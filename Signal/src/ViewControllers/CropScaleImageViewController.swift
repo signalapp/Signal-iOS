@@ -6,7 +6,7 @@ import Foundation
 import MediaPlayer
 
 class OWSLayerView: UIView {
-    var layoutCallback : (() -> Void)?
+    let layoutCallback : (() -> Void)
 
     required init(frame: CGRect, layoutCallback : @escaping () -> Void) {
         self.layoutCallback = layoutCallback
@@ -21,23 +21,36 @@ class OWSLayerView: UIView {
 
     override var bounds: CGRect {
         didSet {
-            guard let layoutCallback = self.layoutCallback else {
-                return
-            }
             layoutCallback()
         }
     }
 
     override var frame: CGRect {
         didSet {
-            guard let layoutCallback = self.layoutCallback else {
-                return
-            }
             layoutCallback()
         }
     }
 }
 
+// This kind of view is tricky.  I've tried to organize things in the 
+// simplest possible way.
+//
+// I've tried to avoid the following sources of confusion:
+//
+// * Points vs. pixels. All variables should have names that
+//   reflect the units.  Pretty much everything is done in points
+//   except rendering of the output image which is done in pixels.
+// * Coordinate systems.  You have a) the src image coordinates
+//   b) the image view coordinates c) the output image coordinates.
+//   Wherever possible, I've tried to use src image coordinates.
+// * Translation & scaling vs. crop region.  The crop region is
+//   implicit.  We represent the crop state using the translation 
+//   and scaling of the "default" crop region (the largest possible
+//   crop region, at the origin (upper left) of the source image.
+//   Given the translation & scaling, we can determine a) the crop
+//   region b) the rectangle at which the src image should be rendered
+//   given a dst view or output context that will yield the 
+//   appropriate cropping.
 class CropScaleImageViewController: OWSViewController {
 
     let TAG = "[CropScaleImageViewController]"
@@ -46,14 +59,14 @@ class CropScaleImageViewController: OWSViewController {
 
     let srcImage: UIImage
 
-    var successCompletion: ((UIImage) -> Void)?
+    let successCompletion: ((UIImage) -> Void)
 
-    var imageView: UIView?
+    var imageView: UIView!
 
     // We use a CALayer to render the image for performance reasons.
-    var imageLayer: CALayer?
+    var imageLayer: CALayer!
 
-    var dashedBorderLayer: CAShapeLayer?
+    var dashedBorderLayer: CAShapeLayer!
 
     // In width/height.
     //
@@ -87,9 +100,11 @@ class CropScaleImageViewController: OWSViewController {
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use attachment: constructor instead.")
+    @available(*, unavailable, message:"use srcImage:successCompletion: constructor instead.")
     required init?(coder aDecoder: NSCoder) {
         self.srcImage = UIImage(named:"fail")!
+        self.successCompletion = { _ in
+        }
         super.init(coder: aDecoder)
         owsFail("\(self.TAG) invalid constructor")
 
@@ -108,7 +123,9 @@ class CropScaleImageViewController: OWSViewController {
     // MARK: Cropping and Scaling
 
     private func configureCropAndScale() {
-        // Size of bounding box that reflects the target aspect ratio, whose longer side = 1.
+        // We use a "unit" view size (long dimension of length 1, short dimension reflects
+        // the dst aspect ratio) since we want to be able to perform this logic before we
+        // know the actual size of the cropped image view.
         let unitSquareHeight: CGFloat = (dstAspectRatio >= 1.0 ? 1.0 : 1.0 / dstAspectRatio)
         let unitSquareWidth: CGFloat = (dstAspectRatio >= 1.0 ? dstAspectRatio * unitSquareHeight : 1.0)
         let unitSquareSize = CGSize(width: unitSquareWidth, height: unitSquareHeight)
@@ -207,10 +224,6 @@ class CropScaleImageViewController: OWSViewController {
         contentView.isUserInteractionEnabled = true
         contentView.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(sender:))))
         contentView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePan(sender:))))
-        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(sender:)))
-        doubleTap.numberOfTapsRequired = 2
-        doubleTap.numberOfTouchesRequired = 1
-        contentView.addGestureRecognizer(doubleTap)
     }
 
     override func viewDidLayoutSubviews() {
@@ -232,6 +245,10 @@ class CropScaleImageViewController: OWSViewController {
         updateImageLayout()
     }
 
+    // Given a src image size and a dst view size, this finds the bounds
+    // of the largest rectangular crop region with the correct dst aspect 
+    // ratio that fits in the src image's aspect ratio, in src image point 
+    // coordinates.
     private func defaultCropFramePoints(imageSizePoints: CGSize, viewSizePoints: CGSize) -> (CGRect) {
         let imageAspectRatio = imageSizePoints.width / imageSizePoints.height
         let viewAspectRatio = viewSizePoints.width / viewSizePoints.height
@@ -255,12 +272,6 @@ class CropScaleImageViewController: OWSViewController {
     // Updates the image view _AND_ normalizes the current scale/translate state.
     private func updateImageLayout() {
         guard let imageView = self.imageView else {
-            return
-        }
-        guard let imageLayer = self.imageLayer else {
-            return
-        }
-        guard let dashedBorderLayer = self.dashedBorderLayer else {
             return
         }
         guard srcImageSizePoints.width > 0 && srcImageSizePoints.height > 0 else {
@@ -297,10 +308,22 @@ class CropScaleImageViewController: OWSViewController {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         imageLayer.frame = imageViewFrame
-        CATransaction.commit()
+
+        // Mask to circle.
+        let maskLayer = CAShapeLayer()
+        maskLayer.frame = imageViewFrame
+        maskLayer.fillRule = kCAFillRuleEvenOdd
+        let maskFrame = CGRect(origin:CGPoint(x:-imageViewFrame.origin.x * 2,
+                                              y: -imageViewFrame.origin.y * 2),
+                               size:imageView.bounds.size)
+        maskLayer.path =
+            CGPath(ellipseIn: maskFrame, transform: nil)
+        imageLayer.mask = maskLayer
 
         dashedBorderLayer.frame = imageView.bounds
         dashedBorderLayer.path = UIBezierPath(rect: imageView.bounds).cgPath
+
+        CATransaction.commit()
     }
 
     private func imageRenderRect(forDstSize dstSize: CGSize) -> CGRect {
@@ -335,10 +358,6 @@ class CropScaleImageViewController: OWSViewController {
             lastPinchScale = sender.scale
             break
         case .changed, .ended:
-            guard let imageView = self.imageView else {
-                return
-            }
-
             if sender.numberOfTouches > 1 {
                 let location =
                     sender.location(in: sender.view)
@@ -391,9 +410,6 @@ class CropScaleImageViewController: OWSViewController {
             srcTranslationAtPanStart = srcTranslation
             break
         case .changed, .ended:
-            guard let imageView = self.imageView else {
-                return
-            }
             let viewSizePoints = imageView.frame.size
             let srcCropSizePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
                                            height:srcDefaultCropSizePoints.height / imageScale)
@@ -411,16 +427,6 @@ class CropScaleImageViewController: OWSViewController {
             srcTranslation
                 = srcTranslationAtPanStart
             break
-        }
-
-        updateImageLayout()
-    }
-
-    func handleDoubleTap(sender: UIPanGestureRecognizer) {
-        if (sender.state == .recognized) {
-            if imageScale > 1.5 {
-                imageScale = kMinImageScale
-            }
         }
 
         updateImageLayout()
@@ -477,7 +483,7 @@ class CropScaleImageViewController: OWSViewController {
             guard let dstImage = self.generateDstImage() else {
                 return
             }
-            successCompletion?(dstImage)
+            successCompletion(dstImage)
         })
     }
 
@@ -488,12 +494,15 @@ class CropScaleImageViewController: OWSViewController {
         let dstScale: CGFloat = 1.0 // The size is specified in pixels, not in points.
         UIGraphicsBeginImageContextWithOptions(dstSizePixels, !hasAlpha, dstScale)
 
+        let context = UIGraphicsGetCurrentContext()
+        context!.interpolationQuality = .high
+
         let imageViewFrame = imageRenderRect(forDstSize:dstSizePixels)
         srcImage.draw(in:imageViewFrame)
 
         let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
         if scaledImage == nil {
-            Logger.error("\(TAG) could not generate dst image.")
+            owsFail("\(TAG) could not generate dst image.")
         }
         UIGraphicsEndImageContext()
         return scaledImage
