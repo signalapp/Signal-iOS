@@ -850,11 +850,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(contactRecipientIds);
 
-    // TODO: The persisted whitelist could either be:
-    //
-    // * Just users manually added to the whitelist.
-    // * Also include users auto-added by, for example, being in the user's
-    //   contacts or when the user initiates a 1:1 conversation with them, etc.
     [self addUsersToProfileWhitelist:contactRecipientIds];
 }
 
@@ -1196,6 +1191,14 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 - (nullable NSData *)encryptProfileData:(nullable NSData *)data
 {
     return [self encryptProfileData:data profileKey:self.localProfileKey];
+}
+
+- (BOOL)isProfileNameTooLong:(nullable NSString *)profileName
+{
+    OWSAssert([NSThread isMainThread]);
+
+    NSData *nameData = [profileName dataUsingEncoding:NSUTF8StringEncoding];
+    return nameData.length > kOWSProfileManager_NameDataLength;
 }
 
 - (nullable NSData *)encryptProfileNameWithUnpaddedName:(NSString *)name

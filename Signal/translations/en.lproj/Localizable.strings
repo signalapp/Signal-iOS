@@ -1090,6 +1090,9 @@
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Clear Avatar";
 
+/* Error message shown when user tries to update profile with a profile name that is too long. */
+"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Your profile name is too long.";
+
 /* Error message shown when a profile update fails. */
 "PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Profile update failed.";
 
@@ -1113,9 +1116,6 @@
 
 /* Alert title that indicates the user's profile view is being saved. */
 "PROFILE_VIEW_SAVING" = "Saving...";
-
-/* Button to skip the profile view in the registration workflow. */
-"PROFILE_VIEW_SKIP_BUTTON" = "Skip";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profile";
