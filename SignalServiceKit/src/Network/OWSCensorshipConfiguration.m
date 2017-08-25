@@ -3,11 +3,10 @@
 //
 
 #import "OWSCensorshipConfiguration.h"
+#import "TSConstants.h"
 #import "TSStorageManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-meek.appspot.com";
 
 @implementation OWSCensorshipConfiguration
 
@@ -32,9 +31,14 @@ NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-mee
     return [@"https://" stringByAppendingString:domain];
 }
 
-- (NSString *)reflectorHost
+- (NSString *)signalServiceReflectorHost
 {
-    return OWSCensorshipConfigurationReflectorHost;
+    return textSecureServiceReflectorHost;
+}
+
+- (NSString *)CDNReflectorHost
+{
+    return textSecureCDNReflectorHost;
 }
 
 - (NSDictionary<NSString *, NSString *> *)censoredCountryCodes
@@ -49,7 +53,7 @@ NSString *const OWSCensorshipConfigurationReflectorHost = @"signal-reflector-mee
     //
     // a) Add the appropriate pinning certificate(s) in
     //    SignalServiceKit.podspec.
-    // b) Update reflectorHost accordingly.
+    // b) Update signalServiceReflectorHost accordingly.
     return @{
              // Egypt
              @"+20": @"google.com.eg",

@@ -196,7 +196,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (AFHTTPSessionManager *)avatarHTTPManager
 {
-    return [OWSSignalService sharedInstance].cdnSessionManager;
+    return [OWSSignalService sharedInstance].CDNSessionManager;
 }
 
 #pragma mark - User Profile Accessor
@@ -571,22 +571,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                             @"%@ avatar upload progress: %.2f%%", self.tag, uploadProgress.fractionCompleted * 100);
                     }
                     success:^(NSURLSessionDataTask *_Nonnull uploadTask, id _Nullable responseObject) {
-                        OWSAssert([uploadTask.response isKindOfClass:[NSHTTPURLResponse class]]);
-                        NSHTTPURLResponse *response = (NSHTTPURLResponse *)uploadTask.response;
-
-                        // We could also construct this URL locally from manager.baseUrl + formKey
-                        // but the approach of getting it from the remote provider seems a more
-                        // robust way to ensure we've actually created the resource where we
-                        // think we have.
-                        NSString *avatarUrlPath = response.allHeaderFields[@"Location"];
-                        if (avatarUrlPath.length == 0) {
-                            OWSProdFail(@"profile_manager_error_avatar_upload_no_location_in_response");
-                            failureBlock();
-                            return;
-                        }
-
-                        DDLogVerbose(@"%@ successfully uploaded avatar url: %@", self.tag, avatarUrlPath);
-                        successBlock(avatarUrlPath);
+                        DDLogDebug(@"%@ successfully uploaded avatar with key: %@", self.tag, formKey);
+                        successBlock(formKey);
                     }
                     failure:^(NSURLSessionDataTask *_Nullable uploadTask, NSError *_Nonnull error) {
                         DDLogVerbose(@"%@ uploading avatar failed with error: %@", self.tag, error);
