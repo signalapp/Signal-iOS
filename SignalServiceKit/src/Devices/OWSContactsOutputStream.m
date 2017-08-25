@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)writeSignalAccount:(SignalAccount *)signalAccount
          recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
+            profileKeyData:(nullable NSData *)profileKeyData
 {
     OWSAssert(signalAccount);
     OWSAssert(signalAccount.contact);
@@ -42,6 +43,10 @@ NS_ASSUME_NONNULL_BEGIN
         avatarPng = UIImagePNGRepresentation(signalAccount.contact.image);
         [avatarBuilder setLength:(uint32_t)avatarPng.length];
         [contactBuilder setAvatarBuilder:avatarBuilder];
+    }
+
+    if (profileKeyData) {
+        [contactBuilder setProfileKey:profileKeyData];
     }
 
     NSData *contactData = [[contactBuilder build] data];

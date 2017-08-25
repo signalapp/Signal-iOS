@@ -515,8 +515,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([dataMessage hasProfileKey]) {
         NSData *profileKey = [dataMessage profileKey];
         NSString *recipientId = incomingEnvelope.source;
-        id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-        [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
+        [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
     }
 
     if (dataMessage.hasGroup) {
@@ -580,6 +579,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (id<ProfileManagerProtocol>)profileManager
+{
+    // TODO inject at init?
+    return [TextSecureKitEnv sharedEnv].profileManager;
+}
+
 - (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)incomingEnvelope
                withCallMessage:(OWSSignalServiceProtosCallMessage *)callMessage
 {
@@ -589,8 +594,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([callMessage hasProfileKey]) {
         NSData *profileKey = [callMessage profileKey];
         NSString *recipientId = incomingEnvelope.source;
-        id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-        [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
+        [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
     }
 
     if (callMessage.hasOffer) {
@@ -707,8 +711,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (dataMessage && destination.length > 0 && [dataMessage hasProfileKey]) {
             // If we observe a linked device sending our profile key to another
             // user, we can infer that that user belongs in our profile whitelist.
-            id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-            [profileManager addUserToProfileWhitelist:destination];
+            [self.profileManager addUserToProfileWhitelist:destination];
 
             // TODO: Can we also infer when groups are added to the whitelist
             //       from sent messages to groups?
@@ -729,7 +732,8 @@ NS_ASSUME_NONNULL_BEGIN
         if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
             OWSSyncContactsMessage *syncContactsMessage =
             [[OWSSyncContactsMessage alloc] initWithContactsManager:self.contactsManager
-                                                    identityManager:self.identityManager];
+                                                    identityManager:self.identityManager
+                                                     profileManager:self.profileManager];
             
             [self.messageSender sendTemporaryAttachmentData:[syncContactsMessage buildPlainTextAttachmentData]
                                                 contentType:OWSMimeTypeApplicationOctetStream

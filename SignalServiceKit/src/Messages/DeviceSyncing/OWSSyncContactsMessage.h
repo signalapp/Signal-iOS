@@ -6,14 +6,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class YapDatabaseReadWriteTransaction;
 @protocol ContactsManagerProtocol;
+@protocol ProfileManagerProtocol;
 @class OWSIdentityManager;
 
 @interface OWSSyncContactsMessage : OWSOutgoingSyncMessage
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
-                        identityManager:(OWSIdentityManager *)identityManager;
+                        identityManager:(OWSIdentityManager *)identityManager
+                         profileManager:(id<ProfileManagerProtocol>)profileManager;
 
 - (NSData *)buildPlainTextAttachmentData;
 

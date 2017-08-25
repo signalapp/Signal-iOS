@@ -919,6 +919,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     });
 }
 
+- (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId
+{
+    return [self profileKeyForRecipientId:recipientId].keyData;
+}
+
 - (nullable OWSAES256Key *)profileKeyForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);

@@ -12,6 +12,7 @@
 #import "SignalAccount.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
+#import "ProfileManagerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic, readonly) OWSIdentityManager *identityManager;
+@property (nonatomic, readonly) id<ProfileManagerProtocol> profileManager;
 
 @end
 
@@ -26,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                         identityManager:(OWSIdentityManager *)identityManager
+                         profileManager:(id<ProfileManagerProtocol>)profileManager
 {
     self = [super initWithTimestamp:[NSDate ows_millisecondTimeStamp]];
     if (!self) {
@@ -34,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _contactsManager = contactsManager;
     _identityManager = identityManager;
+    _profileManager = profileManager;
 
     return self;
 }
@@ -71,8 +75,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     for (SignalAccount *signalAccount in self.contactsManager.signalAccounts) {
         OWSRecipientIdentity *recipientIdentity = [self.identityManager recipientIdentityForRecipientId:signalAccount.recipientId];
+        NSData *_Nullable profileKeyData = [self.profileManager profileKeyDataForRecipientId:signalAccount.recipientId];
         
-        [contactsOutputStream writeSignalAccount:signalAccount recipientIdentity:recipientIdentity];
+        [contactsOutputStream writeSignalAccount:signalAccount
+                               recipientIdentity:recipientIdentity
+                                  profileKeyData:profileKeyData];
     }
 
     [contactsOutputStream flush];
