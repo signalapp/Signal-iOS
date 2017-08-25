@@ -4,6 +4,7 @@
 
 #import "AvatarViewHelper.h"
 #import "OWSContactsManager.h"
+#import "OWSNavigationController.h"
 #import "Signal-Swift.h"
 #import "UIUtil.h"
 #import <MobileCoreServices/UTCoreTypes.h>
@@ -120,15 +121,25 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIImage *rawAvatar = [info objectForKey:UIImagePickerControllerOriginalImage];
 
-    if (rawAvatar) {
-        // We resize the avatar to fill a 210x210 square.
-        //
-        // See: GroupCreateActivity.java in Signal-Android.java.
-        UIImage *resizedAvatar = [rawAvatar resizedImageToFillPixelSize:CGSizeMake(210, 210)];
-        [self.delegate avatarDidChange:resizedAvatar];
-    }
+    [self.delegate.fromViewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                               if (rawAvatar) {
+                                   OWSAssert([NSThread isMainThread]);
 
-    [self.delegate.fromViewController dismissViewControllerAnimated:YES completion:nil];
+                                   CropScaleImageViewController *vc = [[CropScaleImageViewController alloc]
+                                        initWithSrcImage:rawAvatar
+                                       successCompletion:^(UIImage *_Nonnull dstImage) {
+                                           [self.delegate avatarDidChange:dstImage];
+                                       }];
+                                   OWSNavigationController *navigationController =
+                                       [[OWSNavigationController alloc] initWithRootViewController:vc];
+                                   [self.delegate.fromViewController
+                                       presentViewController:navigationController
+                                                    animated:YES
+                                                  completion:[UIUtil modalCompletionBlock]];
+                               }
+                           }];
 }
 
 @end
