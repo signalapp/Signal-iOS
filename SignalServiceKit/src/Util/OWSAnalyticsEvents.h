@@ -176,6 +176,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)prekeysDeletedOldUnacceptedSignedPrekey;
 
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidAcl;
+
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidAlgorithm;
+
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidCredential;
+
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidDate;
+
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidKey;
+
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidPolicy;
+
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidResponse;
+
++ (NSString *)profileManagerErrorAvatarUploadFormInvalidSignature;
+
 + (NSString *)registrationBegan;
 
 + (NSString *)registrationRegisteredPhoneNumber;

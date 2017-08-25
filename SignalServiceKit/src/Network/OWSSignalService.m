@@ -179,7 +179,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     return sessionManager;
 }
 
-- (AFHTTPSessionManager *)reflectorSignalServiceSessionManager
+- (NSURL *)domainFrontingBaseURL
 {
     NSString *localNumber = [TSAccountManager localNumber];
     OWSAssert(localNumber.length > 0);
@@ -192,14 +192,20 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     };
     NSURL *baseURL = [[NSURL alloc] initWithString:[self.censorshipConfiguration frontingHost:localNumber]];
     OWSAssert(baseURL);
+    
+    return baseURL;
+}
+
+- (AFHTTPSessionManager *)reflectorSignalServiceSessionManager
+{
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
-        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
+        [[AFHTTPSessionManager alloc] initWithBaseURL:self.domainFrontingBaseURL sessionConfiguration:sessionConf];
     
     sessionManager.securityPolicy = [[self class] googlePinningPolicy];
 
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
-    [sessionManager.requestSerializer setValue:self.censorshipConfiguration.reflectorHost forHTTPHeaderField:@"Host"];
+    [sessionManager.requestSerializer setValue:self.censorshipConfiguration.signalServiceReflectorHost forHTTPHeaderField:@"Host"];
 
     sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
 
@@ -208,12 +214,18 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 #pragma mark - Profile Uploading
 
-- (AFHTTPSessionManager *)cdnSessionManager
+- (AFHTTPSessionManager *)CDNSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
-        DDLogInfo(@"%@ Profile uploading may not work when under censorship.", self.tag);
+        DDLogInfo(@"%@ using reflector CDNSessionManager", self.tag);
+        return self.reflectorCDNSessionManager;
+    } else {
+        return self.defaultCDNSessionManager;
     }
+}
 
+- (AFHTTPSessionManager *)defaultCDNSessionManager
+{
     NSURL *baseURL = [[NSURL alloc] initWithString:textSecureCDNServerURL];
     OWSAssert(baseURL);
     
@@ -226,6 +238,22 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     // Default acceptable content headers are rejected by AWS
     sessionManager.responseSerializer.acceptableContentTypes = nil;
 
+    return sessionManager;
+}
+
+- (AFHTTPSessionManager *)reflectorCDNSessionManager
+{
+    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+    AFHTTPSessionManager *sessionManager =
+    [[AFHTTPSessionManager alloc] initWithBaseURL:self.domainFrontingBaseURL sessionConfiguration:sessionConf];
+    
+    sessionManager.securityPolicy = [[self class] googlePinningPolicy];
+    
+    sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
+    [sessionManager.requestSerializer setValue:self.censorshipConfiguration.CDNReflectorHost forHTTPHeaderField:@"Host"];
+    
+    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+    
     return sessionManager;
 }
 
