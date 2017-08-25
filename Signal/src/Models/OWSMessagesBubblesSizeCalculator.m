@@ -56,6 +56,10 @@ NS_ASSUME_NONNULL_BEGIN
         _referenceSystemMessageCell = [OWSSystemMessageCell new];
         _referenceUnreadIndicatorCell = [OWSUnreadIndicatorCell new];
         _referenceContactOffersCell = [OWSContactOffersCell new];
+
+        // Calculating message size is relatively expensive, so unbound the size of the cache.
+        self.cache.countLimit = 0;
+        self.cache.totalCostLimit = 0;
     }
     return self;
 }
@@ -75,6 +79,21 @@ NS_ASSUME_NONNULL_BEGIN
                               atIndexPath:(NSIndexPath *)indexPath
                                withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
+    id cacheKey = [self cacheKeyForMessageData:messageData];
+    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
+    if (cachedSize != nil) {
+        return [cachedSize CGSizeValue];
+    }
+
+    CGSize result = [self calculateMessageBubbleSizeForMessageData:messageData atIndexPath:indexPath withLayout:layout];
+    [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
+    return result;
+}
+
+- (CGSize)calculateMessageBubbleSizeForMessageData:(id<JSQMessageData>)messageData
+                                       atIndexPath:(NSIndexPath *)indexPath
+                                        withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
+{
     if ([messageData isKindOfClass:[TSMessageAdapter class]]) {
         TSMessageAdapter *message = (TSMessageAdapter *)messageData;
 
@@ -82,21 +101,18 @@ NS_ASSUME_NONNULL_BEGIN
             case TSCallAdapter:
             case TSInfoMessageAdapter:
             case TSErrorMessageAdapter: {
-                id cacheKey = [self cacheKeyForMessageData:messageData];
                 TSInteraction *interaction = ((TSMessageAdapter *)messageData).interaction;
-                return [self sizeForSystemMessage:interaction cacheKey:cacheKey layout:layout];
+                return [self sizeForSystemMessage:interaction layout:layout];
             }
             case TSUnreadIndicatorAdapter: {
-                id cacheKey = [self cacheKeyForMessageData:messageData];
                 TSUnreadIndicatorInteraction *interaction
                     = (TSUnreadIndicatorInteraction *)((TSMessageAdapter *)messageData).interaction;
-                return [self sizeForUnreadIndicator:interaction cacheKey:cacheKey layout:layout];
+                return [self sizeForUnreadIndicator:interaction layout:layout];
             }
             case OWSContactOffersAdapter: {
-                id cacheKey = [self cacheKeyForMessageData:messageData];
                 OWSContactOffersInteraction *interaction
                     = (OWSContactOffersInteraction *)((TSMessageAdapter *)messageData).interaction;
-                return [self sizeForContactOffers:interaction cacheKey:cacheKey layout:layout];
+                return [self sizeForContactOffers:interaction layout:layout];
             }
             case TSIncomingMessageAdapter:
             case TSOutgoingMessageAdapter:
@@ -106,9 +122,8 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
     } else if ([messageData isKindOfClass:[OWSCall class]]) {
-        id cacheKey = [self cacheKeyForMessageData:messageData];
         TSInteraction *interaction = ((OWSCall *)messageData).interaction;
-        return [self sizeForSystemMessage:interaction cacheKey:cacheKey layout:layout];
+        return [self sizeForSystemMessage:interaction layout:layout];
     } else {
         OWSFail(@"Can't size unknown message data type: %@", [messageData class]);
     }
@@ -126,64 +141,31 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (CGSize)sizeForSystemMessage:(TSInteraction *)interaction
-                      cacheKey:(id)cacheKey
                         layout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(interaction);
-    OWSAssert(cacheKey);
 
-    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
-    if (cachedSize != nil) {
-        return [cachedSize CGSizeValue];
-    }
-
-    CGSize result = [self.referenceSystemMessageCell bubbleSizeForInteraction:interaction
-                                                          collectionViewWidth:layout.collectionView.width];
-
-    [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
-
-    return result;
+    return [self.referenceSystemMessageCell bubbleSizeForInteraction:interaction
+                                                 collectionViewWidth:layout.collectionView.width];
 }
 
 - (CGSize)sizeForUnreadIndicator:(TSUnreadIndicatorInteraction *)interaction
-                        cacheKey:(id)cacheKey
                           layout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
     OWSAssert(interaction);
-    OWSAssert(cacheKey);
 
-    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
-    if (cachedSize != nil) {
-        return [cachedSize CGSizeValue];
-    }
-
-    CGSize result = [self.referenceUnreadIndicatorCell bubbleSizeForInteraction:interaction
-                                                            collectionViewWidth:layout.collectionView.width];
-
-    [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
-
-    return result;
+    return [self.referenceUnreadIndicatorCell bubbleSizeForInteraction:interaction
+                                                   collectionViewWidth:layout.collectionView.width];
 }
 
 - (CGSize)sizeForContactOffers:(OWSContactOffersInteraction *)interaction
-                      cacheKey:(id)cacheKey
                         layout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
     OWSAssert(interaction);
-    OWSAssert(cacheKey);
 
-    NSValue *cachedSize = [self.cache objectForKey:cacheKey];
-    if (cachedSize != nil) {
-        return [cachedSize CGSizeValue];
-    }
-
-    CGSize result = [self.referenceContactOffersCell bubbleSizeForInteraction:interaction
-                                                          collectionViewWidth:layout.collectionView.width];
-
-    [self.cache setObject:[NSValue valueWithCGSize:result] forKey:cacheKey];
-
-    return result;
+    return [self.referenceContactOffersCell bubbleSizeForInteraction:interaction
+                                                 collectionViewWidth:layout.collectionView.width];
 }
 
 /**
@@ -252,6 +234,18 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(((id<OWSMessageData>)messageData).interaction.uniqueId);
 
     return @([messageData messageHash]);
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
