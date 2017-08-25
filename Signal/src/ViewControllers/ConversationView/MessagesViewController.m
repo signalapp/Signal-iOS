@@ -228,7 +228,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic) NSCache *messageAdapterCache;
 @property (nonatomic) BOOL userHasScrolled;
 @property (nonatomic) NSDate *lastMessageSentDate;
-@property (nonatomic) NSTimer *scrollLaterTimer;
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, nullable) ThreadDynamicInteractions *dynamicInteractions;
@@ -640,14 +639,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [self.view layoutSubviews];
     [self scrollToDefaultPosition];
-
-    [self.scrollLaterTimer invalidate];
-    // We want to scroll to the bottom _after_ the layout has been updated.
-    self.scrollLaterTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.001f
-                                                                 target:self
-                                                               selector:@selector(scrollToDefaultPosition)
-                                                               userInfo:nil
-                                                                repeats:NO];
 }
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
@@ -684,9 +675,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)scrollToDefaultPosition
 {
-    [self.scrollLaterTimer invalidate];
-    self.scrollLaterTimer = nil;
-
     if (self.isUserScrolling) {
         return;
     }
@@ -709,9 +697,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)scrollToUnreadIndicatorAnimated
 {
-    [self.scrollLaterTimer invalidate];
-    self.scrollLaterTimer = nil;
-
     if (self.isUserScrolling) {
         return;
     }
@@ -2392,17 +2377,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     self.collectionView.contentOffset = CGPointMake(0, self.collectionView.contentSize.height - scrollDistanceToBottom);
 
-    [self.scrollLaterTimer invalidate];
     // Don’t auto-scroll after “loading more messages” unless we have “more unseen messages”.
     //
     // Otherwise, tapping on "load more messages" autoscrolls you downward which is completely wrong.
     if (hasEarlierUnseenMessages) {
-        // We want to scroll to the bottom _after_ the layout has been updated.
-        self.scrollLaterTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.001f
-                                                                     target:self
-                                                                   selector:@selector(scrollToUnreadIndicatorAnimated)
-                                                                   userInfo:nil
-                                                                    repeats:NO];
+        [self scrollToUnreadIndicatorAnimated];
     }
 
     [self updateLoadEarlierVisible];
@@ -3539,8 +3518,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             [self updateLastVisibleTimestamp];
 
             if (scrollToBottom) {
-                [self.scrollLaterTimer invalidate];
-                self.scrollLaterTimer = nil;
                 [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
             }
         }];
@@ -4176,13 +4153,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     BOOL wasAtBottom = [self isScrolledToBottom];
     if (wasAtBottom) {
-        [self.scrollLaterTimer invalidate];
-        // We want to scroll to the bottom _after_ the layout has been updated.
-        self.scrollLaterTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.001f
-                                                                     target:self
-                                                                   selector:@selector(scrollToBottomImmediately)
-                                                                   userInfo:nil
-                                                                    repeats:NO];
+        [self scrollToBottomImmediately];
     }
 
     [self ensureScrollDownButton];
@@ -4197,8 +4168,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)scrollToBottomAnimated:(BOOL)animated
 {
-    [self.scrollLaterTimer invalidate];
-    self.scrollLaterTimer = nil;
 
     if (self.isUserScrolling) {
         return;
