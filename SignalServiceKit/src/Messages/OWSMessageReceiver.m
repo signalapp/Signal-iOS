@@ -171,7 +171,7 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 {
     YapDatabaseView *existingView = [database registeredExtension:OWSMessageProcessingJobFinderExtensionName];
     if (existingView) {
-        OWSFail(@"%@ was already initailized.", OWSMessageProcessingJobFinderExtensionName);
+        OWSFail(@"%@ was already initialized.", OWSMessageProcessingJobFinderExtensionName);
         // already initialized
         return;
     }

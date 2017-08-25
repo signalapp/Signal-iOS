@@ -11,13 +11,20 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 @class UIFont;
 @class SignalAccount;
+@class ImageCache;
 
 /**
  * Get latest Signal contacts, and be notified when they change.
  */
 @interface OWSContactsManager : NSObject <ContactsManagerProtocol>
 
-@property (nonnull, readonly) NSCache<NSString *, UIImage *> *avatarCache;
+#pragma mark - Setup
+
+- (void)startObserving;
+
+#pragma mark - Accessors
+
+@property (nonnull, readonly) ImageCache *avatarCache;
 
 @property (atomic, readonly) NSArray<Contact *> *allContacts;
 
@@ -54,7 +61,14 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (BOOL)hasNameInSystemContactsForRecipientId:(NSString *)recipientId;
 - (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
+
+// Generally we prefer the formattedProfileName over the raw profileName so as to
+// distinguish a profile name apart from a name pulled from the system's contacts.
+// This helps clarify when the remote person chooses a potentially confusing profile name.
 - (nullable NSString *)formattedProfileNameForRecipientId:(NSString *)recipientId;
+- (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;
+- (nullable NSString *)nameFromSystemContactsForRecipientId:(NSString *)recipientId;
+
 - (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSAttributedString *)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount font:(UIFont *_Nonnull)font;
 - (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font;

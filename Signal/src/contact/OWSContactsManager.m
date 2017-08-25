@@ -50,7 +50,7 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
     }
 
     // TODO: We need to configure the limits of this cache.
-    _avatarCache = [NSCache new];
+    _avatarCache = [ImageCache new];
     _allContacts = @[];
     _signalAccountMap = @{};
     _signalAccounts = @[];
@@ -136,6 +136,24 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
                                                                            failure:failure];
 }
 
+- (void)startObserving
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(otherUsersProfileWillChange:)
+                                                 name:kNSNotificationName_OtherUsersProfileWillChange
+                                               object:nil];
+}
+
+- (void)otherUsersProfileWillChange:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    OWSAssert(recipientId.length > 0);
+
+    [self.avatarCache removeAllImagesForKey:recipientId];
+}
+
 - (void)updateWithContacts:(NSArray<Contact *> *)contacts
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -154,7 +172,7 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
             self.allContacts = contacts;
             self.allContactsMap = [allContactsMap copy];
 
-            [self.avatarCache removeAllObjects];
+            [self.avatarCache removeAllImages];
 
             [self intersectContacts];
 
@@ -423,16 +441,25 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
     return [NSString stringWithFormat:profileNameFormatString, profileName];
 }
 
+- (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId
+{
+    return [self.profileManager profileNameForRecipientId:recipientId];
+}
+
+- (nullable NSString *)nameFromSystemContactsForRecipientId:(NSString *)recipientId
+{
+    return [self cachedDisplayNameForRecipientId:recipientId];
+}
+
 - (NSString *_Nonnull)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
 {
     if (!recipientId) {
         return self.unknownContactName;
     }
 
-    // Prefer a saved name from system contacts, if available
-    NSString *_Nullable displayName = [self cachedDisplayNameForRecipientId:recipientId];
+    NSString *_Nullable displayName = [self nameFromSystemContactsForRecipientId:recipientId];
 
-    // Else fall back to just using their recipientId
+    // Fall back to just using their recipientId
     if (displayName.length < 1) {
         displayName = recipientId;
     }
