@@ -16,7 +16,7 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 @property (nonatomic, readonly) AFHTTPSessionManager *signalServiceSessionManager;
 
 /// For uploading avatar assets.
-@property (nonatomic, readonly) AFHTTPSessionManager *cdnSessionManager;
+@property (nonatomic, readonly) AFHTTPSessionManager *CDNSessionManager;
 
 @property (atomic, readonly) BOOL isCensorshipCircumventionActive;
 
