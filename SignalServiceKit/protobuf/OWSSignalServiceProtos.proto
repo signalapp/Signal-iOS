@@ -154,11 +154,6 @@ message SyncMessage {
   optional Blocked  blocked  = 6;
   optional Verified verified = 7;
   optional bytes    padding  = 8;
-  // Signal-iOS includes profileKey in *every* Sync message
-  // We should change this so as not to bloat our sync message size
-  // since sync messages are sent all the time and we only need to
-  // send a key once.
-  optional bytes    profileKey = 9;
 }
 
 message AttachmentPointer {

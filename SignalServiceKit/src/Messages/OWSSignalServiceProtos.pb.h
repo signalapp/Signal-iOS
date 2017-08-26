@@ -1007,7 +1007,6 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define SyncMessage_blocked @"blocked"
 #define SyncMessage_verified @"verified"
 #define SyncMessage_padding @"padding"
-#define SyncMessage_profileKey @"profileKey"
 @interface OWSSignalServiceProtosSyncMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasSent_:1;
@@ -1017,7 +1016,6 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   BOOL hasBlocked_:1;
   BOOL hasVerified_:1;
   BOOL hasPadding_:1;
-  BOOL hasProfileKey_:1;
   OWSSignalServiceProtosSyncMessageSent* sent;
   OWSSignalServiceProtosSyncMessageContacts* contacts;
   OWSSignalServiceProtosSyncMessageGroups* groups;
@@ -1025,7 +1023,6 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   OWSSignalServiceProtosSyncMessageBlocked* blocked;
   OWSSignalServiceProtosVerified* verified;
   NSData* padding;
-  NSData* profileKey;
   NSMutableArray * readArray;
 }
 - (BOOL) hasSent;
@@ -1035,7 +1032,6 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (BOOL) hasBlocked;
 - (BOOL) hasVerified;
 - (BOOL) hasPadding;
-- (BOOL) hasProfileKey;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageSent* sent;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageContacts* contacts;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageGroups* groups;
@@ -1044,7 +1040,6 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageBlocked* blocked;
 @property (readonly, strong) OWSSignalServiceProtosVerified* verified;
 @property (readonly, strong) NSData* padding;
-@property (readonly, strong) NSData* profileKey;
 - (OWSSignalServiceProtosSyncMessageRead*)readAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -1490,11 +1485,6 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (NSData*) padding;
 - (OWSSignalServiceProtosSyncMessageBuilder*) setPadding:(NSData*) value;
 - (OWSSignalServiceProtosSyncMessageBuilder*) clearPadding;
-
-- (BOOL) hasProfileKey;
-- (NSData*) profileKey;
-- (OWSSignalServiceProtosSyncMessageBuilder*) setProfileKey:(NSData*) value;
-- (OWSSignalServiceProtosSyncMessageBuilder*) clearProfileKey;
 @end
 
 #define AttachmentPointer_id @"id"
