@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -7,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *ourPublicKey;
 
 - (instancetype)initWithTheirPublicKey:(NSData *)theirPublicKey;
-- (NSData *)encrypt:(NSData *)plainText;
+- (nullable NSData *)encrypt:(NSData *)plainText;
 
 @end
 

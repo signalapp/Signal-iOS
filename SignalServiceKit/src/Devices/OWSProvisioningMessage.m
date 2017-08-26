@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSProvisioningMessage.h"
 #import "OWSProvisioningCipher.h"
@@ -44,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (NSData *)buildEncryptedMessageBody
+- (nullable NSData *)buildEncryptedMessageBody
 {
     OWSProvisioningProtosProvisionMessageBuilder *messageBuilder = [OWSProvisioningProtosProvisionMessageBuilder new];
     [messageBuilder setIdentityKeyPublic:self.myPublicKey];
@@ -57,7 +59,11 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *plainTextProvisionMessage = [[messageBuilder build] data];
 
     OWSProvisioningCipher *cipher = [[OWSProvisioningCipher alloc] initWithTheirPublicKey:self.theirPublicKey];
-    NSData *encryptedProvisionMessage = [cipher encrypt:plainTextProvisionMessage];
+    NSData *_Nullable encryptedProvisionMessage = [cipher encrypt:plainTextProvisionMessage];
+    if (encryptedProvisionMessage == nil) {
+        DDLogError(@"Failed to encrypt provision message");
+        return nil;
+    }
 
     OWSProvisioningProtosProvisionEnvelopeBuilder *envelopeBuilder = [OWSProvisioningProtosProvisionEnvelopeBuilder new];
     // Note that this is a one-time-use *cipher* public key, not our Signal *identity* public key

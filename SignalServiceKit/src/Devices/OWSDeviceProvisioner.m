@@ -1,9 +1,12 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSDeviceProvisioner.h"
 #import "OWSDeviceProvisioningCodeService.h"
 #import "OWSDeviceProvisioningService.h"
 #import "OWSProvisioningMessage.h"
+#import "OWSError.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -88,7 +91,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                profileKey:self.profileKey
                                                                          provisioningCode:provisioningCode];
 
-    [self.provisioningService provisionWithMessageBody:[message buildEncryptedMessageBody]
+    NSData *_Nullable messageBody = [message buildEncryptedMessageBody];
+    if (messageBody == nil) {
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToEncryptMessage, @"Failed building provisioning message");
+        failureCallback(error);
+        return;
+    }
+    
+    [self.provisioningService provisionWithMessageBody:messageBody
         ephemeralDeviceId:self.ephemeralDeviceId
         success:^{
             DDLogInfo(@"ProvisioningService SUCCEEDED");

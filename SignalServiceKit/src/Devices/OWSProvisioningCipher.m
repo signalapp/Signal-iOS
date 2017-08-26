@@ -22,11 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTheirPublicKey:(NSData *)theirPublicKey
 {
     return [self initWithTheirPublicKey:theirPublicKey
-                           ourKeyPair:[Curve25519 generateKeyPair]
+                             ourKeyPair:[Curve25519 generateKeyPair]
                    initializationVector:[Cryptography generateRandomBytes:kCCBlockSizeAES128]];
 }
 
-    
+// Private method which exposes dependencies for testing
 - (instancetype)initWithTheirPublicKey:(NSData *)theirPublicKey
                             ourKeyPair:(ECKeyPair *)ourKeyPair
                   initializationVector:(NSData *)initializationVector
@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self.ourKeyPair.publicKey;
 }
 
-- (NSData *)encrypt:(NSData *)dataToEncrypt
+- (nullable NSData *)encrypt:(NSData *)dataToEncrypt
 {
     NSData *sharedSecret =
         [Curve25519 generateSharedSecretFromPublicKey:self.theirPublicKey andKeyPair:self.ourKeyPair];
@@ -64,7 +64,12 @@ NS_ASSUME_NONNULL_BEGIN
     u_int8_t versionByte[] = { 0x01 };
     NSMutableData *message = [NSMutableData dataWithBytes:&versionByte length:1];
 
-    NSData *cipherText = [self encrypt:dataToEncrypt withKey:cipherKey];
+    NSData *_Nullable cipherText = [self encrypt:dataToEncrypt withKey:cipherKey];
+    if (cipherText == nil) {
+        OWSFail(@"Provisioning cipher failed.");
+        return nil;
+    }
+    
     [message appendData:cipherText];
 
     NSData *mac = [self macForMessage:message withKey:macKey];
@@ -73,14 +78,27 @@ NS_ASSUME_NONNULL_BEGIN
     return [message copy];
 }
 
-- (NSData *)encrypt:(NSData *)dataToEncrypt withKey:(NSData *)cipherKey
+- (nullable NSData *)encrypt:(NSData *)dataToEncrypt withKey:(NSData *)cipherKey
 {
     NSData *iv = self.initializationVector;
-    OWSAssert(iv.length == kCCBlockSizeAES128);
+    if (iv.length != kCCBlockSizeAES128) {
+        OWSFail(@"Unexpected length for iv");
+        return nil;
+    }
 
     // allow space for message + padding any incomplete block
-    size_t bufferSize = dataToEncrypt.length + kCCBlockSizeAES128;
-    void *buffer = malloc(bufferSize);
+    NSUInteger blockCount = ceil((double)dataToEncrypt.length / (double)kCCBlockSizeAES128);
+    size_t ciphertextBufferSize = blockCount * kCCBlockSizeAES128;
+
+    // message format is (iv || ciphertext)
+    NSMutableData *encryptedMessage = [NSMutableData dataWithLength:iv.length + ciphertextBufferSize];
+    
+    // write the iv
+    [encryptedMessage replaceBytesInRange:NSMakeRange(0, iv.length) withBytes:iv.bytes];
+    
+    // cipher text follows iv
+    char *ciphertextBuffer = encryptedMessage.mutableBytes + iv.length;
+
     size_t bytesEncrypted = 0;
 
     CCCryptorStatus cryptStatus = CCCrypt(kCCEncrypt,
@@ -91,26 +109,25 @@ NS_ASSUME_NONNULL_BEGIN
         iv.bytes,
         dataToEncrypt.bytes,
         dataToEncrypt.length,
-        buffer,
-        bufferSize,
+        ciphertextBuffer,
+        ciphertextBufferSize,
         &bytesEncrypted);
 
     if (cryptStatus != kCCSuccess) {
         DDLogError(@"Encryption failed with status: %d", cryptStatus);
+        return nil;
     }
-
-    NSMutableData *encryptedMessage = [[NSMutableData alloc] initWithData:iv];
-    [encryptedMessage appendBytes:buffer length:bytesEncrypted];
-
+    
     return [encryptedMessage copy];
 }
 
 - (NSData *)macForMessage:(NSData *)message withKey:(NSData *)macKey
 {
-    uint8_t hmacBytes[CC_SHA256_DIGEST_LENGTH] = { 0 };
-    CCHmac(kCCHmacAlgSHA256, macKey.bytes, macKey.length, message.bytes, message.length, hmacBytes);
+    NSMutableData *hmac = [NSMutableData dataWithLength:CC_SHA256_DIGEST_LENGTH];
+    
+    CCHmac(kCCHmacAlgSHA256, macKey.bytes, macKey.length, message.bytes, message.length, hmac.mutableBytes);
 
-    return [NSData dataWithBytes:hmacBytes length:CC_SHA256_DIGEST_LENGTH];
+    return [hmac copy];
 }
 
 
