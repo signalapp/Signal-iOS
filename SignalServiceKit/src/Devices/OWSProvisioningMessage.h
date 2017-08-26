@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
                        myPrivateKey:(NSData *)myPrivateKey
                      theirPublicKey:(NSData *)theirPublicKey
                   accountIdentifier:(NSString *)accountIdentifier
+                         profileKey:(NSData *)profileKey
                    provisioningCode:(NSString *)provisioningCode;
 
 - (NSData *)buildEncryptedMessageBody;

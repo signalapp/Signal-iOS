@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *myPrivateKey;
 @property (nonatomic, readonly) NSData *theirPublicKey;
 @property (nonatomic, readonly) NSString *accountIdentifier;
+@property (nonatomic, readonly) NSData *profileKey;
 @property (nonatomic, nullable) NSString *ephemeralDeviceId;
 @property (nonatomic, readonly) OWSDeviceProvisioningCodeService *provisioningCodeService;
 @property (nonatomic, readonly) OWSDeviceProvisioningService *provisioningService;
@@ -26,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
                      theirPublicKey:(NSData *)theirPublicKey
              theirEphemeralDeviceId:(NSString *)ephemeralDeviceId
                   accountIdentifier:(NSString *)accountIdentifier
+                         profileKey:(NSData *)profileKey
             provisioningCodeService:(OWSDeviceProvisioningCodeService *)provisioningCodeService
                 provisioningService:(OWSDeviceProvisioningService *)provisioningService
 {
@@ -38,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
     _myPrivateKey = myPrivateKey;
     _theirPublicKey = theirPublicKey;
     _accountIdentifier = accountIdentifier;
+    _profileKey = profileKey;
     _ephemeralDeviceId = ephemeralDeviceId;
     _provisioningCodeService = provisioningCodeService;
     _provisioningService = provisioningService;
@@ -50,12 +53,14 @@ NS_ASSUME_NONNULL_BEGIN
                      theirPublicKey:(NSData *)theirPublicKey
              theirEphemeralDeviceId:(NSString *)ephemeralDeviceId
                   accountIdentifier:(NSString *)accountIdentifier
+                         profileKey:(NSData *)profileKey
 {
     return [self initWithMyPublicKey:myPublicKey
                         myPrivateKey:myPrivateKey
                       theirPublicKey:theirPublicKey
               theirEphemeralDeviceId:ephemeralDeviceId
                    accountIdentifier:accountIdentifier
+                          profileKey:profileKey
              provisioningCodeService:[OWSDeviceProvisioningCodeService new]
                  provisioningService:[OWSDeviceProvisioningService new]];
 }
@@ -80,6 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              myPrivateKey:self.myPrivateKey
                                                                            theirPublicKey:self.theirPublicKey
                                                                         accountIdentifier:self.accountIdentifier
+                                                                               profileKey:self.profileKey
                                                                          provisioningCode:provisioningCode];
 
     [self.provisioningService provisionWithMessageBody:[message buildEncryptedMessageBody]
