@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSSyncContactsMessage ()
 
-@property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
+@property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 @property (nonatomic, readonly) OWSIdentityManager *identityManager;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManager;
 
@@ -26,16 +26,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncContactsMessage
 
-- (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
-                        identityManager:(OWSIdentityManager *)identityManager
-                         profileManager:(id<ProfileManagerProtocol>)profileManager
+- (instancetype)initWithSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
+                       identityManager:(OWSIdentityManager *)identityManager
+                        profileManager:(id<ProfileManagerProtocol>)profileManager
 {
     self = [super initWithTimestamp:[NSDate ows_millisecondTimeStamp]];
     if (!self) {
         return self;
     }
 
-    _contactsManager = contactsManager;
+    _signalAccounts = signalAccounts;
     _identityManager = identityManager;
     _profileManager = profileManager;
 
@@ -73,8 +73,9 @@ NS_ASSUME_NONNULL_BEGIN
     [dataOutputStream open];
     OWSContactsOutputStream *contactsOutputStream = [OWSContactsOutputStream streamWithOutputStream:dataOutputStream];
 
-    for (SignalAccount *signalAccount in self.contactsManager.signalAccounts) {
-        OWSRecipientIdentity *recipientIdentity = [self.identityManager recipientIdentityForRecipientId:signalAccount.recipientId];
+    for (SignalAccount *signalAccount in self.signalAccounts) {
+        OWSRecipientIdentity *_Nullable recipientIdentity =
+            [self.identityManager recipientIdentityForRecipientId:signalAccount.recipientId];
         NSData *_Nullable profileKeyData = [self.profileManager profileKeyDataForRecipientId:signalAccount.recipientId];
         
         [contactsOutputStream writeSignalAccount:signalAccount

@@ -94,9 +94,10 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
             return;
         }
 
-        OWSSyncContactsMessage *syncContactsMessage = [[OWSSyncContactsMessage alloc] initWithContactsManager:self.contactsManager
-                                                                                              identityManager:self.identityManager
-                                                                                               profileManager:self.profileManager];
+        OWSSyncContactsMessage *syncContactsMessage =
+            [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
+                                                   identityManager:self.identityManager
+                                                    profileManager:self.profileManager];
 
         NSData *messageData = [syncContactsMessage buildPlainTextAttachmentData];
 

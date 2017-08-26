@@ -731,10 +731,10 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.hasRequest) {
         if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
             OWSSyncContactsMessage *syncContactsMessage =
-            [[OWSSyncContactsMessage alloc] initWithContactsManager:self.contactsManager
-                                                    identityManager:self.identityManager
-                                                     profileManager:self.profileManager];
-            
+                [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
+                                                       identityManager:self.identityManager
+                                                        profileManager:self.profileManager];
+
             [self.messageSender sendTemporaryAttachmentData:[syncContactsMessage buildPlainTextAttachmentData]
                                                 contentType:OWSMimeTypeApplicationOctetStream
                                                   inMessage:syncContactsMessage

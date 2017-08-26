@@ -60,6 +60,7 @@
 #import <SignalServiceKit/OWSCallIceUpdateMessage.h>
 #import <SignalServiceKit/OWSCallMessageHandler.h>
 #import <SignalServiceKit/OWSCallOfferMessage.h>
+#import <SignalServiceKit/OWSContactsOutputStream.h>
 #import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSEndSessionMessage.h>
 #import <SignalServiceKit/OWSError.h>
@@ -71,6 +72,7 @@
 #import <SignalServiceKit/OWSOutgoingCallMessage.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSSignalService.h>
+#import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSTurnServerInfoRequest.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>

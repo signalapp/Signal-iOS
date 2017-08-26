@@ -6,15 +6,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol ContactsManagerProtocol;
 @protocol ProfileManagerProtocol;
+@class SignalAccount;
 @class OWSIdentityManager;
 
 @interface OWSSyncContactsMessage : OWSOutgoingSyncMessage
 
-- (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
-                        identityManager:(OWSIdentityManager *)identityManager
-                         profileManager:(id<ProfileManagerProtocol>)profileManager;
+- (instancetype)initWithSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
+                       identityManager:(OWSIdentityManager *)identityManager
+                        profileManager:(id<ProfileManagerProtocol>)profileManager;
 
 - (NSData *)buildPlainTextAttachmentData;
 
