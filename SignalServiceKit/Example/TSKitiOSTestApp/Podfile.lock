@@ -38,7 +38,7 @@ PODS:
   - Reachability (3.2)
   - SAMKeychain (1.5.2)
   - SignalServiceKit (0.9.0):
-    - 25519
+    - '25519'
     - AFNetworking
     - AxolotlKit
     - CocoaLumberjack
@@ -134,7 +134,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/facebook/SocketRocket.git
 
 SPEC CHECKSUMS:
-  25519: dc4bad7e2dbcbf1efa121068a705a44cd98c80fc
+  '25519': dc4bad7e2dbcbf1efa121068a705a44cd98c80fc
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   AxolotlKit: a9530d6835baae0f204b1f6b9dd79b7901176f0d
   CocoaLumberjack: aa9dcab71bdf9eaf2a63bbd9ddc87863efe45457
@@ -154,4 +154,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 8eff8ab93f8a0a1024e17b16fee43f3a93656c2c
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.2.1

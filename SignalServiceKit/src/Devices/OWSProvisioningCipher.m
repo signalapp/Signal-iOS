@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSProvisioningCipher.h"
 #import <25519/Curve25519.h>
@@ -11,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSData *theirPublicKey;
 @property (nonatomic, readonly) ECKeyPair *ourKeyPair;
+@property (nonatomic, readonly) NSData *initializationVector;
 
 @end
 
@@ -18,14 +21,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithTheirPublicKey:(NSData *)theirPublicKey
 {
+    return [self initWithTheirPublicKey:theirPublicKey
+                           ourKeyPair:[Curve25519 generateKeyPair]
+                   initializationVector:[Cryptography generateRandomBytes:kCCBlockSizeAES128]];
+}
+
+    
+- (instancetype)initWithTheirPublicKey:(NSData *)theirPublicKey
+                            ourKeyPair:(ECKeyPair *)ourKeyPair
+                  initializationVector:(NSData *)initializationVector
+{
     self = [super init];
     if (!self) {
         return self;
     }
-
+    
     _theirPublicKey = theirPublicKey;
-    _ourKeyPair = [Curve25519 generateKeyPair];
-
+    _ourKeyPair = ourKeyPair;
+    _initializationVector = initializationVector;
+    
     return self;
 }
 
@@ -61,7 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSData *)encrypt:(NSData *)dataToEncrypt withKey:(NSData *)cipherKey
 {
-    NSData *iv = [Cryptography generateRandomBytes:kCCBlockSizeAES128];
+    NSData *iv = self.initializationVector;
+    OWSAssert(iv.length == kCCBlockSizeAES128);
+
     // allow space for message + padding any incomplete block
     size_t bufferSize = dataToEncrypt.length + kCCBlockSizeAES128;
     void *buffer = malloc(bufferSize);

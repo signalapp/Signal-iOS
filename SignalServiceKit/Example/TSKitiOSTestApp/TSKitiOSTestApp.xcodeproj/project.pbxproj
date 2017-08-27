@@ -11,6 +11,7 @@
 		34D99C891F2250FF00D284D6 /* OWSAnalyticsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C881F2250FF00D284D6 /* OWSAnalyticsTests.m */; };
 		45046FE01D95A6130015EFF2 /* TSMessagesManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45046FDF1D95A6130015EFF2 /* TSMessagesManagerTest.m */; };
 		450E3C9A1D96DD2600BF4EB6 /* OWSDisappearingMessagesJobTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 450E3C991D96DD2600BF4EB6 /* OWSDisappearingMessagesJobTest.m */; };
+		451686AE1F527A9C00AC3D4B /* OWSProvisioningCipherTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 451686AD1F527A9C00AC3D4B /* OWSProvisioningCipherTest.m */; };
 		4516E3E81DD153CC00DC4206 /* TSGroupThreadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4516E3E71DD153CC00DC4206 /* TSGroupThreadTest.m */; };
 		4516E3EA1DD1542300DC4206 /* TSContactThreadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4516E3E91DD1542300DC4206 /* TSContactThreadTest.m */; };
 		452137231E8D6D2F0048FD10 /* OWSFakeMessageSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 452137221E8D6D2F0048FD10 /* OWSFakeMessageSender.m */; };
@@ -70,6 +71,7 @@
 		36DA6C703F99948D553F4E3F /* Pods-TSKitiOSTestAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TSKitiOSTestAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TSKitiOSTestAppTests/Pods-TSKitiOSTestAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		45046FDF1D95A6130015EFF2 /* TSMessagesManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSMessagesManagerTest.m; path = ../../../tests/Messages/TSMessagesManagerTest.m; sourceTree = "<group>"; };
 		450E3C991D96DD2600BF4EB6 /* OWSDisappearingMessagesJobTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDisappearingMessagesJobTest.m; path = ../../../tests/Messages/OWSDisappearingMessagesJobTest.m; sourceTree = "<group>"; };
+		451686AD1F527A9C00AC3D4B /* OWSProvisioningCipherTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSProvisioningCipherTest.m; path = ../../../tests/Devices/OWSProvisioningCipherTest.m; sourceTree = "<group>"; };
 		4516E3E71DD153CC00DC4206 /* TSGroupThreadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSGroupThreadTest.m; path = ../../../tests/Contacts/TSGroupThreadTest.m; sourceTree = "<group>"; };
 		4516E3E91DD1542300DC4206 /* TSContactThreadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSContactThreadTest.m; path = ../../../tests/Contacts/TSContactThreadTest.m; sourceTree = "<group>"; };
 		452137211E8D6D2F0048FD10 /* OWSFakeMessageSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSFakeMessageSender.h; path = ../../../tests/TestSupport/Fakes/OWSFakeMessageSender.h; sourceTree = "<group>"; };
@@ -263,6 +265,7 @@
 			children = (
 				45D7243E1D67899F00E0CA54 /* OWSDeviceProvisionerTest.m */,
 				45B840201D988DA100F9E938 /* OWSReadReceiptTest.m */,
+				451686AD1F527A9C00AC3D4B /* OWSProvisioningCipherTest.m */,
 			);
 			name = Devices;
 			sourceTree = "<group>";
@@ -468,7 +471,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		276B029791E679B0E87877B7 /* [CP] Copy Pods Resources */ = {
@@ -551,7 +554,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -590,6 +593,7 @@
 				45AE48491E072711004D96C2 /* OWSUnitTestEnvironment.m in Sources */,
 				459850C11D22C6F2006FFEDB /* PhoneNumberTest.m in Sources */,
 				45DC30C71F3B69B7008C4378 /* OWSFakeProfileManager.m in Sources */,
+				451686AE1F527A9C00AC3D4B /* OWSProvisioningCipherTest.m in Sources */,
 				45458B7A1CC342B600A02153 /* TSStorageSignedPreKeyStore.m in Sources */,
 				453E1FDB1DA83EFB00DDD7B7 /* OWSFakeContactsUpdater.m in Sources */,
 				452137231E8D6D2F0048FD10 /* OWSFakeMessageSender.m in Sources */,
