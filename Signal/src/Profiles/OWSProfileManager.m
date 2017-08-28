@@ -487,6 +487,30 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSAssert(failureBlock);
     OWSAssert(avatarData == nil || avatarData.length > 0);
 
+    // We want to clear the local user's profile avatar as soon as
+    // we request the upload form, since that request clears our
+    // avatar on the service.
+    //
+    // TODO: Revisit this so that failed profile updates don't leave
+    // the profile avatar blank, etc.
+    void (^clearLocalAvatar)() = ^{
+        @synchronized(self)
+        {
+            UserProfile *userProfile = self.localUserProfile;
+            OWSAssert(userProfile);
+
+            // TODO remote avatarUrlPath changes as result of fetching form -
+            // we should probably invalidate it at that point, and refresh again when
+            // uploading file completes.
+            userProfile.avatarUrlPath = nil;
+            userProfile.avatarFileName = nil;
+
+            [self saveUserProfile:userProfile];
+
+            self.localCachedAvatarImage = nil;
+        }
+    };
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
         TSProfileAvatarUploadFormRequest *formRequest = [TSProfileAvatarUploadFormRequest new];
@@ -497,6 +521,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
         [self.networkManager makeRequest:formRequest
             success:^(NSURLSessionDataTask *task, id formResponseObject) {
+                clearLocalAvatar();
 
                 if (avatarData == nil) {
                     DDLogDebug(@"%@ successfully cleared avatar", self.tag);
@@ -595,6 +620,12 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                     }];
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
+                // Only clear the local avatar if we have a response. Otherwise, we
+                // had a network failure and probably didn't reach the service.
+                if (task.response != nil) {
+                    clearLocalAvatar();
+                }
+
                 DDLogError(@"%@ Failed to get profile avatar upload form: %@", self.tag, error);
                 failureBlock();
             }];
