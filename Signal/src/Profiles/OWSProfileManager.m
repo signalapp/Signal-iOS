@@ -400,7 +400,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                     [self writeAvatarToDisk:avatarImage
                         success:^(NSData *data, NSString *fileName) {
                             [self uploadAvatarToService:data
-                                success:^(NSString *avatarUrlPath) {
+                                success:^(NSString *_Nullable avatarUrlPath) {
                                     tryToUpdateService(avatarUrlPath, fileName);
                                 }
                                 failure:^{
@@ -411,6 +411,15 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                             failureBlock();
                         }];
                 }
+            } else if (userProfile.avatarUrlPath) {
+                DDLogVerbose(@"%@ Updating local profile on service with cleared avatar.", self.tag);
+                [self uploadAvatarToService:nil
+                    success:^(NSString *_Nullable avatarUrlPath) {
+                        tryToUpdateService(nil, nil);
+                    }
+                    failure:^{
+                        failureBlock();
+                    }];
             } else {
                 DDLogVerbose(@"%@ Updating local profile on service with no avatar.", self.tag);
                 tryToUpdateService(nil, nil);
@@ -469,18 +478,15 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return data;
 }
 
-- (void)uploadAvatarToService:(NSData *)avatarData
-                      success:(void (^)(NSString *avatarUrlPath))successBlock
+- (void)uploadAvatarToService:(NSData *_Nullable)avatarData
+                      success:(void (^)(NSString *_Nullable avatarUrlPath))successBlock
                       failure:(void (^)())failureBlock
 {
-    OWSAssert(avatarData.length > 0);
     OWSAssert(successBlock);
     OWSAssert(failureBlock);
+    OWSAssert(avatarData == nil || avatarData.length > 0);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSData *encryptedAvatarData = [self encryptProfileData:avatarData];
-        OWSAssert(encryptedAvatarData.length > 0);
-
         // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
         TSProfileAvatarUploadFormRequest *formRequest = [TSProfileAvatarUploadFormRequest new];
 
@@ -490,6 +496,12 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
         [self.networkManager makeRequest:formRequest
             success:^(NSURLSessionDataTask *task, id formResponseObject) {
+
+                if (avatarData == nil) {
+                    DDLogDebug(@"%@ successfully cleared avatar", self.tag);
+                    successBlock(nil);
+                    return;
+                }
 
                 if (![formResponseObject isKindOfClass:[NSDictionary class]]) {
                     OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidResponse]);
@@ -562,6 +574,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                         [formData appendPartWithFormData:formDataForString(formSignature) name:@"x-amz-signature"];
                         [formData appendPartWithFormData:formDataForString(OWSMimeTypeApplicationOctetStream)
                                                     name:@"Content-Type"];
+                        NSData *encryptedAvatarData = [self encryptProfileData:avatarData];
+                        OWSAssert(encryptedAvatarData.length > 0);
                         [formData appendPartWithFormData:encryptedAvatarData name:@"file"];
 
                         DDLogVerbose(@"%@ constructed body", self.tag);
@@ -1067,6 +1081,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(recipientId.length > 0);
 
+    DDLogDebug(
+        @"%@ update profile for: %@ name: %@ avatar: %@", self.tag, recipientId, profileNameEncrypted, avatarUrlPath);
+
     // Ensure decryption, etc. off main thread.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
@@ -1083,6 +1100,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
             userProfile.profileName = profileName;
             userProfile.avatarUrlPath = avatarUrlPath;
+            userProfile.avatarFileName = nil;
 
             if (!isAvatarSame) {
                 // Evacuate avatar image cache.
