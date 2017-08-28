@@ -620,6 +620,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                     }];
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
+                // Only clear the local avatar if we have a response. Otherwise, we
+                // had a network failure and probably didn't reach the service.
                 if (task.response != nil) {
                     clearLocalAvatar();
                 }
