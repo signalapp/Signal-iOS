@@ -1367,9 +1367,19 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                       messageSender:(OWSMessageSender *)messageSender
                             success:(void (^)())successHandler
 {
+    AssertIsOnMainThread();
 
     OWSProfileKeyMessage *message =
         [[OWSProfileKeyMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
+
+    BOOL isFeatureEnabled = NO;
+    if (!isFeatureEnabled) {
+        DDLogWarn(@"%@ skipping sending profile-key message because the feature is not yet fully available.", self.tag);
+        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+        successHandler();
+        return;
+    }
+
     [messageSender sendMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully sent profile key message to thread: %@", self.tag, thread);
