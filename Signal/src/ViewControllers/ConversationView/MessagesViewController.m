@@ -692,7 +692,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [self scrollToBottomAnimated:NO];
     }
 
-    [self ensureScrollDownButton];
+    [self updateLastVisibleTimestamp];
 }
 
 - (void)scrollToUnreadIndicatorAnimated
@@ -711,8 +711,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                 animated:YES];
         }
     }
-    
-    [self ensureScrollDownButton];
+
+    [self updateLastVisibleTimestamp];
 }
 
 - (void)resetContentAndLayout
@@ -2928,7 +2928,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [super viewDidLayoutSubviews];
 
     [self updateLastVisibleTimestamp];
-    [self ensureScrollDownButton];
 }
 
 - (void)createScrollDownButton
@@ -4156,7 +4155,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [self scrollToBottomImmediately];
     }
 
-    [self ensureScrollDownButton];
+    [self updateLastVisibleTimestamp];
 }
 
 - (void)scrollToBottomImmediately
@@ -4246,7 +4245,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // and the "send" button if it isn't.
     [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureEnabling];
 
-    [self ensureScrollDownButton];
+    [self updateLastVisibleTimestamp];
 }
 
 #pragma mark - UIScrollViewDelegate
