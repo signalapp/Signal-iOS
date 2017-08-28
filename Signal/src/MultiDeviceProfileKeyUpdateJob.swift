@@ -5,6 +5,10 @@
 import Foundation
 import PromiseKit
 
+/**
+ * Transmits our profile key to any linked devices. 
+ * This is accomplished via the existing contact syncing mechanism, except the only contact synced is ourself.
+ */
 @objc class MultiDeviceProfileKeyUpdateJob: NSObject {
 
     let TAG = "[MultiDeviceProfileKeyUpdateJob]"
@@ -39,17 +43,16 @@ import PromiseKit
                                                         profileManager: self.profileManager)
 
         self.messageSender.sendTemporaryAttachmentData(syncContactsMessage.buildPlainTextAttachmentData(),
-                                                       contentType: OWSMimeTypeApplicationOctetStream,
-                                                       in: syncContactsMessage,
-                                                       success: {
-                                                        Logger.info("\(self.TAG) Successfully synced profile key")
-
-        },
-                                                       failure: { error in
-                                                        Logger.error("\(self.TAG) in \(#function) failed with error: \(error) retrying in \(retryDelay)s.")
-                                                        after(seconds: retryDelay).then {
-                                                            self.run(retryDelay: retryDelay * 2)
-                                                            }.retainUntilComplete()
-        })
+            contentType: OWSMimeTypeApplicationOctetStream,
+            in: syncContactsMessage,
+            success: {
+                Logger.info("\(self.TAG) Successfully synced profile key")
+            },
+            failure: { error in
+                Logger.error("\(self.TAG) in \(#function) failed with error: \(error) retrying in \(retryDelay)s.")
+                after(seconds: retryDelay).then {
+                    self.run(retryDelay: retryDelay * 2)
+                }.retainUntilComplete()
+            })
     }
 }

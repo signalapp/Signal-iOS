@@ -587,7 +587,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id<ProfileManagerProtocol>)profileManager
 {
-    // TODO inject at init?
     return [TextSecureKitEnv sharedEnv].profileManager;
 }
 
