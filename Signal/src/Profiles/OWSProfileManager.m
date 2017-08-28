@@ -478,6 +478,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return data;
 }
 
+// If avatarData is nil, we are clearing the avatar.
 - (void)uploadAvatarToService:(NSData *_Nullable)avatarData
                       success:(void (^)(NSString *_Nullable avatarUrlPath))successBlock
                       failure:(void (^)())failureBlock
