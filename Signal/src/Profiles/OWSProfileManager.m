@@ -1024,7 +1024,10 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             NSURLRequest *request = [NSURLRequest requestWithURL:avatarUrlPath];
             NSURLSessionDownloadTask *downloadTask = [self.avatarHTTPManager downloadTaskWithRequest:request
                 progress:^(NSProgress *_Nonnull downloadProgress) {
-                    DDLogVerbose(@"%@ Downloading avatar for %@", self.tag, userProfile.recipientId);
+                    DDLogVerbose(@"%@ Downloading avatar for %@ %f",
+                        self.tag,
+                        userProfile.recipientId,
+                        downloadProgress.fractionCompleted);
                 }
                 destination:^NSURL *_Nonnull(NSURL *_Nonnull targetPath, NSURLResponse *_Nonnull response) {
                     return [NSURL fileURLWithPath:tempFilePath];
@@ -1330,6 +1333,74 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     if (error) {
         DDLogError(@"Failed to delete database: %@", error.description);
     }
+}
+
+#pragma mark - User Interface
+
+- (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
+                        fromViewController:(UIViewController *)fromViewController
+                             messageSender:(OWSMessageSender *)messageSender
+                                   success:(void (^)())successHandler
+{
+    AssertIsOnMainThread();
+
+    UIAlertController *alertController =
+        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    NSString *shareTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
+        @"Button to confirm that user wants to share their profile with a user or group.");
+    [alertController addAction:[UIAlertAction actionWithTitle:shareTitle
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:^(UIAlertAction *_Nonnull action) {
+                                                          [self addThreadToProfileWhitelist:thread
+                                                                         fromViewController:fromViewController
+                                                                              messageSender:messageSender
+                                                                                    success:successHandler];
+                                                      }]];
+    [alertController addAction:[OWSAlerts cancelAction]];
+
+    [fromViewController presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)addThreadToProfileWhitelist:(TSThread *)thread
+                 fromViewController:(UIViewController *)fromViewController
+                      messageSender:(OWSMessageSender *)messageSender
+                            success:(void (^)())successHandler
+{
+
+    OWSProfileKeyMessage *message =
+        [[OWSProfileKeyMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
+    [messageSender sendMessage:message
+        success:^{
+            DDLogInfo(@"%@ Successfully sent profile key message to thread: %@", self.tag, thread);
+            [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                successHandler();
+            });
+        }
+        failure:^(NSError *_Nonnull error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                DDLogError(@"%@ Failed to send profile key message to thread: %@", self.tag, thread);
+                UIAlertController *retryAlertController = [UIAlertController
+                    alertControllerWithTitle:NSLocalizedString(@"SHARE_PROFILE_FAILED_TITLE", @"alert title")
+                                     message:error.localizedDescription
+                              preferredStyle:UIAlertControllerStyleAlert];
+                [retryAlertController
+                    addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"RETRY_BUTTON_TEXT", nil)
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction *_Nonnull retryAction) {
+                                                         [self addThreadToProfileWhitelist:thread
+                                                                        fromViewController:fromViewController
+                                                                             messageSender:messageSender
+                                                                                   success:successHandler];
+                                                     }]];
+
+                [retryAlertController addAction:[OWSAlerts cancelAction]];
+
+                [fromViewController presentViewController:retryAlertController animated:YES completion:nil];
+            });
+        }];
 }
 
 #pragma mark - Notifications

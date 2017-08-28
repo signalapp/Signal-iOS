@@ -60,7 +60,7 @@ class ProfileFetcherJob: NSObject {
                 if remainingRetries > 0 {
                     self.updateProfile(recipientId: recipientId, remainingRetries: remainingRetries - 1)
                 } else {
-                    owsFail("\(self.TAG) in \(#function) failed to get profile with error: \(error)")
+                    Logger.error("\(self.TAG) in \(#function) failed to get profile with error: \(error)")
                 }
             }
         }.retainUntilComplete()

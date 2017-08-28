@@ -1417,6 +1417,9 @@
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
 
+/* alert title */
+"SHARE_PROFILE_FAILED_TITLE" = "Failed to Share Your Profile";
+
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Show New Safety Number";
 

@@ -17,6 +17,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 @class TSThread;
 @class OWSAES256Key;
+@class OWSMessageSender;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSProfileManager : NSObject <ProfileManagerProtocol>
@@ -77,6 +78,13 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (void)updateProfileForRecipientId:(NSString *)recipientId
                profileNameEncrypted:(nullable NSData *)profileNameEncrypted
                       avatarUrlPath:(nullable NSString *)avatarUrlPath;
+
+#pragma mark - User Interface
+
+- (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
+                        fromViewController:(UIViewController *)fromViewController
+                             messageSender:(OWSMessageSender *)messageSender
+                                   success:(void (^)())successHandler;
 
 @end
 

@@ -78,6 +78,7 @@
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -900,22 +901,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    UIAlertController *alertController =
-        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
-    UIAlertAction *whitelistAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
-                            @"Button to confirm that user wants to share their profile with a user or group.")
-                  style:UIAlertActionStyleDestructive
-                handler:^(UIAlertAction *_Nonnull action) {
-                    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:self.thread];
-
-                    [self ensureBannerState];
-                }];
-    [alertController addAction:whitelistAction];
-    [alertController addAction:[OWSAlerts cancelAction]];
-
-    [self presentViewController:alertController animated:YES completion:nil];
+    [self presentAddThreadToProfileWhitelistWithSuccess:^{
+        [self ensureBannerState];
+    }];
 }
 
 - (void)noLongerVerifiedBannerViewWasTapped:(UIGestureRecognizer *)sender
@@ -2782,34 +2770,29 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction
 {
+    // This is accessed via the contact offer. Group whitelisting happens via a different interaction.
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
         OWSFail(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
 
-    UIAlertController *alertController =
-        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    [self presentAddThreadToProfileWhitelistWithSuccess:^() {
+        // Delete the offers.
+        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            contactThread.hasDismissedOffers = YES;
+            [contactThread saveWithTransaction:transaction];
+            [interaction removeWithTransaction:transaction];
+        }];
+    }];
+}
 
-    UIAlertAction *leaveAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
-                            @"Button to confirm that user wants to share their profile with a user or group.")
-                  style:UIAlertActionStyleDestructive
-                handler:^(UIAlertAction *_Nonnull action) {
-                    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:self.thread];
-
-                    // Delete the offers.
-                    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        contactThread.hasDismissedOffers = YES;
-                        [contactThread saveWithTransaction:transaction];
-                        [interaction removeWithTransaction:transaction];
-                    }];
-                }];
-    [alertController addAction:leaveAction];
-
-    [alertController addAction:[OWSAlerts cancelAction]];
-
-    [self presentViewController:alertController animated:YES completion:nil];
+- (void)presentAddThreadToProfileWhitelistWithSuccess:(void (^)())successHandler
+{
+    [[OWSProfileManager sharedManager] presentAddThreadToProfileWhitelist:self.thread
+                                                       fromViewController:self
+                                                            messageSender:self.messageSender
+                                                                  success:successHandler];
 }
 
 #pragma mark - OWSSystemMessageCellDelegate

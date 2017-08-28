@@ -785,27 +785,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
 
-    UIAlertController *alertController =
-        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
-    UIAlertAction *leaveAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
-                            @"Button to confirm that user wants to share their profile with a user or group.")
-                  style:UIAlertActionStyleDestructive
-                handler:^(UIAlertAction *_Nonnull action) {
-                    [self shareProfile];
-                }];
-    [alertController addAction:leaveAction];
-    [alertController addAction:[OWSAlerts cancelAction]];
-
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
-- (void)shareProfile
-{
-    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:self.thread];
-
-    [self updateTableContents];
+    [OWSProfileManager.sharedManager presentAddThreadToProfileWhitelist:self.thread
+                                                     fromViewController:self
+                                                          messageSender:self.messageSender
+                                                                success:^{
+                                                                    [self updateTableContents];
+                                                                }];
 }
 
 - (void)showVerificationView
