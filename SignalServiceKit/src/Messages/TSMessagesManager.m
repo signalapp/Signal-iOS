@@ -205,15 +205,15 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableString *description = [NSMutableString new];
 
     if (dataMessage.hasGroup) {
-        [description appendString:@"GroupDataMessage: "];
-    } else {
-        [description appendString:@"DataMessage: "];
+        [description appendString:@"(Group:YES) "];
     }
 
     if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsEndSession) != 0) {
         [description appendString:@"EndSession"];
     } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0) {
         [description appendString:@"ExpirationTimerUpdate"];
+    } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsProfileKey) != 0) {
+        [description appendString:@"ProfileKey"];
     } else if (dataMessage.attachments.count > 0) {
         [description appendString:@"MessageWithAttachment"];
     } else {
@@ -500,7 +500,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (envelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
         OWSSignalServiceProtosDataMessage *dataMessage =
             [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
-        DDLogInfo(@"%@ handling dataMessage: %@", self.tag, [self descriptionForDataMessage:dataMessage]);
+        DDLogInfo(@"%@ handling message: <DataMessage: %@ />", self.tag, [self descriptionForDataMessage:dataMessage]);
 
         [self handleIncomingEnvelope:envelope withDataMessage:dataMessage];
     } else {
@@ -574,6 +574,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self handleEndSessionMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0) {
         [self handleExpirationTimerUpdateMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
+    } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsProfileKey) != 0) {
+        [self handleProfileKeyMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else if (dataMessage.attachments.count > 0) {
         [self handleReceivedMediaWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else {
@@ -835,6 +837,27 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    configuration:disappearingMessagesConfiguration
                                                              createdByRemoteName:name];
     [message save];
+}
+
+- (void)handleProfileKeyMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)incomingEnvelope
+                                dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+{
+    NSString *recipientId = incomingEnvelope.source;
+    if (!dataMessage.hasProfileKey) {
+        OWSFail(@"%@ recevied profile key message without profile key from recipient: %@", self.tag, recipientId);
+        return;
+    }
+    NSData *profileKey = dataMessage.profileKey;
+    if (profileKey.length != kAES256_KeyByteLength) {
+        OWSFail(@"%@ recevied profile key of unexpected length:%lu from recipient: %@",
+            self.tag,
+            (unsigned long)profileKey.length,
+            recipientId);
+        return;
+    }
+
+    id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+    [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
 }
 
 - (void)handleReceivedTextMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)textMessageEnvelope
