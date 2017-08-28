@@ -54,32 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIMisc setManualCensorshipCircumventionEnabled:NO];
                                      }]];
-#ifdef DEBUG
-    [items addObject:[OWSTableItem itemWithTitle:@"Clear Profile Whitelist"
-                                     actionBlock:^{
-                                         [OWSProfileManager.sharedManager clearProfileWhitelist];
-                                     }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Log Profile Whitelist"
-                                     actionBlock:^{
-                                         [OWSProfileManager.sharedManager logProfileWhitelist];
-                                     }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Regenerate Profile/ProfileKey"
-                                     actionBlock:^{
-                                         [[OWSProfileManager sharedManager] regenerateLocalProfile];
-                                     }]];
-#endif
-    [items addObject:[OWSTableItem itemWithTitle:@"Send profile key message."
-                                     actionBlock:^{
-                                         OWSProfileKeyMessage *message = [[OWSProfileKeyMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
-                                         
-                                         [[Environment getCurrent].messageSender sendMessage:message
-                                                                                     success:^{
-                                                                                         DDLogInfo(@"Successfully sent profile key message to thread: %@", thread);
-                                                                                     }
-                                                                                     failure:^(NSError * _Nonnull error) {
-                                                                                         OWSFail(@"Failed to send prifle key message to thread: %@", thread);
-                                                                                     }];
-                                     }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
                                      actionBlock:^{
                                          [DebugUIMisc clearHasDismissedOffers];

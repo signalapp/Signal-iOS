@@ -149,6 +149,8 @@
 		45464DBC1DFA041F001D3FD6 /* DataChannelMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */; };
 		454EBAB31F2BC08800ACE0BB /* OWSSwiftUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C921F2937CC00D284D6 /* OWSSwiftUtils.swift */; };
 		454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */; };
+		4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4556FA671F54AA9500AF40DD /* DebugUIProfile.swift */; };
+		4556FA691F54AA9500AF40DD /* DebugUIProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4556FA671F54AA9500AF40DD /* DebugUIProfile.swift */; };
 		455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DB1F1FEA0000F86704 /* Metal.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DC1F1FEA0000F86704 /* MetalKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		455AC69B1F4F79E500134004 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC69A1F4F79E500134004 /* ImageCache.swift */; };
@@ -608,6 +610,7 @@
 		4542F0951EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promise+retainUntilComplete.swift"; sourceTree = "<group>"; };
 		45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataChannelMessage.swift; sourceTree = "<group>"; };
 		454B35071D08EED80026D658 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = translations/mk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		4556FA671F54AA9500AF40DD /* DebugUIProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIProfile.swift; sourceTree = "<group>"; };
 		455A16DB1F1FEA0000F86704 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		455A16DC1F1FEA0000F86704 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		455AC69A1F4F79E500134004 /* ImageCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
@@ -1136,6 +1139,7 @@
 				34D8C0251ED3673300188D7C /* DebugUITableViewController.h */,
 				34D8C0261ED3673300188D7C /* DebugUITableViewController.m */,
 				45638BDB1F3DD0D400128435 /* DebugUICalling.swift */,
+				4556FA671F54AA9500AF40DD /* DebugUIProfile.swift */,
 			);
 			path = DebugUI;
 			sourceTree = "<group>";
@@ -2289,6 +2293,7 @@
 				34F3089F1ECA580B00BB7697 /* OWSUnreadIndicatorCell.m in Sources */,
 				34B3F8861E8DF1700035BE1A /* NotificationSettingsOptionsViewController.m in Sources */,
 				452ECA4D1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */,
+				4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */,
 				452EA0971EA662330078744B /* AttachmentPointerAdapter.swift in Sources */,
 				34DFCB851E8E04B500053165 /* AddToBlockListViewController.m in Sources */,
 				45855F371D9498A40084F340 /* OWSContactAvatarBuilder.m in Sources */,
@@ -2452,6 +2457,7 @@
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,
 				B660F77B1C29988E00687D6E /* Queue.m in Sources */,
 				455AC69C1F4F79E500134004 /* ImageCache.swift in Sources */,
+				4556FA691F54AA9500AF40DD /* DebugUIProfile.swift in Sources */,
 				45666F581D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m in Sources */,
 				B660F77F1C29988E00687D6E /* DateUtil.m in Sources */,
 				B660F7811C29988E00687D6E /* FunctionalUtil.m in Sources */,
