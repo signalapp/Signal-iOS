@@ -5,6 +5,7 @@
 #import "TSMessagesManager.h"
 #import "ContactsManagerProtocol.h"
 #import "ContactsUpdater.h"
+#import "Cryptography.h"
 #import "MimeTypeUtil.h"
 #import "NSData+messagePadding.h"
 #import "NSDate+millisecondTimeStamp.h"
@@ -515,7 +516,12 @@ NS_ASSUME_NONNULL_BEGIN
     if ([dataMessage hasProfileKey]) {
         NSData *profileKey = [dataMessage profileKey];
         NSString *recipientId = incomingEnvelope.source;
-        [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
+        if (profileKey.length == kAES256_KeyByteLength) {
+            [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
+        } else {
+            OWSFail(
+                @"Unexpected profile key length:%lu on message from:%@", (unsigned long)profileKey.length, recipientId);
+        }
     }
 
     if (dataMessage.hasGroup) {
@@ -1089,7 +1095,7 @@ NS_ASSUME_NONNULL_BEGIN
           OWSFail(@"%@ Failed to trust identity on incoming message from: %@.%d",
               self.tag,
               envelope.source,
-              envelope.sourceDevice);
+              (unsigned int)envelope.sourceDevice);
           return;
       } else {
           OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);

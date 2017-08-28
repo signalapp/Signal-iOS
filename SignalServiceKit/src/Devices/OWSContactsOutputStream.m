@@ -4,6 +4,7 @@
 
 #import "OWSContactsOutputStream.h"
 #import "Contact.h"
+#import "Cryptography.h"
 #import "MIMETypeUtil.h"
 #import "NSData+keyVersionByte.h"
 #import "OWSRecipientIdentity.h"
@@ -21,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(signalAccount);
     OWSAssert(signalAccount.contact);
+    OWSAssert(profileKeyData.length == kAES256_KeyByteLength);
 
     OWSSignalServiceProtosContactDetailsBuilder *contactBuilder = [OWSSignalServiceProtosContactDetailsBuilder new];
     [contactBuilder setName:signalAccount.contact.fullName];
