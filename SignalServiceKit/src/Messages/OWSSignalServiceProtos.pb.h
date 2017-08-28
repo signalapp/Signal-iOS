@@ -360,13 +360,18 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @end
 
 #define NullMessage_padding @"padding"
+#define NullMessage_profileKey @"profileKey"
 @interface OWSSignalServiceProtosNullMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasPadding_:1;
+  BOOL hasProfileKey_:1;
   NSData* padding;
+  NSData* profileKey;
 }
 - (BOOL) hasPadding;
+- (BOOL) hasProfileKey;
 @property (readonly, strong) NSData* padding;
+@property (readonly, strong) NSData* profileKey;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -407,6 +412,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (NSData*) padding;
 - (OWSSignalServiceProtosNullMessageBuilder*) setPadding:(NSData*) value;
 - (OWSSignalServiceProtosNullMessageBuilder*) clearPadding;
+
+- (BOOL) hasProfileKey;
+- (NSData*) profileKey;
+- (OWSSignalServiceProtosNullMessageBuilder*) setProfileKey:(NSData*) value;
+- (OWSSignalServiceProtosNullMessageBuilder*) clearProfileKey;
 @end
 
 #define Verified_destination @"destination"

@@ -56,10 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
             // Once we've shared our profile key with a user (perhaps due to being
             // a member of a whitelisted group), make sure they're whitelisted.
             id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-            // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [profileManager addUserToProfileWhitelist:recipientId];
-            });
+            [profileManager addUserToProfileWhitelist:recipientId];
         }
     }
 }
@@ -81,10 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Once we've shared our profile key with a user (perhaps due to being
         // a member of a whitelisted group), make sure they're whitelisted.
         id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-        // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [profileManager addUserToProfileWhitelist:recipientId];
-        });
+        [profileManager addUserToProfileWhitelist:recipientId];
     }
 }
 
@@ -97,6 +91,27 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addLocalProfileKey
 {
     [self setProfileKey:self.localProfileKey.keyData];
+}
+
+@end
+
+#pragma mark -
+
+@implementation OWSSignalServiceProtosNullMessageBuilder (OWS)
+
+- (void)addLocalProfileKeyIfNecessary:(TSThread *)thread recipientId:(NSString *)recipientId
+{
+    OWSAssert(thread);
+    OWSAssert(recipientId.length > 0);
+
+    if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
+        [self setProfileKey:self.localProfileKey.keyData];
+
+        // Once we've shared our profile key with a user (perhaps due to being
+        // a member of a whitelisted group), make sure they're whitelisted.
+        id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+        [profileManager addUserToProfileWhitelist:recipientId];
+    }
 }
 
 @end

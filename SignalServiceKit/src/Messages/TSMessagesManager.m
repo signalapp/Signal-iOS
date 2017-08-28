@@ -492,7 +492,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (content.hasCallMessage) {
             [self handleIncomingEnvelope:envelope withCallMessage:content.callMessage];
         } else if (content.hasNullMessage) {
-            DDLogInfo(@"%@ Received null message.", self.tag);
+            [self handleIncomingEnvelope:envelope withNullMessage:content.nullMessage];
         } else {
             DDLogWarn(@"%@ Ignoring envelope. Content with no known payload", self.tag);
         }
@@ -577,6 +577,22 @@ NS_ASSUME_NONNULL_BEGIN
             DDLogVerbose(@"%@ Data message had group avatar attachment", self.tag);
             [self handleReceivedGroupAvatarUpdateWithEnvelope:incomingEnvelope dataMessage:dataMessage];
         }
+    }
+}
+
+- (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)incomingEnvelope
+               withNullMessage:(OWSSignalServiceProtosNullMessage *)nullMessage
+{
+    OWSAssert(incomingEnvelope);
+    OWSAssert(nullMessage);
+
+    DDLogInfo(@"%@ Received null message.", self.tag);
+
+    if ([nullMessage hasProfileKey]) {
+        NSData *profileKey = [nullMessage profileKey];
+        NSString *recipientId = incomingEnvelope.source;
+        id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+        [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
     }
 }
 
