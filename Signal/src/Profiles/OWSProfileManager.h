@@ -50,7 +50,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 // The local profile state can fall out of sync with the service
 // (e.g. due to a botched profile update, for example).
-- (void)syncLocalProfile;
+- (void)fetchLocalUsersProfile;
 
 #pragma mark - Profile Whitelist
 

@@ -674,7 +674,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     });
 }
 
-- (void)syncLocalProfile
+- (void)fetchLocalUsersProfile
 {
     OWSAssert([NSThread isMainThread]);
 

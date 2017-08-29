@@ -786,7 +786,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // If there were any messages in our local queue which we hadn't yet processed.
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
 
-    [OWSProfileManager.sharedManager syncLocalProfile];
+    [OWSProfileManager.sharedManager fetchLocalUsersProfile];
 }
 
 - (void)ensureRootViewController
