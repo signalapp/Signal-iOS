@@ -53,20 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIMisc setManualCensorshipCircumventionEnabled:NO];
                                      }]];
-#ifdef DEBUG
-    [items addObject:[OWSTableItem itemWithTitle:@"Clear Profile Whitelist"
-                                     actionBlock:^{
-                                         [OWSProfileManager.sharedManager clearProfileWhitelist];
-                                     }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Log Profile Whitelist"
-                                     actionBlock:^{
-                                         [OWSProfileManager.sharedManager logProfileWhitelist];
-                                     }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Regenerate Profile/ProfileKey"
-                                     actionBlock:^{
-                                         [[OWSProfileManager sharedManager] regenerateLocalProfile];
-                                     }]];
-#endif
     [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
                                      actionBlock:^{
                                          [DebugUIMisc clearHasDismissedOffers];

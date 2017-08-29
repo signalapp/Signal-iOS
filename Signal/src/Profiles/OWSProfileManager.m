@@ -1024,7 +1024,10 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             NSURLRequest *request = [NSURLRequest requestWithURL:avatarUrlPath];
             NSURLSessionDownloadTask *downloadTask = [self.avatarHTTPManager downloadTaskWithRequest:request
                 progress:^(NSProgress *_Nonnull downloadProgress) {
-                    DDLogVerbose(@"%@ Downloading avatar for %@", self.tag, userProfile.recipientId);
+                    DDLogVerbose(@"%@ Downloading avatar for %@ %f",
+                        self.tag,
+                        userProfile.recipientId,
+                        downloadProgress.fractionCompleted);
                 }
                 destination:^NSURL *_Nonnull(NSURL *_Nonnull targetPath, NSURLResponse *_Nonnull response) {
                     return [NSURL fileURLWithPath:tempFilePath];
@@ -1330,6 +1333,62 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     if (error) {
         DDLogError(@"Failed to delete database: %@", error.description);
     }
+}
+
+#pragma mark - User Interface
+
+- (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
+                        fromViewController:(UIViewController *)fromViewController
+                                   success:(void (^)())successHandler
+{
+    AssertIsOnMainThread();
+
+    UIAlertController *alertController =
+        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    NSString *shareTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
+        @"Button to confirm that user wants to share their profile with a user or group.");
+    [alertController addAction:[UIAlertAction actionWithTitle:shareTitle
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:^(UIAlertAction *_Nonnull action) {
+                                                          [self userAddedThreadToProfileWhitelist:thread
+                                                                                          success:successHandler];
+                                                      }]];
+    [alertController addAction:[OWSAlerts cancelAction]];
+
+    [fromViewController presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)userAddedThreadToProfileWhitelist:(TSThread *)thread
+                                  success:(void (^)())successHandler
+{
+    AssertIsOnMainThread();
+
+    OWSProfileKeyMessage *message =
+        [[OWSProfileKeyMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
+
+    BOOL isFeatureEnabled = NO;
+    if (!isFeatureEnabled) {
+        DDLogWarn(@"%@ skipping sending profile-key message because the feature is not yet fully available.", self.tag);
+        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+        successHandler();
+        return;
+    }
+
+    [self.messageSender sendMessage:message
+        success:^{
+            DDLogInfo(@"%@ Successfully sent profile key message to thread: %@", self.tag, thread);
+            [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                successHandler();
+            });
+        }
+        failure:^(NSError *_Nonnull error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                DDLogError(@"%@ Failed to send profile key message to thread: %@", self.tag, thread);
+            });
+        }];
 }
 
 #pragma mark - Notifications

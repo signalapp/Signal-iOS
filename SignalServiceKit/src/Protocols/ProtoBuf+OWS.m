@@ -64,6 +64,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)addLocalProfileKey
+{
+    [self setProfileKey:self.localProfileKey.keyData];
+}
+
 @end
 
 #pragma mark -

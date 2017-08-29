@@ -95,6 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
         [subsectionItems
             addObject:[self itemForSubsection:[DebugUICalling new] viewController:viewController thread:thread]];
     }
+    [subsectionItems addObject:[self itemForSubsection:[DebugUIProfile new] viewController:viewController thread:thread]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:thread]];
 
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];

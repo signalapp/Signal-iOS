@@ -167,10 +167,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(envelope != nil);
 
-    return [NSString stringWithFormat:@"<Envelope type: %@, source: %@.%d, timestamp: %llu content.length: %lu />",
+    return [NSString stringWithFormat:@"<Envelope type: %@, source: %@, timestamp: %llu content.length: %lu />",
                      [self descriptionForEnvelopeType:envelope],
-                     envelope.source,
-                     (unsigned int)envelope.sourceDevice,
+                     envelopeAddress(envelope),
                      envelope.timestamp,
                      (unsigned long)envelope.content.length];
 }
@@ -205,15 +204,15 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableString *description = [NSMutableString new];
 
     if (dataMessage.hasGroup) {
-        [description appendString:@"GroupDataMessage: "];
-    } else {
-        [description appendString:@"DataMessage: "];
+        [description appendString:@"(Group:YES) "];
     }
 
     if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsEndSession) != 0) {
         [description appendString:@"EndSession"];
     } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0) {
         [description appendString:@"ExpirationTimerUpdate"];
+    } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsProfileKey) != 0) {
+        [description appendString:@"ProfileKey"];
     } else if (dataMessage.attachments.count > 0) {
         [description appendString:@"MessageWithAttachment"];
     } else {
@@ -296,10 +295,9 @@ NS_ASSUME_NONNULL_BEGIN
                                         DDLogDebug(@"%@ handled secure message.", self.tag);
                                         if (error) {
                                             DDLogError(
-                                                @"%@ handling secure message from address: %@.%d failed with error: %@",
+                                                @"%@ handling secure message from address: %@ failed with error: %@",
                                                 self.tag,
-                                                envelope.source,
-                                                (unsigned int)envelope.sourceDevice,
+                                                envelopeAddress(envelope),
                                                 error);
                                             OWSProdError(
                                                 [OWSAnalyticsEvents messageManagerErrorCouldNotHandleSecureMessage]);
@@ -314,11 +312,10 @@ NS_ASSUME_NONNULL_BEGIN
                                    completion:^(NSError *_Nullable error) {
                                        DDLogDebug(@"%@ handled pre-key whisper message", self.tag);
                                        if (error) {
-                                           DDLogError(@"%@ handling pre-key whisper message from address: %@.%d failed "
+                                           DDLogError(@"%@ handling pre-key whisper message from address: %@ failed "
                                                       @"with error: %@",
                                                self.tag,
-                                               envelope.source,
-                                               (unsigned int)envelope.sourceDevice,
+                                               envelopeAddress(envelope),
                                                error);
                                            OWSProdError(
                                                [OWSAnalyticsEvents messageManagerErrorCouldNotHandlePrekeyBundle]);
@@ -478,7 +475,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                            sourceId:envelope.source
                                                                      sourceDeviceId:envelope.sourceDevice];
     if (duplicateEnvelope) {
-        DDLogInfo(@"%@ Ignoring previously received envelope from %@.%d with timestamp: %llu", self.tag, envelope.source, (unsigned int)envelope.sourceDevice, envelope.timestamp);
+        DDLogInfo(@"%@ Ignoring previously received envelope from %@ with timestamp: %llu",
+            self.tag,
+            envelopeAddress(envelope),
+            envelope.timestamp);
         return;
     }
 
@@ -500,7 +500,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (envelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
         OWSSignalServiceProtosDataMessage *dataMessage =
             [OWSSignalServiceProtosDataMessage parseFromData:plaintextData];
-        DDLogInfo(@"%@ handling dataMessage: %@", self.tag, [self descriptionForDataMessage:dataMessage]);
+        DDLogInfo(@"%@ handling message: <DataMessage: %@ />", self.tag, [self descriptionForDataMessage:dataMessage]);
 
         [self handleIncomingEnvelope:envelope withDataMessage:dataMessage];
     } else {
@@ -543,9 +543,9 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             // FIXME: https://github.com/WhisperSystems/Signal-iOS/issues/1340
-            DDLogInfo(@"%@ Received message from group that I left or don't know about from: %@.",
+            DDLogInfo(@"%@ Received message from group that I left or don't know about from: %@",
                 self.tag,
-                incomingEnvelope.source);
+                envelopeAddress(incomingEnvelope));
 
             NSString *recipientId = incomingEnvelope.source;
 
@@ -574,6 +574,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self handleEndSessionMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0) {
         [self handleExpirationTimerUpdateMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
+    } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsProfileKey) != 0) {
+        [self handleProfileKeyMessageWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else if (dataMessage.attachments.count > 0) {
         [self handleReceivedMediaWithEnvelope:incomingEnvelope dataMessage:dataMessage];
     } else {
@@ -837,6 +839,29 @@ NS_ASSUME_NONNULL_BEGIN
     [message save];
 }
 
+- (void)handleProfileKeyMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)incomingEnvelope
+                                dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+{
+    NSString *recipientId = incomingEnvelope.source;
+    if (!dataMessage.hasProfileKey) {
+        OWSFail(@"%@ received profile key message without profile key from: %@",
+            self.tag,
+            envelopeAddress(incomingEnvelope));
+        return;
+    }
+    NSData *profileKey = dataMessage.profileKey;
+    if (profileKey.length != kAES256_KeyByteLength) {
+        OWSFail(@"%@ received profile key of unexpected length:%lu from:%@",
+            self.tag,
+            (unsigned long)profileKey.length,
+            envelopeAddress(incomingEnvelope));
+        return;
+    }
+
+    id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+    [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
+}
+
 - (void)handleReceivedTextMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)textMessageEnvelope
                                   dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
@@ -978,15 +1003,28 @@ NS_ASSUME_NONNULL_BEGIN
                   break;
               }
               case OWSSignalServiceProtosGroupContextTypeDeliver: {
-                  incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
-                                                                        inThread:gThread
-                                                                        authorId:envelope.source
-                                                                  sourceDeviceId:envelope.sourceDevice
-                                                                     messageBody:body
-                                                                   attachmentIds:attachmentIds
-                                                                expiresInSeconds:dataMessage.expireTimer];
-                  DDLogDebug(@"%@ incoming group text message: %@", self.tag, incomingMessage.debugDescription);
-                  [incomingMessage saveWithTransaction:transaction];
+                  if (body.length == 0) {
+                      DDLogWarn(@"%@ ignoring empty incoming message from: %@ for group: %@ with timestampe: %lu",
+                          self.tag,
+                          envelopeAddress(envelope),
+                          groupId,
+                          (unsigned long)timestamp);
+                  } else {
+                      DDLogDebug(@"%@ incoming message from: %@ for group: %@ with timestampe: %lu",
+                          self.tag,
+                          envelopeAddress(envelope),
+                          groupId,
+                          (unsigned long)timestamp);
+                      incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
+                                                                            inThread:gThread
+                                                                            authorId:envelope.source
+                                                                      sourceDeviceId:envelope.sourceDevice
+                                                                         messageBody:body
+                                                                       attachmentIds:attachmentIds
+                                                                    expiresInSeconds:dataMessage.expireTimer];
+
+                      [incomingMessage saveWithTransaction:transaction];
+                  }
                   break;
               }
               default: {
@@ -996,20 +1034,31 @@ NS_ASSUME_NONNULL_BEGIN
 
           thread = gThread;
       } else {
-          TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source
-                                                                         transaction:transaction
-                                                                               relay:envelope.relay];
+          if (body.length == 0) {
+              DDLogWarn(@"%@ ignoring empty incoming message from: %@ with timestampe: %lu",
+                  self.tag,
+                  envelopeAddress(envelope),
+                  (unsigned long)timestamp);
+          } else {
+              DDLogDebug(@"%@ incoming message from: %@ with timestampe: %lu",
+                  self.tag,
+                  envelopeAddress(envelope),
+                  (unsigned long)timestamp);
+              TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source
+                                                                             transaction:transaction
+                                                                                   relay:envelope.relay];
 
-          incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
-                                                                inThread:cThread
-                                                                authorId:[cThread contactIdentifier]
-                                                          sourceDeviceId:envelope.sourceDevice
-                                                             messageBody:body
-                                                           attachmentIds:attachmentIds
-                                                        expiresInSeconds:dataMessage.expireTimer];
-          DDLogDebug(@"%@ incoming 1:1 text message: %@", self.tag, incomingMessage.debugDescription);
-          [incomingMessage saveWithTransaction:transaction];
-          thread = cThread;
+              incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
+                                                                    inThread:cThread
+                                                                    authorId:[cThread contactIdentifier]
+                                                              sourceDeviceId:envelope.sourceDevice
+                                                                 messageBody:body
+                                                               attachmentIds:attachmentIds
+                                                            expiresInSeconds:dataMessage.expireTimer];
+
+              [incomingMessage saveWithTransaction:transaction];
+              thread = cThread;
+          }
       }
 
       if (thread && incomingMessage) {
@@ -1025,7 +1074,7 @@ NS_ASSUME_NONNULL_BEGIN
 
           // Other clients allow attachments to be sent along with body, we want the text displayed as a separate
           // message
-          if ([attachmentIds count] > 0 && body != nil && ![body isEqualToString:@""]) {
+          if ([attachmentIds count] > 0 && body != nil && body.length > 0) {
               // We want the text to be displayed under the attachment
               uint64_t textMessageTimestamp = timestamp + 1;
               TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
@@ -1041,7 +1090,7 @@ NS_ASSUME_NONNULL_BEGIN
       }
     }];
 
-    if (incomingMessage && thread) {
+    if (thread && incomingMessage) {
         // In case we already have a read receipt for this new message (happens sometimes).
         OWSReadReceiptsProcessor *readReceiptsProcessor =
             [[OWSReadReceiptsProcessor alloc] initWithIncomingMessage:incomingMessage
@@ -1091,10 +1140,7 @@ NS_ASSUME_NONNULL_BEGIN
       } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
           // Should no longer get here, since we now record the new identity for incoming messages.
           OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorUntrustedIdentityKeyException], envelope);
-          OWSFail(@"%@ Failed to trust identity on incoming message from: %@.%d",
-              self.tag,
-              envelope.source,
-              (unsigned int)envelope.sourceDevice);
+          OWSFail(@"%@ Failed to trust identity on incoming message from: %@", self.tag, envelopeAddress(envelope));
           return;
       } else {
           OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);
@@ -1116,6 +1162,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - helpers
+
+// used in log formatting
+NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope)
+{
+    return [NSString stringWithFormat:@"%@.%d", envelope.source, (unsigned int)envelope.sourceDevice];
+}
 
 - (BOOL)isDataMessageGroupAvatarUpdate:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
