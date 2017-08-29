@@ -10,6 +10,7 @@
 #import "Environment.h"
 #import "FLAnimatedImage.h"
 #import "FingerprintViewController.h"
+#import "NSData+Image.h"
 #import "NotificationsManager.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioAttachmentPlayer.h"
