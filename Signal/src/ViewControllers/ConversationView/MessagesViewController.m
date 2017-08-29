@@ -243,6 +243,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL isAppInBackground;
 @property (nonatomic) BOOL shouldObserveDBModifications;
+@property (nonatomic) BOOL viewHasEverAppeared;
 
 @end
 
@@ -639,7 +640,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
 
     [self.view layoutSubviews];
-    [self scrollToDefaultPosition];
+
+    if (!self.viewHasEverAppeared) {
+        [self scrollToDefaultPosition];
+    }
 }
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
@@ -1059,6 +1063,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [ProfileFetcherJob runWithThread:self.thread networkManager:self.networkManager];
 
     [self markVisibleMessagesAsRead];
+
+    self.viewHasEverAppeared = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -3506,6 +3512,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (BOOL)isScrolledToBottom
 {
+    if (self.collectionView.contentSize.height < 1) {
+        // If the collection view hasn't determined its content size yet,
+        // scroll state is not yet coherent.
+        return NO;
+    }
+
     const CGFloat kIsAtBottomTolerancePts = 5;
     return (self.collectionView.contentOffset.y + self.collectionView.bounds.size.height + kIsAtBottomTolerancePts
         >= self.collectionView.contentSize.height);
@@ -4149,6 +4161,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)scrollToBottomAnimated:(BOOL)animated
 {
+    OWSAssert([NSThread isMainThread]);
 
     if (self.isUserScrolling) {
         return;
