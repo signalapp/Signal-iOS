@@ -51,7 +51,7 @@ import PromiseKit
             },
             failure: { error in
                 Logger.error("\(self.TAG) in \(#function) failed with error: \(error) retrying in \(retryDelay)s.")
-                after(seconds: retryDelay).then {
+                after(interval: retryDelay).then {
                     self.run(retryDelay: retryDelay * 2)
                 }.retainUntilComplete()
             })
