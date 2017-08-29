@@ -3,8 +3,10 @@
 //
 
 #import "OWSLinkDeviceViewController.h"
+#import "Cryptography.h"
 #import "OWSDeviceProvisioningURLParser.h"
 #import "OWSLinkedDevicesTableViewController.h"
+#import "OWSProfileManager.h"
 #import <SignalServiceKit/ECKeyPair+OWSPrivateKey.h>
 #import <SignalServiceKit/OWSDeviceProvisioner.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
@@ -36,6 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
         @"QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes");
     self.title
         = NSLocalizedString(@"LINK_NEW_DEVICE_TITLE", "Navigation title when scanning QR code to add new device.");
+}
+
+- (OWSProfileManager *)profileManager
+{
+    return [OWSProfileManager sharedManager];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -132,12 +139,14 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *myPublicKey = identityKeyPair.publicKey;
     NSData *myPrivateKey = identityKeyPair.ows_privateKey;
     NSString *accountIdentifier = [TSAccountManager localNumber];
+    NSData *myProfileKeyData = self.profileManager.localProfileKey.keyData;
 
     OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc] initWithMyPublicKey:myPublicKey
                                                                              myPrivateKey:myPrivateKey
                                                                            theirPublicKey:parser.publicKey
                                                                    theirEphemeralDeviceId:parser.ephemeralDeviceId
-                                                                        accountIdentifier:accountIdentifier];
+                                                                        accountIdentifier:accountIdentifier
+                                                                               profileKey:myProfileKeyData];
 
     [provisioner provisionWithSuccess:^{
         DDLogInfo(@"Successfully provisioned device.");

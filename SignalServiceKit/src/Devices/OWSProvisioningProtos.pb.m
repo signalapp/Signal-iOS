@@ -282,6 +282,7 @@ static OWSProvisioningProtosProvisionEnvelope* defaultOWSProvisioningProtosProvi
 @property (strong) NSString* number;
 @property (strong) NSString* provisioningCode;
 @property (strong) NSString* userAgent;
+@property (strong) NSData* profileKey;
 @end
 
 @implementation OWSProvisioningProtosProvisionMessage
@@ -321,6 +322,13 @@ static OWSProvisioningProtosProvisionEnvelope* defaultOWSProvisioningProtosProvi
   hasUserAgent_ = !!_value_;
 }
 @synthesize userAgent;
+- (BOOL) hasProfileKey {
+  return !!hasProfileKey_;
+}
+- (void) setHasProfileKey:(BOOL) _value_ {
+  hasProfileKey_ = !!_value_;
+}
+@synthesize profileKey;
 - (instancetype) init {
   if ((self = [super init])) {
     self.identityKeyPublic = [NSData data];
@@ -328,6 +336,7 @@ static OWSProvisioningProtosProvisionEnvelope* defaultOWSProvisioningProtosProvi
     self.number = @"";
     self.provisioningCode = @"";
     self.userAgent = @"";
+    self.profileKey = [NSData data];
   }
   return self;
 }
@@ -362,6 +371,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   if (self.hasUserAgent) {
     [output writeString:5 value:self.userAgent];
   }
+  if (self.hasProfileKey) {
+    [output writeData:6 value:self.profileKey];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -385,6 +397,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   }
   if (self.hasUserAgent) {
     size_ += computeStringSize(5, self.userAgent);
+  }
+  if (self.hasProfileKey) {
+    size_ += computeDataSize(6, self.profileKey);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -436,6 +451,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   if (self.hasUserAgent) {
     [output appendFormat:@"%@%@: %@\n", indent, @"userAgent", self.userAgent];
   }
+  if (self.hasProfileKey) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"profileKey", self.profileKey];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -453,6 +471,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   }
   if (self.hasUserAgent) {
     [dictionary setObject: self.userAgent forKey: @"userAgent"];
+  }
+  if (self.hasProfileKey) {
+    [dictionary setObject: self.profileKey forKey: @"profileKey"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -475,6 +496,8 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
       (!self.hasProvisioningCode || [self.provisioningCode isEqual:otherMessage.provisioningCode]) &&
       self.hasUserAgent == otherMessage.hasUserAgent &&
       (!self.hasUserAgent || [self.userAgent isEqual:otherMessage.userAgent]) &&
+      self.hasProfileKey == otherMessage.hasProfileKey &&
+      (!self.hasProfileKey || [self.profileKey isEqual:otherMessage.profileKey]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -493,6 +516,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   }
   if (self.hasUserAgent) {
     hashCode = hashCode * 31 + [self.userAgent hash];
+  }
+  if (self.hasProfileKey) {
+    hashCode = hashCode * 31 + [self.profileKey hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -552,6 +578,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   if (other.hasUserAgent) {
     [self setUserAgent:other.userAgent];
   }
+  if (other.hasProfileKey) {
+    [self setProfileKey:other.profileKey];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -591,6 +620,10 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
       }
       case 42: {
         [self setUserAgent:[input readString]];
+        break;
+      }
+      case 50: {
+        [self setProfileKey:[input readData]];
         break;
       }
     }
@@ -674,6 +707,22 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
 - (OWSProvisioningProtosProvisionMessageBuilder*) clearUserAgent {
   resultProvisionMessage.hasUserAgent = NO;
   resultProvisionMessage.userAgent = @"";
+  return self;
+}
+- (BOOL) hasProfileKey {
+  return resultProvisionMessage.hasProfileKey;
+}
+- (NSData*) profileKey {
+  return resultProvisionMessage.profileKey;
+}
+- (OWSProvisioningProtosProvisionMessageBuilder*) setProfileKey:(NSData*) value {
+  resultProvisionMessage.hasProfileKey = YES;
+  resultProvisionMessage.profileKey = value;
+  return self;
+}
+- (OWSProvisioningProtosProvisionMessageBuilder*) clearProfileKey {
+  resultProvisionMessage.hasProfileKey = NO;
+  resultProvisionMessage.profileKey = [NSData data];
   return self;
 }
 @end

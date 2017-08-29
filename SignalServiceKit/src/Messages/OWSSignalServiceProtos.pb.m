@@ -1004,593 +1004,6 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
 }
 @end
 
-@interface OWSSignalServiceProtosNullMessage ()
-@property (strong) NSData* padding;
-@end
-
-@implementation OWSSignalServiceProtosNullMessage
-
-- (BOOL) hasPadding {
-  return !!hasPadding_;
-}
-- (void) setHasPadding:(BOOL) _value_ {
-  hasPadding_ = !!_value_;
-}
-@synthesize padding;
-- (instancetype) init {
-  if ((self = [super init])) {
-    self.padding = [NSData data];
-  }
-  return self;
-}
-static OWSSignalServiceProtosNullMessage* defaultOWSSignalServiceProtosNullMessageInstance = nil;
-+ (void) initialize {
-  if (self == [OWSSignalServiceProtosNullMessage class]) {
-    defaultOWSSignalServiceProtosNullMessageInstance = [[OWSSignalServiceProtosNullMessage alloc] init];
-  }
-}
-+ (instancetype) defaultInstance {
-  return defaultOWSSignalServiceProtosNullMessageInstance;
-}
-- (instancetype) defaultInstance {
-  return defaultOWSSignalServiceProtosNullMessageInstance;
-}
-- (BOOL) isInitialized {
-  return YES;
-}
-- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
-  if (self.hasPadding) {
-    [output writeData:1 value:self.padding];
-  }
-  [self.unknownFields writeToCodedOutputStream:output];
-}
-- (SInt32) serializedSize {
-  __block SInt32 size_ = memoizedSerializedSize;
-  if (size_ != -1) {
-    return size_;
-  }
-
-  size_ = 0;
-  if (self.hasPadding) {
-    size_ += computeDataSize(1, self.padding);
-  }
-  size_ += self.unknownFields.serializedSize;
-  memoizedSerializedSize = size_;
-  return size_;
-}
-+ (OWSSignalServiceProtosNullMessage*) parseFromData:(NSData*) data {
-  return (OWSSignalServiceProtosNullMessage*)[[[OWSSignalServiceProtosNullMessage builder] mergeFromData:data] build];
-}
-+ (OWSSignalServiceProtosNullMessage*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSSignalServiceProtosNullMessage*)[[[OWSSignalServiceProtosNullMessage builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
-}
-+ (OWSSignalServiceProtosNullMessage*) parseFromInputStream:(NSInputStream*) input {
-  return (OWSSignalServiceProtosNullMessage*)[[[OWSSignalServiceProtosNullMessage builder] mergeFromInputStream:input] build];
-}
-+ (OWSSignalServiceProtosNullMessage*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSSignalServiceProtosNullMessage*)[[[OWSSignalServiceProtosNullMessage builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
-}
-+ (OWSSignalServiceProtosNullMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input {
-  return (OWSSignalServiceProtosNullMessage*)[[[OWSSignalServiceProtosNullMessage builder] mergeFromCodedInputStream:input] build];
-}
-+ (OWSSignalServiceProtosNullMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSSignalServiceProtosNullMessage*)[[[OWSSignalServiceProtosNullMessage builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
-}
-+ (OWSSignalServiceProtosNullMessageBuilder*) builder {
-  return [[OWSSignalServiceProtosNullMessageBuilder alloc] init];
-}
-+ (OWSSignalServiceProtosNullMessageBuilder*) builderWithPrototype:(OWSSignalServiceProtosNullMessage*) prototype {
-  return [[OWSSignalServiceProtosNullMessage builder] mergeFrom:prototype];
-}
-- (OWSSignalServiceProtosNullMessageBuilder*) builder {
-  return [OWSSignalServiceProtosNullMessage builder];
-}
-- (OWSSignalServiceProtosNullMessageBuilder*) toBuilder {
-  return [OWSSignalServiceProtosNullMessage builderWithPrototype:self];
-}
-- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
-  if (self.hasPadding) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"padding", self.padding];
-  }
-  [self.unknownFields writeDescriptionTo:output withIndent:indent];
-}
-- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
-  if (self.hasPadding) {
-    [dictionary setObject: self.padding forKey: @"padding"];
-  }
-  [self.unknownFields storeInDictionary:dictionary];
-}
-- (BOOL) isEqual:(id)other {
-  if (other == self) {
-    return YES;
-  }
-  if (![other isKindOfClass:[OWSSignalServiceProtosNullMessage class]]) {
-    return NO;
-  }
-  OWSSignalServiceProtosNullMessage *otherMessage = other;
-  return
-      self.hasPadding == otherMessage.hasPadding &&
-      (!self.hasPadding || [self.padding isEqual:otherMessage.padding]) &&
-      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
-}
-- (NSUInteger) hash {
-  __block NSUInteger hashCode = 7;
-  if (self.hasPadding) {
-    hashCode = hashCode * 31 + [self.padding hash];
-  }
-  hashCode = hashCode * 31 + [self.unknownFields hash];
-  return hashCode;
-}
-@end
-
-@interface OWSSignalServiceProtosNullMessageBuilder()
-@property (strong) OWSSignalServiceProtosNullMessage* resultNullMessage;
-@end
-
-@implementation OWSSignalServiceProtosNullMessageBuilder
-@synthesize resultNullMessage;
-- (instancetype) init {
-  if ((self = [super init])) {
-    self.resultNullMessage = [[OWSSignalServiceProtosNullMessage alloc] init];
-  }
-  return self;
-}
-- (PBGeneratedMessage*) internalGetResult {
-  return resultNullMessage;
-}
-- (OWSSignalServiceProtosNullMessageBuilder*) clear {
-  self.resultNullMessage = [[OWSSignalServiceProtosNullMessage alloc] init];
-  return self;
-}
-- (OWSSignalServiceProtosNullMessageBuilder*) clone {
-  return [OWSSignalServiceProtosNullMessage builderWithPrototype:resultNullMessage];
-}
-- (OWSSignalServiceProtosNullMessage*) defaultInstance {
-  return [OWSSignalServiceProtosNullMessage defaultInstance];
-}
-- (OWSSignalServiceProtosNullMessage*) build {
-  [self checkInitialized];
-  return [self buildPartial];
-}
-- (OWSSignalServiceProtosNullMessage*) buildPartial {
-  OWSSignalServiceProtosNullMessage* returnMe = resultNullMessage;
-  self.resultNullMessage = nil;
-  return returnMe;
-}
-- (OWSSignalServiceProtosNullMessageBuilder*) mergeFrom:(OWSSignalServiceProtosNullMessage*) other {
-  if (other == [OWSSignalServiceProtosNullMessage defaultInstance]) {
-    return self;
-  }
-  if (other.hasPadding) {
-    [self setPadding:other.padding];
-  }
-  [self mergeUnknownFields:other.unknownFields];
-  return self;
-}
-- (OWSSignalServiceProtosNullMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
-  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
-}
-- (OWSSignalServiceProtosNullMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
-  while (YES) {
-    SInt32 tag = [input readTag];
-    switch (tag) {
-      case 0:
-        [self setUnknownFields:[unknownFields build]];
-        return self;
-      default: {
-        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
-          [self setUnknownFields:[unknownFields build]];
-          return self;
-        }
-        break;
-      }
-      case 10: {
-        [self setPadding:[input readData]];
-        break;
-      }
-    }
-  }
-}
-- (BOOL) hasPadding {
-  return resultNullMessage.hasPadding;
-}
-- (NSData*) padding {
-  return resultNullMessage.padding;
-}
-- (OWSSignalServiceProtosNullMessageBuilder*) setPadding:(NSData*) value {
-  resultNullMessage.hasPadding = YES;
-  resultNullMessage.padding = value;
-  return self;
-}
-- (OWSSignalServiceProtosNullMessageBuilder*) clearPadding {
-  resultNullMessage.hasPadding = NO;
-  resultNullMessage.padding = [NSData data];
-  return self;
-}
-@end
-
-@interface OWSSignalServiceProtosVerified ()
-@property (strong) NSString* destination;
-@property (strong) NSData* identityKey;
-@property OWSSignalServiceProtosVerifiedState state;
-@property (strong) NSData* nullMessage;
-@end
-
-@implementation OWSSignalServiceProtosVerified
-
-- (BOOL) hasDestination {
-  return !!hasDestination_;
-}
-- (void) setHasDestination:(BOOL) _value_ {
-  hasDestination_ = !!_value_;
-}
-@synthesize destination;
-- (BOOL) hasIdentityKey {
-  return !!hasIdentityKey_;
-}
-- (void) setHasIdentityKey:(BOOL) _value_ {
-  hasIdentityKey_ = !!_value_;
-}
-@synthesize identityKey;
-- (BOOL) hasState {
-  return !!hasState_;
-}
-- (void) setHasState:(BOOL) _value_ {
-  hasState_ = !!_value_;
-}
-@synthesize state;
-- (BOOL) hasNullMessage {
-  return !!hasNullMessage_;
-}
-- (void) setHasNullMessage:(BOOL) _value_ {
-  hasNullMessage_ = !!_value_;
-}
-@synthesize nullMessage;
-- (instancetype) init {
-  if ((self = [super init])) {
-    self.destination = @"";
-    self.identityKey = [NSData data];
-    self.state = OWSSignalServiceProtosVerifiedStateDefault;
-    self.nullMessage = [NSData data];
-  }
-  return self;
-}
-static OWSSignalServiceProtosVerified* defaultOWSSignalServiceProtosVerifiedInstance = nil;
-+ (void) initialize {
-  if (self == [OWSSignalServiceProtosVerified class]) {
-    defaultOWSSignalServiceProtosVerifiedInstance = [[OWSSignalServiceProtosVerified alloc] init];
-  }
-}
-+ (instancetype) defaultInstance {
-  return defaultOWSSignalServiceProtosVerifiedInstance;
-}
-- (instancetype) defaultInstance {
-  return defaultOWSSignalServiceProtosVerifiedInstance;
-}
-- (BOOL) isInitialized {
-  return YES;
-}
-- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
-  if (self.hasDestination) {
-    [output writeString:1 value:self.destination];
-  }
-  if (self.hasIdentityKey) {
-    [output writeData:2 value:self.identityKey];
-  }
-  if (self.hasState) {
-    [output writeEnum:3 value:self.state];
-  }
-  if (self.hasNullMessage) {
-    [output writeData:4 value:self.nullMessage];
-  }
-  [self.unknownFields writeToCodedOutputStream:output];
-}
-- (SInt32) serializedSize {
-  __block SInt32 size_ = memoizedSerializedSize;
-  if (size_ != -1) {
-    return size_;
-  }
-
-  size_ = 0;
-  if (self.hasDestination) {
-    size_ += computeStringSize(1, self.destination);
-  }
-  if (self.hasIdentityKey) {
-    size_ += computeDataSize(2, self.identityKey);
-  }
-  if (self.hasState) {
-    size_ += computeEnumSize(3, self.state);
-  }
-  if (self.hasNullMessage) {
-    size_ += computeDataSize(4, self.nullMessage);
-  }
-  size_ += self.unknownFields.serializedSize;
-  memoizedSerializedSize = size_;
-  return size_;
-}
-+ (OWSSignalServiceProtosVerified*) parseFromData:(NSData*) data {
-  return (OWSSignalServiceProtosVerified*)[[[OWSSignalServiceProtosVerified builder] mergeFromData:data] build];
-}
-+ (OWSSignalServiceProtosVerified*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSSignalServiceProtosVerified*)[[[OWSSignalServiceProtosVerified builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
-}
-+ (OWSSignalServiceProtosVerified*) parseFromInputStream:(NSInputStream*) input {
-  return (OWSSignalServiceProtosVerified*)[[[OWSSignalServiceProtosVerified builder] mergeFromInputStream:input] build];
-}
-+ (OWSSignalServiceProtosVerified*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSSignalServiceProtosVerified*)[[[OWSSignalServiceProtosVerified builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
-}
-+ (OWSSignalServiceProtosVerified*) parseFromCodedInputStream:(PBCodedInputStream*) input {
-  return (OWSSignalServiceProtosVerified*)[[[OWSSignalServiceProtosVerified builder] mergeFromCodedInputStream:input] build];
-}
-+ (OWSSignalServiceProtosVerified*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSSignalServiceProtosVerified*)[[[OWSSignalServiceProtosVerified builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
-}
-+ (OWSSignalServiceProtosVerifiedBuilder*) builder {
-  return [[OWSSignalServiceProtosVerifiedBuilder alloc] init];
-}
-+ (OWSSignalServiceProtosVerifiedBuilder*) builderWithPrototype:(OWSSignalServiceProtosVerified*) prototype {
-  return [[OWSSignalServiceProtosVerified builder] mergeFrom:prototype];
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) builder {
-  return [OWSSignalServiceProtosVerified builder];
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) toBuilder {
-  return [OWSSignalServiceProtosVerified builderWithPrototype:self];
-}
-- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
-  if (self.hasDestination) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"destination", self.destination];
-  }
-  if (self.hasIdentityKey) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"identityKey", self.identityKey];
-  }
-  if (self.hasState) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"state", NSStringFromOWSSignalServiceProtosVerifiedState(self.state)];
-  }
-  if (self.hasNullMessage) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"nullMessage", self.nullMessage];
-  }
-  [self.unknownFields writeDescriptionTo:output withIndent:indent];
-}
-- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
-  if (self.hasDestination) {
-    [dictionary setObject: self.destination forKey: @"destination"];
-  }
-  if (self.hasIdentityKey) {
-    [dictionary setObject: self.identityKey forKey: @"identityKey"];
-  }
-  if (self.hasState) {
-    [dictionary setObject: @(self.state) forKey: @"state"];
-  }
-  if (self.hasNullMessage) {
-    [dictionary setObject: self.nullMessage forKey: @"nullMessage"];
-  }
-  [self.unknownFields storeInDictionary:dictionary];
-}
-- (BOOL) isEqual:(id)other {
-  if (other == self) {
-    return YES;
-  }
-  if (![other isKindOfClass:[OWSSignalServiceProtosVerified class]]) {
-    return NO;
-  }
-  OWSSignalServiceProtosVerified *otherMessage = other;
-  return
-      self.hasDestination == otherMessage.hasDestination &&
-      (!self.hasDestination || [self.destination isEqual:otherMessage.destination]) &&
-      self.hasIdentityKey == otherMessage.hasIdentityKey &&
-      (!self.hasIdentityKey || [self.identityKey isEqual:otherMessage.identityKey]) &&
-      self.hasState == otherMessage.hasState &&
-      (!self.hasState || self.state == otherMessage.state) &&
-      self.hasNullMessage == otherMessage.hasNullMessage &&
-      (!self.hasNullMessage || [self.nullMessage isEqual:otherMessage.nullMessage]) &&
-      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
-}
-- (NSUInteger) hash {
-  __block NSUInteger hashCode = 7;
-  if (self.hasDestination) {
-    hashCode = hashCode * 31 + [self.destination hash];
-  }
-  if (self.hasIdentityKey) {
-    hashCode = hashCode * 31 + [self.identityKey hash];
-  }
-  if (self.hasState) {
-    hashCode = hashCode * 31 + self.state;
-  }
-  if (self.hasNullMessage) {
-    hashCode = hashCode * 31 + [self.nullMessage hash];
-  }
-  hashCode = hashCode * 31 + [self.unknownFields hash];
-  return hashCode;
-}
-@end
-
-BOOL OWSSignalServiceProtosVerifiedStateIsValidValue(OWSSignalServiceProtosVerifiedState value) {
-  switch (value) {
-    case OWSSignalServiceProtosVerifiedStateDefault:
-    case OWSSignalServiceProtosVerifiedStateVerified:
-    case OWSSignalServiceProtosVerifiedStateUnverified:
-      return YES;
-    default:
-      return NO;
-  }
-}
-NSString *NSStringFromOWSSignalServiceProtosVerifiedState(OWSSignalServiceProtosVerifiedState value) {
-  switch (value) {
-    case OWSSignalServiceProtosVerifiedStateDefault:
-      return @"OWSSignalServiceProtosVerifiedStateDefault";
-    case OWSSignalServiceProtosVerifiedStateVerified:
-      return @"OWSSignalServiceProtosVerifiedStateVerified";
-    case OWSSignalServiceProtosVerifiedStateUnverified:
-      return @"OWSSignalServiceProtosVerifiedStateUnverified";
-    default:
-      return nil;
-  }
-}
-
-@interface OWSSignalServiceProtosVerifiedBuilder()
-@property (strong) OWSSignalServiceProtosVerified* resultVerified;
-@end
-
-@implementation OWSSignalServiceProtosVerifiedBuilder
-@synthesize resultVerified;
-- (instancetype) init {
-  if ((self = [super init])) {
-    self.resultVerified = [[OWSSignalServiceProtosVerified alloc] init];
-  }
-  return self;
-}
-- (PBGeneratedMessage*) internalGetResult {
-  return resultVerified;
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) clear {
-  self.resultVerified = [[OWSSignalServiceProtosVerified alloc] init];
-  return self;
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) clone {
-  return [OWSSignalServiceProtosVerified builderWithPrototype:resultVerified];
-}
-- (OWSSignalServiceProtosVerified*) defaultInstance {
-  return [OWSSignalServiceProtosVerified defaultInstance];
-}
-- (OWSSignalServiceProtosVerified*) build {
-  [self checkInitialized];
-  return [self buildPartial];
-}
-- (OWSSignalServiceProtosVerified*) buildPartial {
-  OWSSignalServiceProtosVerified* returnMe = resultVerified;
-  self.resultVerified = nil;
-  return returnMe;
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) mergeFrom:(OWSSignalServiceProtosVerified*) other {
-  if (other == [OWSSignalServiceProtosVerified defaultInstance]) {
-    return self;
-  }
-  if (other.hasDestination) {
-    [self setDestination:other.destination];
-  }
-  if (other.hasIdentityKey) {
-    [self setIdentityKey:other.identityKey];
-  }
-  if (other.hasState) {
-    [self setState:other.state];
-  }
-  if (other.hasNullMessage) {
-    [self setNullMessage:other.nullMessage];
-  }
-  [self mergeUnknownFields:other.unknownFields];
-  return self;
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
-  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
-  while (YES) {
-    SInt32 tag = [input readTag];
-    switch (tag) {
-      case 0:
-        [self setUnknownFields:[unknownFields build]];
-        return self;
-      default: {
-        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
-          [self setUnknownFields:[unknownFields build]];
-          return self;
-        }
-        break;
-      }
-      case 10: {
-        [self setDestination:[input readString]];
-        break;
-      }
-      case 18: {
-        [self setIdentityKey:[input readData]];
-        break;
-      }
-      case 24: {
-        OWSSignalServiceProtosVerifiedState value = (OWSSignalServiceProtosVerifiedState)[input readEnum];
-        if (OWSSignalServiceProtosVerifiedStateIsValidValue(value)) {
-          [self setState:value];
-        } else {
-          [unknownFields mergeVarintField:3 value:value];
-        }
-        break;
-      }
-      case 34: {
-        [self setNullMessage:[input readData]];
-        break;
-      }
-    }
-  }
-}
-- (BOOL) hasDestination {
-  return resultVerified.hasDestination;
-}
-- (NSString*) destination {
-  return resultVerified.destination;
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) setDestination:(NSString*) value {
-  resultVerified.hasDestination = YES;
-  resultVerified.destination = value;
-  return self;
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) clearDestination {
-  resultVerified.hasDestination = NO;
-  resultVerified.destination = @"";
-  return self;
-}
-- (BOOL) hasIdentityKey {
-  return resultVerified.hasIdentityKey;
-}
-- (NSData*) identityKey {
-  return resultVerified.identityKey;
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) setIdentityKey:(NSData*) value {
-  resultVerified.hasIdentityKey = YES;
-  resultVerified.identityKey = value;
-  return self;
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) clearIdentityKey {
-  resultVerified.hasIdentityKey = NO;
-  resultVerified.identityKey = [NSData data];
-  return self;
-}
-- (BOOL) hasState {
-  return resultVerified.hasState;
-}
-- (OWSSignalServiceProtosVerifiedState) state {
-  return resultVerified.state;
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) setState:(OWSSignalServiceProtosVerifiedState) value {
-  resultVerified.hasState = YES;
-  resultVerified.state = value;
-  return self;
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) clearState {
-  resultVerified.hasState = NO;
-  resultVerified.state = OWSSignalServiceProtosVerifiedStateDefault;
-  return self;
-}
-- (BOOL) hasNullMessage {
-  return resultVerified.hasNullMessage;
-}
-- (NSData*) nullMessage {
-  return resultVerified.nullMessage;
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) setNullMessage:(NSData*) value {
-  resultVerified.hasNullMessage = YES;
-  resultVerified.nullMessage = value;
-  return self;
-}
-- (OWSSignalServiceProtosVerifiedBuilder*) clearNullMessage {
-  resultVerified.hasNullMessage = NO;
-  resultVerified.nullMessage = [NSData data];
-  return self;
-}
-@end
-
 @interface OWSSignalServiceProtosCallMessage ()
 @property (strong) OWSSignalServiceProtosCallMessageOffer* offer;
 @property (strong) OWSSignalServiceProtosCallMessageAnswer* answer;
@@ -3938,6 +3351,593 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
 }
 @end
 
+@interface OWSSignalServiceProtosNullMessage ()
+@property (strong) NSData* padding;
+@end
+
+@implementation OWSSignalServiceProtosNullMessage
+
+- (BOOL) hasPadding {
+  return !!hasPadding_;
+}
+- (void) setHasPadding:(BOOL) _value_ {
+  hasPadding_ = !!_value_;
+}
+@synthesize padding;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.padding = [NSData data];
+  }
+  return self;
+}
+static OWSSignalServiceProtosNullMessage* defaultOWSSignalServiceProtosNullMessageInstance = nil;
++ (void) initialize {
+  if (self == [OWSSignalServiceProtosNullMessage class]) {
+    defaultOWSSignalServiceProtosNullMessageInstance = [[OWSSignalServiceProtosNullMessage alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosNullMessageInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosNullMessageInstance;
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasPadding) {
+    [output writeData:1 value:self.padding];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasPadding) {
+    size_ += computeDataSize(1, self.padding);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (OWSSignalServiceProtosNullMessage*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosNullMessage*)[[[OWSSignalServiceProtosNullMessage builder] mergeFromData:data] build];
+}
++ (OWSSignalServiceProtosNullMessage*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosNullMessage*)[[[OWSSignalServiceProtosNullMessage builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosNullMessage*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosNullMessage*)[[[OWSSignalServiceProtosNullMessage builder] mergeFromInputStream:input] build];
+}
++ (OWSSignalServiceProtosNullMessage*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosNullMessage*)[[[OWSSignalServiceProtosNullMessage builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosNullMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosNullMessage*)[[[OWSSignalServiceProtosNullMessage builder] mergeFromCodedInputStream:input] build];
+}
++ (OWSSignalServiceProtosNullMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosNullMessage*)[[[OWSSignalServiceProtosNullMessage builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosNullMessageBuilder*) builder {
+  return [[OWSSignalServiceProtosNullMessageBuilder alloc] init];
+}
++ (OWSSignalServiceProtosNullMessageBuilder*) builderWithPrototype:(OWSSignalServiceProtosNullMessage*) prototype {
+  return [[OWSSignalServiceProtosNullMessage builder] mergeFrom:prototype];
+}
+- (OWSSignalServiceProtosNullMessageBuilder*) builder {
+  return [OWSSignalServiceProtosNullMessage builder];
+}
+- (OWSSignalServiceProtosNullMessageBuilder*) toBuilder {
+  return [OWSSignalServiceProtosNullMessage builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasPadding) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"padding", self.padding];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasPadding) {
+    [dictionary setObject: self.padding forKey: @"padding"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[OWSSignalServiceProtosNullMessage class]]) {
+    return NO;
+  }
+  OWSSignalServiceProtosNullMessage *otherMessage = other;
+  return
+      self.hasPadding == otherMessage.hasPadding &&
+      (!self.hasPadding || [self.padding isEqual:otherMessage.padding]) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasPadding) {
+    hashCode = hashCode * 31 + [self.padding hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface OWSSignalServiceProtosNullMessageBuilder()
+@property (strong) OWSSignalServiceProtosNullMessage* resultNullMessage;
+@end
+
+@implementation OWSSignalServiceProtosNullMessageBuilder
+@synthesize resultNullMessage;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultNullMessage = [[OWSSignalServiceProtosNullMessage alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultNullMessage;
+}
+- (OWSSignalServiceProtosNullMessageBuilder*) clear {
+  self.resultNullMessage = [[OWSSignalServiceProtosNullMessage alloc] init];
+  return self;
+}
+- (OWSSignalServiceProtosNullMessageBuilder*) clone {
+  return [OWSSignalServiceProtosNullMessage builderWithPrototype:resultNullMessage];
+}
+- (OWSSignalServiceProtosNullMessage*) defaultInstance {
+  return [OWSSignalServiceProtosNullMessage defaultInstance];
+}
+- (OWSSignalServiceProtosNullMessage*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (OWSSignalServiceProtosNullMessage*) buildPartial {
+  OWSSignalServiceProtosNullMessage* returnMe = resultNullMessage;
+  self.resultNullMessage = nil;
+  return returnMe;
+}
+- (OWSSignalServiceProtosNullMessageBuilder*) mergeFrom:(OWSSignalServiceProtosNullMessage*) other {
+  if (other == [OWSSignalServiceProtosNullMessage defaultInstance]) {
+    return self;
+  }
+  if (other.hasPadding) {
+    [self setPadding:other.padding];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (OWSSignalServiceProtosNullMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (OWSSignalServiceProtosNullMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        [self setPadding:[input readData]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasPadding {
+  return resultNullMessage.hasPadding;
+}
+- (NSData*) padding {
+  return resultNullMessage.padding;
+}
+- (OWSSignalServiceProtosNullMessageBuilder*) setPadding:(NSData*) value {
+  resultNullMessage.hasPadding = YES;
+  resultNullMessage.padding = value;
+  return self;
+}
+- (OWSSignalServiceProtosNullMessageBuilder*) clearPadding {
+  resultNullMessage.hasPadding = NO;
+  resultNullMessage.padding = [NSData data];
+  return self;
+}
+@end
+
+@interface OWSSignalServiceProtosVerified ()
+@property (strong) NSString* destination;
+@property (strong) NSData* identityKey;
+@property OWSSignalServiceProtosVerifiedState state;
+@property (strong) NSData* nullMessage;
+@end
+
+@implementation OWSSignalServiceProtosVerified
+
+- (BOOL) hasDestination {
+  return !!hasDestination_;
+}
+- (void) setHasDestination:(BOOL) _value_ {
+  hasDestination_ = !!_value_;
+}
+@synthesize destination;
+- (BOOL) hasIdentityKey {
+  return !!hasIdentityKey_;
+}
+- (void) setHasIdentityKey:(BOOL) _value_ {
+  hasIdentityKey_ = !!_value_;
+}
+@synthesize identityKey;
+- (BOOL) hasState {
+  return !!hasState_;
+}
+- (void) setHasState:(BOOL) _value_ {
+  hasState_ = !!_value_;
+}
+@synthesize state;
+- (BOOL) hasNullMessage {
+  return !!hasNullMessage_;
+}
+- (void) setHasNullMessage:(BOOL) _value_ {
+  hasNullMessage_ = !!_value_;
+}
+@synthesize nullMessage;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.destination = @"";
+    self.identityKey = [NSData data];
+    self.state = OWSSignalServiceProtosVerifiedStateDefault;
+    self.nullMessage = [NSData data];
+  }
+  return self;
+}
+static OWSSignalServiceProtosVerified* defaultOWSSignalServiceProtosVerifiedInstance = nil;
++ (void) initialize {
+  if (self == [OWSSignalServiceProtosVerified class]) {
+    defaultOWSSignalServiceProtosVerifiedInstance = [[OWSSignalServiceProtosVerified alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosVerifiedInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosVerifiedInstance;
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasDestination) {
+    [output writeString:1 value:self.destination];
+  }
+  if (self.hasIdentityKey) {
+    [output writeData:2 value:self.identityKey];
+  }
+  if (self.hasState) {
+    [output writeEnum:3 value:self.state];
+  }
+  if (self.hasNullMessage) {
+    [output writeData:4 value:self.nullMessage];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasDestination) {
+    size_ += computeStringSize(1, self.destination);
+  }
+  if (self.hasIdentityKey) {
+    size_ += computeDataSize(2, self.identityKey);
+  }
+  if (self.hasState) {
+    size_ += computeEnumSize(3, self.state);
+  }
+  if (self.hasNullMessage) {
+    size_ += computeDataSize(4, self.nullMessage);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (OWSSignalServiceProtosVerified*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosVerified*)[[[OWSSignalServiceProtosVerified builder] mergeFromData:data] build];
+}
++ (OWSSignalServiceProtosVerified*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosVerified*)[[[OWSSignalServiceProtosVerified builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosVerified*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosVerified*)[[[OWSSignalServiceProtosVerified builder] mergeFromInputStream:input] build];
+}
++ (OWSSignalServiceProtosVerified*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosVerified*)[[[OWSSignalServiceProtosVerified builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosVerified*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosVerified*)[[[OWSSignalServiceProtosVerified builder] mergeFromCodedInputStream:input] build];
+}
++ (OWSSignalServiceProtosVerified*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosVerified*)[[[OWSSignalServiceProtosVerified builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosVerifiedBuilder*) builder {
+  return [[OWSSignalServiceProtosVerifiedBuilder alloc] init];
+}
++ (OWSSignalServiceProtosVerifiedBuilder*) builderWithPrototype:(OWSSignalServiceProtosVerified*) prototype {
+  return [[OWSSignalServiceProtosVerified builder] mergeFrom:prototype];
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) builder {
+  return [OWSSignalServiceProtosVerified builder];
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) toBuilder {
+  return [OWSSignalServiceProtosVerified builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasDestination) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"destination", self.destination];
+  }
+  if (self.hasIdentityKey) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"identityKey", self.identityKey];
+  }
+  if (self.hasState) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"state", NSStringFromOWSSignalServiceProtosVerifiedState(self.state)];
+  }
+  if (self.hasNullMessage) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"nullMessage", self.nullMessage];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasDestination) {
+    [dictionary setObject: self.destination forKey: @"destination"];
+  }
+  if (self.hasIdentityKey) {
+    [dictionary setObject: self.identityKey forKey: @"identityKey"];
+  }
+  if (self.hasState) {
+    [dictionary setObject: @(self.state) forKey: @"state"];
+  }
+  if (self.hasNullMessage) {
+    [dictionary setObject: self.nullMessage forKey: @"nullMessage"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[OWSSignalServiceProtosVerified class]]) {
+    return NO;
+  }
+  OWSSignalServiceProtosVerified *otherMessage = other;
+  return
+      self.hasDestination == otherMessage.hasDestination &&
+      (!self.hasDestination || [self.destination isEqual:otherMessage.destination]) &&
+      self.hasIdentityKey == otherMessage.hasIdentityKey &&
+      (!self.hasIdentityKey || [self.identityKey isEqual:otherMessage.identityKey]) &&
+      self.hasState == otherMessage.hasState &&
+      (!self.hasState || self.state == otherMessage.state) &&
+      self.hasNullMessage == otherMessage.hasNullMessage &&
+      (!self.hasNullMessage || [self.nullMessage isEqual:otherMessage.nullMessage]) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasDestination) {
+    hashCode = hashCode * 31 + [self.destination hash];
+  }
+  if (self.hasIdentityKey) {
+    hashCode = hashCode * 31 + [self.identityKey hash];
+  }
+  if (self.hasState) {
+    hashCode = hashCode * 31 + self.state;
+  }
+  if (self.hasNullMessage) {
+    hashCode = hashCode * 31 + [self.nullMessage hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+BOOL OWSSignalServiceProtosVerifiedStateIsValidValue(OWSSignalServiceProtosVerifiedState value) {
+  switch (value) {
+    case OWSSignalServiceProtosVerifiedStateDefault:
+    case OWSSignalServiceProtosVerifiedStateVerified:
+    case OWSSignalServiceProtosVerifiedStateUnverified:
+      return YES;
+    default:
+      return NO;
+  }
+}
+NSString *NSStringFromOWSSignalServiceProtosVerifiedState(OWSSignalServiceProtosVerifiedState value) {
+  switch (value) {
+    case OWSSignalServiceProtosVerifiedStateDefault:
+      return @"OWSSignalServiceProtosVerifiedStateDefault";
+    case OWSSignalServiceProtosVerifiedStateVerified:
+      return @"OWSSignalServiceProtosVerifiedStateVerified";
+    case OWSSignalServiceProtosVerifiedStateUnverified:
+      return @"OWSSignalServiceProtosVerifiedStateUnverified";
+    default:
+      return nil;
+  }
+}
+
+@interface OWSSignalServiceProtosVerifiedBuilder()
+@property (strong) OWSSignalServiceProtosVerified* resultVerified;
+@end
+
+@implementation OWSSignalServiceProtosVerifiedBuilder
+@synthesize resultVerified;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultVerified = [[OWSSignalServiceProtosVerified alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultVerified;
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) clear {
+  self.resultVerified = [[OWSSignalServiceProtosVerified alloc] init];
+  return self;
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) clone {
+  return [OWSSignalServiceProtosVerified builderWithPrototype:resultVerified];
+}
+- (OWSSignalServiceProtosVerified*) defaultInstance {
+  return [OWSSignalServiceProtosVerified defaultInstance];
+}
+- (OWSSignalServiceProtosVerified*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (OWSSignalServiceProtosVerified*) buildPartial {
+  OWSSignalServiceProtosVerified* returnMe = resultVerified;
+  self.resultVerified = nil;
+  return returnMe;
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) mergeFrom:(OWSSignalServiceProtosVerified*) other {
+  if (other == [OWSSignalServiceProtosVerified defaultInstance]) {
+    return self;
+  }
+  if (other.hasDestination) {
+    [self setDestination:other.destination];
+  }
+  if (other.hasIdentityKey) {
+    [self setIdentityKey:other.identityKey];
+  }
+  if (other.hasState) {
+    [self setState:other.state];
+  }
+  if (other.hasNullMessage) {
+    [self setNullMessage:other.nullMessage];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        [self setDestination:[input readString]];
+        break;
+      }
+      case 18: {
+        [self setIdentityKey:[input readData]];
+        break;
+      }
+      case 24: {
+        OWSSignalServiceProtosVerifiedState value = (OWSSignalServiceProtosVerifiedState)[input readEnum];
+        if (OWSSignalServiceProtosVerifiedStateIsValidValue(value)) {
+          [self setState:value];
+        } else {
+          [unknownFields mergeVarintField:3 value:value];
+        }
+        break;
+      }
+      case 34: {
+        [self setNullMessage:[input readData]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasDestination {
+  return resultVerified.hasDestination;
+}
+- (NSString*) destination {
+  return resultVerified.destination;
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) setDestination:(NSString*) value {
+  resultVerified.hasDestination = YES;
+  resultVerified.destination = value;
+  return self;
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) clearDestination {
+  resultVerified.hasDestination = NO;
+  resultVerified.destination = @"";
+  return self;
+}
+- (BOOL) hasIdentityKey {
+  return resultVerified.hasIdentityKey;
+}
+- (NSData*) identityKey {
+  return resultVerified.identityKey;
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) setIdentityKey:(NSData*) value {
+  resultVerified.hasIdentityKey = YES;
+  resultVerified.identityKey = value;
+  return self;
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) clearIdentityKey {
+  resultVerified.hasIdentityKey = NO;
+  resultVerified.identityKey = [NSData data];
+  return self;
+}
+- (BOOL) hasState {
+  return resultVerified.hasState;
+}
+- (OWSSignalServiceProtosVerifiedState) state {
+  return resultVerified.state;
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) setState:(OWSSignalServiceProtosVerifiedState) value {
+  resultVerified.hasState = YES;
+  resultVerified.state = value;
+  return self;
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) clearState {
+  resultVerified.hasState = NO;
+  resultVerified.state = OWSSignalServiceProtosVerifiedStateDefault;
+  return self;
+}
+- (BOOL) hasNullMessage {
+  return resultVerified.hasNullMessage;
+}
+- (NSData*) nullMessage {
+  return resultVerified.nullMessage;
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) setNullMessage:(NSData*) value {
+  resultVerified.hasNullMessage = YES;
+  resultVerified.nullMessage = value;
+  return self;
+}
+- (OWSSignalServiceProtosVerifiedBuilder*) clearNullMessage {
+  resultVerified.hasNullMessage = NO;
+  resultVerified.nullMessage = [NSData data];
+  return self;
+}
+@end
+
 @interface OWSSignalServiceProtosSyncMessage ()
 @property (strong) OWSSignalServiceProtosSyncMessageSent* sent;
 @property (strong) OWSSignalServiceProtosSyncMessageContacts* contacts;
@@ -3947,7 +3947,6 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
 @property (strong) OWSSignalServiceProtosSyncMessageBlocked* blocked;
 @property (strong) OWSSignalServiceProtosVerified* verified;
 @property (strong) NSData* padding;
-@property (strong) NSData* profileKey;
 @end
 
 @implementation OWSSignalServiceProtosSyncMessage
@@ -4003,13 +4002,6 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
   hasPadding_ = !!_value_;
 }
 @synthesize padding;
-- (BOOL) hasProfileKey {
-  return !!hasProfileKey_;
-}
-- (void) setHasProfileKey:(BOOL) _value_ {
-  hasProfileKey_ = !!_value_;
-}
-@synthesize profileKey;
 - (instancetype) init {
   if ((self = [super init])) {
     self.sent = [OWSSignalServiceProtosSyncMessageSent defaultInstance];
@@ -4019,7 +4011,6 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
     self.blocked = [OWSSignalServiceProtosSyncMessageBlocked defaultInstance];
     self.verified = [OWSSignalServiceProtosVerified defaultInstance];
     self.padding = [NSData data];
-    self.profileKey = [NSData data];
   }
   return self;
 }
@@ -4069,9 +4060,6 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   if (self.hasPadding) {
     [output writeData:8 value:self.padding];
   }
-  if (self.hasProfileKey) {
-    [output writeData:9 value:self.profileKey];
-  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -4104,9 +4092,6 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   }
   if (self.hasPadding) {
     size_ += computeDataSize(8, self.padding);
-  }
-  if (self.hasProfileKey) {
-    size_ += computeDataSize(9, self.profileKey);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -4188,9 +4173,6 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   if (self.hasPadding) {
     [output appendFormat:@"%@%@: %@\n", indent, @"padding", self.padding];
   }
-  if (self.hasProfileKey) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"profileKey", self.profileKey];
-  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -4232,9 +4214,6 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   if (self.hasPadding) {
     [dictionary setObject: self.padding forKey: @"padding"];
   }
-  if (self.hasProfileKey) {
-    [dictionary setObject: self.profileKey forKey: @"profileKey"];
-  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -4261,8 +4240,6 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
       (!self.hasVerified || [self.verified isEqual:otherMessage.verified]) &&
       self.hasPadding == otherMessage.hasPadding &&
       (!self.hasPadding || [self.padding isEqual:otherMessage.padding]) &&
-      self.hasProfileKey == otherMessage.hasProfileKey &&
-      (!self.hasProfileKey || [self.profileKey isEqual:otherMessage.profileKey]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -4290,9 +4267,6 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   }
   if (self.hasPadding) {
     hashCode = hashCode * 31 + [self.padding hash];
-  }
-  if (self.hasProfileKey) {
-    hashCode = hashCode * 31 + [self.profileKey hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -5966,9 +5940,6 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
   if (other.hasPadding) {
     [self setPadding:other.padding];
   }
-  if (other.hasProfileKey) {
-    [self setProfileKey:other.profileKey];
-  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -6052,10 +6023,6 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
       }
       case 66: {
         [self setPadding:[input readData]];
-        break;
-      }
-      case 74: {
-        [self setProfileKey:[input readData]];
         break;
       }
     }
@@ -6276,22 +6243,6 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
 - (OWSSignalServiceProtosSyncMessageBuilder*) clearPadding {
   resultSyncMessage.hasPadding = NO;
   resultSyncMessage.padding = [NSData data];
-  return self;
-}
-- (BOOL) hasProfileKey {
-  return resultSyncMessage.hasProfileKey;
-}
-- (NSData*) profileKey {
-  return resultSyncMessage.profileKey;
-}
-- (OWSSignalServiceProtosSyncMessageBuilder*) setProfileKey:(NSData*) value {
-  resultSyncMessage.hasProfileKey = YES;
-  resultSyncMessage.profileKey = value;
-  return self;
-}
-- (OWSSignalServiceProtosSyncMessageBuilder*) clearProfileKey {
-  resultSyncMessage.hasProfileKey = NO;
-  resultSyncMessage.profileKey = [NSData data];
   return self;
 }
 @end
@@ -7340,6 +7291,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @property (strong) OWSSignalServiceProtosContactDetailsAvatar* avatar;
 @property (strong) NSString* color;
 @property (strong) OWSSignalServiceProtosVerified* verified;
+@property (strong) NSData* profileKey;
 @end
 
 @implementation OWSSignalServiceProtosContactDetails
@@ -7379,6 +7331,13 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   hasVerified_ = !!_value_;
 }
 @synthesize verified;
+- (BOOL) hasProfileKey {
+  return !!hasProfileKey_;
+}
+- (void) setHasProfileKey:(BOOL) _value_ {
+  hasProfileKey_ = !!_value_;
+}
+@synthesize profileKey;
 - (instancetype) init {
   if ((self = [super init])) {
     self.number = @"";
@@ -7386,6 +7345,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
     self.avatar = [OWSSignalServiceProtosContactDetailsAvatar defaultInstance];
     self.color = @"";
     self.verified = [OWSSignalServiceProtosVerified defaultInstance];
+    self.profileKey = [NSData data];
   }
   return self;
 }
@@ -7420,6 +7380,9 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
   if (self.hasVerified) {
     [output writeMessage:5 value:self.verified];
   }
+  if (self.hasProfileKey) {
+    [output writeData:6 value:self.profileKey];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -7443,6 +7406,9 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
   }
   if (self.hasVerified) {
     size_ += computeMessageSize(5, self.verified);
+  }
+  if (self.hasProfileKey) {
+    size_ += computeDataSize(6, self.profileKey);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -7500,6 +7466,9 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
+  if (self.hasProfileKey) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"profileKey", self.profileKey];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -7522,6 +7491,9 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
    [self.verified storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"verified"];
   }
+  if (self.hasProfileKey) {
+    [dictionary setObject: self.profileKey forKey: @"profileKey"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -7543,6 +7515,8 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
       (!self.hasColor || [self.color isEqual:otherMessage.color]) &&
       self.hasVerified == otherMessage.hasVerified &&
       (!self.hasVerified || [self.verified isEqual:otherMessage.verified]) &&
+      self.hasProfileKey == otherMessage.hasProfileKey &&
+      (!self.hasProfileKey || [self.profileKey isEqual:otherMessage.profileKey]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -7561,6 +7535,9 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
   }
   if (self.hasVerified) {
     hashCode = hashCode * 31 + [self.verified hash];
+  }
+  if (self.hasProfileKey) {
+    hashCode = hashCode * 31 + [self.profileKey hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -7875,6 +7852,9 @@ static OWSSignalServiceProtosContactDetailsAvatar* defaultOWSSignalServiceProtos
   if (other.hasVerified) {
     [self mergeVerified:other.verified];
   }
+  if (other.hasProfileKey) {
+    [self setProfileKey:other.profileKey];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -7924,6 +7904,10 @@ static OWSSignalServiceProtosContactDetailsAvatar* defaultOWSSignalServiceProtos
         }
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
         [self setVerified:[subBuilder buildPartial]];
+        break;
+      }
+      case 50: {
+        [self setProfileKey:[input readData]];
         break;
       }
     }
@@ -8035,6 +8019,22 @@ static OWSSignalServiceProtosContactDetailsAvatar* defaultOWSSignalServiceProtos
 - (OWSSignalServiceProtosContactDetailsBuilder*) clearVerified {
   resultContactDetails.hasVerified = NO;
   resultContactDetails.verified = [OWSSignalServiceProtosVerified defaultInstance];
+  return self;
+}
+- (BOOL) hasProfileKey {
+  return resultContactDetails.hasProfileKey;
+}
+- (NSData*) profileKey {
+  return resultContactDetails.profileKey;
+}
+- (OWSSignalServiceProtosContactDetailsBuilder*) setProfileKey:(NSData*) value {
+  resultContactDetails.hasProfileKey = YES;
+  resultContactDetails.profileKey = value;
+  return self;
+}
+- (OWSSignalServiceProtosContactDetailsBuilder*) clearProfileKey {
+  resultContactDetails.hasProfileKey = NO;
+  resultContactDetails.profileKey = [NSData data];
   return self;
 }
 @end

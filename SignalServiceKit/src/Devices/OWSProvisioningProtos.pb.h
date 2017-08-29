@@ -126,6 +126,7 @@
 #define ProvisionMessage_number @"number"
 #define ProvisionMessage_provisioningCode @"provisioningCode"
 #define ProvisionMessage_userAgent @"userAgent"
+#define ProvisionMessage_profileKey @"profileKey"
 @interface OWSProvisioningProtosProvisionMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasNumber_:1;
@@ -133,22 +134,26 @@
   BOOL hasUserAgent_:1;
   BOOL hasIdentityKeyPublic_:1;
   BOOL hasIdentityKeyPrivate_:1;
+  BOOL hasProfileKey_:1;
   NSString* number;
   NSString* provisioningCode;
   NSString* userAgent;
   NSData* identityKeyPublic;
   NSData* identityKeyPrivate;
+  NSData* profileKey;
 }
 - (BOOL) hasIdentityKeyPublic;
 - (BOOL) hasIdentityKeyPrivate;
 - (BOOL) hasNumber;
 - (BOOL) hasProvisioningCode;
 - (BOOL) hasUserAgent;
+- (BOOL) hasProfileKey;
 @property (readonly, strong) NSData* identityKeyPublic;
 @property (readonly, strong) NSData* identityKeyPrivate;
 @property (readonly, strong) NSString* number;
 @property (readonly, strong) NSString* provisioningCode;
 @property (readonly, strong) NSString* userAgent;
+@property (readonly, strong) NSData* profileKey;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -209,6 +214,11 @@
 - (NSString*) userAgent;
 - (OWSProvisioningProtosProvisionMessageBuilder*) setUserAgent:(NSString*) value;
 - (OWSProvisioningProtosProvisionMessageBuilder*) clearUserAgent;
+
+- (BOOL) hasProfileKey;
+- (NSData*) profileKey;
+- (OWSProvisioningProtosProvisionMessageBuilder*) setProfileKey:(NSData*) value;
+- (OWSProvisioningProtosProvisionMessageBuilder*) clearProfileKey;
 @end
 
 

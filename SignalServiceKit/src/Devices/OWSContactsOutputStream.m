@@ -4,6 +4,7 @@
 
 #import "OWSContactsOutputStream.h"
 #import "Contact.h"
+#import "Cryptography.h"
 #import "MIMETypeUtil.h"
 #import "NSData+keyVersionByte.h"
 #import "OWSRecipientIdentity.h"
@@ -17,9 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)writeSignalAccount:(SignalAccount *)signalAccount
          recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
+            profileKeyData:(nullable NSData *)profileKeyData
 {
     OWSAssert(signalAccount);
     OWSAssert(signalAccount.contact);
+    OWSAssert(profileKeyData.length == kAES256_KeyByteLength);
 
     OWSSignalServiceProtosContactDetailsBuilder *contactBuilder = [OWSSignalServiceProtosContactDetailsBuilder new];
     [contactBuilder setName:signalAccount.contact.fullName];
@@ -42,6 +45,10 @@ NS_ASSUME_NONNULL_BEGIN
         avatarPng = UIImagePNGRepresentation(signalAccount.contact.image);
         [avatarBuilder setLength:(uint32_t)avatarPng.length];
         [contactBuilder setAvatarBuilder:avatarBuilder];
+    }
+
+    if (profileKeyData) {
+        [contactBuilder setProfileKey:profileKeyData];
     }
 
     NSData *contactData = [[contactBuilder build] data];

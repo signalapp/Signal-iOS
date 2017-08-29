@@ -37,35 +37,18 @@ message Content {
   optional NullMessage nullMessage = 4;
 }
 
-message NullMessage {
-  optional bytes padding = 1;
-}
-
-message Verified {
-  enum State {
-    DEFAULT    = 0;
-    VERIFIED   = 1;
-    UNVERIFIED = 2;
-  }
-
-  optional string destination = 1;
-  optional bytes  identityKey = 2;
-  optional State  state       = 3;
-  optional bytes  nullMessage = 4;
-}
-
 message CallMessage {
   message Offer {
     optional uint64 id          = 1;
-	// We've renamed the description field on iOS to avoid
-	// conflicts with [NSObject description].
+    // Signal-iOS renamed the description field to avoid
+    // conflicts with [NSObject description].
     optional string sessionDescription = 2;
   }
 
   message Answer {
     optional uint64 id          = 1;
-	// We've renamed the description field on iOS to avoid
-	// conflicts with [NSObject description].
+    // Signal-iOS renamed the description field to avoid
+    // conflicts with [NSObject description].
     optional string sessionDescription = 2;
   }
 
@@ -84,11 +67,14 @@ message CallMessage {
     optional uint64 id = 1;
   }
 
-  optional Offer     offer      = 1;
-  optional Answer    answer     = 2;
-  repeated IceUpdate iceUpdate  = 3;
-  optional Hangup    hangup     = 4;
-  optional Busy      busy       = 5;
+
+  optional Offer     offer     = 1;
+  optional Answer    answer    = 2;
+  repeated IceUpdate iceUpdate = 3;
+  optional Hangup    hangup    = 4;
+  optional Busy      busy      = 5;
+  // Signal-iOS sends profile key with call messages
+  // for earlier discovery
   optional bytes     profileKey = 6;
 }
 
@@ -104,6 +90,23 @@ message DataMessage {
   optional uint32             flags       = 4;
   optional uint32             expireTimer = 5;
   optional bytes              profileKey  = 6;
+}
+
+message NullMessage {
+  optional bytes padding = 1;
+}
+
+message Verified {
+  enum State {
+    DEFAULT    = 0;
+    VERIFIED   = 1;
+    UNVERIFIED = 2;
+  }
+
+  optional string destination = 1;
+  optional bytes  identityKey = 2;
+  optional State  state       = 3;
+  optional bytes  nullMessage = 4;
 }
 
 message SyncMessage {
@@ -143,15 +146,14 @@ message SyncMessage {
     optional uint64 timestamp = 2;
   }
 
-  optional Sent     sent       = 1;
-  optional Contacts contacts   = 2;
-  optional Groups   groups     = 3;
-  optional Request  request    = 4;
-  repeated Read     read       = 5;
-  optional Blocked  blocked    = 6;
-  optional Verified verified   = 7;
-  optional bytes    padding    = 8;
-  optional bytes    profileKey = 9;
+  optional Sent     sent     = 1;
+  optional Contacts contacts = 2;
+  optional Groups   groups   = 3;
+  optional Request  request  = 4;
+  repeated Read     read     = 5;
+  optional Blocked  blocked  = 6;
+  optional Verified verified = 7;
+  optional bytes    padding  = 8;
 }
 
 message AttachmentPointer {
@@ -166,7 +168,7 @@ message AttachmentPointer {
   optional bytes   thumbnail   = 5;
   optional bytes   digest      = 6;
   optional string  fileName    = 7;
-  optional uint32 flags = 8;
+  optional uint32  flags       = 8;
 }
 
 message GroupContext {
@@ -190,11 +192,12 @@ message ContactDetails {
     optional uint32 length      = 2;
   }
 
-  optional string number  = 1;
-  optional string name    = 2;
-  optional Avatar avatar  = 3;
-  optional string color   = 4;
-  optional Verified verified = 5;
+  optional string   number     = 1;
+  optional string   name       = 2;
+  optional Avatar   avatar     = 3;
+  optional string   color      = 4;
+  optional Verified verified   = 5;
+  optional bytes    profileKey = 6;
 }
 
 message GroupDetails {

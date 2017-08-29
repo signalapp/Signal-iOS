@@ -4,6 +4,7 @@
 
 #import "OWSContactsSyncing.h"
 #import "OWSContactsManager.h"
+#import "OWSProfileManager.h"
 #import "TSAccountManager.h"
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>
@@ -24,6 +25,7 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSIdentityManager *identityManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic, readonly) OWSProfileManager *profileManager;
 
 @property (nonatomic) BOOL isRequestInFlight;
 
@@ -34,6 +36,7 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
 - (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
                         identityManager:(OWSIdentityManager *)identityManager
                           messageSender:(OWSMessageSender *)messageSender
+                         profileManager:(OWSProfileManager *)profileManager
 {
     self = [super init];
 
@@ -48,6 +51,7 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
     _contactsManager = contactsManager;
     _identityManager = identityManager;
     _messageSender = messageSender;
+    _profileManager = profileManager;
 
     OWSSingletonAssert();
 
@@ -90,8 +94,10 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
             return;
         }
 
-        OWSSyncContactsMessage *syncContactsMessage = [[OWSSyncContactsMessage alloc] initWithContactsManager:self.contactsManager
-                                                                                              identityManager:self.identityManager];
+        OWSSyncContactsMessage *syncContactsMessage =
+            [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
+                                                   identityManager:self.identityManager
+                                                    profileManager:self.profileManager];
 
         NSData *messageData = [syncContactsMessage buildPlainTextAttachmentData];
 

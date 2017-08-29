@@ -105,6 +105,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
+@property (nonatomic, readonly) OWSIdentityManager *identityManager;
 
 // This property can be accessed on any thread, while synchronized on self.
 @property (nonatomic, readonly) UserProfile *localUserProfile;
@@ -199,6 +200,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return [OWSSignalService sharedInstance].CDNSessionManager;
 }
 
+- (OWSIdentityManager *)identityManager
+{
+    return [OWSIdentityManager sharedManager];
+}
+
 #pragma mark - User Profile Accessor
 
 // This method can be safely called from any thread.
@@ -236,6 +242,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
         dispatch_async(dispatch_get_main_queue(), ^{
             if (isLocalUserProfile) {
+                [MultiDeviceProfileKeyUpdateJob runWithProfileKey:userProfile.profileKey
+                                                  identityManager:self.identityManager
+                                                    messageSender:self.messageSender
+                                                   profileManager:self];
+
                 [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_LocalProfileDidChange
                                                                     object:nil
                                                                   userInfo:nil];
@@ -917,6 +928,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             [self refreshProfileForRecipientId:recipientId ignoreThrottling:YES];
         }
     });
+}
+
+- (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId
+{
+    return [self profileKeyForRecipientId:recipientId].keyData;
 }
 
 - (nullable OWSAES256Key *)profileKeyForRecipientId:(NSString *)recipientId

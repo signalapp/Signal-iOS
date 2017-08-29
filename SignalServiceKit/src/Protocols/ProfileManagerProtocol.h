@@ -5,10 +5,13 @@
 @class TSThread;
 @class OWSAES256Key;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol ProfileManagerProtocol <NSObject>
 
 - (OWSAES256Key *)localProfileKey;
 
+- (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId;
 - (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId;
 
 - (BOOL)isUserInProfileWhitelist:(NSString *)recipientId;
@@ -18,3 +21,5 @@
 - (void)addUserToProfileWhitelist:(NSString *)recipientId;
 
 @end
+
+NS_ASSUME_NONNULL_END

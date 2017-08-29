@@ -5,6 +5,7 @@
 #import "TSMessagesManager.h"
 #import "ContactsManagerProtocol.h"
 #import "ContactsUpdater.h"
+#import "Cryptography.h"
 #import "MimeTypeUtil.h"
 #import "NSData+messagePadding.h"
 #import "NSDate+millisecondTimeStamp.h"
@@ -515,8 +516,12 @@ NS_ASSUME_NONNULL_BEGIN
     if ([dataMessage hasProfileKey]) {
         NSData *profileKey = [dataMessage profileKey];
         NSString *recipientId = incomingEnvelope.source;
-        id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-        [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
+        if (profileKey.length == kAES256_KeyByteLength) {
+            [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
+        } else {
+            OWSFail(
+                @"Unexpected profile key length:%lu on message from:%@", (unsigned long)profileKey.length, recipientId);
+        }
     }
 
     if (dataMessage.hasGroup) {
@@ -580,6 +585,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (id<ProfileManagerProtocol>)profileManager
+{
+    return [TextSecureKitEnv sharedEnv].profileManager;
+}
+
 - (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)incomingEnvelope
                withCallMessage:(OWSSignalServiceProtosCallMessage *)callMessage
 {
@@ -589,8 +599,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([callMessage hasProfileKey]) {
         NSData *profileKey = [callMessage profileKey];
         NSString *recipientId = incomingEnvelope.source;
-        id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-        [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
+        [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
     }
 
     if (callMessage.hasOffer) {
@@ -707,8 +716,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (dataMessage && destination.length > 0 && [dataMessage hasProfileKey]) {
             // If we observe a linked device sending our profile key to another
             // user, we can infer that that user belongs in our profile whitelist.
-            id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-            [profileManager addUserToProfileWhitelist:destination];
+            [self.profileManager addUserToProfileWhitelist:destination];
 
             // TODO: Can we also infer when groups are added to the whitelist
             //       from sent messages to groups?
@@ -728,9 +736,10 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.hasRequest) {
         if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
             OWSSyncContactsMessage *syncContactsMessage =
-            [[OWSSyncContactsMessage alloc] initWithContactsManager:self.contactsManager
-                                                    identityManager:self.identityManager];
-            
+                [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
+                                                       identityManager:self.identityManager
+                                                        profileManager:self.profileManager];
+
             [self.messageSender sendTemporaryAttachmentData:[syncContactsMessage buildPlainTextAttachmentData]
                                                 contentType:OWSMimeTypeApplicationOctetStream
                                                   inMessage:syncContactsMessage
@@ -1085,7 +1094,7 @@ NS_ASSUME_NONNULL_BEGIN
           OWSFail(@"%@ Failed to trust identity on incoming message from: %@.%d",
               self.tag,
               envelope.source,
-              envelope.sourceDevice);
+              (unsigned int)envelope.sourceDevice);
           return;
       } else {
           OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);

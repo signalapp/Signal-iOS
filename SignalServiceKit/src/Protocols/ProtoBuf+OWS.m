@@ -90,15 +90,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-#pragma mark -
-
-@implementation OWSSignalServiceProtosSyncMessageBuilder (OWS)
-
-- (void)addLocalProfileKey
-{
-    [self setProfileKey:self.localProfileKey.keyData];
-}
-
-@end
-
 NS_ASSUME_NONNULL_END

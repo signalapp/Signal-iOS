@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *myPrivateKey;
 @property (nonatomic, readonly) NSString *accountIdentifier;
 @property (nonatomic, readonly) NSData *theirPublicKey;
+@property (nonatomic, readonly) NSData *profileKey;
 @property (nonatomic, readonly) NSString *provisioningCode;
 
 @end
@@ -25,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
                        myPrivateKey:(NSData *)myPrivateKey
                      theirPublicKey:(NSData *)theirPublicKey
                   accountIdentifier:(NSString *)accountIdentifier
+                         profileKey:(NSData *)profileKey
                    provisioningCode:(NSString *)provisioningCode
 {
     self = [super init];
@@ -34,8 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     _myPublicKey = myPublicKey;
     _myPrivateKey = myPrivateKey;
-    _accountIdentifier = accountIdentifier;
     _theirPublicKey = theirPublicKey;
+    _accountIdentifier = accountIdentifier;
+    _profileKey = profileKey;
     _provisioningCode = provisioningCode;
 
     return self;
@@ -49,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
     [messageBuilder setNumber:self.accountIdentifier];
     [messageBuilder setProvisioningCode:self.provisioningCode];
     [messageBuilder setUserAgent:@"OWI"];
+    [messageBuilder setProfileKey:self.profileKey];
 
     NSData *plainTextProvisionMessage = [[messageBuilder build] data];
 

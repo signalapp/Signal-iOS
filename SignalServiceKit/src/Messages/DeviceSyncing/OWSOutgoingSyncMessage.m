@@ -32,8 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
     size_t paddingBytesLength = arc4random_uniform(512) + 1;
     builder.padding = [Cryptography generateRandomBytes:paddingBytesLength];
 
-    [builder addLocalProfileKey];
-
     return [builder build];
 }
 

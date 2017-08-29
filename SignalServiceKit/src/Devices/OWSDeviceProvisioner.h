@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,14 +16,16 @@ NS_ASSUME_NONNULL_BEGIN
                      theirPublicKey:(NSData *)theirPublicKey
              theirEphemeralDeviceId:(NSString *)ephemeralDeviceId
                   accountIdentifier:(NSString *)accountIdentifier
+                         profileKey:(NSData *)profileKey
             provisioningCodeService:(OWSDeviceProvisioningCodeService *)provisioningCodeService
                 provisioningService:(OWSDeviceProvisioningService *)provisioningService NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithMyPublicKey:(NSData *)myPublicKey
                        myPrivateKey:(NSData *)myPrivateKey
-                     theirPublicKey:(NSData *)theirEncodedPublicKey
+                     theirPublicKey:(NSData *)theirPublicKey
              theirEphemeralDeviceId:(NSString *)ephemeralDeviceId
-                  accountIdentifier:(NSString *)accountIdentifier;
+                  accountIdentifier:(NSString *)accountIdentifier
+                         profileKey:(NSData *)profileKey;
 
 - (void)provisionWithSuccess:(void (^)())successCallback failure:(void (^)(NSError *))failureCallback;
 
