@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(signalAccount);
     OWSAssert(signalAccount.contact);
-    OWSAssert(profileKeyData.length == kAES256_KeyByteLength);
 
     OWSSignalServiceProtosContactDetailsBuilder *contactBuilder = [OWSSignalServiceProtosContactDetailsBuilder new];
     [contactBuilder setName:signalAccount.contact.fullName];
@@ -48,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (profileKeyData) {
+        OWSAssert(profileKeyData.length == kAES256_KeyByteLength);
         [contactBuilder setProfileKey:profileKeyData];
     }
 
