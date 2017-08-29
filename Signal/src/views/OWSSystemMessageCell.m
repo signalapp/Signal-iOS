@@ -263,12 +263,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGFloat topLabelSpacing = topLabelSize.height;
 
-    self.imageView.frame = CGRectMake(round((self.contentView.width - contentWidth) * 0.5f),
+    CGFloat contentLeft = round((self.contentView.width - contentWidth) * 0.5f);
+    CGFloat imageLeft = ([self isRTL] ? round(contentLeft + contentWidth - [self iconSize]) : contentLeft);
+    CGFloat titleLeft = ([self isRTL] ? contentLeft : round(imageLeft + [self iconSize] + [self hSpacing]));
+
+    self.imageView.frame = CGRectMake(imageLeft,
         round((self.contentView.height - [self iconSize] + topLabelSpacing) * 0.5f),
         [self iconSize],
         [self iconSize]);
 
-    self.titleLabel.frame = CGRectMake(round(self.imageView.right + [self hSpacing]),
+    self.titleLabel.frame = CGRectMake(titleLeft,
         round((self.contentView.height - titleSize.height + topLabelSpacing) * 0.5f),
         ceil(titleSize.width + 1.f),
         ceil(titleSize.height + 1.f));
