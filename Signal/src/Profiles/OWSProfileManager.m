@@ -687,7 +687,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 #pragma mark - Profile Whitelist
 
-#ifdef DEBUG
 - (void)clearProfileWhitelist
 {
     DDLogWarn(@"%@ Clearing the profile whitelist.", self.tag);
@@ -747,7 +746,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         OWSAssert(self.localUserProfile);
     }
 }
-#endif
 
 - (void)addUserToProfileWhitelist:(NSString *)recipientId
 {
