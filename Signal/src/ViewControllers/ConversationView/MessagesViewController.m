@@ -4150,6 +4150,15 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     BOOL wasAtBottom = [self isScrolledToBottom];
     if (wasAtBottom) {
         [self scrollToBottomImmediately];
+    } else if (self.collectionView.contentSize.height < 1) {
+        // If the collection view hasn't determined its content size yet,
+        // scroll state is not yet coherent. Therefore we can't (and don't
+        // need to) determine whether we're "scrolled to the bottom" until
+        // the collection view has determined its content size.
+        //
+        // In this case we should just ensure that scroll state is initialized
+        // properly.
+        [self scrollToDefaultPosition];
     }
 
     [self updateLastVisibleTimestamp];
