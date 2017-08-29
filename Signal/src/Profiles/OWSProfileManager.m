@@ -1352,20 +1352,18 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     [alertController addAction:[UIAlertAction actionWithTitle:shareTitle
                                                         style:UIAlertActionStyleDefault
                                                       handler:^(UIAlertAction *_Nonnull action) {
-                                                          [self addThreadToProfileWhitelist:thread
-                                                                         fromViewController:fromViewController
-                                                                              messageSender:messageSender
-                                                                                    success:successHandler];
+                                                          [self userAddedThreadToProfileWhitelist:thread
+                                                                                    messageSender:messageSender
+                                                                                          success:successHandler];
                                                       }]];
     [alertController addAction:[OWSAlerts cancelAction]];
 
     [fromViewController presentViewController:alertController animated:YES completion:nil];
 }
 
-- (void)addThreadToProfileWhitelist:(TSThread *)thread
-                 fromViewController:(UIViewController *)fromViewController
-                      messageSender:(OWSMessageSender *)messageSender
-                            success:(void (^)())successHandler
+- (void)userAddedThreadToProfileWhitelist:(TSThread *)thread
+                            messageSender:(OWSMessageSender *)messageSender
+                                  success:(void (^)())successHandler
 {
     AssertIsOnMainThread();
 
@@ -1392,23 +1390,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         failure:^(NSError *_Nonnull error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 DDLogError(@"%@ Failed to send profile key message to thread: %@", self.tag, thread);
-                UIAlertController *retryAlertController = [UIAlertController
-                    alertControllerWithTitle:NSLocalizedString(@"SHARE_PROFILE_FAILED_TITLE", @"alert title")
-                                     message:error.localizedDescription
-                              preferredStyle:UIAlertControllerStyleAlert];
-                [retryAlertController
-                    addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"RETRY_BUTTON_TEXT", nil)
-                                                       style:UIAlertActionStyleDefault
-                                                     handler:^(UIAlertAction *_Nonnull retryAction) {
-                                                         [self addThreadToProfileWhitelist:thread
-                                                                        fromViewController:fromViewController
-                                                                             messageSender:messageSender
-                                                                                   success:successHandler];
-                                                     }]];
-
-                [retryAlertController addAction:[OWSAlerts cancelAction]];
-
-                [fromViewController presentViewController:retryAlertController animated:YES completion:nil];
             });
         }];
 }
