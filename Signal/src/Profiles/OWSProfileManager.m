@@ -12,6 +12,7 @@
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSRequestBuilder.h>
 #import <SignalServiceKit/SecurityUtils.h>
+#import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSProfileAvatarUploadFormRequest.h>
 #import <SignalServiceKit/TSStorageManager.h>
@@ -673,6 +674,17 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     });
 }
 
+- (void)fetchLocalUsersProfile
+{
+    OWSAssert([NSThread isMainThread]);
+
+    NSString *_Nullable localNumber = [TSAccountManager sharedInstance].localNumber;
+    if (!localNumber) {
+        return;
+    }
+    [ProfileFetcherJob runWithRecipientId:localNumber networkManager:self.networkManager ignoreThrottling:YES];
+}
+
 #pragma mark - Profile Whitelist
 
 #ifdef DEBUG
@@ -1083,6 +1095,17 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
                                 [self saveUserProfile:userProfile];
                             }
+
+                            // If we're updating the profile that corresponds to our local number,
+                            // update the local profile as well.
+                            NSString *_Nullable localNumber = [TSAccountManager sharedInstance].localNumber;
+                            if (localNumber && [localNumber isEqualToString:userProfile.recipientId]) {
+                                UserProfile *localUserProfile = self.localUserProfile;
+                                OWSAssert(localUserProfile);
+                                localUserProfile.avatarFileName = fileName;
+                                [self saveUserProfile:localUserProfile];
+                                self.localCachedAvatarImage = image;
+                            }
                         }
                     });
                 }];
@@ -1159,6 +1182,22 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             userProfile.profileName = profileName;
             userProfile.avatarUrlPath = avatarUrlPath;
             userProfile.avatarFileName = nil;
+
+            // If we're updating the profile that corresponds to our local number,
+            // update the local profile as well.
+            NSString *_Nullable localNumber = [TSAccountManager sharedInstance].localNumber;
+            if (localNumber && [localNumber isEqualToString:recipientId]) {
+                UserProfile *localUserProfile = self.localUserProfile;
+                OWSAssert(localUserProfile);
+                localUserProfile.profileName = profileName;
+                localUserProfile.avatarUrlPath = avatarUrlPath;
+                // Don't clear avatarFileName and localCachedAvatarImage optimistically.
+                // * The profile avatar probably isn't out of sync.
+                // * If the profile avatar is out of sync, it can be synced on next app launch.
+                // * We don't want to touch local avatar state until we've
+                //   downloaded the latest avatar by downloadAvatarForUserProfile.
+                [self saveUserProfile:localUserProfile];
+            }
 
             if (!isAvatarSame) {
                 // Evacuate avatar image cache.
