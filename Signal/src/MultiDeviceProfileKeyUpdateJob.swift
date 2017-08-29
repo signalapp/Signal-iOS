@@ -6,8 +6,9 @@ import Foundation
 import PromiseKit
 
 /**
- * Transmits our profile key to any linked devices. 
- * This is accomplished via the existing contact syncing mechanism, except the only contact synced is ourself.
+ * Used to distribute our profile key to legacy linked devices, newly linked devices will have our profile key as part of provisioning.
+ * Syncing is accomplished via the existing contact syncing mechanism, except the only contact synced is ourself. It's incumbent on the linked device
+ * to treat this "self contact" record specially.
  */
 @objc class MultiDeviceProfileKeyUpdateJob: NSObject {
 
