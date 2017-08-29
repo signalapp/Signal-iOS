@@ -641,6 +641,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [self.view layoutSubviews];
 
+    // We want to set the initial scroll state the first time we enter the view.
     if (!self.viewHasEverAppeared) {
         [self scrollToDefaultPosition];
     }
@@ -3514,7 +3515,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     if (self.collectionView.contentSize.height < 1) {
         // If the collection view hasn't determined its content size yet,
-        // scroll state is not yet coherent.
+        // scroll state is not yet coherent. Therefore we can't (and don't
+        // need to) determine whether we're "scrolled to the bottom" until
+        // the collection view has determined its content size.
         return NO;
     }
 
