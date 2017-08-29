@@ -715,13 +715,14 @@ NS_ASSUME_NONNULL_BEGIN
         OWSSignalServiceProtosDataMessage *dataMessage = syncMessage.sent.message;
         OWSAssert(dataMessage);
         NSString *destination = syncMessage.sent.destination;
-        if (dataMessage && destination.length > 0 && [dataMessage hasProfileKey]) {
+        if (dataMessage && destination.length > 0 && dataMessage.hasProfileKey) {
             // If we observe a linked device sending our profile key to another
             // user, we can infer that that user belongs in our profile whitelist.
-            [self.profileManager addUserToProfileWhitelist:destination];
-
-            // TODO: Can we also infer when groups are added to the whitelist
-            //       from sent messages to groups?
+            if (dataMessage.hasGroup) {
+                [self.profileManager addGroupIdToProfileWhitelist:dataMessage.group.id];
+            } else {
+                [self.profileManager addUserToProfileWhitelist:destination];
+            }
         }
 
         if ([self isDataMessageGroupAvatarUpdate:syncMessage.sent.message]) {
