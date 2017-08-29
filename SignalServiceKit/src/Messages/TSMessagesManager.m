@@ -1003,7 +1003,7 @@ NS_ASSUME_NONNULL_BEGIN
                   break;
               }
               case OWSSignalServiceProtosGroupContextTypeDeliver: {
-                  if (body.length == 0) {
+                  if (body.length == 0 && attachmentIds.count < 1) {
                       DDLogWarn(@"%@ ignoring empty incoming message from: %@ for group: %@ with timestampe: %lu",
                           self.tag,
                           envelopeAddress(envelope),
@@ -1034,7 +1034,7 @@ NS_ASSUME_NONNULL_BEGIN
 
           thread = gThread;
       } else {
-          if (body.length == 0) {
+          if (body.length == 0 && attachmentIds.count < 1) {
               DDLogWarn(@"%@ ignoring empty incoming message from: %@ with timestampe: %lu",
                   self.tag,
                   envelopeAddress(envelope),
