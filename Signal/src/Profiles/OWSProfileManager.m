@@ -287,6 +287,13 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                     [_localUserProfile saveWithTransaction:transaction];
                 }];
+                // Sync local profile to any linked device
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    @synchronized(self)
+                    {
+                        [self saveUserProfile:_localUserProfile];
+                    }
+                });
             }
         }
 
