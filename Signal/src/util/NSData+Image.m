@@ -87,6 +87,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 // Parse the GIF header to prevent the "GIF of death" issue.
 //
 // See: https://blog.flanker017.me/cve-2017-2416-gif-remote-exec/
+// See: https://www.w3.org/Graphics/GIF/spec-gif89a.txt
 - (BOOL)hasValidGifSize
 {
     const NSUInteger kSignatureLength = 3;
