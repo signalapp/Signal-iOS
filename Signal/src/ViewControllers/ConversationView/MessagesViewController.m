@@ -2791,7 +2791,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     [[OWSProfileManager sharedManager] presentAddThreadToProfileWhitelist:self.thread
                                                        fromViewController:self
-                                                            messageSender:self.messageSender
                                                                   success:successHandler];
 }
 

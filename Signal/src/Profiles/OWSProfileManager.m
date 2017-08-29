@@ -1339,7 +1339,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
                         fromViewController:(UIViewController *)fromViewController
-                             messageSender:(OWSMessageSender *)messageSender
                                    success:(void (^)())successHandler
 {
     AssertIsOnMainThread();
@@ -1353,7 +1352,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                                                         style:UIAlertActionStyleDefault
                                                       handler:^(UIAlertAction *_Nonnull action) {
                                                           [self userAddedThreadToProfileWhitelist:thread
-                                                                                    messageSender:messageSender
                                                                                           success:successHandler];
                                                       }]];
     [alertController addAction:[OWSAlerts cancelAction]];
@@ -1362,7 +1360,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 }
 
 - (void)userAddedThreadToProfileWhitelist:(TSThread *)thread
-                            messageSender:(OWSMessageSender *)messageSender
                                   success:(void (^)())successHandler
 {
     AssertIsOnMainThread();
@@ -1378,7 +1375,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         return;
     }
 
-    [messageSender sendMessage:message
+    [self.messageSender sendMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully sent profile key message to thread: %@", self.tag, thread);
             [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];

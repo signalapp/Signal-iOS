@@ -787,7 +787,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     [OWSProfileManager.sharedManager presentAddThreadToProfileWhitelist:self.thread
                                                      fromViewController:self
-                                                          messageSender:self.messageSender
                                                                 success:^{
                                                                     [self updateTableContents];
                                                                 }];
