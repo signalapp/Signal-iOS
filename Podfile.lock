@@ -114,7 +114,7 @@ PODS:
 DEPENDENCIES:
   - ATAppUpdater
   - AxolotlKit (from `https://github.com/WhisperSystems/SignalProtocolKit.git`)
-  - JSQMessagesViewController (from `../JSQMessagesViewController`)
+  - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController.git`, branch `signal-master`)
   - OpenSSL (from `https://github.com/WhisperSystems/OpenSSL-Pod`)
   - PureLayout
   - Reachability
@@ -125,7 +125,8 @@ EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
   JSQMessagesViewController:
-    :path: ../JSQMessagesViewController
+    :branch: signal-master
+    :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   OpenSSL:
     :git: https://github.com/WhisperSystems/OpenSSL-Pod
   SignalServiceKit:
@@ -137,6 +138,9 @@ CHECKOUT OPTIONS:
   AxolotlKit:
     :commit: 6e9d5e8c3dc87e397b4b7485172507b0990a22dd
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
+  JSQMessagesViewController:
+    :commit: 868cf70fae0f3b54c3cfa7773ef03578d209b668
+    :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
   OpenSSL:
     :commit: b2d3c149102032a09aefbfb470885db4aa83efad
     :git: https://github.com/WhisperSystems/OpenSSL-Pod
@@ -167,6 +171,6 @@ SPEC CHECKSUMS:
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: cd911121580ff16675f65ad742a9eb0ab4d9e266
 
-PODFILE CHECKSUM: 4a6db311736b5ab36b660af813dcdf0af62da48c
+PODFILE CHECKSUM: 2f847bb25e70d1d376f38cf21ae08624fa6ed67d
 
 COCOAPODS: 1.3.1
