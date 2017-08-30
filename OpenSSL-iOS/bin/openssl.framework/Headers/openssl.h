@@ -6,6 +6,8 @@
 //  Copyright © 2016 krzyzanowskim. All rights reserved.
 //
 
+#ifdef __OBJC__
+
 #import <Foundation/Foundation.h>
 
 //! Project version number for OpenSSL-iOS.
@@ -13,6 +15,8 @@ FOUNDATION_EXPORT double OpenSSL_iOSVersionNumber;
 
 //! Project version string for OpenSSL-iOS.
 FOUNDATION_EXPORT const unsigned char OpenSSL_iOSVersionString[];
+
+#endif
 
 // In this header, you should import all the public headers of your framework using statements like #import <OpenSSL_iOS/PublicHeader.h>
 
