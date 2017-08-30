@@ -18,7 +18,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 + (BOOL)ows_isValidImageAtPath:(NSString *)filePath
 {
     NSError *error = nil;
-    NSData *data = [NSData dataWithContentsOfFile:filePath options:NSMappedRead error:&error];
+    NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
     if (error) {
         DDLogError(@"%@ could not read image data: %@", self.tag, error);
     }

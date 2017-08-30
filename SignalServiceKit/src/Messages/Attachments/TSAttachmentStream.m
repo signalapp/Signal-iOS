@@ -258,10 +258,11 @@ NS_ASSUME_NONNULL_BEGIN
         if (!mediaUrl) {
             return nil;
         }
-        if (![NSData ows_isValidImageAtPath:mediaUrl.path]) {
+        NSData *data = [NSData dataWithContentsOfURL:mediaUrl];
+        if (![data ows_isValidImage]) {
             return nil;
         }
-        return [UIImage imageWithData:[NSData dataWithContentsOfURL:mediaUrl]];
+        return [UIImage imageWithData:data];
     } else {
         return nil;
     }
