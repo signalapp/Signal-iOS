@@ -244,6 +244,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic) BOOL isAppInBackground;
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL viewHasEverAppeared;
+@property (nonatomic) BOOL wasScrolledToBottomBeforeKeyboardShow;
 
 @end
 
@@ -352,6 +353,60 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                              selector:@selector(profileWhitelistDidChange:)
                                                  name:kNSNotificationName_ProfileWhitelistDidChange
                                                object:nil];
+}
+
+- (void)addVisibleListeners
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidShow:)
+                                                 name:UIKeyboardDidShowNotification
+                                               object:nil];
+}
+
+- (void)removeVisibleListeners
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
+}
+
+- (void)keyboardWillShow:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    // If we were scrolled to the bottom before the keyboard was presented, we
+    // want to scroll to the bottom after the keyboard is presented.
+    CGRect beginValue = ((NSValue *)notification.userInfo[UIKeyboardFrameBeginUserInfoKey]).CGRectValue;
+    CGRect endValue = ((NSValue *)notification.userInfo[UIKeyboardFrameEndUserInfoKey]).CGRectValue;
+
+    // Some custom keyboards fire this event multiple times for a given "show".
+    // We only want to capture the "before" scroll for the initial show.
+    BOOL isPresenting = (beginValue.size.height == 0.f && endValue.size.height > 0.f);
+
+    if (isPresenting) {
+        self.wasScrolledToBottomBeforeKeyboardShow = [self isScrolledToBottom];
+    }
+}
+
+- (void)keyboardDidShow:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    // If we were scrolled to the bottom before the keyboard was presented, we
+    // want to scroll to the bottom after the keyboard is presented.
+
+    CGRect endValue = ((NSValue *)notification.userInfo[UIKeyboardFrameEndUserInfoKey]).CGRectValue;
+
+    // Some custom keyboards fire this event multiple times for a given "show".
+    // We only want to update scroll state for non-empty show events.
+    BOOL isPresenting = endValue.size.height > 0.f;
+
+    if (isPresenting) {
+        [self scrollToBottomImmediately];
+    }
 }
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
@@ -604,6 +659,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     // In case we're dismissing a CNContactViewController which requires default system appearance
     [UIUtil applySignalAppearence];
+
+    [self addVisibleListeners];
 
     // We need to recheck on every appearance, since the user may have left the group in the settings VC,
     // or on another device.
@@ -1084,6 +1141,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self markVisibleMessagesAsRead];
 
     [self cancelVoiceMemo];
+    [self removeVisibleListeners];
 
     self.isUserScrolling = NO;
 }
