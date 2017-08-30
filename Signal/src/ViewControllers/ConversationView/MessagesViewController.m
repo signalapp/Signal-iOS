@@ -169,7 +169,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     UIDocumentPickerDelegate,
     UIImagePickerControllerDelegate,
     UINavigationControllerDelegate,
-    UITextViewDelegate>
+    UITextViewDelegate,
+    JSQLayoutDelegate>
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) TSMessageAdapter *lastDeliveredMessage;
@@ -245,6 +246,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic) BOOL wasScrolledToBottomBeforeKeyboardShow;
+@property (nonatomic) BOOL wasScrolledToBottomBeforeLayoutChange;
 
 @end
 
@@ -404,7 +406,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // We only want to update scroll state for non-empty show events.
     BOOL isPresenting = endValue.size.height > 0.f;
 
-    if (isPresenting) {
+    if (isPresenting && self.wasScrolledToBottomBeforeKeyboardShow) {
         [self scrollToBottomImmediately];
     }
 }
@@ -543,6 +545,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)viewDidLoad
 {
+    self.collectionView.layoutDelegate = self;
+
     [super viewDidLoad];
 
     [self.navigationController.navigationBar setTranslucent:NO];
@@ -4459,6 +4463,24 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self ensureDynamicInteractions];
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
+}
+
+#pragma mark - JSQLayoutDelegate
+
+- (void)jsqWillChangeLayout
+{
+    OWSAssert([NSThread isMainThread]);
+
+    self.wasScrolledToBottomBeforeLayoutChange = [self isScrolledToBottom];
+}
+
+- (void)jsqDidChangeLayout
+{
+    OWSAssert([NSThread isMainThread]);
+
+    if (self.wasScrolledToBottomBeforeLayoutChange) {
+        [self scrollToBottomImmediately];
+    }
 }
 
 #pragma mark - Class methods
