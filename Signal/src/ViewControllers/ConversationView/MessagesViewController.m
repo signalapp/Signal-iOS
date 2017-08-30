@@ -3579,9 +3579,27 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return NO;
     }
 
+    // This is a bit subtle.
+    //
+    // The _wrong_ way to determine if we're scrolled to the bottom is to
+    // measure whether the collection view's content is "near" the bottom edge
+    // of the collection view.  This is wrong because the collection view
+    // might not have enough content to fill the collection view's bounds
+    // _under certain conditions_ (e.g. with the keyboard dismissed).
+    //
+    // What we're really interested in is something a bit more subtle:
+    // "Is the scroll view scrolled down as far as it can, "at rest".
+    //
+    // To determine that, we find the appropriate "content offset y" if
+    // the scroll view were scrolled down as far as possible.  IFF the
+    // actual "content offset y" is "near" that value, we return YES.
     const CGFloat kIsAtBottomTolerancePts = 5;
-    return (self.collectionView.contentOffset.y + self.collectionView.bounds.size.height + kIsAtBottomTolerancePts
-        >= self.collectionView.contentSize.height);
+    // Note the usage of MAX() to handle the case where there isn't enough
+    // content to fill the collection view at its current size.
+    CGFloat contentOffsetYBottom
+        = MAX(0.f, self.collectionView.contentSize.height - self.collectionView.bounds.size.height);
+    BOOL isScrolledToBottom = (self.collectionView.contentOffset.y > contentOffsetYBottom - kIsAtBottomTolerancePts);
+    return isScrolledToBottom;
 }
 
 #pragma mark - UICollectionView DataSource
