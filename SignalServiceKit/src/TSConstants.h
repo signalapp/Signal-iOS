@@ -22,7 +22,7 @@ typedef enum { kSMSVerification, kPhoneNumberVerification } VerificationTranspor
 
 #define textSecureHTTPTimeOut 10
 
-#ifndef DEBUG
+//#ifndef DEBUG
 
 // Production
 #define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"
@@ -31,16 +31,16 @@ typedef enum { kSMSVerification, kPhoneNumberVerification } VerificationTranspor
 #define textSecureServiceReflectorHost @"signal-reflector-meek.appspot.com"
 #define textSecureCDNReflectorHost @"signal-cdn-reflector.appspot.com"
 
-#else
-
-// Staging
-#define textSecureWebSocketAPI @"wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
-#define textSecureServerURL @"https://textsecure-service-staging.whispersystems.org/"
-#define textSecureCDNServerURL @"https://cdn-staging.signal.org"
-#define textSecureServiceReflectorHost @"meek-signal-service-staging.appspot.com";
-#define textSecureCDNReflectorHost @"meek-signal-cdn-staging.appspot.com";
-
-#endif
+//#else
+//
+//// Staging
+//#define textSecureWebSocketAPI @"wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
+//#define textSecureServerURL @"https://textsecure-service-staging.whispersystems.org/"
+//#define textSecureCDNServerURL @"https://cdn-staging.signal.org"
+//#define textSecureServiceReflectorHost @"meek-signal-service-staging.appspot.com";
+//#define textSecureCDNReflectorHost @"meek-signal-cdn-staging.appspot.com";
+//
+//#endif
 
 #define textSecureGeneralAPI @"v1"
 #define textSecureAccountsAPI @"v1/accounts"
