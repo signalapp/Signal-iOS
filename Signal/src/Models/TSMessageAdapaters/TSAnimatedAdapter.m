@@ -6,13 +6,13 @@
 #import "AttachmentUploadView.h"
 #import "FLAnimatedImage.h"
 #import "JSQMediaItem+OWS.h"
-#import "NSData+Image.h"
 #import "TSAttachmentStream.h"
 #import "UIColor+OWS.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
+#import <SignalServiceKit/NSData+Image.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,8 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // See comments on OWSMessageMediaAdapter.
 @property (nonatomic, nullable, weak) id lastPresentingCell;
-
-@property (nonatomic) NSNumber *isImageValid;
 
 @end
 
@@ -99,21 +97,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - JSQMessageMediaData protocol
 
-- (NSNumber *)isImageValid
-{
-    if (!_isImageValid) {
-        _isImageValid = @([NSData isValidImageAtPath:[self.attachment mediaURL].path]);
-    }
-    return _isImageValid;
-}
-
 - (UIView *)mediaView {
     OWSAssert([NSThread isMainThread]);
 
     if (self.cachedImageView == nil) {
-        if (![self isImageValid]) {
-            return nil;
-        }
         // Use Flipboard FLAnimatedImage library to display gifs
         NSData *fileData = [NSData dataWithContentsOfURL:[self.attachment mediaURL]];
         if (!fileData) {
@@ -121,6 +108,9 @@ NS_ASSUME_NONNULL_BEGIN
             UIView *view = [UIView new];
             view.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
             return view;
+        }
+        if (![fileData ows_isValidImage]) {
+            return nil;
         }
         FLAnimatedImage *animatedGif = [FLAnimatedImage animatedImageWithGIFData:fileData];
         FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];

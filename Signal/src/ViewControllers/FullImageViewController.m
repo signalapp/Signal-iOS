@@ -5,13 +5,13 @@
 #import "FullImageViewController.h"
 #import "AttachmentSharing.h"
 #import "FLAnimatedImage.h"
-#import "NSData+Image.h"
 #import "TSAnimatedAdapter.h"
 #import "TSMessageAdapter.h"
 #import "TSPhotoAdapter.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
+#import <SignalServiceKit/NSData+Image.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -169,7 +169,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)initializeImageView {
     if (self.isAnimated) {
-        if ([self.fileData isValidImage]) {
+        if ([self.fileData ows_isValidImage]) {
             // Present the animated image using Flipboard/FLAnimatedImage
             FLAnimatedImage *animatedGif = [FLAnimatedImage animatedImageWithGIFData:self.fileData];
             FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];

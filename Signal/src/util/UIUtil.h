@@ -1,9 +1,12 @@
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import <Foundation/Foundation.h>
 
 #import "MIMETypeUtil.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
-#import "UIImage+contentTypes.h"
 #import "UIImage+normalizeImage.h"
 
 typedef void (^completionBlock)(void);

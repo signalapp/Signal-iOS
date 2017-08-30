@@ -172,7 +172,7 @@ class AttachmentApprovalViewController: OWSViewController, OWSAudioAttachmentPla
 
     private func createAnimatedPreview(attachmentPreviewView: UIView) {
         let data = attachment.data
-        guard (data as NSData).isValidImage() else {
+        guard (data as NSData).ows_isValidImage() else {
             return
         }
 

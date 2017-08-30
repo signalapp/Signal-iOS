@@ -4,6 +4,7 @@
 
 #import "TSAttachmentStream.h"
 #import "MIMETypeUtil.h"
+#import "NSData+Image.h"
 #import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
 #import <ImageIO/ImageIO.h>
@@ -257,6 +258,9 @@ NS_ASSUME_NONNULL_BEGIN
         if (!mediaUrl) {
             return nil;
         }
+        if (![NSData ows_isValidImageAtPath:mediaUrl.path]) {
+            return nil;
+        }
         return [UIImage imageWithData:[NSData dataWithContentsOfURL:mediaUrl]];
     } else {
         return nil;
@@ -312,6 +316,9 @@ NS_ASSUME_NONNULL_BEGIN
     } else if ([self isImage] || [self isAnimated]) {
         NSURL *_Nullable mediaUrl = [self mediaURL];
         if (!mediaUrl) {
+            return CGSizeZero;
+        }
+        if (![NSData ows_isValidImageAtPath:mediaUrl.path]) {
             return CGSizeZero;
         }
 

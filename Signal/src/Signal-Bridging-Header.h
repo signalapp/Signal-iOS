@@ -10,7 +10,6 @@
 #import "Environment.h"
 #import "FLAnimatedImage.h"
 #import "FingerprintViewController.h"
-#import "NSData+Image.h"
 #import "NotificationsManager.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioAttachmentPlayer.h"
@@ -49,6 +48,7 @@
 #import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Base64.h>
+#import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAcknowledgeMessageDeliveryRequest.h>

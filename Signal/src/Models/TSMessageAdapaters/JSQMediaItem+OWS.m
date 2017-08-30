@@ -6,6 +6,7 @@
 #import "NumberUtil.h"
 #import "UIDevice+TSHardwareVersion.h"
 #import <ImageIO/ImageIO.h>
+#import <SignalServiceKit/NSData+Image.h>
 
 @implementation JSQMediaItem (OWS)
 
@@ -41,6 +42,10 @@
 - (CGSize)sizeOfImageAtURL:(NSURL *)imageURL
 {
     OWSAssert(imageURL);
+
+    if (![NSData ows_isValidImageAtPath:imageURL.path]) {
+        return CGSizeZero;
+    }
 
     // With CGImageSource we avoid loading the whole image into memory.
     CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)imageURL, NULL);

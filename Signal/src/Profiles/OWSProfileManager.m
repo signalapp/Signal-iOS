@@ -7,6 +7,7 @@
 #import "NSString+OWS.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/Cryptography.h>
+#import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSData+hexString.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSMessageSender.h>
@@ -1333,7 +1334,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(filename.length > 0);
 
-    UIImage *_Nullable image = [UIImage imageWithData:[self loadProfileDataWithFilename:filename]];
+    NSData *data = [self loadProfileDataWithFilename:filename];
+    if (![data ows_isValidImage]) {
+        return nil;
+    }
+    UIImage *_Nullable image = [UIImage imageWithData:data];
     return image;
 }
 

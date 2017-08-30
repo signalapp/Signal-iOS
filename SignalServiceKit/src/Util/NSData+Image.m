@@ -15,7 +15,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
 @implementation NSData (Image)
 
-+ (BOOL)isValidImageAtPath:(NSString *)filePath
++ (BOOL)ows_isValidImageAtPath:(NSString *)filePath
 {
     NSError *error = nil;
     NSData *data = [NSData dataWithContentsOfFile:filePath options:NSMappedRead error:&error];
@@ -23,18 +23,18 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         DDLogError(@"%@ could not read image data: %@", self.tag, error);
     }
 
-    return [data isValidImage];
+    return [data ows_isValidImage];
 }
 
-- (BOOL)isValidImage
+- (BOOL)ows_isValidImage
 {
     // Don't trust the file extension; iOS (e.g. UIKit, Core Graphics) will happily
     // load a .gif with a .png file extension.
     //
     // Instead, use the "magic numbers" in the file data to determine the image format.
-    ImageFormat imageFormat = [self guessImageFormat];
+    ImageFormat imageFormat = [self ows_guessImageFormat];
     if (imageFormat == ImageFormat_Gif) {
-        return [self hasValidGifSize];
+        return [self ows_hasValidGifSize];
     } else if (imageFormat == ImageFormat_Unknown) {
         return NO;
     } else {
@@ -42,7 +42,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     }
 }
 
-- (ImageFormat)guessImageFormat
+- (ImageFormat)ows_guessImageFormat
 {
     const NSUInteger kTwoBytesLength = 2;
     if (self.length < kTwoBytesLength) {
@@ -74,7 +74,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     return ImageFormat_Unknown;
 }
 
-+ (BOOL)areByteArraysEqual:(NSUInteger)length left:(unsigned char *)left right:(unsigned char *)right
++ (BOOL)ows_areByteArraysEqual:(NSUInteger)length left:(unsigned char *)left right:(unsigned char *)right
 {
     for (NSUInteger i = 0; i < length; i++) {
         if (left[i] != right[i]) {
@@ -88,7 +88,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 //
 // See: https://blog.flanker017.me/cve-2017-2416-gif-remote-exec/
 // See: https://www.w3.org/Graphics/GIF/spec-gif89a.txt
-- (BOOL)hasValidGifSize
+- (BOOL)ows_hasValidGifSize
 {
     const NSUInteger kSignatureLength = 3;
     const NSUInteger kVersionLength = 3;
@@ -110,8 +110,8 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     unsigned char kGif89APrefix[kPrefixLength] = {
         0x47, 0x49, 0x46, 0x38, 0x39, 0x61,
     };
-    if (![NSData areByteArraysEqual:kPrefixLength left:bytes right:kGif87APrefix]
-        && ![NSData areByteArraysEqual:kPrefixLength left:bytes right:kGif89APrefix]) {
+    if (![NSData ows_areByteArraysEqual:kPrefixLength left:bytes right:kGif87APrefix]
+        && ![NSData ows_areByteArraysEqual:kPrefixLength left:bytes right:kGif89APrefix]) {
         return NO;
     }
     NSUInteger width = ((NSUInteger)bytes[kPrefixLength + 0]) | (((NSUInteger)bytes[kPrefixLength + 1] << 8));

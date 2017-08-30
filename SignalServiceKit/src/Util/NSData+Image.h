@@ -6,7 +6,7 @@
 
 @interface NSData (Image)
 
-+ (BOOL)isValidImageAtPath:(NSString *)filePath;
-- (BOOL)isValidImage;
++ (BOOL)ows_isValidImageAtPath:(NSString *)filePath;
+- (BOOL)ows_isValidImage;
 
 @end
