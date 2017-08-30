@@ -12,6 +12,7 @@
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
+#import <SignalServiceKit/NSData+Image.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -107,6 +108,9 @@ NS_ASSUME_NONNULL_BEGIN
             UIView *view = [UIView new];
             view.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
             return view;
+        }
+        if (![fileData ows_isValidImage]) {
+            return nil;
         }
         FLAnimatedImage *animatedGif = [FLAnimatedImage animatedImageWithGIFData:fileData];
         FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];

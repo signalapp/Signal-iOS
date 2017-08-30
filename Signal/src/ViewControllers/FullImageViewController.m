@@ -2,15 +2,16 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "FLAnimatedImage.h"
 #import "FullImageViewController.h"
+#import "AttachmentSharing.h"
+#import "FLAnimatedImage.h"
+#import "TSAnimatedAdapter.h"
+#import "TSMessageAdapter.h"
+#import "TSPhotoAdapter.h"
+#import "UIColor+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
-#import "TSPhotoAdapter.h"
-#import "TSMessageAdapter.h"
-#import "TSAnimatedAdapter.h"
-#import "UIColor+OWS.h"
-#import "AttachmentSharing.h"
+#import <SignalServiceKit/NSData+Image.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -168,14 +169,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)initializeImageView {
     if (self.isAnimated) {
-        // Present the animated image using Flipboard/FLAnimatedImage
-        FLAnimatedImage *animatedGif   = [FLAnimatedImage animatedImageWithGIFData:self.fileData];
-        FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];
-        imageView.animatedImage        = animatedGif;
-        imageView.frame                = self.originRect;
-        imageView.contentMode          = UIViewContentModeScaleAspectFill;
-        imageView.clipsToBounds        = YES;
-        self.imageView                 = imageView;
+        if ([self.fileData ows_isValidImage]) {
+            // Present the animated image using Flipboard/FLAnimatedImage
+            FLAnimatedImage *animatedGif = [FLAnimatedImage animatedImageWithGIFData:self.fileData];
+            FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];
+            imageView.animatedImage = animatedGif;
+            imageView.frame = self.originRect;
+            imageView.contentMode = UIViewContentModeScaleAspectFill;
+            imageView.clipsToBounds = YES;
+            self.imageView = imageView;
+        } else {
+            self.imageView = [[UIImageView alloc] initWithFrame:self.originRect];
+        }
     } else {
         // Present the static image using standard UIImageView
         self.imageView                              = [[UIImageView alloc] initWithFrame:self.originRect];

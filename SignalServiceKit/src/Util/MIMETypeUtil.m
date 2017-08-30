@@ -4,7 +4,6 @@
 
 #import "MIMETypeUtil.h"
 #if TARGET_OS_IPHONE
-#import "UIImage+contentTypes.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #else
 #import <CoreServices/CoreServices.h>

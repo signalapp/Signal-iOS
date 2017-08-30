@@ -1422,6 +1422,7 @@
 				45E615151E8C590B0018AD52 /* DisplayableTextFilter.swift */,
 				76EB04EA18170B33006006FC /* FunctionalUtil.h */,
 				76EB04EB18170B33006006FC /* FunctionalUtil.m */,
+				455AC69A1F4F79E500134004 /* ImageCache.swift */,
 				B62F5E0E1C2980B4000D370C /* NSData+ows_StripToken.h */,
 				B62F5E0F1C2980B4000D370C /* NSData+ows_StripToken.m */,
 				76EB04EC18170B33006006FC /* NumberUtil.h */,
@@ -1455,7 +1456,6 @@
 				76EB04FB18170B33006006FC /* Util.h */,
 				45F170D51E315310003FC1F2 /* Weak.swift */,
 				45F170CB1E310E22003FC1F2 /* WeakTimer.swift */,
-				455AC69A1F4F79E500134004 /* ImageCache.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -2580,7 +2580,11 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "DEBUG=1 $(inherited) SSK_BUILDING_FOR_TESTS=1";
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
+					"DEBUG=1",
+					"$(inherited)",
+					"SSK_BUILDING_FOR_TESTS=1",
+				);
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

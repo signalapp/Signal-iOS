@@ -3,7 +3,6 @@
 //
 
 #import "OWSOutgoingMessageCollectionViewCell.h"
-#import "FLAnimatedImageView.h"
 #import "OWSExpirationTimerView.h"
 #import "UIView+OWS.h"
 #import <JSQMessagesViewController/JSQMediaItem.h>

@@ -171,8 +171,13 @@ class AttachmentApprovalViewController: OWSViewController, OWSAudioAttachmentPla
     }
 
     private func createAnimatedPreview(attachmentPreviewView: UIView) {
+        let data = attachment.data
+        guard (data as NSData).ows_isValidImage() else {
+            return
+        }
+
         // Use Flipboard FLAnimatedImage library to display gifs
-        guard let animatedImage = FLAnimatedImage(gifData:attachment.data) else {
+        guard let animatedImage = FLAnimatedImage(gifData:data) else {
             createGenericPreview(attachmentPreviewView:attachmentPreviewView)
             return
         }
