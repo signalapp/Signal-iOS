@@ -726,6 +726,11 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
         callOnViewAppearing:(BOOL)callOnViewAppearing
 {
+    if (thread == nil) {
+        OWSFail(@"Thread unexpectedly nil");
+        return;
+    }
+
     // We do this synchronously if we're already on the main thread.
     DispatchMainThreadSafe(^{
         MessagesViewController *mvc = [[MessagesViewController alloc] initWithNibName:@"MessagesViewController"
