@@ -3952,20 +3952,30 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     TSThread *thread = self.thread;
     uint64_t lastVisibleTimestamp = self.lastVisibleTimestamp;
+
     [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         NSMutableArray<id<OWSReadTracking>> *interactions = [NSMutableArray new];
+        
         [[TSDatabaseView unseenDatabaseViewExtension:transaction]
             enumerateRowsInGroup:thread.uniqueId
                       usingBlock:^(
                           NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
 
-                          TSInteraction *interaction = object;
-                          if (interaction.timestampForSorting > lastVisibleTimestamp) {
+                          if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
+                              OWSFail(@"Expected to conform to OWSReadTracking: object with class: %@ collection: %@ "
+                                      @"key: %@",
+                                  [object class],
+                                  collection,
+                                  key);
+                              return;
+                          }
+                          id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
+
+                          if (possiblyRead.timestampForSorting > lastVisibleTimestamp) {
                               *stop = YES;
                               return;
                           }
 
-                          id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
                           OWSAssert(!possiblyRead.read);
                           if (!possiblyRead.read) {
                               [interactions addObject:possiblyRead];

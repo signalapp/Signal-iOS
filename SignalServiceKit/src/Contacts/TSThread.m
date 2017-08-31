@@ -221,7 +221,8 @@ NS_ASSUME_NONNULL_BEGIN
                       NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
 
                       if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                          DDLogError(@"%@ Unexpected object in unread messages: %@", self.tag, object);
+                          OWSFail(@"%@ Unexpected object in unread messages: %@", self.tag, object);
+                          return;
                       }
                       [messages addObject:(id<OWSReadTracking>)object];
                   }];
