@@ -487,8 +487,17 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _callOnOpen = callOnViewAppearing;
 
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    self.messageMappings =
-        [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ] view:TSMessageDatabaseViewExtensionName];
+
+    if (thread.uniqueId.length > 0) {
+        self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ]
+                                                                          view:TSMessageDatabaseViewExtensionName];
+    } else {
+        OWSFail(@"uniqueId unexpectedly empty for thread: %@", thread);
+        self.messageMappings =
+            [[YapDatabaseViewMappings alloc] initWithGroups:@[] view:TSMessageDatabaseViewExtensionName];
+        return;
+    }
+
     // We need to impose the range restrictions on the mappings immediately to avoid
     // doing a great deal of unnecessary work and causing a perf hotspot.
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
