@@ -2198,33 +2198,38 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 if ([[messageItem media] isKindOfClass:[TSPhotoAdapter class]]) {
                     TSPhotoAdapter *messageMedia = (TSPhotoAdapter *)[messageItem media];
 
-                    UIImage *tappedImage = ((UIImageView *)[messageMedia mediaView]).image;
+                    UIView *mediaView = [messageMedia mediaView];
+                    if (![mediaView isKindOfClass:[UIImageView class]]) {
+                        OWSFail(@"unexpected mediaView of type: %@", [mediaView class]);
+                        return;
+                    }
+                    UIImageView *imageView = (UIImageView *)mediaView;
+                    UIImage *tappedImage = imageView.image;
                     if (tappedImage == nil) {
                         DDLogWarn(@"tapped TSPhotoAdapter with nil image");
-                    } else {
-                        UIWindow *window = [UIApplication sharedApplication].keyWindow;
-                        JSQMessagesCollectionViewCell *cell
-                            = (JSQMessagesCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
-                        OWSAssert([cell isKindOfClass:[JSQMessagesCollectionViewCell class]]);
-                        CGRect convertedRect = [cell.mediaView convertRect:cell.mediaView.bounds toView:window];
+                        return;
+                    }
+                    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+                    JSQMessagesCollectionViewCell *cell
+                        = (JSQMessagesCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
+                    OWSAssert([cell isKindOfClass:[JSQMessagesCollectionViewCell class]]);
+                    CGRect convertedRect = [cell.mediaView convertRect:cell.mediaView.bounds toView:window];
 
-                        __block TSAttachment *attachment = nil;
-                        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                            attachment = [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId
-                                                                   transaction:transaction];
-                        }];
+                    __block TSAttachment *attachment = nil;
+                    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                        attachment =
+                            [TSAttachment fetchObjectWithUniqueID:messageMedia.attachmentId transaction:transaction];
+                    }];
 
-                        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-                            TSAttachmentStream *attStream = (TSAttachmentStream *)attachment;
-                            FullImageViewController *vc =
-                                [[FullImageViewController alloc] initWithAttachment:attStream
-                                                                           fromRect:convertedRect
-                                                                     forInteraction:interaction
-                                                                        messageItem:messageItem
-                                                                         isAnimated:NO];
+                    if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+                        TSAttachmentStream *attStream = (TSAttachmentStream *)attachment;
+                        FullImageViewController *vc = [[FullImageViewController alloc] initWithAttachment:attStream
+                                                                                                 fromRect:convertedRect
+                                                                                           forInteraction:interaction
+                                                                                              messageItem:messageItem
+                                                                                               isAnimated:NO];
 
-                            [vc presentFromViewController:self];
-                        }
+                        [vc presentFromViewController:self];
                     }
                 } else if ([[messageItem media] isKindOfClass:[TSAnimatedAdapter class]]) {
                     // Show animated image full-screen
