@@ -4501,6 +4501,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     OWSAssert([NSThread isMainThread]);
 
+    // JSQMessageView has glitchy behavior. When presenting/dismissing view
+    // controllers, the size of the input toolbar and/or collection view can
+    // repeatedly change, leaving scroll state in an invalid state.  The
+    // simplest fix that covers most cases is to ensure that we remain
+    // "scrolled to bottom" across these changes.
     if (self.wasScrolledToBottomBeforeLayoutChange) {
         [self scrollToBottomImmediately];
     }
