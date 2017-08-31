@@ -169,7 +169,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     UIDocumentPickerDelegate,
     UIImagePickerControllerDelegate,
     UINavigationControllerDelegate,
-    UITextViewDelegate>
+    UITextViewDelegate,
+    JSQLayoutDelegate>
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) TSMessageAdapter *lastDeliveredMessage;
@@ -245,6 +246,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic) BOOL wasScrolledToBottomBeforeKeyboardShow;
+@property (nonatomic) BOOL wasScrolledToBottomBeforeLayoutChange;
 
 @end
 
@@ -404,7 +406,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // We only want to update scroll state for non-empty show events.
     BOOL isPresenting = endValue.size.height > 0.f;
 
-    if (isPresenting) {
+    if (isPresenting && self.wasScrolledToBottomBeforeKeyboardShow) {
         [self scrollToBottomImmediately];
     }
 }
@@ -543,6 +545,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)viewDidLoad
 {
+    self.collectionView.layoutDelegate = self;
+
     [super viewDidLoad];
 
     [self.navigationController.navigationBar setTranslucent:NO];
@@ -4432,7 +4436,30 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
     if (self.shouldObserveDBModifications) {
+        // We need to call resetMappings when we _resume_ observing DB modifications,
+        // since we've been ignore DB modifications so the mappings can be wrong.
+        //
+        // resetMappings can however have the side effect of increasing the mapping's
+        // "window" size.  If that happens, we need to restore the scroll state.
+
+        // Snapshot the scroll state by measuring the "distance from top of view to
+        // bottom of content"; if the mapping's "window" size grows, it will grow
+        // _upward_.
+        CGFloat viewTopToContentBottom = self.collectionView.contentSize.height - self.collectionView.contentOffset.y;
+
+        NSUInteger oldCellCount = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
         [self resetMappings];
+        NSUInteger newCellCount = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
+
+        // Detect changes in the mapping's "window" size.
+        if (oldCellCount != newCellCount) {
+            // There's no way to imperatively force the collection view to layout its
+            // content, but we can safely use `collectionViewContentSize` to determine
+            // the new content size.
+            CGSize newContentSize = [self.collectionView.collectionViewLayout collectionViewContentSize];
+            CGPoint newContentOffset = CGPointMake(0, MAX(0, newContentSize.height - viewTopToContentBottom));
+            [self.collectionView setContentOffset:newContentOffset animated:NO];
+        }
     }
 }
 
@@ -4459,6 +4486,29 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self ensureDynamicInteractions];
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
+}
+
+#pragma mark - JSQLayoutDelegate
+
+- (void)jsqWillChangeLayout
+{
+    OWSAssert([NSThread isMainThread]);
+
+    self.wasScrolledToBottomBeforeLayoutChange = [self isScrolledToBottom];
+}
+
+- (void)jsqDidChangeLayout
+{
+    OWSAssert([NSThread isMainThread]);
+
+    // JSQMessageView has glitchy behavior. When presenting/dismissing view
+    // controllers, the size of the input toolbar and/or collection view can
+    // repeatedly change, leaving scroll state in an invalid state.  The
+    // simplest fix that covers most cases is to ensure that we remain
+    // "scrolled to bottom" across these changes.
+    if (self.wasScrolledToBottomBeforeLayoutChange) {
+        [self scrollToBottomImmediately];
+    }
 }
 
 #pragma mark - Class methods
