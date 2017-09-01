@@ -76,6 +76,6 @@ if __name__ == '__main__':
         f.write(text)
         
     output = subprocess.check_output(['git', 'add', '.'])
-    output = subprocess.check_output(['git', 'commit', '-m', 'Bump build from to %s.\n\n// FREEBIE' % new_build_number])
+    output = subprocess.check_output(['git', 'commit', '-m', 'Bump build to %s.\n\n// FREEBIE' % new_build_number])
     
         
