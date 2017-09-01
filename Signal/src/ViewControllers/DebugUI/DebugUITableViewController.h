@@ -2,6 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "DebugUIPage.h"
 #import "OWSTableViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN

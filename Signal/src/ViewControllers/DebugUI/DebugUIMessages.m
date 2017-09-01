@@ -85,6 +85,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendFakeMessages:10 thread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"Create 1 fake thread with 1 message"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeThreads:1 withFakeMessages:1];
+                        }],
         [OWSTableItem itemWithTitle:@"Create 100 fake threads with 10 messages"
                         actionBlock:^{
                             [DebugUIMessages createFakeThreads:100 withFakeMessages:10];
@@ -887,6 +891,9 @@ NS_ASSUME_NONNULL_BEGIN
 
                   TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:phoneNumber.toE164];
                   [self sendFakeMessages:messageCount thread:contactThread];
+                  DDLogError(@"Create fake thread: %@, interactions: %zd",
+                      phoneNumber.toE164,
+                      contactThread.numberOfInteractions);
               }];
 }
 

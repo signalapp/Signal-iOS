@@ -1221,7 +1221,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.navigationBarTitleView
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                      action:@selector(navigationTitleTapped:)]];
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
     [self.navigationBarTitleView addGestureRecognizer:[[UILongPressGestureRecognizer alloc]
                                                           initWithTarget:self
                                                                   action:@selector(navigationTitleLongPressed:)]];
@@ -4148,7 +4148,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 }
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
 - (void)navigationTitleLongPressed:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {

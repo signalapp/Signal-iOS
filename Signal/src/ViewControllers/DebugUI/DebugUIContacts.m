@@ -1150,10 +1150,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSUInteger batch = MIN(kMaxBatchSize, remainder);
     remainder -= batch;
     [self createRandomContactsBatch:batch
-                     contactHandler:nil
+                     contactHandler:contactHandler
              batchCompletionHandler:^{
                  if (remainder > 0) {
-                     [self createRandomContacts:remainder contactHandler:contactHandler];
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                         [self createRandomContacts:remainder contactHandler:contactHandler];
+                     });
                  }
              }];
 }
@@ -1188,39 +1190,44 @@ NS_ASSUME_NONNULL_BEGIN
 
                      CNSaveRequest *request = [[CNSaveRequest alloc] init];
                      for (NSUInteger i = 0; i < count; i++) {
-                         CNMutableContact *contact = [[CNMutableContact alloc] init];
-                         contact.familyName = [@"Rando-" stringByAppendingString:[self randomLastName]];
-                         contact.givenName = [self randomFirstName];
+                         @autoreleasepool {
+                             CNMutableContact *contact = [[CNMutableContact alloc] init];
+                             contact.familyName = [@"Rando-" stringByAppendingString:[self randomLastName]];
+                             contact.givenName = [self randomFirstName];
 
-                         NSString *phoneString = [self randomPhoneNumber];
-                         CNLabeledValue *homePhone = [CNLabeledValue
-                             labeledValueWithLabel:CNLabelHome
-                                             value:[CNPhoneNumber phoneNumberWithStringValue:phoneString]];
-                         contact.phoneNumbers = @[ homePhone ];
+                             NSString *phoneString = [self randomPhoneNumber];
+                             CNLabeledValue *homePhone = [CNLabeledValue
+                                 labeledValueWithLabel:CNLabelHome
+                                                 value:[CNPhoneNumber phoneNumberWithStringValue:phoneString]];
+                             contact.phoneNumbers = @[ homePhone ];
 
-                         // 50% chance of fake contact having an avatar
-                         const NSUInteger kPercentWithAvatar = 50;
-                         const NSUInteger kMinimumAvatarDiameter = 200;
-                         const NSUInteger kMaximumAvatarDiameter = 800;
-                         OWSAssert(kMaximumAvatarDiameter >= kMinimumAvatarDiameter);
-                         if (arc4random_uniform(100) < kPercentWithAvatar) {
-                             NSUInteger avatarDiameter
-                                 = arc4random_uniform(kMaximumAvatarDiameter - kMinimumAvatarDiameter)
-                                 + kMinimumAvatarDiameter;
-                             // Note this doesn't work on iOS9, since iOS9 doesn't generate the imageThumbnailData from
-                             // programmatically assigned imageData. We could make our own thumbnail in Contact.m, but
-                             // it's not worth it for the sake of debug UI.
-                             contact.imageData = UIImageJPEGRepresentation(
-                                 [OWSAvatarBuilder buildRandomAvatarWithDiameter:avatarDiameter], (CGFloat)0.9);
-                             DDLogDebug(@"avatar size: %lu bytes", (unsigned long)contact.imageData.length);
+                             // 50% chance of fake contact having an avatar
+                             const NSUInteger kPercentWithAvatar = 50;
+                             const NSUInteger kMinimumAvatarDiameter = 200;
+                             const NSUInteger kMaximumAvatarDiameter = 800;
+                             OWSAssert(kMaximumAvatarDiameter >= kMinimumAvatarDiameter);
+                             if (arc4random_uniform(100) < kPercentWithAvatar) {
+                                 NSUInteger avatarDiameter
+                                     = arc4random_uniform(kMaximumAvatarDiameter - kMinimumAvatarDiameter)
+                                     + kMinimumAvatarDiameter;
+                                 // Note this doesn't work on iOS9, since iOS9 doesn't generate the imageThumbnailData
+                                 // from programmatically assigned imageData. We could make our own thumbnail in
+                                 // Contact.m, but it's not worth it for the sake of debug UI.
+                                 contact.imageData = UIImageJPEGRepresentation(
+                                     [OWSAvatarBuilder buildRandomAvatarWithDiameter:avatarDiameter], (CGFloat)0.9);
+                                 DDLogDebug(@"avatar size: %lu bytes", (unsigned long)contact.imageData.length);
+                             }
+
+                             [contacts addObject:contact];
+                             [request addContact:contact toContainerWithIdentifier:nil];
                          }
-
-                         [contacts addObject:contact];
-                         [request addContact:contact toContainerWithIdentifier:nil];
                      }
+
+                     DDLogError(@"Saving fake contacts: %zd", contacts.count);
+
                      NSError *saveError = nil;
                      if (![store executeSaveRequest:request error:&saveError]) {
-                         NSLog(@"error = %@", saveError);
+                         DDLogError(@"Error saving fake contacts: %@", saveError);
                          [OWSAlerts showAlertWithTitle:@"Error" message:saveError.localizedDescription];
                      } else {
                          if (contactHandler) {
@@ -1270,10 +1277,10 @@ NS_ASSUME_NONNULL_BEGIN
 
                         NSError *saveError = nil;
                         if (!result || fetchError) {
-                            NSLog(@"error = %@", fetchError);
+                            DDLogError(@"error = %@", fetchError);
                             [OWSAlerts showAlertWithTitle:@"Error" message:fetchError.localizedDescription];
                         } else if (![store executeSaveRequest:request error:&saveError]) {
-                            NSLog(@"error = %@", saveError);
+                            DDLogError(@"error = %@", saveError);
                             [OWSAlerts showAlertWithTitle:@"Error" message:saveError.localizedDescription];
                         }
                     }];
