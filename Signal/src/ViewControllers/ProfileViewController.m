@@ -452,48 +452,10 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                 replacementString:(NSString *)insertionText
 {
     // TODO: Possibly filter invalid input.
-
-    // Prevent crashing undo bug
-    if (editingRange.length + editingRange.location > textField.text.length) {
-        return NO;
-    }
-
-    NSUInteger (^byteLength)(NSString *) = ^NSUInteger(NSString *string) {
-        if (string == nil) {
-            return 0;
-        }
-
-        return [string dataUsingEncoding:NSUTF8StringEncoding].length;
-    };
-
-    NSUInteger lengthOfRemainingExistingString
-        = byteLength(textField.text) - byteLength([textField.text substringWithRange:editingRange]);
-    NSUInteger newLength = lengthOfRemainingExistingString + byteLength(insertionText);
-
-    DDLogVerbose(@"%@ newLength: %lu", self.tag, (unsigned long)newLength);
-    if (newLength <= kOWSProfileManager_NameDataLength) {
-        return YES;
-    }
-
-    // Don't allow any change if inserting a single char (typically this means typing)
-    if (insertionText.length < 2) {
-        return NO;
-    }
-
-    // However if pasting, accept as much of the string as possible.
-    NSUInteger availableSpace = kOWSProfileManager_NameDataLength - lengthOfRemainingExistingString;
-
-    NSString *acceptableSubstring = @"";
-    for (NSUInteger i = 0; i <= insertionText.length; i++) {
-        NSString *maybeAcceptableSubstring = [insertionText substringWithRange:NSMakeRange(0, i)];
-        if (byteLength(maybeAcceptableSubstring) <= availableSpace) {
-            acceptableSubstring = maybeAcceptableSubstring;
-        }
-    }
-    textField.text = [textField.text stringByReplacingCharactersInRange:editingRange withString:acceptableSubstring];
-
-    // We've already handled any valid editing manually, so prevent further changes.
-    return NO;
+    return [TextFieldHelper textField:textField
+        shouldChangeCharactersInRange:editingRange
+                    replacementString:insertionText
+                            byteLimit:kOWSProfileManager_NameDataLength];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField

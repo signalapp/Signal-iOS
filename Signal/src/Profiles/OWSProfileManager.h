@@ -13,8 +13,8 @@ extern NSString *const kNSNotificationName_ProfileWhitelistDidChange;
 extern NSString *const kNSNotificationKey_ProfileRecipientId;
 extern NSString *const kNSNotificationKey_ProfileGroupId;
 
-extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 extern const NSUInteger kOWSProfileManager_NameDataLength;
+extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 @class TSThread;
 @class OWSAES256Key;
