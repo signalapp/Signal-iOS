@@ -1112,7 +1112,7 @@
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile affects how you will appear to other users if you are not in their contacts.";
 
 /* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Click here to learn more.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tap here to learn more.";
 
 /* Label for the profile name field of the profile view. */
 "PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profile Name";

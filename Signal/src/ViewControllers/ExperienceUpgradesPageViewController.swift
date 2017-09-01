@@ -152,7 +152,7 @@ private class ExperienceUpgradeViewController: OWSViewController {
         // Image layout
         imageView.autoPinWidthToSuperview()
         imageView.autoSetDimension(.height, toSize: ScaleFromIPhone5To7Plus(200, 280))
-        imageView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: ScaleFromIPhone5To7Plus(24, 32))
+        imageView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: ScaleFromIPhone5(32))
         imageView.autoPinEdge(.bottom, to: .top, of: bodyLabel, withOffset: -ScaleFromIPhone5To7Plus(18, 28))
     }
 }
@@ -269,7 +269,7 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
         // negative inset so as to overlay the header text in the carousel view with the header background which
         // lives outside of the carousel. We do this so that the user can't bounce past the page view controllers
         // width limits, exposing the edge of the header.
-        carouselView.autoPinEdge(.top, to: .bottom, of: headerBackgroundView, withOffset: ScaleFromIPhone5(-35))
+        carouselView.autoPin(toTopLayoutGuideOf: self, withInset: 16)
         carouselView.autoPinEdge(.bottom, to: .top, of: dismissButton, withOffset: ScaleFromIPhone5(-10))
     }
 
