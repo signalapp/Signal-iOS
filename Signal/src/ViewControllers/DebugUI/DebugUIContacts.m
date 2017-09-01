@@ -1136,7 +1136,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)createRandomContacts:(NSUInteger)count
 {
-    OWSAssert(count > 0);
     [self createRandomContacts:count contactHandler:nil];
 }
 
@@ -1144,6 +1143,31 @@ NS_ASSUME_NONNULL_BEGIN
               contactHandler:
                   (nullable void (^)(CNContact *_Nonnull contact, NSUInteger idx, BOOL *_Nonnull stop))contactHandler
 {
+    OWSAssert(count > 0);
+
+    NSUInteger remainder = count;
+    const NSUInteger kMaxBatchSize = 20;
+    NSUInteger batch = MIN(kMaxBatchSize, remainder);
+    remainder -= batch;
+    [self createRandomContactsBatch:batch
+                     contactHandler:nil
+             batchCompletionHandler:^{
+                 if (remainder > 0) {
+                     [self createRandomContacts:remainder contactHandler:contactHandler];
+                 }
+             }];
+}
+
++ (void)createRandomContactsBatch:(NSUInteger)count
+                   contactHandler:(nullable void (^)(
+                                      CNContact *_Nonnull contact, NSUInteger idx, BOOL *_Nonnull stop))contactHandler
+           batchCompletionHandler:(nullable void (^)())batchCompletionHandler
+{
+    OWSAssert(count > 0);
+    OWSAssert(batchCompletionHandler);
+
+    DDLogDebug(@"createRandomContactsBatch: %zd", count);
+
     CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
     if (status == CNAuthorizationStatusDenied || status == CNAuthorizationStatusRestricted) {
         [OWSAlerts showAlertWithTitle:@"Error" message:@"No contacts access."];
@@ -1202,6 +1226,9 @@ NS_ASSUME_NONNULL_BEGIN
                          if (contactHandler) {
                              [contacts enumerateObjectsUsingBlock:contactHandler];
                          }
+                     }
+                     if (batchCompletionHandler) {
+                         batchCompletionHandler();
                      }
                  }];
 }

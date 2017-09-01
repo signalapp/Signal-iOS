@@ -101,6 +101,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages createFakeThreads:100 withFakeMessages:100];
                         }],
+        [OWSTableItem itemWithTitle:@"Create 1k fake threads with 1 message"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeThreads:1000 withFakeMessages:1];
+                        }],
         [OWSTableItem itemWithTitle:@"Create 1k fake messages"
                         actionBlock:^{
                             [DebugUIMessages sendFakeMessages:1000 thread:thread];
