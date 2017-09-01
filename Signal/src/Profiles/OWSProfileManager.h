@@ -14,6 +14,7 @@ extern NSString *const kNSNotificationKey_ProfileRecipientId;
 extern NSString *const kNSNotificationKey_ProfileGroupId;
 
 extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
+extern const NSUInteger kOWSProfileManager_NameDataLength;
 
 @class TSThread;
 @class OWSAES256Key;
