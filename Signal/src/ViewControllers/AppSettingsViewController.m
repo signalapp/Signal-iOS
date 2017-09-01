@@ -232,9 +232,7 @@
 
     if (!localProfileAvatarImage) {
         UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
-        cameraImage = [cameraImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
-        cameraImageView.tintColor = [UIColor ows_materialBlueColor];
         [cell.contentView addSubview:cameraImageView];
         [cameraImageView autoPinTrailingToView:avatarView];
         [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];

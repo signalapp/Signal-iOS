@@ -152,9 +152,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     self.avatarView = [AvatarImageView new];
 
     UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
-    cameraImage = [cameraImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     self.cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
-    self.cameraImageView.tintColor = [UIColor ows_materialBlueColor];
 
     [avatarRow addSubview:self.avatarView];
     [avatarRow addSubview:self.cameraImageView];
