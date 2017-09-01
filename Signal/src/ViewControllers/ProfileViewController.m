@@ -448,12 +448,14 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 #pragma mark - UITextFieldDelegate
 
 - (BOOL)textField:(UITextField *)textField
-    shouldChangeCharactersInRange:(NSRange)range
+    shouldChangeCharactersInRange:(NSRange)editingRange
                 replacementString:(NSString *)insertionText
 {
     // TODO: Possibly filter invalid input.
-    // TODO: Possibly prevent user from typing overlong name.
-    return YES;
+    return [TextFieldHelper textField:textField
+        shouldChangeCharactersInRange:editingRange
+                    replacementString:insertionText
+                            byteLimit:kOWSProfileManager_NameDataLength];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField

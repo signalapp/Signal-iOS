@@ -99,7 +99,7 @@ NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManag
 
 // The max bytes for a user's profile name, encoded in UTF8.
 // Before encrypting and submitting we NULL pad the name data to this length.
-static const NSUInteger kOWSProfileManager_NameDataLength = 26;
+const NSUInteger kOWSProfileManager_NameDataLength = 26;
 const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 @interface OWSProfileManager ()

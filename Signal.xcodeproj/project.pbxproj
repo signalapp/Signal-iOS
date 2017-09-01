@@ -132,6 +132,8 @@
 		451DE9FE1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451DE9FC1DC1A28200810E42 /* SyncPushTokensJob.swift */; };
 		452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 452037D01EE84975004E4CDF /* DebugUISessionState.m */; };
 		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
+		4521C3C01F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */; };
+		4521C3C11F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */; };
 		452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
 		452C46901E427E200087B011 /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
 		452D1EE81DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452D1EE71DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift */; };
@@ -593,6 +595,7 @@
 		452037CF1EE84975004E4CDF /* DebugUISessionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUISessionState.h; sourceTree = "<group>"; };
 		452037D01EE84975004E4CDF /* DebugUISessionState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUISessionState.m; sourceTree = "<group>"; };
 		4520D8D41D417D8E00123472 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
+		4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldHelper.swift; sourceTree = "<group>"; };
 		4526BD481CA61C8D00166BC8 /* OWSMessageEditing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageEditing.h; sourceTree = "<group>"; };
 		452C468E1E427E200087B011 /* OutboundCallInitiator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutboundCallInitiator.swift; sourceTree = "<group>"; };
 		452D1EE71DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MesssagesBubblesSizeCalculatorTest.swift; path = Models/MesssagesBubblesSizeCalculatorTest.swift; sourceTree = "<group>"; };
@@ -1456,6 +1459,7 @@
 				76EB04FB18170B33006006FC /* Util.h */,
 				45F170D51E315310003FC1F2 /* Weak.swift */,
 				45F170CB1E310E22003FC1F2 /* WeakTimer.swift */,
+				4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -2370,6 +2374,7 @@
 				4574A5D61DD6704700C6B692 /* CallService.swift in Sources */,
 				34B3F8721E8DF1700035BE1A /* AdvancedSettingsTableViewController.m in Sources */,
 				45F170D61E315310003FC1F2 /* Weak.swift in Sources */,
+				4521C3C01F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */,
 				34B3F8891E8DF1700035BE1A /* OWSConversationSettingsViewController.m in Sources */,
 				34C42D671F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m in Sources */,
 				34B3F87E1E8DF1700035BE1A /* InboxTableViewCell.m in Sources */,
@@ -2421,6 +2426,7 @@
 				45BB93391E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */,
 				B660F7211C29988E00687D6E /* SignalKeyingStorage.m in Sources */,
 				B660F7221C29988E00687D6E /* VersionMigrations.m in Sources */,
+				4521C3C11F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */,
 				45D231781DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
 				458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */,
 				45F659831E1BE77000444429 /* NonCallKitCallUIAdaptee.swift in Sources */,
