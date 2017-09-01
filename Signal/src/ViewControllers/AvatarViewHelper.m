@@ -132,10 +132,8 @@ NS_ASSUME_NONNULL_BEGIN
                                        successCompletion:^(UIImage *_Nonnull dstImage) {
                                            [self.delegate avatarDidChange:dstImage];
                                        }];
-                                   OWSNavigationController *navigationController =
-                                       [[OWSNavigationController alloc] initWithRootViewController:vc];
                                    [self.delegate.fromViewController
-                                       presentViewController:navigationController
+                                       presentViewController:vc
                                                     animated:YES
                                                   completion:[UIUtil modalCompletionBlock]];
                                }

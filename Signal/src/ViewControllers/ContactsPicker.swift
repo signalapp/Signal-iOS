@@ -150,7 +150,7 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
 
                 let alert = UIAlertController(title: title, message: body, preferredStyle: UIAlertControllerStyle.alert)
 
-                let dismissText = NSLocalizedString("TXT_CANCEL_TITLE", comment:"")
+                let dismissText = CommonStrings.cancelButton
 
                 let cancelAction = UIAlertAction(title: dismissText, style: .cancel, handler: {  _ in
                     let error = NSError(domain: "contactsPickerErrorDomain", code: 1, userInfo: [NSLocalizedDescriptionKey: "No Contacts Access"])

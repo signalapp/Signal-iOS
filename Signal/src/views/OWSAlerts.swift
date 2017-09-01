@@ -41,7 +41,7 @@ import Foundation
     }
 
     public class func cancelAction() -> UIAlertAction {
-        let action = UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment:"Label for the cancel button in an alert or action sheet."), style: .cancel) { _ in
+        let action = UIAlertAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
             Logger.debug("Cancel item")
             // Do nothing.
         }

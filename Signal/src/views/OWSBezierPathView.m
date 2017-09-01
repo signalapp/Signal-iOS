@@ -6,12 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSBezierPathView ()
-
-@property (nonatomic) NSArray<ConfigureShapeLayerBlock> *configureShapeLayerBlocks;
-
-@end
-
 #pragma mark -
 
 @implementation OWSBezierPathView

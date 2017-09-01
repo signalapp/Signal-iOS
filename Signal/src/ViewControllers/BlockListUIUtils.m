@@ -5,6 +5,7 @@
 #import "BlockListUIUtils.h"
 #import "OWSContactsManager.h"
 #import "PhoneNumber.h"
+#import "Signal-Swift.h"
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/SignalAccount.h>
@@ -104,7 +105,7 @@ typedef void (^BlockAlertCompletionBlock)();
                 }];
     [actionSheetController addAction:unblockAction];
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
                                                             style:UIAlertActionStyleCancel
                                                           handler:^(UIAlertAction *_Nonnull action) {
                                                               if (completionBlock) {
@@ -208,7 +209,7 @@ typedef void (^BlockAlertCompletionBlock)();
                 }];
     [actionSheetController addAction:unblockAction];
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
                                                             style:UIAlertActionStyleCancel
                                                           handler:^(UIAlertAction *_Nonnull action) {
                                                               if (completionBlock) {

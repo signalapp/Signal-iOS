@@ -319,7 +319,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                              message:NSLocalizedString(@"ALERT_VALIDATE_RECIPIENT_MESSAGE",
                                          @"A message for the alert shown while validating a signal account")
                       preferredStyle:UIAlertControllerStyleAlert];
-        [activityAlert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")
+        [activityAlert addAction:[UIAlertAction actionWithTitle:CommonStrings.cancelButton
                                                           style:UIAlertActionStyleCancel
                                                         handler:^(UIAlertAction *_Nonnull action) {
                                                             wasCancelled = YES;

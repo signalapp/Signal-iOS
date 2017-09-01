@@ -13,6 +13,7 @@
 #import "NotificationsManager.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioAttachmentPlayer.h"
+#import "OWSBezierPathView.h"
 #import "OWSCallNotificationsAdaptee.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"

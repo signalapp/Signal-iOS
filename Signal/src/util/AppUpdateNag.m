@@ -85,7 +85,7 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
                                  @"version number.}}.")];
     [updater setAlertUpdateButtonTitle:NSLocalizedString(@"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON",
                                            @"Label for the 'update' button in the 'new app version available' alert.")];
-    [updater setAlertCancelButtonTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"")];
+    [updater setAlertCancelButtonTitle:CommonStrings.cancelButton];
     [updater setDelegate:self];
     [updater showUpdateWithConfirmation];
 }
