@@ -334,11 +334,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
             }
             break;
         case ProfileViewMode_UpgradeOrNag:
-            self.navigationItem.leftBarButtonItem =
-                [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
-                                                              target:self
-                                                              action:@selector(backOrSkipButtonPressed)];
-            break;
         case ProfileViewMode_Registration:
             self.navigationItem.hidesBackButton = YES;
             self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
