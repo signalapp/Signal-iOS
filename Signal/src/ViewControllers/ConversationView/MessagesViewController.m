@@ -78,7 +78,6 @@
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -98,6 +97,7 @@ static const int kYapDatabaseMaxPageCount = 500;
 // Never show more than 6*50 = 300 messages in conversation view when user
 // arrives.
 static const int kYapDatabaseMaxInitialPageCount = 6;
+static const int kConversationInitialMaxRangeSize = kYapDatabasePageSize * kYapDatabaseMaxInitialPageCount;
 static const int kYapDatabaseRangeMaxLength = kYapDatabasePageSize * kYapDatabaseMaxPageCount;
 static const int kYapDatabaseRangeMinLength = 0;
 static const int JSQ_TOOLBAR_ICON_HEIGHT = 22;
@@ -488,6 +488,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
+    self.page = 0;
+    [self ensureDynamicInteractions];
+
     if (thread.uniqueId.length > 0) {
         self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ]
                                                                           view:TSMessageDatabaseViewExtensionName];
@@ -505,24 +508,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }];
     [self updateMessageMappingRangeOptions:MessagesRangeSizeMode_Truncate];
     [self updateShouldObserveDBModifications];
-    self.page = 0;
-
-    if (self.dynamicInteractions.unreadIndicatorPosition != nil) {
-        long unreadIndicatorPosition = [self.dynamicInteractions.unreadIndicatorPosition longValue];
-        // If there is an unread indicator, increase the initial load window
-        // to include it.
-        OWSAssert(unreadIndicatorPosition > 0);
-        OWSAssert(unreadIndicatorPosition <= kYapDatabaseRangeMaxLength);
-
-        // We'd like to include at least N seen messages, if possible,
-        // to give the user the context of where they left off the conversation.
-        //
-        // TODO: Is this still necessary?
-        const int kPreferredSeenMessageCount = 1;
-        self.page = (NSUInteger)MAX(0,
-            MIN(kYapDatabaseMaxInitialPageCount - 1,
-                (unreadIndicatorPosition + kPreferredSeenMessageCount) / kYapDatabasePageSize));
-    }
 }
 
 - (BOOL)userLeftGroup
@@ -662,9 +647,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)viewWillAppear:(BOOL)animated
 {
     DDLogDebug(@"%@ viewWillAppear", self.tag);
-
-    // We need to update the dynamic interactions before we do any layout.
-    [self ensureDynamicInteractions];
 
     [self ensureBannerState];
 
@@ -2487,9 +2469,25 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     NSUInteger targetLength = oldLength;
     if (mode == MessagesRangeSizeMode_Truncate) {
-        // During the initial configuration of the view, we want to truncate the
-        // range size.
-        targetLength = MIN(targetLength, (NSUInteger)(kYapDatabasePageSize * kYapDatabaseMaxInitialPageCount));
+        OWSAssert(self.dynamicInteractions);
+        OWSAssert(self.page == 0);
+
+        if (self.dynamicInteractions.unreadIndicatorPosition) {
+            NSUInteger unreadIndicatorPosition
+                = (NSUInteger)[self.dynamicInteractions.unreadIndicatorPosition longValue];
+            // If there is an unread indicator, increase the initial load window
+            // to include it.
+            OWSAssert(unreadIndicatorPosition > 0);
+            OWSAssert(unreadIndicatorPosition <= kYapDatabaseRangeMaxLength);
+
+            // We'd like to include at least N seen messages,
+            // to give the user the context of where they left off the conversation.
+            const NSUInteger kPreferredSeenMessageCount = 1;
+            targetLength = unreadIndicatorPosition + kPreferredSeenMessageCount;
+        } else {
+            // Default to a single page of messages.
+            targetLength = kYapDatabasePageSize;
+        }
     }
 
     // The "page-based" range length may have been increased by loading "prev" pages at the
@@ -2949,9 +2947,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     OWSAssert([NSThread isMainThread]);
 
-    const int initialMaxRangeSize = kYapDatabasePageSize * kYapDatabaseMaxInitialPageCount;
     const int currentMaxRangeSize = (int)(self.page + 1) * kYapDatabasePageSize;
-    const int maxRangeSize = MAX(initialMaxRangeSize, currentMaxRangeSize);
+    const int maxRangeSize = MAX(kConversationInitialMaxRangeSize, currentMaxRangeSize);
 
     // `ensureDynamicInteractionsForThread` should operate on the latest thread contents, so
     // we should _read_ from uiDatabaseConnection and _write_ to `editingDatabaseConnection`.
