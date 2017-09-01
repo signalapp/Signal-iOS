@@ -488,6 +488,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
+    // We need to update the "unread indicator" _before_ we determine the initial range
+    // size, since it depends on where the unread indicator is placed.
     self.page = 0;
     [self ensureDynamicInteractions];
 
