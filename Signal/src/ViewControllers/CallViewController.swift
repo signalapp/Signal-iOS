@@ -25,6 +25,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: Views
 
+    var isViewLoaded = false
     var hasConstraints = false
     var blurView: UIVisualEffectView!
     var dateFormatter: DateFormatter?
@@ -158,7 +159,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func didBecomeActive() {
-        shouldRemoteVideoControlsBeHidden = false
+        if (self.isViewLoaded) {
+            shouldRemoteVideoControlsBeHidden = false
+        }
     }
 
     // MARK: View Lifecycle
@@ -195,6 +198,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         call.addObserverAndSyncState(observer: self)
 
         Environment.getCurrent().callService.addObserverAndSyncState(observer: self)
+        self.isViewLoaded = true
     }
 
     // MARK: - Create Views
