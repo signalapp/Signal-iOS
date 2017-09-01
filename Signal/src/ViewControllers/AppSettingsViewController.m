@@ -172,7 +172,7 @@
                                                   [weakSelf showAbout];
                                               }]];
 
-#ifdef DEBUG
+#ifdef USE_DEBUG_UI
     [section addItem:[OWSTableItem disclosureItemWithText:@"Debug UI"
                                               actionBlock:^{
                                                   [weakSelf showDebugUI];

@@ -4,6 +4,13 @@
 
 #import "DebugUIPage.h"
 
+// This preprocessor symbol controls whether or not the Debug UI is active.
+//
+// To show the DebugUI in production builds, comment out the #ifdef and #endif
+#ifdef DEBUG
+#define USE_DEBUG_UI
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSTableSection;
