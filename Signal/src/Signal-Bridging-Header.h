@@ -24,6 +24,7 @@
 #import "OWSViewController.h"
 #import "OWSWebRTCDataProtos.pb.h"
 #import "PrivacySettingsTableViewController.h"
+#import "ProfileViewController.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "Release.h"

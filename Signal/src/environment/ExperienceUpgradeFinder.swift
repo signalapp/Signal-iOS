@@ -6,7 +6,8 @@ import Foundation
 
 enum ExperienceUpgradeId: String {
     case videoCalling = "001",
-    callKit = "002"
+    callKit = "002",
+    introducingProfiles = "003"
 }
 
 class ExperienceUpgradeFinder: NSObject {
@@ -25,6 +26,11 @@ class ExperienceUpgradeFinder: NSObject {
                                               body: NSLocalizedString("UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION", comment: "Description of CallKit to upgrading (existing) users"),
                                               image: #imageLiteral(resourceName: "introductory_splash_callkit")))
         }
+
+        upgrades.append(ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingProfiles.rawValue,
+                                          title: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE", comment: "Header for upgrade experience"),
+                                          body: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION", comment: "Description of new profile feature for upgrading (existing) users"),
+                                          image:#imageLiteral(resourceName: "introductory_splash_profile")))
 
         return upgrades
     }

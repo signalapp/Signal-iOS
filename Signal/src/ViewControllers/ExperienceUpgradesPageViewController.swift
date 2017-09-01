@@ -4,6 +4,45 @@
 
 import Foundation
 
+private class IntroductingProfilesExperienceUpgradeViewController: ExperienceUpgradeViewController {
+
+    override func loadView() {
+        super.loadView()
+        assert(view != nil)
+        assert(bodyLabel != nil)
+
+        // Privacy Settings Button
+        let button = UIButton()
+        view.addSubview(button)
+        let privacyTitle = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON", comment: "button label shown one time, after user upgrades app")
+        button.setTitle(privacyTitle, for: .normal)
+        button.setTitleColor(UIColor.ows_signalBrandBlue(), for: .normal)
+        button.isUserInteractionEnabled = true
+        button.addTarget(self, action:#selector(didTapButton), for: .touchUpInside)
+        button.titleLabel?.font = bodyLabel.font
+
+        // Privacy Settings Button layout
+        button.autoPinWidthToSuperview(withMargin: bodyMargin)
+        button.autoPinEdge(.top, to: .bottom, of: bodyLabel, withOffset: ScaleFromIPhone5(12))
+        button.sizeToFit()
+    }
+
+    // MARK: - Actions
+
+    func didTapButton(sender: UIButton) {
+        Logger.debug("\(TAG) in \(#function)")
+
+        // dismiss the modally presented view controller, then proceed.
+        experienceUpgradesPageViewController.dismiss(animated: true) {
+            guard let fromViewController = UIApplication.shared.frontmostViewController as? SignalsViewController else {
+                owsFail("unexpected frontmostViewController: \(String(describing: UIApplication.shared.frontmostViewController))")
+                return
+            }
+            ProfileViewController.presentForUpgradeOrNag(from: fromViewController)
+        }
+    }
+}
+
 private class CallKitExperienceUpgradeViewController: ExperienceUpgradeViewController {
 
     override func loadView() {
@@ -79,7 +118,7 @@ private class ExperienceUpgradeViewController: OWSViewController {
         view.addSubview(titleLabel)
         titleLabel.text = header
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(26, 32))
+        titleLabel.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5(24))
         titleLabel.textColor = UIColor.white
         titleLabel.minimumScaleFactor = 0.5
         titleLabel.adjustsFontSizeToFitWidth = true
@@ -301,6 +340,8 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
             switch identifier {
             case .callKit:
                 return CallKitExperienceUpgradeViewController(experienceUpgrade: experienceUpgrade, experienceUpgradesPageViewController: self)
+            case .introducingProfiles:
+                return IntroductingProfilesExperienceUpgradeViewController(experienceUpgrade: experienceUpgrade, experienceUpgradesPageViewController: self)
             default:
                 return ExperienceUpgradeViewController(experienceUpgrade: experienceUpgrade, experienceUpgradesPageViewController: self)
             }

@@ -47,6 +47,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 @property (nonatomic) UISegmentedControl *segmentedControl;
 @property (nonatomic) id previewingContext;
 @property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
+@property (nonatomic) BOOL viewHasEverAppeared;
 
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL isAppInBackground;
@@ -491,9 +492,11 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
         [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
-    } else {
+    } else if (!self.viewHasEverAppeared) {
         [self displayAnyUnseenUpgradeExperience];
     }
+
+    self.viewHasEverAppeared = YES;
 }
 
 #pragma mark - startup
