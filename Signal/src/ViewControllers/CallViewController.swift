@@ -25,7 +25,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: Views
 
-    var isViewLoaded = false
     var hasConstraints = false
     var blurView: UIVisualEffectView!
     var dateFormatter: DateFormatter?
@@ -181,10 +180,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         updateCallUI(callState: call.state)
     }
 
+    override func loadView() {
+        self.view = UIView()
+        createViews()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        createViews()
 
         contactNameLabel.text = contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
         updateAvatarImage()
@@ -198,7 +200,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         call.addObserverAndSyncState(observer: self)
 
         Environment.getCurrent().callService.addObserverAndSyncState(observer: self)
-        self.isViewLoaded = true
     }
 
     // MARK: - Create Views
