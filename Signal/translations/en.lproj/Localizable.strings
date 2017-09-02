@@ -1517,7 +1517,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
 
 /* button label shown one time, after user upgrades app */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Set up your profile now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Set up Your Profile";
 
 /* Description of new profile feature for upgrading (existing) users */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "You can now share a photo and name with your friends on Signal.";
