@@ -204,13 +204,16 @@ class CropScaleImageViewController: OWSViewController {
         let maskingView = OWSBezierPathView()
         contentView.addSubview(maskingView)
 
-        maskingView.configureShapeLayerBlock = { layer, bounds in
+        maskingView.configureShapeLayerBlock = { [weak self] layer, bounds in
+            guard let strongSelf = self else {
+                return
+            }
             let path = UIBezierPath(rect: bounds)
 
-            let radius = min(bounds.size.width, bounds.size.height) * 0.5 - self.maskMargin
-            // Center the circle's bounding rectangle
-            let circleRect = CGRect(x: bounds.size.width * 0.5 - radius, y: bounds.size.height * 0.5 - radius, width: radius * 2, height: radius * 2)
+            let circleRect = strongSelf.cropFrame(forBounds:bounds)
+            let radius = circleRect.size.width * 0.5
             let circlePath = UIBezierPath(roundedRect: circleRect, cornerRadius: radius)
+
             path.append(circlePath)
             path.usesEvenOddFillRule = true
 
@@ -237,6 +240,15 @@ class CropScaleImageViewController: OWSViewController {
         contentView.isUserInteractionEnabled = true
         contentView.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(sender:))))
         contentView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePan(sender:))))
+    }
+
+    // Given the current bounds for the image view, return the frame of the
+    // crop region within that view.
+    private func cropFrame(forBounds bounds: CGRect) -> CGRect {
+        let radius = min(bounds.size.width, bounds.size.height) * 0.5 - self.maskMargin
+        // Center the circle's bounding rectangle
+        let circleRect = CGRect(x: bounds.size.width * 0.5 - radius, y: bounds.size.height * 0.5 - radius, width: radius * 2, height: radius * 2)
+        return circleRect
     }
 
     override func viewDidLayoutSubviews() {
@@ -294,11 +306,14 @@ class CropScaleImageViewController: OWSViewController {
             return
         }
 
-        let viewSizePoints = imageView.frame.size
+        // The size of the image view (should be full screen).
+        let imageViewSizePoints = imageView.frame.size
         guard
-            (viewSizePoints.width > 0 && viewSizePoints.height > 0) else {
+            (imageViewSizePoints.width > 0 && imageViewSizePoints.height > 0) else {
                 return
         }
+        // The frame of the crop circle within the image view.
+        let cropFrame = self.cropFrame(forBounds:CGRect(origin:CGPoint.zero, size: imageViewSizePoints))
 
         // Normalize the scaling property.
         imageScale = max(kMinImageScale, min(kMaxImageScale, imageScale))
@@ -317,29 +332,29 @@ class CropScaleImageViewController: OWSViewController {
         srcTranslation = CGPoint(x: max(minSrcTranslationPoints.x, min(maxSrcTranslationPoints.x, srcTranslation.x)),
                                  y: max(minSrcTranslationPoints.y, min(maxSrcTranslationPoints.y, srcTranslation.y)))
 
-        var imageViewFrame = imageRenderRect(forDstSize: viewSizePoints)
-
-        // offset to vertically center image in view (aspect ratio?)
-        let srcToViewRatio = viewSizePoints.width / srcCropSizePoints.width / imageScale
-        let heightOfImageLayer = srcDefaultCropSizePoints.height * srcToViewRatio
-        let yOffset = imageView.frame.height * 0.5 - heightOfImageLayer * 0.5
-        imageViewFrame = imageViewFrame.offsetBy(dx: 0, dy: yOffset)
-
-        // inset frame by the with of the masking margin so the user can pan to the very edge of the image
-        imageViewFrame = CGRect(x: imageViewFrame.origin.x + self.maskMargin,
-                                y: imageViewFrame.origin.y + self.maskMargin,
-                                width: imageViewFrame.width - maskMargin * 2,
-                                height: imageViewFrame.height - maskMargin * 2)
+        // The frame of the image layer in crop frame coordinates.
+        let rawImageLayerFrame = imageRenderRect(forDstSize: cropFrame.size)
+        // The frame of the image layer in image view coordinates.
+        let imageLayerFrame = CGRect(x: rawImageLayerFrame.origin.x + cropFrame.origin.x,
+                                          y: rawImageLayerFrame.origin.y + cropFrame.origin.y,
+                                          width: rawImageLayerFrame.size.width,
+                                          height: rawImageLayerFrame.size.height)
 
         // Disable implicit animations for snappier panning/zooming.
         CATransaction.begin()
         CATransaction.setDisableActions(true)
 
-        imageLayer.frame = imageViewFrame
+        imageLayer.frame = imageLayerFrame
 
         CATransaction.commit()
     }
 
+    // Give the size of a given view or image context into which we
+    // will render the source image, return the frame (in that 
+    // view/context's coordinate system) to render the source image.
+    //
+    // Gathering this logic in a single function ensures that the
+    // output will be WYSIWYG with the view state.
     private func imageRenderRect(forDstSize dstSize: CGSize) -> CGRect {
 
         let srcCropSizePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
@@ -347,10 +362,10 @@ class CropScaleImageViewController: OWSViewController {
 
         let srcToViewRatio = dstSize.width / srcCropSizePoints.width
 
-        return CGRect(origin: CGPoint(x: srcTranslation.x * -srcToViewRatio,
-                                      y: srcTranslation.y * -srcToViewRatio),
-                      size: CGSize(width:srcImageSizePoints.width * +srcToViewRatio,
-                                   height:srcImageSizePoints.height * +srcToViewRatio
+        return CGRect(origin: CGPoint(x:srcTranslation.x * -srcToViewRatio,
+                                                    y:srcTranslation.y * -srcToViewRatio),
+                                    size: CGSize(width:srcImageSizePoints.width * +srcToViewRatio,
+                                                 height:srcImageSizePoints.height * +srcToViewRatio
         ))
     }
 
