@@ -27,11 +27,13 @@ class SyncPushTokensJob: NSObject {
     func run() -> Promise<Void> {
         Logger.info("\(TAG) Starting.")
 
-        // Required to potentially prompt user for notifications settings
-        // before `requestPushTokens` will return.
-        self.pushManager.validateUserNotificationSettings()
+        let runPromise: Promise<Void> = DispatchQueue.main.promise {
+            // Required to potentially prompt user for notifications settings
+            // before `requestPushTokens` will return.
+            self.pushManager.validateUserNotificationSettings()
 
-        let runPromise: Promise<Void> = self.requestPushTokens().then { (pushToken: String, voipToken: String) in
+            return self.requestPushTokens()
+        }.then { (pushToken: String, voipToken: String) in
             var shouldUploadTokens = false
 
             if self.preferences.getPushToken() != pushToken || self.preferences.getVoipToken() != voipToken {

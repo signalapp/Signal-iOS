@@ -290,6 +290,8 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 }
 
 - (void)requestPushTokenWithSuccess:(pushTokensSuccessBlock)success failure:(failedPushRegistrationBlock)failure {
+    AssertIsOnMainThread();
+
     if (!self.wantRemoteNotifications) {
         DDLogWarn(@"%@ Using fake push tokens", self.tag);
         success(@"fakePushToken", @"fakeVoipToken");
