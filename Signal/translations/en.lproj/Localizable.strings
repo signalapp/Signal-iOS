@@ -389,7 +389,7 @@
 "CREATE_NEW_GROUP" = "Create new group";
 
 /* Title for the 'crop/scale image' dialog. */
-"CROP_SCALE_IMAGE_VIEW_TITLE" = "Crop and Scale";
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Move and Scale";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "This can take a few minutes.";
