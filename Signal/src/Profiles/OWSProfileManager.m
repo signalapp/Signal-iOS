@@ -869,9 +869,10 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         NSData *groupId = groupThread.groupModel.groupId;
         [self addGroupIdToProfileWhitelist:groupId];
 
-        // When we add a group to the profile whitelist,
-        // also add all current members to the profile
-        // whitelist individually as well.
+        // When we add a group to the profile whitelist, we might as well
+        // also add all current members to the profile whitelist
+        // individually as well just in case delivery of the profile key
+        // fails.
         for (NSString *recipientId in groupThread.recipientIdentifiers) {
             [self addUserToProfileWhitelist:recipientId];
         }
