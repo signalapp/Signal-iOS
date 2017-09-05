@@ -1704,6 +1704,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 }
 
+- (void)finishSendingMessageAnimated:(BOOL)animated
+{
+    [super finishSendingMessageAnimated:animated];
+
+    [self scrollToBottomAnimated:animated];
+}
+
 - (void)toggleDefaultKeyboard
 {
     // Primary language is nil for the emoji keyboard & we want to stay on it after sending
@@ -3584,17 +3591,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    BOOL wasAtBottom = [self isScrolledToBottom];
-    // We want sending messages to feel snappy.  So, if the only
-    // update is a new outgoing message AND we're already scrolled to
-    // the bottom of the conversation, skip the scroll animation.
-    __block BOOL shouldAnimateScrollToBottom = !wasAtBottom;
-    // We want to scroll to the bottom if the user:
-    //
-    // a) already was at the bottom of the conversation.
-    // b) is inserting new interactions.
-    __block BOOL scrollToBottom = wasAtBottom;
-
     [self.collectionView performBatchUpdates:^{
         for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
             switch (rowChange.type) {
@@ -3611,12 +3607,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 }
                 case YapDatabaseViewChangeInsert: {
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
-
-                    TSInteraction *interaction = [self interactionAtIndexPath:rowChange.newIndexPath];
-                    if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                        scrollToBottom = YES;
-                        shouldAnimateScrollToBottom = NO;
-                    }
                     break;
                 }
                 case YapDatabaseViewChangeMove: {
@@ -3642,10 +3632,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             }
 
             [self updateLastVisibleTimestamp];
-
-            if (scrollToBottom) {
-                [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
-            }
         }];
 }
 
