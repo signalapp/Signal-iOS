@@ -37,8 +37,12 @@ class ExperienceUpgradeFinder: NSObject {
     // Keep these ordered by increasing uniqueId.
     private var allExperienceUpgrades: [ExperienceUpgrade] {
         return [
-            videoCalling,
-            (UIDevice.current.supportsCallKit ? callKit : nil),
+            // Disable old experience upgrades. Most people have seen them by now, and accomodating multiple makes layout harder.
+            // Note if we ever want to show multiple experience upgrades again
+            // we'll have to update the layout in ExperienceUpgradesPageViewController
+            //
+            // videoCalling,
+            // (UIDevice.current.supportsCallKit ? callKit : nil),
             introducingProfiles
         ].flatMap { $0 }
     }
