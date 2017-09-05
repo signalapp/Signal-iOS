@@ -14,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)presentForAppSettings:(UINavigationController *)navigationController;
 + (void)presentForRegistration:(UINavigationController *)navigationController;
-+ (void)presentForUpgradeOrNag:(SignalsViewController *)presentingController;
++ (void)presentForUpgradeOrNag:(SignalsViewController *)presentingController
+    NS_SWIFT_NAME(presentForUpgradeOrNag(from:));
 
 @end
 

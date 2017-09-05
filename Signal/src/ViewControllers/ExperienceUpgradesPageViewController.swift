@@ -4,6 +4,94 @@
 
 import Foundation
 
+private class IntroductingProfilesExperienceUpgradeViewController: ExperienceUpgradeViewController {
+
+    override func loadView() {
+        self.view = UIView()
+
+        /// Create Views
+
+        // Title label
+        let titleLabel = UILabel()
+        view.addSubview(titleLabel)
+        titleLabel.text = header
+        titleLabel.textAlignment = .center
+        titleLabel.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5(24))
+        titleLabel.textColor = UIColor.white
+        titleLabel.minimumScaleFactor = 0.5
+        titleLabel.adjustsFontSizeToFitWidth = true
+
+        // Body label
+        let bodyLabel = UILabel()
+        self.bodyLabel = bodyLabel
+        view.addSubview(bodyLabel)
+        bodyLabel.text = body
+        bodyLabel.font = UIFont.ows_lightFont(withSize: ScaleFromIPhone5To7Plus(17, 22))
+        bodyLabel.textColor = UIColor.black
+        bodyLabel.numberOfLines = 0
+        bodyLabel.lineBreakMode = .byWordWrapping
+        bodyLabel.textAlignment = .center
+
+        // Image
+        let imageView = UIImageView(image: image)
+        view.addSubview(imageView)
+        imageView.contentMode = .scaleAspectFit
+
+        // Button
+        let button = UIButton()
+        view.addSubview(button)
+        let buttonTitle = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON", comment: "button label shown one time, after user upgrades app")
+        button.setTitle(buttonTitle, for: .normal)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.backgroundColor = UIColor.ows_materialBlue()
+
+        button.isUserInteractionEnabled = true
+        button.addTarget(self, action:#selector(didTapButton), for: .touchUpInside)
+        button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
+
+        button.titleLabel?.font = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5(18))
+
+        /// Layout Views
+
+        // Image layout
+        imageView.autoAlignAxis(toSuperviewAxis: .vertical)
+        imageView.autoPinToSquareAspectRatio()
+        imageView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: ScaleFromIPhone5To7Plus(36, 40))
+        imageView.autoSetDimension(.height, toSize: ScaleFromIPhone5(225))
+
+        // Title label layout
+        titleLabel.autoSetDimension(.height, toSize: ScaleFromIPhone5(40))
+        titleLabel.autoPinWidthToSuperview(withMargin: ScaleFromIPhone5To7Plus(16, 24))
+        titleLabel.autoPinEdge(toSuperviewEdge: .top)
+
+        // Body label layout
+        bodyLabel.autoPinEdge(.top, to: .bottom, of: imageView, withOffset: ScaleFromIPhone5To7Plus(18, 28))
+        bodyLabel.autoPinWidthToSuperview(withMargin: bodyMargin)
+        bodyLabel.sizeToFit()
+
+        // Button layout
+        button.autoPinEdge(.top, to: .bottom, of: bodyLabel, withOffset: ScaleFromIPhone5(18))
+        button.autoPinWidthToSuperview(withMargin: ScaleFromIPhone5(32))
+        button.autoPinEdge(toSuperviewEdge: .bottom, withInset: ScaleFromIPhone5(16))
+        button.autoSetDimension(.height, toSize: ScaleFromIPhone5(36))
+    }
+
+    // MARK: - Actions
+
+    func didTapButton(sender: UIButton) {
+        Logger.debug("\(TAG) in \(#function)")
+
+        // dismiss the modally presented view controller, then proceed.
+        experienceUpgradesPageViewController.dismiss(animated: true) {
+            guard let fromViewController = UIApplication.shared.frontmostViewController as? SignalsViewController else {
+                owsFail("unexpected frontmostViewController: \(String(describing: UIApplication.shared.frontmostViewController))")
+                return
+            }
+            ProfileViewController.presentForUpgradeOrNag(from: fromViewController)
+        }
+    }
+}
+
 private class CallKitExperienceUpgradeViewController: ExperienceUpgradeViewController {
 
     override func loadView() {
@@ -79,7 +167,7 @@ private class ExperienceUpgradeViewController: OWSViewController {
         view.addSubview(titleLabel)
         titleLabel.text = header
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(26, 32))
+        titleLabel.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5(24))
         titleLabel.textColor = UIColor.white
         titleLabel.minimumScaleFactor = 0.5
         titleLabel.adjustsFontSizeToFitWidth = true
@@ -102,19 +190,22 @@ private class ExperienceUpgradeViewController: OWSViewController {
 
         /// Layout Views
 
+        // Image layout
+        imageView.autoAlignAxis(toSuperviewAxis: .vertical)
+        imageView.autoPinToSquareAspectRatio()
+        imageView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: ScaleFromIPhone5To7Plus(36, 60))
+        imageView.autoSetDimension(.height, toSize: ScaleFromIPhone5(225))
+
         // Title label layout
+        titleLabel.autoSetDimension(.height, toSize: ScaleFromIPhone5(40))
         titleLabel.autoPinWidthToSuperview(withMargin: ScaleFromIPhone5To7Plus(16, 24))
         titleLabel.autoPinEdge(toSuperviewEdge: .top)
 
         // Body label layout
+        bodyLabel.autoPinEdge(.top, to: .bottom, of: imageView, withOffset: ScaleFromIPhone5To7Plus(18, 28))
         bodyLabel.autoPinWidthToSuperview(withMargin: bodyMargin)
         bodyLabel.sizeToFit()
-
-        // Image layout
-        imageView.autoPinWidthToSuperview()
-        imageView.autoSetDimension(.height, toSize: ScaleFromIPhone5To7Plus(200, 280))
-        imageView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: ScaleFromIPhone5To7Plus(24, 32))
-        imageView.autoPinEdge(.bottom, to: .top, of: bodyLabel, withOffset: -ScaleFromIPhone5To7Plus(18, 28))
+        bodyLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: ScaleFromIPhone5(16))
     }
 }
 
@@ -122,7 +213,7 @@ func setPageControlAppearance() {
     if #available(iOS 9.0, *) {
         let pageControl = UIPageControl.appearance(whenContainedInInstancesOf: [UIPageViewController.self])
         pageControl.pageIndicatorTintColor = UIColor.lightGray
-        pageControl.currentPageIndicatorTintColor = UIColor.white
+        pageControl.currentPageIndicatorTintColor = UIColor.ows_materialBlue()
     } else {
         // iOS8 won't see the page controls =(
     }
@@ -185,20 +276,14 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
         view.addSubview(headerBackgroundView)
         headerBackgroundView.backgroundColor = UIColor.ows_materialBlue()
 
-        // Footer Background
-
-        let footerBackgroundView = UIView()
-        view.addSubview(footerBackgroundView)
-        footerBackgroundView.backgroundColor = UIColor.ows_materialBlue()
-
         // Dismiss button
         let dismissButton = UIButton()
         view.addSubview(dismissButton)
         dismissButton.setTitle(CommonStrings.dismissButton, for: .normal)
-        dismissButton.setTitleColor(UIColor.white, for: .normal)
+        dismissButton.setTitleColor(UIColor.ows_signalBrandBlue(), for: .normal)
         dismissButton.isUserInteractionEnabled = true
         dismissButton.addTarget(self, action:#selector(didTapDismissButton), for: .touchUpInside)
-        dismissButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5(20))
+        dismissButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5(16))
         let dismissInsetValue: CGFloat = ScaleFromIPhone5(10)
         dismissButton.contentEdgeInsets = UIEdgeInsets(top: dismissInsetValue, left: dismissInsetValue, bottom: dismissInsetValue, right: dismissInsetValue)
 
@@ -216,11 +301,6 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
         headerBackgroundView.autoPinEdge(toSuperviewEdge: .top)
         headerBackgroundView.autoSetDimension(.height, toSize: ScaleFromIPhone5(80))
 
-        // Footer Background layout
-        footerBackgroundView.autoPinWidthToSuperview()
-        footerBackgroundView.autoPinEdge(toSuperviewEdge: .bottom)
-        footerBackgroundView.autoSetDimension(.height, toSize: ScaleFromIPhone5(95))
-
         // Dismiss button layout
         dismissButton.autoHCenterInSuperview()
         dismissButton.autoPinEdge(toSuperviewEdge: .bottom, withInset: ScaleFromIPhone5(10))
@@ -230,7 +310,7 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
         // negative inset so as to overlay the header text in the carousel view with the header background which
         // lives outside of the carousel. We do this so that the user can't bounce past the page view controllers
         // width limits, exposing the edge of the header.
-        carouselView.autoPinEdge(.top, to: .bottom, of: headerBackgroundView, withOffset: ScaleFromIPhone5(-35))
+        carouselView.autoPin(toTopLayoutGuideOf: self, withInset: ScaleFromIPhone5To7Plus(14, 24))
         carouselView.autoPinEdge(.bottom, to: .top, of: dismissButton, withOffset: ScaleFromIPhone5(-10))
     }
 
@@ -301,6 +381,8 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
             switch identifier {
             case .callKit:
                 return CallKitExperienceUpgradeViewController(experienceUpgrade: experienceUpgrade, experienceUpgradesPageViewController: self)
+            case .introducingProfiles:
+                return IntroductingProfilesExperienceUpgradeViewController(experienceUpgrade: experienceUpgrade, experienceUpgradesPageViewController: self)
             default:
                 return ExperienceUpgradeViewController(experienceUpgrade: experienceUpgrade, experienceUpgradesPageViewController: self)
             }

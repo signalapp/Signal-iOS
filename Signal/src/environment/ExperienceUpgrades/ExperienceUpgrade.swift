@@ -8,7 +8,6 @@ class ExperienceUpgrade: TSYapDatabaseObject {
     let title: String
     let body: String
     let image: UIImage?
-    var seenAt: Date?
 
     required init(uniqueId: String, title: String, body: String, image: UIImage) {
         self.title = title
@@ -60,10 +59,5 @@ class ExperienceUpgrade: TSYapDatabaseObject {
             owsFail("unknown property \(propertyKey)")
             return super.storageBehaviorForProperty(withKey: propertyKey)
         }
-    }
-
-    func markAsSeen(transaction: YapDatabaseReadWriteTransaction) {
-        self.seenAt = Date()
-        super.save(with: transaction)
     }
 }
