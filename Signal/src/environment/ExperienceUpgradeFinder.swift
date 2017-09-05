@@ -13,26 +13,34 @@ enum ExperienceUpgradeId: String {
 class ExperienceUpgradeFinder: NSObject {
     public let TAG = "[ExperienceUpgradeFinder]"
 
+    var videoCalling: ExperienceUpgrade {
+        return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.videoCalling.rawValue,
+                                 title: NSLocalizedString("UPGRADE_EXPERIENCE_VIDEO_TITLE", comment: "Header for upgrade experience"),
+                                 body: NSLocalizedString("UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION", comment: "Description of video calling to upgrading (existing) users"),
+                                 image: #imageLiteral(resourceName: "introductory_splash_video_calling"))
+    }
+
+    var callKit: ExperienceUpgrade {
+        return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.callKit.rawValue,
+                                 title: NSLocalizedString("UPGRADE_EXPERIENCE_CALLKIT_TITLE", comment: "Header for upgrade experience"),
+                                 body: NSLocalizedString("UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION", comment: "Description of CallKit to upgrading (existing) users"),
+                                 image: #imageLiteral(resourceName: "introductory_splash_callkit"))
+    }
+
+    var introducingProfiles: ExperienceUpgrade {
+        return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingProfiles.rawValue,
+                                 title: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE", comment: "Header for upgrade experience"),
+                                 body: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION", comment: "Description of new profile feature for upgrading (existing) users"),
+                                 image:#imageLiteral(resourceName: "introductory_splash_profile"))
+    }
+
     // Keep these ordered by increasing uniqueId.
     private var allExperienceUpgrades: [ExperienceUpgrade] {
-        var upgrades = [ExperienceUpgrade(uniqueId: ExperienceUpgradeId.videoCalling.rawValue,
-                                          title: NSLocalizedString("UPGRADE_EXPERIENCE_VIDEO_TITLE", comment: "Header for upgrade experience"),
-                                          body: NSLocalizedString("UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION", comment: "Description of video calling to upgrading (existing) users"),
-                                          image: #imageLiteral(resourceName: "introductory_splash_video_calling"))]
-
-        if UIDevice.current.supportsCallKit {
-            upgrades.append(ExperienceUpgrade(uniqueId: ExperienceUpgradeId.callKit.rawValue,
-                                              title: NSLocalizedString("UPGRADE_EXPERIENCE_CALLKIT_TITLE", comment: "Header for upgrade experience"),
-                                              body: NSLocalizedString("UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION", comment: "Description of CallKit to upgrading (existing) users"),
-                                              image: #imageLiteral(resourceName: "introductory_splash_callkit")))
-        }
-
-        upgrades.append(ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingProfiles.rawValue,
-                                          title: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE", comment: "Header for upgrade experience"),
-                                          body: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION", comment: "Description of new profile feature for upgrading (existing) users"),
-                                          image:#imageLiteral(resourceName: "introductory_splash_profile")))
-
-        return upgrades
+        return [
+            videoCalling,
+            (UIDevice.current.supportsCallKit ? callKit : nil),
+            introducingProfiles
+        ].flatMap { $0 }
     }
 
     // MARK: - Instance Methods
