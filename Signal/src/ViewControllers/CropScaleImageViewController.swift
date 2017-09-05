@@ -66,8 +66,6 @@ class CropScaleImageViewController: OWSViewController {
     // We use a CALayer to render the image for performance reasons.
     var imageLayer: CALayer!
 
-    var dashedBorderLayer: CAShapeLayer!
-
     // In width/height.
     //
     // TODO: We could make this a parameter.
@@ -97,6 +95,9 @@ class CropScaleImageViewController: OWSViewController {
     // upper-left corner of the src image to the upper-left
     // corner of the crop region in src image point coordinates.
     var srcTranslation: CGPoint = CGPoint.zero
+
+    // space between the cropping circle and the outside edge of the view
+    let maskMargin = CGFloat(20)
 
     // MARK: Initializers
 
@@ -174,29 +175,18 @@ class CropScaleImageViewController: OWSViewController {
 
         view.backgroundColor = UIColor.white
 
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem:.stop,
-                                                                target:self,
-                                                                action:#selector(cancelPressed))
-        self.navigationItem.title = NSLocalizedString("CROP_SCALE_IMAGE_VIEW_TITLE",
-                                                      comment: "Title for the 'crop/scale image' dialog.")
-
         createViews()
     }
 
     // MARK: - Create Views
 
     private func createViews() {
-        let previewTopMargin: CGFloat = 30
-        let previewHMargin: CGFloat = 20
 
         let contentView = UIView()
+        contentView.backgroundColor = UIColor.black
         self.view.addSubview(contentView)
-        contentView.autoPinWidthToSuperview(withMargin:previewHMargin)
-        contentView.autoPin(toTopLayoutGuideOf: self, withInset:previewTopMargin)
+        contentView.autoPinEdgesToSuperviewEdges()
 
-        createButtonRow(contentView:contentView)
-
-        let imageHMargin: CGFloat = 0
         let imageView = OWSLayerView(frame:CGRect.zero, layoutCallback: {[weak self] _ in
             guard let strongSelf = self else { return }
             strongSelf.updateImageLayout()
@@ -204,26 +194,61 @@ class CropScaleImageViewController: OWSViewController {
         imageView.clipsToBounds = true
         self.imageView = imageView
         contentView.addSubview(imageView)
-        imageView.autoPinWidthToSuperview(withMargin:imageHMargin)
-        imageView.autoVCenterInSuperview()
-        imageView.autoPinToSquareAspectRatio()
+        imageView.autoPinEdgesToSuperviewEdges()
 
         let imageLayer = CALayer()
         self.imageLayer = imageLayer
         imageLayer.contents = srcImage.cgImage
         imageView.layer.addSublayer(imageLayer)
 
-        let dashedBorderLayer = CAShapeLayer()
-        self.dashedBorderLayer = dashedBorderLayer
-        dashedBorderLayer.strokeColor = UIColor.ows_materialBlue().cgColor
-        dashedBorderLayer.lineDashPattern = [10, 10]
-        dashedBorderLayer.lineWidth = 4
-        dashedBorderLayer.fillColor = nil
-        imageView.layer.addSublayer(dashedBorderLayer)
+        let maskingView = OWSBezierPathView()
+        contentView.addSubview(maskingView)
+
+        maskingView.configureShapeLayerBlock = { [weak self] layer, bounds in
+            guard let strongSelf = self else {
+                return
+            }
+            let path = UIBezierPath(rect: bounds)
+
+            let circleRect = strongSelf.cropFrame(forBounds:bounds)
+            let radius = circleRect.size.width * 0.5
+            let circlePath = UIBezierPath(roundedRect: circleRect, cornerRadius: radius)
+
+            path.append(circlePath)
+            path.usesEvenOddFillRule = true
+
+            layer.path = path.cgPath
+            layer.fillRule = kCAFillRuleEvenOdd
+            layer.fillColor = UIColor.black.cgColor
+            layer.opacity = 0.7
+        }
+        maskingView.autoPinEdgesToSuperviewEdges()
+
+        let titleLabel = UILabel()
+        titleLabel.textColor = UIColor.white
+        titleLabel.textAlignment = .center
+        titleLabel.font = UIFont.ows_mediumFont(withSize:ScaleFromIPhone5(16))
+        titleLabel.text = NSLocalizedString("CROP_SCALE_IMAGE_VIEW_TITLE",
+                                            comment: "Title for the 'crop/scale image' dialog.")
+        contentView.addSubview(titleLabel)
+        titleLabel.autoPinWidthToSuperview()
+        let titleLabelMargin = ScaleFromIPhone5(16)
+        titleLabel.autoPin(toTopLayoutGuideOf:self, withInset:titleLabelMargin)
+
+        createButtonRow(contentView: contentView)
 
         contentView.isUserInteractionEnabled = true
         contentView.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(sender:))))
         contentView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePan(sender:))))
+    }
+
+    // Given the current bounds for the image view, return the frame of the
+    // crop region within that view.
+    private func cropFrame(forBounds bounds: CGRect) -> CGRect {
+        let radius = min(bounds.size.width, bounds.size.height) * 0.5 - self.maskMargin
+        // Center the circle's bounding rectangle
+        let circleRect = CGRect(x: bounds.size.width * 0.5 - radius, y: bounds.size.height * 0.5 - radius, width: radius * 2, height: radius * 2)
+        return circleRect
     }
 
     override func viewDidLayoutSubviews() {
@@ -281,11 +306,14 @@ class CropScaleImageViewController: OWSViewController {
             return
         }
 
-        let viewSizePoints = imageView.frame.size
+        // The size of the image view (should be full screen).
+        let imageViewSizePoints = imageView.frame.size
         guard
-            (viewSizePoints.width > 0 && viewSizePoints.height > 0) else {
+            (imageViewSizePoints.width > 0 && imageViewSizePoints.height > 0) else {
                 return
         }
+        // The frame of the crop circle within the image view.
+        let cropFrame = self.cropFrame(forBounds:CGRect(origin:CGPoint.zero, size: imageViewSizePoints))
 
         // Normalize the scaling property.
         imageScale = max(kMinImageScale, min(kMaxImageScale, imageScale))
@@ -294,38 +322,39 @@ class CropScaleImageViewController: OWSViewController {
                                        height:srcDefaultCropSizePoints.height / imageScale)
 
         let minSrcTranslationPoints = CGPoint.zero
+
+        // Prevent panning outside of image area.
         let maxSrcTranslationPoints = CGPoint(x:srcImageSizePoints.width - srcCropSizePoints.width,
                                               y:srcImageSizePoints.height - srcCropSizePoints.height
         )
 
-        // Normalize the translation property.
+        // Normalize the translation property
         srcTranslation = CGPoint(x: max(minSrcTranslationPoints.x, min(maxSrcTranslationPoints.x, srcTranslation.x)),
                                  y: max(minSrcTranslationPoints.y, min(maxSrcTranslationPoints.y, srcTranslation.y)))
 
-        let imageViewFrame = imageRenderRect(forDstSize:viewSizePoints)
+        // The frame of the image layer in crop frame coordinates.
+        let rawImageLayerFrame = imageRenderRect(forDstSize: cropFrame.size)
+        // The frame of the image layer in image view coordinates.
+        let imageLayerFrame = CGRect(x: rawImageLayerFrame.origin.x + cropFrame.origin.x,
+                                          y: rawImageLayerFrame.origin.y + cropFrame.origin.y,
+                                          width: rawImageLayerFrame.size.width,
+                                          height: rawImageLayerFrame.size.height)
 
-        // Disable implicit animations.
+        // Disable implicit animations for snappier panning/zooming.
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        imageLayer.frame = imageViewFrame
 
-        // Mask to circle.
-        let maskLayer = CAShapeLayer()
-        maskLayer.frame = imageViewFrame
-        maskLayer.fillRule = kCAFillRuleEvenOdd
-        let maskFrame = CGRect(origin:CGPoint(x:-imageViewFrame.origin.x * 2,
-                                              y: -imageViewFrame.origin.y * 2),
-                               size:imageView.bounds.size)
-        maskLayer.path =
-            CGPath(ellipseIn: maskFrame, transform: nil)
-        imageLayer.mask = maskLayer
-
-        dashedBorderLayer.frame = imageView.bounds
-        dashedBorderLayer.path = UIBezierPath(rect: imageView.bounds).cgPath
+        imageLayer.frame = imageLayerFrame
 
         CATransaction.commit()
     }
 
+    // Give the size of a given view or image context into which we
+    // will render the source image, return the frame (in that 
+    // view/context's coordinate system) to render the source image.
+    //
+    // Gathering this logic in a single function ensures that the
+    // output will be WYSIWYG with the view state.
     private func imageRenderRect(forDstSize dstSize: CGSize) -> CGRect {
 
         let srcCropSizePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
@@ -442,19 +471,24 @@ class CropScaleImageViewController: OWSViewController {
         buttonRow.autoPinEdge(toSuperviewEdge:.bottom, withInset:buttonBottomMargin)
         buttonRow.autoPinEdge(.top, to:.bottom, of:contentView, withOffset:buttonTopMargin)
 
+        let cancelButton = createButton(title: CommonStrings.cancelButton,
+                                        action: #selector(cancelPressed))
+        buttonRow.addSubview(cancelButton)
+        cancelButton.autoPinEdge(toSuperviewEdge:.top)
+        cancelButton.autoPinEdge(toSuperviewEdge:.bottom)
+        cancelButton.autoPinEdge(toSuperviewEdge: .left)
+
         let doneButton = createButton(title: NSLocalizedString("BUTTON_DONE",
                                                                comment: "Label for generic done button."),
-                                      color : UIColor.ows_materialBlue(),
                                       action: #selector(donePressed))
         buttonRow.addSubview(doneButton)
         doneButton.autoPinEdge(toSuperviewEdge:.top)
         doneButton.autoPinEdge(toSuperviewEdge:.bottom)
-        doneButton.autoHCenterInSuperview()
+        doneButton.autoPinEdge(toSuperviewEdge: .right)
     }
 
-    private func createButton(title: String, color: UIColor, action: Selector) -> UIButton {
+    private func createButton(title: String, action: Selector) -> UIButton {
         let buttonFont = UIFont.ows_mediumFont(withSize:ScaleFromIPhone5To7Plus(18, 22))
-        let buttonCornerRadius = ScaleFromIPhone5To7Plus(4, 5)
         let buttonWidth = ScaleFromIPhone5To7Plus(110, 140)
         let buttonHeight = ScaleFromIPhone5To7Plus(35, 45)
 
@@ -462,9 +496,6 @@ class CropScaleImageViewController: OWSViewController {
         button.setTitle(title, for:.normal)
         button.setTitleColor(UIColor.white, for:.normal)
         button.titleLabel!.font = buttonFont
-        button.backgroundColor = color
-        button.layer.cornerRadius = buttonCornerRadius
-        button.clipsToBounds = true
         button.addTarget(self, action:action, for:.touchUpInside)
         button.autoSetDimension(.width, toSize:buttonWidth)
         button.autoSetDimension(.height, toSize:buttonHeight)
@@ -497,8 +528,8 @@ class CropScaleImageViewController: OWSViewController {
         let context = UIGraphicsGetCurrentContext()
         context!.interpolationQuality = .high
 
-        let imageViewFrame = imageRenderRect(forDstSize:dstSizePixels)
-        srcImage.draw(in:imageViewFrame)
+        let imageViewFrame = imageRenderRect(forDstSize: dstSizePixels)
+        srcImage.draw(in: imageViewFrame)
 
         let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
         if scaledImage == nil {

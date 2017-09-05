@@ -355,8 +355,7 @@ class AttachmentApprovalViewController: OWSViewController, OWSAudioAttachmentPla
         buttonSpacer.autoSetDimension(.width, toSize:buttonHSpacing)
         buttonSpacer.autoHCenterInSuperview()
 
-        let cancelButton = createButton(title: NSLocalizedString("TXT_CANCEL_TITLE",
-                                                                 comment: ""),
+        let cancelButton = createButton(title: CommonStrings.cancelButton,
                                         color : UIColor.ows_destructiveRed(),
                                         action: #selector(cancelPressed))
         buttonRow.addSubview(cancelButton)

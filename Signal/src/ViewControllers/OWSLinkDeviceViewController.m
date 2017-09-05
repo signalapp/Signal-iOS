@@ -7,6 +7,7 @@
 #import "OWSDeviceProvisioningURLParser.h"
 #import "OWSLinkedDevicesTableViewController.h"
 #import "OWSProfileManager.h"
+#import "Signal-Swift.h"
 #import <SignalServiceKit/ECKeyPair+OWSPrivateKey.h>
 #import <SignalServiceKit/OWSDeviceProvisioner.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
@@ -80,15 +81,15 @@ NS_ASSUME_NONNULL_BEGIN
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
                                                                                  message:body
                                                                           preferredStyle:UIAlertControllerStyleAlert];
-        
+
         UIAlertAction *cancelAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
-                                 style:UIAlertActionStyleCancel
-                               handler:^(UIAlertAction *action) {
-                                   dispatch_async(dispatch_get_main_queue(), ^{
-                                       [self.navigationController popViewControllerAnimated:YES];
-                                   });
-                               }];
+            [UIAlertAction actionWithTitle:CommonStrings.cancelButton
+                                     style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action) {
+                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                           [self.navigationController popViewControllerAnimated:YES];
+                                       });
+                                   }];
         [alertController addAction:cancelAction];
         
         UIAlertAction *proceedAction =
@@ -111,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           preferredStyle:UIAlertControllerStyleAlert];
 
         UIAlertAction *cancelAction =
-            [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
+            [UIAlertAction actionWithTitle:CommonStrings.cancelButton
                                      style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action) {
                                        dispatch_async(dispatch_get_main_queue(), ^{
@@ -183,7 +184,7 @@ NS_ASSUME_NONNULL_BEGIN
     [alertController addAction:retryAction];
 
     UIAlertAction *cancelAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
+        [UIAlertAction actionWithTitle:CommonStrings.cancelButton
                                  style:UIAlertActionStyleCancel
                                handler:^(UIAlertAction *action) {
                                    dispatch_async(dispatch_get_main_queue(), ^{

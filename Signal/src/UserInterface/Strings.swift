@@ -10,6 +10,8 @@ import Foundation
 
 @objc class CommonStrings: NSObject {
     static let dismissButton = NSLocalizedString("DISMISS_BUTTON_TEXT", comment: "Short text to dismiss current modal / actionsheet / screen")
+    static let cancelButton = NSLocalizedString("TXT_CANCEL_TITLE", comment:"Label for the cancel button in an alert or action sheet.")
+
 }
 
 @objc class CallStrings: NSObject {

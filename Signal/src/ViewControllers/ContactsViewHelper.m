@@ -421,7 +421,7 @@ NS_ASSUME_NONNULL_BEGIN
     contactViewController.allowsActions = NO;
     contactViewController.allowsEditing = YES;
     contactViewController.navigationItem.leftBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", nil)
+        [[UIBarButtonItem alloc] initWithTitle:CommonStrings.cancelButton
                                          style:UIBarButtonItemStylePlain
                                         target:fromViewController
                                         action:@selector(didFinishEditingContact)];
