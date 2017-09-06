@@ -3,7 +3,7 @@
 //
 
 #import "OWSExpirationTimerView.h"
-#import "MessagesViewController.h"
+#import "ConversationViewController.h"
 #import "UIColor+OWS.h"
 #import <QuartzCore/CAShapeLayer.h>
 
@@ -110,7 +110,7 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
     self.initialDurationSeconds = initialDurationSeconds;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleReappearNotification:)
-                                                 name:OWSMessagesViewControllerDidAppearNotification
+                                                 name:ConversationViewControllerDidAppearNotification
                                                object:nil];
     [self startAnimation];
 }
@@ -176,7 +176,7 @@ double const OWSExpirationTimerViewBlinkingSeconds = 2;
 - (void)stopTimer
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:OWSMessagesViewControllerDidAppearNotification
+                                                    name:ConversationViewControllerDidAppearNotification
                                                   object:nil];
 
     [self.layer removeAnimationForKey:@"alphaBlink"];

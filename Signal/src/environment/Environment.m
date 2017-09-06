@@ -3,10 +3,10 @@
 //
 
 #import "Environment.h"
+#import "ConversationViewController.h"
 #import "DebugLogger.h"
 #import "FunctionalUtil.h"
 #import "HomeViewController.h"
-#import "MessagesViewController.h"
 #import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
 #import "TSContactThread.h"
@@ -195,8 +195,8 @@ static Environment *environment = nil;
         HomeViewController *vc = env.signalsViewController;
         UIViewController *topvc   = vc.navigationController.topViewController;
 
-        if ([topvc isKindOfClass:[MessagesViewController class]]) {
-            MessagesViewController *mvc = (MessagesViewController *)topvc;
+        if ([topvc isKindOfClass:[ConversationViewController class]]) {
+            ConversationViewController *mvc = (ConversationViewController *)topvc;
             if ([mvc.thread.uniqueId isEqualToString:threadId]) {
                 [mvc popKeyBoard];
                 return;

@@ -25,8 +25,8 @@
 		3448BFCC1EDF0EA7005B2D69 /* OWSMessagesToolbarContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3448BFC21EDF0EA7005B2D69 /* OWSMessagesToolbarContentView.m */; };
 		3448BFCD1EDF0EA7005B2D69 /* OWSMessagesInputToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 3448BFC41EDF0EA7005B2D69 /* OWSMessagesInputToolbar.m */; };
 		3448BFCF1EDF0EA7005B2D69 /* OWSMessagesComposerTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3448BFC81EDF0EA7005B2D69 /* OWSMessagesComposerTextView.m */; };
-		3448BFD01EDF0EA7005B2D69 /* MessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3448BFCA1EDF0EA7005B2D69 /* MessagesViewController.m */; };
-		3448BFD11EDF0EA7005B2D69 /* MessagesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3448BFCB1EDF0EA7005B2D69 /* MessagesViewController.xib */; };
+		3448BFD01EDF0EA7005B2D69 /* ConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3448BFCA1EDF0EA7005B2D69 /* ConversationViewController.m */; };
+		3448BFD11EDF0EA7005B2D69 /* ConversationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3448BFCB1EDF0EA7005B2D69 /* ConversationViewController.xib */; };
 		344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F2F661E57A932000D9322 /* UIViewController+OWS.m */; };
 		34533F181EA8D2070006114F /* OWSAudioAttachmentPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */; };
 		34535D821E256BE9008A4747 /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34535D811E256BE9008A4747 /* UIView+OWS.m */; };
@@ -432,9 +432,9 @@
 		3448BFC41EDF0EA7005B2D69 /* OWSMessagesInputToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessagesInputToolbar.m; sourceTree = "<group>"; };
 		3448BFC71EDF0EA7005B2D69 /* OWSMessagesComposerTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessagesComposerTextView.h; sourceTree = "<group>"; };
 		3448BFC81EDF0EA7005B2D69 /* OWSMessagesComposerTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessagesComposerTextView.m; sourceTree = "<group>"; };
-		3448BFC91EDF0EA7005B2D69 /* MessagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessagesViewController.h; sourceTree = "<group>"; };
-		3448BFCA1EDF0EA7005B2D69 /* MessagesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessagesViewController.m; sourceTree = "<group>"; };
-		3448BFCB1EDF0EA7005B2D69 /* MessagesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MessagesViewController.xib; sourceTree = "<group>"; };
+		3448BFC91EDF0EA7005B2D69 /* ConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationViewController.h; sourceTree = "<group>"; };
+		3448BFCA1EDF0EA7005B2D69 /* ConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewController.m; sourceTree = "<group>"; };
+		3448BFCB1EDF0EA7005B2D69 /* ConversationViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConversationViewController.xib; sourceTree = "<group>"; };
 		344F2F651E57A932000D9322 /* UIViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+OWS.h"; path = "util/UIViewController+OWS.h"; sourceTree = "<group>"; };
 		344F2F661E57A932000D9322 /* UIViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+OWS.m"; path = "util/UIViewController+OWS.m"; sourceTree = "<group>"; };
 		34533F161EA8D2070006114F /* OWSAudioAttachmentPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioAttachmentPlayer.h; sourceTree = "<group>"; };
@@ -966,9 +966,9 @@
 		3448BFC01EDF0EA7005B2D69 /* ConversationView */ = {
 			isa = PBXGroup;
 			children = (
-				3448BFC91EDF0EA7005B2D69 /* MessagesViewController.h */,
-				3448BFCA1EDF0EA7005B2D69 /* MessagesViewController.m */,
-				3448BFCB1EDF0EA7005B2D69 /* MessagesViewController.xib */,
+				3448BFC91EDF0EA7005B2D69 /* ConversationViewController.h */,
+				3448BFCA1EDF0EA7005B2D69 /* ConversationViewController.m */,
+				3448BFCB1EDF0EA7005B2D69 /* ConversationViewController.xib */,
 				3448BFC71EDF0EA7005B2D69 /* OWSMessagesComposerTextView.h */,
 				3448BFC81EDF0EA7005B2D69 /* OWSMessagesComposerTextView.m */,
 				3448BFC31EDF0EA7005B2D69 /* OWSMessagesInputToolbar.h */,
@@ -1995,7 +1995,7 @@
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
-				3448BFD11EDF0EA7005B2D69 /* MessagesViewController.xib in Resources */,
+				3448BFD11EDF0EA7005B2D69 /* ConversationViewController.xib in Resources */,
 				B10C9B611A7049EC00ECA2BF /* play_icon.png in Resources */,
 				AD83FF401A73426500B5C81A /* audio_pause_button_blue@2x.png in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
@@ -2348,7 +2348,7 @@
 				34B3F88D1E8DF1700035BE1A /* OWSQRCodeScanningViewController.m in Sources */,
 				34B3F8811E8DF1700035BE1A /* LockInteractionController.m in Sources */,
 				3448BFCC1EDF0EA7005B2D69 /* OWSMessagesToolbarContentView.m in Sources */,
-				3448BFD01EDF0EA7005B2D69 /* MessagesViewController.m in Sources */,
+				3448BFD01EDF0EA7005B2D69 /* ConversationViewController.m in Sources */,
 				34CCAF3B1F0C2748004084F4 /* OWSAddToContactViewController.m in Sources */,
 				45F659731E1BD99C00444429 /* CallKitCallUIAdaptee.swift in Sources */,
 				45BB93381E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */,

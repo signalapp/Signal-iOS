@@ -5,8 +5,8 @@
 #import "HomeViewController.h"
 #import "AppDelegate.h"
 #import "AppSettingsViewController.h"
+#import "ConversationViewController.h"
 #import "InboxTableViewCell.h"
-#import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "NewContactThreadViewController.h"
 #import "OWSContactsManager.h"
@@ -326,7 +326,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     if (indexPath) {
         [previewingContext setSourceRect:[self.tableView rectForRowAtIndexPath:indexPath]];
 
-        MessagesViewController *vc = [MessagesViewController new];
+        ConversationViewController *vc = [ConversationViewController new];
         TSThread *thread = [self threadForIndexPath:indexPath];
         self.lastThread = thread;
         [vc configureForThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
@@ -341,7 +341,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 - (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
      commitViewController:(UIViewController *)viewControllerToCommit
 {
-    MessagesViewController *vc = (MessagesViewController *)viewControllerToCommit;
+    ConversationViewController *vc = (ConversationViewController *)viewControllerToCommit;
     [vc popped];
 
     [self.navigationController pushViewController:vc animated:NO];
@@ -758,8 +758,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     // We do this synchronously if we're already on the main thread.
     DispatchMainThreadSafe(^{
-        MessagesViewController *mvc =
-            [[MessagesViewController alloc] initWithNibName:@"MessagesViewController" bundle:nil];
+        ConversationViewController *mvc =
+            [[ConversationViewController alloc] initWithNibName:@"ConversationViewController" bundle:nil];
         [mvc configureForThread:thread
             keyboardOnViewAppearing:keyboardOnViewAppearing
                 callOnViewAppearing:callOnViewAppearing];
