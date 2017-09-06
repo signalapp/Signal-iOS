@@ -18,7 +18,7 @@
 @class UINavigationController;
 @class OWSContactsManager;
 @class OutboundCallInitiator;
-@class SignalsViewController;
+@class HomeViewController;
 @class TSGroupThread;
 @class ContactsUpdater;
 @class TSNetworkManager;
@@ -49,7 +49,7 @@
 @property (nonatomic, readonly) PropertyListPreferences *preferences;
 
 
-@property (nonatomic, readonly) SignalsViewController *signalsViewController;
+@property (nonatomic, readonly) HomeViewController *signalsViewController;
 @property (nonatomic, readonly, weak) UINavigationController *signUpFlowNavigationController;
 
 + (Environment *)getCurrent;
@@ -59,7 +59,7 @@
 
 + (void)resetAppData;
 
-- (void)setSignalsViewController:(SignalsViewController *)signalsViewController;
+- (void)setHomeViewController:(HomeViewController *)signalsViewController;
 - (void)setSignUpFlowNavigationController:(UINavigationController *)signUpFlowNavigationController;
 
 + (void)messageThreadId:(NSString *)threadId;

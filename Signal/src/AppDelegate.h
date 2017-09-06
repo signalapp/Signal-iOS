@@ -4,7 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "SignalsViewController.h"
+#import "HomeViewController.h"
 
 extern NSString *const AppDelegateStoryboardMain;
 

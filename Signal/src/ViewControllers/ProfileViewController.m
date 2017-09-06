@@ -5,11 +5,11 @@
 #import "ProfileViewController.h"
 #import "AppDelegate.h"
 #import "AvatarViewHelper.h"
+#import "HomeViewController.h"
 #import "OWSNavigationController.h"
 #import "OWSProfileManager.h"
 #import "Signal-Swift.h"
 #import "SignalsNavigationController.h"
-#import "SignalsViewController.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
@@ -434,13 +434,13 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)showHomeView
 {
-    SignalsViewController *homeView = [SignalsViewController new];
+    HomeViewController *homeView = [HomeViewController new];
     homeView.newlyRegisteredUser = YES;
     SignalsNavigationController *navigationController =
         [[SignalsNavigationController alloc] initWithRootViewController:homeView];
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     appDelegate.window.rootViewController = navigationController;
-    OWSAssert([navigationController.topViewController isKindOfClass:[SignalsViewController class]]);
+    OWSAssert([navigationController.topViewController isKindOfClass:[HomeViewController class]]);
 }
 
 #pragma mark - UITextFieldDelegate
@@ -554,7 +554,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [navigationController pushViewController:vc animated:YES];
 }
 
-+ (void)presentForUpgradeOrNag:(SignalsViewController *)presentingController
++ (void)presentForUpgradeOrNag:(HomeViewController *)presentingController
 {
     OWSAssert(presentingController);
 

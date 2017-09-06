@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "SignalsViewController.h"
+#import "HomeViewController.h"
 #import "AppDelegate.h"
 #import "AppSettingsViewController.h"
 #import "InboxTableViewCell.h"
@@ -34,7 +34,7 @@
 
 typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
-@interface SignalsViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate>
+@interface HomeViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate>
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UILabel *emptyBoxLabel;
@@ -74,7 +74,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 #pragma mark -
 
-@implementation SignalsViewController
+@implementation HomeViewController
 
 #pragma mark - Init
 
@@ -169,7 +169,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.view.backgroundColor = [UIColor whiteColor];
 
     // TODO: Remove this.
-    [[Environment getCurrent] setSignalsViewController:self];
+    [[Environment getCurrent] setHomeViewController:self];
 
     self.navigationItem.rightBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
@@ -179,7 +179,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     ReminderView *archiveReminderView = [ReminderView new];
     archiveReminderView.text = NSLocalizedString(
         @"INBOX_VIEW_ARCHIVE_MODE_REMINDER", @"Label reminding the user that they are in archive mode.");
-    __weak SignalsViewController *weakSelf = self;
+    __weak HomeViewController *weakSelf = self;
     archiveReminderView.tapAction = ^{
         [weakSelf showInboxGrouping];
     };
@@ -236,7 +236,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [self.view layoutSubviews];
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
 
@@ -263,18 +264,19 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     UINavigationItem *navigationItem = self.navigationItem;
     navigationItem.titleView = self.segmentedControl;
     [self.segmentedControl setSelectedSegmentIndex:0];
-    navigationItem.leftBarButtonItem.accessibilityLabel = NSLocalizedString(
-        @"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
+    navigationItem.leftBarButtonItem.accessibilityLabel
+        = NSLocalizedString(@"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
 
-    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] &&
-        (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
+    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)]
+        && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
         [self registerForPreviewingWithDelegate:self sourceView:self.tableView];
     }
 
     [self updateBarButtonItems];
 }
 
-- (void)updateBarButtonItems {
+- (void)updateBarButtonItems
+{
     const CGFloat kBarButtonSize = 44;
     // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
     // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
@@ -309,21 +311,23 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
 }
 
-- (void)settingsButtonPressed:(id)sender {
+- (void)settingsButtonPressed:(id)sender
+{
     AppSettingsViewController *vc = [AppSettingsViewController new];
     OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:vc];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
-              viewControllerForLocation:(CGPoint)location {
+              viewControllerForLocation:(CGPoint)location
+{
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
 
     if (indexPath) {
         [previewingContext setSourceRect:[self.tableView rectForRowAtIndexPath:indexPath]];
 
         MessagesViewController *vc = [MessagesViewController new];
-        TSThread *thread           = [self threadForIndexPath:indexPath];
+        TSThread *thread = [self threadForIndexPath:indexPath];
         self.lastThread = thread;
         [vc configureForThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
         [vc peekSetup];
@@ -335,7 +339,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 }
 
 - (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
-     commitViewController:(UIViewController *)viewControllerToCommit {
+     commitViewController:(UIViewController *)viewControllerToCommit
+{
     MessagesViewController *vc = (MessagesViewController *)viewControllerToCommit;
     [vc popped];
 
@@ -361,7 +366,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }];
 }
 
-- (void)swappedSegmentedControl {
+- (void)swappedSegmentedControl
+{
     if (self.segmentedControl.selectedSegmentIndex == 0) {
         [self showInboxGrouping];
     } else {
@@ -369,7 +375,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
     if ([TSThread numberOfKeysInCollection] > 0) {
         [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
@@ -482,11 +489,12 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.isAppInBackground = YES;
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
 
     if (self.newlyRegisteredUser) {
-        [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+        [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
         }];
         // Start running the disappearing messages job in case the newly registered user
@@ -528,7 +536,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     NSArray<ExperienceUpgrade *> *unseenUpgrades = [self unseenUpgradeExperiences];
 
     if (unseenUpgrades.count > 0) {
-        ExperienceUpgradesPageViewController *experienceUpgradeViewController = [[ExperienceUpgradesPageViewController alloc] initWithExperienceUpgrades:unseenUpgrades];
+        ExperienceUpgradesPageViewController *experienceUpgradeViewController =
+            [[ExperienceUpgradesPageViewController alloc] initWithExperienceUpgrades:unseenUpgrades];
         [self presentViewController:experienceUpgradeViewController
                            animated:YES
                          completion:^{
@@ -541,7 +550,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.hasBeenPresented = YES;
 }
 
-- (void)tableViewSetUp {
+- (void)tableViewSetUp
+{
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
@@ -561,7 +571,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     return (NSInteger)[self.threadMappings numberOfSections];
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
     return (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
 }
 
@@ -582,17 +593,19 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     return cell;
 }
 
-- (TSThread *)threadForIndexPath:(NSIndexPath *)indexPath {
+- (TSThread *)threadForIndexPath:(NSIndexPath *)indexPath
+{
     __block TSThread *thread = nil;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      thread = [[transaction extension:TSThreadDatabaseViewExtensionName] objectAtIndexPath:indexPath
-                                                                               withMappings:self.threadMappings];
+        thread = [[transaction extension:TSThreadDatabaseViewExtensionName] objectAtIndexPath:indexPath
+                                                                                 withMappings:self.threadMappings];
     }];
 
     return thread;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     return InboxTableViewCell.rowHeight;
 }
 
@@ -600,35 +613,39 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)tableView:(UITableView *)tableView
     commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
-     forRowAtIndexPath:(NSIndexPath *)indexPath {
+     forRowAtIndexPath:(NSIndexPath *)indexPath
+{
     return;
 }
 
 
-- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     UITableViewRowAction *deleteAction =
         [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault
                                            title:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
                                          handler:^(UITableViewRowAction *action, NSIndexPath *swipedIndexPath) {
-                                           [self tableViewCellTappedDelete:swipedIndexPath];
+                                             [self tableViewCellTappedDelete:swipedIndexPath];
                                          }];
 
     UITableViewRowAction *archiveAction;
     if (self.viewingThreadsIn == kInboxState) {
         archiveAction = [UITableViewRowAction
             rowActionWithStyle:UITableViewRowActionStyleNormal
-                         title:NSLocalizedString(@"ARCHIVE_ACTION", @"Pressing this button moves a thread from the inbox to the archive")
+                         title:NSLocalizedString(@"ARCHIVE_ACTION",
+                                   @"Pressing this button moves a thread from the inbox to the archive")
                        handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
-                         [self archiveIndexPath:tappedIndexPath];
-                         [Environment.preferences setHasArchivedAMessage:YES];
+                           [self archiveIndexPath:tappedIndexPath];
+                           [Environment.preferences setHasArchivedAMessage:YES];
                        }];
 
     } else {
         archiveAction = [UITableViewRowAction
             rowActionWithStyle:UITableViewRowActionStyleNormal
-                         title:NSLocalizedString(@"UNARCHIVE_ACTION", @"Pressing this button moves an archived thread from the archive back to the inbox")
+                         title:NSLocalizedString(@"UNARCHIVE_ACTION",
+                                   @"Pressing this button moves an archived thread from the archive back to the inbox")
                        handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
-                         [self archiveIndexPath:tappedIndexPath];
+                           [self archiveIndexPath:tappedIndexPath];
                        }];
     }
 
@@ -636,23 +653,25 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     return @[ deleteAction, archiveAction ];
 }
 
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
     return YES;
 }
 
 #pragma mark - HomeFeedTableViewCellDelegate
 
-- (void)tableViewCellTappedDelete:(NSIndexPath *)indexPath {
+- (void)tableViewCellTappedDelete:(NSIndexPath *)indexPath
+{
     TSThread *thread = [self threadForIndexPath:indexPath];
     if ([thread isKindOfClass:[TSGroupThread class]]) {
 
         TSGroupThread *gThread = (TSGroupThread *)thread;
         if ([gThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
             UIAlertController *removingFromGroup = [UIAlertController
-                                                    alertControllerWithTitle:[NSString
-                                                                              stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", nil), [thread name]]
-                                                    message:nil
-                                                    preferredStyle:UIAlertControllerStyleAlert];
+                alertControllerWithTitle:[NSString
+                                             stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", nil), [thread name]]
+                                 message:nil
+                          preferredStyle:UIAlertControllerStyleAlert];
             [self presentViewController:removingFromGroup animated:YES completion:nil];
 
             TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -683,22 +702,24 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }
 }
 
-- (void)deleteThread:(TSThread *)thread {
+- (void)deleteThread:(TSThread *)thread
+{
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      [thread removeWithTransaction:transaction];
+        [thread removeWithTransaction:transaction];
     }];
 
     _inboxCount -= (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
     [self checkIfEmptyView];
 }
 
-- (void)archiveIndexPath:(NSIndexPath *)indexPath {
+- (void)archiveIndexPath:(NSIndexPath *)indexPath
+{
     TSThread *thread = [self threadForIndexPath:indexPath];
 
     BOOL viewingThreadsIn = self.viewingThreadsIn;
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      viewingThreadsIn == kInboxState ? [thread archiveThreadWithTransaction:transaction]
-                                      : [thread unarchiveThreadWithTransaction:transaction];
+        viewingThreadsIn == kInboxState ? [thread archiveThreadWithTransaction:transaction]
+                                        : [thread unarchiveThreadWithTransaction:transaction];
 
     }];
     [self checkIfEmptyView];
@@ -707,7 +728,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 - (void)updateInboxCountLabel
 {
     NSUInteger numberOfItems = [self.messagesManager unreadMessagesCount];
-    NSString *unreadString   = NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil);
+    NSString *unreadString = NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil);
 
     if (numberOfItems > 0) {
         unreadString =
@@ -719,7 +740,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [_segmentedControl reloadInputViews];
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     TSThread *thread = [self threadForIndexPath:indexPath];
     [self presentThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -736,8 +758,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     // We do this synchronously if we're already on the main thread.
     DispatchMainThreadSafe(^{
-        MessagesViewController *mvc = [[MessagesViewController alloc] initWithNibName:@"MessagesViewController"
-                                                                               bundle:nil];
+        MessagesViewController *mvc =
+            [[MessagesViewController alloc] initWithNibName:@"MessagesViewController" bundle:nil];
         [mvc configureForThread:thread
             keyboardOnViewAppearing:keyboardOnViewAppearing
                 callOnViewAppearing:callOnViewAppearing];
@@ -865,7 +887,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 #pragma mark Database delegates
 
-- (YapDatabaseConnection *)uiDatabaseConnection {
+- (YapDatabaseConnection *)uiDatabaseConnection
+{
     NSAssert([NSThread isMainThread], @"Must access uiDatabaseConnection on main thread!");
     if (!_uiDatabaseConnection) {
         YapDatabase *database = TSStorageManager.sharedManager.database;
@@ -875,12 +898,13 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     return _uiDatabaseConnection;
 }
 
-- (void)yapDatabaseModified:(NSNotification *)notification {
+- (void)yapDatabaseModified:(NSNotification *)notification
+{
     if (!self.shouldObserveDBModifications) {
         return;
     }
 
-    NSArray *notifications  = [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
     if (![[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
                                                                                inNotifications:notifications]) {
@@ -964,14 +988,15 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [self.tableView endUpdates];
 }
 
-- (void)checkIfEmptyView {
+- (void)checkIfEmptyView
+{
     [_tableView setHidden:NO];
     [_emptyBoxLabel setHidden:NO];
     if (self.viewingThreadsIn == kInboxState && [self.threadMappings numberOfItemsInGroup:TSInboxGroup] == 0) {
         [self setEmptyBoxText];
         [_tableView setHidden:YES];
     } else if (self.viewingThreadsIn == kArchiveState &&
-               [self.threadMappings numberOfItemsInGroup:TSArchiveGroup] == 0) {
+        [self.threadMappings numberOfItemsInGroup:TSArchiveGroup] == 0) {
         [self setEmptyBoxText];
         [_tableView setHidden:YES];
     } else {
@@ -979,31 +1004,32 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }
 }
 
-- (void)setEmptyBoxText {
-    _emptyBoxLabel.textColor     = [UIColor grayColor];
-    _emptyBoxLabel.font          = [UIFont ows_regularFontWithSize:18.f];
+- (void)setEmptyBoxText
+{
+    _emptyBoxLabel.textColor = [UIColor grayColor];
+    _emptyBoxLabel.font = [UIFont ows_regularFontWithSize:18.f];
     _emptyBoxLabel.textAlignment = NSTextAlignmentCenter;
     _emptyBoxLabel.numberOfLines = 4;
 
-    NSString *firstLine  = @"";
+    NSString *firstLine = @"";
     NSString *secondLine = @"";
 
     if (self.viewingThreadsIn == kInboxState) {
         if ([Environment.preferences getHasSentAMessage]) {
-            firstLine  = NSLocalizedString(@"EMPTY_INBOX_FIRST_TITLE", @"");
+            firstLine = NSLocalizedString(@"EMPTY_INBOX_FIRST_TITLE", @"");
             secondLine = NSLocalizedString(@"EMPTY_INBOX_FIRST_TEXT", @"");
         } else {
             // FIXME This looks wrong. Shouldn't we be showing inbox_title/text here?
-            firstLine  = NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TITLE", @"");
+            firstLine = NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TITLE", @"");
             secondLine = NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TEXT", @"");
         }
     } else {
         if ([Environment.preferences getHasArchivedAMessage]) {
             // FIXME This looks wrong. Shouldn't we be showing first_archive_title/text here?
-            firstLine  = NSLocalizedString(@"EMPTY_INBOX_TITLE", @"");
+            firstLine = NSLocalizedString(@"EMPTY_INBOX_TITLE", @"");
             secondLine = NSLocalizedString(@"EMPTY_INBOX_TEXT", @"");
         } else {
-            firstLine  = NSLocalizedString(@"EMPTY_ARCHIVE_TITLE", @"");
+            firstLine = NSLocalizedString(@"EMPTY_ARCHIVE_TITLE", @"");
             secondLine = NSLocalizedString(@"EMPTY_ARCHIVE_TEXT", @"");
         }
     }

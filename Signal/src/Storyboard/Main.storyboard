@@ -1,65 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--MessagesVC-->
-        <scene sceneID="QqV-z2-xRW">
-            <objects>
-                <viewController storyboardIdentifier="MessagesViewController" title="MessagesVC" hidesBottomBarWhenPushed="YES" id="DtA-8O-wrT" customClass="MessagesViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="0di-ZU-w1m"/>
-                        <viewControllerLayoutGuide type="bottom" id="stV-ob-KSQ"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="5r3-kq-bbI">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Title" id="mLN-DG-4IU">
-                        <barButtonItem key="backBarButtonItem" title=" " id="wnY-V7-zmi"/>
-                        <barButtonItem key="rightBarButtonItem" image="contact-options-action" id="662-pN-RLf">
-                            <inset key="imageInsets" minX="17" minY="10" maxX="0.0" maxY="5"/>
-                            <color key="tintColor" red="0.99987119436264038" green="0.99998223781585693" blue="0.99984109401702881" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        </barButtonItem>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="inputToolbar" destination="BdJ-vY-dHA" id="EfK-zI-nSM"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="yXZ-iE-5va" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="BdJ-vY-dHA" customClass="OWSMessagesInputToolbar">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <items>
-                        <barButtonItem title="Item" id="4F3-az-L9s"/>
-                    </items>
-                </toolbar>
-                <view contentMode="scaleToFill" id="X6H-b7-xZK" customClass="OWSMessagesToolbarContentView">
-                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    <connections>
-                        <outlet property="textView" destination="XUl-oy-JS1" id="kzd-TM-IJT"/>
-                    </connections>
-                </view>
-                <view contentMode="scaleToFill" id="XUl-oy-JS1" customClass="JSQMessagesComposerTextView">
-                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                </view>
-            </objects>
-            <point key="canvasLocation" x="-2287" y="-1516"/>
-        </scene>
         <!--Linked Devices-->
         <scene sceneID="R59-ey-Ucx">
             <objects>
@@ -262,7 +214,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="contact-options-action" width="44" height="44"/>
         <image name="ic_devices_ios" width="180" height="119"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

@@ -669,7 +669,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self startExpirationTimerAnimations];
 
     // We should have already requested contact access at this point, so this should be a no-op
-    // unless it ever becomes possible to load this VC without going via the SignalsViewController.
+    // unless it ever becomes possible to load this VC without going via the HomeViewController.
     [self.contactsManager requestSystemContactsOnce];
 
     OWSDisappearingMessagesConfiguration *configuration =
