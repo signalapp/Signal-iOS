@@ -46,10 +46,13 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 	
 	dispatch_source_t holdTimer;
 	BOOL holdTimerSuspended;
+	
+	__weak YapDatabaseCloudCore *_atomic_owner;
 }
 
 @synthesize name = name;
 @synthesize delegate = delegate;
+@dynamic owner;
 
 @synthesize previousNames = previousNames;
 @synthesize maxConcurrentOperationCount = _atomic_maxConcurrentOperationCount;
@@ -105,6 +108,48 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 		dispatch_resume(holdTimer);
 		holdTimerSuspended = NO;
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Ownership
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (YapDatabaseCloudCore *)owner
+{
+	__block YapDatabaseCloudCore *owner = nil;
+	
+	dispatch_block_t block = ^{ @autoreleasepool {
+		
+		owner = _atomic_owner;
+	}};
+	
+	if (dispatch_get_specific(IsOnQueueKey))
+		block();
+	else
+		dispatch_sync(queue, block);
+	
+	return owner;
+}
+
+- (BOOL)setOwner:(YapDatabaseCloudCore *)inOwner
+{
+	__block BOOL wasOwnerSet = NO;
+	
+	dispatch_block_t block = ^{ @autoreleasepool {
+		
+		if (!_atomic_owner && inOwner)
+		{
+			_atomic_owner = inOwner;
+			wasOwnerSet = YES;
+		}
+	}};
+	
+	if (dispatch_get_specific(IsOnQueueKey))
+		block();
+	else
+		dispatch_sync(queue, block);
+	
+	return wasOwnerSet;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

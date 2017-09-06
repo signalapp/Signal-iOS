@@ -7,6 +7,7 @@
 #import "YapDatabaseCloudCorePipelineDelegate.h"
 #import "YapDatabaseCloudCoreGraph.h"
 #import "YapDatabaseCloudCoreOperation.h"
+#import "YapDatabaseCloudCore.h"
 
 typedef NS_ENUM(NSInteger, YDBCloudCoreOperationStatus) {
 	
@@ -82,9 +83,10 @@ extern NSString *const YDBCloudCorePipelineSuspendCountChangedNotification;
 **/
 - (instancetype)initWithName:(NSString *)name delegate:(id <YapDatabaseCloudCorePipelineDelegate>)delegate;
 
-
 @property (nonatomic, copy, readonly) NSString *name;
 @property (nonatomic, weak, readonly) id <YapDatabaseCloudCorePipelineDelegate> delegate;
+
+@property (atomic, weak, readonly) YapDatabaseCloudCore *owner;
 
 #pragma mark Configuration
 

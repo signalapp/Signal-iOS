@@ -6,6 +6,7 @@
 
 #import "YapDatabaseCloudCorePipeline.h"
 #import "YapDatabaseCloudCoreGraph.h"
+#import "YapDatabaseCloudCore.h"
 
 
 @interface YapDatabaseCloudCorePipeline ()
@@ -20,6 +21,8 @@
  * In addition to saving a small amount of space, this makes renaming pipelines significantly easier.
 **/
 @property (nonatomic, assign, readwrite) int64_t rowid;
+
+- (BOOL)setOwner:(YapDatabaseCloudCore *)owner;
 
 - (NSArray<NSArray<YapDatabaseCloudCoreOperation *> *> *)graphOperations;
 

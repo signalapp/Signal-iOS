@@ -322,6 +322,12 @@ withRegisteredExtensions:(NSDictionary __unused *)registeredExtensions
 			return;
 		}
 		
+		if (![pipeline setOwner:self])
+		{
+			result = NO;
+			return;
+		}
+		
 		pipelines[pipeline.name] = pipeline;
 		
 		for (NSString *alias in pipeline.previousNames)
