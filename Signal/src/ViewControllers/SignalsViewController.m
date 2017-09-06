@@ -6,9 +6,9 @@
 #import "AppDelegate.h"
 #import "AppSettingsViewController.h"
 #import "InboxTableViewCell.h"
-#import "MessageComposeTableViewController.h"
 #import "MessagesViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "NewContactThreadViewController.h"
 #import "OWSContactsManager.h"
 #import "OWSNavigationController.h"
 #import "ProfileViewController.h"
@@ -344,7 +344,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)composeNew
 {
-    MessageComposeTableViewController *viewController = [MessageComposeTableViewController new];
+    NewContactThreadViewController *viewController = [NewContactThreadViewController new];
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
         if (error) {

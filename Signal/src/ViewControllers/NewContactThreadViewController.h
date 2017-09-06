@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MessageComposeTableViewController : OWSViewController
+@interface NewContactThreadViewController : OWSViewController
 
 @end
 
