@@ -21,8 +21,14 @@
 #endif
 #pragma unused(ydbLogLevel)
 
-NSString *const YDBCloudCorePipelineQueueChangedNotification = @"YDBCloudCorePipelineQueueChangedNotification";
-NSString *const YDBCloudCorePipelineSuspendCountChangedNotification = @"YDBCloudCorePipelineSuspendCountChangedNotification";
+NSString *const YDBCloudCorePipelineQueueChangedNotification =
+              @"YDBCloudCorePipelineQueueChangedNotification";
+
+NSString *const YDBCloudCorePipelineSuspendCountChangedNotification =
+              @"YDBCloudCorePipelineSuspendCountChangedNotification";
+
+NSString *const YDBCloudCorePipelineActiveStatusChangedNotification =
+              @"YDBCloudCorePipelineActiveStatusChangedNotification";
 
 NSString *const YDBCloudCore_EphemeralKey_Status   = @"status";
 NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
@@ -48,6 +54,8 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 	BOOL holdTimerSuspended;
 	
 	__weak YapDatabaseCloudCore *_atomic_owner;
+	
+	BOOL isActive;
 }
 
 @synthesize name = name;
@@ -873,6 +881,100 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark Active & Inactive
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (BOOL)isActive
+{
+	__block BOOL status = NO;
+	
+	dispatch_block_t block = ^{ @autoreleasepool {
+		
+		status = isActive;
+	}};
+	
+	if (dispatch_get_specific(IsOnQueueKey))
+		block();
+	else
+		dispatch_sync(queue, block);
+	
+	return status;
+}
+
+- (void)checkActiveStatus
+{
+	NSAssert(dispatch_get_specific(IsOnQueueKey), @"Must be executed within queue");
+	
+	__block BOOL hasOps = NO;
+	__block BOOL hasStartedOps = NO;
+	
+	[self _enumerateOperationsUsingBlock:
+		^(YapDatabaseCloudCoreOperation *operation, NSUInteger graphIdx, BOOL *stop)
+	{
+		if (!hasOps) {
+			hasOps = YES;
+		}
+		
+		if (graphIdx == 0)
+		{
+			if ([self statusForOperationWithUUID:operation.uuid] == YDBCloudOperationStatus_Started)
+			{
+				hasStartedOps = YES;
+				*stop = YES;
+			}
+		}
+		else
+		{
+			*stop = YES;
+		}
+	}];
+	
+	if (isActive)
+	{
+		// Transition to inactive when:
+		// - There are 0 operations in 'YDBCloudOperationStatus_Started' mode
+		// - AND (the pipeline is suspended OR there are no more operations)
+		
+		if (!hasStartedOps)
+		{
+			if (!hasOps || self.isSuspended)
+			{
+				isActive = NO;
+				[self postActiveStatusChanged:isActive];
+			}
+		}
+	}
+	else
+	{
+		// Transition to active when:
+		// - There are 1 or more operations in 'YDBCloudOperationStatus_Started' mode.
+		
+		if (hasStartedOps)
+		{
+			isActive = YES;
+			[self postActiveStatusChanged:isActive];
+		}
+	}
+}
+
+- (void)postActiveStatusChanged:(BOOL)_isActive
+{
+	dispatch_block_t block = ^{
+		
+		NSDictionary *userInfo = @{ @"isActive" : @(_isActive) };
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:YDBCloudCorePipelineActiveStatusChangedNotification
+		                                                    object:self
+		                                                  userInfo:userInfo];
+	};
+	
+	if ([NSThread isMainThread])
+		block();
+	else
+		dispatch_async(dispatch_get_main_queue(), block);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Graph Management
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1054,8 +1156,11 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 		[self postQueueChangedNotification];
 	}
 	
-	if (currentGraph == nil) {
+	if (currentGraph == nil)
+	{
 		// Waiting for another graph to be added
+		
+		[self checkActiveStatus];
 		return;
 	}
 	
@@ -1096,6 +1201,8 @@ NSString *const YDBCloudCore_EphemeralKey_Hold     = @"hold";
 			nextOp = [currentGraph dequeueNextOperation];
 			
 		} while (nextOp);
+		
+		[self checkActiveStatus];
 	}
 }
 

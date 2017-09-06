@@ -59,6 +59,12 @@ extern NSString *const YDBCloudCorePipelineQueueChangedNotification;
 extern NSString *const YDBCloudCorePipelineSuspendCountChangedNotification;
 
 /**
+ * This notification is posted whenever the isActive status changes.
+ * This notification is posted to the main thread.
+**/
+extern NSString *const YDBCloudCorePipelineActiveStatusChangedNotification;
+
+/**
  * A "pipeline" represents a queue of operations for syncing with a cloud server.
  * It operates by managing a series of "graphs".
  * 
@@ -255,5 +261,17 @@ extern NSString *const YDBCloudCorePipelineSuspendCountChangedNotification;
  * @see suspendCount
 **/
 - (NSUInteger)resume;
+
+#pragma mark Activity
+
+/**
+ * A pipeline transitions to the 'active' state when:
+ * - There are 1 or more operations in 'YDBCloudOperationStatus_Started' mode.
+ *
+ * A pipeline transitions to the 'inactive' state when:
+ * - There are 0 operations in 'YDBCloudOperationStatus_Started' mode
+ * - AND (the pipeline is suspended OR there are no more operations)
+**/
+@property (atomic, readonly) BOOL isActive;
 
 @end
