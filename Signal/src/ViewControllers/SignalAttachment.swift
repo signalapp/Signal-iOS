@@ -252,7 +252,7 @@ class SignalAttachment: NSObject {
     // being uploaded.
     private class var inputImageUTISet: Set<String> {
          // HEIC is valid input, but not valid output. Non-iOS11 clients do not support it.
-        let heicSet: Set<String> = Set(["public.heic"])
+        let heicSet: Set<String> = Set(["public.heic", "public.heif"])
 
         return MIMETypeUtil.supportedImageUTITypes()
             .union(animatedImageUTISet)
