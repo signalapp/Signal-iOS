@@ -3311,6 +3311,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     } else {
         // Non-Video image picked from library
 
+        // To avoid re-encoding GIF and PNG's as JPEG we have to get the raw data of
+        // the selected item vs. using the UIImagePickerControllerOriginalImage
         NSURL *assetURL = info[UIImagePickerControllerReferenceURL];
         PHAsset *asset = [[PHAsset fetchAssetsWithALAssetURLs:@[ assetURL ] options:nil] lastObject];
         if (!asset) {

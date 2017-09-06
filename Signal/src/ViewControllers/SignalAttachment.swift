@@ -251,7 +251,12 @@ class SignalAttachment: NSObject {
     // Image attachments may be converted to another image format before 
     // being uploaded.
     private class var inputImageUTISet: Set<String> {
-        return MIMETypeUtil.supportedImageUTITypes().union(animatedImageUTISet)
+         // HEIC is valid input, but not valid output. Non-iOS11 clients do not support it.
+        let heicSet: Set<String> = Set(["public.heic", "public.heif"])
+
+        return MIMETypeUtil.supportedImageUTITypes()
+            .union(animatedImageUTISet)
+            .union(heicSet)
     }
 
     // Returns the set of UTIs that correspond to valid _output_ image formats
@@ -441,7 +446,7 @@ class SignalAttachment: NSObject {
         }
 
         guard imageData.count > 0 else {
-            assert(imageData.count > 0)
+            owsFail("\(self.TAG) in \(#function) imageData was empty")
             attachment.error = .invalidData
             return attachment
         }
