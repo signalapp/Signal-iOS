@@ -17,13 +17,13 @@
 "ADD_GROUP_MEMBER_VIEW_TITLE" = "إضافة عضو";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Would you like to share your profile with this group?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "هل تريد مشاركة ملفك الشخصي مع هذه المجموعة؟";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "هل ترغب في إضافة هذا المستخدم لجهات الاتصال الخاصة بك؟";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Would you like to share your profile with this user?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "هل تريد مشاركة ملفك الشخصي مع هذا المستخدم؟";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "تجاهل";
@@ -60,6 +60,9 @@
 
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ في المجموعة %@: %@";
+
+/* Text prompting user to edit their profile name. */
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Enter your name";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "النسخة %@ غير متواجدة بمتجر الآب ستور";
@@ -201,6 +204,9 @@
 
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "حظر %@؟";
+
+/* Label for generic done button. */
+"BUTTON_DONE" = "Done";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "من أجل إجراء المكالمات وتسجيل الرسائل الصوتية يحتاج تطبيق سجنال السماح بإستخدام الميكروفون. بإمكانك منح هذا الإذن من خلال تطبيق الإعدادات.";
@@ -347,19 +353,31 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "رفع الكتم";
 
 /* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "This group can see your profile.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "يمكن لهذه المجموعة مشاهدة ملفك الشخصي.";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "This user can see your profile.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "يمكن لهذا المستخدم رؤية ملفك الشخصي.";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Share Profile";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "مشاركة الملف الشخصي";
 
 /* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Share Your Profile";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "مشاركة ملفك الشخصي";
 
 /* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Share Your Profile";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "مشاركة ملفك الشخصي";
+
+/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Add to Contacts";
+
+/* Message shown in conversation view that offers to share your profile with a user. */
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile With This User";
+
+/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "This user is not in your contacts.";
+
+/* Message shown in conversation view that offers to block an unknown user. */
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Block This User";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "إعادة تعيين جلستك سيسمح لك باستقبال الرسائل الحديثة من %@, لكن لن تتمكن من استعادة أي من الرسائل التالفة.";
@@ -369,6 +387,9 @@
 
 /* Accessibility label for the create group new group button */
 "CREATE_NEW_GROUP" = "انشاء مجموعة جديدة";
+
+/* Title for the 'crop/scale image' dialog. */
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Move and Scale";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "قد يستغرق ذلك بضع دقائق.";
@@ -799,6 +820,9 @@
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "لقد حظرت %@ من أعضاء هذه المجموعة.";
 
+/* Text for banner in group conversation view that offers to share your profile with this group. */
+"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Share Your Profile With This Group?";
+
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "لم يعد هناك دلالة تحقق لأكثر من عضو في هذه المجموعة. انقر للحصول على خيارات.";
 
@@ -857,6 +881,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "لن تستلم تنبيهات من المحادثات التي تم كتمها.";
+
+/* A button to skip a view. */
+"NAVIGATION_ITEM_SKIP_BUTTON" = "Skip";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "من فضلك تأكد من اتصالك بالانترنت وحاول مرة أخرى.";
@@ -1057,29 +1084,47 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "تقدم";
 
+/* Label text combining the phone number and profile name separated by a simple demarcation character. Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced with {{profile name}} */
+"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT" = "%1$@ ~%2$@";
+
+/* Prepend a simple marker to differentiate the profile name, embeds the contact's {{profile name}}. */
+"PROFILE_NAME_LABEL_FORMAT" = "~%@";
+
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Avatar";
-
-/* Instructions for how to change the profile avatar. */
-"PROFILE_VIEW_AVATAR_INSTRUCTIONS" = "Tap to Select Avatar";
-
-/* Header title for the profile avatar field of the profile view. */
-"PROFILE_VIEW_AVATAR_SECTION_HEADER" = "Avatar";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "تعيين  الصورة الرمزية للملف الشخصي";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Clear Avatar";
+"PROFILE_VIEW_CLEAR_AVATAR" = "مسح الصورة الرمزية";
+
+/* Error message shown when user tries to update profile with a profile name that is too long. */
+"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Your profile name is too long.";
 
 /* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Profile update failed.";
+"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "أخفقت عملية تحديث الملف الشخصي.";
 
 /* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Enter your name.";
+"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Enter your name";
+
+/* Label for the profile avatar field of the profile view. */
+"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
+
+/* Description of the user profile. */
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your Signal Profile will be visible to your contacts, when you initiate new conversations, and when you share it with other users and groups.";
+
+/* Link to more information about the user profile. */
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tap here to learn more.";
 
 /* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_SECTION_HEADER" = "Profile Name";
+"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profile Name";
+
+/* Button to save the profile view in the profile view. */
+"PROFILE_VIEW_SAVE_BUTTON" = "Save";
+
+/* Alert title that indicates the user's profile view is being saved. */
+"PROFILE_VIEW_SAVING" = "Saving...";
 
 /* Title for the profile view. */
-"PROFILE_VIEW_TITLE" = "Profile";
+"PROFILE_VIEW_TITLE" = "الملف الشخصي";
 
 /* No comment provided by engineer. */
 "PUSH_MANAGER_MARKREAD" = "وضع علامة \"مقروء\"";
@@ -1119,9 +1164,6 @@
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "حاولت مراراً وتكراراً . الرجاء الانتظار لدقيقة واحدة قبل إعادة المحاولة.";
-
-/* No comment provided by engineer. */
-"REGISTERED_NUMBER_TEXT" = "رقم مسجّل";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "فشل إعادة التسجيل في دفع اﻹشعارات.";
@@ -1417,7 +1459,7 @@
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ أسابيع";
 
-/* generic cancel text */
+/* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "إلغاء";
 
 /* No comment provided by engineer. */
@@ -1473,6 +1515,15 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "تصفح بسلاسة لتعرف الإجابة ببساطة";
+
+/* button label shown one time, after user upgrades app */
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Set up Your Profile";
+
+/* Description of new profile feature for upgrading (existing) users */
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "You can now share a profile photo and name with your friends on Signal.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Ready for Your Closeup?";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "تدعم Signal حالياً إتصال الفيديو الآمن. إِبدأ بمجرد إجراء الاتصال الهاتفي المعتاد، وانقر على زرّ الكاميرا، ثم لوِّح لتلقي التحية. ";

@@ -61,6 +61,9 @@
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ ក្នុងក្រុម %@: %@";
 
+/* Text prompting user to edit their profile name. */
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Enter your name";
+
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "ជំនាន់ %@ ឥលូវមាននៅលើ App Store។";
 
@@ -201,6 +204,9 @@
 
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "ហាមឃាត់ %@?";
+
+/* Label for generic done button. */
+"BUTTON_DONE" = "Done";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal ទាមទារចូលប្រើប្រាស់ប្រដាប់ស្រូបសំឡេងរបស់អ្នក ដើម្បីធ្វើការហៅចេញ និងថតសារសំឡេង។ អ្នកអាចផ្តល់សិទ្ធិនេះក្នុងការកំណត់។";
@@ -361,6 +367,18 @@
 /* Action that shares user profile with a user. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Share Your Profile";
 
+/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Add to Contacts";
+
+/* Message shown in conversation view that offers to share your profile with a user. */
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile With This User";
+
+/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "This user is not in your contacts.";
+
+/* Message shown in conversation view that offers to block an unknown user. */
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Block This User";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "ការកំណត់ការចូលប្រើប្រាស់របស់អ្នកឡើងវិញ នឹងអនុញ្ញាតអ្នក ឲ្យទទួលសារក្នុងពេលខាងមុខពី %@, ប៉ុន្តែ វានឹងមិនស្តារសារណាដែលខូចខាតទេ។";
 
@@ -369,6 +387,9 @@
 
 /* Accessibility label for the create group new group button */
 "CREATE_NEW_GROUP" = "បង្កើតក្រុមថ្មី";
+
+/* Title for the 'crop/scale image' dialog. */
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Move and Scale";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "នេះអាចចំណាយពេលប៉ុន្មានទាទី។";
@@ -799,6 +820,9 @@
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "អ្នកបានហាមឃាត់ សមាជិក%@ នៃក្រុមនេះ";
 
+/* Text for banner in group conversation view that offers to share your profile with this group. */
+"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Share Your Profile With This Group?";
+
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "សមាជិកលើសពីមួយក្នុងក្រុមនេះ លែងបានផ្ទៀងផ្ទាត់ហើយ។ ចុច សម្រាប់ជម្រើសបន្ថែម។";
 
@@ -857,6 +881,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "អ្នកនឹងមិនទទួលសារជូនដំណឹង សម្រាប់ការសន្ទនាបិទសំឡេងទេ។";
+
+/* A button to skip a view. */
+"NAVIGATION_ITEM_SKIP_BUTTON" = "Skip";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "សូមពិនិត្យថា អ្នកកំពុងលើបណ្តាញ និងព្យាយាមម្តងទៀត។";
@@ -1057,26 +1084,44 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "ដំណើរការ";
 
+/* Label text combining the phone number and profile name separated by a simple demarcation character. Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced with {{profile name}} */
+"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT" = "%1$@ ~%2$@";
+
+/* Prepend a simple marker to differentiate the profile name, embeds the contact's {{profile name}}. */
+"PROFILE_NAME_LABEL_FORMAT" = "~%@";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Avatar";
 
-/* Instructions for how to change the profile avatar. */
-"PROFILE_VIEW_AVATAR_INSTRUCTIONS" = "Tap to Select Avatar";
-
-/* Header title for the profile avatar field of the profile view. */
-"PROFILE_VIEW_AVATAR_SECTION_HEADER" = "Avatar";
-
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Clear Avatar";
+
+/* Error message shown when user tries to update profile with a profile name that is too long. */
+"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Your profile name is too long.";
 
 /* Error message shown when a profile update fails. */
 "PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Profile update failed.";
 
 /* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Enter your name.";
+"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Enter your name";
+
+/* Label for the profile avatar field of the profile view. */
+"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
+
+/* Description of the user profile. */
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your Signal Profile will be visible to your contacts, when you initiate new conversations, and when you share it with other users and groups.";
+
+/* Link to more information about the user profile. */
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tap here to learn more.";
 
 /* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_SECTION_HEADER" = "Profile Name";
+"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profile Name";
+
+/* Button to save the profile view in the profile view. */
+"PROFILE_VIEW_SAVE_BUTTON" = "Save";
+
+/* Alert title that indicates the user's profile view is being saved. */
+"PROFILE_VIEW_SAVING" = "Saving...";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profile";
@@ -1119,9 +1164,6 @@
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "អ្នកបានព្យាយាមច្រើនដងពេក។ សូមរង់ចាំមួយនាទី មុនពេលព្យាយាមម្តងទៀត។";
-
-/* No comment provided by engineer. */
-"REGISTERED_NUMBER_TEXT" = "លេខបានចុះឈ្មោះ";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "បរាជ័យក្នុងការចុះឈ្មោះឡើងវិញ​ សម្រាប់ការផ្តល់ដំណឹង។";
@@ -1417,7 +1459,7 @@
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ សប្តាហ៍";
 
-/* generic cancel text */
+/* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "បោះបង់";
 
 /* No comment provided by engineer. */
@@ -1473,6 +1515,15 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "គ្រាន់តែអូស ដើម្បីឆ្លើយ";
+
+/* button label shown one time, after user upgrades app */
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Set up Your Profile";
+
+/* Description of new profile feature for upgrading (existing) users */
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "You can now share a profile photo and name with your friends on Signal.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Ready for Your Closeup?";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal ឥលូវគាំទ្រការហៅវីដេអូសុវត្ថិភាព។ គ្រាន់តែហៅតាមធម្មតា ចុចលើប៊ូតុង កាមេរ៉ា ហើយបក់ដៃ សួស្តី។";

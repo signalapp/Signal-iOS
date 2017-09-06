@@ -17,13 +17,13 @@
 "ADD_GROUP_MEMBER_VIEW_TITLE" = "Dodaj člana";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Would you like to share your profile with this group?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Želite li podijeliti svoj profil s ovom grupom?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "Da li želite dodati ovog korisnika u vaš imenik?";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Would you like to share your profile with this user?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Želite li podijeliti svoj profil s ovim korisnikom?";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Odbaci";
@@ -38,7 +38,7 @@
 "ALERT_SAVE" = "Spremi";
 
 /* A message for the alert shown while validating a signal account */
-"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Provjeri da je to važeći Signal račun.";
+"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Provjeravanje da je to važeći Signal račun.";
 
 /* A title for the alert shown while validating a signal account */
 "ALERT_VALIDATE_RECIPIENT_TITLE" = "Ovjera";
@@ -60,6 +60,9 @@
 
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ u grupi %@: %@";
+
+/* Text prompting user to edit their profile name. */
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Unesite svoje ime";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "%@ verzija je sada dostupna na App Storeu.";
@@ -134,7 +137,7 @@
 "ATTACHMENT_LABEL" = "Privitak";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Neuspješan odabir dokumenta.";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Nije moguće odabrati dokument.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal ne može prenijeti ovu datoteku. Probajte je sažeti u .zip format prije slanja.";
@@ -201,6 +204,9 @@
 
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Blokiraj %@?";
+
+/* Label for generic done button. */
+"BUTTON_DONE" = "Uredu";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal zahtijeva pristup mikrofonu za uspostavu poziva i snimanje glasovnih poruka. Možete odobriti ove dozvole u aplikaciji Postavke.";
@@ -275,7 +281,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Uveži novi uređaj";
 
 /* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@je možda reinstalirao/la Signal ili promijenio/la uređaj. Verifikujte svoj sigurnosni broj s njim/njom kako biste osigurali privatnost.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@je možda reinstalirao/la Signal ili promijenio/la uređaj. Provjerite svoj sigurnosni broj s njim/njom kako biste osigurali privatnost.";
 
 /* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Sigurnosni broj sa %@ je promijenjen.";
@@ -347,19 +353,31 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Isključi utišavanje";
 
 /* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "This group can see your profile.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Ova grupa može vidjeti vaš profil.";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "This user can see your profile.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Ovaj korisnik može vidjeti vaš profil.";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Share Profile";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Podijeli profil";
 
 /* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Share Your Profile";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Podijeli svoj profil";
 
 /* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Share Your Profile";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Podijeli svoj profil";
+
+/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Dodaj u kontakte";
+
+/* Message shown in conversation view that offers to share your profile with a user. */
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Podijeli svoj profil sa ovim korisnikom";
+
+/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Ovaj korisnik nije u vašim kontaktima.";
+
+/* Message shown in conversation view that offers to block an unknown user. */
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Blokiraj ovog korisnika";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Resetovanje sesije će vam omogućiti da primate buduće poruke od %@, ali neće oporaviti već korumpirane poruke.";
@@ -370,8 +388,11 @@
 /* Accessibility label for the create group new group button */
 "CREATE_NEW_GROUP" = "Kreiraj novu grupu";
 
+/* Title for the 'crop/scale image' dialog. */
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Pomakni i skaliraj";
+
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Ovo može potrajati nekolikio minuta.";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Ovo može potrajati nekoliko minuta.";
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Ažuriranje podataka";
@@ -536,13 +557,13 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Sigurnosni broj promijenjen.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Vaš sigurnosi broj sa %@ je promijenjen.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Vaš sigurnosni broj sa %@ je promijenjen.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Došlo je do nepoznate pogreške.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sigurnosni broj primijenjen. Dodirni za verifikaciju.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sigurnosni broj primijenjen. Dodirni za provjeru.";
 
 /* during registration */
 "EXISTING_USER_REGISTRATION_ALERT_BODY" = "U ovom trenutku Signal može biti aktivan samo na jednom mobilnom uređaju po telefonskom broju.";
@@ -590,7 +611,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Privitak";
 
 /* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "Fotografija profila promijenjena!";
+"GROUP_AVATAR_CHANGED" = "Slika profila promijenjena!";
 
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "Grupa je kreirana!";
@@ -599,7 +620,7 @@
 "GROUP_CREATING" = "Kreiranje nove grupe";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Nisu svi članovi mogli biti dodani u grupu. Dodirnite za ponovni pokušaj.";
+"GROUP_CREATION_FAILED" = "Nisu svi članovi mogli biti dodani u grupu. Dodirni za ponovni pokušaj.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Upravljanje grupom";
@@ -799,6 +820,9 @@
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Blokirali ste %@ članova ove grupe.";
 
+/* Text for banner in group conversation view that offers to share your profile with this group. */
+"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Podijeli svoj profil sa ovom grupom?";
+
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Nekoliko korisnika u ovoj grupi više nije označeno provjerenim. Dodirni za opcije.";
 
@@ -818,7 +842,7 @@
 "MISSED_CALL" = "Propušten poziv";
 
 /* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Propušten poziv od %@jer je njihov broj promijenjen.";
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Propušten poziv od %@ jer je njihov broj promijenjen.";
 
 /* notification title */
 "MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Propušten poziv jer je sigurnosni broj pozivatelja promijenjen.";
@@ -857,6 +881,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Nećete primati obavijesti za utišane razgovore.";
+
+/* A button to skip a view. */
+"NAVIGATION_ITEM_SKIP_BUTTON" = "Preskoči";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Molimo provjerite da li ste na mreži i pokušajte ponovo.";
@@ -1025,22 +1052,22 @@
 "PRIVACY_UNVERIFY_BUTTON" = "Ukloni iz provjerenih";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ovo ne izgleda kao sigurnosni broj sa %@. Da li verifikujete ispravan kontakt?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ovo ne izgleda kao sigurnosni broj sa %@. Da li provjeravate ispravan kontakt?";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Broj u vašem međuspremniku ne izgleda kao ispravan sigurnosni broj za ovaj razgovor.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ne može pronaći nijedan sigurnosni broj u međuspremniku. Da li sta ga ispravno kopirali?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ne može pronaći nijedan sigurnosni broj u međuspremniku. Da li ste ga ispravno kopirali?";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Svaki korisnički par na Signalu dijeli poseban sigurnosni broj. Duplo provjerite da %@ prikazuje *vaš* poseban sigurnosni broj.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Pokrećete staru verziju Signala. Potrebno je ažuriranje prije verifikacije.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Pokrećete staru verziju Signala. Potrebno je ažuriranje prije provjere.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Vaš partner pokreće staru verziju Signala. Potrebna je nadogradnja prije verifikacije.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Vaš partner pokreće staru verziju Signala. Potrebna je nadogradnja prije provjere.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skenirani kôd ne izgleda kao kôd sigurnosnih brojeva. Da li oboje koristite najnoviju verziju Signala?";
@@ -1057,29 +1084,47 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Nastavljanje";
 
+/* Label text combining the phone number and profile name separated by a simple demarcation character. Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced with {{profile name}} */
+"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT" = "%1$@ ~%2$@ ";
+
+/* Prepend a simple marker to differentiate the profile name, embeds the contact's {{profile name}}. */
+"PROFILE_NAME_LABEL_FORMAT" = "~%@";
+
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Avatar";
-
-/* Instructions for how to change the profile avatar. */
-"PROFILE_VIEW_AVATAR_INSTRUCTIONS" = "Tap to Select Avatar";
-
-/* Header title for the profile avatar field of the profile view. */
-"PROFILE_VIEW_AVATAR_SECTION_HEADER" = "Avatar";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Postavi sliku profila";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Clear Avatar";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Ukloni sliku profila";
+
+/* Error message shown when user tries to update profile with a profile name that is too long. */
+"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Vaše ime profila je predugo.";
 
 /* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Profile update failed.";
+"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Ažuriranje profila nije uspjelo.";
 
 /* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Enter your name.";
+"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Unesite svoje ime";
+
+/* Label for the profile avatar field of the profile view. */
+"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Slika profila";
+
+/* Description of the user profile. */
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Vaš Signal profil će biti vidljiv vašim kontaktima, kada pokrenete nove razgovore i kada ga podijelite sa drugim korisnicima i grupama.";
+
+/* Link to more information about the user profile. */
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Dodirnite ovdje da biste saznali više.";
 
 /* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_SECTION_HEADER" = "Profile Name";
+"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Ime profila";
+
+/* Button to save the profile view in the profile view. */
+"PROFILE_VIEW_SAVE_BUTTON" = "Spremi";
+
+/* Alert title that indicates the user's profile view is being saved. */
+"PROFILE_VIEW_SAVING" = "Spremanje...";
 
 /* Title for the profile view. */
-"PROFILE_VIEW_TITLE" = "Profile";
+"PROFILE_VIEW_TITLE" = "Profil";
 
 /* No comment provided by engineer. */
 "PUSH_MANAGER_MARKREAD" = "Označi kao pročitano";
@@ -1119,9 +1164,6 @@
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "Pokušali ste previše puta. Molimo pričekajte minut prije novog pokušaja.";
-
-/* No comment provided by engineer. */
-"REGISTERED_NUMBER_TEXT" = "Registrirani broj";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Neuspješna ponovna registracija za \"push\" obavijesti.";
@@ -1289,7 +1331,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Nema rezultata pretraživanja";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Blokiranje";
+"SETTINGS_BLOCK_LIST_TITLE" = "Blokirani";
 
 /* Accessibility hint for the settings button */
 "SETTINGS_BUTTON_ACCESSIBILITY" = "Postavke";
@@ -1417,7 +1459,7 @@
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ tjedna";
 
-/* generic cancel text */
+/* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Otkaži";
 
 /* No comment provided by engineer. */
@@ -1474,6 +1516,15 @@
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Samo povucite prstom za odgovor";
 
+/* button label shown one time, after user upgrades app */
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Postavite svoj profil";
+
+/* Description of new profile feature for upgrading (existing) users */
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Sada možete podijeliti fotografiju i ime profila s prijateljima na Signalu.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Spremni za zbližavanje?";
+
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal sada podržava sigurne video pozive. Dovoljno je da uspostavite uobičajen poziv i dotaknete ikonu kamere.";
 
@@ -1493,7 +1544,7 @@
 "VERIFICATION_BACK_BUTTON" = "Nazad";
 
 /* Text field placeholder for SMS verification code during registration */
-"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Verifikacijski kôd";
+"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Potvrdni kôd";
 
 /* button text during registration to request phone number verification be done via phone call */
 "VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Potvrdi pozivom";
@@ -1502,10 +1553,10 @@
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Ponovo pošalji kôd SMS-om";
 
 /* button text during registration to submit your SMS verification code */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Potvrdi verifikacijski kôd";
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Pošalji potvrdnii kôd";
 
 /* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Unesite verifikacijski kôd koji smo poslali na %@.";
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "Unesite potvrdni kôd koji smo poslali na %@.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%@ nije provjeren/a.";
@@ -1520,7 +1571,7 @@
 "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "%@ je provjeren/a na drugom uređaju.";
 
 /* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "Status verifikacije je promijenjen.";
+"VERIFICATION_STATE_CHANGE_GENERIC" = "Status provjere je promijenjen.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
 "VERIFY_PRIVACY" = "Prikaži sigurnosni broj";
