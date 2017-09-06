@@ -7,7 +7,7 @@
 
 @class TSThread;
 
-@interface SignalsViewController : OWSViewController
+@interface HomeViewController : OWSViewController
 
 // TODO: Remove this property.
 @property (nonatomic) BOOL newlyRegisteredUser;

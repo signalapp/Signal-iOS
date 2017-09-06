@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "MessagesViewController.h"
+#import "ConversationViewController.h"
 #import "AppDelegate.h"
 #import "AttachmentSharing.h"
 #import "BlockListUIUtils.h"
@@ -106,7 +106,7 @@ static const int JSQ_IMAGE_INSET = 5;
 
 static NSTimeInterval const kTSMessageSentDateShowTimeInterval = 5 * kMinuteInterval;
 
-NSString *const OWSMessagesViewControllerDidAppearNotification = @"OWSMessagesViewControllerDidAppear";
+NSString *const ConversationViewControllerDidAppearNotification = @"ConversationViewControllerDidAppear";
 
 typedef enum : NSUInteger {
     kMediaTypePicture,
@@ -154,7 +154,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 #pragma mark -
 
-@interface MessagesViewController () <AVAudioPlayerDelegate,
+@interface ConversationViewController () <AVAudioPlayerDelegate,
     ContactsViewHelperDelegate,
     ContactEditingDelegate,
     CNContactViewControllerDelegate,
@@ -252,7 +252,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 #pragma mark -
 
-@implementation MessagesViewController
+@implementation ConversationViewController
 
 - (void)dealloc
 {
@@ -422,7 +422,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             // update title with profile name
             [self setNavigationTitle];
         }
-        
+
         // Reload all cells.
         [self resetContentAndLayout];
     }
@@ -669,7 +669,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self startExpirationTimerAnimations];
 
     // We should have already requested contact access at this point, so this should be a no-op
-    // unless it ever becomes possible to load this VC without going via the SignalsViewController.
+    // unless it ever becomes possible to load this VC without going via the HomeViewController.
     [self.contactsManager requestSystemContactsOnce];
 
     OWSDisappearingMessagesConfiguration *configuration =
@@ -979,7 +979,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                 message:nil
                                          preferredStyle:UIAlertControllerStyleActionSheet];
 
-        __weak MessagesViewController *weakSelf = self;
+        __weak ConversationViewController *weakSelf = self;
         UIAlertAction *verifyAction = [UIAlertAction
             actionWithTitle:(hasMultiple ? NSLocalizedString(@"VERIFY_PRIVACY_MULTIPLE",
                                                @"Label for button or row which allows users to verify the safety "
@@ -1145,7 +1145,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)startExpirationTimerAnimations
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:OWSMessagesViewControllerDidAppearNotification
+    [[NSNotificationCenter defaultCenter] postNotificationName:ConversationViewControllerDidAppearNotification
                                                         object:nil];
 }
 
@@ -1517,7 +1517,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    __weak MessagesViewController *weakSelf = self;
+    __weak ConversationViewController *weakSelf = self;
     if ([self isBlockedContactConversation]) {
         [self showUnblockContactUI:^(BOOL isBlocked) {
             if (!isBlocked) {
@@ -1571,7 +1571,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
        updateKeyboardState:(BOOL)updateKeyboardState
 {
 
-    __weak MessagesViewController *weakSelf = self;
+    __weak ConversationViewController *weakSelf = self;
     if ([self isBlockedContactConversation]) {
         [self showUnblockContactUI:^(BOOL isBlocked) {
             if (!isBlocked) {
@@ -2737,19 +2737,19 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                }];
     [actionSheetController addAction:showSafteyNumberAction];
 
-    UIAlertAction *acceptSafetyNumberAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
-                    DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.tag);
+    UIAlertAction *acceptSafetyNumberAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *_Nonnull action) {
+                                   DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.tag);
 
-                    // DEPRECATED: we're no longer creating these incoming SN error's per message,
-                    // but there will be some legacy ones in the wild, behind which await as-of-yet-undecrypted
-                    // messages
-                    if ([errorMessage isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
-                        [errorMessage acceptNewIdentityKey];
-                    }
-                }];
+                                   // DEPRECATED: we're no longer creating these incoming SN error's per message,
+                                   // but there will be some legacy ones in the wild, behind which await
+                                   // as-of-yet-undecrypted messages
+                                   if ([errorMessage isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
+                                       [errorMessage acceptNewIdentityKey];
+                                   }
+                               }];
     [actionSheetController addAction:acceptSafetyNumberAction];
 
     [self presentViewController:actionSheetController animated:YES completion:nil];
@@ -2772,7 +2772,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                          message:[NSString stringWithFormat:[CallStrings callBackAlertMessageFormat], displayName]
                   preferredStyle:UIAlertControllerStyleAlert];
 
-    __weak MessagesViewController *weakSelf = self;
+    __weak ConversationViewController *weakSelf = self;
     UIAlertAction *callAction = [UIAlertAction actionWithTitle:[CallStrings callBackAlertCallButton]
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction *_Nonnull action) {
@@ -2808,21 +2808,20 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [actionSheetController addAction:[OWSAlerts cancelAction]];
 
-    UIAlertAction *blockAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION",
-                                           @"Action sheet that will block an unknown user.")
-                                 style:UIAlertActionStyleDestructive
-                               handler:^(UIAlertAction *_Nonnull action) {
-                                   DDLogInfo(@"%@ Blocking an unknown user.", self.tag);
-                                   [self.blockingManager addBlockedPhoneNumber:interaction.recipientId];
-                                   // Delete the offers.
-                                   [self.editingDatabaseConnection
-                                       readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                           contactThread.hasDismissedOffers = YES;
-                                           [contactThread saveWithTransaction:transaction];
-                                           [interaction removeWithTransaction:transaction];
-                                       }];
-                               }];
+    UIAlertAction *blockAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(
+                            @"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION", @"Action sheet that will block an unknown user.")
+                  style:UIAlertActionStyleDestructive
+                handler:^(UIAlertAction *_Nonnull action) {
+                    DDLogInfo(@"%@ Blocking an unknown user.", self.tag);
+                    [self.blockingManager addBlockedPhoneNumber:interaction.recipientId];
+                    // Delete the offers.
+                    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        contactThread.hasDismissedOffers = YES;
+                        [contactThread saveWithTransaction:transaction];
+                        [interaction removeWithTransaction:transaction];
+                    }];
+                }];
     [actionSheetController addAction:blockAction];
 
     [self presentViewController:actionSheetController animated:YES completion:nil];
@@ -3507,11 +3506,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     NSArray *messageRowChanges = nil;
     NSArray *sectionChanges = nil;
-    [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName]
-        getSectionChanges:&sectionChanges
-               rowChanges:&messageRowChanges
-         forNotifications:notifications
-             withMappings:self.messageMappings];
+    [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] getSectionChanges:&sectionChanges
+                                                                               rowChanges:&messageRowChanges
+                                                                         forNotifications:notifications
+                                                                             withMappings:self.messageMappings];
 
     if ([sectionChanges count] == 0 && [messageRowChanges count] == 0) {
         // YapDatabase will ignore insertions within the message mapping's
@@ -3860,7 +3858,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)didPressAccessoryButton:(UIButton *)sender
 {
 
-    __weak MessagesViewController *weakSelf = self;
+    __weak ConversationViewController *weakSelf = self;
     if ([self isBlockedContactConversation]) {
         [self showUnblockContactUI:^(BOOL isBlocked) {
             if (!isBlocked) {
@@ -3974,7 +3972,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         NSMutableArray<id<OWSReadTracking>> *interactions = [NSMutableArray new];
-        
+
         [[TSDatabaseView unseenDatabaseViewExtension:transaction]
             enumerateRowsInGroup:thread.uniqueId
                       usingBlock:^(
@@ -4130,7 +4128,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     // Max out the unread count at 99+.
     const NSUInteger kMaxUnreadCount = 99;
-    _backButtonUnreadCountLabel.text = [ViewControllerUtils formatInt:(int) MIN(kMaxUnreadCount, unreadCount)];
+    _backButtonUnreadCountLabel.text = [ViewControllerUtils formatInt:(int)MIN(kMaxUnreadCount, unreadCount)];
 }
 
 #pragma mark 3D Touch Preview Actions
@@ -4185,7 +4183,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     DDLogError(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
 
     DispatchMainThreadSafe(^{
-        __weak MessagesViewController *weakSelf = self;
+        __weak ConversationViewController *weakSelf = self;
         if ([self isBlockedContactConversation]) {
             [self showUnblockContactUI:^(BOOL isBlocked) {
                 if (!isBlocked) {
@@ -4540,14 +4538,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 + (UINib *)nib
 {
-    return [UINib nibWithNibName:NSStringFromClass([MessagesViewController class])
-                          bundle:[NSBundle bundleForClass:[MessagesViewController class]]];
+    return [UINib nibWithNibName:NSStringFromClass([ConversationViewController class])
+                          bundle:[NSBundle bundleForClass:[ConversationViewController class]]];
 }
 
 + (instancetype)messagesViewController
 {
-    return [[[self class] alloc] initWithNibName:NSStringFromClass([MessagesViewController class])
-                                          bundle:[NSBundle bundleForClass:[MessagesViewController class]]];
+    return [[[self class] alloc] initWithNibName:NSStringFromClass([ConversationViewController class])
+                                          bundle:[NSBundle bundleForClass:[ConversationViewController class]]];
 }
 
 #pragma mark - Logging

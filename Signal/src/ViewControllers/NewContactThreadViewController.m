@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "MessageComposeTableViewController.h"
+#import "NewContactThreadViewController.h"
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
@@ -22,7 +22,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MessageComposeTableViewController () <UISearchBarDelegate,
+@interface NewContactThreadViewController () <UISearchBarDelegate,
     ContactsViewHelperDelegate,
     OWSTableViewControllerDelegate,
     NewNonContactConversationViewControllerDelegate,
@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation MessageComposeTableViewController
+@implementation NewContactThreadViewController
 
 - (void)loadView
 {
@@ -211,7 +211,8 @@ NS_ASSUME_NONNULL_BEGIN
     return view;
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
 
     self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
@@ -231,13 +232,15 @@ NS_ASSUME_NONNULL_BEGIN
     [self showContactAppropriateViews];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
-    
+
     [self showIOSUpgradeNagIfNecessary];
 }
 
-- (void)showIOSUpgradeNagIfNecessary {
+- (void)showIOSUpgradeNagIfNecessary
+{
     // Only show the nag to iOS 8 users.
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
         return;
@@ -253,16 +256,14 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *currentAppVersion = [AppVersion instance].currentAppVersion;
     OWSAssert(currentAppVersion.length > 0);
     NSString *lastNagAppVersion = [Environment.preferences iOSUpgradeNagVersion];
-    if (lastNagAppVersion &&
-        ![lastNagAppVersion isEqualToString:currentAppVersion]) {
-        
+    if (lastNagAppVersion && ![lastNagAppVersion isEqualToString:currentAppVersion]) {
+
         [Environment.preferences setIOSUpgradeNagVersion:currentAppVersion];
-        
-        [OWSAlerts showAlertWithTitle:
-         NSLocalizedString(@"UPGRADE_IOS_ALERT_TITLE",
-                           @"Title for the alert indicating that user should upgrade iOS.")
+
+        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"UPGRADE_IOS_ALERT_TITLE",
+                                          @"Title for the alert indicating that user should upgrade iOS.")
                               message:NSLocalizedString(@"UPGRADE_IOS_ALERT_MESSAGE",
-                                                        @"Message for the alert indicating that user should upgrade iOS.")];
+                                          @"Message for the alert indicating that user should upgrade iOS.")];
     }
 }
 
@@ -277,7 +278,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    __weak MessageComposeTableViewController *weakSelf = self;
+    __weak NewContactThreadViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
 
     OWSTableSection *section = [OWSTableSection new];
@@ -461,8 +462,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showContactAppropriateViews
 {
     if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
-        if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce
-            && self.contactsViewHelper.signalAccounts.count < 1
+        if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce && self.contactsViewHelper.signalAccounts.count < 1
             && ![[Environment preferences] hasDeclinedNoContactsView]) {
             self.isNoContactsModeActive = YES;
         } else {
@@ -502,13 +502,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Send Invite By SMS
 
-- (void)sendTextToPhoneNumber:(NSString *)phoneNumber {
+- (void)sendTextToPhoneNumber:(NSString *)phoneNumber
+{
     OWSAssert([phoneNumber length] > 0);
     NSString *confirmMessage = NSLocalizedString(@"SEND_SMS_CONFIRM_TITLE", @"");
     if ([phoneNumber length] > 0) {
-        confirmMessage = [[NSLocalizedString(@"SEND_SMS_INVITE_TITLE", @"")
-                           stringByAppendingString:phoneNumber]
-                          stringByAppendingString:NSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
+        confirmMessage = [[NSLocalizedString(@"SEND_SMS_INVITE_TITLE", @"") stringByAppendingString:phoneNumber]
+            stringByAppendingString:NSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
     }
 
     UIAlertController *alertController =
@@ -543,11 +543,14 @@ NS_ASSUME_NONNULL_BEGIN
     [alertController addAction:okAction];
     self.searchBar.text = @"";
 
-    //must dismiss search controller before presenting alert.
+    // must dismiss search controller before presenting alert.
     if ([self presentedViewController]) {
-        [self dismissViewControllerAnimated:YES completion:^{
-            [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
-        }];
+        [self dismissViewControllerAnimated:YES
+                                 completion:^{
+                                     [self presentViewController:alertController
+                                                        animated:YES
+                                                      completion:[UIUtil modalCompletionBlock]];
+                                 }];
     } else {
         [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
     }
@@ -557,7 +560,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // called on completion of message screen
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller
-                 didFinishWithResult:(MessageComposeResult)result {
+                 didFinishWithResult:(MessageComposeResult)result
+{
     switch (result) {
         case MessageComposeResultCancelled:
             break;
@@ -574,14 +578,14 @@ NS_ASSUME_NONNULL_BEGIN
         case MessageComposeResultSent: {
             [self dismissViewControllerAnimated:NO
                                      completion:^{
-                                       DDLogDebug(@"view controller dismissed");
+                                         DDLogDebug(@"view controller dismissed");
                                      }];
-            UIAlertView *successAlert =
-                [[UIAlertView alloc] initWithTitle:@""
-                                           message:NSLocalizedString(@"SEND_INVITE_SUCCESS", @"Alert body after invite succeeded")
-                                          delegate:nil
-                                 cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                 otherButtonTitles:nil];
+            UIAlertView *successAlert = [[UIAlertView alloc]
+                    initWithTitle:@""
+                          message:NSLocalizedString(@"SEND_INVITE_SUCCESS", @"Alert body after invite succeeded")
+                         delegate:nil
+                cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                otherButtonTitles:nil];
             [successAlert show];
             break;
         }
@@ -760,7 +764,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    __weak MessageComposeTableViewController *weakSelf = self;
+    __weak NewContactThreadViewController *weakSelf = self;
     [[ContactsUpdater sharedUpdater] lookupIdentifiers:unknownPhoneNumbers
                                                success:^(NSArray<SignalRecipient *> *recipients) {
                                                    [weakSelf updateNonContactAccountSet:recipients];

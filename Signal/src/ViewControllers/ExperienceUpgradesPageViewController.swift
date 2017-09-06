@@ -83,7 +83,7 @@ private class IntroductingProfilesExperienceUpgradeViewController: ExperienceUpg
 
         // dismiss the modally presented view controller, then proceed.
         experienceUpgradesPageViewController.dismiss(animated: true) {
-            guard let fromViewController = UIApplication.shared.frontmostViewController as? SignalsViewController else {
+            guard let fromViewController = UIApplication.shared.frontmostViewController as? HomeViewController else {
                 owsFail("unexpected frontmostViewController: \(String(describing: UIApplication.shared.frontmostViewController))")
                 return
             }

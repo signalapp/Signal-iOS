@@ -801,7 +801,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogInfo(@"Presenting initial root view controller");
 
     if ([TSAccountManager isRegistered]) {
-        SignalsViewController *homeView = [SignalsViewController new];
+        HomeViewController *homeView = [HomeViewController new];
         SignalsNavigationController *navigationController =
             [[SignalsNavigationController alloc] initWithRootViewController:homeView];
         self.window.rootViewController = navigationController;

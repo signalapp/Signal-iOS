@@ -3,12 +3,12 @@
 //
 
 #import "Environment.h"
+#import "ConversationViewController.h"
 #import "DebugLogger.h"
 #import "FunctionalUtil.h"
-#import "MessagesViewController.h"
+#import "HomeViewController.h"
 #import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
-#import "SignalsViewController.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import <SignalServiceKit/ContactsUpdater.h>
@@ -171,7 +171,8 @@ static Environment *environment = nil;
     return _preferences;
 }
 
-- (void)setSignalsViewController:(SignalsViewController *)signalsViewController {
+- (void)setHomeViewController:(HomeViewController *)signalsViewController
+{
     _signalsViewController = signalsViewController;
 }
 
@@ -191,11 +192,11 @@ static Environment *environment = nil;
         [self messageGroup:(TSGroupThread *)thread];
     } else {
         Environment *env          = [self getCurrent];
-        SignalsViewController *vc = env.signalsViewController;
+        HomeViewController *vc = env.signalsViewController;
         UIViewController *topvc   = vc.navigationController.topViewController;
 
-        if ([topvc isKindOfClass:[MessagesViewController class]]) {
-            MessagesViewController *mvc = (MessagesViewController *)topvc;
+        if ([topvc isKindOfClass:[ConversationViewController class]]) {
+            ConversationViewController *mvc = (ConversationViewController *)topvc;
             if ([mvc.thread.uniqueId isEqualToString:threadId]) {
                 [mvc popKeyBoard];
                 return;
@@ -207,7 +208,7 @@ static Environment *environment = nil;
 
 + (void)messageIdentifier:(NSString *)identifier withCompose:(BOOL)compose {
     Environment *env          = [self getCurrent];
-    SignalsViewController *vc = env.signalsViewController;
+    HomeViewController *vc = env.signalsViewController;
 
     [[TSStorageManager sharedManager].dbReadWriteConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
@@ -219,7 +220,7 @@ static Environment *environment = nil;
 + (void)callUserWithIdentifier:(NSString *)identifier
 {
     Environment *env = [self getCurrent];
-    SignalsViewController *vc = env.signalsViewController;
+    HomeViewController *vc = env.signalsViewController;
 
     [[TSStorageManager sharedManager].dbReadWriteConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
@@ -230,7 +231,7 @@ static Environment *environment = nil;
 
 + (void)messageGroup:(TSGroupThread *)groupThread {
     Environment *env          = [self getCurrent];
-    SignalsViewController *vc = env.signalsViewController;
+    HomeViewController *vc = env.signalsViewController;
 
     [vc presentThread:groupThread keyboardOnViewAppearing:YES callOnViewAppearing:NO];
 }

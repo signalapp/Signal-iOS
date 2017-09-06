@@ -63,8 +63,8 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
     UIViewController *frontmostViewController =
     [UIApplication sharedApplication].frontmostViewController;
     OWSAssert(frontmostViewController);
-    BOOL canPresent = ([frontmostViewController isKindOfClass:[SignalsViewController class]] ||
-                       [frontmostViewController isKindOfClass:[RegistrationViewController class]]);
+    BOOL canPresent = ([frontmostViewController isKindOfClass:[HomeViewController class]] ||
+        [frontmostViewController isKindOfClass:[RegistrationViewController class]]);
     if (!canPresent) {
         return;
     }

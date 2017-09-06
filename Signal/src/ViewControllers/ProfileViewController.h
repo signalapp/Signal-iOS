@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SignalsViewController;
+@class HomeViewController;
 
 @interface ProfileViewController : UIViewController
 
@@ -14,8 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)presentForAppSettings:(UINavigationController *)navigationController;
 + (void)presentForRegistration:(UINavigationController *)navigationController;
-+ (void)presentForUpgradeOrNag:(SignalsViewController *)presentingController
-    NS_SWIFT_NAME(presentForUpgradeOrNag(from:));
++ (void)presentForUpgradeOrNag:(HomeViewController *)presentingController NS_SWIFT_NAME(presentForUpgradeOrNag(from:));
 
 @end
 

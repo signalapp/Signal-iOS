@@ -6,9 +6,9 @@
 
 @class TSThread;
 
-extern NSString *const OWSMessagesViewControllerDidAppearNotification;
+extern NSString *const ConversationViewControllerDidAppearNotification;
 
-@interface MessagesViewController : JSQMessagesViewController
+@interface ConversationViewController : JSQMessagesViewController
 
 @property (nonatomic, readonly) TSThread *thread;
 
