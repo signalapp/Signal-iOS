@@ -113,7 +113,23 @@ NS_ASSUME_NONNULL_BEGIN
     [self.noSignalContactsView autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.noSignalContactsView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 
+    UIRefreshControl *pullToRefreshView = [UIRefreshControl new];
+    pullToRefreshView.tintColor = [UIColor grayColor];
+    [pullToRefreshView addTarget:self
+                          action:@selector(pullToRefreshPerformed:)
+                forControlEvents:UIControlEventValueChanged];
+    [self.tableViewController.tableView insertSubview:pullToRefreshView atIndex:0];
+
     [self updateTableContents];
+}
+
+- (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self.contactsViewHelper.contactsManager requestSystemContactsOnce];
+
+    [refreshControl endRefreshing];
 }
 
 - (void)showContactsPermissionReminder:(BOOL)isVisible
@@ -787,6 +803,18 @@ NS_ASSUME_NONNULL_BEGIN
     if (didUpdate) {
         [self updateTableContents];
     }
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
