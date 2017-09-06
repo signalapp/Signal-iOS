@@ -31,8 +31,8 @@ class SyncPushTokensJob: NSObject {
             // Required to potentially prompt user for notifications settings
             // before `requestPushTokens` will return.
             self.pushManager.validateUserNotificationSettings()
-
-            return self.requestPushTokens()
+        }.then {
+            self.requestPushTokens()
         }.then { (pushToken: String, voipToken: String) in
             var shouldUploadTokens = false
 
