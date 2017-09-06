@@ -1437,7 +1437,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     OWSAssert(self.inputToolbar.contentView);
     OWSAssert(self.inputToolbar.contentView.textView);
-    self.inputToolbar.contentView.textView.pasteDelegate = self;
+    self.inputToolbar.contentView.textView.jsqPasteDelegate = self;
     ((OWSMessagesComposerTextView *)self.inputToolbar.contentView.textView).textViewPasteDelegate = self;
     ((OWSMessagesToolbarContentView *)self.inputToolbar.contentView).voiceMemoGestureDelegate = self;
 }
