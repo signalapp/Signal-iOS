@@ -496,7 +496,7 @@
 {
 	sqlite3_stmt **statement = &enumerateDstFileURLWithSrcStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		// The 'dst' column can store either an integer or a blob.
 		// If the edge has a destination key & collection,
@@ -549,7 +549,7 @@
 {
 	sqlite3_stmt **statement = &enumerateDstFileURLWithSrcNameStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		// The 'dst' column can store either an integer or a blob.
 		// If the edge has a destination key & collection,
@@ -602,7 +602,7 @@
 {
 	sqlite3_stmt **statement = &enumerateDstFileURLWithNameStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 	
 		// The 'dst' column can store either an integer or a blob.
 		// If the edge has a destination key & collection,
@@ -655,7 +655,7 @@
 {
 	sqlite3_stmt **statement = &enumerateDstFileURLWithNameExcludingSrcStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 	
 		// The 'dst' column can store either an integer or a blob.
 		// If the edge has a destination key & collection,
@@ -708,7 +708,7 @@
 {
 	sqlite3_stmt **statement = &enumerateAllDstFileURLStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 	
 		// The 'dst' column can store either an integer or a blob.
 		// If the edge has a destination key & collection,
@@ -760,7 +760,7 @@
 {
 	sqlite3_stmt **statement = &enumerateForSrcStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		NSString *string = [NSString stringWithFormat:
 		  @"SELECT \"rowid\", \"name\", \"dst\", \"rules\", \"manual\" FROM \"%@\" WHERE \"src\" = ?;",
@@ -798,7 +798,7 @@
 {
 	sqlite3_stmt **statement = &enumerateForDstStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		NSString *string = [NSString stringWithFormat:
 		  @"SELECT \"rowid\", \"name\", \"src\", \"rules\", \"manual\" FROM \"%@\" WHERE \"dst\" = ?;",
@@ -836,7 +836,7 @@
 {
 	sqlite3_stmt **statement = &enumerateForSrcNameStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		NSString *string = [NSString stringWithFormat:
 		  @"SELECT \"rowid\", \"dst\", \"rules\", \"manual\" FROM \"%@\" WHERE \"src\" = ? AND \"name\" = ?;",
@@ -874,7 +874,7 @@
 {
 	sqlite3_stmt **statement = &enumerateForDstNameStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		NSString *string = [NSString stringWithFormat:
 		  @"SELECT \"rowid\", \"src\", \"rules\", \"manual\" FROM \"%@\" WHERE \"dst\" = ? AND \"name\" = ?;",
@@ -912,7 +912,7 @@
 {
 	sqlite3_stmt **statement = &enumerateForNameStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		NSString *string = [NSString stringWithFormat:
 		  @"SELECT \"rowid\", \"src\", \"dst\", \"rules\", \"manual\" FROM \"%@\" WHERE \"name\" = ?;",
@@ -950,7 +950,7 @@
 {
 	NSParameterAssert(needsFinalizePtr != NULL);
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		NSString *string = [NSString stringWithFormat:
 		  @"SELECT \"rowid\", \"name\", \"rules\", \"manual\" FROM \"%@\" WHERE \"src\" = ? AND \"dst\" = ?;",
@@ -988,7 +988,7 @@
 {
 	sqlite3_stmt **statement = &enumerateForSrcDstNameStatement;
 	
-	sqlite3_stmt* (^CreateStatement)() = ^{
+	sqlite3_stmt* (^CreateStatement)(void) = ^{
 		
 		NSString *string = [NSString stringWithFormat:
 		  @"SELECT \"rowid\", \"rules\", \"manual\" FROM \"%@\" WHERE \"src\" = ? AND \"dst\" = ? AND \"name\" = ?;",
