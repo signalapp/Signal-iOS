@@ -62,7 +62,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ i gruppe %@: %@";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Navnet ditt?";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Skriv inn navnet ditt";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versjon %@ er nå tilgjengelig i App Store.";
@@ -368,13 +368,13 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Del din profil";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Legg til i Kontakter";
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Legg til i kontakter";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Del profilen med denne brukeren";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Del din profil med denne brukeren";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Denne brukeren er ikke blant kontaktene dine";
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Denne brukeren er ikke i kontaktene dine.";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Blokker denne brukeren";
@@ -821,7 +821,7 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Du blokkerte %@ medlemmer av gruppen";
 
 /* Text for banner in group conversation view that offers to share your profile with this group. */
-"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Dele profilen med denne gruppen?";
+"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Del din profil med denne gruppen?";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Mer enn ett medlem av denne gruppen er ikke lenger merket som verifisert. Trykk for valg.";
@@ -1088,7 +1088,7 @@
 "PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT" = "%1$@ ~%2$@";
 
 /* Prepend a simple marker to differentiate the profile name, embeds the contact's {{profile name}}. */
-"PROFILE_NAME_LABEL_FORMAT" = "~%@";
+"PROFILE_NAME_LABEL_FORMAT" = "~1%@";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Velg profilbilde";
@@ -1097,22 +1097,22 @@
 "PROFILE_VIEW_CLEAR_AVATAR" = "Fjern profilbilde";
 
 /* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Profilnavnet er for langt";
+"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Profilnavnet er for langt.";
 
 /* Error message shown when a profile update fails. */
 "PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Oppdatering av profil feilet.";
 
 /* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Navnet ditt?";
+"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Skriv inn navnet ditt";
 
 /* Label for the profile avatar field of the profile view. */
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Signal-profilen din vil være synlig for kontaktene dine, når du starter nye samtaler, og når du deler den med andre brukere og grupper.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Signal profilen din vil være synlig for kontaktene dine når du starter nye samtaler, og når du deler den med andre brukere og grupper.";
 
 /* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Trykk her for mer info";
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Trykk her for mer info.";
 
 /* Label for the profile name field of the profile view. */
 "PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profilnavn";
@@ -1517,13 +1517,13 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Skyv for å besvare";
 
 /* button label shown one time, after user upgrades app */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Sett opp profil";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Sett opp din profil";
 
 /* Description of new profile feature for upgrading (existing) users */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Du kan nå dele profilbilde og navn med vennene dine i Signal";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Klar for nærbilde?";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Klar for ditt nærbilde?";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal har nå støtte for sikre videosamtaler. Bare start en lydsamtale som vanlig, trykk på kamera-knappen, og si hei også med levende bilder.";
