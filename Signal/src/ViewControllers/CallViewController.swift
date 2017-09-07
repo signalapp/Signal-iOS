@@ -31,7 +31,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: Contact Views
 
-    var contactNameLabel: UILabel!
+    var contactNameLabel: MarqueeLabel!
     var contactAvatarView: AvatarImageView!
     var callStatusLabel: UILabel!
     var callDurationTimer: Timer?
@@ -243,14 +243,25 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func createContactViews() {
-        contactNameLabel = UILabel()
+        contactNameLabel = MarqueeLabel()
+
+        // marquee config
+        contactNameLabel.type = .continuous
+        // This feels pretty slow when you're initially waiting for it, but when you're overlaying video calls, anything faster is distracting.
+        contactNameLabel.speed = .duration(30.0)
+        contactNameLabel.animationCurve = .easeInOut
+        contactNameLabel.fadeLength = 10.0
+        contactNameLabel.animationDelay = 5
+        // Add trailing space after the name scrolls before it wraps around and scrolls back in.
+        contactNameLabel.trailingBuffer = ScaleFromIPhone5(80.0)
+
+        // label config
         contactNameLabel.font = UIFont.ows_lightFont(withSize:ScaleFromIPhone5To7Plus(32, 40))
         contactNameLabel.textColor = UIColor.white
         contactNameLabel.layer.shadowOffset = CGSize.zero
         contactNameLabel.layer.shadowOpacity = 0.35
         contactNameLabel.layer.shadowRadius = 4
-        contactNameLabel.adjustsFontSizeToFitWidth = true
-        contactNameLabel.minimumScaleFactor = 0.7
+
         self.view.addSubview(contactNameLabel)
 
         callStatusLabel = UILabel()
