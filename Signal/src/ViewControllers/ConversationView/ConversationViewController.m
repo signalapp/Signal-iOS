@@ -119,6 +119,73 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     MessagesRangeSizeMode_Truncate,
     MessagesRangeSizeMode_Normal
 };
+
+@interface ConversationHeader : UIView
+
+@property (nonatomic) UILabel *titleLabel;
+@property (nonatomic) UILabel *subtitleLabel;
+
+@end
+
+#pragma mark -
+
+@implementation ConversationHeader
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+
+    if (self) {
+        self.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0);
+    }
+
+    return self;
+}
+
+- (void)setBounds:(CGRect)bounds
+{
+    [super setBounds:bounds];
+
+    [self layoutSubviews];
+}
+
+- (void)setFrame:(CGRect)frame
+{
+    [super setFrame:frame];
+
+    [self layoutSubviews];
+}
+
+- (void)setCenter:(CGPoint)center
+{
+    [super setCenter:center];
+
+    [self layoutSubviews];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+
+    // We need to manually resize and position the title views;
+    // iOS AutoLayout doesn't work inside navigation bar items.
+    const int kTitleVSpacing = 0.f;
+    const int kTitleHMargin = 5.f;
+    CGFloat titleHeight = ceil([self.titleLabel sizeThatFits:CGSizeZero].height);
+    CGFloat subtitleHeight = ceil([self.subtitleLabel sizeThatFits:CGSizeZero].height);
+    CGFloat contentHeight = titleHeight + kTitleVSpacing + subtitleHeight;
+    CGFloat contentWidth = round(self.width - 2 * kTitleHMargin);
+
+    CGFloat y = MAX(0, round((self.height - contentHeight) * 0.5f));
+    self.titleLabel.frame = CGRectMake(kTitleHMargin, y, contentWidth, titleHeight);
+    self.subtitleLabel.frame
+        = CGRectMake(kTitleHMargin, ceil(y + titleHeight + kTitleVSpacing), contentWidth, subtitleHeight);
+}
+
+@end
+
+#pragma mark -
+
 @protocol OWSMessagesCollectionViewFlowLayoutDelegate <NSObject>
 
 // Returns YES for all but the unread indicator
@@ -202,7 +269,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic) NSUUID *voiceMessageUUID;
 
 @property (nonatomic) NSTimer *readTimer;
-@property (nonatomic) UIView *navigationBarTitleView;
+@property (nonatomic) ConversationHeader *navigationBarTitleView;
 @property (nonatomic) UILabel *navigationBarTitleLabel;
 @property (nonatomic) UILabel *navigationBarSubtitleLabel;
 @property (nonatomic) UIButton *attachButton;
@@ -1201,7 +1268,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
     _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
 
-    self.navigationBarTitleView = [UIView containerView];
+    self.navigationBarTitleView = [ConversationHeader new];
+    self.navigationBarTitleView.userInteractionEnabled = YES;
     [self.navigationBarTitleView
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                      action:@selector(navigationTitleTapped:)]];
@@ -1212,12 +1280,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 #endif
 
     self.navigationBarTitleLabel = [UILabel new];
+    self.navigationBarTitleView.titleLabel = self.navigationBarTitleLabel;
     self.navigationBarTitleLabel.textColor = [UIColor whiteColor];
-    self.navigationBarTitleLabel.font = [UIFont ows_boldFontWithSize:18.f];
+    self.navigationBarTitleLabel.font = [UIFont ows_boldFontWithSize:20.f];
     self.navigationBarTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [self.navigationBarTitleView addSubview:self.navigationBarTitleLabel];
 
     self.navigationBarSubtitleLabel = [UILabel new];
+    self.navigationBarTitleView.subtitleLabel = self.navigationBarSubtitleLabel;
     [self updateNavigationBarSubtitleLabel];
     [self.navigationBarTitleView addSubview:self.navigationBarSubtitleLabel];
 }
@@ -1253,13 +1323,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // Initialize newly created unread count badge to accurately reflect the current unread count.
     [self updateBackButtonUnreadCount];
 
-    const CGFloat kTitleVSpacing = 0.f;
-    // We need to manually resize and position the title views;
-    // iOS AutoLayout doesn't work inside navigation bar items.
-    [self.navigationBarTitleLabel sizeToFit];
-    [self.navigationBarSubtitleLabel sizeToFit];
-    const CGFloat kShortScreenDimension
-        = MIN([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+    self.navigationItem.leftBarButtonItem = backItem;
+
     // We want to leave space for the "back" button, the "timer" button, and the "call"
     // button, and all of the whitespace around these views.  There
     // isn't a convenient way to calculate these in a navigation bar, so we just leave
@@ -1287,27 +1352,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             barButtonSize = 150;
             break;
     }
-    CGFloat maxTitleViewWidth = kShortScreenDimension - barButtonSize;
-    const CGFloat titleViewWidth = MIN(maxTitleViewWidth,
-        MAX(self.navigationBarTitleLabel.frame.size.width, self.navigationBarSubtitleLabel.frame.size.width));
-    self.navigationBarTitleView.frame = CGRectMake(0,
-        0,
-        titleViewWidth,
-        self.navigationBarTitleLabel.frame.size.height + self.navigationBarSubtitleLabel.frame.size.height
-            + kTitleVSpacing);
-    self.navigationBarTitleLabel.frame
-        = CGRectMake(0, 0, titleViewWidth, self.navigationBarTitleLabel.frame.size.height);
-    self.navigationBarSubtitleLabel.frame = CGRectMake((self.view.isRTL ? self.navigationBarTitleView.frame.size.width
-                                                                   - self.navigationBarSubtitleLabel.frame.size.width
-                                                                        : 0),
-        self.navigationBarTitleView.frame.size.height - self.navigationBarSubtitleLabel.frame.size.height,
-        titleViewWidth,
-        self.navigationBarSubtitleLabel.frame.size.height);
-
-    self.navigationItem.leftBarButtonItems = @[
-        backItem,
-        [[UIBarButtonItem alloc] initWithCustomView:self.navigationBarTitleView],
-    ];
+    CGSize screenSize = [UIScreen mainScreen].bounds.size;
+    CGFloat screenWidth = MIN(screenSize.width, screenSize.height);
+    // Request "full width" title; the navigation bar will truncate this
+    // to fit between the left and right buttons.
+    self.navigationBarTitleView.frame = CGRectMake(0, 0, screenWidth, 44);
+    self.navigationItem.titleView = self.navigationBarTitleView;
 
     if (self.userLeftGroup) {
         self.navigationItem.rightBarButtonItems = @[];
