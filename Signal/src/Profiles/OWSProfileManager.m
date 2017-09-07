@@ -934,6 +934,32 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 #pragma mark - Other User's Profiles
 
+- (void)logUserProfiles
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @synchronized(self)
+        {
+            DDLogError(@"logUserProfiles: %zd", [self.dbConnection numberOfKeysInCollection:UserProfile.collection]);
+            [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                [transaction
+                    enumerateKeysAndObjectsInCollection:UserProfile.collection
+                                             usingBlock:^(
+                                                 NSString *_Nonnull key, id _Nonnull object, BOOL *_Nonnull stop) {
+                                                 OWSAssert([object isKindOfClass:[UserProfile class]]);
+                                                 UserProfile *userProfile = object;
+                                                 DDLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
+                                                            @"avatar file: %d, name: %@",
+                                                     userProfile.recipientId,
+                                                     userProfile.profileKey != nil,
+                                                     userProfile.avatarUrlPath != nil,
+                                                     userProfile.avatarFileName != nil,
+                                                     userProfile.profileName);
+                                             }];
+            }];
+        }
+    });
+}
+
 - (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
