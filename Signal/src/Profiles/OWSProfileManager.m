@@ -270,6 +270,13 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     }
 }
 
+- (void)ensureLocalProfileCached
+{
+    // Since localUserProfile can create a transaction, we want to make sure it's not called for the first
+    // time unexpectedly (e.g. in a nested transaction.)
+    __unused UserProfile *profile = [self localUserProfile];
+}
+
 #pragma mark - Local Profile
 
 - (UserProfile *)localUserProfile
@@ -652,7 +659,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     });
 }
 
-// TODO: The exact API & encryption scheme for profiles is not yet settled.
 - (void)updateServiceWithProfileName:(nullable NSString *)localProfileName
                              success:(void (^)())successBlock
                              failure:(void (^)())failureBlock
