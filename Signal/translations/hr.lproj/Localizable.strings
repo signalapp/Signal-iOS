@@ -314,7 +314,7 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blokiraj ovog korisnika";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
-"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Kontakt informacije";
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Detalji kontakta";
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Informacije o grupi";
@@ -653,7 +653,7 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "Pošalji poruku";
 
 /* Button label for the 'show contact info' button */
-"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Informacije o kontaktu";
+"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Detalji kontakta";
 
 /* No comment provided by engineer. */
 "GROUP_REMOVING" = "Napuštanje grupe %@";
@@ -1553,7 +1553,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Ponovo pošalji kôd SMS-om";
 
 /* button text during registration to submit your SMS verification code */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Pošalji potvrdnii kôd";
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Pošalji potvrdni kôd";
 
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Unesite potvrdni kôd koji smo poslali na %@.";

@@ -473,6 +473,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.
                 [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
+                [[OWSProfileManager sharedManager] ensureLocalProfileCached];
 
                 // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
                 // sent before the app exited should be marked as failures.

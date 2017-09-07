@@ -883,7 +883,7 @@
 "MUTE_BEHAVIOR_EXPLANATION" = "Al silenciar, no recibirás notificaciones de mensajes en este chat durante el tiempo seleccionado.";
 
 /* A button to skip a view. */
-"NAVIGATION_ITEM_SKIP_BUTTON" = "Saltar";
+"NAVIGATION_ITEM_SKIP_BUTTON" = "Ahora no";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Combrueba que estás online y prueba nuevamente.";
@@ -1109,10 +1109,10 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Foto";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Tu perfil de Signal será visible para tus contactos al iniciar un chat nuevo y cuando decidas compartirlo con otros usuarios y grupos.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "El perfil de Signal será visible para tus contactos al iniciar un chat nuevo y cuando decidas compartirlo con otros usuarios y grupos.";
 
 /* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Toca aquí para más información.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Toca para más información.";
 
 /* Label for the profile name field of the profile view. */
 "PROFILE_VIEW_PROFILE_NAME_FIELD" = "Nombre de perfil";

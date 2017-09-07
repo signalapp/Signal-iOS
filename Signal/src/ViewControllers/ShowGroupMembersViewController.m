@@ -95,6 +95,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    OWSAssert([self.navigationController isKindOfClass:[OWSNavigationController class]]);
+
     // HACK otherwise CNContactViewController Navbar is shown as black.
     // RADAR rdar://28433898 http://www.openradar.me/28433898
     // CNContactViewController incompatible with opaque navigation bar

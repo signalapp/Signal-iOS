@@ -62,7 +62,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ no grupo %@: %@";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Enter your name";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Introduza o seu nome.";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "A versão %@ está disponível na App Store.";
@@ -206,7 +206,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Bloquear %@?";
 
 /* Label for generic done button. */
-"BUTTON_DONE" = "Done";
+"BUTTON_DONE" = "Concluído";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "O Signal necessita de acesso ao seu microfone para poder realizar chamadas e gravar mensagens de voz. Pode dar acesso nas Definições.";
@@ -368,16 +368,16 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Partilhar o Seu Perfil";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Add to Contacts";
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Adicionar aos Contactos";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile With This User";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Partilhar o seu perfil com este utilizador";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "This user is not in your contacts.";
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Este utilizador não está presente nos seus contactos.";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Block This User";
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Bloquear este utilizador";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Reiniciar a sua sessão permitirá que receba mensagens de %@ novamente, mas não poderá recuperar as mensagens corrompidas.";
@@ -389,7 +389,7 @@
 "CREATE_NEW_GROUP" = "Criar novo grupo";
 
 /* Title for the 'crop/scale image' dialog. */
-"CROP_SCALE_IMAGE_VIEW_TITLE" = "Move and Scale";
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Mover e Redimensionar";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Isto pode demorar alguns minutos.";
@@ -821,7 +821,7 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = " Bloqueou %@ Membros deste Grupo ";
 
 /* Text for banner in group conversation view that offers to share your profile with this group. */
-"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Share Your Profile With This Group?";
+"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Deseja partilhar o seu perfil com este Grupo?";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Mais de um membro do grupo não se encontra marcado como verificado. Toque para opções.";
@@ -883,7 +883,7 @@
 "MUTE_BEHAVIOR_EXPLANATION" = "Não receberá notificações de conversas silenciadas.";
 
 /* A button to skip a view. */
-"NAVIGATION_ITEM_SKIP_BUTTON" = "Skip";
+"NAVIGATION_ITEM_SKIP_BUTTON" = "Passar à frente";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Verifique que está online e tente novamente por favor.";
@@ -1097,31 +1097,31 @@
 "PROFILE_VIEW_CLEAR_AVATAR" = "Remover Avatar";
 
 /* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Your profile name is too long.";
+"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "O seu nome de perfil é demasiado longo.";
 
 /* Error message shown when a profile update fails. */
 "PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Falha ao actualizar o perfil.";
 
 /* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Enter your name";
+"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Introduza o seu nome";
 
 /* Label for the profile avatar field of the profile view. */
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your Signal Profile will be visible to your contacts, when you initiate new conversations, and when you share it with other users and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "O seu Perfil Signal estará visível para todos os seus contactos, quando inicia novas conversas, e quando o partilha com outros utilizadores ou grupos. ";
 
 /* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tap here to learn more.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Toque para ver mais.";
 
 /* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profile Name";
+"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Nome de perfil";
 
 /* Button to save the profile view in the profile view. */
-"PROFILE_VIEW_SAVE_BUTTON" = "Save";
+"PROFILE_VIEW_SAVE_BUTTON" = "Guardar";
 
 /* Alert title that indicates the user's profile view is being saved. */
-"PROFILE_VIEW_SAVING" = "Saving...";
+"PROFILE_VIEW_SAVING" = "A guardar...";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Perfil";
@@ -1517,10 +1517,10 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Arrastar para Atender";
 
 /* button label shown one time, after user upgrades app */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Set up Your Profile";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Prepare o Seu Perfil";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "You can now share a profile photo and name with your friends on Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "A partir de agora pode partilhar uma foto de perfil e nome com os seus amigos no Signal.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Ready for Your Closeup?";

@@ -11,6 +11,7 @@
 #import "NewContactThreadViewController.h"
 #import "OWSContactsManager.h"
 #import "OWSNavigationController.h"
+#import "OWSProfileManager.h"
 #import "ProfileViewController.h"
 #import "PropertyListPreferences.h"
 #import "PushManager.h"
@@ -311,10 +312,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
 }
 
-- (void)settingsButtonPressed:(id)sender
-{
-    AppSettingsViewController *vc = [AppSettingsViewController new];
-    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:vc];
+- (void)settingsButtonPressed:(id)sender {
+    OWSNavigationController *navigationController = [AppSettingsViewController inModalNavigationController];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
@@ -500,6 +499,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
         [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
+        [[OWSProfileManager sharedManager] ensureLocalProfileCached];
     } else if (!self.viewHasEverAppeared) {
         [self displayAnyUnseenUpgradeExperience];
     }

@@ -389,7 +389,7 @@
 "CREATE_NEW_GROUP" = "Neue Gruppe erstellen";
 
 /* Title for the 'crop/scale image' dialog. */
-"CROP_SCALE_IMAGE_VIEW_TITLE" = "Move and Scale";
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Verschieben und Skalieren";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Dies kann einige Minuten dauern.";
@@ -1097,7 +1097,7 @@
 "PROFILE_VIEW_CLEAR_AVATAR" = "Avatar löschen";
 
 /* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Dein Profilname ist zu lang";
+"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Dein Profilname ist zu lang.";
 
 /* Error message shown when a profile update fails. */
 "PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Aktualisierung des Profils gescheitert.";
@@ -1109,7 +1109,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your Signal Profile will be visible to your contacts, when you initiate new conversations, and when you share it with other users and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Dein Signal-Profil wird für deine Kontakte sichtbar, wenn du eine neue Unterhaltung beginnst und es mit anderen Benutzern und Gruppen teilst.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Hier antippen, um mehr zu erfahren.";

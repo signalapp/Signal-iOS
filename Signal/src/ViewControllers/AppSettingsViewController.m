@@ -10,6 +10,7 @@
 #import "NotificationSettingsViewController.h"
 #import "OWSContactsManager.h"
 #import "OWSLinkedDevicesTableViewController.h"
+#import "OWSNavigationController.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
 #import "PropertyListPreferences.h"
@@ -28,6 +29,18 @@
 #pragma mark -
 
 @implementation AppSettingsViewController
+
+/**
+ * We always present the settings controller modally, from within an OWSNavigationController
+ */
++ (OWSNavigationController *)inModalNavigationController
+{
+    AppSettingsViewController *viewController = [AppSettingsViewController new];
+    OWSNavigationController *navController =
+        [[OWSNavigationController alloc] initWithRootViewController:viewController];
+
+    return navController;
+}
 
 - (instancetype)init
 {
@@ -63,6 +76,8 @@
 {
     [super viewDidLoad];
     [self.navigationItem setHidesBackButton:YES];
+
+    OWSAssert([self.navigationController isKindOfClass:[OWSNavigationController class]]);
 
     [self.navigationController.navigationBar setTranslucent:NO];
     self.navigationItem.leftBarButtonItem =

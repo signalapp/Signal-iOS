@@ -270,6 +270,13 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     }
 }
 
+- (void)ensureLocalProfileCached
+{
+    // Since localUserProfile can create a transaction, we want to make sure it's not called for the first
+    // time unexpectedly (e.g. in a nested transaction.)
+    __unused UserProfile *profile = [self localUserProfile];
+}
+
 #pragma mark - Local Profile
 
 - (UserProfile *)localUserProfile
@@ -353,11 +360,15 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         {
             // Ensure that the success and failure blocks are called on the main thread.
             void (^failureBlock)() = ^{
+                DDLogError(@"%@ Updating service with profile failed.", self.tag);
+
                 dispatch_async(dispatch_get_main_queue(), ^{
                     failureBlockParameter();
                 });
             };
             void (^successBlock)() = ^{
+                DDLogInfo(@"%@ Successfully updated service with profile.", self.tag);
+
                 dispatch_async(dispatch_get_main_queue(), ^{
                     successBlockParameter();
                 });
@@ -608,8 +619,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                         };
 
                         // We have to build up the form manually vs. simply passing in a paramaters dict
-                        // because AWS is sensitive to the order of the order of the form params (at least
-                        // the "key" field must occur early on).
+                        // because AWS is sensitive to the order of the form params (at least the "key"
+                        // field must occur early on).
                         // For consistency, all fields are ordered here in a known working order.
                         [formData appendPartWithFormData:formDataForString(formKey) name:@"key"];
                         [formData appendPartWithFormData:formDataForString(formAcl) name:@"acl"];
@@ -631,11 +642,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                             @"%@ avatar upload progress: %.2f%%", self.tag, uploadProgress.fractionCompleted * 100);
                     }
                     success:^(NSURLSessionDataTask *_Nonnull uploadTask, id _Nullable responseObject) {
-                        DDLogDebug(@"%@ successfully uploaded avatar with key: %@", self.tag, formKey);
+                        DDLogInfo(@"%@ successfully uploaded avatar with key: %@", self.tag, formKey);
                         successBlock(formKey);
                     }
                     failure:^(NSURLSessionDataTask *_Nullable uploadTask, NSError *_Nonnull error) {
-                        DDLogVerbose(@"%@ uploading avatar failed with error: %@", self.tag, error);
+                        DDLogError(@"%@ uploading avatar failed with error: %@", self.tag, error);
                         failureBlock();
                     }];
             }
@@ -652,7 +663,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     });
 }
 
-// TODO: The exact API & encryption scheme for profiles is not yet settled.
 - (void)updateServiceWithProfileName:(nullable NSString *)localProfileName
                              success:(void (^)())successBlock
                              failure:(void (^)())failureBlock

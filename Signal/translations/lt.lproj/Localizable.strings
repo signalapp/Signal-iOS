@@ -62,7 +62,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@, grupėje %@: %@";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Enter your name";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Įveskite savo vardą";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versija %@ yra prieinama App Store.";
@@ -206,7 +206,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Užblokuoti %@?";
 
 /* Label for generic done button. */
-"BUTTON_DONE" = "Done";
+"BUTTON_DONE" = "Atlikta";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Tam, kad galėtų skambinti ir įrašinėti balso žinutes, Signal reikia prieigos prie jūsų mikrofono. Jūs galite suteikti šį leidimą Nustatymų (angl. Settings) programėlėje.";
@@ -368,16 +368,16 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Bendrinti savo profilį";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Add to Contacts";
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Įtraukti į kontaktus";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile With This User";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Bendrinti savo profilį su šiuo naudotoju";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "This user is not in your contacts.";
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Šio naudotojo nėra jūsų kontaktuose.";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Block This User";
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Užblokuoti šį naudotoją";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Jūsų seanso atstatymas leis jums ateityje gauti žinutes nuo %@, tačiau jis neatkurs jokias jau pažeistas žinutes.";
@@ -389,7 +389,7 @@
 "CREATE_NEW_GROUP" = "Sukurti naują grupę";
 
 /* Title for the 'crop/scale image' dialog. */
-"CROP_SCALE_IMAGE_VIEW_TITLE" = "Move and Scale";
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Perkelti ir keisti mastelį";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Tai gali užimti kelias minutes.";
@@ -821,7 +821,7 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Jūs užblokavote %@ šios grupės dalyvius(-ių)";
 
 /* Text for banner in group conversation view that offers to share your profile with this group. */
-"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Share Your Profile With This Group?";
+"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Bendrinti jūsų profilį su šia grupe?";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Daugiau nei vienas šios grupės dalyvis daugiau nebėra pažymėtas kaip patvirtintas. Bakstelėkite, norėdami matyti parinktis.";
@@ -883,7 +883,7 @@
 "MUTE_BEHAVIOR_EXPLANATION" = "Pokalbiams, kuriuose pranešimai yra išjungti, nebus rodomi jokie pranešimai.";
 
 /* A button to skip a view. */
-"NAVIGATION_ITEM_SKIP_BUTTON" = "Skip";
+"NAVIGATION_ITEM_SKIP_BUTTON" = "Praleisti";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Patikrinkite ar esate prisijungę prie interneto ir bandykite dar kartą.";
@@ -1097,31 +1097,31 @@
 "PROFILE_VIEW_CLEAR_AVATAR" = "Išvalyti avatarą";
 
 /* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Your profile name is too long.";
+"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Jūsų profilio vardas yra per ilgas.";
 
 /* Error message shown when a profile update fails. */
 "PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Profilio atnaujinimas nepavyko.";
 
 /* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Enter your name";
+"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Įveskite savo vardą";
 
 /* Label for the profile avatar field of the profile view. */
-"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
+"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avataras";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your Signal Profile will be visible to your contacts, when you initiate new conversations, and when you share it with other users and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Jūsų Signal profilis bus matomas jūsų kontaktams, kai inicijuosite naujus pokalbius, o taip pat, kai bendrinsite jį su kitais naudotojais ir grupėmis.";
 
 /* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tap here to learn more.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Bakstelėkite čia, norėdami sužinoti daugiau.";
 
 /* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profile Name";
+"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profilio vardas";
 
 /* Button to save the profile view in the profile view. */
-"PROFILE_VIEW_SAVE_BUTTON" = "Save";
+"PROFILE_VIEW_SAVE_BUTTON" = "Įrašyti";
 
 /* Alert title that indicates the user's profile view is being saved. */
-"PROFILE_VIEW_SAVING" = "Saving...";
+"PROFILE_VIEW_SAVING" = "Įrašoma...";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profilis";
@@ -1517,13 +1517,13 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Tiesiog perbraukite, norėdami atsiliepti";
 
 /* button label shown one time, after user upgrades app */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Set up Your Profile";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Nusistatyti savo profilį";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "You can now share a profile photo and name with your friends on Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Dabar, naudodami Signal, su savo draugais galite bendrinti savo profilio nuotrauką ir vardą.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Ready for Your Closeup?";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Pasiruošę artimesniam bendravimui?";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Dabar, Signal palaiko saugius vaizdo skambučius. Tiesiog, pradėkite skambutį kaip įprasta, bakstelėkite kameros mygtuką ir pamojuokite.";

@@ -26,7 +26,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Вы хотите поделиться Вашим профилем с данным пользователем?";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Сбросить";
+"ALERT_DISCARD_BUTTON" = "Отклонить";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Не сохранять";
@@ -38,13 +38,13 @@
 "ALERT_SAVE" = "Сохранить";
 
 /* A message for the alert shown while validating a signal account */
-"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Пожалуйста, убедитесь, что это корректный аккаунт Signal.";
+"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Пожалуйста, убедитесь, что это корректная учетная запись Signal.";
 
 /* A title for the alert shown while validating a signal account */
 "ALERT_VALIDATE_RECIPIENT_TITLE" = "Проверка";
 
 /* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "Уже есть Signal-аккаунт?";
+"ALREADY_HAVE_ACCOUNT_BUTTON" = "Уже есть учетная запись Signal?";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Ответить";
@@ -68,7 +68,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Версия %@ уже доступна в App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Доступна обновлённая версия Signal";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Доступна обновленная версия Signal";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Обновить";
@@ -101,10 +101,10 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Вложение";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Не удалось загрузить вложение. Нажмите, чтобы попробовать ещё раз.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Ошибка. Нажмите, чтобы попробовать еще раз.";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Скачивание...";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Загрузка...";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "В очереди";
@@ -113,7 +113,7 @@
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Ошибка отправки вложения";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Не удалось изменить размер прикреплённого изображения.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Не удалось изменить размер прикрепленного изображения.";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Не удалось обработать вложенное изображение.";
@@ -131,7 +131,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Вложение пустое.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Сделать новую фотографию или выбрать одну из существующих и отправить её";
+"ATTACHMENT_HINT" = "Сделать новую фотографию или выбрать одну из существующих и отправить ее";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Добавить вложение";
@@ -233,16 +233,16 @@
 "CALL_USER_ALERT_TITLE" = "Позвонить?";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Вы сможете отвечать на входящие вызовы, просматривать имена и телефонные номера вызывающих Вас абонентов непосредственно с экрана блокировки, если Вы изменяете свои настройки. \n\nПосмотрите настройки конфиденциальности Вашего устройства для деталей.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Можно отвечать на звонки непосредственно с экрана блокировки и просматривать имя и номер телефона для входящих звонков.\n\nПодробнее смотрите Настройки конфиденциальности.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Вы сможете просматривать имена и телефонные номера вызывающих Вас абонентов, если Вы изменяете свои настройки. \n\nПосмотрите настройки конфиденциальности для деталей.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Вы сможете просматривать имена и телефонные номера вызывающих вас абонентов.\n\nПодробнее смотрите Настройки конфиденциальности.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Не сейчас";
 
 /* Label for button that shows the privacy settings */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Показать настройки приватности";
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Показать настройки конфиденциальности";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Перезвонить";
@@ -269,7 +269,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Это действие сбросит настройки приложения, удалив все сообщения и отменив регистрацию на сервере. Приложение закроется после удаления данных.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Вы уверены, что хотите удалить свою учётную запись?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Вы действительно хотите удалить свою учетную запись?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Вы больше не сможете отправлять и получать сообщения в этой группе.";
@@ -281,7 +281,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Привязать устройство";
 
 /* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ мог перепрошить или сменить своё устройство. Сверьте ваши коды безопасности для того, чтобы убедиться в конфиденциальности общения.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ мог переустановить Signal или сменить устройство. Сверьте ваши коды безопасности для того, чтобы убедиться в конфиденциальности общения.";
 
 /* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Код безопасности %@ сменился";
@@ -455,7 +455,7 @@
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Вы изменили эту группу. Применить изменения?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Несохранённые изменения";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Несохраненные изменения";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Скопировать";
@@ -503,7 +503,7 @@
 "EMPTY_INBOX_TEXT" = "Тут совсем ничего нет.";
 
 /* No comment provided by engineer. */
-"EMPTY_INBOX_TITLE" = "Всё чисто.";
+"EMPTY_INBOX_TITLE" = "Все чисто.";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Занято.";
@@ -611,13 +611,13 @@
 "GENERIC_ATTACHMENT_LABEL" = "Вложение";
 
 /* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "Аватар изменён.";
+"GROUP_AVATAR_CHANGED" = "Аватар изменен.";
 
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "Группа создана.";
 
 /* No comment provided by engineer. */
-"GROUP_CREATING" = "Создаём новую группу";
+"GROUP_CREATING" = "Создаем новую группу";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Не все участники могут быть добавлены в группу. Нажмите, чтобы повторить попытку. ";
@@ -752,7 +752,7 @@
 "LINK_DEVICE_RESTART" = "Повторить попытку";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Для привязки устройства просканируйте отображенный на нём QR-код.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Для привязки устройства сосканируйте отображенный на нем QR-код.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Сканировать QR-код";
@@ -812,7 +812,7 @@
 "MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Скачивание не удалось.";
 
 /* Action sheet button text */
-"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "Скачать ещё раз";
+"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "Скачать еще раз";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Вы заблокировали 1 участника в этой группе";
@@ -931,7 +931,7 @@
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Вы хотите отменить правки?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Несохранённые изменения";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Несохраненные изменения";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Поиск";
@@ -1079,7 +1079,7 @@
 "PRIVACY_VERIFICATION_TITLE" = "Подтверждение кода безопасности";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Отметить как подтверждённый";
+"PRIVACY_VERIFY_BUTTON" = "Отметить как подтвержденный";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Продолжить";
@@ -1127,7 +1127,7 @@
 "PROFILE_VIEW_TITLE" = "Профиль";
 
 /* No comment provided by engineer. */
-"PUSH_MANAGER_MARKREAD" = "Отметить как прочтённое";
+"PUSH_MANAGER_MARKREAD" = "Отметить как прочтенное";
 
 /* No comment provided by engineer. */
 "PUSH_MANAGER_REPLY" = "Ответить";
@@ -1142,7 +1142,7 @@
 "QUESTIONMARK_PUNCTUATION" = "?";
 
 /* No comment provided by engineer. */
-"RATING_MSG" = "Если вам нравится использовать Signal для безопасного общения, вы можете поддержать наш проект, поставив ему оценку. Это не займёт больше минуты и поможет другим обеспечить безопасность.";
+"RATING_MSG" = "Если вам нравится использовать Signal для безопасного общения, вы можете поддержать наш проект, поставив ему оценку. Это займет не больше минуты и поможет другим обеспечить безопасность.";
 
 /* No comment provided by engineer. */
 "RATING_RATE" = "Оценить Signal";
@@ -1160,7 +1160,7 @@
 "REGISTER_CONTACTS_WELCOME" = "Добро пожаловать!";
 
 /* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "Попробуйте ещё раз";
+"REGISTER_FAILED_TRY_AGAIN" = "Повторить";
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "Слишком часто. Попробуйте через минуту";
@@ -1187,7 +1187,7 @@
 "REGISTRATION_PHONENUMBER_BUTTON" = "Телефонный номер";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "Кому-то не терпится отправить своё первое сообщение! Вы должны зарегестрироваться, чтобы выполнить это действие.";
+"REGISTRATION_RESTRICTED_MESSAGE" = "Кому-то не терпится отправить свое первое сообщение! Вы должны зарегестрироваться, чтобы выполнить это действие.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_TITLE_LABEL" = "Ваш телефонный номер";
@@ -1253,7 +1253,7 @@
 "SECURE_SESSION_RESET" = "Безопасный сеанс связи был сброшен.";
 
 /* No comment provided by engineer. */
-"SEND_AGAIN_BUTTON" = "Отправить ещё раз";
+"SEND_AGAIN_BUTTON" = "Отправить еще раз";
 
 /* No comment provided by engineer. */
 "SEND_BUTTON_TITLE" = "Отправить";
@@ -1274,7 +1274,7 @@
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Пригласить %@ по SMS";
 
 /* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "Пригласить друга через незащищённое SMS?";
+"SEND_SMS_CONFIRM_TITLE" = "Пригласить друга через незащищенное SMS?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Хотите пригласить этот номер в Signal:";
@@ -1349,7 +1349,7 @@
 "SETTINGS_COPYRIGHT" = "Все права принадлежат Open Whisper Systems\nЛицензия GPLv3";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Удалить учётную запись";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Удалить учетную запись";
 
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Вы уверены, что хотите удалить всю историю (сообщения, вложения, журнал вызовов и т. д.)? Эта операция необратима.";
