@@ -1354,10 +1354,17 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
     CGSize screenSize = [UIScreen mainScreen].bounds.size;
     CGFloat screenWidth = MIN(screenSize.width, screenSize.height);
-    // Request "full width" title; the navigation bar will truncate this
-    // to fit between the left and right buttons.
-    self.navigationBarTitleView.frame = CGRectMake(0, 0, screenWidth, 44);
-    self.navigationItem.titleView = self.navigationBarTitleView;
+    if (self.navigationItem.titleView != self.navigationBarTitleView) {
+        // Request "full width" title; the navigation bar will truncate this
+        // to fit between the left and right buttons.
+        self.navigationBarTitleView.frame = CGRectMake(0, 0, screenWidth, 44);
+        self.navigationItem.titleView = self.navigationBarTitleView;
+    } else {
+        // Don't reset the frame of the navigationBarTitleView every time
+        // this method is called or we'll gave bad frames where it will appear
+        // in the wrong position.
+        [self.navigationBarTitleView layoutSubviews];
+    }
 
     if (self.userLeftGroup) {
         self.navigationItem.rightBarButtonItems = @[];
