@@ -21,6 +21,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     private let callManager: CallKitCallManager
     internal let callService: CallService
     internal let notificationsAdapter: CallNotificationsAdapter
+    internal let contactsManager: OWSContactsManager
     private let provider: CXProvider
 
     // CallKit handles incoming ringer stop/start for us. Yay!
@@ -48,13 +49,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         return providerConfiguration
     }
 
-    init(callService: CallService, notificationsAdapter: CallNotificationsAdapter) {
+    init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter) {
         AssertIsOnMainThread()
 
         Logger.debug("\(self.TAG) \(#function)")
 
         self.callManager = CallKitCallManager()
         self.callService = callService
+        self.contactsManager = contactsManager
         self.notificationsAdapter = notificationsAdapter
         self.provider = CXProvider(configuration: type(of: self).providerConfiguration)
 
@@ -104,13 +106,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             update.remoteHandle = CXHandle(type: .generic, value: callKitId)
             TSStorageManager.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId:callKitId)
+            update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
         } else {
+            update.localizedCallerName = self.contactsManager.stringForConversationTitle(withPhoneIdentifier: call.remotePhoneNumber)
             update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
         }
 
         update.hasVideo = call.hasLocalVideo
-        // Update the name used in the CallKit UI for incoming calls.
-        update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
+
         disableUnsupportedFeatures(callUpdate: update)
 
         // Report the incoming call to the system
