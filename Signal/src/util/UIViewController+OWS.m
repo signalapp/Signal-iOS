@@ -49,9 +49,12 @@ NS_ASSUME_NONNULL_BEGIN
     const CGFloat kTopInsetPadding = 1.5;
     backButton.imageEdgeInsets = UIEdgeInsetsMake(kTopInsetPadding, kExtraLeftPadding, 0, 0);
 
-    backButton.frame = CGRectMake(0, 0, backImage.size.width + kExtraRightPadding, backImage.size.height + kExtraHeightPadding);
+    CGRect buttonFrame
+        = CGRectMake(0, 0, backImage.size.width + kExtraRightPadding, backImage.size.height + kExtraHeightPadding);
+    backButton.frame = buttonFrame;
 
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+    backItem.width = buttonFrame.size.width;
 
     return backItem;
 }
