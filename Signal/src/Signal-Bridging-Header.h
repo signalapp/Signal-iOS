@@ -20,6 +20,7 @@
 #import "OWSDatabaseMigration.h"
 #import "OWSLogger.h"
 #import "OWSMessageEditing.h"
+#import "OWSNavigationController.h"
 #import "OWSProfileManager.h"
 #import "OWSProgressView.h"
 #import "OWSViewController.h"
