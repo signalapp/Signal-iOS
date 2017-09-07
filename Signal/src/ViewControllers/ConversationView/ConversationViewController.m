@@ -170,7 +170,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // We need to manually resize and position the title views;
     // iOS AutoLayout doesn't work inside navigation bar items.
     const int kTitleVSpacing = 0.f;
-    const int kTitleHMargin = 5.f;
+    const int kTitleHMargin = 0.f;
     CGFloat titleHeight = ceil([self.titleLabel sizeThatFits:CGSizeZero].height);
     CGFloat subtitleHeight = ceil([self.subtitleLabel sizeThatFits:CGSizeZero].height);
     CGFloat contentHeight = titleHeight + kTitleVSpacing + subtitleHeight;
