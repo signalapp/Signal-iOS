@@ -742,6 +742,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             return
         }
 
+        // Marquee scrolling is distractingn during a video call, disable it.
+        contactNameLabel.labelize = call.hasLocalVideo
+
         audioModeMuteButton.isSelected = call.isMuted
         videoModeMuteButton.isSelected = call.isMuted
         audioModeVideoButton.isSelected = call.hasLocalVideo
