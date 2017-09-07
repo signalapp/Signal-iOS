@@ -188,7 +188,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        contactNameLabel.text = contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
+        contactNameLabel.text = contactsManager.stringForConversationTitle(withPhoneIdentifier: thread.contactIdentifier())
         updateAvatarImage()
         NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { [weak self] _ in
             guard let strongSelf = self else { return }
@@ -249,6 +249,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         contactNameLabel.layer.shadowOffset = CGSize.zero
         contactNameLabel.layer.shadowOpacity = 0.35
         contactNameLabel.layer.shadowRadius = 4
+        contactNameLabel.adjustsFontSizeToFitWidth = true
+        contactNameLabel.minimumScaleFactor = 0.7
         self.view.addSubview(contactNameLabel)
 
         callStatusLabel = UILabel()
