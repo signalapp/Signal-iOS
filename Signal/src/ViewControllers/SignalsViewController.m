@@ -310,8 +310,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 }
 
 - (void)settingsButtonPressed:(id)sender {
-    AppSettingsViewController *vc = [AppSettingsViewController new];
-    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:vc];
+    OWSNavigationController *navigationController = [AppSettingsViewController inModalNavigationController];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
