@@ -131,8 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
                         }],
         [OWSTableItem itemWithTitle:@"Send unknown mimetype"
                         actionBlock:^{
-                            [DebugUIMessages sendRandomAttachment:thread
-                                                              uti:SignalAttachment.kUnknownTestAttachmentUTI];
+                            [DebugUIMessages sendRandomAttachment:thread uti:kUnknownTestAttachmentUTI];
                         }],
         [OWSTableItem itemWithTitle:@"Send pdf"
                         actionBlock:^{
@@ -588,12 +587,9 @@ NS_ASSUME_NONNULL_BEGIN
                               @"lorem, in rhoncus nisi."];
     }
 
-    id<DataSource> _Nullable dataSource =
-        [DataSourceValue dataSourceWithData:[message dataUsingEncoding:NSUTF8StringEncoding]];
+    id<DataSource> _Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];
     SignalAttachment *attachment =
-        [SignalAttachment attachmentWithDataSource:dataSource
-                                           dataUTI:SignalAttachment.kOversizeTextAttachmentUTI
-                                          filename:nil];
+        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI filename:nil];
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender];
 }
 
@@ -617,7 +613,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti length:(NSUInteger)length
 {
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
-    id<DataSource> _Nullable dataSource = [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length]];
+    id<DataSource> _Nullable dataSource =
+        [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length] utiType:uti];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti filename:nil];
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender ignoreErrors:YES];
 }

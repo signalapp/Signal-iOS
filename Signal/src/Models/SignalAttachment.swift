@@ -70,7 +70,7 @@ class SignalAttachment: NSObject {
         return dataSource.dataLength()
     }
     public var dataUrl: URL? {
-        return dataSource.dataUrl(fileExtensionNonNil)
+        return dataSource.dataUrl()
     }
 
     // Attachment types are identified using UTIs.
@@ -79,10 +79,9 @@ class SignalAttachment: NSObject {
     let dataUTI: String
 
     // An optional field that indicates the filename, if known, for this attachment.
+    //
+    // TODO: Try to eliminate this property.
     let filename: String?
-
-    static let kOversizeTextAttachmentUTI = "org.whispersystems.oversize-text-attachment"
-    static let kUnknownTestAttachmentUTI = "org.whispersystems.unknown"
 
     var error: SignalAttachmentError? {
         didSet {
@@ -179,10 +178,10 @@ class SignalAttachment: NSObject {
                 }
             }
         }
-        if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI {
+        if dataUTI == kOversizeTextAttachmentUTI {
             return OWSMimeTypeOversizeTextMessage
         }
-        if dataUTI == SignalAttachment.kUnknownTestAttachmentUTI {
+        if dataUTI == kUnknownTestAttachmentUTI {
             return OWSMimeTypeUnknownForTests
         }
         guard let mimeType = UTTypeCopyPreferredTagWithClass(dataUTI as CFString, kUTTagClassMIMEType) else {
@@ -221,10 +220,10 @@ class SignalAttachment: NSObject {
                 return fileExtension
             }
         }
-        if dataUTI == SignalAttachment.kOversizeTextAttachmentUTI {
-            return "txt"
+        if dataUTI == kOversizeTextAttachmentUTI {
+            return kOversizeTextAttachmentFileExtension
         }
-        if dataUTI == SignalAttachment.kUnknownTestAttachmentUTI {
+        if dataUTI == kUnknownTestAttachmentUTI {
             return "unknown"
         }
         guard let fileExtension = MIMETypeUtil.fileExtension(forUTIType:dataUTI) else {
@@ -379,7 +378,7 @@ class SignalAttachment: NSObject {
                     owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
-                let dataSource = DataSourceValue.dataSource(with:data)
+                let dataSource = DataSourceValue.dataSource(with:data, utiType: dataUTI)
                 return imageAttachment(dataSource : dataSource, dataUTI : dataUTI, filename: nil)
             }
         }
@@ -389,7 +388,7 @@ class SignalAttachment: NSObject {
                     owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
-                let dataSource = DataSourceValue.dataSource(with:data)
+                let dataSource = DataSourceValue.dataSource(with:data, utiType: dataUTI)
                 return videoAttachment(dataSource : dataSource, dataUTI : dataUTI, filename: nil)
             }
         }
@@ -399,7 +398,7 @@ class SignalAttachment: NSObject {
                     owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
-                let dataSource = DataSourceValue.dataSource(with:data)
+                let dataSource = DataSourceValue.dataSource(with:data, utiType: dataUTI)
                 return audioAttachment(dataSource : dataSource, dataUTI : dataUTI, filename: nil)
             }
         }
@@ -409,7 +408,7 @@ class SignalAttachment: NSObject {
             owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
-        let dataSource = DataSourceValue.dataSource(with:data)
+        let dataSource = DataSourceValue.dataSource(with:data, utiType: dataUTI)
         return genericAttachment(dataSource : dataSource, dataUTI : dataUTI, filename: nil)
     }
 
@@ -553,7 +552,7 @@ class SignalAttachment: NSObject {
                                                                 return attachment
             }
 
-            guard let dataSource = DataSourceValue.dataSource(with:jpgImageData) else {
+            guard let dataSource = DataSourceValue.dataSource(with:jpgImageData, fileExtension:"jpg") else {
                 attachment.error = .couldNotConvertToJpeg
                 return attachment
             }
@@ -658,10 +657,7 @@ class SignalAttachment: NSObject {
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
     private class func oversizeTextAttachment(text: String?) -> SignalAttachment {
-        var dataSource: DataSource? = DataSourceValue.emptyDataSource()
-        if let data = text?.data(using: .utf8) {
-            dataSource = DataSourceValue.dataSource(with:data)
-        }
+        let dataSource = DataSourceValue.dataSource(withOversizeText:text)
         return newAttachment(dataSource : dataSource,
                              dataUTI : kOversizeTextAttachmentUTI,
                              validUTISet : nil,

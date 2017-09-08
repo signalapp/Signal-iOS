@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Will only return nil in the error case.
 //
 // TODO: Try to remove the parameter.
-- (nullable NSURL *)dataUrl:(NSString *)fileExtension;
+- (nullable NSURL *)dataUrl;
 
 // The file path for the data.
 //
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Will only return nil in the error case.
 //
 // TODO: Try to remove the parameter.
-- (nullable NSString *)dataPath:(NSString *)fileExtension;
+- (nullable NSString *)dataPath;
 
 // The file path for the data, if it already exists on disk.
 //
@@ -48,7 +48,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DataSourceValue : NSObject <DataSource>
 
-+ (nullable id<DataSource>)dataSourceWithData:(NSData *)data;
++ (nullable id<DataSource>)dataSourceWithData:(NSData *)data fileExtension:(NSString *)fileExtension;
+
++ (nullable id<DataSource>)dataSourceWithData:(NSData *)data utiType:(NSString *)utiType;
+
++ (nullable id<DataSource>)dataSourceWithOversizeText:(NSString *_Nullable)text;
 
 + (id<DataSource>)emptyDataSource;
 
@@ -63,13 +67,5 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable id<DataSource>)dataSourceWithFilePath:(NSString *)filePath;
 
 @end
-
-//#pragma mark -
-//
-//@interface DataSourceURL : NSObject <DataSource>
-//
-//+ (id<DataSource>)dataSourceWithURL:(NSURL *)fileUrl;
-//
-//@end
 
 NS_ASSUME_NONNULL_END

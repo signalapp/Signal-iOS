@@ -1673,12 +1673,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
         TSOutgoingMessage *message;
         if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
-            id<DataSource> _Nullable dataSource =
-                [DataSourceValue dataSourceWithData:[text dataUsingEncoding:NSUTF8StringEncoding]];
+            id<DataSource> _Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
             SignalAttachment *attachment =
-                [SignalAttachment attachmentWithDataSource:dataSource
-                                                   dataUTI:SignalAttachment.kOversizeTextAttachmentUTI
-                                                  filename:nil];
+                [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI filename:nil];
             message =
                 [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
         } else {
@@ -3377,7 +3374,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                            }
                            OWSAssert([NSThread isMainThread]);
 
-                           id<DataSource> _Nullable dataSource = [DataSourceValue dataSourceWithData:imageData];
+                           id<DataSource> _Nullable dataSource =
+                               [DataSourceValue dataSourceWithData:imageData utiType:dataUTI];
                            SignalAttachment *attachment =
                                [SignalAttachment attachmentWithDataSource:dataSource dataUTI:dataUTI filename:filename];
                            [self dismissViewControllerAnimated:YES

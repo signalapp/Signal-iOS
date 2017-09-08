@@ -16,6 +16,10 @@ NSString *const OWSMimeTypeImagePng = @"image/png";
 NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
 NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 
+NSString *const kOversizeTextAttachmentUTI = @"org.whispersystems.oversize-text-attachment";
+NSString *const kOversizeTextAttachmentFileExtension = @"txt";
+NSString *const kUnknownTestAttachmentUTI = @"org.whispersystems.unknown";
+
 @implementation MIMETypeUtil
 
 + (NSDictionary *)supportedVideoMIMETypesToExtensionTypes {
