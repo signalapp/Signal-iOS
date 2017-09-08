@@ -490,7 +490,7 @@ typedef void (^CustomLayoutBlock)();
 - (void)learnMoreButtonTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        NSString *learnMoreURL = @"https://support.whispersystems.org/hc/en-us/articles/"
+        NSString *learnMoreURL = @"https://support.signal.org/hc/en-us/articles/"
                                  @"213134107";
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:learnMoreURL]];
     }
