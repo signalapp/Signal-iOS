@@ -32,6 +32,17 @@ While the repository does contain the pre-built frameworks, if you want to re-bu
 2. build
 3. Result is located: OpenSSL/OpenSSL-macOS/bin/openssl.framework
 
+### Updating OpenSSL Version
+
+The build scripts and projects are all tailored for the 1.1.0 series of OpenSSL, so if you're attempting to use a different series you might run into some issues.
+
+1. Download the source tarball from [https://www.openssl.org/source/](https://www.openssl.org/source/)
+2. Download the PGP sig as well, and validate the tarball's signature.
+3. Place the downloaded file in this directory.
+4. Update the `OPENSSL_VERSION` value in the `_master_build.sh`
+5. Execute the `_master_build.sh` script from its present location.
+6. Follow the steps outlined in "Building" (above).
+
 ### Reference
 [https://github.com/krzyzanowskim/OpenSSL/issues/9](https://github.com/krzyzanowskim/OpenSSL/issues/9)  
 [https://github.com/krzyzanowskim/OpenSSL/pull/27](https://github.com/krzyzanowskim/OpenSSL/pull/27)  

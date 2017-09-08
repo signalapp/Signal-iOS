@@ -27,7 +27,7 @@ set -eu
 [ $DEBUG -ne 0 ] && set -x
 
 # Build OpenSSL
-#source ./build.sh
+source ./build.sh
 
 # Create the macOS umbrella header
 HEADER_DEST="OpenSSL-macOS/OpenSSL-macOS/openssl.h"
