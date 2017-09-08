@@ -228,15 +228,6 @@ class SignalAttachment: NSObject {
         return fileExtension
     }
 
-    // Returns the file extension for this attachment or nil if no file extension
-    // can be identified.
-    var fileExtensionNonNil: String {
-        if let fileExtension = fileExtension {
-            return fileExtension
-        }
-        return ""
-    }
-
     // Returns the set of UTIs that correspond to valid _input_ image formats
     // for Signal attachments.
     //
@@ -299,6 +290,9 @@ class SignalAttachment: NSObject {
 
     public var isValidImage: Bool {
         if let dataPath = dataSource.dataPathIfOnDisk() {
+            // if ows_isValidImage is given a file path, it will
+            // avoid loading most of the data into memory, which 
+            // is considerably more performant, so try to do that.
             return NSData.ows_isValidImage(atPath:dataPath)
         }
 
