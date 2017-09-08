@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // Will only return nil in the error case.
 //
-// TODO: Try to remove the parameter.
+// TODO: Try to remove this parameter.
 - (nullable NSURL *)dataUrl;
 
 // The file path for the data.
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // Will only return nil in the error case.
 //
-// TODO: Try to remove the parameter.
+// TODO: Try to remove this parameter.
 - (nullable NSString *)dataPath;
 
 // The file path for the data, if it already exists on disk.

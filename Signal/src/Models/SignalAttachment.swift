@@ -62,7 +62,6 @@ class SignalAttachment: NSObject {
 
     let dataSource: DataSource
 
-    // TODO: Rename
     public var data: Data {
         return dataSource.data()
     }
