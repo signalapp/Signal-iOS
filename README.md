@@ -24,13 +24,15 @@ While the repository does contain the pre-built frameworks, if you want to re-bu
 
 #### iOS
 1. Open in Xcode: OpenSSL/OpenSSL-iOS/OpenSSL-iOS.xcodeproj
-2. build
-3. Result is located: OpenSSL/OpenSSL-iOS/bin/openssl.framework
+2. Clean Build Folder (Option-Shift-Command-K)
+3. Build
+4. Result is located: OpenSSL/OpenSSL-iOS/bin/openssl.framework
 
 #### macOS
 1. Open in Xcode: OpenSSL/OpenSSL-macOS/OpenSSL-macOS.xcodeproj
-2. build
-3. Result is located: OpenSSL/OpenSSL-macOS/bin/openssl.framework
+2. Clean Build Folder (Option-Shift-Command-K)
+3. Build
+4. Result is located: OpenSSL/OpenSSL-macOS/bin/openssl.framework
 
 ### Updating OpenSSL Version
 
