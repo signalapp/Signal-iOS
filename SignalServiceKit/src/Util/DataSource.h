@@ -45,6 +45,9 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns YES on success.
 - (BOOL)writeToPath:(NSString *)dstFilePath;
 
+- (nullable NSString *)sourceFilename;
+- (void)setSourceFilename:(NSString *_Nullable)sourceFilename;
+
 @end
 
 #pragma mark -

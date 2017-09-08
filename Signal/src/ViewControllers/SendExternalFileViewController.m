@@ -141,8 +141,9 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // TODO: If we reuse this VC, for example to offer a "forward attachment to other thread",
     //       feature, this assumption would no longer apply.
-    OWSAssert(self.attachment) NSString *filename =
-        [self.attachment.filename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    OWSAssert(self.attachment);
+    NSString *filename =
+        [self.attachment.sourceFilename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     OWSAssert(filename.length > 0);
     const NSUInteger kMaxFilenameLength = 20;
     if (filename.length > kMaxFilenameLength) {

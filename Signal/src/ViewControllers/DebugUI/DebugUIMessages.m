@@ -328,11 +328,11 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *filename = [filePath lastPathComponent];
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
     id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
-    SignalAttachment *attachment =
-        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType filename:filename];
+    [dataSource setSourceFilename:filename];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     OWSAssert(attachment);
     if ([attachment hasError]) {
-        DDLogError(@"attachment[%@]: %@", [attachment filename], [attachment errorName]);
+        DDLogError(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
         [DDLog flushLog];
     }
     OWSAssert(![attachment hasError]);
@@ -589,7 +589,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     id<DataSource> _Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];
     SignalAttachment *attachment =
-        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI filename:nil];
+        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender];
 }
 
@@ -615,7 +615,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
     id<DataSource> _Nullable dataSource =
         [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length] utiType:uti];
-    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti filename:nil];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti];
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender ignoreErrors:YES];
 }
 + (OWSSignalServiceProtosEnvelope *)createEnvelopeForThread:(TSThread *)thread

@@ -1675,7 +1675,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
             id<DataSource> _Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
             SignalAttachment *attachment =
-                [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI filename:nil];
+                [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
             message =
                 [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
         } else {
@@ -3207,8 +3207,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     OWSAssert(type);
     OWSAssert(filename);
     id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
-    SignalAttachment *attachment =
-        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:type filename:filename];
+    [dataSource setSourceFilename:filename];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:type];
     [self tryToSendAttachmentIfApproved:attachment];
 }
 
@@ -3226,13 +3226,17 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
         picker.allowsEditing = NO;
         picker.delegate = self;
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
         });
     }];
 }
+
 - (void)chooseFromLibrary
 {
+    OWSAssert([NSThread isMainThread]);
+
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
         DDLogError(@"PhotoLibrary ImagePicker source not available");
         return;
@@ -3242,9 +3246,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     picker.delegate = self;
     picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
-    });
+
+    [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
 /*
@@ -3376,8 +3379,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
                            id<DataSource> _Nullable dataSource =
                                [DataSourceValue dataSourceWithData:imageData utiType:dataUTI];
+                           [dataSource setSourceFilename:filename];
                            SignalAttachment *attachment =
-                               [SignalAttachment attachmentWithDataSource:dataSource dataUTI:dataUTI filename:filename];
+                               [SignalAttachment attachmentWithDataSource:dataSource dataUTI:dataUTI];
                            [self dismissViewControllerAnimated:YES
                                                     completion:^{
                                                         OWSAssert([NSThread isMainThread]);
@@ -3424,8 +3428,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (NSURL *)videoTempFolder
 {
     NSString *temporaryDirectory = NSTemporaryDirectory();
-    //    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    //    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     NSString *videoDirPath = [temporaryDirectory stringByAppendingPathComponent:@"videos"];
     if (![[NSFileManager defaultManager] fileExistsAtPath:videoDirPath]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:videoDirPath
@@ -3436,10 +3438,24 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     return [NSURL fileURLWithPath:videoDirPath];
 }
 
+- (NSUInteger)sizeOfFileURL:(NSURL *)movieURL
+{
+    NSError *error;
+    NSDictionary<NSFileAttributeKey, id> *_Nullable attributes =
+        [[NSFileManager defaultManager] attributesOfItemAtPath:movieURL.path error:&error];
+    OWSAssert(attributes);
+    OWSAssert(!error);
+    uint64_t fileSize = [attributes fileSize];
+    return (NSUInteger)fileSize;
+}
+
 - (void)sendQualityAdjustedAttachmentForVideo:(NSURL *)movieURL
                                      filename:(NSString *)filename
                            skipApprovalDialog:(BOOL)skipApprovalDialog
 {
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogError(@"movieURL: %@ %zd", movieURL, [self sizeOfFileURL:movieURL]);
     AVAsset *video = [AVAsset assetWithURL:movieURL];
     AVAssetExportSession *exportSession =
         [AVAssetExportSession exportSessionWithAsset:video presetName:AVAssetExportPresetMediumQuality];
@@ -3449,11 +3465,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         URLByAppendingPathComponent:[[[NSUUID UUID] UUIDString] stringByAppendingPathExtension:@"mp4"]];
     exportSession.outputURL = compressedVideoUrl;
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
+        DDLogError(@"compressedVideoUrl: %@ %zd", compressedVideoUrl, [self sizeOfFileURL:compressedVideoUrl]);
         dispatch_async(dispatch_get_main_queue(), ^{
             id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:compressedVideoUrl];
-            SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
-                                                                              dataUTI:(NSString *)kUTTypeMPEG4
-                                                                             filename:filename];
+            [dataSource setSourceFilename:filename];
+            SignalAttachment *attachment =
+                [SignalAttachment attachmentWithDataSource:dataSource dataUTI:(NSString *)kUTTypeMPEG4];
             if (!attachment || [attachment hasError]) {
                 DDLogError(@"%@ %s Invalid attachment: %@.",
                     self.tag,
@@ -3832,10 +3849,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     NSString *filename = [NSLocalizedString(@"VOICE_MESSAGE_FILE_NAME", @"Filename for voice messages.")
         stringByAppendingPathExtension:@"m4a"];
-
-    SignalAttachment *attachment = [SignalAttachment voiceMessageAttachmentWithDataSource:dataSource
-                                                                                  dataUTI:(NSString *)kUTTypeMPEG4Audio
-                                                                                 filename:filename];
+    [dataSource setSourceFilename:filename];
+    SignalAttachment *attachment =
+        [SignalAttachment voiceMessageAttachmentWithDataSource:dataSource dataUTI:(NSString *)kUTTypeMPEG4Audio];
     if (!attachment || [attachment hasError]) {
         DDLogWarn(@"%@ %s Invalid attachment: %@.",
             self.tag,

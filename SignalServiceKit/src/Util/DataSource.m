@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 // This property is lazy-populated.
 @property (nonatomic) NSString *cachedFilePath;
 
+@property (nonatomic, nullable) NSString *sourceFilename;
+
 @end
 
 #pragma mark -
@@ -152,6 +154,8 @@ NS_ASSUME_NONNULL_BEGIN
 // These properties are lazy-populated.
 @property (nonatomic) NSData *cachedData;
 @property (nonatomic) NSNumber *cachedDataLength;
+
+@property (nonatomic, nullable) NSString *sourceFilename;
 
 @end
 

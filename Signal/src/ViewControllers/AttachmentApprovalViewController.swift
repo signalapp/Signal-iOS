@@ -283,10 +283,10 @@ class AttachmentApprovalViewController: OWSViewController, OWSAudioAttachmentPla
     }
 
     private func formattedFileName() -> String? {
-        guard let rawFilename = attachment.filename else {
+        guard let sourceFilename = attachment.sourceFilename else {
             return nil
         }
-        let filename = rawFilename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        let filename = sourceFilename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         guard filename.characters.count > 0 else {
             return nil
         }

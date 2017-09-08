@@ -366,8 +366,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         }
 
         id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
-        SignalAttachment *attachment =
-            [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType filename:filename];
+        [dataSource setSourceFilename:filename];
+        SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
         if (!attachment) {
             DDLogError(@"Application opened with URL with invalid content: %@", url);
             [OWSAlerts showAlertWithTitle:
