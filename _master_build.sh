@@ -16,7 +16,8 @@
 
 OPENSSL_VERSION="1.0.2l"
 
-FRAMEWORK_BIN="openssl.framework/openssl"
+FRAMEWORK="openssl.framework"
+FRAMEWORK_BIN="${FRAMEWORK}/openssl"
 
 # macOS configuration
 MAC_HEADER_DEST="OpenSSL-macOS/OpenSSL-macOS/openssl.h"
@@ -100,9 +101,9 @@ function valid()
 		do
 			local REZ=$($OTOOL_B -arch ${ARCH} -l "${LIB_BIN}" | $GREP_B LLVM)
 			if [ "$REZ" == "" ]; then
-				echo "ERROR: Did not find bitcode slice for ${ARCH}."
+				echo "ERROR: Did not find bitcode slice for ${ARCH}"
 			else
-				echo " GOOD: Found bitcode slice for ${ARCH}."
+				echo " GOOD: Found bitcode slice for ${ARCH}"
 			fi
 		done
 	
@@ -112,11 +113,22 @@ function valid()
 		do
 			local REZ=$($OTOOL_B -arch ${ARCH} -l "${LIB_BIN}" | $GREP_B LLVM)
 			if [ "$REZ" != "" ]; then
-				echo "ERROR: Found bitcode slice for ${ARCH}."
+				echo "ERROR: Found bitcode slice for ${ARCH}"
 			else
-				echo " GOOD: Did not find bitcode slice for ${ARCH}."
+				echo " GOOD: Did not find bitcode slice for ${ARCH}"
 			fi
 		done
+		
+		local EXPECTING=("${IOS_BUILD_DIR}/${FRAMEWORK}/Modules/module.modulemap")
+		for EXPECT in ${EXPECTING[*]}
+		do
+			if [ -f "${EXPECT}" ]; then
+				echo " GOOD: Found expected file: \"${EXPECT}\""
+			else
+				echo "ERROR: Did not file expected file: \"${EXPECT}\""
+			fi
+		done
+
 	else
 		echo "ERROR: \"${LIB_BIN}\" not found. Please be sure it has been built (see README.md)"
 	fi
