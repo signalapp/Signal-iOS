@@ -365,7 +365,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             return NO;
         }
 
-        DataSourceUrl *dataSource = [[DataSourceUrl alloc] init:url];
+        id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType filename:filename];
         if (!attachment) {

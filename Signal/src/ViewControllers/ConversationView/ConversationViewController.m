@@ -1673,7 +1673,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
         TSOutgoingMessage *message;
         if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
-            DataSourceValue *dataSource = [[DataSourceValue alloc] init:[text dataUsingEncoding:NSUTF8StringEncoding]];
+            id<DataSource> _Nullable dataSource =
+                [DataSourceValue dataSourceWithData:[text dataUsingEncoding:NSUTF8StringEncoding]];
             SignalAttachment *attachment =
                 [SignalAttachment attachmentWithDataSource:dataSource
                                                    dataUTI:SignalAttachment.kOversizeTextAttachmentUTI
@@ -3208,7 +3209,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     OWSAssert(type);
     OWSAssert(filename);
-    DataSourceUrl *dataSource = [[DataSourceUrl alloc] init:url];
+    id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:type filename:filename];
     [self tryToSendAttachmentIfApproved:attachment];
@@ -3376,7 +3377,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                            }
                            OWSAssert([NSThread isMainThread]);
 
-                           DataSourceValue *dataSource = [[DataSourceValue alloc] init:imageData];
+                           id<DataSource> _Nullable dataSource = [DataSourceValue dataSourceWithData:imageData];
                            SignalAttachment *attachment =
                                [SignalAttachment attachmentWithDataSource:dataSource dataUTI:dataUTI filename:filename];
                            [self dismissViewControllerAnimated:YES
@@ -3451,7 +3452,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     exportSession.outputURL = compressedVideoUrl;
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
         dispatch_async(dispatch_get_main_queue(), ^{
-            DataSourceUrl *dataSource = [[DataSourceUrl alloc] init:compressedVideoUrl];
+            id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:compressedVideoUrl];
             SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
                                                                               dataUTI:(NSString *)kUTTypeMPEG4
                                                                              filename:filename];
@@ -3828,7 +3829,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    DataSourceUrl *dataSource = [[DataSourceUrl alloc] init:self.audioRecorder.url];
+    id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:self.audioRecorder.url];
     self.audioRecorder = nil;
 
     NSString *filename = [NSLocalizedString(@"VOICE_MESSAGE_FILE_NAME", @"Filename for voice messages.")
