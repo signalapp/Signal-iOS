@@ -249,7 +249,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         contactNameLabel.type = .continuous
         // This feels pretty slow when you're initially waiting for it, but when you're overlaying video calls, anything faster is distracting.
         contactNameLabel.speed = .duration(30.0)
-        contactNameLabel.animationCurve = .easeInOut
+        contactNameLabel.animationCurve = .linear
         contactNameLabel.fadeLength = 10.0
         contactNameLabel.animationDelay = 5
         // Add trailing space after the name scrolls before it wraps around and scrolls back in.
