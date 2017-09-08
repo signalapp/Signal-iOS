@@ -486,12 +486,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                           failure:failureHandler];
 }
 
-- (void)sendTemporaryAttachmentData:(NSData *)attachmentData
+- (void)sendTemporaryAttachmentData:(id<DataSource>)dataSource
                         contentType:(NSString *)contentType
                           inMessage:(TSOutgoingMessage *)message
                             success:(void (^)())successHandler
                             failure:(void (^)(NSError *error))failureHandler
 {
+    OWSAssert(dataSource);
+
     void (^successWithDeleteHandler)() = ^() {
         successHandler();
 
@@ -506,7 +508,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [message remove];
     };
 
-    [self sendAttachmentData:attachmentData
+    [self sendAttachmentData:dataSource
                  contentType:contentType
               sourceFilename:nil
                    inMessage:message
@@ -514,19 +516,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                      failure:failureWithDeleteHandler];
 }
 
-- (void)sendAttachmentData:(NSData *)data
+- (void)sendAttachmentData:(id<DataSource>)dataSource
                contentType:(NSString *)contentType
             sourceFilename:(nullable NSString *)sourceFilename
                  inMessage:(TSOutgoingMessage *)message
                    success:(void (^)())successHandler
                    failure:(void (^)(NSError *error))failureHandler
 {
-    // There's an odd bug wherein instances of NSData/Data created in Swift
-    // code reliably crash on iOS 9 when calling [NSData writeToFile:...].
-    // We can avoid these crashes by simply copying the Data.
-    //
-    // TODO: Move the iOSVersion header to SSK.
-    NSData *dataCopy = (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0) ? data : [data copy]);
+    OWSAssert(dataSource);
 
     dispatch_async([OWSDispatch attachmentsQueue], ^{
         TSAttachmentStream *attachmentStream =
@@ -535,10 +532,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
         }
 
-        NSError *error;
-        [attachmentStream writeData:dataCopy error:&error];
-        if (error) {
+        if (![attachmentStream writeDataSource:dataSource]) {
             OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotWriteAttachment]);
+            NSError *error = OWSErrorMakeWriteAttachmentDataError();
             return failureHandler(error);
         }
 

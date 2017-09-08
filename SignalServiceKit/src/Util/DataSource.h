@@ -42,6 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
 // Will return zero in the error case.
 - (NSUInteger)dataLength;
 
+// Returns YES on success.
+- (BOOL)writeToPath:(NSString *)dstFilePath;
+
 @end
 
 #pragma mark -
@@ -53,6 +56,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable id<DataSource>)dataSourceWithData:(NSData *)data utiType:(NSString *)utiType;
 
 + (nullable id<DataSource>)dataSourceWithOversizeText:(NSString *_Nullable)text;
+
++ (id<DataSource>)dataSourceWithSyncMessage:(NSData *)data;
 
 + (id<DataSource>)emptyDataSource;
 

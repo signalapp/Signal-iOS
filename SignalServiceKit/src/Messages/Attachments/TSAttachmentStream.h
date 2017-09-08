@@ -2,6 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "DataSource.h"
 #import "TSAttachment.h"
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
@@ -43,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)readDataFromFileWithError:(NSError **)error;
 - (BOOL)writeData:(NSData *)data error:(NSError **)error;
+- (BOOL)writeDataSource:(id<DataSource>)dataSource;
 
 + (void)deleteAttachments;
 + (NSString *)attachmentsFolder;

@@ -54,6 +54,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [self dataSourceWithData:data fileExtension:kOversizeTextAttachmentFileExtension];
 }
 
++ (id<DataSource>)dataSourceWithSyncMessage:(NSData *)data
+{
+    return [self dataSourceWithData:data fileExtension:kSyncMessageFileExtension];
+}
+
 + (id<DataSource>)emptyDataSource
 {
     return [self dataSourceWithData:[NSData new] fileExtension:@"bin"];
@@ -82,7 +87,8 @@ NS_ASSUME_NONNULL_BEGIN
             NSString *dirPath = NSTemporaryDirectory();
             NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingPathExtension:self.fileExtension];
             NSString *filePath = [dirPath stringByAppendingPathComponent:fileName];
-            if ([self.dataValue writeToFile:fileName atomically:YES]) {
+            DDLogError(@"%@ ---- writing data", self.tag);
+            if ([self writeToPath:filePath]) {
                 self.cachedFilePath = filePath;
             } else {
                 OWSFail(@"%@ Could not write data to disk: %@", self.tag, self.fileExtension);
@@ -103,6 +109,24 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.dataValue);
 
     return self.dataValue.length;
+}
+
+- (BOOL)writeToPath:(NSString *)dstFilePath
+{
+    OWSAssert(self.dataValue);
+
+    // There's an odd bug wherein instances of NSData/Data created in Swift
+    // code reliably crash on iOS 9 when calling [NSData writeToFile:...].
+    // We can avoid these crashes by simply copying the Data.
+    NSData *dataCopy = (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0) ? self.dataValue : [self.dataValue copy]);
+
+    BOOL success = [dataCopy writeToFile:dstFilePath atomically:YES];
+    if (!success) {
+        OWSFail(@"%@ Could not write data to disk: %@", self.tag, dstFilePath);
+        return NO;
+    } else {
+        return YES;
+    }
 }
 
 #pragma mark - Logging
@@ -167,6 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
     @synchronized(self)
     {
         if (!self.cachedData) {
+            DDLogError(@"%@ ---- reading data", self.tag);
             self.cachedData = [NSData dataWithContentsOfFile:self.filePath];
         }
         if (!self.cachedData) {
@@ -217,6 +242,20 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
         return [self.cachedDataLength unsignedIntegerValue];
+    }
+}
+
+- (BOOL)writeToPath:(NSString *)dstFilePath
+{
+    OWSAssert(self.filePath);
+
+    NSError *error;
+    BOOL success = [[NSFileManager defaultManager] copyItemAtPath:self.filePath toPath:dstFilePath error:&error];
+    if (!success || error) {
+        OWSFail(@"%@ Could not write data from path: %@, to path: %@", self.tag, self.filePath, dstFilePath);
+        return NO;
+    } else {
+        return YES;
     }
 }
 

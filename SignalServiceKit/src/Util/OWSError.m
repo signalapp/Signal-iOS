@@ -54,4 +54,11 @@ NSError *OWSErrorMakeMessageSendFailedToBlockListError()
             @"Error mesage indicating that message send failed due to block list"));
 }
 
+NSError *OWSErrorMakeWriteAttachmentDataError()
+{
+    return OWSErrorWithCodeDescription(OWSErrorCodeCouldNotWriteAttachmentData,
+        NSLocalizedString(@"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE",
+            @"Error mesage indicating that message send failed due to failed attachment write"));
+}
+
 NS_ASSUME_NONNULL_END

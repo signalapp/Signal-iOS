@@ -6,6 +6,7 @@
 #import "OWSContactsManager.h"
 #import "OWSProfileManager.h"
 #import "TSAccountManager.h"
+#import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
@@ -112,7 +113,9 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
 
         self.isRequestInFlight = YES;
 
-        [self.messageSender sendTemporaryAttachmentData:[syncContactsMessage buildPlainTextAttachmentData]
+        id<DataSource> dataSource =
+            [DataSourceValue dataSourceWithSyncMessage:[syncContactsMessage buildPlainTextAttachmentData]];
+        [self.messageSender sendTemporaryAttachmentData:dataSource
             contentType:OWSMimeTypeApplicationOctetStream
             inMessage:syncContactsMessage
             success:^{

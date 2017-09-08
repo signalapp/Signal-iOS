@@ -6,6 +6,7 @@
 #import "ContactsManagerProtocol.h"
 #import "ContactsUpdater.h"
 #import "Cryptography.h"
+#import "DataSource.h"
 #import "MimeTypeUtil.h"
 #import "NSData+messagePadding.h"
 #import "NSDate+millisecondTimeStamp.h"
@@ -742,28 +743,30 @@ NS_ASSUME_NONNULL_BEGIN
                 [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
                                                        identityManager:self.identityManager
                                                         profileManager:self.profileManager];
-
-            [self.messageSender sendTemporaryAttachmentData:[syncContactsMessage buildPlainTextAttachmentData]
-                                                contentType:OWSMimeTypeApplicationOctetStream
-                                                  inMessage:syncContactsMessage
-                                                    success:^{
-                                                        DDLogInfo(@"%@ Successfully sent Contacts response syncMessage.", self.tag);
-                                                    }
-                                                    failure:^(NSError *error) {
-                                                        DDLogError(@"%@ Failed to send Contacts response syncMessage with error: %@", self.tag, error);
-                                                    }];
+            id<DataSource> dataSource =
+                [DataSourceValue dataSourceWithSyncMessage:[syncContactsMessage buildPlainTextAttachmentData]];
+            [self.messageSender sendTemporaryAttachmentData:dataSource
+                contentType:OWSMimeTypeApplicationOctetStream
+                inMessage:syncContactsMessage
+                success:^{
+                    DDLogInfo(@"%@ Successfully sent Contacts response syncMessage.", self.tag);
+                }
+                failure:^(NSError *error) {
+                    DDLogError(@"%@ Failed to send Contacts response syncMessage with error: %@", self.tag, error);
+                }];
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
-            
-            [self.messageSender sendTemporaryAttachmentData:[syncGroupsMessage buildPlainTextAttachmentData]
-                                                contentType:OWSMimeTypeApplicationOctetStream
-                                                  inMessage:syncGroupsMessage
-                                                    success:^{
-                                                        DDLogInfo(@"%@ Successfully sent Groups response syncMessage.", self.tag);
-                                                    }
-                                                    failure:^(NSError *error) {
-                                                        DDLogError(@"%@ Failed to send Groups response syncMessage with error: %@", self.tag, error);
-                                                    }];
+            id<DataSource> dataSource =
+                [DataSourceValue dataSourceWithSyncMessage:[syncGroupsMessage buildPlainTextAttachmentData]];
+            [self.messageSender sendTemporaryAttachmentData:dataSource
+                contentType:OWSMimeTypeApplicationOctetStream
+                inMessage:syncGroupsMessage
+                success:^{
+                    DDLogInfo(@"%@ Successfully sent Groups response syncMessage.", self.tag);
+                }
+                failure:^(NSError *error) {
+                    DDLogError(@"%@ Failed to send Groups response syncMessage with error: %@", self.tag, error);
+                }];
         } else {
             DDLogWarn(@"%@ ignoring unsupported sync request message", self.tag);
         }
@@ -878,7 +881,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(message);
 
     if (gThread.groupModel.groupImage) {
-        [self.messageSender sendAttachmentData:UIImagePNGRepresentation(gThread.groupModel.groupImage)
+        NSData *data = UIImagePNGRepresentation(gThread.groupModel.groupImage);
+        id<DataSource> _Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+        [self.messageSender sendAttachmentData:dataSource
             contentType:OWSMimeTypeImagePng
             sourceFilename:nil
             inMessage:message

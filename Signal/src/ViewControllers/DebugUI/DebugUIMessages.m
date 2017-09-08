@@ -952,8 +952,8 @@ NS_ASSUME_NONNULL_BEGIN
                         [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3" sourceFilename:filename];
 
                     NSError *error;
-                    [attachmentStream writeData:[self createRandomNSDataOfSize:16] error:&error];
-                    OWSAssert(!error);
+                    BOOL success = [attachmentStream writeData:[self createRandomNSDataOfSize:16] error:&error];
+                    OWSAssert(success && !error);
 
                     [attachmentStream saveWithTransaction:transaction];
                     [message.attachmentIds addObject:attachmentStream.uniqueId];

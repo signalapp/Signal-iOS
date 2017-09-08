@@ -150,6 +150,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)writeData:(NSData *)data error:(NSError **)error
 {
+    OWSAssert(data);
+
     *error = nil;
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
@@ -159,6 +161,20 @@ NS_ASSUME_NONNULL_BEGIN
     }
     DDLogInfo(@"%@ Writing attachment to file: %@", self.tag, filePath);
     return [data writeToFile:filePath options:0 error:error];
+}
+
+- (BOOL)writeDataSource:(id<DataSource>)dataSource
+{
+    OWSAssert(dataSource);
+
+    NSString *_Nullable filePath = self.filePath;
+    if (!filePath) {
+        DDLogError(@"%@ Missing path for attachment.", self.tag);
+        OWSAssert(0);
+        return NO;
+    }
+    DDLogInfo(@"%@ Writing attachment to file: %@", self.tag, filePath);
+    return [dataSource writeToPath:filePath];
 }
 
 + (NSString *)attachmentsFolder
