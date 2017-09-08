@@ -324,8 +324,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
                                                            attributes:nil
                                                                 error:&error];
                 if (error) {
-                    DDLogError(@"Failed to create attachment directory: %@", error);
-                    OWSAssert(0);
+                    OWSFail(@"Failed to create attachment directory: %@", error);
                     return nil;
                 }
             }

@@ -50,7 +50,7 @@
     // With CGImageSource we avoid loading the whole image into memory.
     CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)imageURL, NULL);
     if (!source) {
-        OWSAssert(0);
+        OWSFail(@"%@ Could not load image: %@", self.tag, imageURL);
         return CGSizeZero;
     }
 
@@ -66,7 +66,7 @@
         if (width && height) {
             imageSize = CGSizeMake(width.floatValue, height.floatValue);
         } else {
-            OWSAssert(0);
+            OWSFail(@"%@ Could not determine size of image: %@", self.tag, imageURL);
         }
     }
     CFRelease(source);

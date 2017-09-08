@@ -363,7 +363,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
         // Don't run when inactive.
-        OWSAssert(0);
+        OWSFail(@"%@ Disappearing messages job timer fired while app inactive.", self.tag);
         return;
     }
 

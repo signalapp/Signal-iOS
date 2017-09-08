@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
             adapter.messageType       = TSOutgoingMessageAdapter;
         }
     } else {
-        OWSAssert(0);
+        OWSFail(@"%@ Unknown thread type: %@", self.tag, [thread class]);
     }
 
     if ([interaction isKindOfClass:[TSIncomingMessage class]] ||
@@ -235,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
         adapter.messageBody          = errorMessage.description;
         adapter.messageType          = TSErrorMessageAdapter;
     } else {
-        OWSAssert(0);
+        OWSFail(@"%@ Unknown interaction type: %@", self.tag, [interaction class]);
     }
 
     if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {

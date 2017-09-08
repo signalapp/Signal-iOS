@@ -114,19 +114,16 @@ NS_ASSUME_NONNULL_BEGIN
                                               sourceFilename:self.sourceFilename
                                                     inFolder:attachmentsFolder];
     if (!filePath) {
-        DDLogError(@"%@ Could not generate path for attachment.", self.tag);
-        OWSAssert(0);
+        OWSFail(@"%@ Could not generate path for attachment.", self.tag);
         return;
     }
     if (![filePath hasPrefix:attachmentsFolder]) {
-        DDLogError(@"%@ Attachment paths should all be in the attachments folder.", self.tag);
-        OWSAssert(0);
+        OWSFail(@"%@ Attachment paths should all be in the attachments folder.", self.tag);
         return;
     }
     NSString *localRelativeFilePath = [filePath substringFromIndex:attachmentsFolder.length];
     if (localRelativeFilePath.length < 1) {
-        DDLogError(@"%@ Empty local relative attachment paths.", self.tag);
-        OWSAssert(0);
+        OWSFail(@"%@ Empty local relative attachment paths.", self.tag);
         return;
     }
 
@@ -141,8 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
     *error = nil;
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        DDLogError(@"%@ Missing path for attachment.", self.tag);
-        OWSAssert(0);
+        OWSFail(@"%@ Missing path for attachment.", self.tag);
         return nil;
     }
     return [NSData dataWithContentsOfFile:filePath options:0 error:error];
@@ -155,8 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
     *error = nil;
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        DDLogError(@"%@ Missing path for attachment.", self.tag);
-        OWSAssert(0);
+        OWSFail(@"%@ Missing path for attachment.", self.tag);
         return NO;
     }
     DDLogInfo(@"%@ Writing attachment to file: %@", self.tag, filePath);
@@ -169,8 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        DDLogError(@"%@ Missing path for attachment.", self.tag);
-        OWSAssert(0);
+        OWSFail(@"%@ Missing path for attachment.", self.tag);
         return NO;
     }
     DDLogInfo(@"%@ Writing attachment to file: %@", self.tag, filePath);
@@ -209,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)filePath
 {
     if (!self.localRelativeFilePath) {
-        OWSAssert(0);
+        OWSFail(@"%@ Attachment missing local file path.", self.tag);
         return nil;
     }
 
@@ -220,8 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        DDLogError(@"%@ Missing path for attachment.", self.tag);
-        OWSAssert(0);
+        OWSFail(@"%@ Missing path for attachment.", self.tag);
         return nil;
     }
     return [NSURL fileURLWithPath:filePath];
@@ -231,8 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        DDLogError(@"%@ Missing path for attachment.", self.tag);
-        OWSAssert(0);
+        OWSFail(@"%@ Missing path for attachment.", self.tag);
         return;
     }
     NSError *error;
@@ -342,7 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
         // With CGImageSource we avoid loading the whole image into memory.
         CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)mediaUrl, NULL);
         if (!source) {
-            OWSAssert(0);
+            OWSFail(@"%@ Could not load image: %@", self.tag, mediaUrl);
             return CGSizeZero;
         }
 
@@ -358,7 +350,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (width && height) {
                 imageSize = CGSizeMake(width.floatValue, height.floatValue);
             } else {
-                OWSAssert(0);
+                OWSFail(@"%@ Could not determine size of image: %@", self.tag, mediaUrl);
             }
         }
         CFRelease(source);
@@ -391,7 +383,7 @@ NS_ASSUME_NONNULL_BEGIN
             [latestInstance saveWithTransaction:transaction];
         } else {
             // This message has not yet been saved; do nothing.
-            OWSAssert(0);
+            OWSFail(@"%@ Attachment not yet saved.", self.tag);
         }
     };
 
@@ -462,7 +454,7 @@ NS_ASSUME_NONNULL_BEGIN
             [latestInstance saveWithTransaction:transaction];
         } else {
             // This message has not yet been saved; do nothing.
-            OWSAssert(0);
+            OWSFail(@"%@ Attachment not yet saved.", self.tag);
         }
     };
 

@@ -1346,7 +1346,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             barButtonSize = 105;
             break;
         default:
-            OWSAssert(0);
+            OWSFail(@"%@ Unexpected number of right navbar items.", self.tag);
         // In production, fall through to the largest defined case.
         case 2:
             barButtonSize = 150;
@@ -1803,7 +1803,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 return self.currentlyOutgoingBubbleImageData;
             case TSOutgoingMessageStateSent_OBSOLETE:
             case TSOutgoingMessageStateDelivered_OBSOLETE:
-                OWSAssert(0);
+                OWSFail(@"%@ Obsolete message state.", self.tag);
                 return self.outgoingBubbleImageData;
             case TSOutgoingMessageStateSentToService:
                 return self.outgoingBubbleImageData;
@@ -1890,8 +1890,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                  cellForItemAtIndexPath:indexPath];
 
     if (![cell isKindOfClass:[OWSIncomingMessageCollectionViewCell class]]) {
-        DDLogError(@"%@ Unexpected cell type: %@", self.tag, cell);
-        OWSAssert(0);
+        OWSFail(@"%@ Unexpected cell type: %@", self.tag, cell);
         return cell;
     }
 
@@ -1911,8 +1910,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                  cellForItemAtIndexPath:indexPath];
 
     if (![cell isKindOfClass:[OWSOutgoingMessageCollectionViewCell class]]) {
-        DDLogError(@"%@ Unexpected cell type: %@", self.tag, cell);
-        OWSAssert(0);
+        OWSFail(@"%@ Unexpected cell type: %@", self.tag, cell);
         return cell;
     }
 
@@ -3178,21 +3176,15 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             isDirectoryError);
     } else if ([isDirectory boolValue]) {
         DDLogInfo(@"%@ User picked directory at url: %@", self.tag, url);
-        UIAlertController *alertController = [UIAlertController
-            alertControllerWithTitle:
-                NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
-                    @"Alert title when picking a document fails because user picked a directory/bundle")
-                             message:
-                                 NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
-                                     @"Alert body when picking a document fails because user picked a directory/bundle")
-                      preferredStyle:UIAlertControllerStyleAlert];
-
-        UIAlertAction *dismissAction =
-            [UIAlertAction actionWithTitle:CommonStrings.dismissButton style:UIAlertActionStyleCancel handler:nil];
-        [alertController addAction:dismissAction];
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self presentViewController:alertController animated:YES completion:nil];
+            [OWSAlerts
+                showAlertWithTitle:
+                    NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
+                        @"Alert title when picking a document fails because user picked a directory/bundle")
+                           message:
+                               NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
+                                   @"Alert body when picking a document fails because user picked a directory/bundle")];
         });
         return;
     }
@@ -3207,6 +3199,16 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     OWSAssert(type);
     OWSAssert(filename);
     id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
+    if (!dataSource) {
+        OWSFail(@"%@ attachment data was unexpectedly empty for picked document url: %@", self.tag, url);
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE",
+                                              @"Alert title when picking a document fails for an unknown reason")];
+        });
+        return;
+    }
+
     [dataSource setSourceFilename:filename];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:type];
     [self tryToSendAttachmentIfApproved:attachment];
@@ -3293,8 +3295,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [assetslibrary assetForURL:referenceURL
                    resultBlock:resultblock
                   failureBlock:^(NSError *error) {
-                      DDLogError(@"Error retrieving filename for asset: %@", error);
-                      OWSAssert(0);
+                      OWSFail(@"Error retrieving filename for asset: %@", error);
                   }];
 }
 
@@ -3438,24 +3439,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     return [NSURL fileURLWithPath:videoDirPath];
 }
 
-- (NSUInteger)sizeOfFileURL:(NSURL *)movieURL
-{
-    NSError *error;
-    NSDictionary<NSFileAttributeKey, id> *_Nullable attributes =
-        [[NSFileManager defaultManager] attributesOfItemAtPath:movieURL.path error:&error];
-    OWSAssert(attributes);
-    OWSAssert(!error);
-    uint64_t fileSize = [attributes fileSize];
-    return (NSUInteger)fileSize;
-}
-
 - (void)sendQualityAdjustedAttachmentForVideo:(NSURL *)movieURL
                                      filename:(NSString *)filename
                            skipApprovalDialog:(BOOL)skipApprovalDialog
 {
     OWSAssert([NSThread isMainThread]);
 
-    DDLogError(@"movieURL: %@ %zd", movieURL, [self sizeOfFileURL:movieURL]);
     AVAsset *video = [AVAsset assetWithURL:movieURL];
     AVAssetExportSession *exportSession =
         [AVAssetExportSession exportSessionWithAsset:video presetName:AVAssetExportPresetMediumQuality];
@@ -3465,7 +3454,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         URLByAppendingPathComponent:[[[NSUUID UUID] UUIDString] stringByAppendingPathExtension:@"mp4"]];
     exportSession.outputURL = compressedVideoUrl;
     [exportSession exportAsynchronouslyWithCompletionHandler:^{
-        DDLogError(@"compressedVideoUrl: %@ %zd", compressedVideoUrl, [self sizeOfFileURL:compressedVideoUrl]);
         dispatch_async(dispatch_get_main_queue(), ^{
             id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:compressedVideoUrl];
             [dataSource setSourceFilename:filename];
@@ -3769,9 +3757,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     NSError *error;
     [session setCategory:AVAudioSessionCategoryRecord error:&error];
     if (error) {
-        DDLogError(@"%@ Couldn't configure audio session: %@", self.tag, error);
+        OWSFail(@"%@ Couldn't configure audio session: %@", self.tag, error);
         [self cancelVoiceMemo];
-        OWSAssert(0);
         return;
     }
 
@@ -3785,25 +3772,22 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                      }
                                                         error:&error];
     if (error) {
-        DDLogError(@"%@ Couldn't create audioRecorder: %@", self.tag, error);
+        OWSFail(@"%@ Couldn't create audioRecorder: %@", self.tag, error);
         [self cancelVoiceMemo];
-        OWSAssert(0);
         return;
     }
 
     self.audioRecorder.meteringEnabled = YES;
 
     if (![self.audioRecorder prepareToRecord]) {
-        DDLogError(@"%@ audioRecorder couldn't prepareToRecord.", self.tag);
+        OWSFail(@"%@ audioRecorder couldn't prepareToRecord.", self.tag);
         [self cancelVoiceMemo];
-        OWSAssert(0);
         return;
     }
 
     if (![self.audioRecorder record]) {
-        DDLogError(@"%@ audioRecorder couldn't record.", self.tag);
+        OWSFail(@"%@ audioRecorder couldn't record.", self.tag);
         [self cancelVoiceMemo];
-        OWSAssert(0);
         return;
     }
 }
@@ -3846,6 +3830,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:self.audioRecorder.url];
     self.audioRecorder = nil;
+
+    if (!dataSource) {
+        OWSFail(@"%@ Couldn't load audioRecorder data", self.tag);
+        self.audioRecorder = nil;
+        return;
+    }
 
     NSString *filename = [NSLocalizedString(@"VOICE_MESSAGE_FILE_NAME", @"Filename for voice messages.")
         stringByAppendingPathExtension:@"m4a"];

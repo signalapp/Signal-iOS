@@ -201,8 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
                               OWSAssert(errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
                               [nonBlockingSafetyNumberChanges addObject:errorMessage];
                           } else {
-                              DDLogError(@"Unexpected dynamic interaction type: %@", [object class]);
-                              OWSAssert(0);
+                              OWSFail(@"Unexpected dynamic interaction type: %@", [object class]);
                           }
                       }];
 

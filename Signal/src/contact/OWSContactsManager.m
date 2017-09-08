@@ -340,7 +340,7 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
         if (self.cachedAccountNameMap || self.cachedFirstNameMap || self.cachedLastNameMap) {
             // If these properties have already been populated from system contacts,
             // don't overwrite.  In practice this should never happen.
-            OWSAssert(0);
+            OWSFail(@"%@ Unexpected cache state", self.tag);
             return;
         }
 

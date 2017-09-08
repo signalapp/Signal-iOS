@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
     __weak AddToBlockListViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
     if ([helper isRecipientIdBlocked:signalAccount.recipientId]) {
-        OWSAssert(0);
+        OWSFail(@"%@ Cannot add already blocked user to block list.", self.tag);
         return;
     }
     [BlockListUIUtils showBlockSignalAccountActionSheet:signalAccount

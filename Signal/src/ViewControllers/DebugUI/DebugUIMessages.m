@@ -303,14 +303,12 @@ NS_ASSUME_NONNULL_BEGIN
                 if ([responseObject writeToFile:filePath atomically:YES]) {
                     success(filePath);
                 } else {
-                    DDLogError(@"Error write url response [%@]: %@", url, filePath);
-                    OWSAssert(0);
+                    OWSFail(@"Error write url response [%@]: %@", url, filePath);
                     failure();
                 }
             }
             failure:^(NSURLSessionDataTask *_Nullable task, NSError *requestError) {
-                DDLogError(@"Error downloading url[%@]: %@", url, requestError);
-                OWSAssert(0);
+                OWSFail(@"Error downloading url[%@]: %@", url, requestError);
                 failure();
             }];
     }

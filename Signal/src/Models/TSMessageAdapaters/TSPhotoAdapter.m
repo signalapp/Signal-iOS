@@ -125,13 +125,12 @@ NS_ASSUME_NONNULL_BEGIN
 
         NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:self.attachment.contentType];
         if (!utiType) {
-            OWSAssert(0);
+            OWSFail(@"%@ Unknown MIME type: %@", self.tag, self.attachment.contentType);
             utiType = (NSString *)kUTTypeImage;
         }
         NSData *data = [NSData dataWithContentsOfURL:self.attachment.mediaURL];
         if (!data) {
-            DDLogError(@"%@ Could not load image data: %@", [self tag], [self.attachment mediaURL]);
-            OWSAssert(0);
+            OWSFail(@"%@ Could not load image data: %@", [self tag], [self.attachment mediaURL]);
             return;
         }
         [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
@@ -139,8 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (action == NSSelectorFromString(@"save:")) {
         NSData *data = [NSData dataWithContentsOfURL:[self.attachment mediaURL]];
         if (!data) {
-            DDLogError(@"%@ Could not load image data: %@", [self tag], [self.attachment mediaURL]);
-            OWSAssert(0);
+            OWSFail(@"%@ Could not load image data: %@", [self tag], [self.attachment mediaURL]);
             return;
         }
         ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];

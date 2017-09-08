@@ -366,7 +366,18 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         }
 
         id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
+        if (!dataSource) {
+            DDLogError(@"Application opened with URL with unloadable content: %@", url);
+            [OWSAlerts showAlertWithTitle:
+                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
+                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
+                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA",
+                                              @"Message for the alert indicating the 'export with signal' data "
+                                              @"couldn't be loaded.")];
+            return NO;
+        }
         [dataSource setSourceFilename:filename];
+
         SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
         if (!attachment) {
             DDLogError(@"Application opened with URL with invalid content: %@", url);

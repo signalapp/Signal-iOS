@@ -375,7 +375,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
             logFlag = DDLogFlagError;
             break;
         default:
-            OWSAssert(0);
+            OWSFail(@"Unknown severity.");
             logFlag = DDLogFlagDebug;
             break;
     }

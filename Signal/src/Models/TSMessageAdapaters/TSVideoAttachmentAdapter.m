@@ -211,8 +211,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self setAudioIconToPlay];
         }
     } else {
-        // Unknown media type.
-        OWSAssert(0);
+        OWSFail(@"%@ Unknown media type: %@", self.tag, self.attachment.contentType);
     }
     return self.cachedMediaView;
 }
@@ -396,15 +395,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if ([self isVideo]) {
         if (action == @selector(copy:)) {
-            NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:_contentType];
+            NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:self.contentType];
             if (!utiType) {
-                OWSAssert(0);
+                OWSFail(@"%@ Unknown MIME type: %@", self.tag, self.contentType);
                 utiType = (NSString *)kUTTypeVideo;
             }
             NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
             if (!data) {
-                OWSAssert(data);
-                DDLogError(@"%@ Could not load data: %@", [self tag], [self.attachment mediaURL]);
+                OWSFail(@"%@ Could not load data: %@", [self tag], [self.attachment mediaURL]);
                 return;
             }
             [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
@@ -418,16 +416,15 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if ([self isAudio]) {
         if (action == @selector(copy:)) {
-            NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:_contentType];
+            NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:self.contentType];
             if (!utiType) {
-                OWSAssert(0);
+                OWSFail(@"%@ Unknown MIME type: %@", self.tag, self.contentType);
                 utiType = (NSString *)kUTTypeAudio;
             }
 
             NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
             if (!data) {
-                OWSAssert(data);
-                DDLogError(@"%@ Could not load data: %@", [self tag], [self.attachment mediaURL]);
+                OWSFail(@"%@ Could not load data: %@", [self tag], [self.attachment mediaURL]);
                 return;
             }
             [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];

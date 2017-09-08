@@ -126,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
             self.lastProgress = progress;
             self.isAttachmentReady = self.attachment.isUploaded;
         } else {
-            OWSAssert(0);
+            OWSFail(@"%@ Invalid attachment progress.", self.tag);
             self.isAttachmentReady = YES;
         }
     }

@@ -915,8 +915,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(!self.isGroupThread);
 
     if (![sender isKindOfClass:[UISwitch class]]) {
-        DDLogError(@"%@ Unexpected sender for block user switch: %@", self.tag, sender);
-        OWSAssert(0);
+        OWSFail(@"%@ Unexpected sender for block user switch: %@", self.tag, sender);
     }
     UISwitch *blockUserSwitch = (UISwitch *)sender;
 
