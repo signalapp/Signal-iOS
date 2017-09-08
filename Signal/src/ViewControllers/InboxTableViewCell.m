@@ -250,6 +250,7 @@ const NSUInteger kAvatarViewDiameter = 52;
     self.avatarView.image =
         [OWSAvatarBuilder buildImageForThread:thread diameter:kAvatarViewDiameter contactsManager:contactsManager];
 }
+
 #pragma mark - Date formatting
 
 - (NSAttributedString *)dateAttributedString:(NSDate *)date {

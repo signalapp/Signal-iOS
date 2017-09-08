@@ -328,14 +328,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
     NSString *filename = [filePath lastPathComponent];
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
-    NSData *data = [NSData dataWithContentsOfFile:filePath];
-    OWSAssert(data);
-    if (!data) {
-        DDLogError(@"Couldn't read attachment: %@", filePath);
-        failure();
-        return;
-    }
-    SignalAttachment *attachment = [SignalAttachment attachmentWithData:data dataUTI:utiType filename:filename];
+    DataSourcePath *dataSource = [[DataSourcePath alloc] init:filePath];
+    SignalAttachment *attachment =
+        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType filename:filename];
     OWSAssert(attachment);
     if ([attachment hasError]) {
         DDLogError(@"attachment[%@]: %@", [attachment filename], [attachment errorName]);
@@ -593,9 +588,11 @@ NS_ASSUME_NONNULL_BEGIN
                               @"lorem, in rhoncus nisi."];
     }
 
-    SignalAttachment *attachment = [SignalAttachment attachmentWithData:[message dataUsingEncoding:NSUTF8StringEncoding]
-                                                                dataUTI:SignalAttachment.kOversizeTextAttachmentUTI
-                                                               filename:nil];
+    DataSourceValue *dataSource = [[DataSourceValue alloc] init:[message dataUsingEncoding:NSUTF8StringEncoding]];
+    SignalAttachment *attachment =
+        [SignalAttachment attachmentWithDataSource:dataSource
+                                           dataUTI:SignalAttachment.kOversizeTextAttachmentUTI
+                                          filename:nil];
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender];
 }
 
@@ -619,8 +616,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti length:(NSUInteger)length
 {
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
-    SignalAttachment *attachment =
-        [SignalAttachment attachmentWithData:[self createRandomNSDataOfSize:length] dataUTI:uti filename:nil];
+    DataSourceValue *dataSource = [[DataSourceValue alloc] init:[self createRandomNSDataOfSize:length]];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti filename:nil];
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender ignoreErrors:YES];
 }
 + (OWSSignalServiceProtosEnvelope *)createEnvelopeForThread:(TSThread *)thread

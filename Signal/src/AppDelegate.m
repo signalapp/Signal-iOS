@@ -364,19 +364,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                    @"Alert body when picking a document fails because user picked a directory/bundle")];
             return NO;
         }
-        
-        NSData *data = [NSData dataWithContentsOfURL:url];
-        if (!data) {
-            DDLogError(@"Application opened with URL with unloadable content: %@", url);
-            [OWSAlerts showAlertWithTitle:
-                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA",
-                                              @"Message for the alert indicating the 'export with signal' data "
-                                              @"couldn't be loaded.")];
-            return NO;
-        }
-        SignalAttachment *attachment = [SignalAttachment attachmentWithData:data dataUTI:utiType filename:filename];
+
+        DataSourceUrl *dataSource = [[DataSourceUrl alloc] init:url];
+        SignalAttachment *attachment =
+            [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType filename:filename];
         if (!attachment) {
             DDLogError(@"Application opened with URL with invalid content: %@", url);
             [OWSAlerts showAlertWithTitle:
