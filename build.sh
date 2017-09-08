@@ -1,13 +1,11 @@
 #!/bin/bash
 
-# Yay shell scripting! This script builds a static version of
+# This script builds a static version of
 # OpenSSL ${OPENSSL_VERSION} for iOS and OSX that contains code for armv6, armv7, armv7s, arm64, i386 and x86_64.
-
-set -x
 
 # Setup paths to stuff we need
 
-OPENSSL_VERSION="1.0.1u"
+OPENSSL_VERSION=${OPENSSL_VERSION:-""}
 
 DEVELOPER=$(xcode-select --print-path)
 
