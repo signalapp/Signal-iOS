@@ -19,24 +19,16 @@ NS_ASSUME_NONNULL_BEGIN
 // Should not be called unless necessary as it can involve an expensive write.
 //
 // Will only return nil in the error case.
-//
-// TODO: Try to remove this parameter.
 - (nullable NSURL *)dataUrl;
-
-// The file path for the data.
-//
-// Should not be called unless necessary as it can involve an expensive write.
-//
-// Will only return nil in the error case.
-//
-// TODO: Try to remove this parameter.
-- (nullable NSString *)dataPath;
 
 // The file path for the data, if it already exists on disk.
 //
 // This method is safe to call as it will not do any expensive reads or writes.
 //
-// May return nil if the data does not reside on disk.
+// May return nil if the data does not (yet) reside on disk.
+//
+// Use dataUrl instead if you need to access the data; it will
+// ensure the data is on disk and return a URL, barring an error.
 - (nullable NSString *)dataPathIfOnDisk;
 
 // Will return zero in the error case.
