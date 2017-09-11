@@ -310,51 +310,46 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
     if ([self.delegate shouldValidatePhoneNumbers]) {
         // Show an alert while validating the recipient.
-        __block BOOL wasCancelled = NO;
-        UIAlertController *activityAlert = [UIAlertController
-            alertControllerWithTitle:NSLocalizedString(@"ALERT_VALIDATE_RECIPIENT_TITLE",
-                                         @"A title for the alert shown while validating a signal account")
-                             message:NSLocalizedString(@"ALERT_VALIDATE_RECIPIENT_MESSAGE",
-                                         @"A message for the alert shown while validating a signal account")
-                      preferredStyle:UIAlertControllerStyleAlert];
-        [activityAlert addAction:[UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                                          style:UIAlertActionStyleCancel
-                                                        handler:^(UIAlertAction *_Nonnull action) {
-                                                            wasCancelled = YES;
-                                                        }]];
-        [[UIApplication sharedApplication].frontmostViewController presentViewController:activityAlert
-                                                                                animated:YES
-                                                                              completion:nil];
 
         __weak SelectRecipientViewController *weakSelf = self;
-        [[ContactsUpdater sharedUpdater] lookupIdentifiers:possiblePhoneNumbers
-            success:^(NSArray<SignalRecipient *> *recipients) {
-                OWSAssert([NSThread isMainThread]);
-                OWSAssert(recipients.count > 0);
+        [ModalActivityIndicatorViewController
+            presentFromViewController:self
+                            canCancel:YES
+                    presentCompletion:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                            [[ContactsUpdater sharedUpdater] lookupIdentifiers:possiblePhoneNumbers
+                                success:^(NSArray<SignalRecipient *> *recipients) {
+                                    OWSAssert([NSThread isMainThread]);
+                                    OWSAssert(recipients.count > 0);
 
-                if (wasCancelled) {
-                    return;
-                }
+                                    if (modalActivityIndicator.wasCancelled) {
+                                        return;
+                                    }
 
-                NSString *recipientId = recipients[0].uniqueId;
-                [activityAlert dismissViewControllerAnimated:NO
-                                                  completion:^{
-                                                      [weakSelf.delegate phoneNumberWasSelected:recipientId];
-                                                  }];
-            }
-            failure:^(NSError *error) {
-                OWSAssert([NSThread isMainThread]);
-                if (wasCancelled) {
-                    return;
-                }
-                [activityAlert dismissViewControllerAnimated:NO
-                                                  completion:^{
-                                                      [OWSAlerts
-                                                          showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE",
-                                                                                 @"Title for a generic error alert.")
-                                                                     message:error.localizedDescription];
-                                                  }];
-            }];
+                                    NSString *recipientId = recipients[0].uniqueId;
+                                    [modalActivityIndicator
+                                        dismissViewControllerAnimated:NO
+                                                           completion:^{
+                                                               [weakSelf.delegate phoneNumberWasSelected:recipientId];
+                                                           }];
+                                }
+                                failure:^(NSError *error) {
+                                    OWSAssert([NSThread isMainThread]);
+                                    if (modalActivityIndicator.wasCancelled) {
+                                        return;
+                                    }
+                                    [modalActivityIndicator
+                                        dismissViewControllerAnimated:NO
+                                                           completion:^{
+                                                               [OWSAlerts
+                                                                   showAlertWithTitle:
+                                                                       NSLocalizedString(@"ALERT_ERROR_TITLE",
+                                                                           @"Title for a generic error alert.")
+                                                                              message:error.localizedDescription];
+                                                           }];
+                                }];
+                        });
+                    }];
     } else {
         NSString *recipientId = possiblePhoneNumbers[0];
         [self.delegate phoneNumberWasSelected:recipientId];

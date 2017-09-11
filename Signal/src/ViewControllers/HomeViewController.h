@@ -18,7 +18,7 @@
 
 - (void)updateInboxCountLabel;
 
-- (void)composeNew;
+- (void)showNewConversationView;
 
 - (void)presentTopLevelModalViewController:(UIViewController *)viewController
                           animateDismissal:(BOOL)animateDismissal
