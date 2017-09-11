@@ -134,7 +134,6 @@
 		DB6EAD3E1F620AEF00CC0B1E /* obj_mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = obj_mac.h; sourceTree = "<group>"; };
 		DB6EAD3F1F620AEF00CC0B1E /* objects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objects.h; sourceTree = "<group>"; };
 		DB6EAD401F620AEF00CC0B1E /* ocsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ocsp.h; sourceTree = "<group>"; };
-		DB6EAD411F620AEF00CC0B1E /* openssl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = openssl; sourceTree = "<group>"; };
 		DB6EAD421F620AEF00CC0B1E /* opensslconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = opensslconf.h; sourceTree = "<group>"; };
 		DB6EAD431F620AEF00CC0B1E /* opensslv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = opensslv.h; sourceTree = "<group>"; };
 		DB6EAD441F620AEF00CC0B1E /* ossl_typ.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ossl_typ.h; sourceTree = "<group>"; };
@@ -269,7 +268,6 @@
 				DB6EAD3E1F620AEF00CC0B1E /* obj_mac.h */,
 				DB6EAD3F1F620AEF00CC0B1E /* objects.h */,
 				DB6EAD401F620AEF00CC0B1E /* ocsp.h */,
-				DB6EAD411F620AEF00CC0B1E /* openssl */,
 				DB6EAD421F620AEF00CC0B1E /* opensslconf.h */,
 				DB6EAD431F620AEF00CC0B1E /* opensslv.h */,
 				DB6EAD441F620AEF00CC0B1E /* ossl_typ.h */,
@@ -478,8 +476,8 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "printenv\n/bin/sh \"${SRCROOT}/OpenSSL-iOS/build-framework-ios.sh\"";
+			shellPath = /bin/bash;
+			shellScript = "source \"${SRCROOT}/OpenSSL-iOS/build-framework-ios.sh\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 

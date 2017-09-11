@@ -84,6 +84,7 @@ function build()
 
 function valid()
 {
+	local VALID=1
 	local LIB_BIN="${IOS_BUILD_DIR}/${FRAMEWORK_BIN}"
 	
 	if [ -r "${LIB_BIN}" ]; then
@@ -91,6 +92,7 @@ function valid()
 		local REZ=$($LIPO_B -info "${LIB_BIN}")
 		if [ "$REZ" != "Architectures in the fat file: OpenSSL-iOS/bin/openssl.framework/openssl are: i386 x86_64 armv7 armv7s arm64 " ]; then
 			echo "ERROR: Unexpected result from $LIPO_B: \"${REZ}\""
+			VALID=0
 		else
 			echo " GOOD: ${REZ}"
 		fi
@@ -102,6 +104,7 @@ function valid()
 			local REZ=$($OTOOL_B -arch ${ARCH} -l "${LIB_BIN}" | $GREP_B LLVM)
 			if [ "$REZ" == "" ]; then
 				echo "ERROR: Did not find bitcode slice for ${ARCH}"
+				VALID=0
 			else
 				echo " GOOD: Found bitcode slice for ${ARCH}"
 			fi
@@ -114,6 +117,7 @@ function valid()
 			local REZ=$($OTOOL_B -arch ${ARCH} -l "${LIB_BIN}" | $GREP_B LLVM)
 			if [ "$REZ" != "" ]; then
 				echo "ERROR: Found bitcode slice for ${ARCH}"
+				VALID=0
 			else
 				echo " GOOD: Did not find bitcode slice for ${ARCH}"
 			fi
@@ -126,11 +130,17 @@ function valid()
 				echo " GOOD: Found expected file: \"${EXPECT}\""
 			else
 				echo "ERROR: Did not file expected file: \"${EXPECT}\""
+				VALID=0
 			fi
 		done
 
 	else
 		echo "ERROR: \"${LIB_BIN}\" not found. Please be sure it has been built (see README.md)"
+		VALID=0
+	fi
+	
+	if [ $VALID -ne 1 ]; then
+		fail "Invalid framework"
 	fi
 }
 
