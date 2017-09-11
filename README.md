@@ -33,7 +33,8 @@ While the repository does contain the pre-built frameworks, if you want to re-bu
 1. Open in Xcode: OpenSSL/OpenSSL-macOS/OpenSSL-macOS.xcodeproj
 2. Clean Build Folder (Option-Shift-Command-K)
 3. Build
-4. Result is located: OpenSSL/OpenSSL-macOS/bin/openssl.framework
+4. Build again. This is needed to ensure the modulemap file is available.
+5. Result is located: OpenSSL/OpenSSL-macOS/bin/openssl.framework
 
 ### Updating OpenSSL Version
 
