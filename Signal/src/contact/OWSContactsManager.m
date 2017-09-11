@@ -610,6 +610,34 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
     return [[NSAttributedString alloc] initWithString:recipientId];
 }
 
+// TODO refactor attributed counterparts to use this as a helper method?
+- (NSString *)stringForConversationTitleWithPhoneIdentifier:(NSString *)recipientId
+{
+    // Prefer a saved name from system contacts, if available
+    NSString *_Nullable savedContactName = [self cachedDisplayNameForRecipientId:recipientId];
+    if (savedContactName.length > 0) {
+        return savedContactName;
+    }
+
+    NSString *formattedPhoneNumber =
+        [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId];
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    if (profileName.length > 0) {
+        NSString *numberAndProfileNameFormat = NSLocalizedString(@"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT",
+            @"Label text combining the phone number and profile name separated by a simple demarcation character. "
+            @"Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced "
+            @"with {{profile name}}");
+
+        NSString *numberAndProfileName =
+            [NSString stringWithFormat:numberAndProfileNameFormat, formattedPhoneNumber, profileName];
+
+        return numberAndProfileName;
+    }
+
+    // else fall back phone number
+    return formattedPhoneNumber;
+}
+
 - (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
