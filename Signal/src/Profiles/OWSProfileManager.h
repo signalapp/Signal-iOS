@@ -71,6 +71,9 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 #pragma mark - Other User's Profiles
 
+// This method is for debugging.
+- (void)logUserProfiles;
+
 - (nullable OWSAES256Key *)profileKeyForRecipientId:(NSString *)recipientId;
 
 - (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;

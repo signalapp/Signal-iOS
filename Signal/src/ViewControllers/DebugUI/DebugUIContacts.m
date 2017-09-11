@@ -54,6 +54,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                            actionBlock:^{
                                                                [DebugUIContacts deleteRandomContacts];
                                                            }],
+                                           [OWSTableItem itemWithTitle:@"Delete All Contacts"
+                                                           actionBlock:^{
+                                                               [DebugUIContacts deleteAllContacts];
+                                                           }],
                                        ]];
 }
 
@@ -1240,8 +1244,10 @@ NS_ASSUME_NONNULL_BEGIN
                  }];
 }
 
-+ (void)deleteRandomContacts
++ (void)deleteContactsWithFilter:(BOOL (^_Nonnull)(CNContact *contact))filterBlock
 {
+    OWSAssert(filterBlock);
+
     CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
     if (status == CNAuthorizationStatusDenied || status == CNAuthorizationStatusRestricted) {
         [OWSAlerts showAlertWithTitle:@"Error" message:@"No contacts access."];
@@ -1270,7 +1276,7 @@ NS_ASSUME_NONNULL_BEGIN
                             [store enumerateContactsWithFetchRequest:fetchRequest
                                                                error:&fetchError
                                                           usingBlock:^(CNContact *contact, BOOL *stop) {
-                                                              if ([contact.familyName hasPrefix:@"Rando-"]) {
+                                                              if (filterBlock(contact)) {
                                                                   [request deleteContact:[contact mutableCopy]];
                                                               }
                                                           }];
@@ -1284,6 +1290,20 @@ NS_ASSUME_NONNULL_BEGIN
                             [OWSAlerts showAlertWithTitle:@"Error" message:saveError.localizedDescription];
                         }
                     }];
+}
+
++ (void)deleteAllContacts
+{
+    [self deleteContactsWithFilter:^(CNContact *contact) {
+        return YES;
+    }];
+}
+
++ (void)deleteRandomContacts
+{
+    [self deleteContactsWithFilter:^(CNContact *contact) {
+        return [contact.familyName hasPrefix:@"Rando-"];
+    }];
 }
 
 @end

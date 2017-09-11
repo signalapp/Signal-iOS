@@ -31,15 +31,18 @@ class DebugUIProfile: DebugUIPage {
             OWSTableItem(title: "Log Profile Whitelist") {
                 self.profileManager.logProfileWhitelist()
             },
+            OWSTableItem(title: "Log User Profiles") {
+                self.profileManager.logUserProfiles()
+            },
             OWSTableItem(title: "Regenerate Profile/ProfileKey") {
                 self.profileManager.regenerateLocalProfile()
             },
-            OWSTableItem(title: "Send profile key message.") {
+            OWSTableItem(title: "Send Profile Key Message") {
                 let message = OWSProfileKeyMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: aThread)
                 self.messageSender.sendPromise(message: message).then {
                     Logger.info("Successfully sent profile key message to thread: \(String(describing: aThread))")
-                }.catch { _ in
-                    owsFail("Failed to send profile key message to thread: \(String(describing: aThread))")
+                    }.catch { _ in
+                        owsFail("Failed to send profile key message to thread: \(String(describing: aThread))")
                 }
             }
         ]
