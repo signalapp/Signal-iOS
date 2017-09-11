@@ -9,6 +9,11 @@ extern NSString *const OWSMimeTypeImagePng;
 extern NSString *const OWSMimeTypeOversizeTextMessage;
 extern NSString *const OWSMimeTypeUnknownForTests;
 
+extern NSString *const kOversizeTextAttachmentUTI;
+extern NSString *const kOversizeTextAttachmentFileExtension;
+extern NSString *const kUnknownTestAttachmentUTI;
+extern NSString *const kSyncMessageFileExtension;
+
 @interface MIMETypeUtil : NSObject
 
 + (BOOL)isSupportedVideoMIMEType:(NSString *)contentType;

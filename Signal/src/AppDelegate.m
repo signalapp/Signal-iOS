@@ -364,9 +364,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                    @"Alert body when picking a document fails because user picked a directory/bundle")];
             return NO;
         }
-        
-        NSData *data = [NSData dataWithContentsOfURL:url];
-        if (!data) {
+
+        id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
+        if (!dataSource) {
             DDLogError(@"Application opened with URL with unloadable content: %@", url);
             [OWSAlerts showAlertWithTitle:
                            NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
@@ -376,7 +376,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                               @"couldn't be loaded.")];
             return NO;
         }
-        SignalAttachment *attachment = [SignalAttachment attachmentWithData:data dataUTI:utiType filename:filename];
+        [dataSource setSourceFilename:filename];
+
+        SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
         if (!attachment) {
             DDLogError(@"Application opened with URL with invalid content: %@", url);
             [OWSAlerts showAlertWithTitle:

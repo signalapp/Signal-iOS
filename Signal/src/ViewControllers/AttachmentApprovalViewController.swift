@@ -29,9 +29,7 @@ class AttachmentApprovalViewController: OWSViewController, OWSAudioAttachmentPla
 
     @available(*, unavailable, message:"use attachment: constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        self.attachment = SignalAttachment.attachment(data: nil,
-                                                      dataUTI: kUTTypeContent as String,
-                                                      filename:nil)
+        self.attachment = SignalAttachment.empty()
         super.init(coder: aDecoder)
         owsFail("\(self.TAG) invalid constructor")
     }
@@ -130,7 +128,7 @@ class AttachmentApprovalViewController: OWSViewController, OWSAudioAttachmentPla
     }
 
     private func createAudioPreview(attachmentPreviewView: UIView) {
-        guard let dataUrl = attachment.getTemporaryDataUrl() else {
+        guard let dataUrl = attachment.dataUrl else {
             createGenericPreview(attachmentPreviewView:attachmentPreviewView)
             return
         }
@@ -171,11 +169,10 @@ class AttachmentApprovalViewController: OWSViewController, OWSAudioAttachmentPla
     }
 
     private func createAnimatedPreview(attachmentPreviewView: UIView) {
-        let data = attachment.data
-        guard (data as NSData).ows_isValidImage() else {
+        guard attachment.isValidImage else {
             return
         }
-
+        let data = attachment.data
         // Use Flipboard FLAnimatedImage library to display gifs
         guard let animatedImage = FLAnimatedImage(gifData:data) else {
             createGenericPreview(attachmentPreviewView:attachmentPreviewView)
@@ -209,7 +206,7 @@ class AttachmentApprovalViewController: OWSViewController, OWSAudioAttachmentPla
     }
 
     private func createVideoPreview(attachmentPreviewView: UIView) {
-        guard let dataUrl = attachment.getTemporaryDataUrl() else {
+        guard let dataUrl = attachment.dataUrl else {
             createGenericPreview(attachmentPreviewView:attachmentPreviewView)
             return
         }
@@ -286,10 +283,10 @@ class AttachmentApprovalViewController: OWSViewController, OWSAudioAttachmentPla
     }
 
     private func formattedFileName() -> String? {
-        guard let rawFilename = attachment.filename else {
+        guard let sourceFilename = attachment.sourceFilename else {
             return nil
         }
-        let filename = rawFilename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        let filename = sourceFilename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         guard filename.characters.count > 0 else {
             return nil
         }
@@ -314,7 +311,7 @@ class AttachmentApprovalViewController: OWSViewController, OWSAudioAttachmentPla
 
     private func createFileSizeLabel() -> UIView {
         let label = UILabel()
-        let fileSize = attachment.data.count
+        let fileSize = attachment.dataLength
         label.text = String(format:NSLocalizedString("ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
                                                      comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}."),
                             ViewControllerUtils.formatFileSize(UInt(fileSize)))

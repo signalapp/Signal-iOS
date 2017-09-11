@@ -171,13 +171,11 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                             // downloading attachments with low server ids".
                             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
                             NSInteger statusCode = [httpResponse statusCode];
-                            DDLogError(@"%@ %d Failure with suspicious attachment id: %llu, %@",
+                            OWSFail(@"%@ %d Failure with suspicious attachment id: %llu, %@",
                                 self.tag,
                                 (int)statusCode,
                                 (unsigned long long)attachment.serverId,
                                 error);
-                            [DDLog flushLog];
-                            OWSAssert(0);
                         }
                         if (markAndHandleFailure) {
                             markAndHandleFailure(error);
@@ -195,13 +193,11 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                 // downloading attachments with low server ids".
                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
                 NSInteger statusCode = [httpResponse statusCode];
-                DDLogError(@"%@ %d Failure with suspicious attachment id: %llu, %@",
+                OWSFail(@"%@ %d Failure with suspicious attachment id: %llu, %@",
                     self.tag,
                     (int)statusCode,
                     (unsigned long long)attachment.serverId,
                     error);
-                [DDLog flushLog];
-                OWSAssert(0);
             }
             return markAndHandleFailure(error);
         }];
@@ -258,12 +254,12 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
             if (progress.completedUnitCount < 1) {
                 return;
             }
-            
+
             void (^abortDownload)() = ^{
-                OWSAssert(0);
+                OWSFail(@"%@ Download aborted.", self.tag);
                 [task cancel];
             };
-            
+
             if (progress.totalUnitCount > kMaxDownloadSize || progress.completedUnitCount > kMaxDownloadSize) {
                 // A malicious service might send a misleading content length header,
                 // so....

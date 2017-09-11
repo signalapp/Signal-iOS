@@ -68,7 +68,6 @@
 		34B3F88F1E8DF1710035BE1A /* RegistrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8671E8DF1700035BE1A /* RegistrationViewController.m */; };
 		34B3F8901E8DF1710035BE1A /* AppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8691E8DF1700035BE1A /* AppSettingsViewController.m */; };
 		34B3F8911E8DF1710035BE1A /* ShowGroupMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F86B1E8DF1700035BE1A /* ShowGroupMembersViewController.m */; };
-		34B3F8921E8DF1710035BE1A /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F86C1E8DF1700035BE1A /* SignalAttachment.swift */; };
 		34B3F8931E8DF1710035BE1A /* SignalsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */; };
 		34B3F8941E8DF1710035BE1A /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8701E8DF1700035BE1A /* HomeViewController.m */; };
 		34B3F8991E8DF1B90035BE1A /* TSMessageAdapterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8981E8DF1B90035BE1A /* TSMessageAdapterTest.m */; };
@@ -90,6 +89,7 @@
 		34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0241ED3673300188D7C /* DebugUIMessages.m */; };
 		34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0261ED3673300188D7C /* DebugUITableViewController.m */; };
 		34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C02A1ED3685800188D7C /* DebugUIContacts.m */; };
+		34D9134B1F62D4A500722898 /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
 		34D99C8C1F27B13B00D284D6 /* OWSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C8B1F27B13B00D284D6 /* OWSViewController.m */; };
 		34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */; };
 		34D99C941F2937CC00D284D6 /* OWSSwiftUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C921F2937CC00D284D6 /* OWSSwiftUtils.swift */; };
@@ -507,7 +507,6 @@
 		34B3F8691E8DF1700035BE1A /* AppSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppSettingsViewController.m; sourceTree = "<group>"; };
 		34B3F86A1E8DF1700035BE1A /* ShowGroupMembersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowGroupMembersViewController.h; sourceTree = "<group>"; };
 		34B3F86B1E8DF1700035BE1A /* ShowGroupMembersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowGroupMembersViewController.m; sourceTree = "<group>"; };
-		34B3F86C1E8DF1700035BE1A /* SignalAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAttachment.swift; sourceTree = "<group>"; };
 		34B3F86D1E8DF1700035BE1A /* SignalsNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalsNavigationController.h; sourceTree = "<group>"; };
 		34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalsNavigationController.m; sourceTree = "<group>"; };
 		34B3F86F1E8DF1700035BE1A /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewController.h; sourceTree = "<group>"; };
@@ -551,6 +550,7 @@
 		34D8C0261ED3673300188D7C /* DebugUITableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = DebugUITableViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		34D8C0291ED3685800188D7C /* DebugUIContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIContacts.h; sourceTree = "<group>"; };
 		34D8C02A1ED3685800188D7C /* DebugUIContacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIContacts.m; sourceTree = "<group>"; };
+		34D913491F62D4A500722898 /* SignalAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAttachment.swift; sourceTree = "<group>"; };
 		34D99C8A1F27B13B00D284D6 /* OWSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSViewController.h; sourceTree = "<group>"; };
 		34D99C8B1F27B13B00D284D6 /* OWSViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSViewController.m; sourceTree = "<group>"; };
 		34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAnalytics.swift; sourceTree = "<group>"; };
@@ -1077,7 +1077,6 @@
 				3400C7911EAF89CD008A8584 /* SendExternalFileViewController.m */,
 				34B3F86A1E8DF1700035BE1A /* ShowGroupMembersViewController.h */,
 				34B3F86B1E8DF1700035BE1A /* ShowGroupMembersViewController.m */,
-				34B3F86C1E8DF1700035BE1A /* SignalAttachment.swift */,
 				34B3F86D1E8DF1700035BE1A /* SignalsNavigationController.h */,
 				34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */,
 				3400C7971EAFB772008A8584 /* ThreadViewHelper.h */,
@@ -1244,6 +1243,7 @@
 				45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */,
 				453D28B81D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.h */,
 				453D28B91D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m */,
+				34D913491F62D4A500722898 /* SignalAttachment.swift */,
 				B62D53F41A23CC8B009AAF82 /* TSMessageAdapters */,
 				34C42D641F4734ED0072EC04 /* TSUnreadIndicatorInteraction.h */,
 				34C42D651F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m */,
@@ -2210,6 +2210,7 @@
 				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,
 				45C9DEB81DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift in Sources */,
 				34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */,
+				34D9134B1F62D4A500722898 /* SignalAttachment.swift in Sources */,
 				34B3F88E1E8DF1700035BE1A /* PrivacySettingsTableViewController.m in Sources */,
 				4505C2C21E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift in Sources */,
 				341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */,
@@ -2285,7 +2286,6 @@
 				34B3F87C1E8DF1700035BE1A /* FingerprintViewController.m in Sources */,
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
 				76EB058218170B33006006FC /* Environment.m in Sources */,
-				34B3F8921E8DF1710035BE1A /* SignalAttachment.swift in Sources */,
 				450449391F45EE7D002D1ADA /* NSString+OWS.m in Sources */,
 				45464DBC1DFA041F001D3FD6 /* DataChannelMessage.swift in Sources */,
 				34E3E5681EC4B19400495BAC /* AudioProgressView.swift in Sources */,

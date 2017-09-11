@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
                                             inThread:thread
                                       isVoiceMessage:[attachment isVoiceMessage]
                                     expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
-    [messageSender sendAttachmentData:attachment.data
+    [messageSender sendAttachmentData:attachment.dataSource
         contentType:attachment.mimeType
         sourceFilename:attachment.filenameOrDefault
         inMessage:message
@@ -201,8 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
                               OWSAssert(errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
                               [nonBlockingSafetyNumberChanges addObject:errorMessage];
                           } else {
-                              DDLogError(@"Unexpected dynamic interaction type: %@", [object class]);
-                              OWSAssert(0);
+                              OWSFail(@"Unexpected dynamic interaction type: %@", [object class]);
                           }
                       }];
 

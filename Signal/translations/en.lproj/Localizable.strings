@@ -136,9 +136,6 @@
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Attachment";
 
-/* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Failed to choose document.";
-
 /* Alert body when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
 
@@ -520,6 +517,9 @@
 /* Error mesage indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Failed to message user because you blocked them.";
 
+/* Error mesage indicating that message send failed due to failed attachment write */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed due to failed attachment write.";
+
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try from another WiFi network or use mobile data.";
 
@@ -576,9 +576,6 @@
 
 /* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
 "EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Couldn't load file.";
-
-/* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Couldn't load file.";
 
 /* Message for the alert indicating the 'export with signal' file had unknown type. */
 "EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Unknown file type.";

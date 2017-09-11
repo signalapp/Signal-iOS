@@ -131,8 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
                         }],
         [OWSTableItem itemWithTitle:@"Send unknown mimetype"
                         actionBlock:^{
-                            [DebugUIMessages sendRandomAttachment:thread
-                                                              uti:SignalAttachment.kUnknownTestAttachmentUTI];
+                            [DebugUIMessages sendRandomAttachment:thread uti:kUnknownTestAttachmentUTI];
                         }],
         [OWSTableItem itemWithTitle:@"Send pdf"
                         actionBlock:^{
@@ -304,14 +303,12 @@ NS_ASSUME_NONNULL_BEGIN
                 if ([responseObject writeToFile:filePath atomically:YES]) {
                     success(filePath);
                 } else {
-                    DDLogError(@"Error write url response [%@]: %@", url, filePath);
-                    OWSAssert(0);
+                    OWSFail(@"Error write url response [%@]: %@", url, filePath);
                     failure();
                 }
             }
             failure:^(NSURLSessionDataTask *_Nullable task, NSError *requestError) {
-                DDLogError(@"Error downloading url[%@]: %@", url, requestError);
-                OWSAssert(0);
+                OWSFail(@"Error downloading url[%@]: %@", url, requestError);
                 failure();
             }];
     }
@@ -328,17 +325,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
     NSString *filename = [filePath lastPathComponent];
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
-    NSData *data = [NSData dataWithContentsOfFile:filePath];
-    OWSAssert(data);
-    if (!data) {
-        DDLogError(@"Couldn't read attachment: %@", filePath);
-        failure();
-        return;
-    }
-    SignalAttachment *attachment = [SignalAttachment attachmentWithData:data dataUTI:utiType filename:filename];
+    id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
+    [dataSource setSourceFilename:filename];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     OWSAssert(attachment);
     if ([attachment hasError]) {
-        DDLogError(@"attachment[%@]: %@", [attachment filename], [attachment errorName]);
+        DDLogError(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
         [DDLog flushLog];
     }
     OWSAssert(![attachment hasError]);
@@ -593,9 +585,9 @@ NS_ASSUME_NONNULL_BEGIN
                               @"lorem, in rhoncus nisi."];
     }
 
-    SignalAttachment *attachment = [SignalAttachment attachmentWithData:[message dataUsingEncoding:NSUTF8StringEncoding]
-                                                                dataUTI:SignalAttachment.kOversizeTextAttachmentUTI
-                                                               filename:nil];
+    id<DataSource> _Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];
+    SignalAttachment *attachment =
+        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender];
 }
 
@@ -619,8 +611,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti length:(NSUInteger)length
 {
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
-    SignalAttachment *attachment =
-        [SignalAttachment attachmentWithData:[self createRandomNSDataOfSize:length] dataUTI:uti filename:nil];
+    id<DataSource> _Nullable dataSource =
+        [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length] utiType:uti];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti];
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender ignoreErrors:YES];
 }
 + (OWSSignalServiceProtosEnvelope *)createEnvelopeForThread:(TSThread *)thread
@@ -957,8 +950,8 @@ NS_ASSUME_NONNULL_BEGIN
                         [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3" sourceFilename:filename];
 
                     NSError *error;
-                    [attachmentStream writeData:[self createRandomNSDataOfSize:16] error:&error];
-                    OWSAssert(!error);
+                    BOOL success = [attachmentStream writeData:[self createRandomNSDataOfSize:16] error:&error];
+                    OWSAssert(success && !error);
 
                     [attachmentStream saveWithTransaction:transaction];
                     [message.attachmentIds addObject:attachmentStream.uniqueId];

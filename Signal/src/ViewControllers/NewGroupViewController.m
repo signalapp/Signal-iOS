@@ -500,7 +500,10 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                          [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 
                          if (model.groupImage) {
-                             [self.messageSender sendAttachmentData:UIImagePNGRepresentation(model.groupImage)
+                             NSData *data = UIImagePNGRepresentation(model.groupImage);
+                             id<DataSource> _Nullable dataSource =
+                                 [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+                             [self.messageSender sendAttachmentData:dataSource
                                                         contentType:OWSMimeTypeImagePng
                                                      sourceFilename:nil
                                                           inMessage:message

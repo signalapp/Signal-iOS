@@ -16,6 +16,11 @@ NSString *const OWSMimeTypeImagePng = @"image/png";
 NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
 NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 
+NSString *const kOversizeTextAttachmentUTI = @"org.whispersystems.oversize-text-attachment";
+NSString *const kOversizeTextAttachmentFileExtension = @"txt";
+NSString *const kUnknownTestAttachmentUTI = @"org.whispersystems.unknown";
+NSString *const kSyncMessageFileExtension = @"bin";
+
 @implementation MIMETypeUtil
 
 + (NSDictionary *)supportedVideoMIMETypesToExtensionTypes {
@@ -319,8 +324,7 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
                                                            attributes:nil
                                                                 error:&error];
                 if (error) {
-                    DDLogError(@"Failed to create attachment directory: %@", error);
-                    OWSAssert(0);
+                    OWSFail(@"Failed to create attachment directory: %@", error);
                     return nil;
                 }
             }

@@ -267,8 +267,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(utiType.length > 0);
         NSData *data = [NSData dataWithContentsOfURL:self.attachment.mediaURL];
         if (!data) {
-            OWSAssert(data);
-            DDLogError(@"%@ Could not load data: %@", [self tag], [self.attachment mediaURL]);
+            OWSFail(@"%@ Could not load data: %@", [self tag], [self.attachment mediaURL]);
             return;
         }
         [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];

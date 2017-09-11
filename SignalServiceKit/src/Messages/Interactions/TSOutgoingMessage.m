@@ -219,7 +219,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
             return NO;
         case TSOutgoingMessageStateSent_OBSOLETE:
         case TSOutgoingMessageStateDelivered_OBSOLETE:
-            OWSAssert(0);
+            OWSFail(@"%@ Obsolete message state.", self.tag);
             return self.isExpiringMessage;
     }
 }

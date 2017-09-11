@@ -263,8 +263,10 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
                 } else {
                     SignedPreKeyRecord *currentRecord = [storageManager loadSignedPrekeyOrNil:currentSignedPrekeyId.intValue];
                     if (!currentRecord) {
-                        DDLogError(@"%@ %s Couldn't find signed prekey for id: %@", self.tag, __PRETTY_FUNCTION__, currentSignedPrekeyId);
-                        OWSAssert(0);
+                        OWSFail(@"%@ %s Couldn't find signed prekey for id: %@",
+                            self.tag,
+                            __PRETTY_FUNCTION__,
+                            currentSignedPrekeyId);
                         shouldUpdateSignedPrekey = YES;
                     } else {
                         shouldUpdateSignedPrekey
@@ -352,8 +354,7 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         SignedPreKeyRecord *currentRecord = [storageManager loadSignedPrekeyOrNil:keyId.intValue];
         if (!currentRecord) {
-            DDLogError(@"%@ %s Couldn't find signed prekey for id: %@", self.tag, __PRETTY_FUNCTION__, keyId);
-            OWSAssert(0);
+            OWSFail(@"%@ %s Couldn't find signed prekey for id: %@", self.tag, __PRETTY_FUNCTION__, keyId);
         }
         NSArray *allSignedPrekeys = [storageManager loadSignedPreKeys];
         NSArray *oldSignedPrekeys
