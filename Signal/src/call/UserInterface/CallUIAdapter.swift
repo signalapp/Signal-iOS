@@ -91,7 +91,7 @@ extension CallUIAdaptee {
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
         } else if #available(iOS 10.0, *), Environment.getCurrent().preferences.isCallKitEnabled() {
             Logger.info("\(TAG) choosing callkit adaptee for iOS10+")
-            adaptee = CallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
+            adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationsAdapter: notificationsAdapter)
         } else {
             Logger.info("\(TAG) choosing non-callkit adaptee")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
