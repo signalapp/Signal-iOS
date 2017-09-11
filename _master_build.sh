@@ -34,6 +34,7 @@ IOS_LIB_DIR="lib-ios"
 IOS_BUILD_DIR="OpenSSL-iOS/bin"
 
 UMBRELLA_HEADER_SCRIPT="framework_scripts/create_umbrella_header.sh"
+UMBRELLA_STATIC_INCLUDES="framework_scripts/static_includes.txt"
 
 ###
 
@@ -48,9 +49,10 @@ function usage()
 	[[ "$@" = "" ]] || echo "$@" >&2
 	echo "Usage:" >&2
 	echo "$0 build|valid|clean" >&2
-	echo "    build  Builds OpenSSL libraries from source." >&2
-	echo "    valid  Validates the frameworks." >&2
-	echo "    clean  Removes all build artifacts." >&2
+	echo "    build   Builds OpenSSL libraries from source." >&2
+	echo "    header  Generates macOS and iOS umbrella headers." >&2
+	echo "    valid   Validates the frameworks." >&2
+	echo "    clean   Removes all build artifacts." >&2
 	echo "" >&2
 	echo "    ex.: $0 build" >&2
 	echo "    ex.: $0 clean" >&2
@@ -65,6 +67,15 @@ function build()
 	source ./build.sh
 	echo "Finished building OpenSSL ${OPENSSL_VERSION}"
 
+	header
+	
+	echo "Build complete. Please follow the steps under \"Building\" in the README.md file to create the macOS and iOS frameworks."
+}
+
+function header()
+{
+	export CONTENT=$(<"${UMBRELLA_STATIC_INCLUDES}")
+
 	# Create the macOS umbrella header
 	HEADER_DEST="${MAC_HEADER_DEST}"
 	HEADER_TEMPLATE="${MAC_HEADER_TEMPLATE}"
@@ -78,8 +89,6 @@ function build()
 	INCLUDES_DIR="${IOS_INCLUDES_DIR}"
 	source "${UMBRELLA_HEADER_SCRIPT}"
 	echo "Created $HEADER_DEST"
-	
-	echo "Build complete. Please follow the steps under \"Building\" in the README.md file to create the macOS and iOS frameworks."
 }
 
 function valid()
@@ -188,6 +197,13 @@ case $command in
     build)
 		if [[ $# -le 0 ]]; then
 			build
+		else
+			usage
+		fi
+    ;;
+    header)
+		if [[ $# -le 0 ]]; then
+			header
 		else
 			usage
 		fi

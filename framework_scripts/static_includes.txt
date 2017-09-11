@@ -1,26 +1,3 @@
-//
-//  openssl.h
-//  OpenSSL-iOS
-//
-//  Created by @levigroker Mon Sep 11 17:35:52 MDT 2017.
-//  Copyright © 2017 @levigroker. All rights reserved.
-//
-
-#ifndef openssl_h
-#define openssl_h
-
-#ifdef __OBJC__
-
-#import <Foundation/Foundation.h>
-
-//! Project version number for OpenSSL-iOS.
-FOUNDATION_EXPORT double OpenSSL_iOSVersionNumber;
-
-//! Project version string for OpenSSL-iOS.
-FOUNDATION_EXPORT const unsigned char OpenSSL_iOSVersionString[];
-
-#endif
-
 #import <openssl/rc4.h>
 #import <openssl/rc2.h>
 #import <openssl/idea.h>
@@ -96,5 +73,3 @@ FOUNDATION_EXPORT const unsigned char OpenSSL_iOSVersionString[];
 #import <openssl/kssl.h>
 #import <openssl/e_os2.h>
 #import <openssl/ec.h>
-
-#endif /* openssl_h */

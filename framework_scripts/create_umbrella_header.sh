@@ -60,7 +60,19 @@ $RM_B -f "${HEADER_DEST}"
 
 DATE=$($DATE_B)
 YEAR=$($DATE_B "+%Y")
-# Generate all the include statements from the headers found in the INCLUDES_DIR
-CONTENT=$($FIND_B "${INCLUDES_DIR}" -name "*.h" -print | $SED_B -Ee 's|^.*/(openssl/.+\.h)$|#import <\1>|g')
+
+# Use what we are given, if anything.
+CONTENT=${CONTENT:-""}
+if [ "$CONTENT" = "" ] ; then
+	# Generate all the include statements from the headers found in the INCLUDES_DIR
+	# NOTE: Sadly this approach is flawed. The resulting import statements are in
+	# lexicographical order, which does not satisfy internal header dependencies which
+	# ultimately makes the umbrella header unusable.
+	# Ideally we could dynamically generate the order of the imports based on a
+	# deterministic dependency mapping, but that's outside the scope of effort I can
+	# devote at this time.
+	CONTENT=$($FIND_B "${INCLUDES_DIR}" -name "*.h" -print | $SED_B -Ee 's|^.*/(openssl/.+\.h)$|#import <\1>|g')
+fi
+
 # Populate the template by replacing the @DATE@,  @YEAR@, and GENERATED_CONTENT@ tags appropriately
 $AWK_B -v d="${DATE}" -v y="${YEAR}" -v cont="${CONTENT//$'\n'/\\n}" '{ gsub(/@GENERATED_CONTENT@/,cont); gsub(/@DATE@/,d); gsub(/@YEAR@/,y) }1' "${HEADER_TEMPLATE}" > "${HEADER_DEST}"
