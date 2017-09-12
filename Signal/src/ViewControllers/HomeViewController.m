@@ -175,7 +175,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.navigationItem.rightBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
                                                       target:self
-                                                      action:@selector(composeNew)];
+                                                      action:@selector(showNewConversationView)];
 
     ReminderView *archiveReminderView = [ReminderView new];
     archiveReminderView.text = NSLocalizedString(
@@ -346,7 +346,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [self.navigationController pushViewController:vc animated:NO];
 }
 
-- (void)composeNew
+- (void)showNewConversationView
 {
     NewContactThreadViewController *viewController = [NewContactThreadViewController new];
 

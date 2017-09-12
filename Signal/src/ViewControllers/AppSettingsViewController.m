@@ -374,12 +374,24 @@
 
 - (void)proceedToUnregistration
 {
-    [TSAccountManager unregisterTextSecureWithSuccess:^{
-        [Environment resetAppData];
-    }
-        failure:^(NSError *error) {
-            [OWSAlerts showAlertWithTitle:NSLocalizedString(@"UNREGISTER_SIGNAL_FAIL", @"")];
-        }];
+    [ModalActivityIndicatorViewController
+        presentFromViewController:self
+                        canCancel:NO
+                presentCompletion:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        [TSAccountManager unregisterTextSecureWithSuccess:^{
+                            [Environment resetAppData];
+                        }
+                            failure:^(NSError *error) {
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    [modalActivityIndicator dismissWithCompletion:^{
+                                        [OWSAlerts
+                                            showAlertWithTitle:NSLocalizedString(@"UNREGISTER_SIGNAL_FAIL", @"")];
+                                    }];
+                                });
+                            }];
+                    });
+                }];
 }
 
 #pragma mark - Socket Status Notifications
