@@ -74,6 +74,7 @@
 		34B3F89C1E8DF3270035BE1A /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F89B1E8DF3270035BE1A /* BlockListViewController.m */; };
 		34B3F89F1E8DF5490035BE1A /* OWSTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F89E1E8DF5490035BE1A /* OWSTableViewController.m */; };
 		34B3F8A21E8EA6040035BE1A /* ViewControllerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8A11E8EA6040035BE1A /* ViewControllerUtils.m */; };
+		34C04D801F6195E6004308B3 /* OWSFlatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C04D7F1F6195E6004308B3 /* OWSFlatButton.swift */; };
 		34C42D5B1F45F7A80072EC04 /* OWSNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D5A1F45F7A80072EC04 /* OWSNavigationController.m */; };
 		34C42D611F4734CA0072EC04 /* OWSContactOffersCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D601F4734CA0072EC04 /* OWSContactOffersCell.m */; };
 		34C42D661F4734ED0072EC04 /* OWSContactOffersInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D631F4734ED0072EC04 /* OWSContactOffersInteraction.m */; };
@@ -324,7 +325,7 @@
 		B660F7721C29988E00687D6E /* AppStoreRating.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DA6B061B8A2F9A00CA6F98 /* AppStoreRating.m */; };
 		B660F7751C29988E00687D6E /* UIColor+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFA64B31A24F3880007FB87 /* UIColor+OWS.m */; };
 		B660F7761C29988E00687D6E /* UIFont+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFA64B61A24F6730007FB87 /* UIFont+OWS.m */; };
-		B660F7771C29988E00687D6E /* UIImage+normalizeImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B68112E91A4D9EC400BA82FF /* UIImage+normalizeImage.m */; };
+		B660F7771C29988E00687D6E /* UIImage+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = B68112E91A4D9EC400BA82FF /* UIImage+OWS.m */; };
 		B660F77B1C29988E00687D6E /* Queue.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04D518170B33006006FC /* Queue.m */; };
 		B660F77F1C29988E00687D6E /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B660F7811C29988E00687D6E /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EB18170B33006006FC /* FunctionalUtil.m */; };
@@ -335,7 +336,7 @@
 		B660F78C1C29988E00687D6E /* UIDevice+TSHardwareVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */; };
 		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
-		B68112EA1A4D9EC400BA82FF /* UIImage+normalizeImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B68112E91A4D9EC400BA82FF /* UIImage+normalizeImage.m */; };
+		B68112EA1A4D9EC400BA82FF /* UIImage+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = B68112E91A4D9EC400BA82FF /* UIImage+OWS.m */; };
 		B68EF9BA1C0B1EBD009C3DCD /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B68EF9B71C0B1EBD009C3DCD /* FLAnimatedImage.m */; };
 		B68EF9BB1C0B1EBD009C3DCD /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68EF9B91C0B1EBD009C3DCD /* FLAnimatedImageView.m */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
@@ -519,6 +520,7 @@
 		34B3F89E1E8DF5490035BE1A /* OWSTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSTableViewController.m; sourceTree = "<group>"; };
 		34B3F8A01E8EA6040035BE1A /* ViewControllerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerUtils.h; sourceTree = "<group>"; };
 		34B3F8A11E8EA6040035BE1A /* ViewControllerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerUtils.m; sourceTree = "<group>"; };
+		34C04D7F1F6195E6004308B3 /* OWSFlatButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSFlatButton.swift; sourceTree = "<group>"; };
 		34C42D591F45F7A80072EC04 /* OWSNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSNavigationController.h; sourceTree = "<group>"; };
 		34C42D5A1F45F7A80072EC04 /* OWSNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSNavigationController.m; sourceTree = "<group>"; };
 		34C42D5F1F4734CA0072EC04 /* OWSContactOffersCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactOffersCell.h; sourceTree = "<group>"; };
@@ -808,8 +810,8 @@
 		B676BCF01AA544F5009637B8 /* el_GR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el_GR; path = translations/el_GR.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B676BCF11AA5451E009637B8 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = translations/es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
-		B68112E81A4D9EC400BA82FF /* UIImage+normalizeImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+normalizeImage.h"; path = "util/UIImage+normalizeImage.h"; sourceTree = "<group>"; };
-		B68112E91A4D9EC400BA82FF /* UIImage+normalizeImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+normalizeImage.m"; path = "util/UIImage+normalizeImage.m"; sourceTree = "<group>"; };
+		B68112E81A4D9EC400BA82FF /* UIImage+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+OWS.h"; path = "util/UIImage+OWS.h"; sourceTree = "<group>"; };
+		B68112E91A4D9EC400BA82FF /* UIImage+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+OWS.m"; path = "util/UIImage+OWS.m"; sourceTree = "<group>"; };
 		B68CB7D71AA546B80065AC3F /* ko_KR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko_KR; path = translations/ko_KR.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B68CB7D81AA546C30065AC3F /* lv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lv; path = translations/lv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B68CB7D91AA546CE0065AC3F /* nb_NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb_NO; path = translations/nb_NO.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1498,6 +1500,7 @@
 				450873C91D9D86F4006B54F2 /* OWSExpirableMessageView.h */,
 				450873C11D9D5149006B54F2 /* OWSExpirationTimerView.h */,
 				450873C21D9D5149006B54F2 /* OWSExpirationTimerView.m */,
+				34C04D7F1F6195E6004308B3 /* OWSFlatButton.swift */,
 				450873C51D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.h */,
 				450873C61D9D867B006B54F2 /* OWSIncomingMessageCollectionViewCell.m */,
 				45F2B1951D9CA207000D2C69 /* OWSIncomingMessageCollectionViewCell.xib */,
@@ -1807,8 +1810,8 @@
 				FCFA64B31A24F3880007FB87 /* UIColor+OWS.m */,
 				FCFA64B51A24F6730007FB87 /* UIFont+OWS.h */,
 				FCFA64B61A24F6730007FB87 /* UIFont+OWS.m */,
-				B68112E81A4D9EC400BA82FF /* UIImage+normalizeImage.h */,
-				B68112E91A4D9EC400BA82FF /* UIImage+normalizeImage.m */,
+				B68112E81A4D9EC400BA82FF /* UIImage+OWS.h */,
+				B68112E91A4D9EC400BA82FF /* UIImage+OWS.m */,
 				34535D801E256BE9008A4747 /* UIView+OWS.h */,
 				34535D811E256BE9008A4747 /* UIView+OWS.m */,
 				EF764C331DB67CC5000D9A87 /* UIViewController+CameraPermissions.h */,
@@ -2246,6 +2249,7 @@
 				FCFA64B71A24F6730007FB87 /* UIFont+OWS.m in Sources */,
 				B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */,
 				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
+				34C04D801F6195E6004308B3 /* OWSFlatButton.swift in Sources */,
 				458DE9D91DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m in Sources */,
 				B62D53F71A23CCAD009AAF82 /* TSMessageAdapter.m in Sources */,
 				76EB063C18170B33006006FC /* NumberUtil.m in Sources */,
@@ -2373,7 +2377,7 @@
 				34C42D5B1F45F7A80072EC04 /* OWSNavigationController.m in Sources */,
 				BFB074C919A5611000F2947C /* ObservableValue.m in Sources */,
 				B68EF9BA1C0B1EBD009C3DCD /* FLAnimatedImage.m in Sources */,
-				B68112EA1A4D9EC400BA82FF /* UIImage+normalizeImage.m in Sources */,
+				B68112EA1A4D9EC400BA82FF /* UIImage+OWS.m in Sources */,
 				B609597C1C2C0FC6004E8797 /* iRate.m in Sources */,
 				4574A5D61DD6704700C6B692 /* CallService.swift in Sources */,
 				34B3F8721E8DF1700035BE1A /* AdvancedSettingsTableViewController.m in Sources */,
@@ -2463,7 +2467,7 @@
 				B660F7721C29988E00687D6E /* AppStoreRating.m in Sources */,
 				B660F7751C29988E00687D6E /* UIColor+OWS.m in Sources */,
 				B660F7761C29988E00687D6E /* UIFont+OWS.m in Sources */,
-				B660F7771C29988E00687D6E /* UIImage+normalizeImage.m in Sources */,
+				B660F7771C29988E00687D6E /* UIImage+OWS.m in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,
 				B660F77B1C29988E00687D6E /* Queue.m in Sources */,
 				455AC69C1F4F79E500134004 /* ImageCache.swift in Sources */,

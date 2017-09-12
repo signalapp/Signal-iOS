@@ -370,23 +370,17 @@ class AttachmentApprovalViewController: OWSViewController, OWSAudioAttachmentPla
         sendButton.autoPinEdge(.left, to:.right, of:buttonSpacer)
     }
 
-    private func createButton(title: String, color: UIColor, action: Selector) -> UIButton {
-        let buttonFont = UIFont.ows_mediumFont(withSize:ScaleFromIPhone5To7Plus(18, 22))
-        let buttonCornerRadius = ScaleFromIPhone5To7Plus(4, 5)
+    private func createButton(title: String, color: UIColor, action: Selector) -> UIView {
         let buttonWidth = ScaleFromIPhone5To7Plus(110, 140)
         let buttonHeight = ScaleFromIPhone5To7Plus(35, 45)
 
-        let button = UIButton()
-        button.setTitle(title, for:.normal)
-        button.setTitleColor(UIColor.white, for:.normal)
-        button.titleLabel!.font = buttonFont
-        button.backgroundColor = color
-        button.layer.cornerRadius = buttonCornerRadius
-        button.clipsToBounds = true
-        button.addTarget(self, action:action, for:.touchUpInside)
-        button.autoSetDimension(.width, toSize:buttonWidth)
-        button.autoSetDimension(.height, toSize:buttonHeight)
-        return button
+        return OWSFlatButton.button(title:title,
+                                    titleColor:UIColor.white,
+                                    backgroundColor:color,
+                                    width:buttonWidth,
+                                    height:buttonHeight,
+                                    target:target,
+                                    selector:action)
     }
 
     // MARK: - Event Handlers

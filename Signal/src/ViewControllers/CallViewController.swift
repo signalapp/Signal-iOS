@@ -285,33 +285,27 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         settingsNagDescriptionLabel.autoPinEdge(toSuperviewEdge:.top)
 
         let buttonHeight = ScaleFromIPhone5To7Plus(35, 45)
-        let buttonFont = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(14, 18))
-        let buttonCornerRadius = CGFloat(4)
         let descriptionVSpacingHeight = ScaleFromIPhone5To7Plus(30, 60)
 
-        let callSettingsButton = UIButton()
-        callSettingsButton.setTitle(NSLocalizedString("CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS",
-                                                      comment: "Label for button that shows the privacy settings"), for:.normal)
-        callSettingsButton.setTitleColor(UIColor.white, for:.normal)
-        callSettingsButton.titleLabel!.font = buttonFont
-        callSettingsButton.addTarget(self, action:#selector(didPressShowCallSettings), for:.touchUpInside)
-        callSettingsButton.backgroundColor = UIColor.ows_signalBrandBlue()
-        callSettingsButton.layer.cornerRadius = buttonCornerRadius
-        callSettingsButton.clipsToBounds = true
+        let callSettingsButton = OWSFlatButton.button(title:NSLocalizedString("CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS",
+                                                                              comment: "Label for button that shows the privacy settings."),
+                                                      font:OWSFlatButton.fontForHeight(buttonHeight),
+                                                      titleColor:UIColor.white,
+                                                      backgroundColor:UIColor.ows_signalBrandBlue(),
+                                                      target:self,
+                                                      selector:#selector(didPressShowCallSettings))
         viewStack.addSubview(callSettingsButton)
         callSettingsButton.autoSetDimension(.height, toSize:buttonHeight)
         callSettingsButton.autoPinWidthToSuperview()
         callSettingsButton.autoPinEdge(.top, to:.bottom, of:settingsNagDescriptionLabel, withOffset:descriptionVSpacingHeight)
 
-        let notNowButton = UIButton()
-        notNowButton.setTitle(NSLocalizedString("CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON",
-                                                comment: "Label for button that dismiss the call view's settings nag."), for:.normal)
-        notNowButton.setTitleColor(UIColor.white, for:.normal)
-        notNowButton.titleLabel!.font = buttonFont
-        notNowButton.addTarget(self, action:#selector(didPressDismissNag), for:.touchUpInside)
-        notNowButton.backgroundColor = UIColor.ows_signalBrandBlue()
-        notNowButton.layer.cornerRadius = buttonCornerRadius
-        notNowButton.clipsToBounds = true
+        let notNowButton = OWSFlatButton.button(title:NSLocalizedString("CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON",
+                                                                        comment: "Label for button that dismiss the call view's settings nag."),
+                                                font:OWSFlatButton.fontForHeight(buttonHeight),
+                                                titleColor:UIColor.white,
+                                                backgroundColor:UIColor.ows_signalBrandBlue(),
+                                                target:self,
+                                                selector:#selector(didPressDismissNag))
         viewStack.addSubview(notNowButton)
         notNowButton.autoSetDimension(.height, toSize:buttonHeight)
         notNowButton.autoPinWidthToSuperview()

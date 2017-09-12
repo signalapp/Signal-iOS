@@ -32,7 +32,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 @property (nonatomic) UILabel *countryCodeLabel;
 @property (nonatomic) UITextField *phoneNumberTextField;
 @property (nonatomic) UILabel *examplePhoneNumberLabel;
-@property (nonatomic) UIButton *activateButton;
+@property (nonatomic) OWSFlatButton *activateButton;
 @property (nonatomic) UIActivityIndicatorView *spinnerView;
 
 @end
@@ -198,22 +198,23 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [separatorView2 autoSetDimension:ALDimensionHeight toSize:kSeparatorHeight];
 
     // Activate Button
-    UIButton *activateButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    const CGFloat kActivateButtonHeight = 47.f;
+    // NOTE: We use ows_signalBrandBlueColor instead of ows_materialBlueColor
+    //       throughout the onboarding flow to be consistent with the headers.
+    OWSFlatButton *activateButton = [OWSFlatButton buttonWithTitle:NSLocalizedString(@"REGISTRATION_VERIFY_DEVICE", @"")
+                                                              font:[OWSFlatButton fontForHeight:kActivateButtonHeight]
+                                                        titleColor:[UIColor whiteColor]
+                                                   backgroundColor:[UIColor ows_signalBrandBlueColor]
+                                                            target:self
+                                                          selector:@selector(sendCodeAction)];
     self.activateButton = activateButton;
-    activateButton.backgroundColor = [UIColor ows_signalBrandBlueColor];
-    [activateButton setTitle:NSLocalizedString(@"REGISTRATION_VERIFY_DEVICE", @"") forState:UIControlStateNormal];
-    [activateButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    activateButton.titleLabel.font = [UIFont ows_boldFontWithSize:fontSizePoints];
-    [activateButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
-    [activateButton setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
     [contentView addSubview:activateButton];
     [activateButton autoPinLeadingAndTrailingToSuperview];
     [activateButton autoPinEdge:ALEdgeTop
                          toEdge:ALEdgeBottom
                          ofView:separatorView2
                      withOffset:ScaleFromIPhone5To7Plus(12.f, 15.f)];
-    [activateButton autoSetDimension:ALDimensionHeight toSize:47.f];
-    [activateButton addTarget:self action:@selector(sendCodeAction) forControlEvents:UIControlEventTouchUpInside];
+    [activateButton autoSetDimension:ALDimensionHeight toSize:kActivateButtonHeight];
 
     UIActivityIndicatorView *spinnerView =
         [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];

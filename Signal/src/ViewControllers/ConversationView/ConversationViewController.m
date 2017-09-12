@@ -1235,9 +1235,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             name = [[NSAttributedString alloc] initWithString:self.thread.name];
         }
     } else {
+        OWSAssert(self.thread.contactIdentifier);
         name = [self.contactsManager
             attributedStringForConversationTitleWithPhoneIdentifier:self.thread.contactIdentifier
-                                                        primaryFont:self.navigationBarTitleLabel.font
+                                                        primaryFont:[self navigationBarTitleLabelFont]
                                                       secondaryFont:[UIFont ows_footnoteFont]];
     }
     self.title = nil;
@@ -1282,7 +1283,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.navigationBarTitleLabel = [UILabel new];
     self.navigationBarTitleView.titleLabel = self.navigationBarTitleLabel;
     self.navigationBarTitleLabel.textColor = [UIColor whiteColor];
-    self.navigationBarTitleLabel.font = [UIFont ows_boldFontWithSize:20.f];
+    self.navigationBarTitleLabel.font = [self navigationBarTitleLabelFont];
     self.navigationBarTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [self.navigationBarTitleView addSubview:self.navigationBarTitleLabel];
 
@@ -1290,6 +1291,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.navigationBarTitleView.subtitleLabel = self.navigationBarSubtitleLabel;
     [self updateNavigationBarSubtitleLabel];
     [self.navigationBarTitleView addSubview:self.navigationBarSubtitleLabel];
+}
+
+- (UIFont *)navigationBarTitleLabelFont
+{
+    return [UIFont ows_boldFontWithSize:20.f];
 }
 
 - (CGFloat)unreadCountViewDiameter

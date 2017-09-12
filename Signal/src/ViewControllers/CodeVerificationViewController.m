@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *phoneNumberLabel;
 
 //// User action buttons
-@property (nonatomic) UIButton *challengeButton;
+@property (nonatomic) OWSFlatButton *submitButton;
 @property (nonatomic) UIButton *sendCodeViaSMSAgainButton;
 @property (nonatomic) UIButton *sendCodeViaVoiceButton;
 
@@ -154,28 +154,29 @@ NS_ASSUME_NONNULL_BEGIN
                      withOffset:3];
     [underscoreView autoPinWidthToSuperviewWithMargin:kHMargin];
     [underscoreView autoSetDimension:ALDimensionHeight toSize:1.f];
-    
-    _challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _challengeButton.backgroundColor = signalBlueColor;
-    [_challengeButton setTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_CODE", @"button text during registration to submit your SMS verification code")
-                     forState:UIControlStateNormal];
-    [_challengeButton setTitleColor:[UIColor whiteColor]
-                     forState:UIControlStateNormal];
-    _challengeButton.titleLabel.font = [UIFont ows_mediumFontWithSize:14.f];
-    [_challengeButton addTarget:self
-                         action:@selector(verifyChallengeAction:)
-               forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:_challengeButton];
-    [_challengeButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:underscoreView
-                      withOffset:15];
-    [_challengeButton autoPinWidthToSuperviewWithMargin:kHMargin];
-    [_challengeButton autoSetDimension:ALDimensionHeight toSize:47.f];
+
+    const CGFloat kSubmitButtonHeight = 47.f;
+    // NOTE: We use ows_signalBrandBlueColor instead of ows_materialBlueColor
+    //       throughout the onboarding flow to be consistent with the headers.
+    OWSFlatButton *submitButton =
+        [OWSFlatButton buttonWithTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_CODE",
+                                           @"button text during registration to submit your SMS verification code.")
+                                  font:[OWSFlatButton fontForHeight:kSubmitButtonHeight]
+                            titleColor:[UIColor whiteColor]
+                       backgroundColor:[UIColor ows_signalBrandBlueColor]
+                                target:self
+                              selector:@selector(submitVerificationCode)];
+    self.submitButton = submitButton;
+    [self.view addSubview:_submitButton];
+    [_submitButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:underscoreView withOffset:15];
+    [_submitButton autoPinWidthToSuperviewWithMargin:kHMargin];
+    [_submitButton autoSetDimension:ALDimensionHeight toSize:kSubmitButtonHeight];
 
     const CGFloat kSpinnerSize = 20;
     const CGFloat kSpinnerSpacing = ScaleFromIPhone5To7Plus(5, 15);
 
     _submitCodeSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    [_challengeButton addSubview:_submitCodeSpinner];
+    [_submitButton addSubview:_submitCodeSpinner];
     [_submitCodeSpinner autoSetDimension:ALDimensionWidth toSize:kSpinnerSize];
     [_submitCodeSpinner autoSetDimension:ALDimensionHeight toSize:kSpinnerSize];
     [_submitCodeSpinner autoVCenterInSuperview];
@@ -192,8 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    action:@selector(sendCodeViaSMSAction:)
                          forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_sendCodeViaSMSAgainButton];
-    [_sendCodeViaSMSAgainButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_challengeButton
-                                withOffset:10];
+    [_sendCodeViaSMSAgainButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_submitButton withOffset:10];
     [_sendCodeViaSMSAgainButton autoPinWidthToSuperviewWithMargin:kHMargin];
     [_sendCodeViaSMSAgainButton autoSetDimension:ALDimensionHeight toSize:35];
     
@@ -255,7 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.submitCodeSpinner stopAnimating];
 }
 
-- (void)verifyChallengeAction:(nullable id)sender
+- (void)submitVerificationCode
 {
     [self startActivityIndicator];
     OWSProdInfo([OWSAnalyticsEvents registrationRegisteringCode]);
@@ -368,7 +368,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)enableServerActions:(BOOL)enabled {
-    [_challengeButton setEnabled:enabled];
+    [_submitButton setEnabled:enabled];
     [_sendCodeViaSMSAgainButton setEnabled:enabled];
     [_sendCodeViaVoiceButton setEnabled:enabled];
 }
@@ -452,7 +452,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [self verifyChallengeAction:nil];
+    [self submitVerificationCode];
     [textField resignFirstResponder];
     return NO;
 }
@@ -469,7 +469,7 @@ NS_ASSUME_NONNULL_BEGIN
     UITextPosition *newPosition = [self.challengeTextField endOfDocument];
     self.challengeTextField.selectedTextRange = [self.challengeTextField textRangeFromPosition:newPosition
                                                                                     toPosition:newPosition];
-    [self verifyChallengeAction:nil];
+    [self submitVerificationCode];
 }
 
 #pragma mark - Logging

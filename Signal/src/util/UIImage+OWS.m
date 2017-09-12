@@ -2,26 +2,28 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "UIImage+normalizeImage.h"
+#import "UIImage+OWS.h"
 
 @implementation UIImage (normalizeImage)
 
-- (UIImage *)normalizedImage {
+- (UIImage *)normalizedImage
+{
     if (self.imageOrientation == UIImageOrientationUp) {
         return self;
     }
 
     UIGraphicsBeginImageContextWithOptions(self.size, NO, self.scale);
-    [self drawInRect:(CGRect){{0, 0}, self.size}];
+    [self drawInRect:(CGRect){ { 0, 0 }, self.size }];
     UIImage *normalizedImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return normalizedImage;
 }
 
-- (UIImage *)resizedWithQuality:(CGInterpolationQuality)quality rate:(CGFloat)rate {
+- (UIImage *)resizedWithQuality:(CGInterpolationQuality)quality rate:(CGFloat)rate
+{
     UIImage *resized = nil;
-    CGFloat width    = self.size.width * rate;
-    CGFloat height   = self.size.height * rate;
+    CGFloat width = self.size.width * rate;
+    CGFloat height = self.size.height * rate;
 
     UIGraphicsBeginImageContext(CGSizeMake(width, height));
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -35,11 +37,11 @@
 
 // Source: https://github.com/AliSoftware/UIImage-Resize
 
-- (UIImage *)resizedImageToSize:(CGSize)dstSize {
+- (UIImage *)resizedImageToSize:(CGSize)dstSize
+{
     CGImageRef imgRef = self.CGImage;
     // the below values are regardless of orientation : for UIImages from Camera, width>height (landscape)
-    CGSize srcSize = CGSizeMake(
-        CGImageGetWidth(imgRef),
+    CGSize srcSize = CGSizeMake(CGImageGetWidth(imgRef),
         CGImageGetHeight(imgRef)); // not equivalent to self.size (which is dependant on the imageOrientation)!
 
     /* Don't resize if we already meet the required destination size. */
@@ -47,8 +49,8 @@
         return self;
     }
 
-    CGFloat scaleRatio          = dstSize.width / srcSize.width;
-    UIImageOrientation orient   = self.imageOrientation;
+    CGFloat scaleRatio = dstSize.width / srcSize.width;
+    UIImageOrientation orient = self.imageOrientation;
     CGAffineTransform transform = CGAffineTransformIdentity;
     switch (orient) {
         case UIImageOrientationUp: // EXIF = 1
@@ -71,26 +73,26 @@
             break;
 
         case UIImageOrientationLeftMirrored: // EXIF = 5
-            dstSize   = CGSizeMake(dstSize.height, dstSize.width);
+            dstSize = CGSizeMake(dstSize.height, dstSize.width);
             transform = CGAffineTransformMakeTranslation(srcSize.height, srcSize.width);
             transform = CGAffineTransformScale(transform, -1.0, 1.0);
             transform = CGAffineTransformRotate(transform, (CGFloat)(3.0f * M_PI_2));
             break;
 
         case UIImageOrientationLeft: // EXIF = 6
-            dstSize   = CGSizeMake(dstSize.height, dstSize.width);
+            dstSize = CGSizeMake(dstSize.height, dstSize.width);
             transform = CGAffineTransformMakeTranslation(0.0, srcSize.width);
             transform = CGAffineTransformRotate(transform, (CGFloat)(3.0 * M_PI_2));
             break;
 
         case UIImageOrientationRightMirrored: // EXIF = 7
-            dstSize   = CGSizeMake(dstSize.height, dstSize.width);
+            dstSize = CGSizeMake(dstSize.height, dstSize.width);
             transform = CGAffineTransformMakeScale(-1.0, 1.0);
             transform = CGAffineTransformRotate(transform, (CGFloat)M_PI_2);
             break;
 
         case UIImageOrientationRight: // EXIF = 8
-            dstSize   = CGSizeMake(dstSize.height, dstSize.width);
+            dstSize = CGSizeMake(dstSize.height, dstSize.width);
             transform = CGAffineTransformMakeTranslation(srcSize.height, 0.0);
             transform = CGAffineTransformRotate(transform, (CGFloat)M_PI_2);
             break;
@@ -164,6 +166,30 @@
     UIImage *dstImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return dstImage;
+}
+
++ (UIImage *)imageWithColor:(UIColor *)color
+{
+    OWSAssert(color);
+
+    return [self imageWithColor:color size:CGSizeMake(1.f, 1.f)];
+}
+
++ (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size
+{
+    OWSAssert(color);
+
+    CGRect rect = CGRectMake(0.0f, 0.0f, size.width, size.height);
+    UIGraphicsBeginImageContextWithOptions(rect.size, NO, 1.f);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextClearRect(context, rect);
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    return image;
 }
 
 @end

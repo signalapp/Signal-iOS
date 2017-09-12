@@ -198,21 +198,23 @@
         UITableViewCell *cell = [UITableViewCell new];
         cell.preservesSuperviewLayoutMargins = YES;
         cell.contentView.preservesSuperviewLayoutMargins = YES;
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-        button.backgroundColor = [UIColor ows_destructiveRedColor];
-        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [button setTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"") forState:UIControlStateNormal];
-        button.titleLabel.font = [UIFont ows_mediumFontWithSize:18.f];
-        button.titleLabel.textAlignment = NSTextAlignmentCenter;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+        const CGFloat kButtonHeight = 40.f;
+        OWSFlatButton *button = [OWSFlatButton buttonWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
+                                                          font:[OWSFlatButton fontForHeight:kButtonHeight]
+                                                    titleColor:[UIColor whiteColor]
+                                               backgroundColor:[UIColor ows_destructiveRedColor]
+                                                        target:self
+                                                      selector:@selector(unregisterUser)];
         [cell.contentView addSubview:button];
-        [button autoSetDimension:ALDimensionHeight toSize:50.f];
+        [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
         [button autoVCenterInSuperview];
         [button autoPinLeadingAndTrailingToSuperview];
-        [button addTarget:self action:@selector(unregisterUser) forControlEvents:UIControlEventTouchUpInside];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
         return cell;
     }
-                                           customRowHeight:100.f
+                                           customRowHeight:90.f
                                                actionBlock:nil]];
 
     [contents addSection:section];
