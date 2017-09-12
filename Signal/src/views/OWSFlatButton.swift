@@ -136,7 +136,9 @@ import Foundation
             owsFail("Missing button")
             return
         }
-        button.layer.cornerRadius = ScaleFromIPhone5To7Plus(4, 5)
+        // To my eye, this radius tends to look right regardless of button size
+        // (within reason) or device size. 
+        button.layer.cornerRadius = 5
         button.clipsToBounds = true
     }
 
