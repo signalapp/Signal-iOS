@@ -170,7 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view addSubview:_submitButton];
     [_submitButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:underscoreView withOffset:15];
     [_submitButton autoPinWidthToSuperviewWithMargin:kHMargin];
-    [_submitButton autoSetDimension:ALDimensionHeight toSize:47.f];
+    [_submitButton autoSetDimension:ALDimensionHeight toSize:kSubmitButtonHeight];
 
     const CGFloat kSpinnerSize = 20;
     const CGFloat kSpinnerSpacing = ScaleFromIPhone5To7Plus(5, 15);
