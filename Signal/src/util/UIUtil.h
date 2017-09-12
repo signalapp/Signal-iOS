@@ -7,7 +7,7 @@
 #import "MIMETypeUtil.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
-#import "UIImage+normalizeImage.h"
+#import "UIImage+OWS.h"
 
 typedef void (^completionBlock)(void);
 

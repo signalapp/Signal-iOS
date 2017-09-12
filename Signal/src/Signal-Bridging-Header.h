@@ -34,7 +34,7 @@
 #import "TSMessageAdapter.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
-#import "UIImage+normalizeImage.h"
+#import "UIImage+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
