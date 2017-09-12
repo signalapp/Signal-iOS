@@ -555,11 +555,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                                      handler:^(UIAlertAction *_Nonnull action){
 
                                                      }]];
-        [[Environment getCurrent].homeViewController.presentedViewController presentViewController:controller
-                                                                                          animated:YES
-                                                                                        completion:^{
-                                                                                            completionHandler(NO);
-                                                                                        }];
+        UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
+        [fromViewController presentViewController:controller
+                                         animated:YES
+                                       completion:^{
+                                           completionHandler(NO);
+                                       }];
     }
 }
 
