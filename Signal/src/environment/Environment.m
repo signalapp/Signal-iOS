@@ -12,6 +12,7 @@
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import <SignalServiceKit/ContactsUpdater.h>
+#import <SignalServiceKit/Threading.h>
 
 static Environment *environment = nil;
 
@@ -171,69 +172,75 @@ static Environment *environment = nil;
     return _preferences;
 }
 
-- (void)setHomeViewController:(HomeViewController *)signalsViewController
+- (void)setHomeViewController:(HomeViewController *)homeViewController
 {
-    _signalsViewController = signalsViewController;
+    _homeViewController = homeViewController;
 }
 
 - (void)setSignUpFlowNavigationController:(UINavigationController *)navigationController {
     _signUpFlowNavigationController = navigationController;
 }
 
-+ (void)messageThreadId:(NSString *)threadId {
-    TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
++ (void)presentConversationForRecipientId:(NSString *)recipientId
+{
+    [self presentConversationForRecipientId:recipientId keyboardOnViewAppearing:YES callOnViewAppearing:NO];
+}
 
++ (void)presentConversationForRecipientId:(NSString *)recipientId withCompose:(BOOL)compose
+{
+    [self presentConversationForRecipientId:recipientId keyboardOnViewAppearing:compose callOnViewAppearing:NO];
+}
+
++ (void)callRecipientId:(NSString *)recipientId
+{
+    [self presentConversationForRecipientId:recipientId keyboardOnViewAppearing:NO callOnViewAppearing:YES];
+}
+
++ (void)presentConversationForRecipientId:(NSString *)recipientId
+                  keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
+                      callOnViewAppearing:(BOOL)callOnViewAppearing
+{
+    [[TSStorageManager sharedManager].dbReadWriteConnection
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self presentConversationForThread:thread
+                           keyboardOnViewAppearing:keyboardOnViewAppearing
+                               callOnViewAppearing:callOnViewAppearing];
+            });
+        }];
+}
+
++ (void)presentConversationForThread:(TSThread *)thread
+{
+    [self presentConversationForThread:thread keyboardOnViewAppearing:YES callOnViewAppearing:NO];
+}
+
++ (void)presentConversationForThread:(TSThread *)thread
+             keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
+                 callOnViewAppearing:(BOOL)callOnViewAppearing
+{
     if (!thread) {
-        DDLogWarn(@"We get UILocalNotifications with unknown threadId: %@", threadId);
+        OWSFail(@"%@ Can't present nil thread.", self.tag);
         return;
     }
 
-    if ([thread isGroupThread]) {
-        [self messageGroup:(TSGroupThread *)thread];
-    } else {
-        Environment *env          = [self getCurrent];
-        HomeViewController *vc = env.signalsViewController;
-        UIViewController *topvc   = vc.navigationController.topViewController;
+    DispatchMainThreadSafe(^{
+        UIViewController *frontmostVC = [[UIApplication sharedApplication] frontmostViewController];
 
-        if ([topvc isKindOfClass:[ConversationViewController class]]) {
-            ConversationViewController *mvc = (ConversationViewController *)topvc;
-            if ([mvc.thread.uniqueId isEqualToString:threadId]) {
-                [mvc popKeyBoard];
+        if ([frontmostVC isKindOfClass:[ConversationViewController class]]) {
+            ConversationViewController *conversationVC = (ConversationViewController *)frontmostVC;
+            if ([conversationVC.thread.uniqueId isEqualToString:thread.uniqueId]) {
+                [conversationVC popKeyBoard];
                 return;
             }
         }
-        [self messageIdentifier:((TSContactThread *)thread).contactIdentifier withCompose:YES];
-    }
-}
 
-+ (void)messageIdentifier:(NSString *)identifier withCompose:(BOOL)compose {
-    Environment *env          = [self getCurrent];
-    HomeViewController *vc = env.signalsViewController;
-
-    [[TSStorageManager sharedManager].dbReadWriteConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:identifier transaction:transaction];
-            [vc presentThread:thread keyboardOnViewAppearing:YES callOnViewAppearing:NO];
-        }];
-}
-
-+ (void)callUserWithIdentifier:(NSString *)identifier
-{
-    Environment *env = [self getCurrent];
-    HomeViewController *vc = env.signalsViewController;
-
-    [[TSStorageManager sharedManager].dbReadWriteConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:identifier transaction:transaction];
-            [vc presentThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:YES];
-        }];
-}
-
-+ (void)messageGroup:(TSGroupThread *)groupThread {
-    Environment *env          = [self getCurrent];
-    HomeViewController *vc = env.signalsViewController;
-
-    [vc presentThread:groupThread keyboardOnViewAppearing:YES callOnViewAppearing:NO];
+        Environment *env = [self getCurrent];
+        [env.homeViewController presentThread:thread
+                      keyboardOnViewAppearing:keyboardOnViewAppearing
+                          callOnViewAppearing:callOnViewAppearing];
+    });
 }
 
 + (void)resetAppData {

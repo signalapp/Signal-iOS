@@ -625,7 +625,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self dismissViewControllerAnimated:YES
                              completion:^() {
-                                 [Environment messageIdentifier:recipientId withCompose:YES];
+                                 [Environment presentConversationForRecipientId:recipientId withCompose:YES];
                              }];
 }
 

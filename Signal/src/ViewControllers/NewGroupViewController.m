@@ -459,7 +459,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
             [self dismissViewControllerAnimated:YES
                                      completion:^{
                                          // Pop to new group thread.
-                                         [Environment messageGroup:thread];
+                                         [Environment presentConversationForThread:thread];
                                      }];
 
         });
@@ -478,7 +478,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                                                                   failedMessageType:TSErrorMessageGroupCreationFailed]
                                              save];
 
-                                         [Environment messageGroup:thread];
+                                         [Environment presentConversationForThread:thread];
                                      }];
         });
     };
