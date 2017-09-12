@@ -156,6 +156,8 @@ NS_ASSUME_NONNULL_BEGIN
     [underscoreView autoSetDimension:ALDimensionHeight toSize:1.f];
 
     const CGFloat kSubmitButtonHeight = 47.f;
+    // NOTE: We use ows_signalBrandBlueColor instead of ows_materialBlueColor
+    //       throughout the onboarding flow to be consistent with the headers.
     OWSFlatButton *submitButton =
         [OWSFlatButton buttonWithTitle:NSLocalizedString(@"VERIFICATION_CHALLENGE_SUBMIT_CODE",
                                            @"button text during registration to submit your SMS verification code.")

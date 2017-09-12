@@ -38,7 +38,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 @property (nonatomic) UIImageView *cameraImageView;
 
-@property (nonatomic) UIButton *saveButton;
+@property (nonatomic) OWSFlatButton *saveButton;
 
 @property (nonatomic, nullable) UIImage *avatar;
 
@@ -209,21 +209,22 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         UIView *buttonRow = [UIView containerView];
         [rows addObject:buttonRow];
 
-        UIButton *saveButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        const CGFloat kButtonHeight = 47.f;
+        // NOTE: We use ows_signalBrandBlueColor instead of ows_materialBlueColor
+        //       throughout the onboarding flow to be consistent with the headers.
+        OWSFlatButton *saveButton =
+            [OWSFlatButton buttonWithTitle:NSLocalizedString(@"PROFILE_VIEW_SAVE_BUTTON",
+                                               @"Button to save the profile view in the profile view.")
+                                      font:[OWSFlatButton fontForHeight:kButtonHeight]
+                                titleColor:[UIColor whiteColor]
+                           backgroundColor:[UIColor ows_signalBrandBlueColor]
+                                    target:self
+                                  selector:@selector(saveButtonPressed)];
         self.saveButton = saveButton;
-        saveButton.backgroundColor = [UIColor ows_signalBrandBlueColor];
-        [saveButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        saveButton.titleLabel.font = [UIFont ows_boldFontWithSize:fontSizePoints];
-        [saveButton setTitle:NSLocalizedString(
-                                 @"PROFILE_VIEW_SAVE_BUTTON", @"Button to save the profile view in the profile view.")
-                    forState:UIControlStateNormal];
-        [saveButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
-        [saveButton setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
         [buttonRow addSubview:saveButton];
         [saveButton autoPinLeadingAndTrailingToSuperview];
         [saveButton autoPinHeightToSuperview];
         [saveButton autoSetDimension:ALDimensionHeight toSize:47.f];
-        [saveButton addTarget:self action:@selector(saveButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     }
 
     // Row Layout
@@ -345,11 +346,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     // The save button is only used in "registration" and "upgrade or nag" modes.
     if (self.hasUnsavedChanges) {
         self.saveButton.enabled = YES;
-        self.saveButton.backgroundColor = [UIColor ows_signalBrandBlueColor];
+        [self.saveButton setBackgroundColors:[UIColor ows_signalBrandBlueColor]];
     } else {
         self.saveButton.enabled = NO;
-        self.saveButton.backgroundColor =
-            [[UIColor ows_signalBrandBlueColor] blendWithColor:[UIColor whiteColor] alpha:0.5f];
+        [self.saveButton
+            setBackgroundColors:[[UIColor ows_signalBrandBlueColor] blendWithColor:[UIColor whiteColor] alpha:0.5f]];
     }
 }
 

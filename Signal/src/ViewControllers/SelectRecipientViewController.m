@@ -37,7 +37,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 @property (nonatomic) UITextField *phoneNumberTextField;
 
-@property (nonatomic) UIButton *phoneNumberButton;
+@property (nonatomic) OWSFlatButton *phoneNumberButton;
 
 @property (nonatomic) UILabel *examplePhoneNumberLabel;
 
@@ -172,24 +172,19 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     return _phoneNumberTextField;
 }
 
-- (UIButton *)phoneNumberButton
+- (OWSFlatButton *)phoneNumberButton
 {
     if (!_phoneNumberButton) {
-        // TODO: Eventually we should make a view factory that will allow us to
-        //       create views with consistent appearance across the app and move
-        //       towards a "design language."
-        _phoneNumberButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _phoneNumberButton.titleLabel.font = [UIFont ows_mediumFontWithSize:18.f];
-        [_phoneNumberButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [_phoneNumberButton setBackgroundColor:[UIColor ows_materialBlueColor]];
-        _phoneNumberButton.clipsToBounds = YES;
-        _phoneNumberButton.layer.cornerRadius = 3.f;
-        [_phoneNumberButton setTitle:[self.delegate phoneNumberButtonText] forState:UIControlStateNormal];
-        [_phoneNumberButton addTarget:self
-                               action:@selector(phoneNumberButtonPressed:)
-                     forControlEvents:UIControlEventTouchUpInside];
-        [_phoneNumberButton autoSetDimension:ALDimensionWidth toSize:140];
-        [_phoneNumberButton autoSetDimension:ALDimensionHeight toSize:40];
+        const CGFloat kButtonHeight = 40;
+        OWSFlatButton *button = [OWSFlatButton buttonWithTitle:[self.delegate phoneNumberButtonText]
+                                                          font:[OWSFlatButton fontForHeight:kButtonHeight]
+                                                    titleColor:[UIColor whiteColor]
+                                               backgroundColor:[UIColor ows_materialBlueColor]
+                                                        target:self
+                                                      selector:@selector(phoneNumberButtonPressed)];
+        _phoneNumberButton = button;
+        [button autoSetDimension:ALDimensionWidth toSize:140];
+        [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
     }
     return _phoneNumberButton;
 }
@@ -275,7 +270,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     [self presentViewController:navigationController animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
-- (void)phoneNumberButtonPressed:(id)sender
+- (void)phoneNumberButtonPressed
 {
     [self tryToSelectPhoneNumber];
 }
@@ -387,7 +382,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     BOOL isEnabled = [self hasValidPhoneNumber];
     self.phoneNumberButton.enabled = isEnabled;
     [self.phoneNumberButton
-        setBackgroundColor:(isEnabled ? [UIColor ows_signalBrandBlueColor] : [UIColor lightGrayColor])];
+        setBackgroundColors:(isEnabled ? [UIColor ows_signalBrandBlueColor] : [UIColor lightGrayColor])];
 }
 
 #pragma mark - CountryCodeViewControllerDelegate
