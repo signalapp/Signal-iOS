@@ -200,15 +200,16 @@ static Environment *environment = nil;
                   keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
                       callOnViewAppearing:(BOOL)callOnViewAppearing
 {
-    [[TSStorageManager sharedManager].dbReadWriteConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self presentConversationForThread:thread
-                           keyboardOnViewAppearing:keyboardOnViewAppearing
-                               callOnViewAppearing:callOnViewAppearing];
-            });
-        }];
+    DispatchMainThreadSafe(^{
+        __block TSThread *thread = nil;
+        [[TSStorageManager sharedManager].dbReadWriteConnection
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+            }];
+        [self presentConversationForThread:thread
+                   keyboardOnViewAppearing:keyboardOnViewAppearing
+                       callOnViewAppearing:callOnViewAppearing];
+    });
 }
 
 + (void)presentConversationForThread:(TSThread *)thread
