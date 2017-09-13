@@ -1187,6 +1187,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     encryptionException = exception;
                 }
             });
+
             if (encryptionException) {
                 DDLogInfo(@"%@ Exception during encryption: %@", self.tag, encryptionException);
                 @throw encryptionException;

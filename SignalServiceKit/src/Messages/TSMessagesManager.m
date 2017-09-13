@@ -678,6 +678,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                             relay:envelope.relay
                                                            thread:groupThread
                                                    networkManager:self.networkManager
+                                                   storageManager:self.storageManager
                                                       transaction:transaction];
 
     if (!attachmentsProcessor.hasSupportedAttachments) {
@@ -713,6 +714,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                             relay:envelope.relay
                                                            thread:thread
                                                    networkManager:self.networkManager
+                                                   storageManager:self.storageManager
                                                       transaction:transaction];
     if (!attachmentsProcessor.hasSupportedAttachments) {
         DDLogWarn(@"%@ received unsupported media envelope", self.tag);

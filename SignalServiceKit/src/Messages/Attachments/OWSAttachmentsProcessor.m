@@ -15,6 +15,7 @@
 #import "TSInfoMessage.h"
 #import "TSMessage.h"
 #import "TSNetworkManager.h"
+#import "TSStorageManager.h"
 #import "TSThread.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 
@@ -31,6 +32,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 @interface OWSAttachmentsProcessor ()
 
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
+@property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) NSArray<TSAttachmentPointer *> *supportedAttachmentPointers;
 
 @end
@@ -39,6 +41,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 
 - (instancetype)initWithAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
                            networkManager:(TSNetworkManager *)networkManager
+                           storageManager:(TSStorageManager *)storageManager
 {
     self = [super init];
     if (!self) {
@@ -46,6 +49,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     }
 
     _networkManager = networkManager;
+    _storageManager = storageManager;
 
     _supportedAttachmentPointers = @[ attachmentPointer ];
     _supportedAttachmentIds = @[ attachmentPointer.uniqueId ];
@@ -58,6 +62,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                                    relay:(nullable NSString *)relay
                                   thread:(TSThread *)thread
                           networkManager:(TSNetworkManager *)networkManager
+                          storageManager:(TSStorageManager *)storageManager
                              transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     self = [super init];
@@ -66,6 +71,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     }
 
     _networkManager = networkManager;
+    _storageManager = storageManager;
 
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
     NSMutableArray<TSAttachmentPointer *> *supportedAttachmentPointers = [NSMutableArray new];
@@ -108,6 +114,15 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     _supportedAttachmentIds = [supportedAttachmentIds copy];
 
     return self;
+}
+
+- (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
+                           success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
+                           failure:(void (^)(NSError *error))failureHandler
+{
+    [[self.storageManager newDatabaseConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self fetchAttachmentsForMessage:message transaction:transaction success:successHandler failure:failureHandler];
+    }];
 }
 
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
