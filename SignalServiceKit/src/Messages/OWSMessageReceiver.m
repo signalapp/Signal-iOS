@@ -115,7 +115,6 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
                                        NSString *_Nonnull key,
                                        NSUInteger index,
                                        BOOL *_Nonnull stop) {
-                                       DDLogVerbose(@"key: %@", key);
                                        [jobIds addObject:key];
                                        if (jobIds.count >= maxBatchSize) {
                                            *stop = YES;
@@ -295,7 +294,7 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 {
     AssertIsOnMainThread();
 
-    const NSUInteger kMaxBatchSize = 16;
+    const NSUInteger kMaxBatchSize = 10;
     NSArray<OWSMessageProcessingJob *> *jobs = [self.finder nextJobsForBatchSize:kMaxBatchSize];
     OWSAssert(jobs);
     if (jobs.count < 1) {

@@ -299,7 +299,7 @@ NSString *const OWSBatchMessageProcessingJobFinderExtensionGroup = @"OWSBatchMes
 {
     AssertIsOnMainThread();
 
-    const NSUInteger kMaxBatchSize = 16;
+    const NSUInteger kMaxBatchSize = 10;
     NSArray<OWSBatchMessageProcessingJob *> *jobs = [self.finder nextJobsForBatchSize:kMaxBatchSize];
     OWSAssert(jobs);
     if (jobs.count < 1) {
