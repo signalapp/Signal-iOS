@@ -260,84 +260,89 @@ NS_ASSUME_NONNULL_BEGIN
     return description;
 }
 
-#pragma mark - message handling
+#pragma mark - Blocking
 
-- (void)processEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-             completion:(nullable MessageManagerCompletionBlock)completionHandler
+- (BOOL)isEnvelopeBlocked:(OWSSignalServiceProtosEnvelope *)envelope
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssert(envelope);
+
+    return [_blockingManager.blockedPhoneNumbers containsObject:envelope.source];
+}
+
+#pragma mark - Decryption
+
+- (void)decryptEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+           successBlock:(DecryptSuccessBlock)successBlockParameter
+           failureBlock:(DecryptFailureBlock)failureBlockParameter
+{
+    OWSAssert(envelope);
+    OWSAssert(successBlockParameter);
+    OWSAssert(failureBlockParameter);
     OWSAssert([TSAccountManager isRegistered]);
 
-    // Ensure that completionHandler is called on the main thread,
-    // and handle the nil case.
-    MessageManagerCompletionBlock completion = ^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (completionHandler) {
-                completionHandler();
-            }
+    // Ensure that successBlock and failureBlock are called on a worker queue.
+    DecryptSuccessBlock successBlock = ^(NSData *_Nullable plaintextData) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            successBlockParameter(plaintextData);
         });
     };
-
-    DDLogInfo(@"%@ received envelope: %@", self.tag, [self descriptionForEnvelope:envelope]);
+    DecryptFailureBlock failureBlock = ^() {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            failureBlockParameter();
+        });
+    };
+    DDLogInfo(@"%@ decrypting envelope: %@", self.tag, [self descriptionForEnvelope:envelope]);
 
     OWSAssert(envelope.source.length > 0);
-    BOOL isEnvelopeBlocked = [_blockingManager.blockedPhoneNumbers containsObject:envelope.source];
-    if (isEnvelopeBlocked) {
+    if ([self isEnvelopeBlocked:envelope]) {
         DDLogInfo(@"%@ ignoring blocked envelope: %@", self.tag, envelope.source);
-        completion();
+        failureBlock();
         return;
     }
 
     @try {
         switch (envelope.type) {
             case OWSSignalServiceProtosEnvelopeTypeCiphertext: {
-                [self handleSecureMessageAsync:envelope
-                                    completion:^(NSError *_Nullable error) {
-                                        DDLogDebug(@"%@ handled secure message.", self.tag);
-                                        if (error) {
-                                            DDLogError(
-                                                @"%@ handling secure message from address: %@ failed with error: %@",
-                                                self.tag,
-                                                envelopeAddress(envelope),
-                                                error);
-                                            OWSProdError(
-                                                [OWSAnalyticsEvents messageManagerErrorCouldNotHandleSecureMessage]);
-                                        }
-                                        completion();
-                                    }];
+                [self decryptSecureMessage:envelope
+                    successBlock:^(NSData *_Nullable plaintextData) {
+                        DDLogDebug(@"%@ decrypted secure message.", self.tag);
+                        successBlock(plaintextData);
+                    }
+                    failureBlock:^(NSError *_Nullable error) {
+                        DDLogError(@"%@ decrypting secure message from address: %@ failed with error: %@",
+                            self.tag,
+                            envelopeAddress(envelope),
+                            error);
+                        OWSProdError([OWSAnalyticsEvents messageManagerErrorCouldNotHandleSecureMessage]);
+                        failureBlock();
+                    }];
                 // Return to avoid double-acknowledging.
                 return;
             }
             case OWSSignalServiceProtosEnvelopeTypePrekeyBundle: {
-                [self handlePreKeyBundleAsync:envelope
-                                   completion:^(NSError *_Nullable error) {
-                                       DDLogDebug(@"%@ handled pre-key whisper message", self.tag);
-                                       if (error) {
-                                           DDLogError(@"%@ handling pre-key whisper message from address: %@ failed "
-                                                      @"with error: %@",
-                                               self.tag,
-                                               envelopeAddress(envelope),
-                                               error);
-                                           OWSProdError(
-                                               [OWSAnalyticsEvents messageManagerErrorCouldNotHandlePrekeyBundle]);
-                                       }
-                                       completion();
-                                   }];
+                [self decryptPreKeyBundle:envelope
+                    successBlock:^(NSData *_Nullable plaintextData) {
+                        DDLogDebug(@"%@ decrypted pre-key whisper message", self.tag);
+                        successBlock(plaintextData);
+                    }
+                    failureBlock:^(NSError *_Nullable error) {
+                        DDLogError(@"%@ decrypting pre-key whisper message from address: %@ failed "
+                                   @"with error: %@",
+                            self.tag,
+                            envelopeAddress(envelope),
+                            error);
+                        OWSProdError([OWSAnalyticsEvents messageManagerErrorCouldNotHandlePrekeyBundle]);
+                        failureBlock();
+                    }];
                 // Return to avoid double-acknowledging.
                 return;
             }
             case OWSSignalServiceProtosEnvelopeTypeReceipt:
-                [self handleDeliveryReceipt:envelope];
-                break;
-
-            // Other messages are just dismissed for now.
-
             case OWSSignalServiceProtosEnvelopeTypeKeyExchange:
-                DDLogWarn(@"Received Key Exchange Message, not supported");
-                break;
             case OWSSignalServiceProtosEnvelopeTypeUnknown:
-                DDLogWarn(@"Received an unknown message type");
-                break;
+                successBlock(nil);
+                // Return to avoid double-acknowledging.
+                return;
             default:
                 DDLogWarn(@"Received unhandled envelope type: %d", (int)envelope.type);
                 break;
@@ -347,13 +352,140 @@ NS_ASSUME_NONNULL_BEGIN
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorInvalidProtocolMessage]);
     }
 
-    completion();
+    failureBlock();
+}
+
+- (void)decryptSecureMessage:(OWSSignalServiceProtosEnvelope *)messageEnvelope
+                successBlock:(DecryptSuccessBlock)successBlock
+                failureBlock:(void (^)(NSError *_Nullable error))failureBlock
+{
+    OWSAssert(messageEnvelope);
+    OWSAssert(successBlock);
+    OWSAssert(failureBlock);
+
+    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    NSString *recipientId = messageEnvelope.source;
+    int deviceId = messageEnvelope.sourceDevice;
+    dispatch_async([OWSDispatch sessionStoreQueue], ^{
+        // DEPRECATED - Remove after all clients have been upgraded.
+        NSData *encryptedData = messageEnvelope.hasContent ? messageEnvelope.content : messageEnvelope.legacyMessage;
+        if (!encryptedData) {
+            OWSProdFail([OWSAnalyticsEvents messageManagerErrorMessageEnvelopeHasNoContent]);
+            failureBlock(nil);
+            return;
+        }
+
+        @try {
+            WhisperMessage *message = [[WhisperMessage alloc] initWithData:encryptedData];
+            SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
+                                                                    preKeyStore:storageManager
+                                                              signedPreKeyStore:storageManager
+                                                               identityKeyStore:self.identityManager
+                                                                    recipientId:recipientId
+                                                                       deviceId:deviceId];
+
+            NSData *plaintextData = [[cipher decrypt:message] removePadding];
+            successBlock(plaintextData);
+        } @catch (NSException *exception) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self processException:exception envelope:messageEnvelope];
+                NSString *errorDescription =
+                    [NSString stringWithFormat:@"Exception while decrypting: %@", exception.description];
+                NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
+                failureBlock(error);
+            });
+        }
+    });
+}
+
+- (void)decryptPreKeyBundle:(OWSSignalServiceProtosEnvelope *)preKeyEnvelope
+               successBlock:(DecryptSuccessBlock)successBlock
+               failureBlock:(void (^)(NSError *_Nullable error))failureBlock
+{
+    OWSAssert(preKeyEnvelope);
+    OWSAssert(successBlock);
+    OWSAssert(failureBlock);
+
+    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    NSString *recipientId = preKeyEnvelope.source;
+    int deviceId = preKeyEnvelope.sourceDevice;
+
+    // DEPRECATED - Remove after all clients have been upgraded.
+    NSData *encryptedData = preKeyEnvelope.hasContent ? preKeyEnvelope.content : preKeyEnvelope.legacyMessage;
+    if (!encryptedData) {
+        OWSProdFail([OWSAnalyticsEvents messageManagerErrorPrekeyBundleEnvelopeHasNoContent]);
+        failureBlock(nil);
+        return;
+    }
+
+    dispatch_async([OWSDispatch sessionStoreQueue], ^{
+        @try {
+            // Check whether we need to refresh our PreKeys every time we receive a PreKeyWhisperMessage.
+            [TSPreKeyManager checkPreKeys];
+
+            PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] initWithData:encryptedData];
+            SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
+                                                                    preKeyStore:storageManager
+                                                              signedPreKeyStore:storageManager
+                                                               identityKeyStore:self.identityManager
+                                                                    recipientId:recipientId
+                                                                       deviceId:deviceId];
+
+            NSData *plaintextData = [[cipher decrypt:message] removePadding];
+            successBlock(plaintextData);
+        } @catch (NSException *exception) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self processException:exception envelope:preKeyEnvelope];
+                NSString *errorDescription =
+                    [NSString stringWithFormat:@"Exception while decrypting PreKey Bundle: %@", exception.description];
+                NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
+                failureBlock(error);
+            });
+        }
+    });
+}
+
+#pragma mark - message handling
+
+// TODO: Add transaction parameter.
+- (void)processEnvelope:(OWSSignalServiceProtosEnvelope *)envelope plaintextData:(NSData *_Nullable)plaintextData
+{
+    OWSAssert([TSAccountManager isRegistered]);
+
+    DDLogInfo(@"%@ received envelope: %@", self.tag, [self descriptionForEnvelope:envelope]);
+
+    OWSAssert(envelope.source.length > 0);
+    OWSAssert(![self isEnvelopeBlocked:envelope]);
+
+    switch (envelope.type) {
+        case OWSSignalServiceProtosEnvelopeTypeCiphertext:
+        case OWSSignalServiceProtosEnvelopeTypePrekeyBundle:
+            if (plaintextData) {
+                [self handleEnvelope:envelope plaintextData:plaintextData];
+            } else {
+                OWSFail(
+                    @"%@ missing decrypted data for envelope: %@", self.tag, [self descriptionForEnvelope:envelope]);
+            }
+            break;
+        case OWSSignalServiceProtosEnvelopeTypeReceipt:
+            OWSAssert(!plaintextData);
+            [self handleDeliveryReceipt:envelope];
+            break;
+        // Other messages are just dismissed for now.
+        case OWSSignalServiceProtosEnvelopeTypeKeyExchange:
+            DDLogWarn(@"Received Key Exchange Message, not supported");
+            break;
+        case OWSSignalServiceProtosEnvelopeTypeUnknown:
+            DDLogWarn(@"Received an unknown message type");
+            break;
+        default:
+            DDLogWarn(@"Received unhandled envelope type: %d", (int)envelope.type);
+            break;
+    }
 }
 
 - (void)handleDeliveryReceipt:(OWSSignalServiceProtosEnvelope *)envelope
 {
-    OWSAssert([NSThread isMainThread]);
-
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSInteraction *interaction =
             [TSInteraction interactionForTimestamp:envelope.timestamp withTransaction:transaction];
@@ -364,110 +496,8 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-- (void)handleSecureMessageAsync:(OWSSignalServiceProtosEnvelope *)messageEnvelope
-                      completion:(void (^)(NSError *_Nullable error))completion
-{
-    OWSAssert([NSThread isMainThread]);
-
-    @synchronized(self) {
-        TSStorageManager *storageManager = [TSStorageManager sharedManager];
-        NSString *recipientId = messageEnvelope.source;
-        int deviceId = messageEnvelope.sourceDevice;
-        dispatch_async([OWSDispatch sessionStoreQueue], ^{
-            // DEPRECATED - Remove after all clients have been upgraded.
-            NSData *encryptedData
-                = messageEnvelope.hasContent ? messageEnvelope.content : messageEnvelope.legacyMessage;
-            if (!encryptedData) {
-                OWSProdFail([OWSAnalyticsEvents messageManagerErrorMessageEnvelopeHasNoContent]);
-                completion(nil);
-                return;
-            }
-
-            NSData *plaintextData;
-
-            @try {
-                WhisperMessage *message = [[WhisperMessage alloc] initWithData:encryptedData];
-                SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
-                                                                        preKeyStore:storageManager
-                                                                  signedPreKeyStore:storageManager
-                                                                   identityKeyStore:self.identityManager
-                                                                        recipientId:recipientId
-                                                                           deviceId:deviceId];
-
-                plaintextData = [[cipher decrypt:message] removePadding];
-            } @catch (NSException *exception) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self processException:exception envelope:messageEnvelope];
-                    NSString *errorDescription =
-                        [NSString stringWithFormat:@"Exception while decrypting: %@", exception.description];
-                    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
-                    completion(error);
-                });
-                return;
-            }
-
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self handleEnvelope:messageEnvelope plaintextData:plaintextData];
-                completion(nil);
-            });
-        });
-    }
-}
-
-- (void)handlePreKeyBundleAsync:(OWSSignalServiceProtosEnvelope *)preKeyEnvelope
-                     completion:(void (^)(NSError *_Nullable error))completion
-{
-    OWSAssert([NSThread isMainThread]);
-
-    @synchronized(self) {
-        TSStorageManager *storageManager = [TSStorageManager sharedManager];
-        NSString *recipientId = preKeyEnvelope.source;
-        int deviceId = preKeyEnvelope.sourceDevice;
-
-        // DEPRECATED - Remove after all clients have been upgraded.
-        NSData *encryptedData = preKeyEnvelope.hasContent ? preKeyEnvelope.content : preKeyEnvelope.legacyMessage;
-        if (!encryptedData) {
-            OWSProdFail([OWSAnalyticsEvents messageManagerErrorPrekeyBundleEnvelopeHasNoContent]);
-            completion(nil);
-            return;
-        }
-
-        dispatch_async([OWSDispatch sessionStoreQueue], ^{
-            NSData *plaintextData;
-            @try {
-                // Check whether we need to refresh our PreKeys every time we receive a PreKeyWhisperMessage.
-                [TSPreKeyManager checkPreKeys];
-
-                PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] initWithData:encryptedData];
-                SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
-                                                                        preKeyStore:storageManager
-                                                                  signedPreKeyStore:storageManager
-                                                                   identityKeyStore:self.identityManager
-                                                                        recipientId:recipientId
-                                                                           deviceId:deviceId];
-
-                plaintextData = [[cipher decrypt:message] removePadding];
-            } @catch (NSException *exception) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self processException:exception envelope:preKeyEnvelope];
-                    NSString *errorDescription = [NSString stringWithFormat:@"Exception while decrypting PreKey Bundle: %@", exception.description];
-                    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
-                    completion(error);
-                });
-                return;
-            }
-
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self handleEnvelope:preKeyEnvelope plaintextData:plaintextData];
-                completion(nil);
-            });
-        });
-    }
-}
-
 - (void)handleEnvelope:(OWSSignalServiceProtosEnvelope *)envelope plaintextData:(NSData *)plaintextData
 {
-    OWSAssert([NSThread isMainThread]);
     OWSAssert(envelope.hasTimestamp && envelope.timestamp > 0);
     OWSAssert(envelope.hasSource && envelope.source.length > 0);
     OWSAssert(envelope.hasSourceDevice && envelope.sourceDevice > 0);
@@ -1120,6 +1150,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)processException:(NSException *)exception envelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
     OWSAssert([NSThread isMainThread]);
+
     DDLogError(@"%@ Got exception: %@ of type: %@ with reason: %@",
         self.tag,
         exception.description,
@@ -1128,40 +1159,40 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block TSErrorMessage *errorMessage;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-      if ([exception.name isEqualToString:NoSessionException]) {
-          OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorNoSession], envelope);
-          errorMessage = [TSErrorMessage missingSessionWithEnvelope:envelope withTransaction:transaction];
-      } else if ([exception.name isEqualToString:InvalidKeyException]) {
-          OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKey], envelope);
-          errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
-      } else if ([exception.name isEqualToString:InvalidKeyIdException]) {
-          OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKeyId], envelope);
-          errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
-      } else if ([exception.name isEqualToString:DuplicateMessageException]) {
-          // Duplicate messages are dismissed
-          return;
-      } else if ([exception.name isEqualToString:InvalidVersionException]) {
-          OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidMessageVersion], envelope);
-          errorMessage = [TSErrorMessage invalidVersionWithEnvelope:envelope withTransaction:transaction];
-      } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
-          // Should no longer get here, since we now record the new identity for incoming messages.
-          OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorUntrustedIdentityKeyException], envelope);
-          OWSFail(@"%@ Failed to trust identity on incoming message from: %@", self.tag, envelopeAddress(envelope));
-          return;
-      } else {
-          OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);
-          errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
-      }
+        if ([exception.name isEqualToString:NoSessionException]) {
+            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorNoSession], envelope);
+            errorMessage = [TSErrorMessage missingSessionWithEnvelope:envelope withTransaction:transaction];
+        } else if ([exception.name isEqualToString:InvalidKeyException]) {
+            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKey], envelope);
+            errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
+        } else if ([exception.name isEqualToString:InvalidKeyIdException]) {
+            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKeyId], envelope);
+            errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
+        } else if ([exception.name isEqualToString:DuplicateMessageException]) {
+            // Duplicate messages are dismissed
+            return;
+        } else if ([exception.name isEqualToString:InvalidVersionException]) {
+            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidMessageVersion], envelope);
+            errorMessage = [TSErrorMessage invalidVersionWithEnvelope:envelope withTransaction:transaction];
+        } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
+            // Should no longer get here, since we now record the new identity for incoming messages.
+            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorUntrustedIdentityKeyException], envelope);
+            OWSFail(@"%@ Failed to trust identity on incoming message from: %@", self.tag, envelopeAddress(envelope));
+            return;
+        } else {
+            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);
+            errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
+        }
 
-      [errorMessage saveWithTransaction:transaction];
+        [errorMessage saveWithTransaction:transaction];
     }];
 
     if (errorMessage != nil) {
-        [self notififyForErrorMessage:errorMessage withEnvelope:envelope];
+        [self notifyForErrorMessage:errorMessage withEnvelope:envelope];
     }
 }
 
-- (void)notififyForErrorMessage:(TSErrorMessage *)errorMessage withEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+- (void)notifyForErrorMessage:(TSErrorMessage *)errorMessage withEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
     TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source];
     [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage inThread:contactThread];

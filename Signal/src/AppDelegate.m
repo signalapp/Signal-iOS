@@ -29,6 +29,7 @@
 #import <SignalServiceKit/OWSFailedAttachmentDownloadsJob.h>
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
 #import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
+#import <SignalServiceKit/OWSMessageDecrypter.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSDatabaseView.h>
@@ -816,6 +817,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // If there were any messages in our local queue which we hadn't yet processed.
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
+    //    [[OWSMessageDecrypter sharedInstance] handleAnyUnprocessedEnvelopesAsync];
 
     [OWSProfileManager.sharedManager fetchLocalUsersProfile];
 }
