@@ -73,7 +73,7 @@ NSString *const OWSBatchMessageProcessingJobFinderExtensionGroup = @"OWSBatchMes
 
 @interface OWSBatchMessageProcessingJobFinder : NSObject
 
-- (nullable OWSBatchMessageProcessingJob *)nextJob;
+- (NSArray<OWSBatchMessageProcessingJob *> *)nextJobsForBatchSize:(NSUInteger)maxBatchSize;
 - (void)addJobWithEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData;
 - (void)removeJobWithId:(NSString *)uniqueId;
 
@@ -105,16 +105,36 @@ NSString *const OWSBatchMessageProcessingJobFinderExtensionGroup = @"OWSBatchMes
     return self;
 }
 
-- (nullable OWSBatchMessageProcessingJob *)nextJob
+- (NSArray<OWSBatchMessageProcessingJob *> *)nextJobsForBatchSize:(NSUInteger)maxBatchSize
 {
-    __block OWSBatchMessageProcessingJob *_Nullable job;
+    NSMutableArray<OWSBatchMessageProcessingJob *> *jobs = [NSMutableArray new];
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         YapDatabaseViewTransaction *viewTransaction = [transaction ext:OWSBatchMessageProcessingJobFinderExtensionName];
         OWSAssert(viewTransaction != nil);
-        job = [viewTransaction firstObjectInGroup:OWSBatchMessageProcessingJobFinderExtensionGroup];
+        NSMutableArray<NSString *> *jobIds = [NSMutableArray new];
+        [viewTransaction enumerateKeysInGroup:OWSBatchMessageProcessingJobFinderExtensionGroup
+                                   usingBlock:^(NSString *_Nonnull collection,
+                                       NSString *_Nonnull key,
+                                       NSUInteger index,
+                                       BOOL *_Nonnull stop) {
+                                       [jobIds addObject:key];
+                                       if (jobIds.count >= maxBatchSize) {
+                                           *stop = YES;
+                                       }
+                                   }];
+
+        for (NSString *jobId in jobIds) {
+            OWSBatchMessageProcessingJob *_Nullable job =
+                [OWSBatchMessageProcessingJob fetchObjectWithUniqueID:jobId transaction:transaction];
+            if (job) {
+                [jobs addObject:job];
+            } else {
+                OWSFail(@"Could not load job: %@", jobId);
+            }
+        }
     }];
 
-    return job;
+    return jobs;
 }
 
 - (void)addJobWithEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
@@ -279,32 +299,39 @@ NSString *const OWSBatchMessageProcessingJobFinderExtensionGroup = @"OWSBatchMes
 {
     AssertIsOnMainThread();
 
-    OWSBatchMessageProcessingJob *_Nullable job = [self.finder nextJob];
-    if (job == nil) {
+    const NSUInteger kMaxBatchSize = 16;
+    NSArray<OWSBatchMessageProcessingJob *> *jobs = [self.finder nextJobsForBatchSize:kMaxBatchSize];
+    OWSAssert(jobs);
+    if (jobs.count < 1) {
         self.isDrainingQueue = NO;
         DDLogVerbose(@"%@ Queue is drained", self.tag);
         return;
     }
 
-    [self processJob:job
-          completion:^{
-              dispatch_async(dispatch_get_main_queue(), ^{
-                  DDLogVerbose(@"%@ completed job. %lu jobs left.",
-                      self.tag,
-                      (unsigned long)[OWSBatchMessageProcessingJob numberOfKeysInCollection]);
-                  [self.finder removeJobWithId:job.uniqueId];
-                  [self drainQueueWorkStep];
-              });
-          }];
+    [self processJobs:jobs
+           completion:^{
+               dispatch_async(dispatch_get_main_queue(), ^{
+                   for (OWSBatchMessageProcessingJob *job in jobs) {
+                       [self.finder removeJobWithId:job.uniqueId];
+                   }
+                   DDLogVerbose(@"%@ completed %zd jobs. %zd jobs left.",
+                       self.tag,
+                       jobs.count,
+                       [OWSBatchMessageProcessingJob numberOfKeysInCollection]);
+                   [self drainQueueWorkStep];
+               });
+           }];
 }
 
-- (void)processJob:(OWSBatchMessageProcessingJob *)job completion:(void (^)())completion
+- (void)processJobs:(NSArray<OWSBatchMessageProcessingJob *> *)jobs completion:(void (^)())completion
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [self.messagesManager processEnvelope:job.envelopeProto
-                                    plaintextData:job.plaintextData
-                                      transaction:transaction];
+            for (OWSBatchMessageProcessingJob *job in jobs) {
+                [self.messagesManager processEnvelope:job.envelopeProto
+                                        plaintextData:job.plaintextData
+                                          transaction:transaction];
+            }
         }];
         completion();
     });
