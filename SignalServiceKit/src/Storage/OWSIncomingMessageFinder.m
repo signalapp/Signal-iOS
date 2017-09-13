@@ -114,6 +114,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 - (BOOL)existsMessageWithTimestamp:(uint64_t)timestamp
                           sourceId:(NSString *)sourceId
                     sourceDeviceId:(uint32_t)sourceDeviceId
+                       transaction:(YapDatabaseReadTransaction *)transaction
 {
     if (![self.database registeredExtension:OWSIncomingMessageFinderExtensionName]) {
         OWSFail(@"%@ in %s but extension is not registered", self.tag, __PRETTY_FUNCTION__);
@@ -129,13 +130,8 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
     // YapDatabaseQuery params must be objects
     YapDatabaseQuery *query = [YapDatabaseQuery queryWithFormat:queryFormat, @(timestamp), sourceId, @(sourceDeviceId)];
 
-    __block NSUInteger count;
-    __block BOOL success;
-
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        success = [[transaction ext:OWSIncomingMessageFinderExtensionName] getNumberOfRows:&count matchingQuery:query];
-    }];
-
+    NSUInteger count;
+    BOOL success = [[transaction ext:OWSIncomingMessageFinderExtensionName] getNumberOfRows:&count matchingQuery:query];
     if (!success) {
         OWSFail(@"%@ Could not execute query", self.tag);
         return NO;

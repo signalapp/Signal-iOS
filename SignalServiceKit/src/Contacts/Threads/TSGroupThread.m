@@ -59,14 +59,27 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (instancetype)getOrCreateThreadWithGroupIdData:(NSData *)groupId
+                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(groupId.length > 0);
+    OWSAssert(transaction);
+
+    TSGroupThread *thread = [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupId] transaction:transaction];
+    if (!thread) {
+        thread = [[self alloc] initWithGroupIdData:groupId];
+        [thread saveWithTransaction:transaction];
+    }
+    return thread;
+}
+
++ (instancetype)getOrCreateThreadWithGroupIdData:(NSData *)groupId
 {
     OWSAssert(groupId.length > 0);
 
-    TSGroupThread *thread = [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupId]];
-    if (!thread) {
-        thread = [[self alloc] initWithGroupIdData:groupId];
-        [thread save];
-    }
+    __block TSGroupThread *thread;
+    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        thread = [self getOrCreateThreadWithGroupIdData:groupId transaction:transaction];
+    }];
     return thread;
 }
 
@@ -74,6 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     transaction:(YapDatabaseReadWriteTransaction *)transaction {
     OWSAssert(groupModel);
     OWSAssert(groupModel.groupId.length > 0);
+    OWSAssert(transaction);
 
     TSGroupThread *thread =
         [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupModel.groupId] transaction:transaction];
@@ -162,12 +176,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
 {
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self updateAvatarWithAttachmentStream:attachmentStream transaction:transaction];
+    }];
+}
+
+- (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
+                             transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(attachmentStream);
+    OWSAssert(transaction);
+
     self.groupModel.groupImage = [attachmentStream image];
-    [self save];
+    [self saveWithTransaction:transaction];
 
     // Avatars are stored directly in the database, so there's no need
     // to keep the attachment around after assigning the image.
-    [attachmentStream remove];
+    [attachmentStream removeWithTransaction:transaction];
 }
 
 @end

@@ -322,15 +322,15 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     }];
 }
 
-- (void)updateWithWasSentAndDelivered
+- (void)updateWithWasSentAndDeliveredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestOutgoingMessage:transaction
-                                            changeBlock:^(TSOutgoingMessage *message) {
-                                                [message setMessageState:TSOutgoingMessageStateSentToService];
-                                                [message setWasDelivered:YES];
-                                            }];
-    }];
+    OWSAssert(transaction);
+
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            [message setMessageState:TSOutgoingMessageStateSentToService];
+                                            [message setWasDelivered:YES];
+                                        }];
 }
 
 - (void)updateWithSingleGroupRecipient:(NSString *)singleGroupRecipient

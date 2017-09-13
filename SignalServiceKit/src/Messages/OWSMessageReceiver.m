@@ -9,6 +9,7 @@
 #import "TSMessagesManager.h"
 #import "TSStorageManager.h"
 #import "TSYapDatabaseObject.h"
+#import "Threading.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import <YapDatabase/YapDatabaseView.h>
@@ -226,7 +227,22 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
     _finder = finder;
     _isDrainingQueue = NO;
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(databaseViewRegistrationComplete)
+                                                 name:kNSNotificationName_DatabaseViewRegistrationComplete
+                                               object:nil];
+
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)databaseViewRegistrationComplete
+{
+    [self drainQueue];
 }
 
 #pragma mark - instance methods
@@ -238,14 +254,20 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 
 - (void)drainQueue
 {
-    AssertIsOnMainThread();
+    DispatchMainThreadSafe(^{
+        if ([TSDatabaseView hasPendingViewRegistrations]) {
+            // We don't want to process incoming messages until database
+            // view registration is complete.
+            return;
+        }
 
-    if (self.isDrainingQueue) {
-        return;
-    }
-    self.isDrainingQueue = YES;
+        if (self.isDrainingQueue) {
+            return;
+        }
+        self.isDrainingQueue = YES;
 
-    [self drainQueueWorkStep];
+        [self drainQueueWorkStep];
+    });
 }
 
 - (void)drainQueueWorkStep
@@ -369,9 +391,7 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 
 - (void)handleAnyUnprocessedEnvelopesAsync
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.processingQueue drainQueue];
-    });
+    [self.processingQueue drainQueue];
 }
 
 - (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope

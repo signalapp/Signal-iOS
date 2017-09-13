@@ -167,7 +167,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (void)updateWithCustomMessage:(NSString *)customMessage;
 - (void)updateWithWasDeliveredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithWasDelivered;
-- (void)updateWithWasSentAndDelivered;
+- (void)updateWithWasSentAndDeliveredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithSingleGroupRecipient:(NSString *)singleGroupRecipient
                            transaction:(YapDatabaseReadWriteTransaction *)transaction;
 

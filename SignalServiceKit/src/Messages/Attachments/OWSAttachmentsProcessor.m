@@ -58,6 +58,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                                    relay:(nullable NSString *)relay
                                   thread:(TSThread *)thread
                           networkManager:(TSNetworkManager *)networkManager
+                             transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     self = [super init];
     if (!self) {
@@ -97,7 +98,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 
         [attachmentIds addObject:pointer.uniqueId];
 
-        [pointer save];
+        [pointer saveWithTransaction:transaction];
         [supportedAttachmentPointers addObject:pointer];
         [supportedAttachmentIds addObject:pointer.uniqueId];
     }
@@ -110,31 +111,47 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 }
 
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
+                       transaction:(YapDatabaseReadWriteTransaction *)transaction
                            success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
                            failure:(void (^)(NSError *error))failureHandler
 {
+    OWSAssert(transaction);
+
     for (TSAttachmentPointer *attachmentPointer in self.supportedAttachmentPointers) {
-        [self retrieveAttachment:attachmentPointer message:message success:successHandler failure:failureHandler];
+        [self retrieveAttachment:attachmentPointer
+                         message:message
+                     transaction:transaction
+                         success:successHandler
+                         failure:failureHandler];
     }
 }
 
 - (void)retrieveAttachment:(TSAttachmentPointer *)attachment
                    message:(nullable TSMessage *)message
+               transaction:(YapDatabaseReadWriteTransaction *)transaction
                    success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
                    failure:(void (^)(NSError *error))failureHandler
 {
-    [self setAttachment:attachment isDownloadingInMessage:message];
+    OWSAssert(transaction);
+
+    [self setAttachment:attachment isDownloadingInMessage:message transaction:transaction];
 
     void (^markAndHandleFailure)(NSError *) = ^(NSError *error) {
-        [self setAttachment:attachment didFailInMessage:message];
-        return failureHandler(error);
+        // Ensure enclosing transaction is complete.
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self setAttachment:attachment didFailInMessage:message];
+            failureHandler(error);
+        });
     };
 
     void (^markAndHandleSuccess)(TSAttachmentStream *attachmentStream) = ^(TSAttachmentStream *attachmentStream) {
-        successHandler(attachmentStream);
-        if (message) {
-            [message touch];
-        }
+        // Ensure enclosing transaction is complete.
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            successHandler(attachmentStream);
+            if (message) {
+                [message touch];
+            }
+        });
     };
 
     if (attachment.serverId < 100) {
@@ -352,12 +369,16 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     });
 }
 
-- (void)setAttachment:(TSAttachmentPointer *)pointer isDownloadingInMessage:(nullable TSMessage *)message
+- (void)setAttachment:(TSAttachmentPointer *)pointer
+    isDownloadingInMessage:(nullable TSMessage *)message
+               transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssert(transaction);
+
     pointer.state = TSAttachmentPointerStateDownloading;
-    [pointer save];
+    [pointer saveWithTransaction:transaction];
     if (message) {
-        [message touch];
+        [message touchWithTransaction:transaction];
     }
 }
 

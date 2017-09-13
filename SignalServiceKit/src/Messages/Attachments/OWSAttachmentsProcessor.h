@@ -14,6 +14,7 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
 @class OWSSignalServiceProtosAttachmentPointer;
 @class TSAttachmentStream;
 @class TSAttachmentPointer;
+@class YapDatabaseReadWriteTransaction;
 
 /**
  * Given incoming attachment protos, determines which we support.
@@ -31,7 +32,8 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
                                timestamp:(uint64_t)timestamp
                                    relay:(nullable NSString *)relay
                                   thread:(TSThread *)thread
-                          networkManager:(TSNetworkManager *)networkManager NS_DESIGNATED_INITIALIZER;
+                          networkManager:(TSNetworkManager *)networkManager
+                             transaction:(YapDatabaseReadWriteTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 /*
  * Retry fetching failed attachment download
@@ -40,6 +42,7 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
                            networkManager:(TSNetworkManager *)networkManager NS_DESIGNATED_INITIALIZER;
 
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
+                       transaction:(YapDatabaseReadWriteTransaction *)transaction
                            success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
                            failure:(void (^)(NSError *error))failureHandler;
 @end
