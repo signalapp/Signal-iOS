@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ContactsManagerProtocol;
 @protocol OWSCallMessageHandler;
 
+typedef void (^DecryptSuccessBlock)(NSData *_Nullable plaintextData);
+typedef void (^DecryptFailureBlock)();
 typedef void (^MessageManagerCompletionBlock)();
 
 @interface TSMessagesManager : NSObject
@@ -28,8 +30,13 @@ typedef void (^MessageManagerCompletionBlock)();
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 
-- (void)processEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-             completion:(nullable MessageManagerCompletionBlock)completion;
+// decryptEnvelope: can be called from any thread.
+// successBlock & failureBlock may be called on any thread.
+- (void)decryptEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+           successBlock:(DecryptSuccessBlock)successBlock
+           failureBlock:(DecryptFailureBlock)failureBlock;
+
+- (void)processEnvelope:(OWSSignalServiceProtosEnvelope *)envelope plaintextData:(NSData *_Nullable)plaintextData;
 
 - (NSUInteger)unreadMessagesCount;
 - (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread;

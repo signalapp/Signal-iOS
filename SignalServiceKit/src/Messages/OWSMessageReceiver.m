@@ -15,6 +15,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Persisted data model
+
 @class OWSSignalServiceProtosEnvelope;
 
 @interface OWSMessageProcessingJob : TSYapDatabaseObject
@@ -27,11 +28,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
 @interface OWSMessageProcessingJob ()
 
 @property (nonatomic, readonly) NSData *envelopeData;
 
 @end
+
+#pragma mark -
 
 @implementation OWSMessageProcessingJob
 
@@ -70,11 +75,15 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 
 @end
 
+#pragma mark -
+
 @interface OWSMessageProcessingJobFinder ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
+
+#pragma mark -
 
 @implementation OWSMessageProcessingJobFinder
 
@@ -118,7 +127,7 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
     }];
 }
 
-+ (YapDatabaseView *)databaseExension
++ (YapDatabaseView *)databaseExtension
 {
     YapDatabaseViewSorting *sorting =
         [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction *transaction,
@@ -175,7 +184,7 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
         // already initialized
         return;
     }
-    [database registerExtension:[self databaseExension] withName:OWSMessageProcessingJobFinderExtensionName];
+    [database registerExtension:[self databaseExtension] withName:OWSMessageProcessingJobFinderExtensionName];
 }
 
 @end
@@ -193,6 +202,8 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
+
+#pragma mark -
 
 @implementation OWSMessageProcessingQueue
 
@@ -248,17 +259,25 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
               DDLogVerbose(@"%@ completed job. %lu jobs left.",
                   self.tag,
                   (unsigned long)[OWSMessageProcessingJob numberOfKeysInCollection]);
+              [self.finder removeJobWithId:job.uniqueId];
               [self drainQueueWorkStep];
           }];
 }
 
 - (void)processJob:(OWSMessageProcessingJob *)job completion:(void (^)())completion
 {
-    [self.messagesManager processEnvelope:job.envelopeProto
-                               completion:^{
-                                   [self.finder removeJobWithId:job.uniqueId];
-                                   completion();
-                               }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self.messagesManager decryptEnvelope:job.envelopeProto
+            successBlock:^(NSData *_Nullable plaintextData) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.messagesManager processEnvelope:job.envelopeProto plaintextData:plaintextData];
+                    completion();
+                });
+            }
+            failureBlock:^{
+                completion();
+            }];
+    });
 }
 
 #pragma mark Logging
@@ -283,6 +302,8 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
+
+#pragma mark -
 
 @implementation OWSMessageReceiver
 
