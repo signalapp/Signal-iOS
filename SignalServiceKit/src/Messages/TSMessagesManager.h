@@ -36,7 +36,9 @@ typedef void (^MessageManagerCompletionBlock)();
            successBlock:(DecryptSuccessBlock)successBlock
            failureBlock:(DecryptFailureBlock)failureBlock;
 
-- (void)processEnvelope:(OWSSignalServiceProtosEnvelope *)envelope plaintextData:(NSData *_Nullable)plaintextData;
+- (void)processEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+          plaintextData:(NSData *_Nullable)plaintextData
+            transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (NSUInteger)unreadMessagesCount;
 - (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread;

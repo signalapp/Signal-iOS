@@ -8,12 +8,14 @@ extern NSString *const kAttachmentDownloadProgressNotification;
 extern NSString *const kAttachmentDownloadProgressKey;
 extern NSString *const kAttachmentDownloadAttachmentIDKey;
 
-@class TSMessage;
-@class TSThread;
-@class TSNetworkManager;
-@class OWSSignalServiceProtosAttachmentPointer;
-@class TSAttachmentStream;
 @class TSAttachmentPointer;
+@class TSAttachmentStream;
+@class TSMessage;
+@class TSNetworkManager;
+@class TSStorageManager;
+@class TSThread;
+@class OWSSignalServiceProtosAttachmentPointer;
+@class YapDatabaseReadWriteTransaction;
 
 /**
  * Given incoming attachment protos, determines which we support.
@@ -31,7 +33,8 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
                                timestamp:(uint64_t)timestamp
                                    relay:(nullable NSString *)relay
                                   thread:(TSThread *)thread
-                          networkManager:(TSNetworkManager *)networkManager NS_DESIGNATED_INITIALIZER;
+                          networkManager:(TSNetworkManager *)networkManager
+                             transaction:(YapDatabaseReadWriteTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 /*
  * Retry fetching failed attachment download
@@ -40,6 +43,11 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
                            networkManager:(TSNetworkManager *)networkManager NS_DESIGNATED_INITIALIZER;
 
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
+                    storageManager:(TSStorageManager *)storageManager
+                           success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
+                           failure:(void (^)(NSError *error))failureHandler;
+- (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
+                       transaction:(YapDatabaseReadWriteTransaction *)transaction
                            success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
                            failure:(void (^)(NSError *error))failureHandler;
 @end

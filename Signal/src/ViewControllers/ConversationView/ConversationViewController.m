@@ -2600,6 +2600,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                         [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
                                                                     networkManager:self.networkManager];
                     [processor fetchAttachmentsForMessage:message
+                                           storageManager:self.storageManager
                         success:^(TSAttachmentStream *_Nonnull attachmentStream) {
                             DDLogInfo(
                                 @"%@ Successfully redownloaded attachment in thread: %@", self.tag, message.thread);

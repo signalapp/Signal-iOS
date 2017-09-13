@@ -80,10 +80,20 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
 
 - (void)process
 {
+    [[self.storageManager newDatabaseConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self processWithTransaction:transaction];
+    }];
+}
+
+- (void)processWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+
     DDLogDebug(@"%@ Processing %ld read receipts.", self.tag, (unsigned long)self.readReceipts.count);
     for (OWSReadReceipt *readReceipt in self.readReceipts) {
-        TSIncomingMessage *message =
-            [TSIncomingMessage findMessageWithAuthorId:readReceipt.senderId timestamp:readReceipt.timestamp];
+        TSIncomingMessage *message = [TSIncomingMessage findMessageWithAuthorId:readReceipt.senderId
+                                                                      timestamp:readReceipt.timestamp
+                                                                    transaction:transaction];
         if (message) {
             OWSAssert(message.thread);
 
@@ -94,55 +104,52 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
             // Always mark the message specified by the read receipt as read.
             [interactionsToMarkAsRead addObject:message];
 
-            [self.storageManager.dbReadWriteConnection readWriteWithBlock:^(
-                YapDatabaseReadWriteTransaction *transaction) {
-                [[TSDatabaseView unseenDatabaseViewExtension:transaction]
-                    enumerateRowsInGroup:message.uniqueThreadId
-                              usingBlock:^(NSString *collection,
-                                  NSString *key,
-                                  id object,
-                                  id metadata,
-                                  NSUInteger index,
-                                  BOOL *stop) {
+            [[TSDatabaseView unseenDatabaseViewExtension:transaction]
+                enumerateRowsInGroup:message.uniqueThreadId
+                          usingBlock:^(NSString *collection,
+                              NSString *key,
+                              id object,
+                              id metadata,
+                              NSUInteger index,
+                              BOOL *stop) {
 
-                                  TSInteraction *interaction = object;
-                                  if (interaction.timestampForSorting > message.timestampForSorting) {
-                                      *stop = YES;
-                                      return;
-                                  }
+                              TSInteraction *interaction = object;
+                              if (interaction.timestampForSorting > message.timestampForSorting) {
+                                  *stop = YES;
+                                  return;
+                              }
 
-                                  id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
-                                  OWSAssert(!possiblyRead.read);
-                                  [interactionsToMarkAsRead addObject:possiblyRead];
-                              }];
+                              id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
+                              OWSAssert(!possiblyRead.read);
+                              [interactionsToMarkAsRead addObject:possiblyRead];
+                          }];
 
-                for (id<OWSReadTracking> interaction in interactionsToMarkAsRead) {
-                    // * Don't send a read receipt in response to a read receipt.
-                    // * Don't update expiration; we'll do that in the next statement.
-                    [interaction markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+            for (id<OWSReadTracking> interaction in interactionsToMarkAsRead) {
+                // * Don't send a read receipt in response to a read receipt.
+                // * Don't update expiration; we'll do that in the next statement.
+                [interaction markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
 
-                    if ([interaction isKindOfClass:[TSMessage class]]) {
-                        TSMessage *otherMessage = (TSMessage *)interaction;
+                if ([interaction isKindOfClass:[TSMessage class]]) {
+                    TSMessage *otherMessage = (TSMessage *)interaction;
 
-                        // Update expiration using the timestamp from the readReceipt.
-                        [OWSDisappearingMessagesJob setExpirationForMessage:otherMessage
-                                                        expirationStartedAt:readReceipt.timestamp];
+                    // Update expiration using the timestamp from the readReceipt.
+                    [OWSDisappearingMessagesJob setExpirationForMessage:otherMessage
+                                                    expirationStartedAt:readReceipt.timestamp];
 
-                        // Fire event that will cancel any pending notifications for this message.
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [[NSNotificationCenter defaultCenter]
-                                postNotificationName:OWSReadReceiptsProcessorMarkedMessageAsReadNotification
-                                              object:otherMessage];
-                        });
-                    }
+                    // Fire event that will cancel any pending notifications for this message.
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [[NSNotificationCenter defaultCenter]
+                            postNotificationName:OWSReadReceiptsProcessorMarkedMessageAsReadNotification
+                                          object:otherMessage];
+                    });
                 }
-            }];
+            }
 
             // If it was previously saved, no need to keep it around any longer.
-            [readReceipt remove];
+            [readReceipt removeWithTransaction:transaction];
         } else {
             DDLogDebug(@"%@ Received read receipt for an unknown message. Saving it for later.", self.tag);
-            [readReceipt save];
+            [readReceipt saveWithTransaction:transaction];
         }
     }
 }
