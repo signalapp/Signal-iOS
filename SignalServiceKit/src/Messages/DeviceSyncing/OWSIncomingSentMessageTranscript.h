@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSSignalServiceProtosDataMessage;
 @class OWSSignalServiceProtosAttachmentPointer;
 @class TSThread;
+@class YapDatabaseReadWriteTransaction;
 
 /**
  * Represents notification of a message sent on our behalf from another device.
@@ -23,13 +24,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t expirationStartedAt;
 @property (nonatomic, readonly) uint32_t expirationDuration;
-@property (nonatomic, readonly) TSThread *thread;
 @property (nonatomic, readonly) BOOL isGroupUpdate;
 @property (nonatomic, readonly) BOOL isExpirationTimerUpdate;
 @property (nonatomic, readonly) BOOL isEndSessionMessage;
 @property (nullable, nonatomic, readonly) NSData *groupId;
 @property (nonatomic, readonly) NSString *body;
 @property (nonatomic, readonly) NSArray<OWSSignalServiceProtosAttachmentPointer *> *attachmentPointerProtos;
+
+- (TSThread *)threadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

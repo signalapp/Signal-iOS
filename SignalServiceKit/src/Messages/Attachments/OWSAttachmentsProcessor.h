@@ -34,13 +34,15 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
                                    relay:(nullable NSString *)relay
                                   thread:(TSThread *)thread
                           networkManager:(TSNetworkManager *)networkManager
+                          storageManager:(TSStorageManager *)storageManager
                              transaction:(YapDatabaseReadWriteTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 /*
  * Retry fetching failed attachment download
  */
 - (instancetype)initWithAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
-                           networkManager:(TSNetworkManager *)networkManager NS_DESIGNATED_INITIALIZER;
+                           networkManager:(TSNetworkManager *)networkManager
+                           storageManager:(TSStorageManager *)storageManager NS_DESIGNATED_INITIALIZER;
 
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
                     storageManager:(TSStorageManager *)storageManager

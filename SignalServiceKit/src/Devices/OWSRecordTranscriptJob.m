@@ -48,27 +48,27 @@ NS_ASSUME_NONNULL_BEGIN
     OWSIncomingSentMessageTranscript *transcript = self.incomingSentMessageTranscript;
     DDLogDebug(@"%@ Recording transcript: %@", self.tag, transcript);
 
+    TSThread *thread = [transcript threadWithTransaction:transaction];
     if (transcript.isEndSessionMessage) {
         DDLogInfo(@"%@ EndSession was sent to recipient: %@.", self.tag, transcript.recipientId);
-        // NOTE: We dispatch_sync() here.
-        dispatch_sync([OWSDispatch sessionStoreQueue], ^{
+        dispatch_async([OWSDispatch sessionStoreQueue], ^{
             [self.storageManager deleteAllSessionsForContact:transcript.recipientId];
         });
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
-                                         inThread:transcript.thread
+                                         inThread:thread
                                       messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
 
         // Don't continue processing lest we print a bubble for the session reset.
         return;
     }
 
-    TSThread *thread = transcript.thread;
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:transcript.attachmentPointerProtos
                                                         timestamp:transcript.timestamp
                                                             relay:transcript.relay
                                                            thread:thread
                                                    networkManager:self.networkManager
+                                                   storageManager:self.storageManager
                                                       transaction:transaction];
 
     // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.

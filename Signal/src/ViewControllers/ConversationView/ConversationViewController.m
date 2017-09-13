@@ -2598,7 +2598,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 handler:^(UIAlertAction *_Nonnull action) {
                     OWSAttachmentsProcessor *processor =
                         [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
-                                                                    networkManager:self.networkManager];
+                                                                    networkManager:self.networkManager
+                                                                    storageManager:self.storageManager];
                     [processor fetchAttachmentsForMessage:message
                                            storageManager:self.storageManager
                         success:^(TSAttachmentStream *_Nonnull attachmentStream) {
