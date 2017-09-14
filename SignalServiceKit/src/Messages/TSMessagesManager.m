@@ -346,6 +346,7 @@ const NSUInteger kIncomingMessageBatchSize = 10;
                 // Return to avoid double-acknowledging.
                 return;
             }
+            // These message types don't have a payload to decrypt.
             case OWSSignalServiceProtosEnvelopeTypeReceipt:
             case OWSSignalServiceProtosEnvelopeTypeKeyExchange:
             case OWSSignalServiceProtosEnvelopeTypeUnknown:
@@ -364,75 +365,78 @@ const NSUInteger kIncomingMessageBatchSize = 10;
     failureBlock();
 }
 
-- (void)decryptSecureMessage:(OWSSignalServiceProtosEnvelope *)messageEnvelope
+- (void)decryptSecureMessage:(OWSSignalServiceProtosEnvelope *)envelope
                 successBlock:(DecryptSuccessBlock)successBlock
                 failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
-    OWSAssert(messageEnvelope);
+    OWSAssert(envelope);
     OWSAssert(successBlock);
     OWSAssert(failureBlock);
 
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
-    NSString *recipientId = messageEnvelope.source;
-    int deviceId = messageEnvelope.sourceDevice;
-    dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        // DEPRECATED - Remove after all clients have been upgraded.
-        NSData *encryptedData = messageEnvelope.hasContent ? messageEnvelope.content : messageEnvelope.legacyMessage;
-        if (!encryptedData) {
+    [self decryptEnvelope:envelope
+        messageTypeName:@"Secure Message"
+        missingPayloadBlock:^{
             OWSProdFail([OWSAnalyticsEvents messageManagerErrorMessageEnvelopeHasNoContent]);
-            failureBlock(nil);
-            return;
         }
-
-        @try {
-            WhisperMessage *message = [[WhisperMessage alloc] initWithData:encryptedData];
-            SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
-                                                                    preKeyStore:storageManager
-                                                              signedPreKeyStore:storageManager
-                                                               identityKeyStore:self.identityManager
-                                                                    recipientId:recipientId
-                                                                       deviceId:deviceId];
-
-            NSData *plaintextData = [[cipher decrypt:message] removePadding];
-            successBlock(plaintextData);
-        } @catch (NSException *exception) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self processException:exception envelope:messageEnvelope];
-                NSString *errorDescription =
-                    [NSString stringWithFormat:@"Exception while decrypting: %@", exception.description];
-                NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
-                failureBlock(error);
-            });
+        cipherMessageBlock:^(NSData *encryptedData) {
+            return [[WhisperMessage alloc] initWithData:encryptedData];
         }
-    });
+        successBlock:successBlock
+        failureBlock:failureBlock];
 }
 
-- (void)decryptPreKeyBundle:(OWSSignalServiceProtosEnvelope *)preKeyEnvelope
+- (void)decryptPreKeyBundle:(OWSSignalServiceProtosEnvelope *)envelope
                successBlock:(DecryptSuccessBlock)successBlock
                failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
-    OWSAssert(preKeyEnvelope);
+    OWSAssert(envelope);
+    OWSAssert(successBlock);
+    OWSAssert(failureBlock);
+
+    // Check whether we need to refresh our PreKeys every time we receive a PreKeyWhisperMessage.
+    [TSPreKeyManager checkPreKeys];
+
+    [self decryptEnvelope:envelope
+        messageTypeName:@"PreKey Bundle"
+        missingPayloadBlock:^{
+            OWSProdFail([OWSAnalyticsEvents messageManagerErrorPrekeyBundleEnvelopeHasNoContent]);
+        }
+        cipherMessageBlock:^(NSData *encryptedData) {
+            return [[PreKeyWhisperMessage alloc] initWithData:encryptedData];
+        }
+        successBlock:successBlock
+        failureBlock:failureBlock];
+}
+
+- (void)decryptEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+        messageTypeName:(NSString *)messageTypeName
+    missingPayloadBlock:(void (^_Nonnull)())missingPayloadBlock
+     cipherMessageBlock:(id<CipherMessage> (^_Nonnull)(NSData *))cipherMessageBlock
+           successBlock:(DecryptSuccessBlock)successBlock
+           failureBlock:(void (^)(NSError *_Nullable error))failureBlock
+{
+    OWSAssert(envelope);
+    OWSAssert(messageTypeName.length > 0);
+    OWSAssert(missingPayloadBlock);
+    OWSAssert(cipherMessageBlock);
     OWSAssert(successBlock);
     OWSAssert(failureBlock);
 
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
-    NSString *recipientId = preKeyEnvelope.source;
-    int deviceId = preKeyEnvelope.sourceDevice;
+    NSString *recipientId = envelope.source;
+    int deviceId = envelope.sourceDevice;
 
     // DEPRECATED - Remove after all clients have been upgraded.
-    NSData *encryptedData = preKeyEnvelope.hasContent ? preKeyEnvelope.content : preKeyEnvelope.legacyMessage;
+    NSData *encryptedData = envelope.hasContent ? envelope.content : envelope.legacyMessage;
     if (!encryptedData) {
-        OWSProdFail([OWSAnalyticsEvents messageManagerErrorPrekeyBundleEnvelopeHasNoContent]);
+        missingPayloadBlock();
         failureBlock(nil);
         return;
     }
 
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
         @try {
-            // Check whether we need to refresh our PreKeys every time we receive a PreKeyWhisperMessage.
-            [TSPreKeyManager checkPreKeys];
-
-            PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] initWithData:encryptedData];
+            id<CipherMessage> cipherMessage = cipherMessageBlock(encryptedData);
             SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
                                                                     preKeyStore:storageManager
                                                               signedPreKeyStore:storageManager
@@ -440,13 +444,13 @@ const NSUInteger kIncomingMessageBatchSize = 10;
                                                                     recipientId:recipientId
                                                                        deviceId:deviceId];
 
-            NSData *plaintextData = [[cipher decrypt:message] removePadding];
+            NSData *plaintextData = [[cipher decrypt:cipherMessage] removePadding];
             successBlock(plaintextData);
         } @catch (NSException *exception) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self processException:exception envelope:preKeyEnvelope];
-                NSString *errorDescription =
-                    [NSString stringWithFormat:@"Exception while decrypting PreKey Bundle: %@", exception.description];
+                [self processException:exception envelope:envelope];
+                NSString *errorDescription = [NSString
+                    stringWithFormat:@"Exception while decrypting %@: %@", messageTypeName, exception.description];
                 NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
                 failureBlock(error);
             });

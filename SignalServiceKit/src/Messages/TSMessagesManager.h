@@ -34,10 +34,14 @@ typedef void (^MessageManagerCompletionBlock)();
 
 // decryptEnvelope: can be called from any thread.
 // successBlock & failureBlock may be called on any thread.
+//
+// Exactly one of successBlock & failureBlock will be called,
+// once.
 - (void)decryptEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
            successBlock:(DecryptSuccessBlock)successBlock
            failureBlock:(DecryptFailureBlock)failureBlock;
 
+// processEnvelope: can be called from any thread.
 - (void)processEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
           plaintextData:(NSData *_Nullable)plaintextData
             transaction:(YapDatabaseReadWriteTransaction *)transaction;
