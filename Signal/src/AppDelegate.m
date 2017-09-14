@@ -105,6 +105,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [AppVersion instance];
 
+    [self startupLogging];
+
     // Set the seed the generator for rand().
     //
     // We should always use arc4random() instead of rand(), but we
@@ -165,6 +167,24 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [OWSAnalytics appLaunchDidBegin];
 
     return YES;
+}
+
+- (void)startupLogging
+{
+    DDLogInfo(@"iOS Version: %@", [UIDevice currentDevice].systemVersion);
+
+    NSString *localeIdentifier = [NSLocale.currentLocale objectForKey:NSLocaleIdentifier];
+    if (localeIdentifier.length > 0) {
+        DDLogInfo(@"Locale Identifier: %@", localeIdentifier);
+    }
+    NSString *countryCode = [NSLocale.currentLocale objectForKey:NSLocaleCountryCode];
+    if (countryCode.length > 0) {
+        DDLogInfo(@"Country Code: %@", countryCode);
+    }
+    NSString *languageCode = [NSLocale.currentLocale objectForKey:NSLocaleLanguageCode];
+    if (languageCode.length > 0) {
+        DDLogInfo(@"Language Code: %@", languageCode);
+    }
 }
 
 - (UIViewController *)loadingRootViewController
