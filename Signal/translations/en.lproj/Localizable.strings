@@ -37,12 +37,6 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "Save";
 
-/* A message for the alert shown while validating a signal account */
-"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Checking that this is a valid Signal account.";
-
-/* A title for the alert shown while validating a signal account */
-"ALERT_VALIDATE_RECIPIENT_TITLE" = "Validating";
-
 /* registration button text */
 "ALREADY_HAVE_ACCOUNT_BUTTON" = "Already have a Signal account?";
 
@@ -135,6 +129,9 @@
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Attachment";
+
+/* Alert title when picking a document fails for an unknown reason */
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Failed to choose document.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
@@ -238,7 +235,7 @@
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Not Now";
 
-/* Label for button that shows the privacy settings */
+/* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Show Privacy Settings";
 
 /* notification action */
@@ -577,6 +574,9 @@
 /* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
 "EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Couldn't load file.";
 
+/* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
+"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Couldn't load file.";
+
 /* Message for the alert indicating the 'export with signal' file had unknown type. */
 "EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Unknown file type.";
 
@@ -612,9 +612,6 @@
 
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "Group created.";
-
-/* No comment provided by engineer. */
-"GROUP_CREATING" = "Creating new group";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Not all members could be added to the group. Tap to retry.";
@@ -1384,6 +1381,15 @@
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Privacy";
 
+/* Label for the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPT" = "Send Read Receipts";
+
+/* An explanation of the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Read receipts let you see when others have read your message - and let them see when you have read their messages.";
+
+/* Title of the 'read receipts' settings section. */
+"SETTINGS_READ_RECEIPTS_SECTION_TITLE" = "Read Receipts";
+
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Enable Screen Security";
 
@@ -1549,7 +1555,7 @@
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Resend Code by SMS";
 
-/* button text during registration to submit your SMS verification code */
+/* button text during registration to submit your SMS verification code. */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Submit Verification Code";
 
 /* Label indicating the phone number currently being verified. */
