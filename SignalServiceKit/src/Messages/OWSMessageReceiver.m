@@ -294,8 +294,7 @@ NSString *const OWSMessageProcessingJobFinderExtensionGroup = @"OWSMessageProces
 {
     AssertIsOnMainThread();
 
-    const NSUInteger kMaxBatchSize = 10;
-    NSArray<OWSMessageProcessingJob *> *jobs = [self.finder nextJobsForBatchSize:kMaxBatchSize];
+    NSArray<OWSMessageProcessingJob *> *jobs = [self.finder nextJobsForBatchSize:kIncomingMessageBatchSize];
     OWSAssert(jobs);
     if (jobs.count < 1) {
         self.isDrainingQueue = NO;
