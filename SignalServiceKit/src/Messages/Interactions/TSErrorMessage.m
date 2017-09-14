@@ -5,9 +5,9 @@
 #import "TSErrorMessage.h"
 #import "ContactsManagerProtocol.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "OWSMessageManager.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
-#import "TSMessagesManager.h"
 #import "TextSecureKitEnv.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 

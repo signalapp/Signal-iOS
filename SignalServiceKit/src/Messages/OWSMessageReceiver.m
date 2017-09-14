@@ -5,9 +5,9 @@
 #import "OWSMessageReceiver.h"
 #import "NSArray+OWS.h"
 #import "OWSBatchMessageProcessor.h"
+#import "OWSMessageDecrypter.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSDatabaseView.h"
-#import "TSMessagesManager.h"
 #import "TSStorageManager.h"
 #import "TSYapDatabaseObject.h"
 #import "Threading.h"
@@ -208,14 +208,14 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 @interface OWSMessageDecryptQueue : NSObject
 
-@property (nonatomic, readonly) TSMessagesManager *messagesManager;
+@property (nonatomic, readonly) OWSMessageDecrypter *messageDecrypter;
 @property (nonatomic, readonly) OWSBatchMessageProcessor *batchMessageProcessor;
 @property (nonatomic, readonly) OWSMessageDecryptJobFinder *finder;
 @property (nonatomic) BOOL isDrainingQueue;
 
-- (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager
-                  batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
-                                 finder:(OWSMessageDecryptJobFinder *)finder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithMessageDecrypter:(OWSMessageDecrypter *)messageDecrypter
+                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
+                                  finder:(OWSMessageDecryptJobFinder *)finder NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
@@ -224,9 +224,9 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 @implementation OWSMessageDecryptQueue
 
-- (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager
-                  batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
-                                 finder:(OWSMessageDecryptJobFinder *)finder
+- (instancetype)initWithMessageDecrypter:(OWSMessageDecrypter *)messageDecrypter
+                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
+                                  finder:(OWSMessageDecryptJobFinder *)finder
 {
     OWSSingletonAssert();
 
@@ -235,7 +235,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         return self;
     }
 
-    _messagesManager = messagesManager;
+    _messageDecrypter = messageDecrypter;
     _batchMessageProcessor = batchMessageProcessor;
     _finder = finder;
     _isDrainingQueue = NO;
@@ -337,7 +337,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         OWSAssert(unprocessedJobs.count > 0);
         OWSMessageDecryptJob *job = unprocessedJobs.firstObject;
         [unprocessedJobs removeObjectAtIndex:0];
-        [self.messagesManager decryptEnvelope:job.envelopeProto
+        [self.messageDecrypter decryptEnvelope:job.envelopeProto
             successBlock:^(NSData *_Nullable plaintextData) {
                 if (plaintextData) {
                     plaintextDataMap[job.uniqueId] = plaintextData;
@@ -384,7 +384,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 @implementation OWSMessageReceiver
 
 - (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection
-                     messagesManager:(TSMessagesManager *)messagesManager
+                    messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
                batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
 {
     OWSSingletonAssert();
@@ -396,9 +396,9 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     OWSMessageDecryptJobFinder *finder = [[OWSMessageDecryptJobFinder alloc] initWithDBConnection:dbConnection];
     OWSMessageDecryptQueue *processingQueue =
-        [[OWSMessageDecryptQueue alloc] initWithMessagesManager:messagesManager
-                                          batchMessageProcessor:batchMessageProcessor
-                                                         finder:finder];
+        [[OWSMessageDecryptQueue alloc] initWithMessageDecrypter:messageDecrypter
+                                           batchMessageProcessor:batchMessageProcessor
+                                                          finder:finder];
 
     _processingQueue = processingQueue;
 
@@ -409,11 +409,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 {
     // For concurrency coherency we use the same dbConnection to persist and read the unprocessed envelopes
     YapDatabaseConnection *dbConnection = [[TSStorageManager sharedManager].database newConnection];
-    TSMessagesManager *messagesManager = [TSMessagesManager sharedManager];
+    OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter sharedManager];
     OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor sharedInstance];
 
     return [self initWithDBConnection:dbConnection
-                      messagesManager:messagesManager
+                     messageDecrypter:messageDecrypter
                 batchMessageProcessor:batchMessageProcessor];
 }
 

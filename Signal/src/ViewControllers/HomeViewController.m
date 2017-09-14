@@ -25,8 +25,8 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
+#import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
@@ -59,7 +59,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 @property (nonatomic, readonly) AccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) ExperienceUpgradeFinder *experienceUpgradeFinder;
-@property (nonatomic, readonly) TSMessagesManager *messagesManager;
+@property (nonatomic, readonly) OWSMessageManager *messagesManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
@@ -108,7 +108,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 {
     _accountManager = [Environment getCurrent].accountManager;
     _contactsManager = [Environment getCurrent].contactsManager;
-    _messagesManager = [TSMessagesManager sharedManager];
+    _messagesManager = [OWSMessageManager sharedManager];
     _messageSender = [Environment getCurrent].messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
