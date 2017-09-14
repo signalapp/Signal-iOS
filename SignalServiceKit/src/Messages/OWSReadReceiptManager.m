@@ -7,23 +7,63 @@
 #import "OWSReadReceipt.h"
 #import "OWSReadReceiptsMessage.h"
 #import "TSContactThread.h"
+#import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
+//#import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+//// A two-tuple that can be used to hash by a pair a values.
+//@interface HashablePair : NSObject
+//
+//@property (nonatomic) NSObject *left;
+//@property (nonatomic) NSString *sender;
+//
+//@end
+//
+//#pragma mark -
+//
+//@implementation OWSReadReceiptManager
+//
+//- (BOOL)isEqual:(id)object {
+//    if ([object isKindOfClass:[HashablePair class]]) {
+//        return NO;
+//    }
+//    HashablePair *otherPair = object;
+//    return (self.left )
+//}
+//@property (readonly) NSUInteger hash;
+//
+//- (instancetype)init NS_UNAVAILABLE;
+//+ (instancetype)sharedManager;
+//
+//- (void)enqueueIncomingMessage:(TSIncomingMessage *)message;
+//
+//@end
+//
+//#pragma mark -
+
 @interface OWSReadReceiptManager ()
+
+// A map of "thread unique id"-to-"read receipt" for incoming messages.
+//
+// Should only be accessed while synchronized on the OWSReadReceiptManager.
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSReadReceipt *> *incomingReadReceiptMap;
 
 //@property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;
 //@property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
-//@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 //@property (nonatomic, readonly) OWSIncomingMessageFinder *incomingMessageFinder;
 //@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 //@property (nonatomic, readonly) OWSIdentityManager *identityManager;
 
-@property (atomic) NSMutableArray<OWSReadReceipt *> *readReceiptsQueue;
-@property BOOL isObserving;
+// Should only be accessed while synchronized on the OWSReadReceiptManager.
+@property (nonatomic) BOOL isProcessing;
+
+//@property (atomic) NSMutableArray<OWSReadReceipt *> *readReceiptsQueue;
+//@property BOOL isObserving;
 
 @end
 
@@ -44,25 +84,28 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initDefault
 {
     //    TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
-    //    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    //        TSStorageManager *storageManager = [TSStorageManager sharedManager];
     //    id<ContactsManagerProtocol> contactsManager = [TextSecureKitEnv sharedEnv].contactsManager;
     //    id<OWSCallMessageHandler> callMessageHandler = [TextSecureKitEnv sharedEnv].callMessageHandler;
     //    ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
     //    OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
     OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
 
-    return [self initWithMessageSender:messageSender];
+    return [self initWithMessageSender:messageSender
+        //                        storageManager:storageManager
+    ];
 }
 
 - (instancetype)initWithMessageSender:(OWSMessageSender *)messageSender
+//                       storageManager:(TSStorageManager *)storageManager
 {
     self = [super init];
 
     if (!self) {
         return self;
     }
-
-    //    _storageManager = storageManager;
+    //
+    //        _storageManager = storageManager;
     //    _networkManager = networkManager;
     //    _callMessageHandler = callMessageHandler;
     //    _contactsManager = contactsManager;
@@ -70,29 +113,91 @@ NS_ASSUME_NONNULL_BEGIN
     //    _identityManager = identityManager;
     _messageSender = messageSender;
 
+    _incomingReadReceiptMap = [NSMutableDictionary new];
+
     //    _dbConnection = storageManager.newDatabaseConnection;
     //    _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithDatabase:storageManager.database];
     //    _blockingManager = [OWSBlockingManager sharedManager];
 
-    _readReceiptsQueue = [NSMutableArray new];
-    _messageSender = messageSender;
-    _isObserving = NO;
+    //    _readReceiptsQueue = [NSMutableArray new];
+    //    _messageSender = messageSender;
+    //    _isObserving = NO;
 
     OWSSingletonAssert();
 
-    //    [self startObserving];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(databaseViewRegistrationComplete)
+                                                 name:kNSNotificationName_DatabaseViewRegistrationComplete
+                                               object:nil];
 
     return self;
 }
 
-//- (void)dealloc
-//{
-//    [[NSNotificationCenter defaultCenter] removeObserver:self];
-//}
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)databaseViewRegistrationComplete
+{
+    [self scheduleProcessing];
+}
+
+- (void)scheduleProcessing
+{
+    @synchronized(self)
+    {
+        if ([TSDatabaseView hasPendingViewRegistrations]) {
+            return;
+        }
+        if (self.isProcessing) {
+            return;
+        }
+
+        self.isProcessing = YES;
+
+        // Process read receipts every N seconds.
+        const CGFloat kProcessingFrequencySeconds = 3.f;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kProcessingFrequencySeconds * NSEC_PER_SEC)),
+            dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+            ^{
+                [self process];
+            });
+    }
+}
+
+- (void)process
+{
+    @synchronized(self)
+    {
+        self.isProcessing = NO;
+
+        NSArray<OWSReadReceipt *> *readReceiptsToSend = [[self.incomingReadReceiptMap allValues] copy];
+        if (readReceiptsToSend.count < 1) {
+            DDLogVerbose(@"%@ Read receipts queue already drained.", self.tag);
+            return;
+        }
+        [self.incomingReadReceiptMap removeAllObjects];
+
+        OWSReadReceiptsMessage *message = [[OWSReadReceiptsMessage alloc] initWithReadReceipts:readReceiptsToSend];
+
+        [self.messageSender sendMessage:message
+            success:^{
+                DDLogInfo(@"%@ Successfully sent %zd read receipt", self.tag, readReceiptsToSend.count);
+            }
+            failure:^(NSError *error) {
+                DDLogError(@"%@ Failed to send read receipt with error: %@", self.tag, error);
+            }];
+    }
+}
 
 - (void)enqueueIncomingMessage:(TSIncomingMessage *)message;
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    @synchronized(self)
+    {
+        NSString *threadUniqueId = message.thread.uniqueId;
+        OWSAssert(threadUniqueId.length > 0);
+
         // Only groupthread sets authorId, thus this crappy code.
         // TODO Refactor so that ALL incoming messages have an authorId.
         NSString *messageAuthorId;
@@ -101,47 +206,22 @@ NS_ASSUME_NONNULL_BEGIN
         } else { // Contact Thread
             messageAuthorId = [TSContactThread contactIdFromThreadId:message.uniqueThreadId];
         }
+        OWSAssert(messageAuthorId.length > 0);
 
-        OWSReadReceipt *readReceipt =
+        OWSReadReceipt *newReadReceipt =
             [[OWSReadReceipt alloc] initWithSenderId:messageAuthorId timestamp:message.timestamp];
-        [self.readReceiptsQueue addObject:readReceipt];
 
-        // Wait a bit to bundle up read receipts into one request.
-        __weak typeof(self) weakSelf = self;
-        [weakSelf performSelector:@selector(sendAllReadReceiptsInQueue) withObject:nil afterDelay:2.0];
-    });
-}
-
-- (void)sendAllReadReceiptsInQueue
-{
-    // Synchronized so we don't lose any read receipts while replacing the queue
-    __block NSArray<OWSReadReceipt *> *_Nullable receiptsToSend;
-    @synchronized(self)
-    {
-        if (self.readReceiptsQueue.count > 0) {
-            receiptsToSend = self.readReceiptsQueue;
-            self.readReceiptsQueue = [NSMutableArray new];
+        OWSReadReceipt *_Nullable oldReadReceipt = self.incomingReadReceiptMap[threadUniqueId];
+        if (oldReadReceipt && oldReadReceipt.timestamp > newReadReceipt.timestamp) {
+            // If there's an existing read receipt for the same thread with
+            // a later timestamp, discard the new read receipt.
+            return;
         }
+
+        self.incomingReadReceiptMap[threadUniqueId] = newReadReceipt;
+
+        [self scheduleProcessing];
     }
-
-    if (receiptsToSend) {
-        [self sendReadReceipts:receiptsToSend];
-    } else {
-        DDLogVerbose(@"Read receipts queue already drained.");
-    }
-}
-
-- (void)sendReadReceipts:(NSArray<OWSReadReceipt *> *)readReceipts
-{
-    OWSReadReceiptsMessage *message = [[OWSReadReceiptsMessage alloc] initWithReadReceipts:readReceipts];
-
-    [self.messageSender sendMessage:message
-        success:^{
-            DDLogInfo(@"%@ Successfully sent %ld read receipt", self.tag, (unsigned long)readReceipts.count);
-        }
-        failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to send read receipt with error: %@", self.tag, error);
-        }];
 }
 
 #pragma mark - Logging

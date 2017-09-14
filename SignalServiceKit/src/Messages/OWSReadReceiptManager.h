@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)sharedManager;
 
+// This method can be called from any thread.
 - (void)enqueueIncomingMessage:(TSIncomingMessage *)message;
 
 @end
