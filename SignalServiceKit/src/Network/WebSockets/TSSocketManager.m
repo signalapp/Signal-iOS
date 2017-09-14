@@ -7,6 +7,7 @@
 #import "NSTimer+OWS.h"
 #import "OWSMessageReceiver.h"
 #import "OWSSignalService.h"
+#import "OWSSignalServiceProtos.pb.h"
 #import "OWSWebsocketSecurityPolicy.h"
 #import "SubProtocol.pb.h"
 #import "TSAccountManager.h"

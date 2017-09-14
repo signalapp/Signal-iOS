@@ -4,11 +4,8 @@
 
 #import "TSMessagesManager.h"
 #import "ContactsManagerProtocol.h"
-#import "ContactsUpdater.h"
 #import "Cryptography.h"
-#import "DataSource.h"
 #import "MimeTypeUtil.h"
-#import "NSData+messagePadding.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "NotificationsProtocol.h"
 #import "OWSAttachmentsProcessor.h"
@@ -17,7 +14,7 @@
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "OWSError.h"
+#import "OWSIdentityManager.h"
 #import "OWSIncomingMessageFinder.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
@@ -28,20 +25,17 @@
 #import "OWSSyncGroupsRequestMessage.h"
 #import "ProfileManagerProtocol.h"
 #import "TSAccountManager.h"
-#import "TSAttachmentStream.h"
-#import "TSCall.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
+#import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
-#import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSNetworkManager.h"
-#import "TSPreKeyManager.h"
-#import "TSStorageHeaders.h"
+#import "TSOutgoingMessage.h"
+#import "TSStorageManager+SessionStore.h"
+#import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
-#import <AxolotlKit/AxolotlExceptions.h>
-#import <AxolotlKit/SessionCipher.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -54,6 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSIncomingMessageFinder *incomingMessageFinder;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) OWSIdentityManager *identityManager;
+@property (nonatomic, readonly) TSNetworkManager *networkManager;
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
 
@@ -76,7 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
     id<ContactsManagerProtocol> contactsManager = [TextSecureKitEnv sharedEnv].contactsManager;
     id<OWSCallMessageHandler> callMessageHandler = [TextSecureKitEnv sharedEnv].callMessageHandler;
-    ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
     OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
     OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
     
@@ -85,7 +80,6 @@ NS_ASSUME_NONNULL_BEGIN
                          storageManager:storageManager
                      callMessageHandler:callMessageHandler
                         contactsManager:contactsManager
-                        contactsUpdater:contactsUpdater
                         identityManager:identityManager
                           messageSender:messageSender];
 }
@@ -94,7 +88,6 @@ NS_ASSUME_NONNULL_BEGIN
                         storageManager:(TSStorageManager *)storageManager
                     callMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
-                       contactsUpdater:(ContactsUpdater *)contactsUpdater
                        identityManager:(OWSIdentityManager *)identityManager
                          messageSender:(OWSMessageSender *)messageSender
 {
@@ -108,7 +101,6 @@ NS_ASSUME_NONNULL_BEGIN
     _networkManager = networkManager;
     _callMessageHandler = callMessageHandler;
     _contactsManager = contactsManager;
-    _contactsUpdater = contactsUpdater;
     _identityManager = identityManager;
     _messageSender = messageSender;
 
