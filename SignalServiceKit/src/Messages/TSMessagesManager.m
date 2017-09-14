@@ -45,15 +45,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// We need to use a consistent batch size throughout
-// the incoming message pipeline (i.e. in the
-// "decrypt" and "process" steps), or the pipeline
-// doesn't flow smoothly.
-//
-// We want a value that is just high enough to yield
-// perf benefits.  The right value is probably 5-15.
-const NSUInteger kIncomingMessageBatchSize = 10;
-
 @interface TSMessagesManager ()
 
 @property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;

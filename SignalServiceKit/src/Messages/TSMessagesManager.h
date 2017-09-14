@@ -9,8 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern const NSUInteger kIncomingMessageBatchSize;
-
 @class TSNetworkManager;
 @class TSStorageManager;
 @class OWSSignalServiceProtosEnvelope;

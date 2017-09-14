@@ -2,25 +2,11 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-//#import "TSIncomingMessage.h"
-//#import "TSInvalidIdentityKeySendingErrorMessage.h"
-//#import "TSOutgoingMessage.h"
-
 NS_ASSUME_NONNULL_BEGIN
 
-// extern const NSUInteger kIncomingMessageBatchSize;
-//
-//@class TSNetworkManager;
-//@class TSStorageManager;
-@class OWSSignalServiceProtosEnvelope;
-//@class OWSSignalServiceProtosDataMessage;
-//@class ContactsUpdater;
-//@class OWSMessageSender;
-//@protocol ContactsManagerProtocol;
-//@protocol OWSCallMessageHandler;
+extern const NSUInteger kIncomingMessageBatchSize;
 
-// typedef void (^DecryptSuccessBlock)(NSData *_Nullable plaintextData);
-// typedef void (^DecryptFailureBlock)();
+@class OWSSignalServiceProtosEnvelope;
 
 NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope);
 
@@ -28,22 +14,6 @@ NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope);
 
 - (NSString *)descriptionForEnvelopeType:(OWSSignalServiceProtosEnvelope *)envelope;
 - (NSString *)descriptionForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope;
-
-//- (instancetype)init NS_UNAVAILABLE;
-//+ (instancetype)sharedManager;
-//
-////@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
-////@property (nonatomic, readonly) TSNetworkManager *networkManager;
-////@property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
-//
-//// decryptEnvelope: can be called from any thread.
-//// successBlock & failureBlock may be called on any thread.
-////
-//// Exactly one of successBlock & failureBlock will be called,
-//// once.
-//- (void)decryptEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-//           successBlock:(DecryptSuccessBlock)successBlock
-//           failureBlock:(DecryptFailureBlock)failureBlock;
 
 @end
 
