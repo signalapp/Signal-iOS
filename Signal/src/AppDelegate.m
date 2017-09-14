@@ -837,6 +837,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         // enables this feature
         [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
         [[OWSProfileManager sharedManager] ensureLocalProfileCached];
+
+        // For non-legacy users, read receipts are on by default.
+        [[Environment preferences] setAreReadReceiptsEnabled:YES];
     }
 }
 
