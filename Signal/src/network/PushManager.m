@@ -6,7 +6,6 @@
 #import "AppDelegate.h"
 #import "NSData+ows_StripToken.h"
 #import "OWSContactsManager.h"
-#import "PropertyListPreferences.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>

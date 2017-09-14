@@ -7,8 +7,8 @@
 #import "DomainFrontingCountryViewController.h"
 #import "Environment.h"
 #import "OWSCountryMetadata.h"
+#import "OWSPreferences.h"
 #import "Pastelog.h"
-#import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
@@ -90,12 +90,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *loggingSection = [OWSTableSection new];
     loggingSection.headerTitle = NSLocalizedString(@"LOGGING_SECTION", nil);
     [loggingSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_DEBUGLOG", @"")
-                                                        isOn:[PropertyListPreferences loggingIsEnabled]
+                                                        isOn:[OWSPreferences loggingIsEnabled]
                                                       target:weakSelf
                                                     selector:@selector(didToggleEnableLogSwitch:)]];
 
 
-    if ([PropertyListPreferences loggingIsEnabled]) {
+    if ([OWSPreferences loggingIsEnabled]) {
         [loggingSection
             addItem:[OWSTableItem actionItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", @"")
                                          actionBlock:^{
@@ -263,8 +263,8 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         [[DebugLogger sharedLogger] enableFileLogging];
     }
-    
-    [PropertyListPreferences setLoggingEnabled:sender.isOn];
+
+    [OWSPreferences setLoggingEnabled:sender.isOn];
 
     [self updateTableContents];
 }

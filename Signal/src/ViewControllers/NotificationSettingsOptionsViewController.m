@@ -4,7 +4,6 @@
 
 #import "NotificationSettingsOptionsViewController.h"
 #import "Environment.h"
-#import "PropertyListPreferences.h"
 
 @implementation NotificationSettingsOptionsViewController
 
@@ -23,7 +22,7 @@
     OWSTableSection *section = [OWSTableSection new];
     section.footerTitle = NSLocalizedString(@"NOTIFICATIONS_FOOTER_WARNING", nil);
 
-    PropertyListPreferences *prefs = [Environment preferences];
+    OWSPreferences *prefs = [Environment preferences];
     NotificationType selectedNotifType = [prefs notificationPreviewType];
     for (NSNumber *option in
         @[ @(NotificationNamePreview), @(NotificationNameNoPreview), @(NotificationNoNameNoPreview) ]) {

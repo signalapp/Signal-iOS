@@ -153,18 +153,18 @@ static Environment *environment = nil;
     return _notificationsManager;
 }
 
-+ (PropertyListPreferences *)preferences
++ (OWSPreferences *)preferences
 {
     OWSAssert([Environment getCurrent] != nil);
     OWSAssert([Environment getCurrent].preferences != nil);
     return [Environment getCurrent].preferences;
 }
 
-- (PropertyListPreferences *)preferences
+- (OWSPreferences *)preferences
 {
     @synchronized (self) {
         if (!_preferences) {
-            _preferences = [PropertyListPreferences new];
+            _preferences = [OWSPreferences new];
         }
     }
 

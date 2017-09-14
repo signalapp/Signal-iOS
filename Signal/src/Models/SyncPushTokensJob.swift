@@ -10,16 +10,16 @@ class SyncPushTokensJob: NSObject {
     let TAG = "[SyncPushTokensJob]"
     let pushManager: PushManager
     let accountManager: AccountManager
-    let preferences: PropertyListPreferences
+    let preferences: OWSPreferences
     var uploadOnlyIfStale = true
 
-    required init(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences) {
+    required init(pushManager: PushManager, accountManager: AccountManager, preferences: OWSPreferences) {
         self.pushManager = pushManager
         self.accountManager = accountManager
         self.preferences = preferences
     }
 
-    class func run(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences) -> Promise<Void> {
+    class func run(pushManager: PushManager, accountManager: AccountManager, preferences: OWSPreferences) -> Promise<Void> {
         let job = self.init(pushManager: pushManager, accountManager: accountManager, preferences: preferences)
         return job.run()
     }
@@ -73,7 +73,7 @@ class SyncPushTokensJob: NSObject {
 
     // MARK - objc wrappers, since objc can't use swift parameterized types
 
-    @objc class func run(pushManager: PushManager, accountManager: AccountManager, preferences: PropertyListPreferences) -> AnyPromise {
+    @objc class func run(pushManager: PushManager, accountManager: AccountManager, preferences: OWSPreferences) -> AnyPromise {
         let promise: Promise<Void> = self.run(pushManager: pushManager, accountManager: accountManager, preferences: preferences)
         return AnyPromise(promise)
     }
