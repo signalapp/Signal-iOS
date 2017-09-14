@@ -14,7 +14,6 @@
 #import "OWSNavigationController.h"
 #import "OWSPreferences.h"
 #import "OWSProfileManager.h"
-#import "OWSStaleNotificationObserver.h"
 #import "Pastelog.h"
 #import "PushManager.h"
 #import "RegistrationViewController.h"
@@ -28,7 +27,6 @@
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSFailedAttachmentDownloadsJob.h>
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
-#import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSDatabaseView.h>
@@ -50,8 +48,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 @interface AppDelegate ()
 
 @property (nonatomic) UIWindow *screenProtectionWindow;
-@property (nonatomic) OWSIncomingMessageReadObserver *incomingMessageReadObserver;
-@property (nonatomic) OWSStaleNotificationObserver *staleNotificationObserver;
 @property (nonatomic) OWSContactsSyncing *contactsSyncing;
 @property (nonatomic) BOOL hasInitialRootViewController;
 
@@ -249,13 +245,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [VersionMigrations runSafeBlockingMigrations];
     }];
     [[Environment getCurrent].contactsManager startObserving];
-
-    self.incomingMessageReadObserver =
-        [[OWSIncomingMessageReadObserver alloc] initWithMessageSender:[Environment getCurrent].messageSender];
-    [self.incomingMessageReadObserver startObserving];
-
-    self.staleNotificationObserver = [OWSStaleNotificationObserver new];
-    [self.staleNotificationObserver startObserving];
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken

@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -9,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification;
 
+// TODO:
 @interface OWSReadReceiptsProcessor : NSObject
 
 /**

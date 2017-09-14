@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSContactThread;
 @class TSGroupThread;
 
-extern NSString *const TSIncomingMessageWasReadOnThisDeviceNotification;
-
 @interface TSIncomingMessage : TSMessage <OWSReadTracking>
 
 /**
