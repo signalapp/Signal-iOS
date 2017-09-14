@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSMessagesManager.h"
+#import "OWSMessageManager.h"
 #import "ContactsManagerProtocol.h"
 #import "Cryptography.h"
 #import "MimeTypeUtil.h"
@@ -39,7 +39,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSMessagesManager ()
+@interface OWSMessageManager ()
 
 @property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
@@ -55,10 +55,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation TSMessagesManager
+@implementation OWSMessageManager
 
-+ (instancetype)sharedManager {
-    static TSMessagesManager *sharedMyManager = nil;
++ (instancetype)sharedManager
+{
+    static OWSMessageManager *sharedMyManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedMyManager = [[self alloc] initDefault];
@@ -74,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<OWSCallMessageHandler> callMessageHandler = [TextSecureKitEnv sharedEnv].callMessageHandler;
     OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
     OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
-    
+
 
     return [self initWithNetworkManager:networkManager
                          storageManager:storageManager
@@ -891,8 +892,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isDataMessageGroupAvatarUpdate:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
-    return dataMessage.hasGroup
-        && dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate
+    return dataMessage.hasGroup && dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate
         && dataMessage.group.hasAvatar;
 }
 
@@ -915,16 +915,18 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (NSUInteger)unreadMessagesCount {
+- (NSUInteger)unreadMessagesCount
+{
     __block NSUInteger numberOfItems;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
+        numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
     }];
 
     return numberOfItems;
 }
 
-- (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread {
+- (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread
+{
     __block NSUInteger numberOfItems;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         id databaseView = [transaction ext:TSUnreadDatabaseViewExtensionName];
@@ -941,10 +943,11 @@ NS_ASSUME_NONNULL_BEGIN
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:numberOfItems];
 }
 
-- (NSUInteger)unreadMessagesInThread:(TSThread *)thread {
+- (NSUInteger)unreadMessagesInThread:(TSThread *)thread
+{
     __block NSUInteger numberOfItems;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
+        numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
     }];
     return numberOfItems;
 }

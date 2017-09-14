@@ -12,7 +12,7 @@ extern const NSUInteger kIncomingMessageBatchSize;
 
 NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope);
 
-@interface TSMessagesHandler : NSObject
+@interface OWSMessageHandler : NSObject
 
 - (NSString *)descriptionForEnvelopeType:(OWSSignalServiceProtosEnvelope *)envelope;
 - (NSString *)descriptionForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope;

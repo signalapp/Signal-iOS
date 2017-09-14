@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSMessagesHandler.h"
+#import "OWSMessageHandler.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
 
-@interface TSMessagesManager : TSMessagesHandler
+@interface OWSMessageManager : OWSMessageHandler
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)sharedManager;

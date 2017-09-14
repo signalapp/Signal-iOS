@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSMessagesHandler.h"
+#import "OWSMessageHandler.h"
 #import "OWSSignalServiceProtos.pb.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,7 +22,7 @@ NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope)
     return [NSString stringWithFormat:@"%@.%d", envelope.source, (unsigned int)envelope.sourceDevice];
 }
 
-@implementation TSMessagesHandler
+@implementation OWSMessageHandler
 
 - (NSString *)descriptionForEnvelopeType:(OWSSignalServiceProtosEnvelope *)envelope
 {

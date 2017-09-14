@@ -3,9 +3,9 @@
 //
 
 #import "OWSBatchMessageProcessor.h"
+#import "OWSMessageManager.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSDatabaseView.h"
-#import "TSMessagesManager.h"
 #import "TSStorageManager.h"
 #import "TSYapDatabaseObject.h"
 #import "Threading.h"
@@ -218,12 +218,12 @@ NSString *const OWSBatchMessageProcessingJobFinderExtensionGroup = @"OWSBatchMes
 
 @interface OWSBatchMessageProcessingQueue : NSObject
 
-@property (nonatomic, readonly) TSMessagesManager *messagesManager;
+@property (nonatomic, readonly) OWSMessageManager *messagesManager;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
 @property (nonatomic, readonly) OWSBatchMessageProcessingJobFinder *finder;
 @property (nonatomic) BOOL isDrainingQueue;
 
-- (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager
+- (instancetype)initWithMessagesManager:(OWSMessageManager *)messagesManager
                          storageManager:(TSStorageManager *)storageManager
                                  finder:(OWSBatchMessageProcessingJobFinder *)finder NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
@@ -234,7 +234,7 @@ NSString *const OWSBatchMessageProcessingJobFinderExtensionGroup = @"OWSBatchMes
 
 @implementation OWSBatchMessageProcessingQueue
 
-- (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager
+- (instancetype)initWithMessagesManager:(OWSMessageManager *)messagesManager
                          storageManager:(TSStorageManager *)storageManager
                                  finder:(OWSBatchMessageProcessingJobFinder *)finder
 {
@@ -364,7 +364,7 @@ NSString *const OWSBatchMessageProcessingJobFinderExtensionGroup = @"OWSBatchMes
 @implementation OWSBatchMessageProcessor
 
 - (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection
-                     messagesManager:(TSMessagesManager *)messagesManager
+                     messagesManager:(OWSMessageManager *)messagesManager
                       storageManager:(TSStorageManager *)storageManager
 {
     OWSSingletonAssert();
@@ -390,7 +390,7 @@ NSString *const OWSBatchMessageProcessingJobFinderExtensionGroup = @"OWSBatchMes
 {
     // For concurrency coherency we use the same dbConnection to persist and read the unprocessed envelopes
     YapDatabaseConnection *dbConnection = [[TSStorageManager sharedManager].database newConnection];
-    TSMessagesManager *messagesManager = [TSMessagesManager sharedManager];
+    OWSMessageManager *messagesManager = [OWSMessageManager sharedManager];
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
 
     return [self initWithDBConnection:dbConnection messagesManager:messagesManager storageManager:storageManager];

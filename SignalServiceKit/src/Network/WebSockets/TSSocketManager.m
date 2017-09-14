@@ -5,6 +5,7 @@
 #import "TSSocketManager.h"
 #import "Cryptography.h"
 #import "NSTimer+OWS.h"
+#import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
 #import "OWSSignalService.h"
 #import "OWSSignalServiceProtos.pb.h"
@@ -12,7 +13,6 @@
 #import "SubProtocol.pb.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
-#import "TSMessagesManager.h"
 #import "TSStorageManager+keyingMaterial.h"
 #import "Threading.h"
 

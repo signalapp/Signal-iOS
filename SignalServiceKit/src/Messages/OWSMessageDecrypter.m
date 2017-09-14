@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSMessageDecrypter.h"
+#import "OWSMessageDecrypter.h"
 #import "NSData+messagePadding.h"
 #import "NotificationsProtocol.h"
 #import "OWSAnalytics.h"
@@ -24,7 +24,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSMessageDecrypter ()
+@interface OWSMessageDecrypter ()
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
@@ -35,11 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation TSMessageDecrypter
+@implementation OWSMessageDecrypter
 
 + (instancetype)sharedManager
 {
-    static TSMessageDecrypter *sharedMyManager = nil;
+    static OWSMessageDecrypter *sharedMyManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedMyManager = [[self alloc] initDefault];

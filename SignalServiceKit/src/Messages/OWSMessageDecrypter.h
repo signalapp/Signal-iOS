@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSMessagesHandler.h"
+#import "OWSMessageHandler.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^DecryptSuccessBlock)(NSData *_Nullable plaintextData);
 typedef void (^DecryptFailureBlock)();
 
-@interface TSMessageDecrypter : TSMessagesHandler
+@interface OWSMessageDecrypter : OWSMessageHandler
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)sharedManager;
