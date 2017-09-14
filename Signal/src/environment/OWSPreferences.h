@@ -52,12 +52,14 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 - (BOOL)hasRegisteredVOIPPush;
 - (void)setHasRegisteredVOIPPush:(BOOL)enabled;
 
-
 - (BOOL)hasDeclinedNoContactsView;
 - (void)setHasDeclinedNoContactsView:(BOOL)value;
 
 - (void)setIOSUpgradeNagVersion:(NSString *)value;
 - (nullable NSString *)iOSUpgradeNagVersion;
+
+- (BOOL)areReadReceiptsEnabled;
+- (void)setAreReadReceiptsEnabled:(BOOL)value;
 
 #pragma mark - Calling
 
