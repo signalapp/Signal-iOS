@@ -4,6 +4,7 @@
 
 #import "TSIncomingMessage.h"
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
+#import "TSMessagesHandler.h"
 #import "TSOutgoingMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,7 +24,7 @@ typedef void (^DecryptSuccessBlock)(NSData *_Nullable plaintextData);
 typedef void (^DecryptFailureBlock)();
 typedef void (^MessageManagerCompletionBlock)();
 
-@interface TSMessagesManager : NSObject
+@interface TSMessagesManager : TSMessagesHandler
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)sharedManager;

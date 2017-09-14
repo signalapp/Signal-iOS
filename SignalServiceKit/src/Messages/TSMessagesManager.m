@@ -374,7 +374,7 @@ const NSUInteger kIncomingMessageBatchSize = 10;
     OWSAssert(failureBlock);
 
     [self decryptEnvelope:envelope
-        messageTypeName:@"Secure Message"
+        cipherTypeName:@"Secure Message"
         missingPayloadBlock:^{
             OWSProdFail([OWSAnalyticsEvents messageManagerErrorMessageEnvelopeHasNoContent]);
         }
@@ -397,7 +397,7 @@ const NSUInteger kIncomingMessageBatchSize = 10;
     [TSPreKeyManager checkPreKeys];
 
     [self decryptEnvelope:envelope
-        messageTypeName:@"PreKey Bundle"
+        cipherTypeName:@"PreKey Bundle"
         missingPayloadBlock:^{
             OWSProdFail([OWSAnalyticsEvents messageManagerErrorPrekeyBundleEnvelopeHasNoContent]);
         }
@@ -409,14 +409,14 @@ const NSUInteger kIncomingMessageBatchSize = 10;
 }
 
 - (void)decryptEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-        messageTypeName:(NSString *)messageTypeName
+         cipherTypeName:(NSString *)cipherTypeName
     missingPayloadBlock:(void (^_Nonnull)())missingPayloadBlock
      cipherMessageBlock:(id<CipherMessage> (^_Nonnull)(NSData *))cipherMessageBlock
            successBlock:(DecryptSuccessBlock)successBlock
            failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
     OWSAssert(envelope);
-    OWSAssert(messageTypeName.length > 0);
+    OWSAssert(cipherTypeName.length > 0);
     OWSAssert(missingPayloadBlock);
     OWSAssert(cipherMessageBlock);
     OWSAssert(successBlock);
@@ -450,7 +450,7 @@ const NSUInteger kIncomingMessageBatchSize = 10;
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self processException:exception envelope:envelope];
                 NSString *errorDescription = [NSString
-                    stringWithFormat:@"Exception while decrypting %@: %@", messageTypeName, exception.description];
+                    stringWithFormat:@"Exception while decrypting %@: %@", cipherTypeName, exception.description];
                 NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
                 failureBlock(error);
             });
@@ -1260,12 +1260,6 @@ const NSUInteger kIncomingMessageBatchSize = 10;
 }
 
 #pragma mark - helpers
-
-// used in log formatting
-NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope)
-{
-    return [NSString stringWithFormat:@"%@.%d", envelope.source, (unsigned int)envelope.sourceDevice];
-}
 
 - (BOOL)isDataMessageGroupAvatarUpdate:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
