@@ -45,6 +45,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// We need to use a consistent batch size throughout
+// the incoming message pipeline (i.e. in the
+// "decrypt" and "process" steps), or the pipeline
+// doesn't flow smoothly.
+//
+// We want a value that is just high enough to yield
+// perf benefits.  The right value is probably 5-15.
+const NSUInteger kIncomingMessageBatchSize = 10;
+
 @interface TSMessagesManager ()
 
 @property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;
@@ -1087,13 +1096,13 @@ NS_ASSUME_NONNULL_BEGIN
             }
             case OWSSignalServiceProtosGroupContextTypeDeliver: {
                 if (body.length == 0 && attachmentIds.count < 1) {
-                    DDLogWarn(@"%@ ignoring empty incoming message from: %@ for group: %@ with timestampe: %lu",
+                    DDLogWarn(@"%@ ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu",
                         self.tag,
                         envelopeAddress(envelope),
                         groupId,
                         (unsigned long)timestamp);
                 } else {
-                    DDLogDebug(@"%@ incoming message from: %@ for group: %@ with timestampe: %lu",
+                    DDLogDebug(@"%@ incoming message from: %@ for group: %@ with timestamp: %lu",
                         self.tag,
                         envelopeAddress(envelope),
                         groupId,
@@ -1111,19 +1120,19 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
             }
             default: {
-                DDLogWarn(@"%@ Ignoring unknown group message type:%d", self.tag, (int)dataMessage.group.type);
+                DDLogWarn(@"%@ Ignoring unknown group message type: %d", self.tag, (int)dataMessage.group.type);
             }
         }
 
         thread = gThread;
     } else {
         if (body.length == 0 && attachmentIds.count < 1) {
-            DDLogWarn(@"%@ ignoring empty incoming message from: %@ with timestampe: %lu",
+            DDLogWarn(@"%@ ignoring empty incoming message from: %@ with timestamp: %lu",
                 self.tag,
                 envelopeAddress(envelope),
                 (unsigned long)timestamp);
         } else {
-            DDLogDebug(@"%@ incoming message from: %@ with timestampe: %lu",
+            DDLogDebug(@"%@ incoming message from: %@ with timestamp: %lu",
                 self.tag,
                 envelopeAddress(envelope),
                 (unsigned long)timestamp);
