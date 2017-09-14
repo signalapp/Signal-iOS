@@ -798,6 +798,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 {
     DDLogInfo(@"databaseViewRegistrationComplete");
 
+    if ([TSAccountManager isRegistered]) {
+        DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
+    }
+
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 
     [AppVersion.instance appLaunchDidComplete];
