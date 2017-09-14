@@ -6,6 +6,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern const NSUInteger kIncomingMessageBatchSize;
 
+@class OWSSignalServiceProtosContent;
+@class OWSSignalServiceProtosDataMessage;
 @class OWSSignalServiceProtosEnvelope;
 
 NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope);
@@ -14,6 +16,8 @@ NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope);
 
 - (NSString *)descriptionForEnvelopeType:(OWSSignalServiceProtosEnvelope *)envelope;
 - (NSString *)descriptionForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope;
+- (NSString *)descriptionForContent:(OWSSignalServiceProtosContent *)content;
+- (NSString *)descriptionForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage;
 
 @end
 
