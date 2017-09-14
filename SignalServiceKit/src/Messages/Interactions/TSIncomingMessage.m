@@ -5,14 +5,13 @@
 #import "TSIncomingMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
+#import "OWSReadReceiptManager.h"
 #import "TSContactThread.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSGroupThread.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingMessageWasReadOnThisDeviceNotification";
 
 @interface TSIncomingMessage ()
 
@@ -141,10 +140,7 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
     if (sendReadReceipt) {
         // Notification must happen outside of the transaction, else we'll likely crash when the notification receiver
         // tries to do anything with the DB.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:TSIncomingMessageWasReadOnThisDeviceNotification
-                                                                object:self];
-        });
+        [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
     }
 }
 

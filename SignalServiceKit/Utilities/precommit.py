@@ -189,7 +189,7 @@ def find_matching_section(text, match_test):
     return text0, text1, text2
 
 
-def sort_matching_blocks(filepath, filename, file_extension, text, match_func, sort_func):
+def sort_matching_blocks(sort_name, filepath, filename, file_extension, text, match_func, sort_func):
     unprocessed = text
     processed = None
     while True:
@@ -230,6 +230,8 @@ def sort_matching_blocks(filepath, filename, file_extension, text, match_func, s
         else:
             break
 
+    if text != processed:
+        print sort_name, filepath
     return processed
 
 
@@ -249,17 +251,17 @@ def find_include_section(text):
 
 
 def sort_includes(filepath, filename, file_extension, text):
-    print 'sort_includes', filepath
+    # print 'sort_includes', filepath
     if file_extension not in ('.h', '.m', '.mm'):
         return text
-    return sort_matching_blocks(filepath, filename, file_extension, text, find_include_section, sort_include_block)
+    return sort_matching_blocks('sort_includes', filepath, filename, file_extension, text, find_include_section, sort_include_block)
 
 
 def sort_class_statements(filepath, filename, file_extension, text):
-    print 'sort_class_statements', filepath
+    # print 'sort_class_statements', filepath
     if file_extension not in ('.h', '.m', '.mm'):
         return text
-    return sort_matching_blocks(filepath, filename, file_extension, text, find_class_statement_section, sort_class_statement_block)
+    return sort_matching_blocks('sort_class_statements', filepath, filename, file_extension, text, find_class_statement_section, sort_class_statement_block)
 
 
 def splitall(path):
