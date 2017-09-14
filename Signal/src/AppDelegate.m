@@ -159,6 +159,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                              selector:@selector(databaseViewRegistrationComplete)
                                                  name:kNSNotificationName_DatabaseViewRegistrationComplete
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(registrationStateDidChange)
+                                                 name:kNSNotificationName_RegistrationStateDidChange
+                                               object:nil];
 
     DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.tag);
 
@@ -790,6 +794,26 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
 
     [OWSProfileManager.sharedManager fetchLocalUsersProfile];
+}
+
+- (void)registrationStateDidChange
+{
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogInfo(@"registrationStateDidChange");
+
+    if ([TSAccountManager isRegistered]) {
+        DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
+
+        [[TSStorageManager sharedManager].newDatabaseConnection
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                [[ExperienceUpgradeFinder new] markAllAsSeenWithTransaction:transaction];
+            }];
+        // Start running the disappearing messages job in case the newly registered user
+        // enables this feature
+        [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
+        [[OWSProfileManager sharedManager] ensureLocalProfileCached];
+    }
 }
 
 - (void)ensureRootViewController
