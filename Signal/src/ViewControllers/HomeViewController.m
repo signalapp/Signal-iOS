@@ -13,7 +13,6 @@
 #import "OWSNavigationController.h"
 #import "OWSProfileManager.h"
 #import "ProfileViewController.h"
-#import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"

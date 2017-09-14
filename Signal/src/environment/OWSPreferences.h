@@ -14,10 +14,10 @@ typedef NS_ENUM(NSUInteger, NotificationType) {
 };
 
 // Used when migrating logging to NSUserDefaults.
-extern NSString *const PropertyListPreferencesSignalDatabaseCollection;
-extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
+extern NSString *const OWSPreferencesSignalDatabaseCollection;
+extern NSString *const OWSPreferencesKeyEnableDebugLog;
 
-@interface PropertyListPreferences : NSObject
+@interface OWSPreferences : NSObject
 
 #pragma mark - Helpers
 

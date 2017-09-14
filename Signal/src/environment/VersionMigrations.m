@@ -7,7 +7,6 @@
 #import "Environment.h"
 #import "LockInteractionController.h"
 #import "OWSDatabaseMigrationRunner.h"
-#import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "SignalKeyingStorage.h"
 #import "TSAccountManager.h"

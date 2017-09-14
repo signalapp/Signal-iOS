@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSContactThread;
 @class OWSContactsManager;
 @class SignalCall;
-@class PropertyListPreferences;
+@class OWSPreferences;
 
 @interface NotificationsManager : NSObject <NotificationsProtocol, OWSCallNotificationsAdaptee>
 

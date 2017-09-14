@@ -5,7 +5,7 @@
 #import "NotificationsManager.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
-#import "PropertyListPreferences.h"
+#import "OWSPreferences.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
 #import <AudioToolbox/AudioServices.h>
@@ -373,7 +373,7 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
 
 - (NotificationType)notificationPreviewType
 {
-    PropertyListPreferences *prefs = [Environment getCurrent].preferences;
+    OWSPreferences *prefs = [Environment getCurrent].preferences;
     return prefs.notificationPreviewType;
 }
 
