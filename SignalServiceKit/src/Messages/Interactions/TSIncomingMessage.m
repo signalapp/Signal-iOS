@@ -138,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (sendReadReceipt) {
         // Notification must happen outside of the transaction, else we'll likely crash when the notification receiver
         // tries to do anything with the DB.
-        [OWSReadReceiptManager.sharedManager enqueueIncomingMessage:self];
+        [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
     }
 }
 

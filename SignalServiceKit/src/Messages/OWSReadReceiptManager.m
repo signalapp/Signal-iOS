@@ -9,6 +9,7 @@
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
+#import "Threading.h"
 //#import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 
@@ -38,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 //- (instancetype)init NS_UNAVAILABLE;
 //+ (instancetype)sharedManager;
 //
-//- (void)enqueueIncomingMessage:(TSIncomingMessage *)message;
+//- (void)messageWasReadLocally:(TSIncomingMessage *)message;
 //
 //@end
 //
@@ -143,27 +144,30 @@ NS_ASSUME_NONNULL_BEGIN
     [self scheduleProcessing];
 }
 
+// Schedules a processing pass, unless one is already scheduled.
 - (void)scheduleProcessing
 {
-    @synchronized(self)
-    {
-        if ([TSDatabaseView hasPendingViewRegistrations]) {
-            return;
-        }
-        if (self.isProcessing) {
-            return;
-        }
+    DispatchMainThreadSafe(^{
+        @synchronized(self)
+        {
+            if ([TSDatabaseView hasPendingViewRegistrations]) {
+                return;
+            }
+            if (self.isProcessing) {
+                return;
+            }
 
-        self.isProcessing = YES;
+            self.isProcessing = YES;
 
-        // Process read receipts every N seconds.
-        const CGFloat kProcessingFrequencySeconds = 3.f;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kProcessingFrequencySeconds * NSEC_PER_SEC)),
-            dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-            ^{
-                [self process];
-            });
-    }
+            // Process read receipts every N seconds.
+            const CGFloat kProcessingFrequencySeconds = 3.f;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kProcessingFrequencySeconds * NSEC_PER_SEC)),
+                dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                ^{
+                    [self process];
+                });
+        }
+    });
 }
 
 - (void)process
@@ -181,17 +185,19 @@ NS_ASSUME_NONNULL_BEGIN
 
         OWSReadReceiptsMessage *message = [[OWSReadReceiptsMessage alloc] initWithReadReceipts:readReceiptsToSend];
 
-        [self.messageSender sendMessage:message
-            success:^{
-                DDLogInfo(@"%@ Successfully sent %zd read receipt", self.tag, readReceiptsToSend.count);
-            }
-            failure:^(NSError *error) {
-                DDLogError(@"%@ Failed to send read receipt with error: %@", self.tag, error);
-            }];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.messageSender sendMessage:message
+                success:^{
+                    DDLogInfo(@"%@ Successfully sent %zd read receipt", self.tag, readReceiptsToSend.count);
+                }
+                failure:^(NSError *error) {
+                    DDLogError(@"%@ Failed to send read receipt with error: %@", self.tag, error);
+                }];
+        });
     }
 }
 
-- (void)enqueueIncomingMessage:(TSIncomingMessage *)message;
+- (void)messageWasReadLocally:(TSIncomingMessage *)message;
 {
     @synchronized(self)
     {
