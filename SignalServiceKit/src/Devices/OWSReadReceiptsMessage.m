@@ -32,11 +32,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
     for (OWSReadReceipt *readReceipt in self.readReceipts) {
-        OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder *readProtoBuilder =
-            [OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder new];
+        OWSSignalServiceProtosSyncMessageReadBuilder *readProtoBuilder =
+            [OWSSignalServiceProtosSyncMessageReadBuilder new];
         [readProtoBuilder setSender:readReceipt.senderId];
         [readProtoBuilder setTimestamp:readReceipt.timestamp];
-        [syncMessageBuilder addReadLinkedDevices:[readProtoBuilder build]];
+        [syncMessageBuilder addRead:[readProtoBuilder build]];
     }
 
     return syncMessageBuilder;

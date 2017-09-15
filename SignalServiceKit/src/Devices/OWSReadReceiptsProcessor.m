@@ -40,12 +40,11 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
     return self;
 }
 
-- (instancetype)initWithReadReceiptProtos:
-                    (NSArray<OWSSignalServiceProtosSyncMessageReadLinkedDevices *> *)readReceiptProtos
+- (instancetype)initWithReadReceiptProtos:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos
                            storageManager:(TSStorageManager *)storageManager
 {
     NSMutableArray<OWSReadReceipt *> *readReceipts = [NSMutableArray new];
-    for (OWSSignalServiceProtosSyncMessageReadLinkedDevices *readReceiptProto in readReceiptProtos) {
+    for (OWSSignalServiceProtosSyncMessageRead *readReceiptProto in readReceiptProtos) {
         OWSReadReceipt *readReceipt =
             [[OWSReadReceipt alloc] initWithSenderId:readReceiptProto.sender timestamp:readReceiptProto.timestamp];
         if (readReceipt.isValid) {
