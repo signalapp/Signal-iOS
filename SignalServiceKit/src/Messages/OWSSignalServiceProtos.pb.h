@@ -383,22 +383,17 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @end
 
 #define ReceiptMessage_type @"type"
-#define ReceiptMessage_timestamps @"timestamps"
-#define ReceiptMessage_when @"when"
+#define ReceiptMessage_timestamp @"timestamp"
 @interface OWSSignalServiceProtosReceiptMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
-  BOOL hasWhen_:1;
   BOOL hasType_:1;
-  UInt64 when;
   OWSSignalServiceProtosReceiptMessageType type;
-  PBAppendableArray * timestampsArray;
+  PBAppendableArray * timestampArray;
 }
 - (BOOL) hasType;
-- (BOOL) hasWhen;
 @property (readonly) OWSSignalServiceProtosReceiptMessageType type;
-@property (readonly, strong) PBArray * timestamps;
-@property (readonly) UInt64 when;
-- (UInt64)timestampsAtIndex:(NSUInteger)index;
+@property (readonly, strong) PBArray * timestamp;
+- (UInt64)timestampAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -440,17 +435,12 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosReceiptMessageBuilder*) setType:(OWSSignalServiceProtosReceiptMessageType) value;
 - (OWSSignalServiceProtosReceiptMessageBuilder*) clearType;
 
-- (PBAppendableArray *)timestamps;
-- (UInt64)timestampsAtIndex:(NSUInteger)index;
-- (OWSSignalServiceProtosReceiptMessageBuilder *)addTimestamps:(UInt64)value;
-- (OWSSignalServiceProtosReceiptMessageBuilder *)setTimestampsArray:(NSArray *)array;
-- (OWSSignalServiceProtosReceiptMessageBuilder *)setTimestampsValues:(const UInt64 *)values count:(NSUInteger)count;
-- (OWSSignalServiceProtosReceiptMessageBuilder *)clearTimestamps;
-
-- (BOOL) hasWhen;
-- (UInt64) when;
-- (OWSSignalServiceProtosReceiptMessageBuilder*) setWhen:(UInt64) value;
-- (OWSSignalServiceProtosReceiptMessageBuilder*) clearWhen;
+- (PBAppendableArray *)timestamp;
+- (UInt64)timestampAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosReceiptMessageBuilder *)addTimestamp:(UInt64)value;
+- (OWSSignalServiceProtosReceiptMessageBuilder *)setTimestampArray:(NSArray *)array;
+- (OWSSignalServiceProtosReceiptMessageBuilder *)setTimestampValues:(const UInt64 *)values count:(NSUInteger)count;
+- (OWSSignalServiceProtosReceiptMessageBuilder *)clearTimestamp;
 @end
 
 #define CallMessage_offer @"offer"
