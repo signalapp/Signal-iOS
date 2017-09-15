@@ -44,9 +44,8 @@ message ReceiptMessage {
     READ     = 1;
   }
 
-  optional Type   type       = 1;
-  repeated uint64 timestamp  = 2;
-  optional bytes  profileKey = 3;
+  optional Type   type      = 1;
+  repeated uint64 timestamp = 2;
 }
 
 message CallMessage {
