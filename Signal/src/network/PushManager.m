@@ -14,6 +14,7 @@
 #import <SignalServiceKit/OWSReadReceiptsProcessor.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSSocketManager.h>
 
