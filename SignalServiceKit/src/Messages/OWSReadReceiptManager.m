@@ -5,7 +5,8 @@
 #import "OWSReadReceiptManager.h"
 #import "OWSMessageSender.h"
 #import "OWSReadReceipt.h"
-#import "OWSReadReceiptsMessage.h"
+#import "OWSReadReceiptsForLinkedDevicesMessage.h"
+#import "OWSReadReceiptsForSenderMessage.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
@@ -24,6 +25,12 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSReadReceipt *> *toLinkedDevicesReadReceiptMap;
+
+// A map of "recipient id"-to-"timestamp list" for read receipts that
+// we will send to senders.
+//
+// Should only be accessed while synchronized on the OWSReadReceiptManager.
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSMutableArray<NSNumber *> *> *toSenderReadReceiptMap;
 
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
 @property (nonatomic) BOOL isProcessing;
@@ -63,6 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
     _messageSender = messageSender;
 
     _toLinkedDevicesReadReceiptMap = [NSMutableDictionary new];
+    _toSenderReadReceiptMap = [NSMutableDictionary new];
 
     OWSSingletonAssert();
 
@@ -120,22 +128,49 @@ NS_ASSUME_NONNULL_BEGIN
     {
         self.isProcessing = NO;
 
-        NSArray<OWSReadReceipt *> *readReceiptsToSend = [[self.toLinkedDevicesReadReceiptMap allValues] copy];
+        NSArray<OWSReadReceipt *> *readReceiptsForLinkedDevices = [[self.toLinkedDevicesReadReceiptMap allValues] copy];
         [self.toLinkedDevicesReadReceiptMap removeAllObjects];
-        if (readReceiptsToSend.count > 0) {
-            OWSReadReceiptsMessage *message = [[OWSReadReceiptsMessage alloc] initWithReadReceipts:readReceiptsToSend];
+        if (readReceiptsForLinkedDevices.count > 0) {
+            OWSReadReceiptsForLinkedDevicesMessage *message =
+                [[OWSReadReceiptsForLinkedDevicesMessage alloc] initWithReadReceipts:readReceiptsForLinkedDevices];
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.messageSender sendMessage:message
                     success:^{
                         DDLogInfo(@"%@ Successfully sent %zd read receipt to linked devices.",
                             self.tag,
-                            readReceiptsToSend.count);
+                            readReceiptsForLinkedDevices.count);
                     }
                     failure:^(NSError *error) {
                         DDLogError(@"%@ Failed to send read receipt to linked devices with error: %@", self.tag, error);
                     }];
             });
+        }
+
+        NSArray<OWSReadReceipt *> *readReceiptsToSend = [[self.toLinkedDevicesReadReceiptMap allValues] copy];
+        [self.toLinkedDevicesReadReceiptMap removeAllObjects];
+        if (self.toSenderReadReceiptMap.count > 0) {
+            for (NSString *recipientId in self.toSenderReadReceiptMap) {
+                NSArray<NSNumber *> *timestamps = self.toSenderReadReceiptMap[recipientId];
+                OWSAssert(timestamps.count > 0);
+
+                TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+                OWSReadReceiptsForSenderMessage *message =
+                    [[OWSReadReceiptsForSenderMessage alloc] initWithThread:thread messageTimestamps:timestamps];
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.messageSender sendMessage:message
+                        success:^{
+                            DDLogInfo(@"%@ Successfully sent %zd read receipts to sender.",
+                                self.tag,
+                                readReceiptsToSend.count);
+                        }
+                        failure:^(NSError *error) {
+                            DDLogError(@"%@ Failed to send read receipts to sender with error: %@", self.tag, error);
+                        }];
+                });
+            }
+            [self.toSenderReadReceiptMap removeAllObjects];
         }
     }
 }
@@ -162,14 +197,23 @@ NS_ASSUME_NONNULL_BEGIN
         OWSReadReceipt *newReadReceipt =
             [[OWSReadReceipt alloc] initWithSenderId:messageAuthorId timestamp:message.timestamp];
 
+        BOOL modified = NO;
         OWSReadReceipt *_Nullable oldReadReceipt = self.toLinkedDevicesReadReceiptMap[threadUniqueId];
         if (oldReadReceipt && oldReadReceipt.timestamp > newReadReceipt.timestamp) {
             // If there's an existing read receipt for the same thread with
             // a newer timestamp, discard the new read receipt.
-            return;
+        } else {
+            self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
+
+            modified = YES;
         }
 
-        self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
+        NSMutableArray<NSNumber *> *_Nullable timestamps = self.toSenderReadReceiptMap[messageAuthorId];
+        if (!timestamps) {
+            timestamps = [NSMutableArray new];
+            self.toSenderReadReceiptMap[messageAuthorId] = timestamps;
+        }
+        [timestamps addObject:@(message.timestamp)];
 
         [self scheduleProcessing];
     }
