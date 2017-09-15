@@ -38,6 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
 // Both types of messages are deduplicated.
 - (void)messageWasReadLocally:(TSIncomingMessage *)message;
 
+#pragma mark - Settings
+
+- (BOOL)areReadReceiptsEnabled;
+- (void)setAreReadReceiptsEnabled:(BOOL)value;
+
 @end
 
 NS_ASSUME_NONNULL_END

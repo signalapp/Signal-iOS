@@ -25,7 +25,6 @@ NSString *const OWSPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled
 NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 NSString *const OWSPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
-NSString *const OWSPreferencesKeyAreReadReceiptsEnabled = @"areReadReceiptsEnabled";
 
 @implementation OWSPreferences
 
@@ -175,18 +174,6 @@ NSString *const OWSPreferencesKeyAreReadReceiptsEnabled = @"areReadReceiptsEnabl
 - (nullable NSString *)iOSUpgradeNagVersion
 {
     return [self tryGetValueForKey:OWSPreferencesKeyIOSUpgradeNagVersion];
-}
-
-- (BOOL)areReadReceiptsEnabled
-{
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyAreReadReceiptsEnabled];
-    // Default to NO.
-    return preference ? [preference boolValue] : NO;
-}
-
-- (void)setAreReadReceiptsEnabled:(BOOL)value
-{
-    [self setValueForKey:OWSPreferencesKeyAreReadReceiptsEnabled toValue:@(value)];
 }
 
 #pragma mark - Calling

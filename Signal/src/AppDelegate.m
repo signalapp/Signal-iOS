@@ -30,6 +30,7 @@
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
@@ -806,7 +807,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [[OWSProfileManager sharedManager] ensureLocalProfileCached];
 
         // For non-legacy users, read receipts are on by default.
-        [[Environment preferences] setAreReadReceiptsEnabled:YES];
+        [OWSReadReceiptManager.sharedManager setAreReadReceiptsEnabled:YES];
     }
 }
 

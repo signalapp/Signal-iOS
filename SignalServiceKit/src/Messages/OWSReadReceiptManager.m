@@ -10,15 +10,20 @@
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
+#import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 #import "Threading.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const OWSReadReceiptManagerCollection = @"OWSReadReceiptManagerCollection";
+NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabled";
+
 @interface OWSReadReceiptManager ()
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
+
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 // A map of "thread unique id"-to-"read receipt" for read receipts that
 // we will send to our linked devices.
@@ -54,12 +59,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initDefault
 {
     OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
+    TSStorageManager *storageManager = [TSStorageManager sharedManager];
 
-    return [self initWithMessageSender:messageSender
-    ];
+    return [self initWithMessageSender:messageSender storageManager:storageManager];
 }
 
 - (instancetype)initWithMessageSender:(OWSMessageSender *)messageSender
+                       storageManager:(TSStorageManager *)storageManager
 {
     self = [super init];
 
@@ -68,6 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _messageSender = messageSender;
+    _dbConnection = storageManager.newDatabaseConnection;
 
     _toLinkedDevicesReadReceiptMap = [NSMutableDictionary new];
     _toSenderReadReceiptMap = [NSMutableDictionary new];
@@ -197,26 +204,41 @@ NS_ASSUME_NONNULL_BEGIN
         OWSReadReceipt *newReadReceipt =
             [[OWSReadReceipt alloc] initWithSenderId:messageAuthorId timestamp:message.timestamp];
 
-        BOOL modified = NO;
         OWSReadReceipt *_Nullable oldReadReceipt = self.toLinkedDevicesReadReceiptMap[threadUniqueId];
         if (oldReadReceipt && oldReadReceipt.timestamp > newReadReceipt.timestamp) {
             // If there's an existing read receipt for the same thread with
             // a newer timestamp, discard the new read receipt.
         } else {
             self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
-
-            modified = YES;
         }
 
-        NSMutableArray<NSNumber *> *_Nullable timestamps = self.toSenderReadReceiptMap[messageAuthorId];
-        if (!timestamps) {
-            timestamps = [NSMutableArray new];
-            self.toSenderReadReceiptMap[messageAuthorId] = timestamps;
+        if ([self areReadReceiptsEnabled]) {
+            NSMutableArray<NSNumber *> *_Nullable timestamps = self.toSenderReadReceiptMap[messageAuthorId];
+            if (!timestamps) {
+                timestamps = [NSMutableArray new];
+                self.toSenderReadReceiptMap[messageAuthorId] = timestamps;
+            }
+            [timestamps addObject:@(message.timestamp)];
         }
-        [timestamps addObject:@(message.timestamp)];
 
         [self scheduleProcessing];
     }
+}
+
+#pragma mark - Settings
+
+- (BOOL)areReadReceiptsEnabled
+{
+    // Default to NO.
+    return [self.dbConnection boolForKey:OWSReadReceiptManagerAreReadReceiptsEnabled
+                            inCollection:OWSReadReceiptManagerCollection];
+}
+
+- (void)setAreReadReceiptsEnabled:(BOOL)value
+{
+    [self.dbConnection setBool:value
+                        forKey:OWSReadReceiptManagerAreReadReceiptsEnabled
+                  inCollection:OWSReadReceiptManagerCollection];
 }
 
 #pragma mark - Logging
