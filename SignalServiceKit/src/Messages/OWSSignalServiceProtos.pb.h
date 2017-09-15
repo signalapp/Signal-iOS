@@ -384,20 +384,15 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 
 #define ReceiptMessage_type @"type"
 #define ReceiptMessage_timestamps @"timestamps"
-#define ReceiptMessage_when @"when"
 @interface OWSSignalServiceProtosReceiptMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
-  BOOL hasWhen_:1;
   BOOL hasType_:1;
-  UInt64 when;
   OWSSignalServiceProtosReceiptMessageType type;
   PBAppendableArray * timestampsArray;
 }
 - (BOOL) hasType;
-- (BOOL) hasWhen;
 @property (readonly) OWSSignalServiceProtosReceiptMessageType type;
 @property (readonly, strong) PBArray * timestamps;
-@property (readonly) UInt64 when;
 - (UInt64)timestampsAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -446,11 +441,6 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosReceiptMessageBuilder *)setTimestampsArray:(NSArray *)array;
 - (OWSSignalServiceProtosReceiptMessageBuilder *)setTimestampsValues:(const UInt64 *)values count:(NSUInteger)count;
 - (OWSSignalServiceProtosReceiptMessageBuilder *)clearTimestamps;
-
-- (BOOL) hasWhen;
-- (UInt64) when;
-- (OWSSignalServiceProtosReceiptMessageBuilder*) setWhen:(UInt64) value;
-- (OWSSignalServiceProtosReceiptMessageBuilder*) clearWhen;
 @end
 
 #define CallMessage_offer @"offer"

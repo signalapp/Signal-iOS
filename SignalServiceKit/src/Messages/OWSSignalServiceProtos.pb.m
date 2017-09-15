@@ -1080,7 +1080,6 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
 @interface OWSSignalServiceProtosReceiptMessage ()
 @property OWSSignalServiceProtosReceiptMessageType type;
 @property (strong) PBAppendableArray * timestampsArray;
-@property UInt64 when;
 @end
 
 @implementation OWSSignalServiceProtosReceiptMessage
@@ -1094,17 +1093,9 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
 @synthesize type;
 @synthesize timestampsArray;
 @dynamic timestamps;
-- (BOOL) hasWhen {
-  return !!hasWhen_;
-}
-- (void) setHasWhen:(BOOL) _value_ {
-  hasWhen_ = !!_value_;
-}
-@synthesize when;
 - (instancetype) init {
   if ((self = [super init])) {
     self.type = OWSSignalServiceProtosReceiptMessageTypeDelivery;
-    self.when = 0L;
   }
   return self;
 }
@@ -1140,9 +1131,6 @@ static OWSSignalServiceProtosReceiptMessage* defaultOWSSignalServiceProtosReceip
       [output writeUInt64:2 value:values[i]];
     }
   }
-  if (self.hasWhen) {
-    [output writeUInt64:3 value:self.when];
-  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -1164,9 +1152,6 @@ static OWSSignalServiceProtosReceiptMessage* defaultOWSSignalServiceProtosReceip
     }
     size_ += dataSize;
     size_ += (SInt32)(1 * count);
-  }
-  if (self.hasWhen) {
-    size_ += computeUInt64Size(3, self.when);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -1209,9 +1194,6 @@ static OWSSignalServiceProtosReceiptMessage* defaultOWSSignalServiceProtosReceip
   [self.timestampsArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
     [output appendFormat:@"%@%@: %@\n", indent, @"timestamps", obj];
   }];
-  if (self.hasWhen) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"when", [NSNumber numberWithLongLong:self.when]];
-  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -1224,9 +1206,6 @@ static OWSSignalServiceProtosReceiptMessage* defaultOWSSignalServiceProtosReceip
     [timestampsArrayArray addObject: @([self.timestampsArray uint64AtIndex:i])];
   }
   [dictionary setObject: timestampsArrayArray forKey: @"timestamps"];
-  if (self.hasWhen) {
-    [dictionary setObject: [NSNumber numberWithLongLong:self.when] forKey: @"when"];
-  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -1241,8 +1220,6 @@ static OWSSignalServiceProtosReceiptMessage* defaultOWSSignalServiceProtosReceip
       self.hasType == otherMessage.hasType &&
       (!self.hasType || self.type == otherMessage.type) &&
       [self.timestampsArray isEqualToArray:otherMessage.timestampsArray] &&
-      self.hasWhen == otherMessage.hasWhen &&
-      (!self.hasWhen || self.when == otherMessage.when) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -1253,9 +1230,6 @@ static OWSSignalServiceProtosReceiptMessage* defaultOWSSignalServiceProtosReceip
   [self.timestampsArray enumerateObjectsUsingBlock:^(NSNumber *obj, NSUInteger idx, BOOL *stop) {
     hashCode = hashCode * 31 + [obj longValue];
   }];
-  if (self.hasWhen) {
-    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.when] hash];
-  }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
 }
@@ -1329,9 +1303,6 @@ NSString *NSStringFromOWSSignalServiceProtosReceiptMessageType(OWSSignalServiceP
       [resultReceiptMessage.timestampsArray appendArray:other.timestampsArray];
     }
   }
-  if (other.hasWhen) {
-    [self setWhen:other.when];
-  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -1364,10 +1335,6 @@ NSString *NSStringFromOWSSignalServiceProtosReceiptMessageType(OWSSignalServiceP
       }
       case 16: {
         [self addTimestamps:[input readUInt64]];
-        break;
-      }
-      case 24: {
-        [self setWhen:[input readUInt64]];
         break;
       }
     }
@@ -1412,22 +1379,6 @@ NSString *NSStringFromOWSSignalServiceProtosReceiptMessageType(OWSSignalServiceP
 }
 - (OWSSignalServiceProtosReceiptMessageBuilder *)clearTimestamps {
   resultReceiptMessage.timestampsArray = nil;
-  return self;
-}
-- (BOOL) hasWhen {
-  return resultReceiptMessage.hasWhen;
-}
-- (UInt64) when {
-  return resultReceiptMessage.when;
-}
-- (OWSSignalServiceProtosReceiptMessageBuilder*) setWhen:(UInt64) value {
-  resultReceiptMessage.hasWhen = YES;
-  resultReceiptMessage.when = value;
-  return self;
-}
-- (OWSSignalServiceProtosReceiptMessageBuilder*) clearWhen {
-  resultReceiptMessage.hasWhen = NO;
-  resultReceiptMessage.when = 0L;
   return self;
 }
 @end
