@@ -939,6 +939,25 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
+    NSString *localNumber = [TSAccountManager localNumber];
+    if ([localNumber isEqualToString:recipient.uniqueId]) {
+        if (deviceMessages.count < 1) {
+            DDLogInfo(@"Ignoring sync message without linked devices: %@", [message class]);
+            OWSAssert([message isKindOfClass:[OWSOutgoingSyncMessage class]]);
+
+            dispatch_async([OWSDispatch sendingQueue], ^{
+                [recipient save];
+                [self handleMessageSentLocally:message];
+                successHandler();
+            });
+
+            return;
+        }
+    } else {
+        OWSAssert(deviceMessages.count > 0);
+    }
+
+
     TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId
                                                                                messages:deviceMessages
                                                                                   relay:recipient.relay
