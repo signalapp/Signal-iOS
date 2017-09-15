@@ -7,6 +7,7 @@
 #import "OWSReadReceipt.h"
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReadReceiptsForSenderMessage.h"
+#import "OWSSignalServiceProtos.pb.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
@@ -39,6 +40,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
 @property (nonatomic) BOOL isProcessing;
+
+// Should only be accessed while synchronized on the OWSReadReceiptManager.
+@property (nonatomic) NSNumber *areReadReceiptsEnabledCached;
 
 @end
 
@@ -86,6 +90,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                                  name:kNSNotificationName_DatabaseViewRegistrationComplete
                                                object:nil];
 
+    DDLogInfo(@"%@ areReadReceiptsEnabled: %d.", self.tag, self.areReadReceiptsEnabled);
+
     return self;
 }
 
@@ -106,6 +112,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         @synchronized(self)
         {
             if ([TSDatabaseView hasPendingViewRegistrations]) {
+                DDLogInfo(
+                    @"%@ Deferring read receipt processing due to pending database view registrations.", self.tag);
                 return;
             }
             if (self.isProcessing) {
@@ -133,6 +141,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 {
     @synchronized(self)
     {
+        DDLogVerbose(@"%@ Processing read receipts.", self.tag);
+
         self.isProcessing = NO;
 
         NSArray<OWSReadReceipt *> *readReceiptsForLinkedDevices = [[self.toLinkedDevicesReadReceiptMap allValues] copy];
@@ -184,44 +194,74 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (void)messageWasReadLocally:(TSIncomingMessage *)message;
 {
-    @synchronized(self)
-    {
-        NSString *threadUniqueId = message.thread.uniqueId;
-        OWSAssert(threadUniqueId.length > 0);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @synchronized(self)
+        {
+            NSString *threadUniqueId = message.thread.uniqueId;
+            OWSAssert(threadUniqueId.length > 0);
 
-        // Only groupthread sets authorId, thus this crappy code.
-        // TODO Refactor so that ALL incoming messages have an authorId.
-        NSString *messageAuthorId;
-        if (message.authorId) {
-            // Group Thread
-            messageAuthorId = message.authorId;
-        } else {
-            // Contact Thread
-            messageAuthorId = [TSContactThread contactIdFromThreadId:message.uniqueThreadId];
-        }
-        OWSAssert(messageAuthorId.length > 0);
-
-        OWSReadReceipt *newReadReceipt =
-            [[OWSReadReceipt alloc] initWithSenderId:messageAuthorId timestamp:message.timestamp];
-
-        OWSReadReceipt *_Nullable oldReadReceipt = self.toLinkedDevicesReadReceiptMap[threadUniqueId];
-        if (oldReadReceipt && oldReadReceipt.timestamp > newReadReceipt.timestamp) {
-            // If there's an existing read receipt for the same thread with
-            // a newer timestamp, discard the new read receipt.
-        } else {
-            self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
-        }
-
-        if ([self areReadReceiptsEnabled]) {
-            NSMutableArray<NSNumber *> *_Nullable timestamps = self.toSenderReadReceiptMap[messageAuthorId];
-            if (!timestamps) {
-                timestamps = [NSMutableArray new];
-                self.toSenderReadReceiptMap[messageAuthorId] = timestamps;
+            // Only groupthread sets authorId, thus this crappy code.
+            // TODO Refactor so that ALL incoming messages have an authorId.
+            NSString *messageAuthorId;
+            if (message.authorId) {
+                // Group Thread
+                messageAuthorId = message.authorId;
+            } else {
+                // Contact Thread
+                messageAuthorId = [TSContactThread contactIdFromThreadId:message.uniqueThreadId];
             }
-            [timestamps addObject:@(message.timestamp)];
-        }
+            OWSAssert(messageAuthorId.length > 0);
 
-        [self scheduleProcessing];
+            OWSReadReceipt *newReadReceipt =
+                [[OWSReadReceipt alloc] initWithSenderId:messageAuthorId timestamp:message.timestamp];
+
+            OWSReadReceipt *_Nullable oldReadReceipt = self.toLinkedDevicesReadReceiptMap[threadUniqueId];
+            if (oldReadReceipt && oldReadReceipt.timestamp > newReadReceipt.timestamp) {
+                // If there's an existing read receipt for the same thread with
+                // a newer timestamp, discard the new read receipt.
+                DDLogVerbose(@"%@ Ignoring redundant read receipt for linked devices.", self.tag);
+            } else {
+                DDLogVerbose(@"%@ Enqueuing read receipt for linked devices.", self.tag);
+                self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
+            }
+
+            if ([self areReadReceiptsEnabled]) {
+                DDLogVerbose(@"%@ Enqueuing read receipt for sender.", self.tag);
+                NSMutableArray<NSNumber *> *_Nullable timestamps = self.toSenderReadReceiptMap[messageAuthorId];
+                if (!timestamps) {
+                    timestamps = [NSMutableArray new];
+                    self.toSenderReadReceiptMap[messageAuthorId] = timestamps;
+                }
+                [timestamps addObject:@(message.timestamp)];
+            }
+
+            [self scheduleProcessing];
+        }
+    });
+}
+
+#pragma mark - Read Receipts From Recipient
+
+- (void)processReadReceiptsFromRecipient:(OWSSignalServiceProtosReceiptMessage *)receiptMessage
+                                envelope:(OWSSignalServiceProtosEnvelope *)envelope
+{
+    OWSAssert(receiptMessage);
+    OWSAssert(envelope);
+    OWSAssert(receiptMessage.type == OWSSignalServiceProtosReceiptMessageTypeRead);
+
+    if (![self areReadReceiptsEnabled]) {
+        DDLogInfo(@"%@ Ignoring receipt message as read receipts are disabled.", self.tag);
+        return;
+    }
+
+    NSString *recipientId = envelope.source;
+    OWSAssert(recipientId.length > 0);
+
+    PBArray *timestamps = receiptMessage.timestamp;
+    for (int i = 0; i < timestamps.count; i++) {
+        UInt64 timestamp = [timestamps uint64AtIndex:i];
+
+        DDLogError(@"%@ timestamp: %llu", self.tag, timestamp);
     }
 }
 
@@ -229,16 +269,30 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (BOOL)areReadReceiptsEnabled
 {
-    // Default to NO.
-    return [self.dbConnection boolForKey:OWSReadReceiptManagerAreReadReceiptsEnabled
-                            inCollection:OWSReadReceiptManagerCollection];
+    @synchronized(self)
+    {
+        if (!self.areReadReceiptsEnabledCached) {
+            // Default to NO.
+            self.areReadReceiptsEnabledCached =
+                @([self.dbConnection boolForKey:OWSReadReceiptManagerAreReadReceiptsEnabled
+                                   inCollection:OWSReadReceiptManagerCollection]);
+        }
+
+        return [self.areReadReceiptsEnabledCached boolValue];
+    }
 }
 
 - (void)setAreReadReceiptsEnabled:(BOOL)value
 {
-    [self.dbConnection setBool:value
-                        forKey:OWSReadReceiptManagerAreReadReceiptsEnabled
-                  inCollection:OWSReadReceiptManagerCollection];
+    DDLogInfo(@"%@ areReadReceiptsEnabled: %d.", self.tag, value);
+
+    @synchronized(self)
+    {
+        [self.dbConnection setBool:value
+                            forKey:OWSReadReceiptManagerAreReadReceiptsEnabled
+                      inCollection:OWSReadReceiptManagerCollection];
+        self.areReadReceiptsEnabledCached = @(value);
+    }
 }
 
 #pragma mark - Logging

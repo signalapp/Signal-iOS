@@ -5,6 +5,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSIncomingMessage;
+@class OWSSignalServiceProtosEnvelope;
+@class OWSSignalServiceProtosReceiptMessage;
 
 // There are four kinds of read receipts:
 //
@@ -27,16 +29,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)sharedManager;
 
-// This method can be called from any thread.
-//
-// It cues this manager:
+// This method cues this manager:
 //
 // * ...to inform the sender that this message was read (if read receipts
 //      are enabled).
 // * ...to inform the local user's other devices that this message was read.
 //
 // Both types of messages are deduplicated.
+//
+// This method can be called from any thread.
 - (void)messageWasReadLocally:(TSIncomingMessage *)message;
+
+// This method should be called when we receive a read receipt
+// from a user to whom we have sent a message.
+//
+// This method can be called from any thread.
+- (void)processReadReceiptsFromRecipient:(OWSSignalServiceProtosReceiptMessage *)receiptMessage
+                                envelope:(OWSSignalServiceProtosEnvelope *)envelope;
 
 #pragma mark - Settings
 

@@ -18,6 +18,7 @@
 #import "OWSIncomingMessageFinder.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
+#import "OWSReadReceiptManager.h"
 #import "OWSReadReceiptsProcessor.h"
 #import "OWSRecordTranscriptJob.h"
 #import "OWSSyncContactsMessage.h"
@@ -228,6 +229,8 @@ NS_ASSUME_NONNULL_BEGIN
             [self handleIncomingEnvelope:envelope withCallMessage:content.callMessage];
         } else if (content.hasNullMessage) {
             DDLogInfo(@"%@ Received null message.", self.tag);
+        } else if (content.hasReceiptMessage) {
+            [self handleIncomingEnvelope:envelope withReceiptMessage:content.receiptMessage];
         } else {
             DDLogWarn(@"%@ Ignoring envelope. Content with no known payload", self.tag);
         }
@@ -319,6 +322,26 @@ NS_ASSUME_NONNULL_BEGIN
 - (id<ProfileManagerProtocol>)profileManager
 {
     return [TextSecureKitEnv sharedEnv].profileManager;
+}
+
+- (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+            withReceiptMessage:(OWSSignalServiceProtosReceiptMessage *)receiptMessage
+{
+    OWSAssert(envelope);
+    OWSAssert(receiptMessage);
+
+    switch (receiptMessage.type) {
+        case OWSSignalServiceProtosReceiptMessageTypeDelivery:
+            DDLogInfo(@"%@ Ignoring receipt message with delivery receipt.", self.tag);
+            return;
+        case OWSSignalServiceProtosReceiptMessageTypeRead:
+            DDLogVerbose(@"%@ Processing receipt message with read receipts.", self.tag);
+            [OWSReadReceiptManager.sharedManager processReadReceiptsFromRecipient:receiptMessage envelope:envelope];
+            break;
+        default:
+            DDLogInfo(@"%@ Ignoring receipt message of unknown type: %d.", self.tag, (int)receiptMessage.type);
+            return;
+    }
 }
 
 - (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
