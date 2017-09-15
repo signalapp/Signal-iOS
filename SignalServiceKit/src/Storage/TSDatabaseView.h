@@ -22,6 +22,7 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// This method can be called from any thread.
 + (BOOL)hasPendingViewRegistrations;
 
 // This method must be called _AFTER_ registerThreadInteractionsDatabaseView.
