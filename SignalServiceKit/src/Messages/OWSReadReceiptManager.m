@@ -14,8 +14,142 @@
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 #import "Threading.h"
+#import <YapDatabase/YapDatabaseView.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+#pragma mark - Finder
+
+NSString *const OWSOutgoingMessageFinderExtensionName = @"OWSOutgoingMessageFinderExtensionName";
+
+@interface OWSOutgoingMessageFinder : NSObject
+
+@end
+
+#pragma mark -
+
+@interface OWSOutgoingMessageFinder ()
+
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+
+@end
+
+#pragma mark -
+
+@implementation OWSOutgoingMessageFinder
+
+- (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection
+{
+    OWSSingletonAssert();
+
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _dbConnection = dbConnection;
+
+    return self;
+}
+
+- (NSArray<TSOutgoingMessage *> *)outgoingMessagesWithTimestamp:(uint64_t)timestamp
+{
+    NSMutableArray<TSOutgoingMessage *> *result = [NSMutableArray new];
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        YapDatabaseViewTransaction *viewTransaction = [transaction ext:OWSOutgoingMessageFinderExtensionName];
+        OWSAssert(viewTransaction != nil);
+        [viewTransaction enumerateKeysAndObjectsInGroup:[OWSOutgoingMessageFinder groupForTimestamp:timestamp]
+                                             usingBlock:^(NSString *_Nonnull collection,
+                                                 NSString *_Nonnull key,
+                                                 id _Nonnull object,
+                                                 NSUInteger index,
+                                                 BOOL *_Nonnull stop) {
+                                                 OWSAssert([object isKindOfClass:[TSOutgoingMessage class]]);
+                                                 TSOutgoingMessage *message = (TSOutgoingMessage *)object;
+                                                 OWSAssert(message.timestamp == timestamp);
+                                                 [result addObject:object];
+                                             }];
+    }];
+
+    return [result copy];
+}
+
++ (NSString *)groupForTimestamp:(uint64_t)timestamp
+{
+    return [NSString stringWithFormat:@"%llu", timestamp];
+}
+
++ (YapDatabaseView *)databaseExtension
+{
+    YapDatabaseViewSorting *sorting =
+        [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction *transaction,
+            NSString *group,
+            NSString *collection1,
+            NSString *key1,
+            id object1,
+            NSString *collection2,
+            NSString *key2,
+            id object2) {
+            // The ordering doesn't matter as long as its consistent.
+            return [key1 compare:key2];
+        }];
+
+    YapDatabaseViewGrouping *grouping =
+        [YapDatabaseViewGrouping withObjectBlock:^NSString *_Nullable(YapDatabaseReadTransaction *_Nonnull transaction,
+            NSString *_Nonnull collection,
+            NSString *_Nonnull key,
+            id _Nonnull object) {
+            if (![object isKindOfClass:[TSOutgoingMessage class]]) {
+                return nil;
+            }
+
+            TSOutgoingMessage *message = (TSOutgoingMessage *)object;
+
+            // Arbitrary string - all in the same group. We're only using the view for sorting.
+            return [OWSOutgoingMessageFinder groupForTimestamp:message.timestamp];
+        }];
+
+    YapDatabaseViewOptions *options = [YapDatabaseViewOptions new];
+    options.allowedCollections =
+        [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSOutgoingMessage collection]]];
+
+    return [[YapDatabaseView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"1" options:options];
+}
+
+
++ (void)asyncRegisterDatabaseExtension:(YapDatabase *)database
+{
+    YapDatabaseView *existingView = [database registeredExtension:OWSOutgoingMessageFinderExtensionName];
+    if (existingView) {
+        OWSFail(@"%@ was already initialized.", OWSOutgoingMessageFinderExtensionName);
+        return;
+    }
+    [database
+        asyncRegisterExtension:[self databaseExtension]
+                      withName:OWSOutgoingMessageFinderExtensionName
+               completionBlock:^(BOOL ready) {
+                   OWSCAssert(ready);
+
+                   DDLogInfo(
+                       @"%@ asyncRegisterExtension: %@ -> %d", self.tag, OWSOutgoingMessageFinderExtensionName, ready);
+               }];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
+
+@end
+
+#pragma mark -
 
 NSString *const OWSReadReceiptManagerCollection = @"OWSReadReceiptManagerCollection";
 NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabled";
@@ -25,6 +159,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+
+@property (nonatomic, readonly) OWSOutgoingMessageFinder *outgoingMessageFinder;
 
 // A map of "thread unique id"-to-"read receipt" for read receipts that
 // we will send to our linked devices.
@@ -79,6 +215,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
     _messageSender = messageSender;
     _dbConnection = storageManager.newDatabaseConnection;
+
+    _outgoingMessageFinder = [[OWSOutgoingMessageFinder alloc] initWithDBConnection:self.dbConnection];
 
     _toLinkedDevicesReadReceiptMap = [NSMutableDictionary new];
     _toSenderReadReceiptMap = [NSMutableDictionary new];
@@ -192,7 +330,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     }
 }
 
-- (void)messageWasReadLocally:(TSIncomingMessage *)message;
+- (void)messageWasReadLocally:(TSIncomingMessage *)message
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
@@ -261,7 +399,18 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     for (int i = 0; i < timestamps.count; i++) {
         UInt64 timestamp = [timestamps uint64AtIndex:i];
 
-        DDLogError(@"%@ timestamp: %llu", self.tag, timestamp);
+        NSArray<TSOutgoingMessage *> *messages = [self.outgoingMessageFinder outgoingMessagesWithTimestamp:timestamp];
+        OWSAssert(messages.count <= 1);
+        if (messages.count > 0) {
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                for (TSOutgoingMessage *message in messages) {
+                    [message updateWithReadRecipient:recipientId transaction:transaction];
+                }
+            }];
+        } else {
+            // TODO: Persist the read receipts and try to apply them to outgoing messages
+            //       that we learn about through sync messages.
+        }
     }
 }
 
@@ -293,6 +442,13 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                       inCollection:OWSReadReceiptManagerCollection];
         self.areReadReceiptsEnabledCached = @(value);
     }
+}
+
+#pragma mark - Database Extension
+
++ (void)asyncRegisterDatabaseExtension:(YapDatabase *)database
+{
+    [OWSOutgoingMessageFinder asyncRegisterDatabaseExtension:database];
 }
 
 #pragma mark - Logging
