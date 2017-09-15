@@ -18,6 +18,7 @@
 #import "TSThread.h"
 #import <25519/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
+#import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
 #import <YapDatabase/YapDatabaseRelationship.h>
 
@@ -305,6 +306,7 @@ void setDatabaseInitialized()
     [TSDatabaseView registerUnreadDatabaseView];
     [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
     [OWSMessageReceiver syncRegisterDatabaseExtension:self.database];
+    [OWSBatchMessageProcessor syncRegisterDatabaseExtension:self.database];
 
     // See comments on OWSDatabaseConnection.
     //

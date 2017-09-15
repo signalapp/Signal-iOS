@@ -5,11 +5,11 @@
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "OWSFingerprint.h"
 #import "OWSIdentityManager.h"
+#import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage_privateConstructor.h"
-#import "TSMessagesManager.h"
 #import "TSStorageManager.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/PreKeyWhisperMessage.h>

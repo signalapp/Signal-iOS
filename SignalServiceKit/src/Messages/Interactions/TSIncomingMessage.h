@@ -99,7 +99,9 @@ NS_ASSUME_NONNULL_BEGIN
  *   When the message was created in milliseconds since epoch
  *
  */
-+ (nullable instancetype)findMessageWithAuthorId:(NSString *)authorId timestamp:(uint64_t)timestamp;
++ (nullable instancetype)findMessageWithAuthorId:(NSString *)authorId
+                                       timestamp:(uint64_t)timestamp
+                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @property (nonatomic, readonly) NSString *authorId;
 

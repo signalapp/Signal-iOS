@@ -134,8 +134,8 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)()
 
 #define OWSProdCritical(__eventName) OWSProdEventWParams(OWSAnalyticsSeverityCritical, __eventName, nil)
 
-#pragma mark - TSMessagesManager macros
-// Defined here rather than in TSMessagesManager so that our analytic event extraction script
+#pragma mark - OWSMessageManager macros
+// Defined here rather than in OWSMessageManager so that our analytic event extraction script
 // can properly detect the event names.
 //
 // The debug logs can be more verbose than the analytics events.

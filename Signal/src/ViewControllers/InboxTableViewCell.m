@@ -7,9 +7,9 @@
 #import "Signal-Swift.h"
 #import "Util.h"
 #import "ViewControllerUtils.h"
+#import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -204,9 +204,9 @@ const NSUInteger kAvatarViewDiameter = 52;
     }
 
     NSAttributedString *attributedDate = [self dateAttributedString:thread.lastMessageDate];
-    NSUInteger unreadCount = [[TSMessagesManager sharedManager] unreadMessagesInThread:thread];
+    NSUInteger unreadCount = [[OWSMessageManager sharedManager] unreadMessagesInThread:thread];
 
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
                                                  name:kNSNotificationName_OtherUsersProfileDidChange

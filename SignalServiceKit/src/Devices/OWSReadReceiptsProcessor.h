@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSReadReceipt;
 @class TSIncomingMessage;
 @class TSStorageManager;
+@class YapDatabaseReadWriteTransaction;
 
 extern NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification;
 
@@ -33,6 +34,7 @@ extern NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)process;
+- (void)processWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

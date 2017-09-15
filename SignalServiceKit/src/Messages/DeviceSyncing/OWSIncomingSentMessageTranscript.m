@@ -3,16 +3,14 @@
 //
 
 #import "OWSIncomingSentMessageTranscript.h"
-#import "OWSAttachmentsProcessor.h"
+#import "OWSMessageManager.h"
 #import "OWSSignalServiceProtos.pb.h"
-#import "TSMessagesManager.h"
-#import "TSOutgoingMessage.h"
-#import "TSThread.h"
-
-// Thread finding imports
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
+#import "TSOutgoingMessage.h"
+#import "TSStorageManager.h"
+#import "TSThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -49,12 +47,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (TSThread *)thread
+- (TSThread *)threadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (self.dataMessage.hasGroup) {
-        return [TSGroupThread getOrCreateThreadWithGroupIdData:self.dataMessage.group.id];
+        return [TSGroupThread getOrCreateThreadWithGroupIdData:self.dataMessage.group.id transaction:transaction];
     } else {
-        return [TSContactThread getOrCreateThreadWithContactId:self.recipientId];
+        return [TSContactThread getOrCreateThreadWithContactId:self.recipientId transaction:transaction];
     }
 }
 
