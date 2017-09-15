@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosSyncMessageRead;
+@class OWSSignalServiceProtosSyncMessageReadLinkedDevices;
 @class OWSReadReceipt;
 @class TSIncomingMessage;
 @class TSStorageManager;
@@ -17,7 +17,8 @@ extern NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification;
 /**
  * Mark existing messages as read from the given received read receipts.
  */
-- (instancetype)initWithReadReceiptProtos:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos
+- (instancetype)initWithReadReceiptProtos:
+                    (NSArray<OWSSignalServiceProtosSyncMessageReadLinkedDevices *> *)readReceiptProtos
                            storageManager:(TSStorageManager *)storageManager;
 
 /**

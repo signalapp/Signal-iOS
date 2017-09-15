@@ -245,8 +245,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if (syncMessage.hasBlocked) {
         [description appendString:@"Blocked"];
-    } else if (syncMessage.read.count > 0) {
-        [description appendString:@"ReadReceipt"];
+    } else if (syncMessage.readLinkedDevices.count > 0) {
+        [description appendString:@"ReadReceiptLinkedDevices"];
+    } else if (syncMessage.readSender.count > 0) {
+        [description appendString:@"ReadReceiptSender"];
     } else if (syncMessage.hasVerified) {
         NSString *verifiedString =
             [NSString stringWithFormat:@"Verification for: %@", syncMessage.verified.destination];
@@ -773,13 +775,19 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.hasBlocked) {
         NSArray<NSString *> *blockedPhoneNumbers = [syncMessage.blocked.numbers copy];
         [_blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers sendSyncMessage:NO];
-    } else if (syncMessage.read.count > 0) {
-        DDLogInfo(@"%@ Received %ld read receipt(s)", self.tag, (u_long)syncMessage.read.count);
+    } else if (syncMessage.readLinkedDevices.count > 0) {
+        DDLogInfo(@"%@ Received %ld read receipt(s) from linked devices",
+            self.tag,
+            (u_long)syncMessage.readLinkedDevices.count);
 
         OWSReadReceiptsProcessor *readReceiptsProcessor =
-            [[OWSReadReceiptsProcessor alloc] initWithReadReceiptProtos:syncMessage.read
+            [[OWSReadReceiptsProcessor alloc] initWithReadReceiptProtos:syncMessage.readLinkedDevices
                                                          storageManager:self.storageManager];
         [readReceiptsProcessor process];
+    } else if (syncMessage.readSender.count > 0) {
+        DDLogInfo(@"%@ Received %ld read receipt(s) from recipient", self.tag, (u_long)syncMessage.readSender.count);
+
+        // TODO:
     } else if (syncMessage.hasVerified) {
         DDLogInfo(@"%@ Received verification state for %@", self.tag, syncMessage.verified.destination);
         [self.identityManager processIncomingSyncMessage:syncMessage.verified];
