@@ -4,7 +4,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSSignalServiceProtosEnvelope;
+@class OWSSignalServiceProtosReceiptMessage;
 @class TSIncomingMessage;
+@class TSOutgoingMessage;
+@class TSThread;
+@class YapDatabase;
+@class YapDatabaseReadWriteTransaction;
 
 // There are four kinds of read receipts:
 //
@@ -27,16 +33,37 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)sharedManager;
 
-// This method can be called from any thread.
+// This method should be called when we receive a read receipt
+// from a user to whom we have sent a message.
 //
-// It cues this manager:
+// This method can be called from any thread.
+- (void)processReadReceiptsFromRecipient:(OWSSignalServiceProtosReceiptMessage *)receiptMessage
+                                envelope:(OWSSignalServiceProtosEnvelope *)envelope;
+
+- (void)outgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
+                            transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+// This method cues this manager:
 //
 // * ...to inform the sender that this message was read (if read receipts
 //      are enabled).
 // * ...to inform the local user's other devices that this message was read.
 //
 // Both types of messages are deduplicated.
+//
+// This method can be called from any thread.
 - (void)messageWasReadLocally:(TSIncomingMessage *)message;
+
+- (void)markAsReadLocallyBeforeTimestamp:(uint64_t)timestamp thread:(TSThread *)thread;
+
+#pragma mark - Settings
+
+- (BOOL)areReadReceiptsEnabled;
+- (void)setAreReadReceiptsEnabled:(BOOL)value;
+
+#pragma mark - Database Extension
+
++ (void)asyncRegisterDatabaseExtension:(YapDatabase *)database;
 
 @end
 

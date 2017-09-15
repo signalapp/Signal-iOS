@@ -12,6 +12,7 @@
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
+#import "NSAttributedString+OWS.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSCall.h"
@@ -77,6 +78,7 @@
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -2132,6 +2134,17 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     ? NSLocalizedString(@"MESSAGE_STATUS_DELIVERED", @"message footer for delivered messages")
                     : NSLocalizedString(@"MESSAGE_STATUS_SENT", @"message footer for sent messages"));
             NSAttributedString *result = [[NSAttributedString alloc] initWithString:text];
+            if (outgoingMessage.wasDelivered && outgoingMessage.readRecipientIds.count > 0) {
+                NSAttributedString *checkmark = [[NSAttributedString alloc]
+                    initWithString:@"\uf00c "
+                        attributes:@{
+                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:10.f],
+                            NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
+                        }];
+                NSAttributedString *spacing = [[NSAttributedString alloc] initWithString:@" "];
+                result = [[checkmark rtlSafeAppend:spacing referenceView:self.view] rtlSafeAppend:result
+                                                                                    referenceView:self.view];
+            }
 
             // Show when it's the last message in the thread
             if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section] - 1) {
@@ -4037,46 +4050,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     [self updateLastVisibleTimestamp];
 
-    TSThread *thread = self.thread;
     uint64_t lastVisibleTimestamp = self.lastVisibleTimestamp;
 
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        NSMutableArray<id<OWSReadTracking>> *interactions = [NSMutableArray new];
-
-        [[TSDatabaseView unseenDatabaseViewExtension:transaction]
-            enumerateRowsInGroup:thread.uniqueId
-                      usingBlock:^(
-                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-
-                          if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                              OWSFail(@"Expected to conform to OWSReadTracking: object with class: %@ collection: %@ "
-                                      @"key: %@",
-                                  [object class],
-                                  collection,
-                                  key);
-                              return;
-                          }
-                          id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
-
-                          if (possiblyRead.timestampForSorting > lastVisibleTimestamp) {
-                              *stop = YES;
-                              return;
-                          }
-
-                          OWSAssert(!possiblyRead.read);
-                          if (!possiblyRead.read) {
-                              [interactions addObject:possiblyRead];
-                          }
-                      }];
-
-        if (interactions.count < 1) {
-            return;
-        }
-        DDLogError(@"Marking %zd messages as read.", interactions.count);
-        for (id<OWSReadTracking> possiblyRead in interactions) {
-            [possiblyRead markAsReadWithTransaction:transaction sendReadReceipt:YES updateExpiration:YES];
-        }
-    }];
+    [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeTimestamp:lastVisibleTimestamp thread:self.thread];
 }
 
 - (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)())successCompletion

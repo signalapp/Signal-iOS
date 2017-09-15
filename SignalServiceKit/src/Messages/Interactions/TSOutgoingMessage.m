@@ -39,6 +39,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 @property (atomic) TSGroupMetaMessage groupMetaMessage;
 
+@property (atomic) NSSet<NSString *> *readRecipientIds;
+
 @end
 
 #pragma mark -
@@ -407,6 +409,21 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self updateWithSentRecipient:contactId transaction:transaction];
     }];
+}
+
+- (void)updateWithReadRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(recipientId.length > 0);
+    OWSAssert(transaction);
+
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            NSMutableSet<NSString *> *readRecipientIds
+                                                = (message.readRecipientIds ? [message.readRecipientIds mutableCopy]
+                                                                            : [NSMutableSet new]);
+                                            [readRecipientIds addObject:recipientId];
+                                            message.readRecipientIds = readRecipientIds;
+                                        }];
 }
 
 #pragma mark -

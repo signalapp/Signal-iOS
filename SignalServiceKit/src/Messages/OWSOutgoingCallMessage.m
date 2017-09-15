@@ -32,7 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-
 - (instancetype)initWithThread:(TSThread *)thread offerMessage:(OWSCallOfferMessage *)offerMessage
 {
     self = [self initWithThread:thread];

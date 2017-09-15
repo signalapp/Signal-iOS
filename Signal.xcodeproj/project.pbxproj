@@ -80,6 +80,7 @@
 		34C42D611F4734CA0072EC04 /* OWSContactOffersCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D601F4734CA0072EC04 /* OWSContactOffersCell.m */; };
 		34C42D661F4734ED0072EC04 /* OWSContactOffersInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D631F4734ED0072EC04 /* OWSContactOffersInteraction.m */; };
 		34C42D671F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D651F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m */; };
+		34CA1C251F706B5400E51C51 /* NSAttributedString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA1C241F706B5400E51C51 /* NSAttributedString+OWS.m */; };
 		34CCAF381F0C0599004084F4 /* AppUpdateNag.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CCAF371F0C0599004084F4 /* AppUpdateNag.m */; };
 		34CCAF3B1F0C2748004084F4 /* OWSAddToContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CCAF3A1F0C2748004084F4 /* OWSAddToContactViewController.m */; };
 		34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CE88E61F2FB9A10098030F /* ProfileViewController.m */; };
@@ -526,6 +527,8 @@
 		34C42D631F4734ED0072EC04 /* OWSContactOffersInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactOffersInteraction.m; sourceTree = "<group>"; };
 		34C42D641F4734ED0072EC04 /* TSUnreadIndicatorInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSUnreadIndicatorInteraction.h; sourceTree = "<group>"; };
 		34C42D651F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSUnreadIndicatorInteraction.m; sourceTree = "<group>"; };
+		34CA1C231F706B5400E51C51 /* NSAttributedString+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+OWS.h"; sourceTree = "<group>"; };
+		34CA1C241F706B5400E51C51 /* NSAttributedString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+OWS.m"; sourceTree = "<group>"; };
 		34CCAF361F0C0599004084F4 /* AppUpdateNag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppUpdateNag.h; sourceTree = "<group>"; };
 		34CCAF371F0C0599004084F4 /* AppUpdateNag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppUpdateNag.m; sourceTree = "<group>"; };
 		34CCAF391F0C2748004084F4 /* OWSAddToContactViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAddToContactViewController.h; sourceTree = "<group>"; };
@@ -1415,6 +1418,8 @@
 				76EB04EA18170B33006006FC /* FunctionalUtil.h */,
 				76EB04EB18170B33006006FC /* FunctionalUtil.m */,
 				455AC69A1F4F79E500134004 /* ImageCache.swift */,
+				34CA1C231F706B5400E51C51 /* NSAttributedString+OWS.h */,
+				34CA1C241F706B5400E51C51 /* NSAttributedString+OWS.m */,
 				B62F5E0E1C2980B4000D370C /* NSData+ows_StripToken.h */,
 				B62F5E0F1C2980B4000D370C /* NSData+ows_StripToken.m */,
 				76EB04EC18170B33006006FC /* NumberUtil.h */,
@@ -1436,6 +1441,7 @@
 				4542F0951EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift */,
 				76EB04F518170B33006006FC /* StringUtil.h */,
 				76EB04F618170B33006006FC /* StringUtil.m */,
+				4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */,
 				345670FF1E89A5F1006EE662 /* ThreadUtil.h */,
 				345671001E89A5F1006EE662 /* ThreadUtil.m */,
 				FCFA64B11A24F29E0007FB87 /* UI Categories */,
@@ -1446,7 +1452,6 @@
 				76EB04FB18170B33006006FC /* Util.h */,
 				45F170D51E315310003FC1F2 /* Weak.swift */,
 				45F170CB1E310E22003FC1F2 /* WeakTimer.swift */,
-				4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -2210,6 +2215,7 @@
 				34CE88ED1F3237260098030F /* ProfileFetcherJob.swift in Sources */,
 				34B3F8791E8DF1700035BE1A /* CountryCodeViewController.m in Sources */,
 				4CE0E3771B954546007210CF /* TSAnimatedAdapter.m in Sources */,
+				34CA1C251F706B5400E51C51 /* NSAttributedString+OWS.m in Sources */,
 				4531C9C41DD8E6D800F08304 /* JSQMessagesCollectionViewCell+OWS.m in Sources */,
 				4542F0961EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift in Sources */,
 				4516E3FF1DD2193B00DC4206 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
