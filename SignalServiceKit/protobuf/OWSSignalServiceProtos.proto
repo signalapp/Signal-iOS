@@ -31,10 +31,22 @@ message Envelope {
 }
 
 message Content {
-  optional DataMessage dataMessage = 1;
-  optional SyncMessage syncMessage = 2;
-  optional CallMessage callMessage = 3;
-  optional NullMessage nullMessage = 4;
+  optional DataMessage    dataMessage = 1;
+  optional SyncMessage    syncMessage = 2;
+  optional CallMessage    callMessage = 3;
+  optional NullMessage    nullMessage = 4;
+  optional ReceiptMessage receiptMessage = 5;
+}
+
+message ReceiptMessage {
+  enum Type {
+    DELIVERY = 0;
+    READ     = 1;
+  }
+
+  optional Type   type       = 1;
+  repeated uint64 timestamps = 2;
+  optional uint64 when       = 3;
 }
 
 message CallMessage {
@@ -142,25 +154,19 @@ message SyncMessage {
     optional Type type = 1;
   }
 
-  message ReadLinkedDevices {
+  message Read {
     optional string sender    = 1;
     optional uint64 timestamp = 2;
   }
 
-  message ReadSender {
-    optional bytes  groupId   = 1;
-    optional uint64 timestamp = 2;
-  }
-
-  optional Sent              sent              = 1;
-  optional Contacts          contacts          = 2;
-  optional Groups            groups            = 3;
-  optional Request           request           = 4;
-  repeated ReadLinkedDevices readLinkedDevices = 5;
-  optional Blocked           blocked           = 6;
-  optional Verified          verified          = 7;
-  optional bytes             padding           = 8;
-  repeated ReadSender        readSender        = 9;
+  optional Sent     sent     = 1;
+  optional Contacts contacts = 2;
+  optional Groups   groups   = 3;
+  optional Request  request  = 4;
+  repeated Read     read     = 5;
+  optional Blocked  blocked  = 6;
+  optional Verified verified = 7;
+  optional bytes    padding  = 8;
 }
 
 message AttachmentPointer {

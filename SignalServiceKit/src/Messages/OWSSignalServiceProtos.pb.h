@@ -36,6 +36,8 @@
 @class OWSSignalServiceProtosGroupDetailsBuilder;
 @class OWSSignalServiceProtosNullMessage;
 @class OWSSignalServiceProtosNullMessageBuilder;
+@class OWSSignalServiceProtosReceiptMessage;
+@class OWSSignalServiceProtosReceiptMessageBuilder;
 @class OWSSignalServiceProtosSyncMessage;
 @class OWSSignalServiceProtosSyncMessageBlocked;
 @class OWSSignalServiceProtosSyncMessageBlockedBuilder;
@@ -44,10 +46,8 @@
 @class OWSSignalServiceProtosSyncMessageContactsBuilder;
 @class OWSSignalServiceProtosSyncMessageGroups;
 @class OWSSignalServiceProtosSyncMessageGroupsBuilder;
-@class OWSSignalServiceProtosSyncMessageReadLinkedDevices;
-@class OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder;
-@class OWSSignalServiceProtosSyncMessageReadSender;
-@class OWSSignalServiceProtosSyncMessageReadSenderBuilder;
+@class OWSSignalServiceProtosSyncMessageRead;
+@class OWSSignalServiceProtosSyncMessageReadBuilder;
 @class OWSSignalServiceProtosSyncMessageRequest;
 @class OWSSignalServiceProtosSyncMessageRequestBuilder;
 @class OWSSignalServiceProtosSyncMessageSent;
@@ -110,6 +110,14 @@ typedef NS_ENUM(SInt32, OWSSignalServiceProtosEnvelopeType) {
 
 BOOL OWSSignalServiceProtosEnvelopeTypeIsValidValue(OWSSignalServiceProtosEnvelopeType value);
 NSString *NSStringFromOWSSignalServiceProtosEnvelopeType(OWSSignalServiceProtosEnvelopeType value);
+
+typedef NS_ENUM(SInt32, OWSSignalServiceProtosReceiptMessageType) {
+  OWSSignalServiceProtosReceiptMessageTypeDelivery = 0,
+  OWSSignalServiceProtosReceiptMessageTypeRead = 1,
+};
+
+BOOL OWSSignalServiceProtosReceiptMessageTypeIsValidValue(OWSSignalServiceProtosReceiptMessageType value);
+NSString *NSStringFromOWSSignalServiceProtosReceiptMessageType(OWSSignalServiceProtosReceiptMessageType value);
 
 typedef NS_ENUM(SInt32, OWSSignalServiceProtosDataMessageFlags) {
   OWSSignalServiceProtosDataMessageFlagsEndSession = 1,
@@ -278,25 +286,30 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define Content_syncMessage @"syncMessage"
 #define Content_callMessage @"callMessage"
 #define Content_nullMessage @"nullMessage"
+#define Content_receiptMessage @"receiptMessage"
 @interface OWSSignalServiceProtosContent : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasDataMessage_:1;
   BOOL hasSyncMessage_:1;
   BOOL hasCallMessage_:1;
   BOOL hasNullMessage_:1;
+  BOOL hasReceiptMessage_:1;
   OWSSignalServiceProtosDataMessage* dataMessage;
   OWSSignalServiceProtosSyncMessage* syncMessage;
   OWSSignalServiceProtosCallMessage* callMessage;
   OWSSignalServiceProtosNullMessage* nullMessage;
+  OWSSignalServiceProtosReceiptMessage* receiptMessage;
 }
 - (BOOL) hasDataMessage;
 - (BOOL) hasSyncMessage;
 - (BOOL) hasCallMessage;
 - (BOOL) hasNullMessage;
+- (BOOL) hasReceiptMessage;
 @property (readonly, strong) OWSSignalServiceProtosDataMessage* dataMessage;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessage* syncMessage;
 @property (readonly, strong) OWSSignalServiceProtosCallMessage* callMessage;
 @property (readonly, strong) OWSSignalServiceProtosNullMessage* nullMessage;
+@property (readonly, strong) OWSSignalServiceProtosReceiptMessage* receiptMessage;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -360,6 +373,84 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosContentBuilder*) setNullMessageBuilder:(OWSSignalServiceProtosNullMessageBuilder*) builderForValue;
 - (OWSSignalServiceProtosContentBuilder*) mergeNullMessage:(OWSSignalServiceProtosNullMessage*) value;
 - (OWSSignalServiceProtosContentBuilder*) clearNullMessage;
+
+- (BOOL) hasReceiptMessage;
+- (OWSSignalServiceProtosReceiptMessage*) receiptMessage;
+- (OWSSignalServiceProtosContentBuilder*) setReceiptMessage:(OWSSignalServiceProtosReceiptMessage*) value;
+- (OWSSignalServiceProtosContentBuilder*) setReceiptMessageBuilder:(OWSSignalServiceProtosReceiptMessageBuilder*) builderForValue;
+- (OWSSignalServiceProtosContentBuilder*) mergeReceiptMessage:(OWSSignalServiceProtosReceiptMessage*) value;
+- (OWSSignalServiceProtosContentBuilder*) clearReceiptMessage;
+@end
+
+#define ReceiptMessage_type @"type"
+#define ReceiptMessage_timestamps @"timestamps"
+#define ReceiptMessage_when @"when"
+@interface OWSSignalServiceProtosReceiptMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasWhen_:1;
+  BOOL hasType_:1;
+  UInt64 when;
+  OWSSignalServiceProtosReceiptMessageType type;
+  PBAppendableArray * timestampsArray;
+}
+- (BOOL) hasType;
+- (BOOL) hasWhen;
+@property (readonly) OWSSignalServiceProtosReceiptMessageType type;
+@property (readonly, strong) PBArray * timestamps;
+@property (readonly) UInt64 when;
+- (UInt64)timestampsAtIndex:(NSUInteger)index;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) builder;
++ (OWSSignalServiceProtosReceiptMessageBuilder*) builder;
++ (OWSSignalServiceProtosReceiptMessageBuilder*) builderWithPrototype:(OWSSignalServiceProtosReceiptMessage*) prototype;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosReceiptMessage*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosReceiptMessage*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosReceiptMessage*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosReceiptMessage*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosReceiptMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosReceiptMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosReceiptMessageBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosReceiptMessage* resultReceiptMessage;
+}
+
+- (OWSSignalServiceProtosReceiptMessage*) defaultInstance;
+
+- (OWSSignalServiceProtosReceiptMessageBuilder*) clear;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) clone;
+
+- (OWSSignalServiceProtosReceiptMessage*) build;
+- (OWSSignalServiceProtosReceiptMessage*) buildPartial;
+
+- (OWSSignalServiceProtosReceiptMessageBuilder*) mergeFrom:(OWSSignalServiceProtosReceiptMessage*) other;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasType;
+- (OWSSignalServiceProtosReceiptMessageType) type;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) setType:(OWSSignalServiceProtosReceiptMessageType) value;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) clearType;
+
+- (PBAppendableArray *)timestamps;
+- (UInt64)timestampsAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosReceiptMessageBuilder *)addTimestamps:(UInt64)value;
+- (OWSSignalServiceProtosReceiptMessageBuilder *)setTimestampsArray:(NSArray *)array;
+- (OWSSignalServiceProtosReceiptMessageBuilder *)setTimestampsValues:(const UInt64 *)values count:(NSUInteger)count;
+- (OWSSignalServiceProtosReceiptMessageBuilder *)clearTimestamps;
+
+- (BOOL) hasWhen;
+- (UInt64) when;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) setWhen:(UInt64) value;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) clearWhen;
 @end
 
 #define CallMessage_offer @"offer"
@@ -1006,11 +1097,10 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define SyncMessage_contacts @"contacts"
 #define SyncMessage_groups @"groups"
 #define SyncMessage_request @"request"
-#define SyncMessage_readLinkedDevices @"readLinkedDevices"
+#define SyncMessage_read @"read"
 #define SyncMessage_blocked @"blocked"
 #define SyncMessage_verified @"verified"
 #define SyncMessage_padding @"padding"
-#define SyncMessage_readSender @"readSender"
 @interface OWSSignalServiceProtosSyncMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasSent_:1;
@@ -1027,8 +1117,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   OWSSignalServiceProtosSyncMessageBlocked* blocked;
   OWSSignalServiceProtosVerified* verified;
   NSData* padding;
-  NSMutableArray * readLinkedDevicesArray;
-  NSMutableArray * readSenderArray;
+  NSMutableArray * readArray;
 }
 - (BOOL) hasSent;
 - (BOOL) hasContacts;
@@ -1041,13 +1130,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageContacts* contacts;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageGroups* groups;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageRequest* request;
-@property (readonly, strong) NSArray<OWSSignalServiceProtosSyncMessageReadLinkedDevices*> * readLinkedDevices;
+@property (readonly, strong) NSArray<OWSSignalServiceProtosSyncMessageRead*> * read;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessageBlocked* blocked;
 @property (readonly, strong) OWSSignalServiceProtosVerified* verified;
 @property (readonly, strong) NSData* padding;
-@property (readonly, strong) NSArray<OWSSignalServiceProtosSyncMessageReadSender*> * readSender;
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevices*)readLinkedDevicesAtIndex:(NSUInteger)index;
-- (OWSSignalServiceProtosSyncMessageReadSender*)readSenderAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosSyncMessageRead*)readAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -1363,9 +1450,9 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosSyncMessageRequestBuilder*) clearType;
 @end
 
-#define ReadLinkedDevices_sender @"sender"
-#define ReadLinkedDevices_timestamp @"timestamp"
-@interface OWSSignalServiceProtosSyncMessageReadLinkedDevices : PBGeneratedMessage<GeneratedMessageProtocol> {
+#define Read_sender @"sender"
+#define Read_timestamp @"timestamp"
+@interface OWSSignalServiceProtosSyncMessageRead : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasTimestamp_:1;
   BOOL hasSender_:1;
@@ -1382,105 +1469,45 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 
 - (BOOL) isInitialized;
 - (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) builder;
-+ (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) builder;
-+ (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) builderWithPrototype:(OWSSignalServiceProtosSyncMessageReadLinkedDevices*) prototype;
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) toBuilder;
+- (OWSSignalServiceProtosSyncMessageReadBuilder*) builder;
++ (OWSSignalServiceProtosSyncMessageReadBuilder*) builder;
++ (OWSSignalServiceProtosSyncMessageReadBuilder*) builderWithPrototype:(OWSSignalServiceProtosSyncMessageRead*) prototype;
+- (OWSSignalServiceProtosSyncMessageReadBuilder*) toBuilder;
 
-+ (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) parseFromData:(NSData*) data;
-+ (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) parseFromInputStream:(NSInputStream*) input;
-+ (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) parseFromCodedInputStream:(PBCodedInputStream*) input;
-+ (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosSyncMessageRead*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosSyncMessageRead*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosSyncMessageRead*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosSyncMessageRead*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosSyncMessageRead*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosSyncMessageRead*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
 @end
 
-@interface OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder : PBGeneratedMessageBuilder {
+@interface OWSSignalServiceProtosSyncMessageReadBuilder : PBGeneratedMessageBuilder {
 @private
-  OWSSignalServiceProtosSyncMessageReadLinkedDevices* resultReadLinkedDevices;
+  OWSSignalServiceProtosSyncMessageRead* resultRead;
 }
 
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) defaultInstance;
+- (OWSSignalServiceProtosSyncMessageRead*) defaultInstance;
 
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) clear;
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) clone;
+- (OWSSignalServiceProtosSyncMessageReadBuilder*) clear;
+- (OWSSignalServiceProtosSyncMessageReadBuilder*) clone;
 
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) build;
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) buildPartial;
+- (OWSSignalServiceProtosSyncMessageRead*) build;
+- (OWSSignalServiceProtosSyncMessageRead*) buildPartial;
 
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) mergeFrom:(OWSSignalServiceProtosSyncMessageReadLinkedDevices*) other;
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+- (OWSSignalServiceProtosSyncMessageReadBuilder*) mergeFrom:(OWSSignalServiceProtosSyncMessageRead*) other;
+- (OWSSignalServiceProtosSyncMessageReadBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosSyncMessageReadBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
 
 - (BOOL) hasSender;
 - (NSString*) sender;
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) setSender:(NSString*) value;
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) clearSender;
+- (OWSSignalServiceProtosSyncMessageReadBuilder*) setSender:(NSString*) value;
+- (OWSSignalServiceProtosSyncMessageReadBuilder*) clearSender;
 
 - (BOOL) hasTimestamp;
 - (UInt64) timestamp;
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) setTimestamp:(UInt64) value;
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) clearTimestamp;
-@end
-
-#define ReadSender_groupId @"groupId"
-#define ReadSender_timestamp @"timestamp"
-@interface OWSSignalServiceProtosSyncMessageReadSender : PBGeneratedMessage<GeneratedMessageProtocol> {
-@private
-  BOOL hasTimestamp_:1;
-  BOOL hasGroupId_:1;
-  UInt64 timestamp;
-  NSData* groupId;
-}
-- (BOOL) hasGroupId;
-- (BOOL) hasTimestamp;
-@property (readonly, strong) NSData* groupId;
-@property (readonly) UInt64 timestamp;
-
-+ (instancetype) defaultInstance;
-- (instancetype) defaultInstance;
-
-- (BOOL) isInitialized;
-- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
-- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) builder;
-+ (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) builder;
-+ (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) builderWithPrototype:(OWSSignalServiceProtosSyncMessageReadSender*) prototype;
-- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) toBuilder;
-
-+ (OWSSignalServiceProtosSyncMessageReadSender*) parseFromData:(NSData*) data;
-+ (OWSSignalServiceProtosSyncMessageReadSender*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (OWSSignalServiceProtosSyncMessageReadSender*) parseFromInputStream:(NSInputStream*) input;
-+ (OWSSignalServiceProtosSyncMessageReadSender*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (OWSSignalServiceProtosSyncMessageReadSender*) parseFromCodedInputStream:(PBCodedInputStream*) input;
-+ (OWSSignalServiceProtosSyncMessageReadSender*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-@end
-
-@interface OWSSignalServiceProtosSyncMessageReadSenderBuilder : PBGeneratedMessageBuilder {
-@private
-  OWSSignalServiceProtosSyncMessageReadSender* resultReadSender;
-}
-
-- (OWSSignalServiceProtosSyncMessageReadSender*) defaultInstance;
-
-- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) clear;
-- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) clone;
-
-- (OWSSignalServiceProtosSyncMessageReadSender*) build;
-- (OWSSignalServiceProtosSyncMessageReadSender*) buildPartial;
-
-- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) mergeFrom:(OWSSignalServiceProtosSyncMessageReadSender*) other;
-- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
-- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-
-- (BOOL) hasGroupId;
-- (NSData*) groupId;
-- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) setGroupId:(NSData*) value;
-- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) clearGroupId;
-
-- (BOOL) hasTimestamp;
-- (UInt64) timestamp;
-- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) setTimestamp:(UInt64) value;
-- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) clearTimestamp;
+- (OWSSignalServiceProtosSyncMessageReadBuilder*) setTimestamp:(UInt64) value;
+- (OWSSignalServiceProtosSyncMessageReadBuilder*) clearTimestamp;
 @end
 
 @interface OWSSignalServiceProtosSyncMessageBuilder : PBGeneratedMessageBuilder {
@@ -1528,11 +1555,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosSyncMessageBuilder*) mergeRequest:(OWSSignalServiceProtosSyncMessageRequest*) value;
 - (OWSSignalServiceProtosSyncMessageBuilder*) clearRequest;
 
-- (NSMutableArray<OWSSignalServiceProtosSyncMessageReadLinkedDevices*> *)readLinkedDevices;
-- (OWSSignalServiceProtosSyncMessageReadLinkedDevices*)readLinkedDevicesAtIndex:(NSUInteger)index;
-- (OWSSignalServiceProtosSyncMessageBuilder *)addReadLinkedDevices:(OWSSignalServiceProtosSyncMessageReadLinkedDevices*)value;
-- (OWSSignalServiceProtosSyncMessageBuilder *)setReadLinkedDevicesArray:(NSArray<OWSSignalServiceProtosSyncMessageReadLinkedDevices*> *)array;
-- (OWSSignalServiceProtosSyncMessageBuilder *)clearReadLinkedDevices;
+- (NSMutableArray<OWSSignalServiceProtosSyncMessageRead*> *)read;
+- (OWSSignalServiceProtosSyncMessageRead*)readAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosSyncMessageBuilder *)addRead:(OWSSignalServiceProtosSyncMessageRead*)value;
+- (OWSSignalServiceProtosSyncMessageBuilder *)setReadArray:(NSArray<OWSSignalServiceProtosSyncMessageRead*> *)array;
+- (OWSSignalServiceProtosSyncMessageBuilder *)clearRead;
 
 - (BOOL) hasBlocked;
 - (OWSSignalServiceProtosSyncMessageBlocked*) blocked;
@@ -1552,12 +1579,6 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (NSData*) padding;
 - (OWSSignalServiceProtosSyncMessageBuilder*) setPadding:(NSData*) value;
 - (OWSSignalServiceProtosSyncMessageBuilder*) clearPadding;
-
-- (NSMutableArray<OWSSignalServiceProtosSyncMessageReadSender*> *)readSender;
-- (OWSSignalServiceProtosSyncMessageReadSender*)readSenderAtIndex:(NSUInteger)index;
-- (OWSSignalServiceProtosSyncMessageBuilder *)addReadSender:(OWSSignalServiceProtosSyncMessageReadSender*)value;
-- (OWSSignalServiceProtosSyncMessageBuilder *)setReadSenderArray:(NSArray<OWSSignalServiceProtosSyncMessageReadSender*> *)array;
-- (OWSSignalServiceProtosSyncMessageBuilder *)clearReadSender;
 @end
 
 #define AttachmentPointer_id @"id"
