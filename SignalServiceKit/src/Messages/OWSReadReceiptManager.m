@@ -9,62 +9,23 @@
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
-#import "Threading.h"
-//#import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
+#import "Threading.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-//// A two-tuple that can be used to hash by a pair a values.
-//@interface HashablePair : NSObject
-//
-//@property (nonatomic) NSObject *left;
-//@property (nonatomic) NSString *sender;
-//
-//@end
-//
-//#pragma mark -
-//
-//@implementation OWSReadReceiptManager
-//
-//- (BOOL)isEqual:(id)object {
-//    if ([object isKindOfClass:[HashablePair class]]) {
-//        return NO;
-//    }
-//    HashablePair *otherPair = object;
-//    return (self.left )
-//}
-//@property (readonly) NSUInteger hash;
-//
-//- (instancetype)init NS_UNAVAILABLE;
-//+ (instancetype)sharedManager;
-//
-//- (void)messageWasReadLocally:(TSIncomingMessage *)message;
-//
-//@end
-//
-//#pragma mark -
-
 @interface OWSReadReceiptManager ()
+
+@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 // A map of "thread unique id"-to-"read receipt" for incoming messages.
 //
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSReadReceipt *> *incomingReadReceiptMap;
 
-//@property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;
-//@property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
-@property (nonatomic, readonly) TSStorageManager *storageManager;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
-//@property (nonatomic, readonly) OWSIncomingMessageFinder *incomingMessageFinder;
-//@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
-//@property (nonatomic, readonly) OWSIdentityManager *identityManager;
-
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
 @property (nonatomic) BOOL isProcessing;
-
-//@property (atomic) NSMutableArray<OWSReadReceipt *> *readReceiptsQueue;
-//@property BOOL isObserving;
 
 @end
 
@@ -84,45 +45,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initDefault
 {
-    //    TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
-    //        TSStorageManager *storageManager = [TSStorageManager sharedManager];
-    //    id<ContactsManagerProtocol> contactsManager = [TextSecureKitEnv sharedEnv].contactsManager;
-    //    id<OWSCallMessageHandler> callMessageHandler = [TextSecureKitEnv sharedEnv].callMessageHandler;
-    //    ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
-    //    OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
     OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
 
     return [self initWithMessageSender:messageSender
-        //                        storageManager:storageManager
     ];
 }
 
 - (instancetype)initWithMessageSender:(OWSMessageSender *)messageSender
-//                       storageManager:(TSStorageManager *)storageManager
 {
     self = [super init];
 
     if (!self) {
         return self;
     }
-    //
-    //        _storageManager = storageManager;
-    //    _networkManager = networkManager;
-    //    _callMessageHandler = callMessageHandler;
-    //    _contactsManager = contactsManager;
-    //    _contactsUpdater = contactsUpdater;
-    //    _identityManager = identityManager;
+
     _messageSender = messageSender;
 
     _incomingReadReceiptMap = [NSMutableDictionary new];
-
-    //    _dbConnection = storageManager.newDatabaseConnection;
-    //    _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithDatabase:storageManager.database];
-    //    _blockingManager = [OWSBlockingManager sharedManager];
-
-    //    _readReceiptsQueue = [NSMutableArray new];
-    //    _messageSender = messageSender;
-    //    _isObserving = NO;
 
     OWSSingletonAssert();
 
