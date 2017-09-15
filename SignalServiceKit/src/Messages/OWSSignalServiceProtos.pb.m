@@ -1080,6 +1080,7 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
 @interface OWSSignalServiceProtosReceiptMessage ()
 @property OWSSignalServiceProtosReceiptMessageType type;
 @property (strong) PBAppendableArray * timestampArray;
+@property (strong) NSData* profileKey;
 @end
 
 @implementation OWSSignalServiceProtosReceiptMessage
@@ -1093,9 +1094,17 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
 @synthesize type;
 @synthesize timestampArray;
 @dynamic timestamp;
+- (BOOL) hasProfileKey {
+  return !!hasProfileKey_;
+}
+- (void) setHasProfileKey:(BOOL) _value_ {
+  hasProfileKey_ = !!_value_;
+}
+@synthesize profileKey;
 - (instancetype) init {
   if ((self = [super init])) {
     self.type = OWSSignalServiceProtosReceiptMessageTypeDelivery;
+    self.profileKey = [NSData data];
   }
   return self;
 }
@@ -1131,6 +1140,9 @@ static OWSSignalServiceProtosReceiptMessage* defaultOWSSignalServiceProtosReceip
       [output writeUInt64:2 value:values[i]];
     }
   }
+  if (self.hasProfileKey) {
+    [output writeData:3 value:self.profileKey];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -1152,6 +1164,9 @@ static OWSSignalServiceProtosReceiptMessage* defaultOWSSignalServiceProtosReceip
     }
     size_ += dataSize;
     size_ += (SInt32)(1 * count);
+  }
+  if (self.hasProfileKey) {
+    size_ += computeDataSize(3, self.profileKey);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -1194,6 +1209,9 @@ static OWSSignalServiceProtosReceiptMessage* defaultOWSSignalServiceProtosReceip
   [self.timestampArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
     [output appendFormat:@"%@%@: %@\n", indent, @"timestamp", obj];
   }];
+  if (self.hasProfileKey) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"profileKey", self.profileKey];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -1206,6 +1224,9 @@ static OWSSignalServiceProtosReceiptMessage* defaultOWSSignalServiceProtosReceip
     [timestampArrayArray addObject: @([self.timestampArray uint64AtIndex:i])];
   }
   [dictionary setObject: timestampArrayArray forKey: @"timestamp"];
+  if (self.hasProfileKey) {
+    [dictionary setObject: self.profileKey forKey: @"profileKey"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -1220,6 +1241,8 @@ static OWSSignalServiceProtosReceiptMessage* defaultOWSSignalServiceProtosReceip
       self.hasType == otherMessage.hasType &&
       (!self.hasType || self.type == otherMessage.type) &&
       [self.timestampArray isEqualToArray:otherMessage.timestampArray] &&
+      self.hasProfileKey == otherMessage.hasProfileKey &&
+      (!self.hasProfileKey || [self.profileKey isEqual:otherMessage.profileKey]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -1230,6 +1253,9 @@ static OWSSignalServiceProtosReceiptMessage* defaultOWSSignalServiceProtosReceip
   [self.timestampArray enumerateObjectsUsingBlock:^(NSNumber *obj, NSUInteger idx, BOOL *stop) {
     hashCode = hashCode * 31 + [obj longValue];
   }];
+  if (self.hasProfileKey) {
+    hashCode = hashCode * 31 + [self.profileKey hash];
+  }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
 }
@@ -1303,6 +1329,9 @@ NSString *NSStringFromOWSSignalServiceProtosReceiptMessageType(OWSSignalServiceP
       [resultReceiptMessage.timestampArray appendArray:other.timestampArray];
     }
   }
+  if (other.hasProfileKey) {
+    [self setProfileKey:other.profileKey];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -1335,6 +1364,10 @@ NSString *NSStringFromOWSSignalServiceProtosReceiptMessageType(OWSSignalServiceP
       }
       case 16: {
         [self addTimestamp:[input readUInt64]];
+        break;
+      }
+      case 26: {
+        [self setProfileKey:[input readData]];
         break;
       }
     }
@@ -1379,6 +1412,22 @@ NSString *NSStringFromOWSSignalServiceProtosReceiptMessageType(OWSSignalServiceP
 }
 - (OWSSignalServiceProtosReceiptMessageBuilder *)clearTimestamp {
   resultReceiptMessage.timestampArray = nil;
+  return self;
+}
+- (BOOL) hasProfileKey {
+  return resultReceiptMessage.hasProfileKey;
+}
+- (NSData*) profileKey {
+  return resultReceiptMessage.profileKey;
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder*) setProfileKey:(NSData*) value {
+  resultReceiptMessage.hasProfileKey = YES;
+  resultReceiptMessage.profileKey = value;
+  return self;
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder*) clearProfileKey {
+  resultReceiptMessage.hasProfileKey = NO;
+  resultReceiptMessage.profileKey = [NSData data];
   return self;
 }
 @end

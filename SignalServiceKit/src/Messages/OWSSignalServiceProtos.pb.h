@@ -384,15 +384,20 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 
 #define ReceiptMessage_type @"type"
 #define ReceiptMessage_timestamp @"timestamp"
+#define ReceiptMessage_profileKey @"profileKey"
 @interface OWSSignalServiceProtosReceiptMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
+  BOOL hasProfileKey_:1;
   BOOL hasType_:1;
+  NSData* profileKey;
   OWSSignalServiceProtosReceiptMessageType type;
   PBAppendableArray * timestampArray;
 }
 - (BOOL) hasType;
+- (BOOL) hasProfileKey;
 @property (readonly) OWSSignalServiceProtosReceiptMessageType type;
 @property (readonly, strong) PBArray * timestamp;
+@property (readonly, strong) NSData* profileKey;
 - (UInt64)timestampAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -441,6 +446,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosReceiptMessageBuilder *)setTimestampArray:(NSArray *)array;
 - (OWSSignalServiceProtosReceiptMessageBuilder *)setTimestampValues:(const UInt64 *)values count:(NSUInteger)count;
 - (OWSSignalServiceProtosReceiptMessageBuilder *)clearTimestamp;
+
+- (BOOL) hasProfileKey;
+- (NSData*) profileKey;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) setProfileKey:(NSData*) value;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) clearProfileKey;
 @end
 
 #define CallMessage_offer @"offer"
