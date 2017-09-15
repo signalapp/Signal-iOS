@@ -3946,10 +3946,11 @@ NSString *NSStringFromOWSSignalServiceProtosVerifiedState(OWSSignalServiceProtos
 @property (strong) OWSSignalServiceProtosSyncMessageContacts* contacts;
 @property (strong) OWSSignalServiceProtosSyncMessageGroups* groups;
 @property (strong) OWSSignalServiceProtosSyncMessageRequest* request;
-@property (strong) NSMutableArray<OWSSignalServiceProtosSyncMessageRead*> * readArray;
+@property (strong) NSMutableArray<OWSSignalServiceProtosSyncMessageReadLinkedDevices*> * readLinkedDevicesArray;
 @property (strong) OWSSignalServiceProtosSyncMessageBlocked* blocked;
 @property (strong) OWSSignalServiceProtosVerified* verified;
 @property (strong) NSData* padding;
+@property (strong) NSMutableArray<OWSSignalServiceProtosSyncMessageReadSender*> * readSenderArray;
 @end
 
 @implementation OWSSignalServiceProtosSyncMessage
@@ -3982,8 +3983,8 @@ NSString *NSStringFromOWSSignalServiceProtosVerifiedState(OWSSignalServiceProtos
   hasRequest_ = !!_value_;
 }
 @synthesize request;
-@synthesize readArray;
-@dynamic read;
+@synthesize readLinkedDevicesArray;
+@dynamic readLinkedDevices;
 - (BOOL) hasBlocked {
   return !!hasBlocked_;
 }
@@ -4005,6 +4006,8 @@ NSString *NSStringFromOWSSignalServiceProtosVerifiedState(OWSSignalServiceProtos
   hasPadding_ = !!_value_;
 }
 @synthesize padding;
+@synthesize readSenderArray;
+@dynamic readSender;
 - (instancetype) init {
   if ((self = [super init])) {
     self.sent = [OWSSignalServiceProtosSyncMessageSent defaultInstance];
@@ -4029,11 +4032,17 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
 - (instancetype) defaultInstance {
   return defaultOWSSignalServiceProtosSyncMessageInstance;
 }
-- (NSArray<OWSSignalServiceProtosSyncMessageRead*> *)read {
-  return readArray;
+- (NSArray<OWSSignalServiceProtosSyncMessageReadLinkedDevices*> *)readLinkedDevices {
+  return readLinkedDevicesArray;
 }
-- (OWSSignalServiceProtosSyncMessageRead*)readAtIndex:(NSUInteger)index {
-  return [readArray objectAtIndex:index];
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevices*)readLinkedDevicesAtIndex:(NSUInteger)index {
+  return [readLinkedDevicesArray objectAtIndex:index];
+}
+- (NSArray<OWSSignalServiceProtosSyncMessageReadSender*> *)readSender {
+  return readSenderArray;
+}
+- (OWSSignalServiceProtosSyncMessageReadSender*)readSenderAtIndex:(NSUInteger)index {
+  return [readSenderArray objectAtIndex:index];
 }
 - (BOOL) isInitialized {
   return YES;
@@ -4051,7 +4060,7 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   if (self.hasRequest) {
     [output writeMessage:4 value:self.request];
   }
-  [self.readArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageRead *element, NSUInteger idx, BOOL *stop) {
+  [self.readLinkedDevicesArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageReadLinkedDevices *element, NSUInteger idx, BOOL *stop) {
     [output writeMessage:5 value:element];
   }];
   if (self.hasBlocked) {
@@ -4063,6 +4072,9 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   if (self.hasPadding) {
     [output writeData:8 value:self.padding];
   }
+  [self.readSenderArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageReadSender *element, NSUInteger idx, BOOL *stop) {
+    [output writeMessage:9 value:element];
+  }];
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -4084,7 +4096,7 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   if (self.hasRequest) {
     size_ += computeMessageSize(4, self.request);
   }
-  [self.readArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageRead *element, NSUInteger idx, BOOL *stop) {
+  [self.readLinkedDevicesArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageReadLinkedDevices *element, NSUInteger idx, BOOL *stop) {
     size_ += computeMessageSize(5, element);
   }];
   if (self.hasBlocked) {
@@ -4096,6 +4108,9 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   if (self.hasPadding) {
     size_ += computeDataSize(8, self.padding);
   }
+  [self.readSenderArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageReadSender *element, NSUInteger idx, BOOL *stop) {
+    size_ += computeMessageSize(9, element);
+  }];
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
   return size_;
@@ -4155,8 +4170,8 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
-  [self.readArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageRead *element, NSUInteger idx, BOOL *stop) {
-    [output appendFormat:@"%@%@ {\n", indent, @"read"];
+  [self.readLinkedDevicesArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageReadLinkedDevices *element, NSUInteger idx, BOOL *stop) {
+    [output appendFormat:@"%@%@ {\n", indent, @"readLinkedDevices"];
     [element writeDescriptionTo:output
                      withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
@@ -4176,6 +4191,12 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   if (self.hasPadding) {
     [output appendFormat:@"%@%@: %@\n", indent, @"padding", self.padding];
   }
+  [self.readSenderArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageReadSender *element, NSUInteger idx, BOOL *stop) {
+    [output appendFormat:@"%@%@ {\n", indent, @"readSender"];
+    [element writeDescriptionTo:output
+                     withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }];
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -4199,10 +4220,10 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
    [self.request storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"request"];
   }
-  for (OWSSignalServiceProtosSyncMessageRead* element in self.readArray) {
+  for (OWSSignalServiceProtosSyncMessageReadLinkedDevices* element in self.readLinkedDevicesArray) {
     NSMutableDictionary *elementDictionary = [NSMutableDictionary dictionary];
     [element storeInDictionary:elementDictionary];
-    [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"read"];
+    [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"readLinkedDevices"];
   }
   if (self.hasBlocked) {
    NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
@@ -4216,6 +4237,11 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   }
   if (self.hasPadding) {
     [dictionary setObject: self.padding forKey: @"padding"];
+  }
+  for (OWSSignalServiceProtosSyncMessageReadSender* element in self.readSenderArray) {
+    NSMutableDictionary *elementDictionary = [NSMutableDictionary dictionary];
+    [element storeInDictionary:elementDictionary];
+    [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"readSender"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -4236,13 +4262,14 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
       (!self.hasGroups || [self.groups isEqual:otherMessage.groups]) &&
       self.hasRequest == otherMessage.hasRequest &&
       (!self.hasRequest || [self.request isEqual:otherMessage.request]) &&
-      [self.readArray isEqualToArray:otherMessage.readArray] &&
+      [self.readLinkedDevicesArray isEqualToArray:otherMessage.readLinkedDevicesArray] &&
       self.hasBlocked == otherMessage.hasBlocked &&
       (!self.hasBlocked || [self.blocked isEqual:otherMessage.blocked]) &&
       self.hasVerified == otherMessage.hasVerified &&
       (!self.hasVerified || [self.verified isEqual:otherMessage.verified]) &&
       self.hasPadding == otherMessage.hasPadding &&
       (!self.hasPadding || [self.padding isEqual:otherMessage.padding]) &&
+      [self.readSenderArray isEqualToArray:otherMessage.readSenderArray] &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -4259,7 +4286,7 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   if (self.hasRequest) {
     hashCode = hashCode * 31 + [self.request hash];
   }
-  [self.readArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageRead *element, NSUInteger idx, BOOL *stop) {
+  [self.readLinkedDevicesArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageReadLinkedDevices *element, NSUInteger idx, BOOL *stop) {
     hashCode = hashCode * 31 + [element hash];
   }];
   if (self.hasBlocked) {
@@ -4271,6 +4298,9 @@ static OWSSignalServiceProtosSyncMessage* defaultOWSSignalServiceProtosSyncMessa
   if (self.hasPadding) {
     hashCode = hashCode * 31 + [self.padding hash];
   }
+  [self.readSenderArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosSyncMessageReadSender *element, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [element hash];
+  }];
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
 }
@@ -5622,12 +5652,12 @@ NSString *NSStringFromOWSSignalServiceProtosSyncMessageRequestType(OWSSignalServ
 }
 @end
 
-@interface OWSSignalServiceProtosSyncMessageRead ()
+@interface OWSSignalServiceProtosSyncMessageReadLinkedDevices ()
 @property (strong) NSString* sender;
 @property UInt64 timestamp;
 @end
 
-@implementation OWSSignalServiceProtosSyncMessageRead
+@implementation OWSSignalServiceProtosSyncMessageReadLinkedDevices
 
 - (BOOL) hasSender {
   return !!hasSender_;
@@ -5650,17 +5680,17 @@ NSString *NSStringFromOWSSignalServiceProtosSyncMessageRequestType(OWSSignalServ
   }
   return self;
 }
-static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncMessageReadInstance = nil;
+static OWSSignalServiceProtosSyncMessageReadLinkedDevices* defaultOWSSignalServiceProtosSyncMessageReadLinkedDevicesInstance = nil;
 + (void) initialize {
-  if (self == [OWSSignalServiceProtosSyncMessageRead class]) {
-    defaultOWSSignalServiceProtosSyncMessageReadInstance = [[OWSSignalServiceProtosSyncMessageRead alloc] init];
+  if (self == [OWSSignalServiceProtosSyncMessageReadLinkedDevices class]) {
+    defaultOWSSignalServiceProtosSyncMessageReadLinkedDevicesInstance = [[OWSSignalServiceProtosSyncMessageReadLinkedDevices alloc] init];
   }
 }
 + (instancetype) defaultInstance {
-  return defaultOWSSignalServiceProtosSyncMessageReadInstance;
+  return defaultOWSSignalServiceProtosSyncMessageReadLinkedDevicesInstance;
 }
 - (instancetype) defaultInstance {
-  return defaultOWSSignalServiceProtosSyncMessageReadInstance;
+  return defaultOWSSignalServiceProtosSyncMessageReadLinkedDevicesInstance;
 }
 - (BOOL) isInitialized {
   return YES;
@@ -5691,35 +5721,35 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
   memoizedSerializedSize = size_;
   return size_;
 }
-+ (OWSSignalServiceProtosSyncMessageRead*) parseFromData:(NSData*) data {
-  return (OWSSignalServiceProtosSyncMessageRead*)[[[OWSSignalServiceProtosSyncMessageRead builder] mergeFromData:data] build];
++ (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosSyncMessageReadLinkedDevices*)[[[OWSSignalServiceProtosSyncMessageReadLinkedDevices builder] mergeFromData:data] build];
 }
-+ (OWSSignalServiceProtosSyncMessageRead*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSSignalServiceProtosSyncMessageRead*)[[[OWSSignalServiceProtosSyncMessageRead builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
++ (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosSyncMessageReadLinkedDevices*)[[[OWSSignalServiceProtosSyncMessageReadLinkedDevices builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
 }
-+ (OWSSignalServiceProtosSyncMessageRead*) parseFromInputStream:(NSInputStream*) input {
-  return (OWSSignalServiceProtosSyncMessageRead*)[[[OWSSignalServiceProtosSyncMessageRead builder] mergeFromInputStream:input] build];
++ (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosSyncMessageReadLinkedDevices*)[[[OWSSignalServiceProtosSyncMessageReadLinkedDevices builder] mergeFromInputStream:input] build];
 }
-+ (OWSSignalServiceProtosSyncMessageRead*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSSignalServiceProtosSyncMessageRead*)[[[OWSSignalServiceProtosSyncMessageRead builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
++ (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosSyncMessageReadLinkedDevices*)[[[OWSSignalServiceProtosSyncMessageReadLinkedDevices builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
 }
-+ (OWSSignalServiceProtosSyncMessageRead*) parseFromCodedInputStream:(PBCodedInputStream*) input {
-  return (OWSSignalServiceProtosSyncMessageRead*)[[[OWSSignalServiceProtosSyncMessageRead builder] mergeFromCodedInputStream:input] build];
++ (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosSyncMessageReadLinkedDevices*)[[[OWSSignalServiceProtosSyncMessageReadLinkedDevices builder] mergeFromCodedInputStream:input] build];
 }
-+ (OWSSignalServiceProtosSyncMessageRead*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (OWSSignalServiceProtosSyncMessageRead*)[[[OWSSignalServiceProtosSyncMessageRead builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
++ (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosSyncMessageReadLinkedDevices*)[[[OWSSignalServiceProtosSyncMessageReadLinkedDevices builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
 }
-+ (OWSSignalServiceProtosSyncMessageReadBuilder*) builder {
-  return [[OWSSignalServiceProtosSyncMessageReadBuilder alloc] init];
++ (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) builder {
+  return [[OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder alloc] init];
 }
-+ (OWSSignalServiceProtosSyncMessageReadBuilder*) builderWithPrototype:(OWSSignalServiceProtosSyncMessageRead*) prototype {
-  return [[OWSSignalServiceProtosSyncMessageRead builder] mergeFrom:prototype];
++ (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) builderWithPrototype:(OWSSignalServiceProtosSyncMessageReadLinkedDevices*) prototype {
+  return [[OWSSignalServiceProtosSyncMessageReadLinkedDevices builder] mergeFrom:prototype];
 }
-- (OWSSignalServiceProtosSyncMessageReadBuilder*) builder {
-  return [OWSSignalServiceProtosSyncMessageRead builder];
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) builder {
+  return [OWSSignalServiceProtosSyncMessageReadLinkedDevices builder];
 }
-- (OWSSignalServiceProtosSyncMessageReadBuilder*) toBuilder {
-  return [OWSSignalServiceProtosSyncMessageRead builderWithPrototype:self];
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) toBuilder {
+  return [OWSSignalServiceProtosSyncMessageReadLinkedDevices builderWithPrototype:self];
 }
 - (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
   if (self.hasSender) {
@@ -5743,10 +5773,10 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
   if (other == self) {
     return YES;
   }
-  if (![other isKindOfClass:[OWSSignalServiceProtosSyncMessageRead class]]) {
+  if (![other isKindOfClass:[OWSSignalServiceProtosSyncMessageReadLinkedDevices class]]) {
     return NO;
   }
-  OWSSignalServiceProtosSyncMessageRead *otherMessage = other;
+  OWSSignalServiceProtosSyncMessageReadLinkedDevices *otherMessage = other;
   return
       self.hasSender == otherMessage.hasSender &&
       (!self.hasSender || [self.sender isEqual:otherMessage.sender]) &&
@@ -5767,42 +5797,42 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
 }
 @end
 
-@interface OWSSignalServiceProtosSyncMessageReadBuilder()
-@property (strong) OWSSignalServiceProtosSyncMessageRead* resultRead;
+@interface OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder()
+@property (strong) OWSSignalServiceProtosSyncMessageReadLinkedDevices* resultReadLinkedDevices;
 @end
 
-@implementation OWSSignalServiceProtosSyncMessageReadBuilder
-@synthesize resultRead;
+@implementation OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder
+@synthesize resultReadLinkedDevices;
 - (instancetype) init {
   if ((self = [super init])) {
-    self.resultRead = [[OWSSignalServiceProtosSyncMessageRead alloc] init];
+    self.resultReadLinkedDevices = [[OWSSignalServiceProtosSyncMessageReadLinkedDevices alloc] init];
   }
   return self;
 }
 - (PBGeneratedMessage*) internalGetResult {
-  return resultRead;
+  return resultReadLinkedDevices;
 }
-- (OWSSignalServiceProtosSyncMessageReadBuilder*) clear {
-  self.resultRead = [[OWSSignalServiceProtosSyncMessageRead alloc] init];
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) clear {
+  self.resultReadLinkedDevices = [[OWSSignalServiceProtosSyncMessageReadLinkedDevices alloc] init];
   return self;
 }
-- (OWSSignalServiceProtosSyncMessageReadBuilder*) clone {
-  return [OWSSignalServiceProtosSyncMessageRead builderWithPrototype:resultRead];
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) clone {
+  return [OWSSignalServiceProtosSyncMessageReadLinkedDevices builderWithPrototype:resultReadLinkedDevices];
 }
-- (OWSSignalServiceProtosSyncMessageRead*) defaultInstance {
-  return [OWSSignalServiceProtosSyncMessageRead defaultInstance];
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) defaultInstance {
+  return [OWSSignalServiceProtosSyncMessageReadLinkedDevices defaultInstance];
 }
-- (OWSSignalServiceProtosSyncMessageRead*) build {
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) build {
   [self checkInitialized];
   return [self buildPartial];
 }
-- (OWSSignalServiceProtosSyncMessageRead*) buildPartial {
-  OWSSignalServiceProtosSyncMessageRead* returnMe = resultRead;
-  self.resultRead = nil;
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevices*) buildPartial {
+  OWSSignalServiceProtosSyncMessageReadLinkedDevices* returnMe = resultReadLinkedDevices;
+  self.resultReadLinkedDevices = nil;
   return returnMe;
 }
-- (OWSSignalServiceProtosSyncMessageReadBuilder*) mergeFrom:(OWSSignalServiceProtosSyncMessageRead*) other {
-  if (other == [OWSSignalServiceProtosSyncMessageRead defaultInstance]) {
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) mergeFrom:(OWSSignalServiceProtosSyncMessageReadLinkedDevices*) other {
+  if (other == [OWSSignalServiceProtosSyncMessageReadLinkedDevices defaultInstance]) {
     return self;
   }
   if (other.hasSender) {
@@ -5814,10 +5844,10 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
-- (OWSSignalServiceProtosSyncMessageReadBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
   return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
 }
-- (OWSSignalServiceProtosSyncMessageReadBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
   PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
   while (YES) {
     SInt32 tag = [input readTag];
@@ -5844,35 +5874,290 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
   }
 }
 - (BOOL) hasSender {
-  return resultRead.hasSender;
+  return resultReadLinkedDevices.hasSender;
 }
 - (NSString*) sender {
-  return resultRead.sender;
+  return resultReadLinkedDevices.sender;
 }
-- (OWSSignalServiceProtosSyncMessageReadBuilder*) setSender:(NSString*) value {
-  resultRead.hasSender = YES;
-  resultRead.sender = value;
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) setSender:(NSString*) value {
+  resultReadLinkedDevices.hasSender = YES;
+  resultReadLinkedDevices.sender = value;
   return self;
 }
-- (OWSSignalServiceProtosSyncMessageReadBuilder*) clearSender {
-  resultRead.hasSender = NO;
-  resultRead.sender = @"";
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) clearSender {
+  resultReadLinkedDevices.hasSender = NO;
+  resultReadLinkedDevices.sender = @"";
   return self;
 }
 - (BOOL) hasTimestamp {
-  return resultRead.hasTimestamp;
+  return resultReadLinkedDevices.hasTimestamp;
 }
 - (UInt64) timestamp {
-  return resultRead.timestamp;
+  return resultReadLinkedDevices.timestamp;
 }
-- (OWSSignalServiceProtosSyncMessageReadBuilder*) setTimestamp:(UInt64) value {
-  resultRead.hasTimestamp = YES;
-  resultRead.timestamp = value;
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) setTimestamp:(UInt64) value {
+  resultReadLinkedDevices.hasTimestamp = YES;
+  resultReadLinkedDevices.timestamp = value;
   return self;
 }
-- (OWSSignalServiceProtosSyncMessageReadBuilder*) clearTimestamp {
-  resultRead.hasTimestamp = NO;
-  resultRead.timestamp = 0L;
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder*) clearTimestamp {
+  resultReadLinkedDevices.hasTimestamp = NO;
+  resultReadLinkedDevices.timestamp = 0L;
+  return self;
+}
+@end
+
+@interface OWSSignalServiceProtosSyncMessageReadSender ()
+@property (strong) NSData* groupId;
+@property UInt64 timestamp;
+@end
+
+@implementation OWSSignalServiceProtosSyncMessageReadSender
+
+- (BOOL) hasGroupId {
+  return !!hasGroupId_;
+}
+- (void) setHasGroupId:(BOOL) _value_ {
+  hasGroupId_ = !!_value_;
+}
+@synthesize groupId;
+- (BOOL) hasTimestamp {
+  return !!hasTimestamp_;
+}
+- (void) setHasTimestamp:(BOOL) _value_ {
+  hasTimestamp_ = !!_value_;
+}
+@synthesize timestamp;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.groupId = [NSData data];
+    self.timestamp = 0L;
+  }
+  return self;
+}
+static OWSSignalServiceProtosSyncMessageReadSender* defaultOWSSignalServiceProtosSyncMessageReadSenderInstance = nil;
++ (void) initialize {
+  if (self == [OWSSignalServiceProtosSyncMessageReadSender class]) {
+    defaultOWSSignalServiceProtosSyncMessageReadSenderInstance = [[OWSSignalServiceProtosSyncMessageReadSender alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosSyncMessageReadSenderInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosSyncMessageReadSenderInstance;
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasGroupId) {
+    [output writeData:1 value:self.groupId];
+  }
+  if (self.hasTimestamp) {
+    [output writeUInt64:2 value:self.timestamp];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasGroupId) {
+    size_ += computeDataSize(1, self.groupId);
+  }
+  if (self.hasTimestamp) {
+    size_ += computeUInt64Size(2, self.timestamp);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (OWSSignalServiceProtosSyncMessageReadSender*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosSyncMessageReadSender*)[[[OWSSignalServiceProtosSyncMessageReadSender builder] mergeFromData:data] build];
+}
++ (OWSSignalServiceProtosSyncMessageReadSender*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosSyncMessageReadSender*)[[[OWSSignalServiceProtosSyncMessageReadSender builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosSyncMessageReadSender*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosSyncMessageReadSender*)[[[OWSSignalServiceProtosSyncMessageReadSender builder] mergeFromInputStream:input] build];
+}
++ (OWSSignalServiceProtosSyncMessageReadSender*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosSyncMessageReadSender*)[[[OWSSignalServiceProtosSyncMessageReadSender builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosSyncMessageReadSender*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosSyncMessageReadSender*)[[[OWSSignalServiceProtosSyncMessageReadSender builder] mergeFromCodedInputStream:input] build];
+}
++ (OWSSignalServiceProtosSyncMessageReadSender*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosSyncMessageReadSender*)[[[OWSSignalServiceProtosSyncMessageReadSender builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) builder {
+  return [[OWSSignalServiceProtosSyncMessageReadSenderBuilder alloc] init];
+}
++ (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) builderWithPrototype:(OWSSignalServiceProtosSyncMessageReadSender*) prototype {
+  return [[OWSSignalServiceProtosSyncMessageReadSender builder] mergeFrom:prototype];
+}
+- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) builder {
+  return [OWSSignalServiceProtosSyncMessageReadSender builder];
+}
+- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) toBuilder {
+  return [OWSSignalServiceProtosSyncMessageReadSender builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasGroupId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"groupId", self.groupId];
+  }
+  if (self.hasTimestamp) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"timestamp", [NSNumber numberWithLongLong:self.timestamp]];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasGroupId) {
+    [dictionary setObject: self.groupId forKey: @"groupId"];
+  }
+  if (self.hasTimestamp) {
+    [dictionary setObject: [NSNumber numberWithLongLong:self.timestamp] forKey: @"timestamp"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[OWSSignalServiceProtosSyncMessageReadSender class]]) {
+    return NO;
+  }
+  OWSSignalServiceProtosSyncMessageReadSender *otherMessage = other;
+  return
+      self.hasGroupId == otherMessage.hasGroupId &&
+      (!self.hasGroupId || [self.groupId isEqual:otherMessage.groupId]) &&
+      self.hasTimestamp == otherMessage.hasTimestamp &&
+      (!self.hasTimestamp || self.timestamp == otherMessage.timestamp) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasGroupId) {
+    hashCode = hashCode * 31 + [self.groupId hash];
+  }
+  if (self.hasTimestamp) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.timestamp] hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface OWSSignalServiceProtosSyncMessageReadSenderBuilder()
+@property (strong) OWSSignalServiceProtosSyncMessageReadSender* resultReadSender;
+@end
+
+@implementation OWSSignalServiceProtosSyncMessageReadSenderBuilder
+@synthesize resultReadSender;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultReadSender = [[OWSSignalServiceProtosSyncMessageReadSender alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultReadSender;
+}
+- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) clear {
+  self.resultReadSender = [[OWSSignalServiceProtosSyncMessageReadSender alloc] init];
+  return self;
+}
+- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) clone {
+  return [OWSSignalServiceProtosSyncMessageReadSender builderWithPrototype:resultReadSender];
+}
+- (OWSSignalServiceProtosSyncMessageReadSender*) defaultInstance {
+  return [OWSSignalServiceProtosSyncMessageReadSender defaultInstance];
+}
+- (OWSSignalServiceProtosSyncMessageReadSender*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (OWSSignalServiceProtosSyncMessageReadSender*) buildPartial {
+  OWSSignalServiceProtosSyncMessageReadSender* returnMe = resultReadSender;
+  self.resultReadSender = nil;
+  return returnMe;
+}
+- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) mergeFrom:(OWSSignalServiceProtosSyncMessageReadSender*) other {
+  if (other == [OWSSignalServiceProtosSyncMessageReadSender defaultInstance]) {
+    return self;
+  }
+  if (other.hasGroupId) {
+    [self setGroupId:other.groupId];
+  }
+  if (other.hasTimestamp) {
+    [self setTimestamp:other.timestamp];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        [self setGroupId:[input readData]];
+        break;
+      }
+      case 16: {
+        [self setTimestamp:[input readUInt64]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasGroupId {
+  return resultReadSender.hasGroupId;
+}
+- (NSData*) groupId {
+  return resultReadSender.groupId;
+}
+- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) setGroupId:(NSData*) value {
+  resultReadSender.hasGroupId = YES;
+  resultReadSender.groupId = value;
+  return self;
+}
+- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) clearGroupId {
+  resultReadSender.hasGroupId = NO;
+  resultReadSender.groupId = [NSData data];
+  return self;
+}
+- (BOOL) hasTimestamp {
+  return resultReadSender.hasTimestamp;
+}
+- (UInt64) timestamp {
+  return resultReadSender.timestamp;
+}
+- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) setTimestamp:(UInt64) value {
+  resultReadSender.hasTimestamp = YES;
+  resultReadSender.timestamp = value;
+  return self;
+}
+- (OWSSignalServiceProtosSyncMessageReadSenderBuilder*) clearTimestamp {
+  resultReadSender.hasTimestamp = NO;
+  resultReadSender.timestamp = 0L;
   return self;
 }
 @end
@@ -5927,11 +6212,11 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
   if (other.hasRequest) {
     [self mergeRequest:other.request];
   }
-  if (other.readArray.count > 0) {
-    if (resultSyncMessage.readArray == nil) {
-      resultSyncMessage.readArray = [[NSMutableArray alloc] initWithArray:other.readArray];
+  if (other.readLinkedDevicesArray.count > 0) {
+    if (resultSyncMessage.readLinkedDevicesArray == nil) {
+      resultSyncMessage.readLinkedDevicesArray = [[NSMutableArray alloc] initWithArray:other.readLinkedDevicesArray];
     } else {
-      [resultSyncMessage.readArray addObjectsFromArray:other.readArray];
+      [resultSyncMessage.readLinkedDevicesArray addObjectsFromArray:other.readLinkedDevicesArray];
     }
   }
   if (other.hasBlocked) {
@@ -5942,6 +6227,13 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
   }
   if (other.hasPadding) {
     [self setPadding:other.padding];
+  }
+  if (other.readSenderArray.count > 0) {
+    if (resultSyncMessage.readSenderArray == nil) {
+      resultSyncMessage.readSenderArray = [[NSMutableArray alloc] initWithArray:other.readSenderArray];
+    } else {
+      [resultSyncMessage.readSenderArray addObjectsFromArray:other.readSenderArray];
+    }
   }
   [self mergeUnknownFields:other.unknownFields];
   return self;
@@ -6001,9 +6293,9 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
         break;
       }
       case 42: {
-        OWSSignalServiceProtosSyncMessageReadBuilder* subBuilder = [OWSSignalServiceProtosSyncMessageRead builder];
+        OWSSignalServiceProtosSyncMessageReadLinkedDevicesBuilder* subBuilder = [OWSSignalServiceProtosSyncMessageReadLinkedDevices builder];
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
-        [self addRead:[subBuilder buildPartial]];
+        [self addReadLinkedDevices:[subBuilder buildPartial]];
         break;
       }
       case 50: {
@@ -6026,6 +6318,12 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
       }
       case 66: {
         [self setPadding:[input readData]];
+        break;
+      }
+      case 74: {
+        OWSSignalServiceProtosSyncMessageReadSenderBuilder* subBuilder = [OWSSignalServiceProtosSyncMessageReadSender builder];
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self addReadSender:[subBuilder buildPartial]];
         break;
       }
     }
@@ -6151,25 +6449,25 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
   resultSyncMessage.request = [OWSSignalServiceProtosSyncMessageRequest defaultInstance];
   return self;
 }
-- (NSMutableArray<OWSSignalServiceProtosSyncMessageRead*> *)read {
-  return resultSyncMessage.readArray;
+- (NSMutableArray<OWSSignalServiceProtosSyncMessageReadLinkedDevices*> *)readLinkedDevices {
+  return resultSyncMessage.readLinkedDevicesArray;
 }
-- (OWSSignalServiceProtosSyncMessageRead*)readAtIndex:(NSUInteger)index {
-  return [resultSyncMessage readAtIndex:index];
+- (OWSSignalServiceProtosSyncMessageReadLinkedDevices*)readLinkedDevicesAtIndex:(NSUInteger)index {
+  return [resultSyncMessage readLinkedDevicesAtIndex:index];
 }
-- (OWSSignalServiceProtosSyncMessageBuilder *)addRead:(OWSSignalServiceProtosSyncMessageRead*)value {
-  if (resultSyncMessage.readArray == nil) {
-    resultSyncMessage.readArray = [[NSMutableArray alloc]init];
+- (OWSSignalServiceProtosSyncMessageBuilder *)addReadLinkedDevices:(OWSSignalServiceProtosSyncMessageReadLinkedDevices*)value {
+  if (resultSyncMessage.readLinkedDevicesArray == nil) {
+    resultSyncMessage.readLinkedDevicesArray = [[NSMutableArray alloc]init];
   }
-  [resultSyncMessage.readArray addObject:value];
+  [resultSyncMessage.readLinkedDevicesArray addObject:value];
   return self;
 }
-- (OWSSignalServiceProtosSyncMessageBuilder *)setReadArray:(NSArray<OWSSignalServiceProtosSyncMessageRead*> *)array {
-  resultSyncMessage.readArray = [[NSMutableArray alloc]initWithArray:array];
+- (OWSSignalServiceProtosSyncMessageBuilder *)setReadLinkedDevicesArray:(NSArray<OWSSignalServiceProtosSyncMessageReadLinkedDevices*> *)array {
+  resultSyncMessage.readLinkedDevicesArray = [[NSMutableArray alloc]initWithArray:array];
   return self;
 }
-- (OWSSignalServiceProtosSyncMessageBuilder *)clearRead {
-  resultSyncMessage.readArray = nil;
+- (OWSSignalServiceProtosSyncMessageBuilder *)clearReadLinkedDevices {
+  resultSyncMessage.readLinkedDevicesArray = nil;
   return self;
 }
 - (BOOL) hasBlocked {
@@ -6246,6 +6544,27 @@ static OWSSignalServiceProtosSyncMessageRead* defaultOWSSignalServiceProtosSyncM
 - (OWSSignalServiceProtosSyncMessageBuilder*) clearPadding {
   resultSyncMessage.hasPadding = NO;
   resultSyncMessage.padding = [NSData data];
+  return self;
+}
+- (NSMutableArray<OWSSignalServiceProtosSyncMessageReadSender*> *)readSender {
+  return resultSyncMessage.readSenderArray;
+}
+- (OWSSignalServiceProtosSyncMessageReadSender*)readSenderAtIndex:(NSUInteger)index {
+  return [resultSyncMessage readSenderAtIndex:index];
+}
+- (OWSSignalServiceProtosSyncMessageBuilder *)addReadSender:(OWSSignalServiceProtosSyncMessageReadSender*)value {
+  if (resultSyncMessage.readSenderArray == nil) {
+    resultSyncMessage.readSenderArray = [[NSMutableArray alloc]init];
+  }
+  [resultSyncMessage.readSenderArray addObject:value];
+  return self;
+}
+- (OWSSignalServiceProtosSyncMessageBuilder *)setReadSenderArray:(NSArray<OWSSignalServiceProtosSyncMessageReadSender*> *)array {
+  resultSyncMessage.readSenderArray = [[NSMutableArray alloc]initWithArray:array];
+  return self;
+}
+- (OWSSignalServiceProtosSyncMessageBuilder *)clearReadSender {
+  resultSyncMessage.readSenderArray = nil;
   return self;
 }
 @end
