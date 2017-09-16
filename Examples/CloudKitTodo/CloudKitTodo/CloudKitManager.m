@@ -369,8 +369,12 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 	CKRecordZoneID *recordZoneID =
 	  [[CKRecordZoneID alloc] initWithZoneName:CloudKitZoneName ownerName:CKCurrentUserDefaultName];
 	
-	CKSubscription *subscription =
-	  [[CKSubscription alloc] initWithZoneID:recordZoneID subscriptionID:CloudKitZoneName options:0];
+	CKNotificationInfo *notificationInfo = [CKNotificationInfo new];
+	notificationInfo.shouldSendContentAvailable = YES;
+	
+	CKRecordZoneSubscription *subscription =
+	  [[CKRecordZoneSubscription alloc] initWithZoneID:recordZoneID subscriptionID:CloudKitZoneName];
+	subscription.notificationInfo = notificationInfo;
 	
 	CKModifySubscriptionsOperation *modifySubscriptionsOperation =
 	  [[CKModifySubscriptionsOperation alloc] initWithSubscriptionsToSave:@[ subscription ]
@@ -483,14 +487,18 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 	CKRecordZoneID *recordZoneID =
 	  [[CKRecordZoneID alloc] initWithZoneName:CloudKitZoneName ownerName:CKCurrentUserDefaultName];
 	
-	CKFetchRecordChangesOperation *operation =
-	  [[CKFetchRecordChangesOperation alloc] initWithRecordZoneID:recordZoneID
-	                                    previousServerChangeToken:prevServerChangeToken];
+	CKFetchRecordZoneChangesOptions *zoneOptions = [CKFetchRecordZoneChangesOptions new];
+	zoneOptions.previousServerChangeToken = prevServerChangeToken;
+	
+	CKFetchRecordZoneChangesOperation *operation =
+	  [[CKFetchRecordZoneChangesOperation alloc] initWithRecordZoneIDs:@[recordZoneID]
+	                                             optionsByRecordZoneID:@{recordZoneID: zoneOptions}];
+	operation.fetchAllChanges = NO;
 	
 	__block NSMutableArray *deletedRecordIDs = nil;
 	__block NSMutableArray *changedRecords = nil;
 	
-	operation.recordWithIDWasDeletedBlock = ^(CKRecordID *recordID){
+	operation.recordWithIDWasDeletedBlock = ^(CKRecordID *recordID, NSString *recordType){
 		
 		if (deletedRecordIDs == nil)
 			deletedRecordIDs = [[NSMutableArray alloc] init];
@@ -506,14 +514,14 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		[changedRecords addObject:record];
 	};
 	
-	__weak CKFetchRecordChangesOperation *weakOperation = operation;
-	operation.fetchRecordChangesCompletionBlock =
-	^(CKServerChangeToken *newServerChangeToken, NSData *clientChangeTokenData, NSError *operationError){
+	operation.recordZoneFetchCompletionBlock =
+		^(CKRecordZoneID *recordZoneID, CKServerChangeToken *newServerChangeToken,
+		  NSData *clientChangeTokenData, BOOL moreComing, NSError *operationError)
+	{
+		DDLogVerbose(@"CKFetchRecordZoneChangesOperation.recordZoneFetchCompletionBlock");
 		
-		DDLogVerbose(@"CKFetchRecordChangesOperation.fetchRecordChangesCompletionBlock");
-		
-		DDLogVerbose(@"CKFetchRecordChangesOperation: serverChangeToken: %@", newServerChangeToken);
-		DDLogVerbose(@"CKFetchRecordChangesOperation: clientChangeTokenData: %@", clientChangeTokenData);
+		DDLogVerbose(@"CKFetchRecordZoneChangesOperation: serverChangeToken: %@", newServerChangeToken);
+		DDLogVerbose(@"CKFetchRecordZoneChangesOperation: clientChangeTokenData: %@", clientChangeTokenData);
 		
 		// Edge Case:
 		//
@@ -529,8 +537,6 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		// Which seems non-intuitive to me, but that's what we're getting from the server.
 		// And, in fact, if we don't follow that up with another fetch,
 		// then we fail to properly fetch what's on the server.
-		
-		BOOL moreComing = weakOperation.moreComing;
 		
 		BOOL hasChanges = NO;
 		if (!operationError)
