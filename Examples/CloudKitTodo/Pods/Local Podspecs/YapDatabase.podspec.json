@@ -1,6 +1,6 @@
 {
   "name": "YapDatabase",
-  "version": "2.9.3",
+  "version": "3.0.1",
   "summary": "A key/value store built atop sqlite for iOS & Mac.",
   "homepage": "https://github.com/yapstudios/YapDatabase",
   "license": "MIT",
@@ -9,7 +9,7 @@
   },
   "source": {
     "git": "https://github.com/yapstudios/YapDatabase.git",
-    "tag": "2.9.3"
+    "tag": "3.0.1"
   },
   "platforms": {
     "osx": "10.9",
@@ -31,7 +31,7 @@
           "libraries": "sqlite3",
           "dependencies": {
             "CocoaLumberjack": [
-              "~> 2"
+
             ]
           },
           "source_files": [
@@ -127,11 +127,6 @@
             },
             {
               "name": "CloudKit",
-              "platforms": {
-                "osx": "10.8",
-                "ios": "6.0",
-                "tvos": "9.0"
-              },
               "source_files": "YapDatabase/Extensions/CloudKit/**/*.{h,m,mm,c}",
               "private_header_files": "YapDatabase/Extensions/CloudKit/Internal/*.h"
             },
@@ -156,12 +151,17 @@
                 "frameworks": "SystemConfiguration"
               },
               "dependencies": {
-                "YapDatabase/Standard/Extensions/View": [
+                "YapDatabase/Standard/Extensions/AutoView": [
 
                 ]
               },
               "source_files": "YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}",
               "private_header_files": "YapDatabase/Extensions/ActionManager/Internal/*.h"
+            },
+            {
+              "name": "CloudCore",
+              "source_files": "YapDatabase/Extensions/CloudCore/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/CloudCore/Internal/*.h"
             }
           ]
         }
@@ -180,7 +180,7 @@
               ">= 3.4.0"
             ],
             "CocoaLumberjack": [
-              "~> 2"
+
             ]
           },
           "source_files": [
@@ -276,11 +276,6 @@
             },
             {
               "name": "CloudKit",
-              "platforms": {
-                "osx": "10.8",
-                "ios": "6.0",
-                "tvos": "9.0"
-              },
               "source_files": "YapDatabase/Extensions/CloudKit/**/*.{h,m,mm,c}",
               "private_header_files": "YapDatabase/Extensions/CloudKit/Internal/*.h"
             },
@@ -305,12 +300,17 @@
                 "frameworks": "SystemConfiguration"
               },
               "dependencies": {
-                "YapDatabase/SQLCipher/Extensions/View": [
+                "YapDatabase/SQLCipher/Extensions/AutoView": [
 
                 ]
               },
               "source_files": "YapDatabase/Extensions/ActionManager/**/*.{h,m,mm,c}",
               "private_header_files": "YapDatabase/Extensions/ActionManager/Internal/*.h"
+            },
+            {
+              "name": "CloudCore",
+              "source_files": "YapDatabase/Extensions/CloudCore/**/*.{h,m,mm,c}",
+              "private_header_files": "YapDatabase/Extensions/CloudCore/Internal/*.h"
             }
           ]
         }
