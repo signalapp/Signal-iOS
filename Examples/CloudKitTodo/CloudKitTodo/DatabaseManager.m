@@ -6,7 +6,6 @@
 #import "MyTodo.h"
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
-#import <Reachability/Reachability.h>
 
 // Log Levels: off, error, warn, info, verbose
 // Log Flags : trace
@@ -291,7 +290,7 @@ DatabaseManager *MyDatabaseManager;
 		if (record == nil)
 		{
 			CKRecordZoneID *zoneID =
-			  [[CKRecordZoneID alloc] initWithZoneName:CloudKitZoneName ownerName:CKOwnerDefaultName];
+			  [[CKRecordZoneID alloc] initWithZoneName:CloudKitZoneName ownerName:CKCurrentUserDefaultName];
 			
 			CKRecordID *recordID = [[CKRecordID alloc] initWithRecordName:todo.uuid zoneID:zoneID];
 			

@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		51EE553F951BF40945032BD5 /* libPods-CloudKitTodo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABB1832E9FCC349F48EB4C9C /* libPods-CloudKitTodo.a */; };
+		DC212CE11F6D98F600C11BF0 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC212CE01F6D98F600C11BF0 /* CloudKit.framework */; };
 		DC6071471A33F3FF00207DE9 /* TodoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DC6071461A33F3FF00207DE9 /* TodoCell.m */; };
 		DC60714A1A33FC3900207DE9 /* checkmark-off.png in Resources */ = {isa = PBXBuildFile; fileRef = DC6071481A33FC3900207DE9 /* checkmark-off.png */; };
 		DC60714B1A33FC3900207DE9 /* checkmark-on.png in Resources */ = {isa = PBXBuildFile; fileRef = DC6071491A33FC3900207DE9 /* checkmark-on.png */; };
 		DC927FFD1A344BA500FEEAEA /* TodoTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC927FFC1A344BA500FEEAEA /* TodoTextView.m */; };
-		DC9A34D61BB5CA650067AD13 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC9A34D51BB5CA650067AD13 /* CloudKit.framework */; };
 		DCDE77211A3023E9001D8FCE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE77201A3023E9001D8FCE /* main.m */; };
 		DCDE77241A3023E9001D8FCE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DCDE77231A3023E9001D8FCE /* AppDelegate.m */; };
 		DCDE772A1A3023E9001D8FCE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DCDE77281A3023E9001D8FCE /* Main.storyboard */; };
@@ -30,13 +30,13 @@
 /* Begin PBXFileReference section */
 		703B5BE0F88E9B9E927805E5 /* Pods-CloudKitTodo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CloudKitTodo.release.xcconfig"; path = "Pods/Target Support Files/Pods-CloudKitTodo/Pods-CloudKitTodo.release.xcconfig"; sourceTree = "<group>"; };
 		ABB1832E9FCC349F48EB4C9C /* libPods-CloudKitTodo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CloudKitTodo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC212CE01F6D98F600C11BF0 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		DC6071451A33F3FF00207DE9 /* TodoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TodoCell.h; sourceTree = "<group>"; };
 		DC6071461A33F3FF00207DE9 /* TodoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TodoCell.m; sourceTree = "<group>"; };
 		DC6071481A33FC3900207DE9 /* checkmark-off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkmark-off.png"; sourceTree = "<group>"; };
 		DC6071491A33FC3900207DE9 /* checkmark-on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkmark-on.png"; sourceTree = "<group>"; };
 		DC927FFB1A344BA500FEEAEA /* TodoTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TodoTextView.h; sourceTree = "<group>"; };
 		DC927FFC1A344BA500FEEAEA /* TodoTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TodoTextView.m; sourceTree = "<group>"; };
-		DC9A34D51BB5CA650067AD13 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		DCDE771B1A3023E9001D8FCE /* CloudKitTodo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CloudKitTodo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCDE771F1A3023E9001D8FCE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DCDE77201A3023E9001D8FCE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -67,7 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC9A34D61BB5CA650067AD13 /* CloudKit.framework in Frameworks */,
+				DC212CE11F6D98F600C11BF0 /* CloudKit.framework in Frameworks */,
 				DCDE78831A302B46001D8FCE /* libsqlite3.dylib in Frameworks */,
 				51EE553F951BF40945032BD5 /* libPods-CloudKitTodo.a in Frameworks */,
 			);
@@ -129,7 +129,7 @@
 		DCDE776B1A3028EA001D8FCE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				DC9A34D51BB5CA650067AD13 /* CloudKit.framework */,
+				DC212CE01F6D98F600C11BF0 /* CloudKit.framework */,
 				DCDE78821A302B46001D8FCE /* libsqlite3.dylib */,
 				ABB1832E9FCC349F48EB4C9C /* libPods-CloudKitTodo.a */,
 			);
@@ -207,7 +207,7 @@
 		DCDE77131A3023E9001D8FCE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = "Deusty LLC";
 				TargetAttributes = {
 					DCDE771A1A3023E9001D8FCE = {
@@ -215,6 +215,9 @@
 						DevelopmentTeam = VT5GYGYX83;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.Push = {
 								enabled = 1;
 							};
 							com.apple.iCloud = {
@@ -356,14 +359,20 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -386,7 +395,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -402,14 +411,20 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -425,7 +440,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -450,7 +465,6 @@
 					"\"${PODS_ROOT}/Headers/Private/YapDatabase\"",
 				);
 				INFOPLIST_FILE = CloudKitTodo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.4th-a.CloudKitTodo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -475,7 +489,6 @@
 					"\"${PODS_ROOT}/Headers/Private/YapDatabase\"",
 				);
 				INFOPLIST_FILE = CloudKitTodo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.4th-a.CloudKitTodo";
 				PRODUCT_NAME = "$(TARGET_NAME)";

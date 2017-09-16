@@ -197,14 +197,23 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		NSString *title = @"You're not signed into iCloud.";
 		NSString *message = @"You must be signed into iCloud for syncing to work.";
 		
-		UIAlertView *alertView =
-		  [[UIAlertView alloc] initWithTitle:title
-		                             message:message
-		                            delegate:nil
-		                   cancelButtonTitle:nil
-		                   otherButtonTitles:@"Oops", nil];
+		UIAlertController* alert =
+		  [UIAlertController alertControllerWithTitle:title
+		                                      message:message
+		                               preferredStyle:UIAlertControllerStyleAlert];
 		
-		[alertView show];
+		UIAlertAction* defaultAction =
+		  [UIAlertAction actionWithTitle:@"Oops"
+		                           style:UIAlertActionStyleDefault
+		                         handler:^(UIAlertAction * action)
+		{
+			[alert dismissViewControllerAnimated:YES completion:nil];
+		}];
+		
+		[alert addAction:defaultAction];
+		
+		UIViewController *rootViewController = MyAppDelegate.window.rootViewController;
+		[rootViewController presentViewController:alert animated:YES completion:nil];
 	};
 	
 	if ([NSThread isMainThread])
@@ -220,14 +229,23 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 		NSString *title = @"This sample app doesn't support switching iCloud accounts.";
 		NSString *message = @"But, of course, your app will, right ???";
 		
-		UIAlertView *alertView =
-		  [[UIAlertView alloc] initWithTitle:title
-		                             message:message
-		                            delegate:nil
-		                   cancelButtonTitle:nil
-		                   otherButtonTitles:@"Of Course", nil];
+		UIAlertController* alert =
+		  [UIAlertController alertControllerWithTitle:title
+		                                      message:message
+		                               preferredStyle:UIAlertControllerStyleAlert];
 		
-		[alertView show];
+		UIAlertAction* defaultAction =
+		  [UIAlertAction actionWithTitle:@"Of Course"
+		                           style:UIAlertActionStyleDefault
+		                         handler:^(UIAlertAction * action)
+		{
+			[alert dismissViewControllerAnimated:YES completion:nil];
+		}];
+		
+		[alert addAction:defaultAction];
+		
+		UIViewController *rootViewController = MyAppDelegate.window.rootViewController;
+		[rootViewController presentViewController:alert animated:YES completion:nil];
 	};
 	
 	if ([NSThread isMainThread])
@@ -349,7 +367,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
 	}
 	
 	CKRecordZoneID *recordZoneID =
-	  [[CKRecordZoneID alloc] initWithZoneName:CloudKitZoneName ownerName:CKOwnerDefaultName];
+	  [[CKRecordZoneID alloc] initWithZoneName:CloudKitZoneName ownerName:CKCurrentUserDefaultName];
 	
 	CKSubscription *subscription =
 	  [[CKSubscription alloc] initWithZoneID:recordZoneID subscriptionID:CloudKitZoneName options:0];
@@ -463,7 +481,7 @@ static NSString *const Key_ServerChangeToken   = @"serverChangeToken";
         (void (^)(UIBackgroundFetchResult result, BOOL moreComing))completionHandler
 {
 	CKRecordZoneID *recordZoneID =
-	  [[CKRecordZoneID alloc] initWithZoneName:CloudKitZoneName ownerName:CKOwnerDefaultName];
+	  [[CKRecordZoneID alloc] initWithZoneName:CloudKitZoneName ownerName:CKCurrentUserDefaultName];
 	
 	CKFetchRecordChangesOperation *operation =
 	  [[CKFetchRecordChangesOperation alloc] initWithRecordZoneID:recordZoneID

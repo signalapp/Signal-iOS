@@ -1,11 +1,10 @@
 #import <UIKit/UIKit.h>
 #import <Reachability/Reachability.h>
 
-#import "YapDatabase.h"
-#import "YapDatabaseCloudKit.h"
+#import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseCloudKit.h>
 
 @class AppDelegate;
-
 extern AppDelegate *MyAppDelegate;
 
 
@@ -16,4 +15,3 @@ extern AppDelegate *MyAppDelegate;
 @property (nonatomic, strong, readonly) Reachability *reachability;
 
 @end
-
