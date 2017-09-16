@@ -515,8 +515,6 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 	// Populate the new_queueTable
 	
 	{
-		int status;
-		
 		sqlite3_stmt *statement = [parentConnection queueTable_insertStatement];
 		
 		int const bind_idx_pipelineID    = SQLITE_BIND_START + 0;  // INTEGER
@@ -541,7 +539,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 			sqlite3_bind_blob(statement, bind_idx_operation,
 			                  operationBlob.bytes, (int)operationBlob.length, SQLITE_STATIC);
 	
-			int status = sqlite3_step(statement);
+			status = sqlite3_step(statement);
 			if (status != SQLITE_DONE)
 			{
 				YDBLogError(@"%@ - Error executing statement: %d %s", THIS_METHOD,
@@ -3347,7 +3345,7 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 	    ^(NSString *pipelineName, NSArray *operations, BOOL *stop)
 	{
 		YapDatabaseCloudCorePipeline *pipeline = [parentConnection->parent pipelineWithName:pipelineName];
-		uint64_t *nextGraphID = [pipeline nextGraphID];
+		uint64_t nextGraphID = [pipeline nextGraphID];
 		
 		[self queueTable_insertOperations:operations
 		                      withGraphID:nextGraphID
@@ -3364,10 +3362,10 @@ static NSString *const ext_key_versionTag   = @"versionTag";
 		NSDictionary *graphs = parentConnection->operations_inserted[pipeline.name];
 		
 		[graphs enumerateKeysAndObjectsUsingBlock:
-		  ^(NSNumber *idx, NSArray<YapDatabaseCloudCoreOperation *> *insertedOps, BOOL *stop)
+		  ^(NSNumber *number, NSArray<YapDatabaseCloudCoreOperation *> *insertedOps, BOOL *stop)
 		{
 			uint64_t graphID = 0;
-			[pipeline getGraphID:&graphID forIndex:idx];
+			[pipeline getGraphID:&graphID forIndex:[number unsignedIntegerValue]];
 			
 			[self queueTable_insertOperations:insertedOps
 			                      withGraphID:graphID
