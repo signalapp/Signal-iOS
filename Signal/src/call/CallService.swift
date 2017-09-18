@@ -1622,7 +1622,8 @@ protocol CallServiceObserver: class {
         }
 
         let frontmostViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts
-            guard nil != frontmostViewController as? CallViewController else {
+
+        guard nil != frontmostViewController as? CallViewController else {
             OWSProdError(OWSAnalyticsEvents.callServiceCallViewCouldNotPresent(), file:#file, function:#function, line:#line)
             owsFail("\(TAG) in \(#function) Call terminated due to call view presentation delay: \(frontmostViewController.debugDescription).")
             self.terminateCall()
