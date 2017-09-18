@@ -64,11 +64,27 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     return self;
 }
 
+- (BOOL)hasPendingViewRegistrations
+{
+    @synchronized(self)
+    {
+        return !self.areAllAsyncRegistrationsComplete;
+    }
+}
+
 + (BOOL)hasPendingViewRegistrations
 {
-    OWSAssert([NSThread isMainThread]);
-
     return ![TSDatabaseView sharedInstance].areAllAsyncRegistrationsComplete;
+}
+
+- (void)setAreAllAsyncRegistrationsComplete
+{
+    @synchronized(self)
+    {
+        OWSAssert(!self.areAllAsyncRegistrationsComplete);
+
+        self.areAllAsyncRegistrationsComplete = YES;
+    }
 }
 
 + (void)registerMessageDatabaseViewWithName:(NSString *)viewName
@@ -423,8 +439,9 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     // All async registrations are complete when writes are unblocked.
     [[TSStorageManager sharedManager].newDatabaseConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [TSDatabaseView.sharedInstance setAreAllAsyncRegistrationsComplete];
+
             dispatch_async(dispatch_get_main_queue(), ^{
-                TSDatabaseView.sharedInstance.areAllAsyncRegistrationsComplete = YES;
                 [[NSNotificationCenter defaultCenter]
                     postNotificationName:kNSNotificationName_DatabaseViewRegistrationComplete
                                   object:nil

@@ -6,14 +6,15 @@
 #import "AppDelegate.h"
 #import "NSData+ows_StripToken.h"
 #import "OWSContactsManager.h"
-#import "PropertyListPreferences.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSReadReceiptsProcessor.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSSocketManager.h>
 
@@ -82,7 +83,22 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
     OWSSingletonAssert();
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleMessageRead:)
+                                                 name:OWSReadReceiptsProcessorMarkedMessageAsReadNotification
+                                               object:nil];
+
     return self;
+}
+
+- (void)handleMessageRead:(NSNotification *)notification
+{
+    if ([notification.object isKindOfClass:[TSIncomingMessage class]]) {
+        TSIncomingMessage *message = (TSIncomingMessage *)notification.object;
+
+        DDLogDebug(@"%@ canceled notification for message:%@", self.tag, message);
+        [self cancelNotificationsWithThreadId:message.uniqueThreadId];
+    }
 }
 
 #pragma mark Manage Incoming Push

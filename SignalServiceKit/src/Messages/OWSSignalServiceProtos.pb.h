@@ -36,6 +36,8 @@
 @class OWSSignalServiceProtosGroupDetailsBuilder;
 @class OWSSignalServiceProtosNullMessage;
 @class OWSSignalServiceProtosNullMessageBuilder;
+@class OWSSignalServiceProtosReceiptMessage;
+@class OWSSignalServiceProtosReceiptMessageBuilder;
 @class OWSSignalServiceProtosSyncMessage;
 @class OWSSignalServiceProtosSyncMessageBlocked;
 @class OWSSignalServiceProtosSyncMessageBlockedBuilder;
@@ -108,6 +110,14 @@ typedef NS_ENUM(SInt32, OWSSignalServiceProtosEnvelopeType) {
 
 BOOL OWSSignalServiceProtosEnvelopeTypeIsValidValue(OWSSignalServiceProtosEnvelopeType value);
 NSString *NSStringFromOWSSignalServiceProtosEnvelopeType(OWSSignalServiceProtosEnvelopeType value);
+
+typedef NS_ENUM(SInt32, OWSSignalServiceProtosReceiptMessageType) {
+  OWSSignalServiceProtosReceiptMessageTypeDelivery = 0,
+  OWSSignalServiceProtosReceiptMessageTypeRead = 1,
+};
+
+BOOL OWSSignalServiceProtosReceiptMessageTypeIsValidValue(OWSSignalServiceProtosReceiptMessageType value);
+NSString *NSStringFromOWSSignalServiceProtosReceiptMessageType(OWSSignalServiceProtosReceiptMessageType value);
 
 typedef NS_ENUM(SInt32, OWSSignalServiceProtosDataMessageFlags) {
   OWSSignalServiceProtosDataMessageFlagsEndSession = 1,
@@ -276,25 +286,30 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define Content_syncMessage @"syncMessage"
 #define Content_callMessage @"callMessage"
 #define Content_nullMessage @"nullMessage"
+#define Content_receiptMessage @"receiptMessage"
 @interface OWSSignalServiceProtosContent : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasDataMessage_:1;
   BOOL hasSyncMessage_:1;
   BOOL hasCallMessage_:1;
   BOOL hasNullMessage_:1;
+  BOOL hasReceiptMessage_:1;
   OWSSignalServiceProtosDataMessage* dataMessage;
   OWSSignalServiceProtosSyncMessage* syncMessage;
   OWSSignalServiceProtosCallMessage* callMessage;
   OWSSignalServiceProtosNullMessage* nullMessage;
+  OWSSignalServiceProtosReceiptMessage* receiptMessage;
 }
 - (BOOL) hasDataMessage;
 - (BOOL) hasSyncMessage;
 - (BOOL) hasCallMessage;
 - (BOOL) hasNullMessage;
+- (BOOL) hasReceiptMessage;
 @property (readonly, strong) OWSSignalServiceProtosDataMessage* dataMessage;
 @property (readonly, strong) OWSSignalServiceProtosSyncMessage* syncMessage;
 @property (readonly, strong) OWSSignalServiceProtosCallMessage* callMessage;
 @property (readonly, strong) OWSSignalServiceProtosNullMessage* nullMessage;
+@property (readonly, strong) OWSSignalServiceProtosReceiptMessage* receiptMessage;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -358,6 +373,74 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosContentBuilder*) setNullMessageBuilder:(OWSSignalServiceProtosNullMessageBuilder*) builderForValue;
 - (OWSSignalServiceProtosContentBuilder*) mergeNullMessage:(OWSSignalServiceProtosNullMessage*) value;
 - (OWSSignalServiceProtosContentBuilder*) clearNullMessage;
+
+- (BOOL) hasReceiptMessage;
+- (OWSSignalServiceProtosReceiptMessage*) receiptMessage;
+- (OWSSignalServiceProtosContentBuilder*) setReceiptMessage:(OWSSignalServiceProtosReceiptMessage*) value;
+- (OWSSignalServiceProtosContentBuilder*) setReceiptMessageBuilder:(OWSSignalServiceProtosReceiptMessageBuilder*) builderForValue;
+- (OWSSignalServiceProtosContentBuilder*) mergeReceiptMessage:(OWSSignalServiceProtosReceiptMessage*) value;
+- (OWSSignalServiceProtosContentBuilder*) clearReceiptMessage;
+@end
+
+#define ReceiptMessage_type @"type"
+#define ReceiptMessage_timestamp @"timestamp"
+@interface OWSSignalServiceProtosReceiptMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasType_:1;
+  OWSSignalServiceProtosReceiptMessageType type;
+  PBAppendableArray * timestampArray;
+}
+- (BOOL) hasType;
+@property (readonly) OWSSignalServiceProtosReceiptMessageType type;
+@property (readonly, strong) PBArray * timestamp;
+- (UInt64)timestampAtIndex:(NSUInteger)index;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) builder;
++ (OWSSignalServiceProtosReceiptMessageBuilder*) builder;
++ (OWSSignalServiceProtosReceiptMessageBuilder*) builderWithPrototype:(OWSSignalServiceProtosReceiptMessage*) prototype;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosReceiptMessage*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosReceiptMessage*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosReceiptMessage*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosReceiptMessage*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosReceiptMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosReceiptMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosReceiptMessageBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosReceiptMessage* resultReceiptMessage;
+}
+
+- (OWSSignalServiceProtosReceiptMessage*) defaultInstance;
+
+- (OWSSignalServiceProtosReceiptMessageBuilder*) clear;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) clone;
+
+- (OWSSignalServiceProtosReceiptMessage*) build;
+- (OWSSignalServiceProtosReceiptMessage*) buildPartial;
+
+- (OWSSignalServiceProtosReceiptMessageBuilder*) mergeFrom:(OWSSignalServiceProtosReceiptMessage*) other;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasType;
+- (OWSSignalServiceProtosReceiptMessageType) type;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) setType:(OWSSignalServiceProtosReceiptMessageType) value;
+- (OWSSignalServiceProtosReceiptMessageBuilder*) clearType;
+
+- (PBAppendableArray *)timestamp;
+- (UInt64)timestampAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosReceiptMessageBuilder *)addTimestamp:(UInt64)value;
+- (OWSSignalServiceProtosReceiptMessageBuilder *)setTimestampArray:(NSArray *)array;
+- (OWSSignalServiceProtosReceiptMessageBuilder *)setTimestampValues:(const UInt64 *)values count:(NSUInteger)count;
+- (OWSSignalServiceProtosReceiptMessageBuilder *)clearTimestamp;
 @end
 
 #define CallMessage_offer @"offer"

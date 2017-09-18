@@ -560,6 +560,7 @@ NSString *NSStringFromOWSSignalServiceProtosEnvelopeType(OWSSignalServiceProtosE
 @property (strong) OWSSignalServiceProtosSyncMessage* syncMessage;
 @property (strong) OWSSignalServiceProtosCallMessage* callMessage;
 @property (strong) OWSSignalServiceProtosNullMessage* nullMessage;
+@property (strong) OWSSignalServiceProtosReceiptMessage* receiptMessage;
 @end
 
 @implementation OWSSignalServiceProtosContent
@@ -592,12 +593,20 @@ NSString *NSStringFromOWSSignalServiceProtosEnvelopeType(OWSSignalServiceProtosE
   hasNullMessage_ = !!_value_;
 }
 @synthesize nullMessage;
+- (BOOL) hasReceiptMessage {
+  return !!hasReceiptMessage_;
+}
+- (void) setHasReceiptMessage:(BOOL) _value_ {
+  hasReceiptMessage_ = !!_value_;
+}
+@synthesize receiptMessage;
 - (instancetype) init {
   if ((self = [super init])) {
     self.dataMessage = [OWSSignalServiceProtosDataMessage defaultInstance];
     self.syncMessage = [OWSSignalServiceProtosSyncMessage defaultInstance];
     self.callMessage = [OWSSignalServiceProtosCallMessage defaultInstance];
     self.nullMessage = [OWSSignalServiceProtosNullMessage defaultInstance];
+    self.receiptMessage = [OWSSignalServiceProtosReceiptMessage defaultInstance];
   }
   return self;
 }
@@ -629,6 +638,9 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
   if (self.hasNullMessage) {
     [output writeMessage:4 value:self.nullMessage];
   }
+  if (self.hasReceiptMessage) {
+    [output writeMessage:5 value:self.receiptMessage];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -649,6 +661,9 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
   }
   if (self.hasNullMessage) {
     size_ += computeMessageSize(4, self.nullMessage);
+  }
+  if (self.hasReceiptMessage) {
+    size_ += computeMessageSize(5, self.receiptMessage);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -709,6 +724,12 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
+  if (self.hasReceiptMessage) {
+    [output appendFormat:@"%@%@ {\n", indent, @"receiptMessage"];
+    [self.receiptMessage writeDescriptionTo:output
+                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -732,6 +753,11 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
    [self.nullMessage storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"nullMessage"];
   }
+  if (self.hasReceiptMessage) {
+   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
+   [self.receiptMessage storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"receiptMessage"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -751,6 +777,8 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
       (!self.hasCallMessage || [self.callMessage isEqual:otherMessage.callMessage]) &&
       self.hasNullMessage == otherMessage.hasNullMessage &&
       (!self.hasNullMessage || [self.nullMessage isEqual:otherMessage.nullMessage]) &&
+      self.hasReceiptMessage == otherMessage.hasReceiptMessage &&
+      (!self.hasReceiptMessage || [self.receiptMessage isEqual:otherMessage.receiptMessage]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -766,6 +794,9 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
   }
   if (self.hasNullMessage) {
     hashCode = hashCode * 31 + [self.nullMessage hash];
+  }
+  if (self.hasReceiptMessage) {
+    hashCode = hashCode * 31 + [self.receiptMessage hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -822,6 +853,9 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
   if (other.hasNullMessage) {
     [self mergeNullMessage:other.nullMessage];
   }
+  if (other.hasReceiptMessage) {
+    [self mergeReceiptMessage:other.receiptMessage];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -877,6 +911,15 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
         }
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
         [self setNullMessage:[subBuilder buildPartial]];
+        break;
+      }
+      case 42: {
+        OWSSignalServiceProtosReceiptMessageBuilder* subBuilder = [OWSSignalServiceProtosReceiptMessage builder];
+        if (self.hasReceiptMessage) {
+          [subBuilder mergeFrom:self.receiptMessage];
+        }
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self setReceiptMessage:[subBuilder buildPartial]];
         break;
       }
     }
@@ -1000,6 +1043,342 @@ static OWSSignalServiceProtosContent* defaultOWSSignalServiceProtosContentInstan
 - (OWSSignalServiceProtosContentBuilder*) clearNullMessage {
   resultContent.hasNullMessage = NO;
   resultContent.nullMessage = [OWSSignalServiceProtosNullMessage defaultInstance];
+  return self;
+}
+- (BOOL) hasReceiptMessage {
+  return resultContent.hasReceiptMessage;
+}
+- (OWSSignalServiceProtosReceiptMessage*) receiptMessage {
+  return resultContent.receiptMessage;
+}
+- (OWSSignalServiceProtosContentBuilder*) setReceiptMessage:(OWSSignalServiceProtosReceiptMessage*) value {
+  resultContent.hasReceiptMessage = YES;
+  resultContent.receiptMessage = value;
+  return self;
+}
+- (OWSSignalServiceProtosContentBuilder*) setReceiptMessageBuilder:(OWSSignalServiceProtosReceiptMessageBuilder*) builderForValue {
+  return [self setReceiptMessage:[builderForValue build]];
+}
+- (OWSSignalServiceProtosContentBuilder*) mergeReceiptMessage:(OWSSignalServiceProtosReceiptMessage*) value {
+  if (resultContent.hasReceiptMessage &&
+      resultContent.receiptMessage != [OWSSignalServiceProtosReceiptMessage defaultInstance]) {
+    resultContent.receiptMessage =
+      [[[OWSSignalServiceProtosReceiptMessage builderWithPrototype:resultContent.receiptMessage] mergeFrom:value] buildPartial];
+  } else {
+    resultContent.receiptMessage = value;
+  }
+  resultContent.hasReceiptMessage = YES;
+  return self;
+}
+- (OWSSignalServiceProtosContentBuilder*) clearReceiptMessage {
+  resultContent.hasReceiptMessage = NO;
+  resultContent.receiptMessage = [OWSSignalServiceProtosReceiptMessage defaultInstance];
+  return self;
+}
+@end
+
+@interface OWSSignalServiceProtosReceiptMessage ()
+@property OWSSignalServiceProtosReceiptMessageType type;
+@property (strong) PBAppendableArray * timestampArray;
+@end
+
+@implementation OWSSignalServiceProtosReceiptMessage
+
+- (BOOL) hasType {
+  return !!hasType_;
+}
+- (void) setHasType:(BOOL) _value_ {
+  hasType_ = !!_value_;
+}
+@synthesize type;
+@synthesize timestampArray;
+@dynamic timestamp;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.type = OWSSignalServiceProtosReceiptMessageTypeDelivery;
+  }
+  return self;
+}
+static OWSSignalServiceProtosReceiptMessage* defaultOWSSignalServiceProtosReceiptMessageInstance = nil;
++ (void) initialize {
+  if (self == [OWSSignalServiceProtosReceiptMessage class]) {
+    defaultOWSSignalServiceProtosReceiptMessageInstance = [[OWSSignalServiceProtosReceiptMessage alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosReceiptMessageInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosReceiptMessageInstance;
+}
+- (PBArray *)timestamp {
+  return timestampArray;
+}
+- (UInt64)timestampAtIndex:(NSUInteger)index {
+  return [timestampArray uint64AtIndex:index];
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasType) {
+    [output writeEnum:1 value:self.type];
+  }
+  const NSUInteger timestampArrayCount = self.timestampArray.count;
+  if (timestampArrayCount > 0) {
+    const UInt64 *values = (const UInt64 *)self.timestampArray.data;
+    for (NSUInteger i = 0; i < timestampArrayCount; ++i) {
+      [output writeUInt64:2 value:values[i]];
+    }
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasType) {
+    size_ += computeEnumSize(1, self.type);
+  }
+  {
+    __block SInt32 dataSize = 0;
+    const NSUInteger count = self.timestampArray.count;
+    const UInt64 *values = (const UInt64 *)self.timestampArray.data;
+    for (NSUInteger i = 0; i < count; ++i) {
+      dataSize += computeUInt64SizeNoTag(values[i]);
+    }
+    size_ += dataSize;
+    size_ += (SInt32)(1 * count);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (OWSSignalServiceProtosReceiptMessage*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosReceiptMessage*)[[[OWSSignalServiceProtosReceiptMessage builder] mergeFromData:data] build];
+}
++ (OWSSignalServiceProtosReceiptMessage*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosReceiptMessage*)[[[OWSSignalServiceProtosReceiptMessage builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosReceiptMessage*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosReceiptMessage*)[[[OWSSignalServiceProtosReceiptMessage builder] mergeFromInputStream:input] build];
+}
++ (OWSSignalServiceProtosReceiptMessage*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosReceiptMessage*)[[[OWSSignalServiceProtosReceiptMessage builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosReceiptMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosReceiptMessage*)[[[OWSSignalServiceProtosReceiptMessage builder] mergeFromCodedInputStream:input] build];
+}
++ (OWSSignalServiceProtosReceiptMessage*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosReceiptMessage*)[[[OWSSignalServiceProtosReceiptMessage builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosReceiptMessageBuilder*) builder {
+  return [[OWSSignalServiceProtosReceiptMessageBuilder alloc] init];
+}
++ (OWSSignalServiceProtosReceiptMessageBuilder*) builderWithPrototype:(OWSSignalServiceProtosReceiptMessage*) prototype {
+  return [[OWSSignalServiceProtosReceiptMessage builder] mergeFrom:prototype];
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder*) builder {
+  return [OWSSignalServiceProtosReceiptMessage builder];
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder*) toBuilder {
+  return [OWSSignalServiceProtosReceiptMessage builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasType) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"type", NSStringFromOWSSignalServiceProtosReceiptMessageType(self.type)];
+  }
+  [self.timestampArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"timestamp", obj];
+  }];
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasType) {
+    [dictionary setObject: @(self.type) forKey: @"type"];
+  }
+  NSMutableArray * timestampArrayArray = [NSMutableArray new];
+  NSUInteger timestampArrayCount=self.timestampArray.count;
+  for(int i=0;i<timestampArrayCount;i++){
+    [timestampArrayArray addObject: @([self.timestampArray uint64AtIndex:i])];
+  }
+  [dictionary setObject: timestampArrayArray forKey: @"timestamp"];
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[OWSSignalServiceProtosReceiptMessage class]]) {
+    return NO;
+  }
+  OWSSignalServiceProtosReceiptMessage *otherMessage = other;
+  return
+      self.hasType == otherMessage.hasType &&
+      (!self.hasType || self.type == otherMessage.type) &&
+      [self.timestampArray isEqualToArray:otherMessage.timestampArray] &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasType) {
+    hashCode = hashCode * 31 + self.type;
+  }
+  [self.timestampArray enumerateObjectsUsingBlock:^(NSNumber *obj, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [obj longValue];
+  }];
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+BOOL OWSSignalServiceProtosReceiptMessageTypeIsValidValue(OWSSignalServiceProtosReceiptMessageType value) {
+  switch (value) {
+    case OWSSignalServiceProtosReceiptMessageTypeDelivery:
+    case OWSSignalServiceProtosReceiptMessageTypeRead:
+      return YES;
+    default:
+      return NO;
+  }
+}
+NSString *NSStringFromOWSSignalServiceProtosReceiptMessageType(OWSSignalServiceProtosReceiptMessageType value) {
+  switch (value) {
+    case OWSSignalServiceProtosReceiptMessageTypeDelivery:
+      return @"OWSSignalServiceProtosReceiptMessageTypeDelivery";
+    case OWSSignalServiceProtosReceiptMessageTypeRead:
+      return @"OWSSignalServiceProtosReceiptMessageTypeRead";
+    default:
+      return nil;
+  }
+}
+
+@interface OWSSignalServiceProtosReceiptMessageBuilder()
+@property (strong) OWSSignalServiceProtosReceiptMessage* resultReceiptMessage;
+@end
+
+@implementation OWSSignalServiceProtosReceiptMessageBuilder
+@synthesize resultReceiptMessage;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultReceiptMessage = [[OWSSignalServiceProtosReceiptMessage alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultReceiptMessage;
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder*) clear {
+  self.resultReceiptMessage = [[OWSSignalServiceProtosReceiptMessage alloc] init];
+  return self;
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder*) clone {
+  return [OWSSignalServiceProtosReceiptMessage builderWithPrototype:resultReceiptMessage];
+}
+- (OWSSignalServiceProtosReceiptMessage*) defaultInstance {
+  return [OWSSignalServiceProtosReceiptMessage defaultInstance];
+}
+- (OWSSignalServiceProtosReceiptMessage*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (OWSSignalServiceProtosReceiptMessage*) buildPartial {
+  OWSSignalServiceProtosReceiptMessage* returnMe = resultReceiptMessage;
+  self.resultReceiptMessage = nil;
+  return returnMe;
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder*) mergeFrom:(OWSSignalServiceProtosReceiptMessage*) other {
+  if (other == [OWSSignalServiceProtosReceiptMessage defaultInstance]) {
+    return self;
+  }
+  if (other.hasType) {
+    [self setType:other.type];
+  }
+  if (other.timestampArray.count > 0) {
+    if (resultReceiptMessage.timestampArray == nil) {
+      resultReceiptMessage.timestampArray = [other.timestampArray copy];
+    } else {
+      [resultReceiptMessage.timestampArray appendArray:other.timestampArray];
+    }
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 8: {
+        OWSSignalServiceProtosReceiptMessageType value = (OWSSignalServiceProtosReceiptMessageType)[input readEnum];
+        if (OWSSignalServiceProtosReceiptMessageTypeIsValidValue(value)) {
+          [self setType:value];
+        } else {
+          [unknownFields mergeVarintField:1 value:value];
+        }
+        break;
+      }
+      case 16: {
+        [self addTimestamp:[input readUInt64]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasType {
+  return resultReceiptMessage.hasType;
+}
+- (OWSSignalServiceProtosReceiptMessageType) type {
+  return resultReceiptMessage.type;
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder*) setType:(OWSSignalServiceProtosReceiptMessageType) value {
+  resultReceiptMessage.hasType = YES;
+  resultReceiptMessage.type = value;
+  return self;
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder*) clearType {
+  resultReceiptMessage.hasType = NO;
+  resultReceiptMessage.type = OWSSignalServiceProtosReceiptMessageTypeDelivery;
+  return self;
+}
+- (PBAppendableArray *)timestamp {
+  return resultReceiptMessage.timestampArray;
+}
+- (UInt64)timestampAtIndex:(NSUInteger)index {
+  return [resultReceiptMessage timestampAtIndex:index];
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder *)addTimestamp:(UInt64)value {
+  if (resultReceiptMessage.timestampArray == nil) {
+    resultReceiptMessage.timestampArray = [PBAppendableArray arrayWithValueType:PBArrayValueTypeUInt64];
+  }
+  [resultReceiptMessage.timestampArray addUint64:value];
+  return self;
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder *)setTimestampArray:(NSArray *)array {
+  resultReceiptMessage.timestampArray = [PBAppendableArray arrayWithArray:array valueType:PBArrayValueTypeUInt64];
+  return self;
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder *)setTimestampValues:(const UInt64 *)values count:(NSUInteger)count {
+  resultReceiptMessage.timestampArray = [PBAppendableArray arrayWithValues:values count:count valueType:PBArrayValueTypeUInt64];
+  return self;
+}
+- (OWSSignalServiceProtosReceiptMessageBuilder *)clearTimestamp {
+  resultReceiptMessage.timestampArray = nil;
   return self;
 }
 @end

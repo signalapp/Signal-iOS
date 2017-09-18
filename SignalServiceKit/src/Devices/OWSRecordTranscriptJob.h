@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/23/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -7,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSMessageSender;
 @class TSNetworkManager;
 @class TSAttachmentStream;
+@class YapDatabaseReadWriteTransaction;
 
 @interface OWSRecordTranscriptJob : NSObject
 
@@ -15,7 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
                                         messageSender:(OWSMessageSender *)messageSender
                                        networkManager:(TSNetworkManager *)networkManager NS_DESIGNATED_INITIALIZER;
 
-- (void)runWithAttachmentHandler:(void (^)(TSAttachmentStream *attachmentStream))attachmentHandler;
+- (void)runWithAttachmentHandler:(void (^)(TSAttachmentStream *attachmentStream))attachmentHandler
+                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

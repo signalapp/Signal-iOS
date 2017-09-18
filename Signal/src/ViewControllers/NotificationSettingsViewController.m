@@ -5,7 +5,7 @@
 #import "NotificationSettingsViewController.h"
 #import "Environment.h"
 #import "NotificationSettingsOptionsViewController.h"
-#import "PropertyListPreferences.h"
+#import "OWSPreferences.h"
 
 @implementation NotificationSettingsViewController
 
@@ -29,7 +29,7 @@
 
     __weak NotificationSettingsViewController *weakSelf = self;
 
-    PropertyListPreferences *prefs = [Environment preferences];
+    OWSPreferences *prefs = [Environment preferences];
 
     OWSTableSection *backgroundSection = [OWSTableSection new];
     backgroundSection.headerTitle = NSLocalizedString(@"NOTIFICATIONS_SECTION_BACKGROUND", nil);

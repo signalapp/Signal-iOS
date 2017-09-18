@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -6,9 +8,11 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSReadReceipt;
 @class TSIncomingMessage;
 @class TSStorageManager;
+@class YapDatabaseReadWriteTransaction;
 
 extern NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification;
 
+// TODO:
 @interface OWSReadReceiptsProcessor : NSObject
 
 /**
@@ -30,6 +34,7 @@ extern NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)process;
+- (void)processWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

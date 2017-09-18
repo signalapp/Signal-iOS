@@ -425,10 +425,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             success:(void (^)())successHandler
             failure:(void (^)(NSError *error))failureHandler
 {
-    OWSAssert(message);
-    AssertIsOnMainThread();
+    [self sendMessage:message transaction:nil success:successHandler failure:failureHandler];
+}
 
-    [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut];
+- (void)sendMessage:(TSOutgoingMessage *)message
+        transaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
+            success:(void (^)())successHandler
+            failure:(void (^)(NSError *error))failureHandler
+{
+    OWSAssert(message);
+
+    if (transaction) {
+        [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut transaction:transaction];
+    } else {
+        [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut];
+    }
     OWSSendMessageOperation *sendMessageOperation = [[OWSSendMessageOperation alloc] initWithMessage:message
                                                                                        messageSender:self
                                                                                              success:successHandler
@@ -939,6 +950,25 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
+    NSString *localNumber = [TSAccountManager localNumber];
+    if ([localNumber isEqualToString:recipient.uniqueId]) {
+        if (deviceMessages.count < 1) {
+            DDLogInfo(@"Ignoring sync message without linked devices: %@", [message class]);
+            OWSAssert([message isKindOfClass:[OWSOutgoingSyncMessage class]]);
+
+            dispatch_async([OWSDispatch sendingQueue], ^{
+                [recipient save];
+                [self handleMessageSentLocally:message];
+                successHandler();
+            });
+
+            return;
+        }
+    } else {
+        OWSAssert(deviceMessages.count > 0);
+    }
+
+
     TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId
                                                                                messages:deviceMessages
                                                                                   relay:recipient.relay
@@ -1082,9 +1112,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [OWSDisappearingMessagesJob setExpirationForMessage:message];
 }
 
-- (void)handleMessageSentRemotely:(TSOutgoingMessage *)message sentAt:(uint64_t)sentAt
+- (void)handleMessageSentRemotely:(TSOutgoingMessage *)message
+                           sentAt:(uint64_t)sentAt
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [message updateWithWasSentAndDelivered];
+    OWSAssert(message);
+    OWSAssert(transaction);
+
+    [message updateWithWasSentAndDeliveredWithTransaction:transaction];
     [self becomeConsistentWithDisappearingConfigurationForMessage:message];
     [OWSDisappearingMessagesJob setExpirationForMessage:message expirationStartedAt:sentAt];
 }
@@ -1171,6 +1206,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     encryptionException = exception;
                 }
             });
+
             if (encryptionException) {
                 DDLogInfo(@"%@ Exception during encryption: %@", self.tag, encryptionException);
                 @throw encryptionException;

@@ -13,14 +13,14 @@ class AccountManager: NSObject {
     let TAG = "[AccountManager]"
     let textSecureAccountManager: TSAccountManager
     let networkManager: TSNetworkManager
-    let preferences: PropertyListPreferences
+    let preferences: OWSPreferences
 
     var pushManager: PushManager {
         // dependency injection hack since PushManager has *alot* of dependencies, and would induce a cycle.
         return PushManager.shared()
     }
 
-    required init(textSecureAccountManager: TSAccountManager, preferences: PropertyListPreferences) {
+    required init(textSecureAccountManager: TSAccountManager, preferences: OWSPreferences) {
         self.networkManager = textSecureAccountManager.networkManager
         self.textSecureAccountManager = textSecureAccountManager
         self.preferences = preferences

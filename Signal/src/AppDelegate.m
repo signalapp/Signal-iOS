@@ -12,10 +12,9 @@
 #import "OWSContactsManager.h"
 #import "OWSContactsSyncing.h"
 #import "OWSNavigationController.h"
+#import "OWSPreferences.h"
 #import "OWSProfileManager.h"
-#import "OWSStaleNotificationObserver.h"
 #import "Pastelog.h"
-#import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "RegistrationViewController.h"
 #import "Release.h"
@@ -25,14 +24,15 @@
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
+#import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSFailedAttachmentDownloadsJob.h>
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
-#import <SignalServiceKit/OWSIncomingMessageReadObserver.h>
+#import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSDatabaseView.h>
-#import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSStorageManager+Calling.h>
@@ -50,8 +50,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 @interface AppDelegate ()
 
 @property (nonatomic) UIWindow *screenProtectionWindow;
-@property (nonatomic) OWSIncomingMessageReadObserver *incomingMessageReadObserver;
-@property (nonatomic) OWSStaleNotificationObserver *staleNotificationObserver;
 @property (nonatomic) OWSContactsSyncing *contactsSyncing;
 @property (nonatomic) BOOL hasInitialRootViewController;
 
@@ -95,7 +93,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     loggingIsEnabled = TRUE;
     [DebugLogger.sharedLogger enableTTYLogging];
 #elif RELEASE
-    loggingIsEnabled = PropertyListPreferences.loggingIsEnabled;
+    loggingIsEnabled = OWSPreferences.loggingIsEnabled;
 #endif
     if (loggingIsEnabled) {
         [DebugLogger.sharedLogger enableFileLogging];
@@ -249,13 +247,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [VersionMigrations runSafeBlockingMigrations];
     }];
     [[Environment getCurrent].contactsManager startObserving];
-
-    self.incomingMessageReadObserver =
-        [[OWSIncomingMessageReadObserver alloc] initWithMessageSender:[Environment getCurrent].messageSender];
-    [self.incomingMessageReadObserver startObserving];
-
-    self.staleNotificationObserver = [OWSStaleNotificationObserver new];
-    [self.staleNotificationObserver startObserving];
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -792,6 +783,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // If there were any messages in our local queue which we hadn't yet processed.
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
+    [[OWSBatchMessageProcessor sharedInstance] handleAnyUnprocessedEnvelopesAsync];
 
     [OWSProfileManager.sharedManager fetchLocalUsersProfile];
 }
@@ -813,6 +805,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         // enables this feature
         [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
         [[OWSProfileManager sharedManager] ensureLocalProfileCached];
+
+        // For non-legacy users, read receipts are on by default.
+        [OWSReadReceiptManager.sharedManager setAreReadReceiptsEnabled:YES];
     }
 }
 

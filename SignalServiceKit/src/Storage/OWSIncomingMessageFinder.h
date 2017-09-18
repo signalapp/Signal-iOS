@@ -21,7 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (BOOL)existsMessageWithTimestamp:(uint64_t)timestamp
                           sourceId:(NSString *)sourceId
-                    sourceDeviceId:(uint32_t)sourceDeviceId;
+                    sourceDeviceId:(uint32_t)sourceDeviceId
+                       transaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

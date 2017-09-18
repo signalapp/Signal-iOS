@@ -41,28 +41,35 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)runWithAttachmentHandler:(void (^)(TSAttachmentStream *attachmentStream))attachmentHandler
+                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssert(transaction);
+
     OWSIncomingSentMessageTranscript *transcript = self.incomingSentMessageTranscript;
     DDLogDebug(@"%@ Recording transcript: %@", self.tag, transcript);
 
+    TSThread *thread = [transcript threadWithTransaction:transaction];
     if (transcript.isEndSessionMessage) {
         DDLogInfo(@"%@ EndSession was sent to recipient: %@.", self.tag, transcript.recipientId);
-        [self.storageManager deleteAllSessionsForContact:transcript.recipientId];
+        dispatch_async([OWSDispatch sessionStoreQueue], ^{
+            [self.storageManager deleteAllSessionsForContact:transcript.recipientId];
+        });
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
-                                         inThread:transcript.thread
-                                      messageType:TSInfoMessageTypeSessionDidEnd] save];
+                                         inThread:thread
+                                      messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
 
         // Don't continue processing lest we print a bubble for the session reset.
         return;
     }
 
-    TSThread *thread = transcript.thread;
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:transcript.attachmentPointerProtos
                                                         timestamp:transcript.timestamp
                                                             relay:transcript.relay
                                                            thread:thread
-                                                   networkManager:self.networkManager];
+                                                   networkManager:self.networkManager
+                                                   storageManager:self.storageManager
+                                                      transaction:transaction];
 
     // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
     TSOutgoingMessage *outgoingMessage =
@@ -79,10 +86,13 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [self.messageSender handleMessageSentRemotely:outgoingMessage sentAt:transcript.expirationStartedAt];
+    [self.messageSender handleMessageSentRemotely:outgoingMessage
+                                           sentAt:transcript.expirationStartedAt
+                                      transaction:transaction];
 
     [attachmentsProcessor
         fetchAttachmentsForMessage:outgoingMessage
+                       transaction:transaction
                            success:attachmentHandler
                            failure:^(NSError *_Nonnull error) {
                                DDLogError(@"%@ failed to fetch transcripts attachments for message: %@",
@@ -101,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      expiresInSeconds:transcript.expirationDuration
                                                                       expireStartedAt:transcript.expirationStartedAt];
         // Since textMessage is a new message, updateWithWasSentAndDelivered will save it.
-        [textMessage updateWithWasSentAndDelivered];
+        [textMessage updateWithWasSentAndDeliveredWithTransaction:transaction];
     }
 }
 
