@@ -7,15 +7,23 @@ import Foundation
 @objc class OWSFlatButton: UIView {
     let TAG = "[OWSFlatButton]"
 
-    private var button: UIButton?
+    private let button: UIButton
 
     private var pressedBlock : (() -> Void)?
 
     private var upColor: UIColor?
     private var downColor: UIColor?
 
+    override var backgroundColor: UIColor? {
+        willSet {
+            owsFail("Use setBackgroundColors(upColor:) instead.")
+        }
+    }
+
     init() {
         AssertIsOnMainThread()
+
+        button = UIButton(type:.custom)
 
         super.init(frame:CGRect.zero)
 
@@ -24,13 +32,14 @@ import Foundation
 
     @available(*, unavailable, message:"use default constructor instead.")
     required init?(coder aDecoder: NSCoder) {
+        button = UIButton(type:.custom)
+
         super.init(coder: aDecoder)
+
         owsFail("\(self.TAG) invalid constructor")
     }
 
     private func createContent() {
-        let button = UIButton(type:.custom)
-        self.button = button
         self.addSubview(button)
         button.addTarget(self, action:#selector(buttonPressed), for:.touchUpInside)
         button.autoPinWidthToSuperview()
@@ -49,7 +58,7 @@ import Foundation
         button.setTitle(title:title,
                         font: font,
                         titleColor: titleColor )
-        button.setBackgroundColors(backgroundColor)
+        button.setBackgroundColors(upColor:backgroundColor)
         button.useDefaultCornerRadius()
         button.setSize(width:width, height:height)
         button.addTarget(target:target, selector:selector)
@@ -83,7 +92,7 @@ import Foundation
         button.setTitle(title:title,
                         font: font,
                         titleColor: titleColor )
-        button.setBackgroundColors(backgroundColor)
+        button.setBackgroundColors(upColor:backgroundColor)
         button.useDefaultCornerRadius()
         button.addTarget(target:target, selector:selector)
         return button
@@ -98,10 +107,6 @@ import Foundation
 
     public func setTitle(title: String, font: UIFont,
                          titleColor: UIColor ) {
-        guard let button = self.button else {
-            owsFail("Missing button")
-            return
-        }
         button.setTitle(title, for: .normal)
         button.setTitleColor(titleColor, for: .normal)
         button.titleLabel!.font = font
@@ -109,33 +114,21 @@ import Foundation
 
     public func setBackgroundColors(upColor: UIColor,
                                     downColor: UIColor ) {
-        guard let button = self.button else {
-            owsFail("Missing button")
-            return
-        }
         button.setBackgroundImage(UIImage(color:upColor), for: .normal)
         button.setBackgroundImage(UIImage(color:downColor), for: .highlighted)
     }
 
-    public func setBackgroundColors(_ backgroundColor: UIColor ) {
-        setBackgroundColors(upColor: backgroundColor,
-                            downColor: backgroundColor.withAlphaComponent(0.7) )
+    public func setBackgroundColors(upColor: UIColor ) {
+        setBackgroundColors(upColor: upColor,
+                            downColor: upColor.withAlphaComponent(0.7) )
     }
 
     public func setSize(width: CGFloat, height: CGFloat) {
-        guard let button = self.button else {
-            owsFail("Missing button")
-            return
-        }
         button.autoSetDimension(.width, toSize:width)
         button.autoSetDimension(.height, toSize:height)
     }
 
     public func useDefaultCornerRadius() {
-        guard let button = self.button else {
-            owsFail("Missing button")
-            return
-        }
         // To my eye, this radius tends to look right regardless of button size
         // (within reason) or device size. 
         button.layer.cornerRadius = 5
@@ -143,19 +136,11 @@ import Foundation
     }
 
     public func setEnabled(_ isEnabled: Bool) {
-        guard let button = self.button else {
-            owsFail("Missing button")
-            return
-        }
         button.isEnabled = isEnabled
     }
 
     public func addTarget(target:Any,
                           selector: Selector) {
-        guard let button = self.button else {
-            owsFail("Missing button")
-            return
-        }
         button.addTarget(target, action:selector, for:.touchUpInside)
     }
 
@@ -168,9 +153,6 @@ import Foundation
     }
 
     internal func buttonPressed() {
-        guard let pressedBlock = pressedBlock else {
-            return
-        }
-        pressedBlock()
+        pressedBlock?()
     }
 }
