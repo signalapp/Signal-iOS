@@ -40,6 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)sourceFilename;
 - (void)setSourceFilename:(NSString *_Nullable)sourceFilename;
 
+// If called, this data source will try to delete its on-disk contents
+// when it is deallocated.
+- (void)setShouldDeleteOnDeallocation;
+
 @end
 
 #pragma mark -

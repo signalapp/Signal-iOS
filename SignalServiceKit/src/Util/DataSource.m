@@ -18,11 +18,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSString *sourceFilename;
 
+@property (nonatomic) BOOL shouldDeleteOnDeallocation;
+
 @end
 
 #pragma mark -
 
 @implementation DataSourceValue
+
+- (void)dealloc
+{
+    if (self.shouldDeleteOnDeallocation) {
+        NSString *filePath = self.cachedFilePath;
+        if (filePath) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSError *error;
+                BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+                if (!success || error) {
+                    OWSCFail(@"DataSourceValue could not delete file: %@, %@", filePath, error);
+                }
+            });
+        }
+    }
+}
 
 + (nullable id<DataSource>)dataSourceWithData:(NSData *)data fileExtension:(NSString *)fileExtension
 {
@@ -35,6 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
     DataSourceValue *instance = [DataSourceValue new];
     instance.dataValue = data;
     instance.fileExtension = fileExtension;
+    // Always try to clean up temp files created by this instance.
+    [instance setShouldDeleteOnDeallocation];
     return instance;
 }
 
@@ -89,7 +109,6 @@ NS_ASSUME_NONNULL_BEGIN
             NSString *dirPath = NSTemporaryDirectory();
             NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingPathExtension:self.fileExtension];
             NSString *filePath = [dirPath stringByAppendingPathComponent:fileName];
-            DDLogError(@"%@ ---- writing data", self.tag);
             if ([self writeToPath:filePath]) {
                 self.cachedFilePath = filePath;
             } else {
@@ -131,6 +150,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)setShouldDeleteOnDeallocation
+{
+    self.shouldDeleteOnDeallocation = YES;
+}
+
 #pragma mark - Logging
 
 + (NSString *)tag
@@ -157,11 +181,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSString *sourceFilename;
 
+@property (nonatomic) BOOL shouldDeleteOnDeallocation;
+
 @end
 
 #pragma mark -
 
 @implementation DataSourcePath
+
+- (void)dealloc
+{
+    if (self.shouldDeleteOnDeallocation) {
+        NSString *filePath = self.filePath;
+        if (filePath) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSError *error;
+                BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+                if (!success || error) {
+                    OWSCFail(@"DataSourcePath could not delete file: %@, %@", filePath, error);
+                }
+            });
+        }
+    }
+}
 
 + (nullable id<DataSource>)dataSourceWithURL:(NSURL *)fileUrl;
 {
@@ -261,6 +303,11 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         return YES;
     }
+}
+
+- (void)setShouldDeleteOnDeallocation
+{
+    self.shouldDeleteOnDeallocation = YES;
 }
 
 #pragma mark - Logging
