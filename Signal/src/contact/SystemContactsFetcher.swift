@@ -104,7 +104,7 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
     }
 }
 
-let kAddressBookContactyStoreDidChangeNotificationName = NSNotification.Name("AddressBookContactStoreAdapteeDidChange")
+let kAddressBookContactStoreDidChangeNotificationName = NSNotification.Name("AddressBookContactStoreAdapteeDidChange")
 /**
  * System contact fetching compatible with iOS8
  */
@@ -143,12 +143,12 @@ class AddressBookContactStoreAdaptee: ContactStoreAdaptee {
         assert(self.changeHandler == nil)
         self.changeHandler = changeHandler
 
-        NotificationCenter.default.addObserver(self, selector: #selector(runChangeHandler), name: kAddressBookContactyStoreDidChangeNotificationName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(runChangeHandler), name: kAddressBookContactStoreDidChangeNotificationName, object: nil)
 
         let callback: ABExternalChangeCallback = { (_, _, _) in
             // Ideally we'd just call the changeHandler here, but because this is a C style callback in swift, 
             // we can't capture any state in the closure, so we use a notification as a trampoline
-            NotificationCenter.default.post(name: kAddressBookContactyStoreDidChangeNotificationName, object: nil)
+            NotificationCenter.default.postNotificationNameAsync(kAddressBookContactStoreDidChangeNotificationName, object: nil)
         }
 
         ABAddressBookRegisterExternalChangeCallback(addressBook, callback, nil)

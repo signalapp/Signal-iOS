@@ -500,7 +500,7 @@ struct AudioSource: Hashable {
 
         if audioSessionChanged {
             Logger.info("\(TAG) in \(#function)")
-            NotificationCenter.default.post(name: CallAudioServiceSessionChanged, object: nil)
+            NotificationCenter.default.postNotificationNameAsync(CallAudioServiceSessionChanged, object: nil)
         }
     }
 }

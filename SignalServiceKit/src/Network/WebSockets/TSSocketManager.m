@@ -4,6 +4,7 @@
 
 #import "TSSocketManager.h"
 #import "Cryptography.h"
+#import "NSNotificationCenter+OWS.h"
 #import "NSTimer+OWS.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
@@ -296,9 +297,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
 - (void)notifyStatusChange
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotification_SocketManagerStateDidChange
-                                                        object:nil
-                                                      userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotification_SocketManagerStateDidChange
+                                                             object:nil
+                                                           userInfo:nil];
 }
 
 #pragma mark -

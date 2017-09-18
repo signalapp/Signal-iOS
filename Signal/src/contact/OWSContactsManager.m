@@ -9,6 +9,7 @@
 #import "Util.h"
 #import "ViewControllerUtils.h"
 #import <SignalServiceKit/ContactsUpdater.h>
+#import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSStorageManager.h>
@@ -308,8 +309,9 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
         }];
     });
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:OWSContactsManagerSignalAccountsDidChangeNotification
-                                                        object:nil];
+    [[NSNotificationCenter defaultCenter]
+        postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
+                           object:nil];
 }
 
 - (void)loadCachedDisplayNames

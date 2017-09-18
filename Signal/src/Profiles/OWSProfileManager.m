@@ -10,6 +10,7 @@
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSData+hexString.h>
 #import <SignalServiceKit/NSDate+OWS.h>
+#import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSRequestBuilder.h>
 #import <SignalServiceKit/SecurityUtils.h>
@@ -249,22 +250,23 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                                                     messageSender:self.messageSender
                                                    profileManager:self];
 
-                [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_LocalProfileDidChange
-                                                                    object:nil
-                                                                  userInfo:nil];
+                [[NSNotificationCenter defaultCenter]
+                    postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
+                                       object:nil
+                                     userInfo:nil];
             } else {
                 [[NSNotificationCenter defaultCenter]
-                    postNotificationName:kNSNotificationName_OtherUsersProfileWillChange
-                                  object:nil
-                                userInfo:@{
-                                    kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
-                                }];
+                    postNotificationNameAsync:kNSNotificationName_OtherUsersProfileWillChange
+                                       object:nil
+                                     userInfo:@{
+                                         kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
+                                     }];
                 [[NSNotificationCenter defaultCenter]
-                    postNotificationName:kNSNotificationName_OtherUsersProfileDidChange
-                                  object:nil
-                                userInfo:@{
-                                    kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
-                                }];
+                    postNotificationNameAsync:kNSNotificationName_OtherUsersProfileDidChange
+                                       object:nil
+                                     userInfo:@{
+                                         kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
+                                     }];
             }
         });
     }
@@ -773,13 +775,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             [self.dbConnection setBool:YES forKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
         }
 
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_ProfileWhitelistDidChange
-                                                                object:nil
-                                                              userInfo:@{
-                                                                  kNSNotificationKey_ProfileRecipientId : recipientId,
-                                                              }];
-        });
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                                                 object:nil
+                                                               userInfo:@{
+                                                                   kNSNotificationKey_ProfileRecipientId : recipientId,
+                                                               }];
     });
 }
 
@@ -812,16 +812,14 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             }];
         }
 
-        dispatch_async(dispatch_get_main_queue(), ^{
             for (NSString *recipientId in newRecipientIds) {
                 [[NSNotificationCenter defaultCenter]
-                    postNotificationName:kNSNotificationName_ProfileWhitelistDidChange
-                                  object:nil
-                                userInfo:@{
-                                    kNSNotificationKey_ProfileRecipientId : recipientId,
-                                }];
+                    postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                       object:nil
+                                     userInfo:@{
+                                         kNSNotificationKey_ProfileRecipientId : recipientId,
+                                     }];
             }
-        });
     });
 }
 
@@ -859,13 +857,12 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             [self.dbConnection setBool:YES forKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
             self.groupProfileWhitelistCache[groupIdKey] = @(YES);
 
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_ProfileWhitelistDidChange
-                                                                    object:nil
-                                                                  userInfo:@{
-                                                                      kNSNotificationKey_ProfileGroupId : groupId,
-                                                                  }];
-            });
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                   object:nil
+                                 userInfo:@{
+                                     kNSNotificationKey_ProfileGroupId : groupId,
+                                 }];
         }
     });
 }

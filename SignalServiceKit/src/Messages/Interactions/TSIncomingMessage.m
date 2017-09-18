@@ -3,6 +3,7 @@
 //
 
 #import "TSIncomingMessage.h"
+#import "NSNotificationCenter+OWS.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSReadReceiptManager.h"

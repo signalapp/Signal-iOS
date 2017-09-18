@@ -5,6 +5,7 @@
 #import "OWSAttachmentsProcessor.h"
 #import "Cryptography.h"
 #import "MIMETypeUtil.h"
+#import "NSNotificationCenter+OWS.h"
 #import "OWSError.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachmentPointer.h"
@@ -377,15 +378,13 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 
 - (void)fireProgressNotification:(CGFloat)progress attachmentId:(NSString *)attachmentId
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-        [notificationCenter postNotificationName:kAttachmentDownloadProgressNotification
-                                          object:nil
-                                        userInfo:@{
-                                            kAttachmentDownloadProgressKey : @(progress),
-                                            kAttachmentDownloadAttachmentIDKey : attachmentId
-                                        }];
-    });
+    NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+    [notificationCenter postNotificationNameAsync:kAttachmentDownloadProgressNotification
+                                           object:nil
+                                         userInfo:@{
+                                             kAttachmentDownloadProgressKey : @(progress),
+                                             kAttachmentDownloadAttachmentIDKey : attachmentId
+                                         }];
 }
 
 - (void)setAttachment:(TSAttachmentPointer *)pointer

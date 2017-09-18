@@ -2,14 +2,14 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <AFNetworking/AFHTTPSessionManager.h>
-
+#import "OWSSignalService.h"
+#import "NSNotificationCenter+OWS.h"
 #import "OWSCensorshipConfiguration.h"
 #import "OWSHTTPSecurityPolicy.h"
-#import "OWSSignalService.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
 #import "TSStorageManager.h"
+#import <AFNetworking/AFHTTPSessionManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -141,9 +141,9 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     }
 
     [[NSNotificationCenter defaultCenter]
-        postNotificationName:kNSNotificationName_IsCensorshipCircumventionActiveDidChange
-                      object:nil
-                    userInfo:nil];
+        postNotificationNameAsync:kNSNotificationName_IsCensorshipCircumventionActiveDidChange
+                           object:nil
+                         userInfo:nil];
 }
 
 - (BOOL)isCensorshipCircumventionActive
