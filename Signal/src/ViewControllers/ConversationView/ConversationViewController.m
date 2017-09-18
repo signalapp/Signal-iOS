@@ -12,6 +12,7 @@
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
+#import "NSAttributedString+OWS.h"
 #import "NSDate+millisecondTimeStamp.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
@@ -2129,6 +2130,18 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     ? NSLocalizedString(@"MESSAGE_STATUS_DELIVERED", @"message footer for delivered messages")
                     : NSLocalizedString(@"MESSAGE_STATUS_SENT", @"message footer for sent messages"));
             NSAttributedString *result = [[NSAttributedString alloc] initWithString:text];
+            if (outgoingMessage.wasDelivered && outgoingMessage.readRecipientIds.count > 0) {
+                result =
+                    [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@" "] referenceView:self.view];
+                result =
+                    [result rtlSafeAppend:[[NSAttributedString alloc]
+                                              initWithString:@"\uf00c "
+                                                  attributes:@{
+                                                      NSFontAttributeName : [UIFont ows_fontAwesomeFont:10.f],
+                                                      NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
+                                                  }]
+                            referenceView:self.view];
+            }
 
             // Show when it's the last message in the thread
             if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section] - 1) {
