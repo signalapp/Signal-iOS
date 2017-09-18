@@ -376,8 +376,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _networkManager = [TSNetworkManager sharedManager];
     _blockingManager = [OWSBlockingManager sharedManager];
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
-
-    [self addNotificationListeners];
 }
 
 - (void)addNotificationListeners
@@ -650,6 +648,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self initializeToolbars];
     [self createScrollDownButton];
     [self createHeaderViews];
+    [self addNotificationListeners];
 }
 
 - (void)registerCustomMessageNibs
