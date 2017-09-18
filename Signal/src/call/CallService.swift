@@ -79,7 +79,7 @@ enum CallError: Error {
 }
 
 // Should be roughly synced with Android client for consistency
-fileprivate let connectingTimeoutSeconds = 120
+private let connectingTimeoutSeconds = 120
 
 // All Observer methods will be invoked from the main thread.
 protocol CallServiceObserver: class {
@@ -1621,9 +1621,11 @@ protocol CallServiceObserver: class {
             return
         }
 
-        guard nil != UIApplication.shared.frontmostViewController as? CallViewController else {
+        let frontmostViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts
+
+        guard nil != frontmostViewController as? CallViewController else {
             OWSProdError(OWSAnalyticsEvents.callServiceCallViewCouldNotPresent(), file:#file, function:#function, line:#line)
-            owsFail("\(TAG) in \(#function) Call terminated due to call view presentation delay.")
+            owsFail("\(TAG) in \(#function) Call terminated due to call view presentation delay: \(frontmostViewController.debugDescription).")
             self.terminateCall()
             return
         }
