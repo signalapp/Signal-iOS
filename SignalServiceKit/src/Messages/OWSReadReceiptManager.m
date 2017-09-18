@@ -330,6 +330,58 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     }
 }
 
+#pragma mark - Mark as Read Locally
+
+- (void)markAsReadLocallyBeforeTimestamp:(uint64_t)timestamp thread:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            NSMutableArray<id<OWSReadTracking>> *interactions = [NSMutableArray new];
+
+            [[TSDatabaseView unseenDatabaseViewExtension:transaction]
+                enumerateRowsInGroup:thread.uniqueId
+                          usingBlock:^(NSString *collection,
+                              NSString *key,
+                              id object,
+                              id metadata,
+                              NSUInteger index,
+                              BOOL *stop) {
+
+                              if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
+                                  OWSFail(
+                                      @"Expected to conform to OWSReadTracking: object with class: %@ collection: %@ "
+                                      @"key: %@",
+                                      [object class],
+                                      collection,
+                                      key);
+                                  return;
+                              }
+                              id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
+
+                              if (possiblyRead.timestampForSorting > timestamp) {
+                                  *stop = YES;
+                                  return;
+                              }
+
+                              OWSAssert(!possiblyRead.read);
+                              if (!possiblyRead.read) {
+                                  [interactions addObject:possiblyRead];
+                              }
+                          }];
+
+            if (interactions.count < 1) {
+                return;
+            }
+            DDLogError(@"Marking %zd messages as read.", interactions.count);
+            for (id<OWSReadTracking> possiblyRead in interactions) {
+                [possiblyRead markAsReadWithTransaction:transaction sendReadReceipt:YES updateExpiration:YES];
+            }
+        }];
+    });
+}
+
 - (void)messageWasReadLocally:(TSIncomingMessage *)message
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
