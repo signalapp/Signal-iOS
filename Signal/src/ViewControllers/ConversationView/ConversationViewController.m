@@ -2131,16 +2131,15 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     : NSLocalizedString(@"MESSAGE_STATUS_SENT", @"message footer for sent messages"));
             NSAttributedString *result = [[NSAttributedString alloc] initWithString:text];
             if (outgoingMessage.wasDelivered && outgoingMessage.readRecipientIds.count > 0) {
-                result =
-                    [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@" "] referenceView:self.view];
-                result =
-                    [result rtlSafeAppend:[[NSAttributedString alloc]
-                                              initWithString:@"\uf00c "
-                                                  attributes:@{
-                                                      NSFontAttributeName : [UIFont ows_fontAwesomeFont:10.f],
-                                                      NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
-                                                  }]
-                            referenceView:self.view];
+                NSAttributedString *checkmark = [[NSAttributedString alloc]
+                    initWithString:@"\uf00c "
+                        attributes:@{
+                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:10.f],
+                            NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
+                        }];
+                NSAttributedString *spacing = [[NSAttributedString alloc] initWithString:@" "];
+                result = [[checkmark rtlSafeAppend:spacing referenceView:self.view] rtlSafeAppend:result
+                                                                                    referenceView:self.view];
             }
 
             // Show when it's the last message in the thread
