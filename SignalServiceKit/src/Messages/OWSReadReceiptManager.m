@@ -403,6 +403,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         OWSAssert(messages.count <= 1);
         if (messages.count > 0) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                // TODO: We might also need to "mark as read by recipient" any older messages
+                // from us in that thread.  Or maybe this state should hang on the thread?
                 for (TSOutgoingMessage *message in messages) {
                     [message updateWithReadRecipient:recipientId transaction:transaction];
                 }
