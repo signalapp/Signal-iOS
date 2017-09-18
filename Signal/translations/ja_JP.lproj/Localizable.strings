@@ -359,7 +359,7 @@
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "このユーザにはあなたのプロフィールが見えます";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "プロフィールの共有";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "プロフィールを共有する";
 
 /* Action that shares user profile with a group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "プロフィールを共有する";
@@ -419,7 +419,7 @@
 "DISAPPEARING_MESSAGES_LABEL" = "メッセージが消える時間の設定";
 
 /* Short text to dismiss current modal / actionsheet / screen */
-"DISMISS_BUTTON_TEXT" = "消す";
+"DISMISS_BUTTON_TEXT" = "キャンセル";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "検閲回避場所";
@@ -1112,7 +1112,7 @@
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "プロフィールは新しく会話を始める際に相手に見えますし，プロフィールを共有するユーザーやグループにも見えます。";
 
 /* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "詳しくはここを押してください";
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "詳細はここにあります。";
 
 /* Label for the profile name field of the profile view. */
 "PROFILE_VIEW_PROFILE_NAME_FIELD" = "プロフィール名";
