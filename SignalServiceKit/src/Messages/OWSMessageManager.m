@@ -482,9 +482,7 @@ NS_ASSUME_NONNULL_BEGIN
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent relay:envelope.relay];
 
         OWSRecordTranscriptJob *recordJob =
-            [[OWSRecordTranscriptJob alloc] initWithIncomingSentMessageTranscript:transcript
-                                                                    messageSender:self.messageSender
-                                                                   networkManager:self.networkManager];
+            [[OWSRecordTranscriptJob alloc] initWithIncomingSentMessageTranscript:transcript];
 
         OWSSignalServiceProtosDataMessage *dataMessage = syncMessage.sent.message;
         OWSAssert(dataMessage);

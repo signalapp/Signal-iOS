@@ -7,8 +7,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSSignalServiceProtosEnvelope;
 @class OWSSignalServiceProtosReceiptMessage;
 @class TSIncomingMessage;
+@class TSOutgoingMessage;
 @class TSThread;
 @class YapDatabase;
+@class YapDatabaseReadWriteTransaction;
 
 // There are four kinds of read receipts:
 //
@@ -38,7 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)processReadReceiptsFromRecipient:(OWSSignalServiceProtosReceiptMessage *)receiptMessage
                                 envelope:(OWSSignalServiceProtosEnvelope *)envelope;
 
-#pragma mark - Mark as Read Locally
+- (void)outgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
+                            transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This method cues this manager:
 //

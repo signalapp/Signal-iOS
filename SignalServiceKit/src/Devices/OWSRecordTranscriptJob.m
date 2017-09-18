@@ -6,26 +6,42 @@
 #import "OWSAttachmentsProcessor.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
+#import "OWSReadReceiptManager.h"
 #import "TSInfoMessage.h"
+#import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager+SessionStore.h"
+#import "TextSecureKitEnv.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSRecordTranscriptJob ()
 
-@property (nonatomic, readonly) OWSIncomingSentMessageTranscript *incomingSentMessageTranscript;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;
+
+@property (nonatomic, readonly) OWSIncomingSentMessageTranscript *incomingSentMessageTranscript;
 
 @end
 
 @implementation OWSRecordTranscriptJob
 
 - (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
+{
+    return [self initWithIncomingSentMessageTranscript:incomingSentMessageTranscript
+                                         messageSender:[TextSecureKitEnv sharedEnv].messageSender
+                                        networkManager:TSNetworkManager.sharedManager
+                                        storageManager:TSStorageManager.sharedManager
+                                    readReceiptManager:OWSReadReceiptManager.sharedManager];
+}
+
+- (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
                                         messageSender:(OWSMessageSender *)messageSender
                                        networkManager:(TSNetworkManager *)networkManager
+                                       storageManager:(TSStorageManager *)storageManager
+                                   readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
 {
     self = [super init];
     if (!self) {
@@ -35,7 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
     _incomingSentMessageTranscript = incomingSentMessageTranscript;
     _messageSender = messageSender;
     _networkManager = networkManager;
-    _storageManager = [TSStorageManager sharedManager];
+    _storageManager = storageManager;
+    _readReceiptManager = readReceiptManager;
 
     return self;
 }
@@ -86,9 +103,18 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    if (outgoingMessage.body.length < 1 && outgoingMessage.attachmentIds.count < 1) {
+        // TODO: Is this safe?
+        DDLogInfo(@"Ignoring message transcript for empty message.");
+        return;
+    }
+
+    // TODO: Refactor this logic.
     [self.messageSender handleMessageSentRemotely:outgoingMessage
                                            sentAt:transcript.expirationStartedAt
                                       transaction:transaction];
+
+    [self.readReceiptManager outgoingMessageFromLinkedDevice:outgoingMessage transaction:transaction];
 
     [attachmentsProcessor
         fetchAttachmentsForMessage:outgoingMessage
