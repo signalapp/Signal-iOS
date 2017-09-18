@@ -34,12 +34,11 @@
 
     OWSTableSection *helpSection = [OWSTableSection new];
     helpSection.headerTitle = NSLocalizedString(@"SETTINGS_HELP_HEADER", @"");
-    [helpSection
-        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_SUPPORT", @"")
-                                         actionBlock:^{
-                                             [[UIApplication sharedApplication]
-                                                 openURL:[NSURL URLWithString:@"http://support.whispersystems.org"]];
-                                         }]];
+    [helpSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_SUPPORT", @"")
+                                                  actionBlock:^{
+                                                      [[UIApplication sharedApplication]
+                                                          openURL:[NSURL URLWithString:@"https://support.signal.org"]];
+                                                  }]];
     [contents addSection:helpSection];
 
     UILabel *copyrightLabel = [UILabel new];
