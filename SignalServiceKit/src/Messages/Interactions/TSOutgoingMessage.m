@@ -28,6 +28,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 @property (atomic) NSString *mostRecentFailureText;
 @property (atomic) BOOL wasDelivered;
 @property (atomic) NSString *singleGroupRecipient;
+@property (atomic) BOOL isFromLinkedDevice;
 
 // For outgoing, non-legacy group messages sent from this client, this
 // contains the list of recipients to whom the message has been sent.
@@ -329,6 +330,18 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                             changeBlock:^(TSOutgoingMessage *message) {
                                                 [message setMessageState:TSOutgoingMessageStateSentToService];
                                                 [message setWasDelivered:YES];
+                                            }];
+    }];
+}
+
+- (void)updateWithWasSentAndDeliveredFromLinkedDevice
+{
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                            changeBlock:^(TSOutgoingMessage *message) {
+                                                [message setMessageState:TSOutgoingMessageStateSentToService];
+                                                [message setWasDelivered:YES];
+                                                [message setIsFromLinkedDevice:YES];
                                             }];
     }];
 }

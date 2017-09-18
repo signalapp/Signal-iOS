@@ -101,6 +101,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @property (nonatomic, readonly) BOOL isVoiceMessage;
 
+// This property won't be accurate for legacy messages.
+@property (atomic, readonly) BOOL isFromLinkedDevice;
+
 /**
  * Signal Identifier (e.g. e164 number) or nil if in a group thread.
  */
@@ -168,6 +171,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (void)updateWithWasDeliveredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithWasDelivered;
 - (void)updateWithWasSentAndDelivered;
+- (void)updateWithWasSentAndDeliveredFromLinkedDevice;
 - (void)updateWithSingleGroupRecipient:(NSString *)singleGroupRecipient
                            transaction:(YapDatabaseReadWriteTransaction *)transaction;
 

@@ -3614,8 +3614,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
                     TSInteraction *interaction = [self interactionAtIndexPath:rowChange.newIndexPath];
                     if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                        scrollToBottom = YES;
-                        shouldAnimateScrollToBottom = NO;
+                        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)interaction;
+                        if (!outgoingMessage.isFromLinkedDevice) {
+                            scrollToBottom = YES;
+                            shouldAnimateScrollToBottom = NO;
+                        }
                     }
                     break;
                 }
