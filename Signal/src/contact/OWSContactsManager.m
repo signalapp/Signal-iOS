@@ -80,7 +80,12 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
 
 - (void)fetchSystemContactsIfAlreadyAuthorized
 {
-    [self.systemContactsFetcher fetchIfAlreadyAuthorized];
+    [self.systemContactsFetcher fetchIfAlreadyAuthorizedWithIgnoreDebounce:NO];
+}
+
+- (void)fetchSystemContactsIfAlreadyAuthorizedAndIgnoreDebounce
+{
+    [self.systemContactsFetcher fetchIfAlreadyAuthorizedWithIgnoreDebounce:YES];
 }
 
 - (BOOL)isSystemContactsAuthorized

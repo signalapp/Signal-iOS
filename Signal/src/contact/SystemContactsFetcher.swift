@@ -417,16 +417,16 @@ class SystemContactsFetcher: NSObject {
         }
     }
 
-    public func fetchIfAlreadyAuthorized() {
+    public func fetchIfAlreadyAuthorized(ignoreDebounce: Bool = false) {
         AssertIsOnMainThread()
         guard authorizationStatus == .authorized else {
             return
         }
 
-        updateContacts(completion: nil)
+        updateContacts(completion: nil, ignoreDebounce:ignoreDebounce)
     }
 
-    private func updateContacts(completion: ((Error?) -> Void)?) {
+    private func updateContacts(completion: ((Error?) -> Void)?, ignoreDebounce: Bool = false) {
         AssertIsOnMainThread()
 
         systemContactsHaveBeenRequestedAtLeastOnce = true
@@ -456,6 +456,9 @@ class SystemContactsFetcher: NSObject {
 
                 if self.lastContactUpdateHash != contactsHash {
                     Logger.info("\(self.TAG) contact hash changed. new contactsHash: \(contactsHash)")
+                    shouldNotifyDelegate = true
+                } else if ignoreDebounce {
+                    Logger.info("\(self.TAG) ignoring debounce.")
                     shouldNotifyDelegate = true
                 } else {
 
