@@ -743,6 +743,9 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
         callOnViewAppearing:(BOOL)callOnViewAppearing
 {
+    // At most one.
+    OWSAssert(!keyboardOnViewAppearing || !callOnViewAppearing);
+
     if (thread == nil) {
         OWSFail(@"Thread unexpectedly nil");
         return;

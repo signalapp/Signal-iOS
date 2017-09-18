@@ -200,6 +200,9 @@ static Environment *environment = nil;
                   keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
                       callOnViewAppearing:(BOOL)callOnViewAppearing
 {
+    // At most one.
+    OWSAssert(!keyboardOnViewAppearing || !callOnViewAppearing);
+
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
         [[TSStorageManager sharedManager].dbReadWriteConnection
@@ -221,6 +224,9 @@ static Environment *environment = nil;
              keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
                  callOnViewAppearing:(BOOL)callOnViewAppearing
 {
+    // At most one.
+    OWSAssert(!keyboardOnViewAppearing || !callOnViewAppearing);
+
     if (!thread) {
         OWSFail(@"%@ Can't present nil thread.", self.tag);
         return;
