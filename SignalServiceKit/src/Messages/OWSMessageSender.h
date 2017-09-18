@@ -72,7 +72,7 @@ NS_SWIFT_NAME(MessageSender)
  * Takes care of allocating and uploading the attachment, then sends the message.
  * Only necessary to call once. If sending fails, retry with `sendMessage:`.
  */
-- (void)sendAttachmentData:(id<DataSource>)dataSource
+- (void)sendAttachmentData:(DataSource *)dataSource
                contentType:(NSString *)contentType
             sourceFilename:(nullable NSString *)sourceFilename
                  inMessage:(TSOutgoingMessage *)outgoingMessage
@@ -83,7 +83,7 @@ NS_SWIFT_NAME(MessageSender)
  * Same as `sendAttachmentData:`, but deletes the local copy of the attachment after sending.
  * Used for sending sync request data, not for user visible attachments.
  */
-- (void)sendTemporaryAttachmentData:(id<DataSource>)dataSource
+- (void)sendTemporaryAttachmentData:(DataSource *)dataSource
                         contentType:(NSString *)contentType
                           inMessage:(TSOutgoingMessage *)outgoingMessage
                             success:(void (^)())successHandler

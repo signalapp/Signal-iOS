@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)readDataFromFileWithError:(NSError **)error;
 - (BOOL)writeData:(NSData *)data error:(NSError **)error;
-- (BOOL)writeDataSource:(id<DataSource>)dataSource;
+- (BOOL)writeDataSource:(DataSource *)dataSource;
 
 + (void)deleteAttachments;
 + (NSString *)attachmentsFolder;

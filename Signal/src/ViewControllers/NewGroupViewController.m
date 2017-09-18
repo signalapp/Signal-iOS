@@ -497,7 +497,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
                     if (model.groupImage) {
                         NSData *data = UIImagePNGRepresentation(model.groupImage);
-                        id<DataSource> _Nullable dataSource =
+                        DataSource *_Nullable dataSource =
                             [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
                         [self.messageSender sendAttachmentData:dataSource
                                                    contentType:OWSMimeTypeImagePng

@@ -743,7 +743,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
                                                        identityManager:self.identityManager
                                                         profileManager:self.profileManager];
-            id<DataSource> dataSource =
+            DataSource *dataSource =
                 [DataSourceValue dataSourceWithSyncMessage:[syncContactsMessage buildPlainTextAttachmentData]];
             [self.messageSender sendTemporaryAttachmentData:dataSource
                 contentType:OWSMimeTypeApplicationOctetStream
@@ -756,7 +756,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }];
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
-            id<DataSource> dataSource =
+            DataSource *dataSource =
                 [DataSourceValue dataSourceWithSyncMessage:[syncGroupsMessage buildPlainTextAttachmentData]];
             [self.messageSender sendTemporaryAttachmentData:dataSource
                 contentType:OWSMimeTypeApplicationOctetStream
@@ -882,7 +882,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (gThread.groupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(gThread.groupModel.groupImage);
-        id<DataSource> _Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
         [self.messageSender sendAttachmentData:dataSource
             contentType:OWSMimeTypeImagePng
             sourceFilename:nil

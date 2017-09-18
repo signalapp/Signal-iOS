@@ -325,7 +325,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
     NSString *filename = [filePath lastPathComponent];
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
-    id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
+    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
     [dataSource setSourceFilename:filename];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     OWSAssert(attachment);
@@ -585,7 +585,7 @@ NS_ASSUME_NONNULL_BEGIN
                               @"lorem, in rhoncus nisi."];
     }
 
-    id<DataSource> _Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];
+    DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender];
@@ -611,7 +611,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti length:(NSUInteger)length
 {
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
-    id<DataSource> _Nullable dataSource =
+    DataSource *_Nullable dataSource =
         [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length] utiType:uti];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti];
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender ignoreErrors:YES];

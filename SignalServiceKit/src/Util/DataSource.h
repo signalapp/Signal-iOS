@@ -9,7 +9,9 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // * Lazy-load if possible.
 // * Avoid duplicate reads & writes.
-@protocol DataSource
+@interface DataSource : NSObject
+
+@property (nonatomic, nullable) NSString *sourceFilename;
 
 // Should not be called unless necessary as it can involve an expensive read.
 - (NSData *)data;
@@ -21,54 +23,43 @@ NS_ASSUME_NONNULL_BEGIN
 // Will only return nil in the error case.
 - (nullable NSURL *)dataUrl;
 
-// The file path for the data, if it already exists on disk.
-//
-// This method is safe to call as it will not do any expensive reads or writes.
-//
-// May return nil if the data does not (yet) reside on disk.
-//
-// Use dataUrl instead if you need to access the data; it will
-// ensure the data is on disk and return a URL, barring an error.
-- (nullable NSString *)dataPathIfOnDisk;
-
 // Will return zero in the error case.
 - (NSUInteger)dataLength;
 
 // Returns YES on success.
 - (BOOL)writeToPath:(NSString *)dstFilePath;
 
-- (nullable NSString *)sourceFilename;
-- (void)setSourceFilename:(NSString *_Nullable)sourceFilename;
-
 // If called, this data source will try to delete its on-disk contents
 // when it is deallocated.
 - (void)setShouldDeleteOnDeallocation;
 
-@end
-
-#pragma mark -
-
-@interface DataSourceValue : NSObject <DataSource>
-
-+ (nullable id<DataSource>)dataSourceWithData:(NSData *)data fileExtension:(NSString *)fileExtension;
-
-+ (nullable id<DataSource>)dataSourceWithData:(NSData *)data utiType:(NSString *)utiType;
-
-+ (nullable id<DataSource>)dataSourceWithOversizeText:(NSString *_Nullable)text;
-
-+ (id<DataSource>)dataSourceWithSyncMessage:(NSData *)data;
-
-+ (id<DataSource>)emptyDataSource;
+- (BOOL)isValidImage;
 
 @end
 
 #pragma mark -
 
-@interface DataSourcePath : NSObject <DataSource>
+@interface DataSourceValue : DataSource
 
-+ (nullable id<DataSource>)dataSourceWithURL:(NSURL *)fileUrl;
++ (nullable DataSource *)dataSourceWithData:(NSData *)data fileExtension:(NSString *)fileExtension;
 
-+ (nullable id<DataSource>)dataSourceWithFilePath:(NSString *)filePath;
++ (nullable DataSource *)dataSourceWithData:(NSData *)data utiType:(NSString *)utiType;
+
++ (nullable DataSource *)dataSourceWithOversizeText:(NSString *)text;
+
++ (DataSource *)dataSourceWithSyncMessage:(NSData *)data;
+
++ (DataSource *)emptyDataSource;
+
+@end
+
+#pragma mark -
+
+@interface DataSourcePath : DataSource
+
++ (nullable DataSource *)dataSourceWithURL:(NSURL *)fileUrl;
+
++ (nullable DataSource *)dataSourceWithFilePath:(NSString *)filePath;
 
 @end
 

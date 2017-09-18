@@ -1681,7 +1681,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
         TSOutgoingMessage *message;
         if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
-            id<DataSource> _Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
+            DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
             SignalAttachment *attachment =
                 [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
             message =
@@ -3206,7 +3206,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     OWSAssert(type);
     OWSAssert(filename);
-    id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
+    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
     if (!dataSource) {
         OWSFail(@"%@ attachment data was unexpectedly empty for picked document url: %@", self.tag, url);
 
@@ -3386,7 +3386,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                            }
                            OWSAssert([NSThread isMainThread]);
 
-                           id<DataSource> _Nullable dataSource =
+                           DataSource *_Nullable dataSource =
                                [DataSourceValue dataSourceWithData:imageData utiType:dataUTI];
                            [dataSource setSourceFilename:filename];
                            SignalAttachment *attachment =
@@ -3477,7 +3477,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                 }
 
                                 [modalActivityIndicator dismissWithCompletion:^{
-                                    id<DataSource> _Nullable dataSource =
+                                    DataSource *_Nullable dataSource =
                                         [DataSourcePath dataSourceWithURL:compressedVideoUrl];
                                     [dataSource setSourceFilename:filename];
                                     // Remove temporary file when complete.
@@ -3865,7 +3865,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:self.audioRecorder.url];
+    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:self.audioRecorder.url];
     self.audioRecorder = nil;
 
     if (!dataSource) {
@@ -4099,7 +4099,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     if (newGroupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(newGroupModel.groupImage);
-        id<DataSource> _Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
         [self.messageSender sendAttachmentData:dataSource
             contentType:OWSMimeTypeImagePng
             sourceFilename:nil

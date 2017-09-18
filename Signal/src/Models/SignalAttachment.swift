@@ -72,7 +72,10 @@ class SignalAttachment: NSObject {
         return dataSource.dataUrl()
     }
     public var sourceFilename: String? {
-        return dataSource.sourceFilename()
+        return dataSource.sourceFilename
+    }
+    public var isValidImage: Bool {
+        return dataSource.isValidImage()
     }
 
     // Attachment types are identified using UTIs.
@@ -288,18 +291,6 @@ class SignalAttachment: NSObject {
         return SignalAttachment.audioUTISet.contains(dataUTI)
     }
 
-    public var isValidImage: Bool {
-        if let dataPath = dataSource.dataPathIfOnDisk() {
-            // if ows_isValidImage is given a file path, it will
-            // avoid loading most of the data into memory, which 
-            // is considerably more performant, so try to do that.
-            return NSData.ows_isValidImage(atPath:dataPath)
-        }
-
-        let data = dataSource.data()
-        return (data as NSData).ows_isValidImage()
-    }
-
     public class func pasteboardHasPossibleAttachment() -> Bool {
         return UIPasteboard.general.numberOfItems > 0
     }
@@ -471,7 +462,7 @@ class SignalAttachment: NSObject {
             }
 
             Logger.verbose("\(TAG) Compressing attachment as image/jpeg")
-            return compressImageAsJPEG(image : image, attachment : attachment, filename:dataSource.sourceFilename())
+            return compressImageAsJPEG(image : image, attachment : attachment, filename:dataSource.sourceFilename)
         }
     }
 
@@ -512,7 +503,7 @@ class SignalAttachment: NSObject {
 
         guard let image = image else {
             let dataSource = DataSourceValue.emptyDataSource()
-            dataSource.setSourceFilename(filename)
+            dataSource.sourceFilename = filename
             let attachment = SignalAttachment(dataSource:dataSource, dataUTI: dataUTI)
             attachment.error = .missingData
             return attachment
@@ -520,7 +511,7 @@ class SignalAttachment: NSObject {
 
         // Make a placeholder attachment on which to hang errors if necessary.
         let dataSource = DataSourceValue.emptyDataSource()
-        dataSource.setSourceFilename(filename)
+        dataSource.sourceFilename = filename
         let attachment = SignalAttachment(dataSource : dataSource, dataUTI: dataUTI)
         attachment.image = image
 
@@ -550,7 +541,7 @@ class SignalAttachment: NSObject {
                 attachment.error = .couldNotConvertToJpeg
                 return attachment
             }
-            dataSource.setSourceFilename(filename)
+            dataSource.sourceFilename = filename
 
             if UInt(jpgImageData.count) <= kMaxFileSizeImage {
                 let recompressedAttachment = SignalAttachment(dataSource : dataSource, dataUTI: kUTTypeJPEG as String)

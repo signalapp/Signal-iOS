@@ -486,7 +486,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                           failure:failureHandler];
 }
 
-- (void)sendTemporaryAttachmentData:(id<DataSource>)dataSource
+- (void)sendTemporaryAttachmentData:(DataSource *)dataSource
                         contentType:(NSString *)contentType
                           inMessage:(TSOutgoingMessage *)message
                             success:(void (^)())successHandler
@@ -516,7 +516,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                      failure:failureWithDeleteHandler];
 }
 
-- (void)sendAttachmentData:(id<DataSource>)dataSource
+- (void)sendAttachmentData:(DataSource *)dataSource
                contentType:(NSString *)contentType
             sourceFilename:(nullable NSString *)sourceFilename
                  inMessage:(TSOutgoingMessage *)message
