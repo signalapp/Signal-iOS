@@ -118,7 +118,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
     NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
     if (threadId && [TSThread fetchObjectWithUniqueID:threadId]) {
-        [Environment messageThreadId:threadId];
+        [Environment presentConversationForRecipientId:threadId];
     }
 }
 
@@ -213,12 +213,12 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
         completionHandler();
     } else if ([identifier isEqualToString:PushManagerActionsShowThread]) {
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
-        [Environment messageThreadId:threadId];
+        [Environment presentConversationForRecipientId:threadId];
         completionHandler();
     } else {
         OWSFail(@"%@ Unhandled action with identifier: %@", self.tag, identifier);
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
-        [Environment messageThreadId:threadId];
+        [Environment presentConversationForRecipientId:threadId];
         completionHandler();
     }
 }
@@ -234,7 +234,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
             [thread markAllAsReadWithTransaction:transaction];
         }
         completionBlock:^{
-            [[[Environment getCurrent] signalsViewController] updateInboxCountLabel];
+            [[[Environment getCurrent] homeViewController] updateInboxCountLabel];
             [self cancelNotificationsWithThreadId:threadId];
 
             completionHandler();

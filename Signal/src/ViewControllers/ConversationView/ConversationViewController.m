@@ -544,6 +544,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
         callOnViewAppearing:(BOOL)callOnViewAppearing
 {
+    // At most one.
+    OWSAssert(!keyboardOnViewAppearing || !callOnViewAppearing);
+
     if (callOnViewAppearing) {
         keyboardOnViewAppearing = NO;
     }

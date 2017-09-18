@@ -49,7 +49,7 @@
 @property (nonatomic, readonly) PropertyListPreferences *preferences;
 
 
-@property (nonatomic, readonly) HomeViewController *signalsViewController;
+@property (nonatomic, readonly) HomeViewController *homeViewController;
 @property (nonatomic, readonly, weak) UINavigationController *signUpFlowNavigationController;
 
 + (Environment *)getCurrent;
@@ -59,12 +59,12 @@
 
 + (void)resetAppData;
 
-- (void)setHomeViewController:(HomeViewController *)signalsViewController;
+- (void)setHomeViewController:(HomeViewController *)homeViewController;
 - (void)setSignUpFlowNavigationController:(UINavigationController *)signUpFlowNavigationController;
 
-+ (void)messageThreadId:(NSString *)threadId;
-+ (void)messageIdentifier:(NSString *)identifier withCompose:(BOOL)compose;
-+ (void)callUserWithIdentifier:(NSString *)identifier;
-+ (void)messageGroup:(TSGroupThread *)groupThread;
++ (void)presentConversationForRecipientId:(NSString *)recipientId;
++ (void)presentConversationForRecipientId:(NSString *)recipientId withCompose:(BOOL)compose;
++ (void)callRecipientId:(NSString *)recipientId;
++ (void)presentConversationForThread:(TSGroupThread *)groupThread;
 
 @end

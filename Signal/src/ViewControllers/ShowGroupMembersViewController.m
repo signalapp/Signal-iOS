@@ -408,12 +408,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(recipientId.length > 0);
 
-    [Environment messageIdentifier:recipientId withCompose:YES];
+    [Environment presentConversationForRecipientId:recipientId withCompose:YES];
 }
 
 - (void)callMember:(NSString *)recipientId
 {
-    [Environment callUserWithIdentifier:recipientId];
+    [Environment callRecipientId:recipientId];
 }
 
 - (void)showSafetyNumberView:(NSString *)recipientId

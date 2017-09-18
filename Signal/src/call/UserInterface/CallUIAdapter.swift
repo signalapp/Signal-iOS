@@ -37,7 +37,7 @@ extension CallUIAdaptee {
         let callViewController = CallViewController(call: call)
         callViewController.modalTransitionStyle = .crossDissolve
 
-        guard let presentingViewController = Environment.getCurrent().signalsViewController else {
+        guard let presentingViewController = Environment.getCurrent().homeViewController else {
             owsFail("in \(#function) view controller unexpectedly nil")
             return
         }
