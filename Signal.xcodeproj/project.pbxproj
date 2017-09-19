@@ -81,6 +81,8 @@
 		34C42D661F4734ED0072EC04 /* OWSContactOffersInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D631F4734ED0072EC04 /* OWSContactOffersInteraction.m */; };
 		34C42D671F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D651F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m */; };
 		34CA1C251F706B5400E51C51 /* NSAttributedString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA1C241F706B5400E51C51 /* NSAttributedString+OWS.m */; };
+		34CA1C271F7156F300E51C51 /* MessageMetadataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CA1C261F7156F300E51C51 /* MessageMetadataViewController.swift */; };
+		34CA1C291F7164F700E51C51 /* MediaMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CA1C281F7164F700E51C51 /* MediaMessageView.swift */; };
 		34CCAF381F0C0599004084F4 /* AppUpdateNag.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CCAF371F0C0599004084F4 /* AppUpdateNag.m */; };
 		34CCAF3B1F0C2748004084F4 /* OWSAddToContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CCAF3A1F0C2748004084F4 /* OWSAddToContactViewController.m */; };
 		34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CE88E61F2FB9A10098030F /* ProfileViewController.m */; };
@@ -529,6 +531,8 @@
 		34C42D651F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSUnreadIndicatorInteraction.m; sourceTree = "<group>"; };
 		34CA1C231F706B5400E51C51 /* NSAttributedString+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+OWS.h"; sourceTree = "<group>"; };
 		34CA1C241F706B5400E51C51 /* NSAttributedString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+OWS.m"; sourceTree = "<group>"; };
+		34CA1C261F7156F300E51C51 /* MessageMetadataViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageMetadataViewController.swift; sourceTree = "<group>"; };
+		34CA1C281F7164F700E51C51 /* MediaMessageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaMessageView.swift; sourceTree = "<group>"; };
 		34CCAF361F0C0599004084F4 /* AppUpdateNag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppUpdateNag.h; sourceTree = "<group>"; };
 		34CCAF371F0C0599004084F4 /* AppUpdateNag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppUpdateNag.m; sourceTree = "<group>"; };
 		34CCAF391F0C2748004084F4 /* OWSAddToContactViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAddToContactViewController.h; sourceTree = "<group>"; };
@@ -1029,6 +1033,8 @@
 				34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */,
 				34B3F84D1E8DF1700035BE1A /* LockInteractionController.h */,
 				34B3F84E1E8DF1700035BE1A /* LockInteractionController.m */,
+				34CA1C281F7164F700E51C51 /* MediaMessageView.swift */,
+				34CA1C261F7156F300E51C51 /* MessageMetadataViewController.swift */,
 				34D9134C1F66DB7C00722898 /* ModalActivityIndicatorViewController.swift */,
 				34B3F84F1E8DF1700035BE1A /* NewContactThreadViewController.h */,
 				34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */,
@@ -2233,6 +2239,7 @@
 				458DE9D91DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m in Sources */,
 				B62D53F71A23CCAD009AAF82 /* TSMessageAdapter.m in Sources */,
 				76EB063C18170B33006006FC /* NumberUtil.m in Sources */,
+				34CA1C291F7164F700E51C51 /* MediaMessageView.swift in Sources */,
 				B6A3EB4B1A423B3800B2236B /* TSPhotoAdapter.m in Sources */,
 				3400C7961EAF99F4008A8584 /* SelectThreadViewController.m in Sources */,
 				34D5CCB11EAE7E7F005515DB /* SelectRecipientViewController.m in Sources */,
@@ -2297,6 +2304,7 @@
 				34B3F8881E8DF1700035BE1A /* OversizeTextMessageViewController.swift in Sources */,
 				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
 				34B3F8A21E8EA6040035BE1A /* ViewControllerUtils.m in Sources */,
+				34CA1C271F7156F300E51C51 /* MessageMetadataViewController.swift in Sources */,
 				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,
 				453D28BA1D332DB100D523F0 /* OWSMessagesBubblesSizeCalculator.m in Sources */,
 				45F170AC1E2F0351003FC1F2 /* CallAudioSession.swift in Sources */,

@@ -454,6 +454,9 @@
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Copy";
 
+/* Short name for edit menu item to show message metadata. */
+"EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Info";
+
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Save";
 
@@ -781,11 +784,63 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "New Message";
 
-/* message footer for delivered messages */
+/* Label for file size of attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "File Size";
+
+/* Label for the MIME type of attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME type";
+
+/* Label for 'missing' attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "Missing Attachment";
+
+/* Label for 'not yet downloaded' attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "Not yet downloaded";
+
+/* Label for the message body in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_BODY_LABEL" = "Message";
+
+/* Label for the 'group name' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_GROUP_NAME" = "Group";
+
+/* Label for media messages of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_MEDIA" = "Media";
+
+/* Label for messages without a body or attachment in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Message has no content or attachment.";
+
+/* Label for the 'received date & time' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Received";
+
+/* Label for the 'recipient' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_RECIPIENT" = "Recipient";
+
+/* Label for the 'sender' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SENDER" = "Sender";
+
+/* Label for the 'sent date & time' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Sent";
+
+/* Label for the original filename of any attachment in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Filename";
+
+/* Title for the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_TITLE" = "Message";
+
+/* Label for voice messages of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_VOICE_MESSAGE" = "Voice Note";
+
+/* message footer for delivered messages
+   message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Delivered";
 
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "Sending failed. Tap for info.";
+
+/* message status for messages read by the recipient. Embeds: {{the date and time the message was read}}. */
+"MESSAGE_STATUS_READ_WITH_TIMESTAMP_FORMAT" = "Read %@";
+
+/* message status while message is sending. */
+"MESSAGE_STATUS_SENDING" = "Sending...";
 
 /* message footer for sent messages */
 "MESSAGE_STATUS_SENT" = "Sent";

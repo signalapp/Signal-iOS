@@ -19,8 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSRecipientReadReceipt : TSYapDatabaseObject
 
-@property (nonatomic, readonly) uint64_t timestamp;
-@property (nonatomic, readonly) NSSet<NSString *> *recipientIds;
+@property (nonatomic, readonly) uint64_t sentTimestamp;
+// Map of "recipient id"-to-"read timestamp".
+@property (nonatomic, readonly) NSDictionary<NSString *, NSNumber *> *recipientMap;
 
 @end
 
@@ -28,62 +29,70 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSRecipientReadReceipt
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
++ (NSString *)collection
 {
-    OWSAssert(timestamp > 0);
+    return @"TSRecipientReadReceipt2";
+}
 
-    self = [super initWithUniqueId:[TSRecipientReadReceipt uniqueIdForTimestamp:timestamp]];
+- (instancetype)initWithSentTimestamp:(uint64_t)sentTimestamp
+{
+    OWSAssert(sentTimestamp > 0);
+
+    self = [super initWithUniqueId:[TSRecipientReadReceipt uniqueIdForSentTimestamp:sentTimestamp]];
 
     if (self) {
-        _timestamp = timestamp;
-        _recipientIds = [NSSet set];
+        _sentTimestamp = sentTimestamp;
+        _recipientMap = [NSDictionary new];
     }
 
     return self;
 }
 
-+ (NSString *)uniqueIdForTimestamp:(uint64_t)timestamp
++ (NSString *)uniqueIdForSentTimestamp:(uint64_t)timestamp
 {
     return [NSString stringWithFormat:@"%llu", timestamp];
 }
 
-- (void)addRecipientId:(NSString *)recipientId
+- (void)addRecipientId:(NSString *)recipientId timestamp:(uint64_t)timestamp
 {
-    NSMutableSet<NSString *> *recipientIdsCopy = [self.recipientIds mutableCopy];
-    [recipientIdsCopy addObject:recipientId];
-    _recipientIds = [recipientIdsCopy copy];
+    NSMutableDictionary<NSString *, NSNumber *> *recipientMapCopy = [self.recipientMap mutableCopy];
+    recipientMapCopy[recipientId] = @(timestamp);
+    _recipientMap = [recipientMapCopy copy];
 }
 
 + (void)addRecipientId:(NSString *)recipientId
-             timestamp:(uint64_t)timestamp
+         sentTimestamp:(uint64_t)sentTimestamp
+         readTimestamp:(uint64_t)readTimestamp
            transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
 
     TSRecipientReadReceipt *_Nullable recipientReadReceipt =
-        [transaction objectForKey:[self uniqueIdForTimestamp:timestamp] inCollection:[self collection]];
+        [transaction objectForKey:[self uniqueIdForSentTimestamp:sentTimestamp] inCollection:[self collection]];
     if (!recipientReadReceipt) {
-        recipientReadReceipt = [[TSRecipientReadReceipt alloc] initWithTimestamp:timestamp];
+        recipientReadReceipt = [[TSRecipientReadReceipt alloc] initWithSentTimestamp:sentTimestamp];
     }
-    [recipientReadReceipt addRecipientId:recipientId];
+    [recipientReadReceipt addRecipientId:recipientId timestamp:readTimestamp];
     [recipientReadReceipt saveWithTransaction:transaction];
 }
 
-+ (nullable NSSet<NSString *> *)recipientIdsForTimestamp:(uint64_t)timestamp
-                                             transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (nullable NSDictionary<NSString *, NSNumber *> *)recipientMapForSentTimestamp:(uint64_t)sentTimestamp
+                                                                    transaction:
+                                                                        (YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
 
     TSRecipientReadReceipt *_Nullable recipientReadReceipt =
-        [transaction objectForKey:[self uniqueIdForTimestamp:timestamp] inCollection:[self collection]];
-    return recipientReadReceipt.recipientIds;
+        [transaction objectForKey:[self uniqueIdForSentTimestamp:sentTimestamp] inCollection:[self collection]];
+    return recipientReadReceipt.recipientMap;
 }
 
-+ (void)removeRecipientIdsForTimestamp:(uint64_t)timestamp transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (void)removeRecipientIdsForTimestamp:(uint64_t)sentTimestamp
+                           transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
 
-    [transaction removeObjectForKey:[self uniqueIdForTimestamp:timestamp] inCollection:[self collection]];
+    [transaction removeObjectForKey:[self uniqueIdForSentTimestamp:sentTimestamp] inCollection:[self collection]];
 }
 
 @end
@@ -376,15 +385,16 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     NSString *recipientId = envelope.source;
     OWSAssert(recipientId.length > 0);
 
-    PBArray *timestamps = receiptMessage.timestamp;
+    PBArray *sentTimestamps = receiptMessage.timestamp;
+    UInt64 readTimestamp = envelope.timestamp;
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            for (int i = 0; i < timestamps.count; i++) {
-                UInt64 timestamp = [timestamps uint64AtIndex:i];
+            for (int i = 0; i < sentTimestamps.count; i++) {
+                UInt64 sentTimestamp = [sentTimestamps uint64AtIndex:i];
 
                 NSArray<TSOutgoingMessage *> *messages
-                    = (NSArray<TSOutgoingMessage *> *)[TSInteraction interactionsWithTimestamp:timestamp
+                    = (NSArray<TSOutgoingMessage *> *)[TSInteraction interactionsWithTimestamp:sentTimestamp
                                                                                        ofClass:[TSOutgoingMessage class]
                                                                                withTransaction:transaction];
                 OWSAssert(messages.count <= 1);
@@ -392,12 +402,17 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                     // TODO: We might also need to "mark as read by recipient" any older messages
                     // from us in that thread.  Or maybe this state should hang on the thread?
                     for (TSOutgoingMessage *message in messages) {
-                        [message updateWithReadRecipientId:recipientId transaction:transaction];
+                        [message updateWithReadRecipientId:recipientId
+                                             readTimestamp:readTimestamp
+                                               transaction:transaction];
                     }
                 } else {
                     // Persist the read receipts so that we can apply them to outgoing messages
                     // that we learn about later through sync messages.
-                    [TSRecipientReadReceipt addRecipientId:recipientId timestamp:timestamp transaction:transaction];
+                    [TSRecipientReadReceipt addRecipientId:recipientId
+                                             sentTimestamp:sentTimestamp
+                                             readTimestamp:readTimestamp
+                                               transaction:transaction];
                 }
             }
         }];
@@ -410,14 +425,18 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssert(message);
     OWSAssert(transaction);
 
-    NSSet<NSString *> *_Nullable recipientIds =
-        [TSRecipientReadReceipt recipientIdsForTimestamp:message.timestamp transaction:transaction];
-    if (!recipientIds) {
+    uint64_t sentTimestamp = message.timestamp;
+    NSDictionary<NSString *, NSNumber *> *recipientMap =
+        [TSRecipientReadReceipt recipientMapForSentTimestamp:sentTimestamp transaction:transaction];
+    if (!recipientMap) {
         return;
     }
-    OWSAssert(recipientIds.count > 0);
-    for (NSString *recipientId in recipientIds) {
-        [message updateWithReadRecipientId:recipientId transaction:transaction];
+    OWSAssert(recipientMap.count > 0);
+    for (NSString *recipientId in recipientMap) {
+        NSNumber *nsReadTimestamp = recipientMap[recipientId];
+        uint64_t readTimestamp = [nsReadTimestamp unsignedLongLongValue];
+
+        [message updateWithReadRecipientId:recipientId readTimestamp:readTimestamp transaction:transaction];
     }
     [TSRecipientReadReceipt removeRecipientIdsForTimestamp:message.timestamp transaction:transaction];
 }

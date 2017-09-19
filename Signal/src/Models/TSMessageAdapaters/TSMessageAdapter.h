@@ -2,10 +2,10 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "ContactsManagerProtocol.h"
 #import "OWSMessageData.h"
 #import "OWSMessageEditing.h"
 #import "TSInfoMessage.h"
-#import "ContactsManagerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) TSInfoMessageType infoMessageType;
 @property (nonatomic, readonly) CGFloat mediaViewAlpha;
 @property (nonatomic, readonly) BOOL isMediaBeingSent;
+
++ (SEL)messageMetadataSelector;
 
 @end
 

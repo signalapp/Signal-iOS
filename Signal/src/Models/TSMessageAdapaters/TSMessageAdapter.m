@@ -260,6 +260,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - OWSMessageEditing Protocol
 
++ (SEL)messageMetadataSelector
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    return @selector(showMessageMetadata:);
+#pragma clang diagnostic pop
+}
+
 - (BOOL)canPerformEditingAction:(SEL)action
 {
     if ([self attachmentStream] && ![self attachmentStream].isUploaded) {
@@ -269,6 +277,9 @@ NS_ASSUME_NONNULL_BEGIN
     // Deletes are always handled by TSMessageAdapter
     if (action == @selector(delete:)) {
         return YES;
+    } else if (action == [TSMessageAdapter messageMetadataSelector]) {
+        return ([self.interaction isKindOfClass:[TSIncomingMessage class]] ||
+            [self.interaction isKindOfClass:[TSOutgoingMessage class]]);
     }
 
     // Delegate other actions for media items
@@ -301,8 +312,10 @@ NS_ASSUME_NONNULL_BEGIN
             [AttachmentSharing showShareUIForAttachment:stream];
         }
         return;
+    } else if (action == [TSMessageAdapter messageMetadataSelector]) {
+        OWSFail(@"Conversation view should handle message metadata events.");
+        return;
     }
-
 
     // Delegate other actions for media items
     if (self.isMediaMessage) {
