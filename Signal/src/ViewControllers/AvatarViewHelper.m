@@ -89,9 +89,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
     picker.delegate = self;
-    picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum]) {
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
         picker.mediaTypes = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeImage, nil];
         [self.delegate.fromViewController presentViewController:picker
                                                        animated:YES
