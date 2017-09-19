@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable DataSource *)dataSourceWithData:(NSData *)data utiType:(NSString *)utiType;
 
-+ (nullable DataSource *)dataSourceWithOversizeText:(NSString *)text;
++ (nullable DataSource *)dataSourceWithOversizeText:(NSString *_Nullable)text;
 
 + (DataSource *)dataSourceWithSyncMessage:(NSData *)data;
 

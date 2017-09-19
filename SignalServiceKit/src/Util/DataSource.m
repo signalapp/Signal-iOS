@@ -145,10 +145,8 @@ NS_ASSUME_NONNULL_BEGIN
     return [self dataSourceWithData:data fileExtension:fileExtension];
 }
 
-+ (nullable DataSource *)dataSourceWithOversizeText:(NSString *)text
++ (nullable DataSource *)dataSourceWithOversizeText:(NSString *_Nullable)text
 {
-    OWSAssert(text);
-
     if (!text) {
         return nil;
     }
