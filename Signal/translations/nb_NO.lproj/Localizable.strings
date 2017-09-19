@@ -1523,7 +1523,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Du kan nå dele profilbilde og navn med vennene dine i Signal";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Klar for ditt nærbilde?";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Klar for å ta profilbilde?";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal har nå støtte for sikre videosamtaler. Bare start en lydsamtale som vanlig, trykk på kamera-knappen, og si hei også med levende bilder.";
