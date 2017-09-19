@@ -36,7 +36,7 @@ class ModalActivityIndicatorViewController: OWSViewController {
     }
 
     public class func present(fromViewController: UIViewController,
-                              canCancel: Bool, presentCompletion : @escaping (ModalActivityIndicatorViewController) -> Void) {
+                              canCancel: Bool, backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
         AssertIsOnMainThread()
 
         let view = ModalActivityIndicatorViewController(canCancel:canCancel)
@@ -44,7 +44,9 @@ class ModalActivityIndicatorViewController: OWSViewController {
         view.modalPresentationStyle = .overFullScreen
         fromViewController.present(view,
                                    animated: false) {
-                                    presentCompletion(view)
+                                    DispatchQueue.global().async {
+                                        backgroundBlock(view)
+                                    }
         }
     }
 

@@ -486,29 +486,31 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     [ModalActivityIndicatorViewController
         presentFromViewController:self
                         canCancel:NO
-                presentCompletion:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                    TSOutgoingMessage *message =
-                        [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                            inThread:thread
-                                                    groupMetaMessage:TSGroupMessageNew];
+                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                      TSOutgoingMessage *message =
+                          [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                              inThread:thread
+                                                      groupMetaMessage:TSGroupMessageNew];
 
-                    // This will save the message.
-                    [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
+                      // This will save the message.
+                      [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 
-                    if (model.groupImage) {
-                        NSData *data = UIImagePNGRepresentation(model.groupImage);
-                        DataSource *_Nullable dataSource =
-                            [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-                        [self.messageSender sendAttachmentData:dataSource
-                                                   contentType:OWSMimeTypeImagePng
-                                                sourceFilename:nil
-                                                     inMessage:message
-                                                       success:successHandler
-                                                       failure:failureHandler];
-                    } else {
-                        [self.messageSender sendMessage:message success:successHandler failure:failureHandler];
-                    }
-                }];
+                      dispatch_async(dispatch_get_main_queue(), ^{
+                          if (model.groupImage) {
+                              NSData *data = UIImagePNGRepresentation(model.groupImage);
+                              DataSource *_Nullable dataSource =
+                                  [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+                              [self.messageSender sendAttachmentData:dataSource
+                                                         contentType:OWSMimeTypeImagePng
+                                                      sourceFilename:nil
+                                                           inMessage:message
+                                                             success:successHandler
+                                                             failure:failureHandler];
+                          } else {
+                              [self.messageSender sendMessage:message success:successHandler failure:failureHandler];
+                          }
+                      });
+                  }];
 }
 
 - (TSGroupModel *)makeGroup

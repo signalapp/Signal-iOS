@@ -3456,50 +3456,48 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [ModalActivityIndicatorViewController
         presentFromViewController:self
                         canCancel:YES
-                presentCompletion:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                        AVAsset *video = [AVAsset assetWithURL:movieURL];
-                        AVAssetExportSession *exportSession =
-                            [AVAssetExportSession exportSessionWithAsset:video
-                                                              presetName:AVAssetExportPresetMediumQuality];
-                        exportSession.shouldOptimizeForNetworkUse = YES;
-                        exportSession.outputFileType = AVFileTypeMPEG4;
-                        NSURL *compressedVideoUrl = [[self videoTempFolder]
-                            URLByAppendingPathComponent:[[[NSUUID UUID] UUIDString]
-                                                            stringByAppendingPathExtension:@"mp4"]];
-                        exportSession.outputURL = compressedVideoUrl;
-                        [exportSession exportAsynchronouslyWithCompletionHandler:^{
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                OWSAssert([NSThread isMainThread]);
+                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                      AVAsset *video = [AVAsset assetWithURL:movieURL];
+                      AVAssetExportSession *exportSession =
+                          [AVAssetExportSession exportSessionWithAsset:video
+                                                            presetName:AVAssetExportPresetMediumQuality];
+                      exportSession.shouldOptimizeForNetworkUse = YES;
+                      exportSession.outputFileType = AVFileTypeMPEG4;
+                      NSURL *compressedVideoUrl = [[self videoTempFolder]
+                          URLByAppendingPathComponent:[[[NSUUID UUID] UUIDString]
+                                                          stringByAppendingPathExtension:@"mp4"]];
+                      exportSession.outputURL = compressedVideoUrl;
+                      [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                          dispatch_async(dispatch_get_main_queue(), ^{
+                              OWSAssert([NSThread isMainThread]);
 
-                                if (modalActivityIndicator.wasCancelled) {
-                                    return;
-                                }
+                              if (modalActivityIndicator.wasCancelled) {
+                                  return;
+                              }
 
-                                [modalActivityIndicator dismissWithCompletion:^{
-                                    DataSource *_Nullable dataSource =
-                                        [DataSourcePath dataSourceWithURL:compressedVideoUrl];
-                                    [dataSource setSourceFilename:filename];
-                                    // Remove temporary file when complete.
-                                    [dataSource setShouldDeleteOnDeallocation];
-                                    SignalAttachment *attachment =
-                                        [SignalAttachment attachmentWithDataSource:dataSource
-                                                                           dataUTI:(NSString *)kUTTypeMPEG4];
-                                    if (!attachment || [attachment hasError]) {
-                                        DDLogError(@"%@ %s Invalid attachment: %@.",
-                                            self.tag,
-                                            __PRETTY_FUNCTION__,
-                                            attachment ? [attachment errorName] : @"Missing data");
-                                        [self showErrorAlertForAttachment:attachment];
-                                    } else {
-                                        [self tryToSendAttachmentIfApproved:attachment
-                                                         skipApprovalDialog:skipApprovalDialog];
-                                    }
-                                }];
-                            });
-                        }];
-                    });
-                }];
+                              [modalActivityIndicator dismissWithCompletion:^{
+                                  DataSource *_Nullable dataSource =
+                                      [DataSourcePath dataSourceWithURL:compressedVideoUrl];
+                                  [dataSource setSourceFilename:filename];
+                                  // Remove temporary file when complete.
+                                  [dataSource setShouldDeleteOnDeallocation];
+                                  SignalAttachment *attachment =
+                                      [SignalAttachment attachmentWithDataSource:dataSource
+                                                                         dataUTI:(NSString *)kUTTypeMPEG4];
+                                  if (!attachment || [attachment hasError]) {
+                                      DDLogError(@"%@ %s Invalid attachment: %@.",
+                                          self.tag,
+                                          __PRETTY_FUNCTION__,
+                                          attachment ? [attachment errorName] : @"Missing data");
+                                      [self showErrorAlertForAttachment:attachment];
+                                  } else {
+                                      [self tryToSendAttachmentIfApproved:attachment
+                                                       skipApprovalDialog:skipApprovalDialog];
+                                  }
+                              }];
+                          });
+                      }];
+                  }];
 }
 
 
