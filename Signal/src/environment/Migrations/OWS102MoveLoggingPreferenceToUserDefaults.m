@@ -5,7 +5,7 @@
 #import "OWS102MoveLoggingPreferenceToUserDefaults.h"
 #import "DebugLogger.h"
 #import "Environment.h"
-#import "PropertyListPreferences.h"
+#import "OWSPreferences.h"
 
 // Increment a similar constant for every future DBMigration
 static NSString *const OWS102MoveLoggingPreferenceToUserDefaultsMigrationId = @"102";
@@ -22,12 +22,12 @@ static NSString *const OWS102MoveLoggingPreferenceToUserDefaultsMigrationId = @"
     DDLogWarn(@"[OWS102MoveLoggingPreferenceToUserDefaultsMigrationId] copying existing logging preference to "
               @"NSUserDefaults");
 
-    NSNumber *existingValue = [transaction objectForKey:PropertyListPreferencesKeyEnableDebugLog
-                                           inCollection:PropertyListPreferencesSignalDatabaseCollection];
+    NSNumber *existingValue =
+        [transaction objectForKey:OWSPreferencesKeyEnableDebugLog inCollection:OWSPreferencesSignalDatabaseCollection];
 
     if (existingValue) {
         DDLogInfo(@"%@ assigning existing value: %@", self.tag, existingValue);
-        [PropertyListPreferences setLoggingEnabled:[existingValue boolValue]];
+        [OWSPreferences setLoggingEnabled:[existingValue boolValue]];
 
         if (![existingValue boolValue]) {
             DDLogInfo(@"%@ Disabling file logger after one-time log settings migration.", self.tag);

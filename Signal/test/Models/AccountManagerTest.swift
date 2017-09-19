@@ -43,7 +43,7 @@ class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
 class AccountManagerTest: XCTestCase {
 
     let tsAccountManager = FailingTSAccountManager(networkManager: TSNetworkManager.shared(), storageManager: TSStorageManager.shared())
-    var preferences = PropertyListPreferences()
+    var preferences = OWSPreferences()
 
     func testRegisterWhenEmptyCode() {
         let accountManager = AccountManager(textSecureAccountManager: tsAccountManager, preferences: self.preferences)

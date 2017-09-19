@@ -3,9 +3,9 @@
 //
 
 #import "PrivacySettingsTableViewController.h"
+#import "OWSPreferences.h"
 #import "BlockListViewController.h"
 #import "Environment.h"
-#import "PropertyListPreferences.h"
 #import "Signal-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -53,6 +53,18 @@ NS_ASSUME_NONNULL_BEGIN
                                                              target:weakSelf
                                                            selector:@selector(didToggleScreenSecuritySwitch:)]];
     [contents addSection:screenSecuritySection];
+
+    OWSTableSection *readReceiptsSection = [OWSTableSection new];
+    readReceiptsSection.headerTitle
+        = NSLocalizedString(@"SETTINGS_READ_RECEIPTS_SECTION_TITLE", @"Title of the 'read receipts' settings section.");
+    readReceiptsSection.footerTitle = NSLocalizedString(
+        @"SETTINGS_READ_RECEIPTS_SECTION_FOOTER", @"An explanation of the 'read receipts' setting.");
+    [readReceiptsSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_READ_RECEIPT",
+                                                                      @"Label for the 'read receipts' setting.")
+                                                             isOn:[Environment.preferences areReadReceiptsEnabled]
+                                                           target:weakSelf
+                                                         selector:@selector(didToggleReadReceiptsSwitch:)]];
+    [contents addSection:readReceiptsSection];
 
     // Allow calls to connect directly vs. using TURN exclusively
     OWSTableSection *callingSection = [OWSTableSection new];
@@ -134,6 +146,13 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL enabled = sender.isOn;
     DDLogInfo(@"%@ toggled screen security: %@", self.tag, enabled ? @"ON" : @"OFF");
     [Environment.preferences setScreenSecurity:enabled];
+}
+
+- (void)didToggleReadReceiptsSwitch:(UISwitch *)sender
+{
+    BOOL enabled = sender.isOn;
+    DDLogInfo(@"%@ toggled areReadReceiptsEnabled: %@", self.tag, enabled ? @"ON" : @"OFF");
+    [Environment.preferences setAreReadReceiptsEnabled:enabled];
 }
 
 - (void)didToggleCallsHideIPAddressSwitch:(UISwitch *)sender

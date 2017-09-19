@@ -12,10 +12,10 @@
 #import "OWSContactsManager.h"
 #import "OWSContactsSyncing.h"
 #import "OWSNavigationController.h"
+#import "OWSPreferences.h"
 #import "OWSProfileManager.h"
 #import "OWSStaleNotificationObserver.h"
 #import "Pastelog.h"
-#import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "RegistrationViewController.h"
 #import "Release.h"
@@ -95,7 +95,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     loggingIsEnabled = TRUE;
     [DebugLogger.sharedLogger enableTTYLogging];
 #elif RELEASE
-    loggingIsEnabled = PropertyListPreferences.loggingIsEnabled;
+    loggingIsEnabled = OWSPreferences.loggingIsEnabled;
 #endif
     if (loggingIsEnabled) {
         [DebugLogger.sharedLogger enableFileLogging];
@@ -837,6 +837,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         // enables this feature
         [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
         [[OWSProfileManager sharedManager] ensureLocalProfileCached];
+
+        // For non-legacy users, read receipts are on by default.
+        [[Environment preferences] setAreReadReceiptsEnabled:YES];
     }
 }
 

@@ -2,10 +2,10 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "PropertyListPreferences.h"
+#import "OWSPreferences.h"
 #import "TSGroupModel.h"
 #import "TSStorageHeaders.h"
+#import <Foundation/Foundation.h>
 
 /**
  *
@@ -46,7 +46,7 @@
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) NotificationsManager *notificationsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
-@property (nonatomic, readonly) PropertyListPreferences *preferences;
+@property (nonatomic, readonly) OWSPreferences *preferences;
 
 
 @property (nonatomic, readonly) HomeViewController *homeViewController;
@@ -55,7 +55,7 @@
 + (Environment *)getCurrent;
 + (void)setCurrent:(Environment *)curEnvironment;
 
-+ (PropertyListPreferences *)preferences;
++ (OWSPreferences *)preferences;
 
 + (void)resetAppData;
 

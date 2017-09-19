@@ -32,7 +32,6 @@
 #import "OWSOutgoingMessageCollectionViewCell.h"
 #import "OWSSystemMessageCell.h"
 #import "OWSUnreadIndicatorCell.h"
-#import "PropertyListPreferences.h"
 #import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
 #import "TSAttachmentPointer.h"

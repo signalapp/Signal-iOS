@@ -14,10 +14,10 @@ typedef NS_ENUM(NSUInteger, NotificationType) {
 };
 
 // Used when migrating logging to NSUserDefaults.
-extern NSString *const PropertyListPreferencesSignalDatabaseCollection;
-extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
+extern NSString *const OWSPreferencesSignalDatabaseCollection;
+extern NSString *const OWSPreferencesKeyEnableDebugLog;
 
-@interface PropertyListPreferences : NSObject
+@interface OWSPreferences : NSObject
 
 #pragma mark - Helpers
 
@@ -52,12 +52,14 @@ extern NSString *const PropertyListPreferencesKeyEnableDebugLog;
 - (BOOL)hasRegisteredVOIPPush;
 - (void)setHasRegisteredVOIPPush:(BOOL)enabled;
 
-
 - (BOOL)hasDeclinedNoContactsView;
 - (void)setHasDeclinedNoContactsView:(BOOL)value;
 
 - (void)setIOSUpgradeNagVersion:(NSString *)value;
 - (nullable NSString *)iOSUpgradeNagVersion;
+
+- (BOOL)areReadReceiptsEnabled;
+- (void)setAreReadReceiptsEnabled:(BOOL)value;
 
 #pragma mark - Calling
 

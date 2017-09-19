@@ -13,7 +13,6 @@
 #import "OWSNavigationController.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
-#import "PropertyListPreferences.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
 #import "UIUtil.h"
