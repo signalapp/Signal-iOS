@@ -24,8 +24,8 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeMessageSendDisabledDueToPreKeyUpdateFailures = 777405,
     OWSErrorCodeMessageSendFailedToBlockList = 777406,
     OWSErrorCodeMessageSendNoValidRecipients = 777407,
-    OWSErrorCodeContactsUpdaterRateLimit = 777407,
-    OWSErrorCodeCouldNotWriteAttachmentData = 777408,
+    OWSErrorCodeContactsUpdaterRateLimit = 777408,
+    OWSErrorCodeCouldNotWriteAttachmentData = 777409,
 };
 
 extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);

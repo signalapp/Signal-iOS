@@ -158,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [data writeToFile:filePath options:0 error:error];
 }
 
-- (BOOL)writeDataSource:(id<DataSource>)dataSource
+- (BOOL)writeDataSource:(DataSource *)dataSource
 {
     OWSAssert(dataSource);
 

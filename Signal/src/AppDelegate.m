@@ -369,7 +369,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             return NO;
         }
 
-        id<DataSource> _Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
+        DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
         if (!dataSource) {
             DDLogError(@"Application opened with URL with unloadable content: %@", url);
             [OWSAlerts showAlertWithTitle:
