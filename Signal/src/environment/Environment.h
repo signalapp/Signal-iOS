@@ -5,7 +5,6 @@
 #import "OWSPreferences.h"
 #import "TSGroupModel.h"
 #import "TSStorageHeaders.h"
-#import <Foundation/Foundation.h>
 
 /**
  *
