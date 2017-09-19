@@ -346,11 +346,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     // The save button is only used in "registration" and "upgrade or nag" modes.
     if (self.hasUnsavedChanges) {
         self.saveButton.enabled = YES;
-        [self.saveButton setBackgroundColors:[UIColor ows_signalBrandBlueColor]];
+        [self.saveButton setBackgroundColorsWithUpColor:[UIColor ows_signalBrandBlueColor]];
     } else {
         self.saveButton.enabled = NO;
         [self.saveButton
-            setBackgroundColors:[[UIColor ows_signalBrandBlueColor] blendWithColor:[UIColor whiteColor] alpha:0.5f]];
+            setBackgroundColorsWithUpColor:[[UIColor ows_signalBrandBlueColor] blendWithColor:[UIColor whiteColor]
+                                                                                        alpha:0.5f]];
     }
 }
 

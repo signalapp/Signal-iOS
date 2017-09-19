@@ -379,7 +379,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     BOOL isEnabled = [self hasValidPhoneNumber];
     self.phoneNumberButton.enabled = isEnabled;
     [self.phoneNumberButton
-        setBackgroundColors:(isEnabled ? [UIColor ows_signalBrandBlueColor] : [UIColor lightGrayColor])];
+        setBackgroundColorsWithUpColor:(isEnabled ? [UIColor ows_signalBrandBlueColor] : [UIColor lightGrayColor])];
 }
 
 #pragma mark - CountryCodeViewControllerDelegate
