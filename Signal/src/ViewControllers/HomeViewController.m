@@ -23,8 +23,6 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
-#import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/Threading.h>
@@ -490,13 +488,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 {
     [super viewDidAppear:animated];
 
-    if (self.newlyRegisteredUser) {
-        [self markAllUpgradeExperiencesAsSeen];
-    } else if (!self.viewHasEverAppeared) {
+    if (!self.viewHasEverAppeared) {
+        self.viewHasEverAppeared = YES;
         [self displayAnyUnseenUpgradeExperience];
     }
-
-    self.viewHasEverAppeared = YES;
 }
 
 #pragma mark - startup
