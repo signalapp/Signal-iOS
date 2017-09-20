@@ -4,8 +4,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosSyncMessageRead;
 @class OWSReadReceipt;
+@class OWSSignalServiceProtosSyncMessageRead;
 @class TSIncomingMessage;
 @class TSStorageManager;
 @class YapDatabaseReadWriteTransaction;

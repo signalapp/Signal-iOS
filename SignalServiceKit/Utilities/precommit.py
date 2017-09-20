@@ -12,6 +12,256 @@ import commands
 git_repo_path = os.path.abspath(subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).strip())
 
 
+
+class include:
+    def __init__(self, isInclude, isQuote, body, comment):
+        self.isInclude = isInclude
+        self.isQuote = isQuote
+        self.body = body
+        self.comment = comment
+
+    def format(self):
+        result = '%s %s%s%s' % (
+                                ('#include' if self.isInclude else '#import'),
+                                ('"' if self.isQuote else '<'),
+                                self.body.strip(),
+                                ('"' if self.isQuote else '>'),
+                                )
+        if self.comment.strip():
+            result += ' ' + self.comment.strip()
+        return result
+
+
+def is_include_or_import(line):
+    line = line.strip()
+    if line.startswith('#include '):
+        return True
+    elif line.startswith('#import '):
+        return True
+    else:
+        return False
+
+
+def parse_include(line):
+    remainder = line.strip()
+
+    if remainder.startswith('#include '):
+        isInclude = True
+        remainder = remainder[len('#include '):]
+    elif remainder.startswith('#import '):
+        isInclude = False
+        remainder = remainder[len('#import '):]
+    elif remainder == '//':
+        return None
+    elif not remainder:
+        return None
+    else:
+        print ('Unexpected import or include: '+ line)
+        sys.exit(1)
+
+    comment = None
+    if remainder.startswith('"'):
+        isQuote = True
+        endIndex = remainder.find('"', 1)
+        if endIndex < 0:
+            print ('Unexpected import or include: '+ line)
+            sys.exit(1)
+        body = remainder[1:endIndex]
+        comment = remainder[endIndex+1:]
+    elif remainder.startswith('<'):
+        isQuote = False
+        endIndex = remainder.find('>', 1)
+        if endIndex < 0:
+            print ('Unexpected import or include: '+ line)
+            sys.exit(1)
+        body = remainder[1:endIndex]
+        comment = remainder[endIndex+1:]
+    else:
+        print ('Unexpected import or include: '+ remainder)
+        sys.exit(1)
+
+    return include(isInclude, isQuote, body, comment)
+
+
+def parse_includes(text):
+    lines = text.split('\n')
+
+    includes = []
+    for line in lines:
+        include = parse_include(line)
+        if include:
+            includes.append(include)
+
+    return includes
+
+
+def sort_include_block(text, filepath, filename, file_extension):
+    lines = text.split('\n')
+
+    includes = parse_includes(text)
+
+    blocks = []
+
+    file_extension = file_extension.lower()
+
+    for include in includes:
+        include.isInclude = False
+
+    if file_extension in ('c', 'cpp', 'hpp'):
+        for include in includes:
+            include.isInclude = True
+    elif file_extension in ('m'):
+        for include in includes:
+            include.isInclude = False
+
+
+    def formatBlock(includes):
+        lines = [include.format() for include in includes]
+        lines = list(set(lines))
+        def include_sorter(a, b):
+            return cmp(a.lower(), b.lower())
+        lines.sort(include_sorter)
+        # print
+        # print 'filepath'
+        # for line in lines:
+        #     print '\t', line
+        # print
+        return '\n'.join(lines)
+
+    includeAngles = [include for include in includes if include.isInclude and not include.isQuote]
+    includeQuotes = [include for include in includes if include.isInclude and include.isQuote]
+    importAngles = [include for include in includes if (not include.isInclude) and not include.isQuote]
+    importQuotes = [include for include in includes if (not include.isInclude) and include.isQuote]
+    if includeQuotes:
+        blocks.append(formatBlock(includeQuotes))
+    if includeAngles:
+        blocks.append(formatBlock(includeAngles))
+    if importQuotes:
+        blocks.append(formatBlock(importQuotes))
+    if importAngles:
+        blocks.append(formatBlock(importAngles))
+
+    return '\n'.join(blocks) + '\n'
+
+
+def sort_class_statement_block(text, filepath, filename, file_extension):
+    lines = text.split('\n')
+    lines = [line.strip() for line in lines if line.strip()]
+    lines.sort()
+    return '\n' + '\n'.join(lines) + '\n'
+
+
+def find_matching_section(text, match_test):
+    lines = text.split('\n')
+    first_matching_line_index = None
+    for index, line in enumerate(lines):
+        if match_test(line):
+            first_matching_line_index = index
+            break
+        
+    if first_matching_line_index is None:
+        return None
+            
+    # Absorb any leading empty lines.
+    while first_matching_line_index > 0:
+        prev_line = lines[first_matching_line_index - 1]
+        if prev_line.strip():
+            break
+        first_matching_line_index = first_matching_line_index - 1
+        
+    first_non_matching_line_index = None
+    for index, line in enumerate(lines[first_matching_line_index:]):
+        if not line.strip():
+            # Absorb any trailing empty lines.
+            continue
+        if not match_test(line):
+            first_non_matching_line_index = index + first_matching_line_index
+            break
+
+    text0 = '\n'.join(lines[:first_matching_line_index])
+    if first_non_matching_line_index is None:
+        text1 = '\n'.join(lines[first_matching_line_index:])
+        text2 = None
+    else:
+        text1 = '\n'.join(lines[first_matching_line_index:first_non_matching_line_index])
+        text2 = '\n'.join(lines[first_non_matching_line_index:])
+
+    return text0, text1, text2
+
+
+def sort_matching_blocks(filepath, filename, file_extension, text, match_func, sort_func):
+    unprocessed = text
+    processed = None
+    while True:
+        section = find_matching_section(unprocessed, match_func)
+        # print '\t', 'sort_matching_blocks', section
+        if not section:
+            if processed:
+                processed = '\n'.join((processed, unprocessed,))
+            else:
+                processed = unprocessed
+            break
+
+        text0, text1, text2 = section
+
+        if processed:
+            processed = '\n'.join((processed, text0,))
+        else:
+            processed = text0
+        
+        # print 'before:'
+        # temp_lines = text1.split('\n')
+        # for index, line in enumerate(temp_lines):
+        #     if index < 3 or index + 3 >= len(temp_lines):
+        #         print '\t', index, line
+        # # print text1
+        # print
+        text1 = sort_func(text1, filepath, filename, file_extension)
+        # print 'after:'
+        # # print text1
+        # temp_lines = text1.split('\n')
+        # for index, line in enumerate(temp_lines):
+        #     if index < 3 or index + 3 >= len(temp_lines):
+        #         print '\t', index, line
+        # print
+        processed = '\n'.join((processed, text1,))
+        if text2:
+            unprocessed = text2
+        else:
+            break
+
+    return processed
+
+
+def find_class_statement_section(text):
+    def is_class_statement(line):
+        return line.strip().startswith('@class ')
+        
+    return find_matching_section(text, is_class_statement)
+
+
+def find_include_section(text):
+    def is_include_line(line):
+        return is_include_or_import(line)
+        # return is_include_or_import_or_empty(line)
+        
+    return find_matching_section(text, is_include_line)
+
+
+def sort_includes(filepath, filename, file_extension, text):
+    print 'sort_includes', filepath
+    if file_extension not in ('.h', '.m', '.mm'):
+        return text
+    return sort_matching_blocks(filepath, filename, file_extension, text, find_include_section, sort_include_block)
+
+
+def sort_class_statements(filepath, filename, file_extension, text):
+    print 'sort_class_statements', filepath
+    if file_extension not in ('.h', '.m', '.mm'):
+        return text
+    return sort_matching_blocks(filepath, filename, file_extension, text, find_class_statement_section, sort_class_statement_block)
+
+
 def splitall(path):
     allparts = []
     while 1:
@@ -52,7 +302,11 @@ def process(filepath):
     
     with open(filepath, 'rt') as f:
         text = f.read()
+
     original_text = text
+        
+    text = sort_includes(filepath, filename, file_ext, text)
+    text = sort_class_statements(filepath, filename, file_ext, text)
     
     lines = text.split('\n')
     while lines and lines[0].startswith('//'):
