@@ -8,7 +8,7 @@ we pull their latest work into the code base.
 ## Fetch Translations
 
 Generally you wan to fetch the latest translations whenever releasing. The
-exception being if you have recently uploaded lots of new source strings 
+exception being if you have recently changed lots of existing source strings 
 that haven't had a chance to be translated.
 
 To fetch the latest translations:
