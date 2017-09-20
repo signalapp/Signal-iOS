@@ -2,7 +2,6 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #include <Availability.h>
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(major, minor) \

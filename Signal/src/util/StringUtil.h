@@ -2,8 +2,6 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
 @interface NSString (Util)
 
 /// The utf-8 encoding of the string's text.

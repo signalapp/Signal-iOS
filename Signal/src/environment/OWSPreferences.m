@@ -7,17 +7,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-double const OWSPreferencesDefaultCallStreamDESBufferLevel = 0.5;
 NSString *const OWSPreferencesSignalDatabaseCollection = @"SignalPreferences";
 
-NSString *const OWSPreferencesKeyCallStreamDESBufferLevel = @"CallStreamDesiredBufferLevel";
 NSString *const OWSPreferencesKeyScreenSecurity = @"Screen Security Key";
 NSString *const OWSPreferencesKeyEnableDebugLog = @"Debugging Log Enabled Key";
 NSString *const OWSPreferencesKeyNotificationPreviewType = @"Notification Preview Type Key";
 NSString *const OWSPreferencesKeyHasSentAMessage = @"User has sent a message";
 NSString *const OWSPreferencesKeyHasArchivedAMessage = @"User archived a message";
 NSString *const OWSPreferencesKeyPlaySoundInForeground = @"NotificationSoundInForeground";
-NSString *const OWSPreferencesKeyHasRegisteredVoipPush = @"VOIPPushEnabled";
 NSString *const OWSPreferencesKeyLastRecordedPushToken = @"LastRecordedPushToken";
 NSString *const OWSPreferencesKeyLastRecordedVoipToken = @"LastRecordedVoipToken";
 NSString *const OWSPreferencesKeyCallKitEnabled = @"CallKitEnabled";
@@ -65,24 +62,15 @@ NSString *const OWSPreferencesKeyAreReadReceiptsEnabled = @"areReadReceiptsEnabl
 
 #pragma mark - Specific Preferences
 
-- (NSTimeInterval)getCachedOrDefaultDesiredBufferDepth
-{
-    id v = [self tryGetValueForKey:OWSPreferencesKeyCallStreamDESBufferLevel];
-    if (v == nil)
-        return OWSPreferencesDefaultCallStreamDESBufferLevel;
-    return [v doubleValue];
-}
-
-- (void)setCachedDesiredBufferDepth:(double)value
-{
-    ows_require(value >= 0);
-    [self setValueForKey:OWSPreferencesKeyCallStreamDESBufferLevel toValue:@(value)];
-}
-
 - (BOOL)screenSecurityIsEnabled
 {
     NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyScreenSecurity];
     return preference ? [preference boolValue] : YES;
+}
+
+- (void)setScreenSecurity:(BOOL)flag
+{
+    [self setValueForKey:OWSPreferencesKeyScreenSecurity toValue:@(flag)];
 }
 
 - (BOOL)getHasSentAMessage
@@ -103,26 +91,6 @@ NSString *const OWSPreferencesKeyAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     } else {
         return NO;
     }
-}
-
-- (BOOL)hasRegisteredVOIPPush
-{
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyHasRegisteredVoipPush];
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return YES;
-    }
-}
-
-- (void)setScreenSecurity:(BOOL)flag
-{
-    [self setValueForKey:OWSPreferencesKeyScreenSecurity toValue:@(flag)];
-}
-
-- (void)setHasRegisteredVOIPPush:(BOOL)enabled
-{
-    [self setValueForKey:OWSPreferencesKeyHasRegisteredVoipPush toValue:@(enabled)];
 }
 
 + (BOOL)loggingIsEnabled

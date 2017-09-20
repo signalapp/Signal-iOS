@@ -2,8 +2,6 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
 #ifndef OWSAssert
 
 #ifdef DEBUG

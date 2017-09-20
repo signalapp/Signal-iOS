@@ -20,7 +20,6 @@
 #import "TSUpdateAttributesRequest.h"
 #import "TSVerifyCodeRequest.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
-#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

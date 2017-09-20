@@ -27,9 +27,6 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 
 #pragma mark - Specific Preferences
 
-- (NSTimeInterval)getCachedOrDefaultDesiredBufferDepth;
-- (void)setCachedDesiredBufferDepth:(double)value;
-
 - (BOOL)getHasSentAMessage;
 - (void)setHasSentAMessage:(BOOL)enabled;
 
@@ -48,9 +45,6 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 
 - (BOOL)soundInForeground;
 - (void)setSoundInForeground:(BOOL)enabled;
-
-- (BOOL)hasRegisteredVOIPPush;
-- (void)setHasRegisteredVOIPPush:(BOOL)enabled;
 
 - (BOOL)hasDeclinedNoContactsView;
 - (void)setHasDeclinedNoContactsView:(BOOL)value;
