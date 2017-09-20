@@ -161,6 +161,11 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
     }
 }
 
+- (BOOL)isRecipientIdBlocked:(NSString *)recipientId
+{
+    return [self.blockedPhoneNumbers containsObject:recipientId];
+}
+
 // This should be called every time the block list changes.
 
 - (void)handleUpdate

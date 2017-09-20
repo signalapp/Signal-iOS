@@ -2,9 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMessageReceiver.h"
-#import "NSArray+OWS.h"
 #import "OWSBatchMessageProcessor.h"
+#import "NSArray+OWS.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSDatabaseView.h"
 #import "TSMessagesManager.h"
@@ -21,11 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosEnvelope;
 
-@interface OWSMessageDecryptJob : TSYapDatabaseObject
+@interface OWSMessageContentJob : TSYapDatabaseObject
 
 @property (nonatomic, readonly) NSDate *createdAt;
 
-- (instancetype)initWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithEnvelopeData:(NSData *)envelopeData
+                       plaintextData:(NSData *_Nullable)plaintextData NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 - (OWSSignalServiceProtosEnvelope *)envelopeProto;
 
@@ -33,31 +33,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSMessageDecryptJob ()
+@interface OWSMessageContentJob ()
 
 @property (nonatomic, readonly) NSData *envelopeData;
+@property (nonatomic, readonly, nullable) NSData *plaintextData;
 
 @end
 
 #pragma mark -
 
-@implementation OWSMessageDecryptJob
+@implementation OWSMessageContentJob
 
 + (NSString *)collection
 {
-    return @"OWSMessageProcessingJob";
+    return @"OWSBatchMessageProcessingJob";
 }
 
-- (instancetype)initWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+- (instancetype)initWithEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
 {
-    OWSAssert(envelope);
+    OWSAssert(envelopeData);
 
     self = [super initWithUniqueId:[NSUUID new].UUIDString];
     if (!self) {
         return self;
     }
 
-    _envelopeData = envelope.data;
+    _envelopeData = envelopeData;
+    _plaintextData = plaintextData;
     _createdAt = [NSDate new];
 
     return self;
@@ -72,16 +74,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Finder
 
-NSString *const OWSMessageDecryptJobFinderExtensionName = @"OWSMessageProcessingJobFinderExtensionName";
-NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessingJobFinderExtensionGroup";
+NSString *const OWSMessageContentJobFinderExtensionName = @"OWSBatchMessageProcessingFinderExtensionName";
+NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSBatchMessageProcessingFinderExtensionGroup";
 
-@interface OWSMessageDecryptJobFinder : NSObject
+@interface OWSMessageContentJobFinder : NSObject
 
 @end
 
 #pragma mark -
 
-@interface OWSMessageDecryptJobFinder ()
+@interface OWSMessageContentJobFinder ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
@@ -89,7 +91,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 #pragma mark -
 
-@implementation OWSMessageDecryptJobFinder
+@implementation OWSMessageContentJobFinder
 
 - (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection
 {
@@ -105,19 +107,19 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     return self;
 }
 
-- (NSArray<OWSMessageDecryptJob *> *)nextJobsForBatchSize:(NSUInteger)maxBatchSize
+- (NSArray<OWSMessageContentJob *> *)nextJobsForBatchSize:(NSUInteger)maxBatchSize
 {
-    NSMutableArray<OWSMessageDecryptJob *> *jobs = [NSMutableArray new];
+    NSMutableArray<OWSMessageContentJob *> *jobs = [NSMutableArray new];
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        YapDatabaseViewTransaction *viewTransaction = [transaction ext:OWSMessageDecryptJobFinderExtensionName];
+        YapDatabaseViewTransaction *viewTransaction = [transaction ext:OWSMessageContentJobFinderExtensionName];
         OWSAssert(viewTransaction != nil);
-        [viewTransaction enumerateKeysAndObjectsInGroup:OWSMessageDecryptJobFinderExtensionGroup
+        [viewTransaction enumerateKeysAndObjectsInGroup:OWSMessageContentJobFinderExtensionGroup
                                              usingBlock:^(NSString *_Nonnull collection,
                                                  NSString *_Nonnull key,
                                                  id _Nonnull object,
                                                  NSUInteger index,
                                                  BOOL *_Nonnull stop) {
-                                                 OWSMessageDecryptJob *job = object;
+                                                 OWSMessageContentJob *job = object;
                                                  [jobs addObject:job];
                                                  if (jobs.count >= maxBatchSize) {
                                                      *stop = YES;
@@ -128,17 +130,18 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     return [jobs copy];
 }
 
-- (void)addJobForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+- (void)addJobWithEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [[[OWSMessageDecryptJob alloc] initWithEnvelope:envelope] saveWithTransaction:transaction];
+        [[[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData plaintextData:plaintextData]
+            saveWithTransaction:transaction];
     }];
 }
 
 - (void)removeJobsWithIds:(NSArray<NSString *> *)uniqueIds
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [transaction removeObjectsForKeys:uniqueIds inCollection:[OWSMessageDecryptJob collection]];
+        [transaction removeObjectsForKeys:uniqueIds inCollection:[OWSMessageContentJob collection]];
     }];
 }
 
@@ -154,17 +157,17 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
             NSString *key2,
             id object2) {
 
-            if (![object1 isKindOfClass:[OWSMessageDecryptJob class]]) {
+            if (![object1 isKindOfClass:[OWSMessageContentJob class]]) {
                 OWSFail(@"Unexpected object: %@ in collection: %@", [object1 class], collection1);
                 return NSOrderedSame;
             }
-            OWSMessageDecryptJob *job1 = (OWSMessageDecryptJob *)object1;
+            OWSMessageContentJob *job1 = (OWSMessageContentJob *)object1;
 
-            if (![object2 isKindOfClass:[OWSMessageDecryptJob class]]) {
+            if (![object2 isKindOfClass:[OWSMessageContentJob class]]) {
                 OWSFail(@"Unexpected object: %@ in collection: %@", [object2 class], collection2);
                 return NSOrderedSame;
             }
-            OWSMessageDecryptJob *job2 = (OWSMessageDecryptJob *)object2;
+            OWSMessageContentJob *job2 = (OWSMessageContentJob *)object2;
 
             return [job1.createdAt compare:job2.createdAt];
         }];
@@ -174,18 +177,18 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
             NSString *_Nonnull collection,
             NSString *_Nonnull key,
             id _Nonnull object) {
-            if (![object isKindOfClass:[OWSMessageDecryptJob class]]) {
+            if (![object isKindOfClass:[OWSMessageContentJob class]]) {
                 OWSFail(@"Unexpected object: %@ in collection: %@", object, collection);
                 return nil;
             }
 
             // Arbitrary string - all in the same group. We're only using the view for sorting.
-            return OWSMessageDecryptJobFinderExtensionGroup;
+            return OWSMessageContentJobFinderExtensionGroup;
         }];
 
     YapDatabaseViewOptions *options = [YapDatabaseViewOptions new];
     options.allowedCollections =
-        [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[OWSMessageDecryptJob collection]]];
+        [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[OWSMessageContentJob collection]]];
 
     return [[YapDatabaseView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"1" options:options];
 }
@@ -193,40 +196,40 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 + (void)syncRegisterDatabaseExtension:(YapDatabase *)database
 {
-    YapDatabaseView *existingView = [database registeredExtension:OWSMessageDecryptJobFinderExtensionName];
+    YapDatabaseView *existingView = [database registeredExtension:OWSMessageContentJobFinderExtensionName];
     if (existingView) {
-        OWSFail(@"%@ was already initialized.", OWSMessageDecryptJobFinderExtensionName);
+        OWSFail(@"%@ was already initialized.", OWSMessageContentJobFinderExtensionName);
         // already initialized
         return;
     }
-    [database registerExtension:[self databaseExtension] withName:OWSMessageDecryptJobFinderExtensionName];
+    [database registerExtension:[self databaseExtension] withName:OWSMessageContentJobFinderExtensionName];
 }
 
 @end
 
 #pragma mark - Queue Processing
 
-@interface OWSMessageDecryptQueue : NSObject
+@interface OWSMessageContentQueue : NSObject
 
 @property (nonatomic, readonly) TSMessagesManager *messagesManager;
-@property (nonatomic, readonly) OWSBatchMessageProcessor *batchMessageProcessor;
-@property (nonatomic, readonly) OWSMessageDecryptJobFinder *finder;
+@property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
+@property (nonatomic, readonly) OWSMessageContentJobFinder *finder;
 @property (nonatomic) BOOL isDrainingQueue;
 
 - (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager
-                  batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
-                                 finder:(OWSMessageDecryptJobFinder *)finder NS_DESIGNATED_INITIALIZER;
+                         storageManager:(TSStorageManager *)storageManager
+                                 finder:(OWSMessageContentJobFinder *)finder NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
 
 #pragma mark -
 
-@implementation OWSMessageDecryptQueue
+@implementation OWSMessageContentQueue
 
 - (instancetype)initWithMessagesManager:(TSMessagesManager *)messagesManager
-                  batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
-                                 finder:(OWSMessageDecryptJobFinder *)finder
+                         storageManager:(TSStorageManager *)storageManager
+                                 finder:(OWSMessageContentJobFinder *)finder
 {
     OWSSingletonAssert();
 
@@ -236,7 +239,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     }
 
     _messagesManager = messagesManager;
-    _batchMessageProcessor = batchMessageProcessor;
+    _dbReadWriteConnection = [storageManager newDatabaseConnection];
     _finder = finder;
     _isDrainingQueue = NO;
 
@@ -260,9 +263,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 #pragma mark - instance methods
 
-- (void)enqueueEnvelopeForProcessing:(OWSSignalServiceProtosEnvelope *)envelope
+- (void)enqueueEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
 {
-    [self.finder addJobForEnvelope:envelope];
+    OWSAssert(envelopeData);
+
+    [self.finder addJobWithEnvelopeData:envelopeData plaintextData:plaintextData];
 }
 
 - (void)drainQueue
@@ -287,11 +292,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 {
     AssertIsOnMainThread();
 
-    NSArray<OWSMessageDecryptJob *> *jobs = [self.finder nextJobsForBatchSize:kIncomingMessageBatchSize];
+    NSArray<OWSMessageContentJob *> *jobs = [self.finder nextJobsForBatchSize:kIncomingMessageBatchSize];
     OWSAssert(jobs);
     if (jobs.count < 1) {
         self.isDrainingQueue = NO;
-        DDLogVerbose(@"%@ Queue is drained.", self.tag);
+        DDLogVerbose(@"%@ Queue is drained", self.tag);
         return;
     }
 
@@ -299,60 +304,27 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
            completion:^{
                dispatch_async(dispatch_get_main_queue(), ^{
                    [self.finder removeJobsWithIds:jobs.uniqueIds];
+
                    DDLogVerbose(@"%@ completed %zd jobs. %zd jobs left.",
                        self.tag,
                        jobs.count,
-                       [OWSMessageDecryptJob numberOfKeysInCollection]);
+                       [OWSMessageContentJob numberOfKeysInCollection]);
                    [self drainQueueWorkStep];
                });
            }];
 }
 
-- (void)processJobs:(NSArray<OWSMessageDecryptJob *> *)jobs completion:(void (^)())completion
+- (void)processJobs:(NSArray<OWSMessageContentJob *> *)jobs completion:(void (^)())completion
 {
-    [self processJobs:jobs
-         unprocessedJobs:[jobs mutableCopy]
-        plaintextDataMap:[NSMutableDictionary new]
-              completion:completion];
-}
-
-- (void)processJobs:(NSArray<OWSMessageDecryptJob *> *)jobs
-     unprocessedJobs:(NSMutableArray<OWSMessageDecryptJob *> *)unprocessedJobs
-    plaintextDataMap:(NSMutableDictionary<NSString *, NSData *> *)plaintextDataMap
-          completion:(void (^)())completion
-{
-    OWSAssert(jobs.count > 0);
-    OWSAssert(unprocessedJobs.count <= jobs.count);
-
-    if (unprocessedJobs.count < 1) {
-        for (OWSMessageDecryptJob *job in jobs) {
-            NSData *_Nullable plaintextData = plaintextDataMap[job.uniqueId];
-            [self.batchMessageProcessor enqueueEnvelopeData:job.envelopeData plaintextData:plaintextData];
-        }
-        completion();
-        return;
-    }
-
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        OWSAssert(unprocessedJobs.count > 0);
-        OWSMessageDecryptJob *job = unprocessedJobs.firstObject;
-        [unprocessedJobs removeObjectAtIndex:0];
-        [self.messagesManager decryptEnvelope:job.envelopeProto
-            successBlock:^(NSData *_Nullable plaintextData) {
-                if (plaintextData) {
-                    plaintextDataMap[job.uniqueId] = plaintextData;
-                }
-                [self processJobs:jobs
-                     unprocessedJobs:unprocessedJobs
-                    plaintextDataMap:plaintextDataMap
-                          completion:completion];
+        [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            for (OWSMessageContentJob *job in jobs) {
+                [self.messagesManager processEnvelope:job.envelopeProto
+                                        plaintextData:job.plaintextData
+                                          transaction:transaction];
             }
-            failureBlock:^{
-                [self processJobs:jobs
-                     unprocessedJobs:unprocessedJobs
-                    plaintextDataMap:plaintextDataMap
-                          completion:completion];
-            }];
+        }];
+        completion();
     });
 }
 
@@ -370,22 +342,22 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 @end
 
-#pragma mark - OWSMessageReceiver
+#pragma mark - OWSBatchMessageProcessor
 
-@interface OWSMessageReceiver ()
+@interface OWSBatchMessageProcessor ()
 
-@property (nonatomic, readonly) OWSMessageDecryptQueue *processingQueue;
+@property (nonatomic, readonly) OWSMessageContentQueue *processingQueue;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
 
 #pragma mark -
 
-@implementation OWSMessageReceiver
+@implementation OWSBatchMessageProcessor
 
 - (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection
                      messagesManager:(TSMessagesManager *)messagesManager
-               batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
+                      storageManager:(TSStorageManager *)storageManager
 {
     OWSSingletonAssert();
 
@@ -394,11 +366,10 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         return self;
     }
 
-    OWSMessageDecryptJobFinder *finder = [[OWSMessageDecryptJobFinder alloc] initWithDBConnection:dbConnection];
-    OWSMessageDecryptQueue *processingQueue =
-        [[OWSMessageDecryptQueue alloc] initWithMessagesManager:messagesManager
-                                          batchMessageProcessor:batchMessageProcessor
-                                                         finder:finder];
+    OWSMessageContentJobFinder *finder = [[OWSMessageContentJobFinder alloc] initWithDBConnection:dbConnection];
+    OWSMessageContentQueue *processingQueue = [[OWSMessageContentQueue alloc] initWithMessagesManager:messagesManager
+                                                                                       storageManager:storageManager
+                                                                                               finder:finder];
 
     _processingQueue = processingQueue;
 
@@ -410,16 +381,14 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     // For concurrency coherency we use the same dbConnection to persist and read the unprocessed envelopes
     YapDatabaseConnection *dbConnection = [[TSStorageManager sharedManager].database newConnection];
     TSMessagesManager *messagesManager = [TSMessagesManager sharedManager];
-    OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor sharedInstance];
+    TSStorageManager *storageManager = [TSStorageManager sharedManager];
 
-    return [self initWithDBConnection:dbConnection
-                      messagesManager:messagesManager
-                batchMessageProcessor:batchMessageProcessor];
+    return [self initWithDBConnection:dbConnection messagesManager:messagesManager storageManager:storageManager];
 }
 
 + (instancetype)sharedInstance
 {
-    static OWSMessageReceiver *sharedInstance;
+    static OWSBatchMessageProcessor *sharedInstance;
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -433,7 +402,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 + (void)syncRegisterDatabaseExtension:(YapDatabase *)database
 {
-    [OWSMessageDecryptJobFinder syncRegisterDatabaseExtension:database];
+    [OWSMessageContentJobFinder syncRegisterDatabaseExtension:database];
 }
 
 #pragma mark - instance methods
@@ -443,23 +412,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     [self.processingQueue drainQueue];
 }
 
-- (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+- (void)enqueueEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
 {
-    // Drop any too-large messages on the floor. Well behaving clients should never send them.
-    NSUInteger kMaxEnvelopeByteCount = 250 * 1024;
-    if (envelope.serializedSize > kMaxEnvelopeByteCount) {
-        OWSProdError([OWSAnalyticsEvents messageReceiverErrorOversizeMessage]);
-        return;
-    }
+    OWSAssert(envelopeData);
 
-    // Take note of any messages larger than we expect, but still process them.
-    // This likely indicates a misbehaving sending client.
-    NSUInteger kLargeEnvelopeWarningByteCount = 25 * 1024;
-    if (envelope.serializedSize > kLargeEnvelopeWarningByteCount) {
-        OWSProdError([OWSAnalyticsEvents messageReceiverErrorLargeMessage]);
-    }
-
-    [self.processingQueue enqueueEnvelopeForProcessing:envelope];
+    [self.processingQueue enqueueEnvelopeData:envelopeData plaintextData:plaintextData];
     [self.processingQueue drainQueue];
 }
 

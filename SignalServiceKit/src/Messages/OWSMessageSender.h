@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSOutgoingMessage;
 @class TSStorageManager;
 @class TSThread;
+@class YapDatabaseReadWriteTransaction;
 
 @protocol ContactsManagerProtocol;
 
@@ -64,7 +65,12 @@ NS_SWIFT_NAME(MessageSender)
  * Send and resend text messages or resend messages with existing attachments.
  * If you haven't yet created the attachment, see the `sendAttachmentData:` variants.
  */
+// TODO: make transaction nonnull and remove `sendMessage:success:failure`
 - (void)sendMessage:(TSOutgoingMessage *)message
+            success:(void (^)())successHandler
+            failure:(void (^)(NSError *error))failureHandler;
+- (void)sendMessage:(TSOutgoingMessage *)message
+        transaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
             success:(void (^)())successHandler
             failure:(void (^)(NSError *error))failureHandler;
 
@@ -89,7 +95,9 @@ NS_SWIFT_NAME(MessageSender)
                             success:(void (^)())successHandler
                             failure:(void (^)(NSError *error))failureHandler;
 
-- (void)handleMessageSentRemotely:(TSOutgoingMessage *)message sentAt:(uint64_t)sentAt;
+- (void)handleMessageSentRemotely:(TSOutgoingMessage *)message
+                           sentAt:(uint64_t)sentAt
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**
  * Set local configuration to match that of the of `outgoingMessage`'s sender

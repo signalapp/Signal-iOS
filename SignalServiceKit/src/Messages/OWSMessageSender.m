@@ -425,10 +425,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             success:(void (^)())successHandler
             failure:(void (^)(NSError *error))failureHandler
 {
-    OWSAssert(message);
-    AssertIsOnMainThread();
+    [self sendMessage:message transaction:nil success:successHandler failure:failureHandler];
+}
 
-    [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut];
+- (void)sendMessage:(TSOutgoingMessage *)message
+        transaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
+            success:(void (^)())successHandler
+            failure:(void (^)(NSError *error))failureHandler
+{
+    OWSAssert(message);
+
+    if (transaction) {
+        [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut transaction:transaction];
+    } else {
+        [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut];
+    }
     OWSSendMessageOperation *sendMessageOperation = [[OWSSendMessageOperation alloc] initWithMessage:message
                                                                                        messageSender:self
                                                                                              success:successHandler
@@ -625,8 +636,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // you might, for example, have a pending outgoing message when
             // you block them.
             OWSAssert(recipientContactId.length > 0);
-            NSArray<NSString *> *blockedPhoneNumbers = _blockingManager.blockedPhoneNumbers;
-            if ([blockedPhoneNumbers containsObject:recipientContactId]) {
+            if ([_blockingManager isRecipientIdBlocked:recipientContactId]) {
                 DDLogInfo(@"%@ skipping 1:1 send to blocked contact: %@", self.tag, recipientContactId);
                 NSError *error = OWSErrorMakeMessageSendFailedToBlockListError();
                 // No need to retry - the user will continue to be blocked.
@@ -1082,9 +1092,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [OWSDisappearingMessagesJob setExpirationForMessage:message];
 }
 
-- (void)handleMessageSentRemotely:(TSOutgoingMessage *)message sentAt:(uint64_t)sentAt
+- (void)handleMessageSentRemotely:(TSOutgoingMessage *)message
+                           sentAt:(uint64_t)sentAt
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [message updateWithWasSentAndDeliveredFromLinkedDevice];
+    OWSAssert(message);
+    OWSAssert(transaction);
+
+    [message updateWithWasSentFromLinkedDeviceWithTransaction:transaction];
     [self becomeConsistentWithDisappearingConfigurationForMessage:message];
     [OWSDisappearingMessagesJob setExpirationForMessage:message expirationStartedAt:sentAt];
 }
@@ -1171,6 +1186,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     encryptionException = exception;
                 }
             });
+
             if (encryptionException) {
                 DDLogInfo(@"%@ Exception during encryption: %@", self.tag, encryptionException);
                 @throw encryptionException;

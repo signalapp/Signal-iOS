@@ -25,6 +25,7 @@
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
+#import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSFailedAttachmentDownloadsJob.h>
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
@@ -816,6 +817,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // If there were any messages in our local queue which we hadn't yet processed.
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
+    [[OWSBatchMessageProcessor sharedInstance] handleAnyUnprocessedEnvelopesAsync];
 
     [OWSProfileManager.sharedManager fetchLocalUsersProfile];
 }

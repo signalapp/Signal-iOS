@@ -51,8 +51,9 @@
     // If we're not going to cancel the pop/back, we need to call the super
     // implementation since it has important side effects.
     if (result) {
+        // NOTE: result might end up NO if the super implementation cancels the
+        //       the pop/back.
         result = [super navigationBar:navigationBar shouldPopItem:item];
-        OWSAssert(result);
     }
     return result;
 }

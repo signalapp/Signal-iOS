@@ -323,27 +323,16 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     }];
 }
 
-- (void)updateWithWasSentAndDelivered
+- (void)updateWithWasSentFromLinkedDeviceWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestOutgoingMessage:transaction
-                                            changeBlock:^(TSOutgoingMessage *message) {
-                                                [message setMessageState:TSOutgoingMessageStateSentToService];
-                                                [message setWasDelivered:YES];
-                                            }];
-    }];
-}
+    OWSAssert(transaction);
 
-- (void)updateWithWasSentAndDeliveredFromLinkedDevice
-{
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestOutgoingMessage:transaction
-                                            changeBlock:^(TSOutgoingMessage *message) {
-                                                [message setMessageState:TSOutgoingMessageStateSentToService];
-                                                [message setWasDelivered:YES];
-                                                [message setIsFromLinkedDevice:YES];
-                                            }];
-    }];
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            [message setMessageState:TSOutgoingMessageStateSentToService];
+                                            [message setWasDelivered:YES];
+                                            [message setIsFromLinkedDevice:YES];
+                                        }];
 }
 
 - (void)updateWithSingleGroupRecipient:(NSString *)singleGroupRecipient
