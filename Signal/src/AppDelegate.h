@@ -10,5 +10,6 @@ extern NSString *const AppDelegateStoryboardMain;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
+@property (atomic) BOOL isEnvironmentSetup;
 
 @end
