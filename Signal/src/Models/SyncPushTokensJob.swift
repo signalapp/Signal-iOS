@@ -30,9 +30,13 @@ class SyncPushTokensJob: NSObject {
         let runPromise: Promise<Void> = DispatchQueue.main.promise {
             // Required to potentially prompt user for notifications settings
             // before `requestPushTokens` will return.
+            Logger.info("\(TAG) started: Validating user notification settings.")
             self.pushManager.validateUserNotificationSettings()
+            Logger.info("\(TAG) finished: Validating user notification settings.")
         }.then {
+            Logger.info("\(TAG) started: requesting push tokens")
             self.requestPushTokens()
+            Logger.info("\(TAG) finished: requesting push tokens")
         }.then { (pushToken: String, voipToken: String) in
             var shouldUploadTokens = false
 
@@ -55,12 +59,13 @@ class SyncPushTokensJob: NSObject {
                 return Promise(value: ())
             }
 
-            Logger.warn("\(self.TAG) Sending new tokens to account servers. pushToken: \(pushToken), voipToken: \(voipToken)")
-
+            Logger.warn("\(self.TAG) Sending tokens to account servers. pushToken: \(pushToken), voipToken: \(voipToken)")
             return self.accountManager.updatePushTokens(pushToken:pushToken, voipToken:voipToken).then {
+                Logger.info("\(TAG) updated push tokens with server")
                 return self.recordNewPushTokens(pushToken:pushToken, voipToken:voipToken)
+                Logger.info("\(TAG) recorded new push tokens locally")
             }.then {
-                Logger.debug("\(self.TAG) Successfully ran syncPushTokensJob.")
+                Logger.info("\(self.TAG) Successfully ran syncPushTokensJob.")
             }.catch { error in
                 Logger.error("\(self.TAG) Failed to run syncPushTokensJob with error: \(error).")
             }
