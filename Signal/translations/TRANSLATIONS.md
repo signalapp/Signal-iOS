@@ -5,13 +5,11 @@ upload our source language (US English) to Transifex, where our
 translators can submit their translations. Before the app is released,
 we pull their latest work into the code base.
 
-## Fetch
+## Fetch Translations
 
-You should always fetch the latest translations before pushing new
-source translations, as any newly updated source strings will blow away
-the existing translated strings. Generally when a source string is
-updated, it's preferred to have the previous translation vs an english
-string.
+Generally you wan to fetch the latest translations whenever releasing. The
+exception being if you have recently uploaded lots of new source strings 
+that haven't had a chance to be translated.
 
 To fetch the latest translations:
 
@@ -21,12 +19,10 @@ This imposes some limits on what localizations we include. For example,
 we don't want to include languages until a substantial portion of the
 app has been translated.
 
-## Source Strings
-
-Run `bin/auto-genstrings` to extract the latest translatable strings and
-comments from our local files (Signal-iOS and SignalServiceKit). The
-script assumes Signal-iOS and SignalServiceKit have the same parent
-directory. e.g. `~/src/Signal-iOS` and `~/src/SignalServiceKit`
+Sometimes you'll pull down a translation which isn't yet tracked by git.
+This means that translation recently became sufficiently complete to
+include in the project. As well as adding it to git, you need to update
+the Xcode project to include the new localization.
 
 ### Writing Good Translatable Strings
 
@@ -35,6 +31,7 @@ example:
 
     /* Tab button label which takes you to view all your archived conversations */
     ARCHIVE_HEADER="Archive"
+    
     /* Button label to archive the current conversation */
     ARCHIVE_ACTION="Archive"
 
@@ -53,11 +50,22 @@ provided. For example, is it an alert title, which can be a few words, a
 button, which must be *very* short, or an alert message, which can be a
 little longer?
 
-### Upload
+## Extract Source Strings
+
+To extract the latest translatable strings and comments from our local source files
+(Signal-iOS and SignalServiceKit):
+
+    bin/auto-genstrings
+
+### Upload Strings to be Translated
 
 Make new source strings available to our translators by uploading them
-to transifex. Make sure you've fetched the latest translations first,
-otherwise you could overwrite some useful translations on Transifex.
+to transifex. Immediately after uploading we also need to pull down the 
+updated translations. Granted, at this point the new strings will be in 
+English until translated, but English is preferable to the string name 
+like ARCHIVE_HEADER which we'd otherwise see.
 
-    tx push --source
+To push the new source strings and then fetch the resultant translations:
+
+    bin/sync-translations
 
