@@ -30,14 +30,11 @@ class SyncPushTokensJob: NSObject {
         let runPromise: Promise<Void> = DispatchQueue.main.promise {
             // Required to potentially prompt user for notifications settings
             // before `requestPushTokens` will return.
-            Logger.info("\(TAG) started: Validating user notification settings.")
             self.pushManager.validateUserNotificationSettings()
-            Logger.info("\(TAG) finished: Validating user notification settings.")
         }.then {
-            Logger.info("\(TAG) started: requesting push tokens")
             self.requestPushTokens()
-            Logger.info("\(TAG) finished: requesting push tokens")
         }.then { (pushToken: String, voipToken: String) in
+            Logger.info("\(self.TAG) finished: requesting push tokens")
             var shouldUploadTokens = false
 
             if self.preferences.getPushToken() != pushToken || self.preferences.getVoipToken() != voipToken {
@@ -61,14 +58,13 @@ class SyncPushTokensJob: NSObject {
 
             Logger.warn("\(self.TAG) Sending tokens to account servers. pushToken: \(pushToken), voipToken: \(voipToken)")
             return self.accountManager.updatePushTokens(pushToken:pushToken, voipToken:voipToken).then {
-                Logger.info("\(TAG) updated push tokens with server")
+                Logger.info("\(self.TAG) updated push tokens with server")
                 return self.recordNewPushTokens(pushToken:pushToken, voipToken:voipToken)
-                Logger.info("\(TAG) recorded new push tokens locally")
-            }.then {
-                Logger.info("\(self.TAG) Successfully ran syncPushTokensJob.")
-            }.catch { error in
-                Logger.error("\(self.TAG) Failed to run syncPushTokensJob with error: \(error).")
             }
+        }.then {
+            Logger.info("\(self.TAG) Successfully ran syncPushTokensJob.")
+        }.catch { error in
+            Logger.error("\(self.TAG) Failed while running syncPushTokensJob with error: \(error).")
         }
 
         runPromise.retainUntilComplete()
