@@ -55,15 +55,15 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
                                               forKey:kNSUserDefaults_LastAppVersion];
     [[NSUserDefaults standardUserDefaults] synchronize];
 
-    DDLogInfo(@"firstAppVersion: %@", self.firstAppVersion);
-    DDLogInfo(@"lastAppVersion: %@", self.lastAppVersion);
-    DDLogInfo(@"currentAppVersion: %@", self.currentAppVersion);
-    DDLogInfo(@"lastCompletedLaunchAppVersion: %@", self.lastCompletedLaunchAppVersion);
+    DDLogInfo(@"%@ firstAppVersion: %@", self.tag, self.firstAppVersion);
+    DDLogInfo(@"%@ lastAppVersion: %@", self.tag, self.lastAppVersion);
+    DDLogInfo(@"%@ currentAppVersion: %@", self.tag, self.currentAppVersion);
+    DDLogInfo(@"%@ lastCompletedLaunchAppVersion: %@", self.tag, self.lastCompletedLaunchAppVersion);
 }
 
 - (void)appLaunchDidComplete
 {
-    DDLogInfo(@"appLaunchDidComplete");
+    DDLogInfo(@"%@ appLaunchDidComplete", self.tag);
 
     self.lastCompletedLaunchAppVersion = self.currentAppVersion;
 
@@ -76,6 +76,18 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
 - (BOOL)isFirstLaunch
 {
     return self.firstAppVersion != nil;
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
