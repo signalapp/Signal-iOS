@@ -1109,7 +1109,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Je Signal-profiel zal zichtbaar zijn voor je ocntacten, wanneer je nieuwe gesprekken begint, en wanneer je het deelt met andere gebruikers en groepen.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Je Signal-profiel zal zichtbaar zijn voor je contacten, wanneer je nieuwe gesprekken begint, en wanneer je het deelt met andere gebruikers en groepen.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tik hier voor meer info.";
