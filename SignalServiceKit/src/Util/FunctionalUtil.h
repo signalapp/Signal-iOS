@@ -1,4 +1,6 @@
-#import <Foundation/Foundation.h>
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 @interface NSArray (FunctionalUtil)
 

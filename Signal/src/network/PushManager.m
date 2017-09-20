@@ -267,7 +267,6 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     } else {
         TOCFutureSource *futureSource = [TOCFutureSource new];
         [futureSource trySetResult:nil];
-        [Environment.preferences setHasRegisteredVOIPPush:FALSE];
         return futureSource.future;
     }
 }
