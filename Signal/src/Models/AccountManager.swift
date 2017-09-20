@@ -49,7 +49,7 @@ class AccountManager: NSObject {
         }.then {
             return SyncPushTokensJob.run(pushManager: self.pushManager, accountManager: self, preferences: self.preferences)
         }.then {
-            Logger.debug("\(self.TAG) successfully registered for TextSecure")
+            Logger.info("\(self.TAG) successfully registered for TextSecure")
         }
         registrationPromise.retainUntilComplete()
 

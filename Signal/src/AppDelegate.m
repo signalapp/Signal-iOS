@@ -271,6 +271,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
+    // This is not being called?
     DDLogDebug(@"%@ Successfully registered for remote notifications with token: %@", self.tag, deviceToken);
     [PushManager.sharedManager.pushNotificationFutureSource trySetResult:deviceToken];
 }
@@ -288,6 +289,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)application:(UIApplication *)application
     didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    DDLogDebug(@"%@ in %s", self.tag, __PRETTY_FUNCTION__);
     [PushManager.sharedManager.userNotificationFutureSource trySetResult:notificationSettings];
 }
 
@@ -482,6 +484,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 DDLogInfo(
                     @"%@ running post launch block for registered user: %@", self.tag, [TSAccountManager localNumber]);
+
                 __unused AnyPromise *promise =
                     [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
                                               accountManager:[Environment getCurrent].accountManager
@@ -490,12 +493,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.
                 [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
-
-                // TODO remove this once we're sure our app boot process is coherent.
-                // Currently this happens *before* db registration is complete when
-                // launching the app directly, but *after* db registration is complete when
-                // the app is launched in the background, e.g. from a voip notification.
-                [[OWSProfileManager sharedManager] ensureLocalProfileCached];
 
                 // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
                 // sent before the app exited should be marked as failures.
@@ -509,9 +506,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
             // Unregistered user should have no unread messages. e.g. if you delete your account.
             [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-
-            [TSSocketManager requestSocketOpen];
-
+            
             UITapGestureRecognizer *gesture =
                 [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class] action:@selector(submitLogs)];
             gesture.numberOfTapsRequired = 8;

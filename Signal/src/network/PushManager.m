@@ -105,8 +105,9 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 #pragma mark Manage Incoming Push
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    DDLogInfo(@"%@ in %s", self.tag, __FUNCTION__);
 
     [self.messageFetcherJob runAsync];
 }
@@ -120,19 +121,23 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
  * "content-available:1" pushes if there is no "voip" token registered
  *
  */
-
 - (void)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo
-          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    DDLogInfo(@"%@ in %s", self.tag, __FUNCTION__);
+
+    // If we want to re-introduce silent pushes we can remove this assert.
+    OWSFail(@"Unexpected content-available push.");
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
       completionHandler(UIBackgroundFetchResultNewData);
     });
 }
 
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    DDLogInfo(@"%@ in %s", self.tag, __FUNCTION__);
 
     NSString *_Nullable threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
 
@@ -146,8 +151,9 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 - (void)application:(UIApplication *)application
     handleActionWithIdentifier:(NSString *)identifier
           forLocalNotification:(UILocalNotification *)notification
-             completionHandler:(void (^)())completionHandler {
-    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+             completionHandler:(void (^)())completionHandler
+{
+    DDLogInfo(@"%@ in %s", self.tag, __FUNCTION__);
 
     [self application:application
         handleActionWithIdentifier:identifier
@@ -276,7 +282,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 - (void)pushRegistry:(PKPushRegistry *)registry
     didUpdatePushCredentials:(PKPushCredentials *)credentials
                      forType:(NSString *)type {
-    [[PushManager sharedManager].pushKitNotificationFutureSource trySetResult:[credentials.token ows_tripToken]];
+    [self.pushKitNotificationFutureSource trySetResult:[credentials.token ows_tripToken]];
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry
@@ -313,6 +319,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 #pragma mark Register device for Push Notification locally
 
 - (TOCFuture *)registerPushNotificationFuture {
+    DDLogInfo(@"%@ in %s", self.tag, __PRETTY_FUNCTION__);
     self.pushNotificationFutureSource = [TOCFutureSource new];
     [UIApplication.sharedApplication registerForRemoteNotifications];
     return self.pushNotificationFutureSource.future;
@@ -327,23 +334,29 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
         return;
     }
 
+    DDLogInfo(@"%@ in %s", self.tag, __PRETTY_FUNCTION__);
     TOCFuture *requestPushTokenFuture = [self registerPushNotificationFuture];
 
     [requestPushTokenFuture thenDo:^(NSData *pushTokenData) {
-      NSString *pushToken = [pushTokenData ows_tripToken];
-      TOCFuture *pushKit  = [self registerPushKitNotificationFuture];
+        DDLogInfo(@"%@ in %s requestedPushTokenFuture", self.tag, __PRETTY_FUNCTION__);
+        NSString *pushToken = [pushTokenData ows_tripToken];
+        TOCFuture *pushKit = [self registerPushKitNotificationFuture];
 
-      [pushKit thenDo:^(NSString *voipToken) {
-        success(pushToken, voipToken);
-      }];
+        [pushKit thenDo:^(NSString *voipToken) {
+            DDLogInfo(@"%@ in %s requestedPushTokenFuture->PushKit", self.tag, __PRETTY_FUNCTION__);
+            DDLogInfo(@"%@ in %s", self.tag, __PRETTY_FUNCTION__);
+            success(pushToken, voipToken);
+        }];
 
-      [pushKit catchDo:^(NSError *error) {
-        failure(error);
-      }];
+        [pushKit catchDo:^(NSError *error) {
+            DDLogInfo(@"%@ in %s ERROR: requestedPushTokenFuture->PushKit", self.tag, __PRETTY_FUNCTION__);
+            failure(error);
+        }];
     }];
 
     [requestPushTokenFuture catchDo:^(NSError *error) {
-      failure(error);
+        DDLogInfo(@"%@ in %s ERROR: requestedPushTokenFuture", self.tag, __PRETTY_FUNCTION__);
+        failure(error);
     }];
 }
 
@@ -485,6 +498,7 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
 
 - (void)validateUserNotificationSettings
 {
+    DDLogInfo(@"%@ in %s", self.tag, __PRETTY_FUNCTION__);
     UIUserNotificationSettings *settings = [UIUserNotificationSettings
         settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
               categories:[NSSet setWithObjects:[self fullNewMessageNotificationCategory],

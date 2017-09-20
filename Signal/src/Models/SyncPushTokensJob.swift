@@ -34,6 +34,7 @@ class SyncPushTokensJob: NSObject {
         }.then {
             self.requestPushTokens()
         }.then { (pushToken: String, voipToken: String) in
+            Logger.info("\(self.TAG) finished: requesting push tokens")
             var shouldUploadTokens = false
 
             if self.preferences.getPushToken() != pushToken || self.preferences.getVoipToken() != voipToken {
@@ -55,15 +56,15 @@ class SyncPushTokensJob: NSObject {
                 return Promise(value: ())
             }
 
-            Logger.warn("\(self.TAG) Sending new tokens to account servers. pushToken: \(pushToken), voipToken: \(voipToken)")
-
+            Logger.warn("\(self.TAG) Sending tokens to account servers. pushToken: \(pushToken), voipToken: \(voipToken)")
             return self.accountManager.updatePushTokens(pushToken:pushToken, voipToken:voipToken).then {
+                Logger.info("\(self.TAG) updated push tokens with server")
                 return self.recordNewPushTokens(pushToken:pushToken, voipToken:voipToken)
-            }.then {
-                Logger.debug("\(self.TAG) Successfully ran syncPushTokensJob.")
-            }.catch { error in
-                Logger.error("\(self.TAG) Failed to run syncPushTokensJob with error: \(error).")
             }
+        }.then {
+            Logger.info("\(self.TAG) Successfully ran syncPushTokensJob.")
+        }.catch { error in
+            Logger.error("\(self.TAG) Failed while running syncPushTokensJob with error: \(error).")
         }
 
         runPromise.retainUntilComplete()
