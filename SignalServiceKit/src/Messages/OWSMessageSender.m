@@ -636,8 +636,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // you might, for example, have a pending outgoing message when
             // you block them.
             OWSAssert(recipientContactId.length > 0);
-            NSArray<NSString *> *blockedPhoneNumbers = _blockingManager.blockedPhoneNumbers;
-            if ([blockedPhoneNumbers containsObject:recipientContactId]) {
+            if ([_blockingManager isRecipientIdBlocked:recipientContactId]) {
                 DDLogInfo(@"%@ skipping 1:1 send to blocked contact: %@", self.tag, recipientContactId);
                 NSError *error = OWSErrorMakeMessageSendFailedToBlockListError();
                 // No need to retry - the user will continue to be blocked.

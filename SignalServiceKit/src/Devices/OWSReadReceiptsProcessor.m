@@ -59,8 +59,8 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
 
 - (instancetype)initWithIncomingMessage:(TSIncomingMessage *)message storageManager:(TSStorageManager *)storageManager
 {
-    // Only groupthread sets authorId, thus this crappy code.
-    // TODO ALL incoming messages should have an authorId.
+    // authorId isn't set on all legacy messages, so we take
+    // extra measures to ensure we obtain a valid value.
     NSString *messageAuthorId;
     if (message.authorId) { // Group Thread
         messageAuthorId = message.authorId;

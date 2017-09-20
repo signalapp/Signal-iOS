@@ -275,7 +275,7 @@ const NSUInteger kIncomingMessageBatchSize = 10;
 {
     OWSAssert(envelope);
 
-    return [_blockingManager.blockedPhoneNumbers containsObject:envelope.source];
+    return [_blockingManager isRecipientIdBlocked:envelope.source];
 }
 
 #pragma mark - Decryption
@@ -375,9 +375,6 @@ const NSUInteger kIncomingMessageBatchSize = 10;
 
     [self decryptEnvelope:envelope
         messageTypeName:@"Secure Message"
-        missingPayloadBlock:^{
-            OWSProdFail([OWSAnalyticsEvents messageManagerErrorMessageEnvelopeHasNoContent]);
-        }
         cipherMessageBlock:^(NSData *encryptedData) {
             return [[WhisperMessage alloc] initWithData:encryptedData];
         }
@@ -398,9 +395,6 @@ const NSUInteger kIncomingMessageBatchSize = 10;
 
     [self decryptEnvelope:envelope
         messageTypeName:@"PreKey Bundle"
-        missingPayloadBlock:^{
-            OWSProdFail([OWSAnalyticsEvents messageManagerErrorPrekeyBundleEnvelopeHasNoContent]);
-        }
         cipherMessageBlock:^(NSData *encryptedData) {
             return [[PreKeyWhisperMessage alloc] initWithData:encryptedData];
         }
@@ -410,26 +404,24 @@ const NSUInteger kIncomingMessageBatchSize = 10;
 
 - (void)decryptEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
         messageTypeName:(NSString *)messageTypeName
-    missingPayloadBlock:(void (^_Nonnull)())missingPayloadBlock
      cipherMessageBlock:(id<CipherMessage> (^_Nonnull)(NSData *))cipherMessageBlock
            successBlock:(DecryptSuccessBlock)successBlock
            failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
     OWSAssert(envelope);
     OWSAssert(messageTypeName.length > 0);
-    OWSAssert(missingPayloadBlock);
     OWSAssert(cipherMessageBlock);
     OWSAssert(successBlock);
     OWSAssert(failureBlock);
 
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    TSStorageManager *storageManager = self.storageManager;
     NSString *recipientId = envelope.source;
     int deviceId = envelope.sourceDevice;
 
     // DEPRECATED - Remove after all clients have been upgraded.
     NSData *encryptedData = envelope.hasContent ? envelope.content : envelope.legacyMessage;
     if (!encryptedData) {
-        missingPayloadBlock();
+        OWSProdFail([OWSAnalyticsEvents messageManagerErrorMessageEnvelopeHasNoContent]);
         failureBlock(nil);
         return;
     }
@@ -468,7 +460,7 @@ const NSUInteger kIncomingMessageBatchSize = 10;
     OWSAssert(transaction);
     OWSAssert([TSAccountManager isRegistered]);
 
-    DDLogInfo(@"%@ received envelope: %@", self.tag, [self descriptionForEnvelope:envelope]);
+    DDLogInfo(@"%@ handling decrypted envelope: %@", self.tag, [self descriptionForEnvelope:envelope]);
 
     OWSAssert(envelope.source.length > 0);
     OWSAssert(![self isEnvelopeBlocked:envelope]);
@@ -510,6 +502,8 @@ const NSUInteger kIncomingMessageBatchSize = 10;
     if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)interaction;
         [outgoingMessage updateWithWasDeliveredWithTransaction:transaction];
+    } else {
+        OWSFail(@"%@ Unexpected message with timestamp: %llu", self.tag, envelope.timestamp);
     }
 }
 
@@ -653,7 +647,9 @@ const NSUInteger kIncomingMessageBatchSize = 10;
         [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
     }
 
-    // TODO: Should we do this synchronously?
+    // By dispatching async, we introduce the possibility that these messages might be lost
+    // if the app exits before this block is executed.  This is fine, since the call by
+    // definition will end if the app exits.
     dispatch_async(dispatch_get_main_queue(), ^{
         if (callMessage.hasOffer) {
             [self.callMessageHandler receivedOffer:callMessage.offer fromCallerId:envelope.source];
@@ -801,7 +797,7 @@ const NSUInteger kIncomingMessageBatchSize = 10;
                 TSGroupThread *groupThread =
                     [TSGroupThread getOrCreateThreadWithGroupIdData:syncMessage.sent.message.group.id
                                                         transaction:transaction];
-                [groupThread updateAvatarWithAttachmentStream:attachmentStream transaction:transaction];
+                [groupThread updateAvatarWithAttachmentStream:attachmentStream];
             }
                                     transaction:transaction];
         } else {
@@ -844,6 +840,7 @@ const NSUInteger kIncomingMessageBatchSize = 10;
             DDLogWarn(@"%@ ignoring unsupported sync request message", self.tag);
         }
     } else if (syncMessage.hasBlocked) {
+        // TODO: Do this synchronously.
         dispatch_async(dispatch_get_main_queue(), ^{
             NSArray<NSString *> *blockedPhoneNumbers = [syncMessage.blocked.numbers copy];
             [_blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers sendSyncMessage:NO];
@@ -857,6 +854,7 @@ const NSUInteger kIncomingMessageBatchSize = 10;
         [readReceiptsProcessor processWithTransaction:transaction];
     } else if (syncMessage.hasVerified) {
         DDLogInfo(@"%@ Received verification state for %@", self.tag, syncMessage.verified.destination);
+        // TODO: Do this synchronously.
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.identityManager processIncomingSyncMessage:syncMessage.verified];
         });
@@ -875,14 +873,12 @@ const NSUInteger kIncomingMessageBatchSize = 10;
 
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
-    if (thread) { // TODO thread should always be nonnull.
-        [[[TSInfoMessage alloc] initWithTimestamp:envelope.timestamp
-                                         inThread:thread
-                                      messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
-    }
+    [[[TSInfoMessage alloc] initWithTimestamp:envelope.timestamp
+                                     inThread:thread
+                                  messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
 
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[TSStorageManager sharedManager] deleteAllSessionsForContact:envelope.source];
+        [self.storageManager deleteAllSessionsForContact:envelope.source];
     });
 }
 
@@ -1186,6 +1182,7 @@ const NSUInteger kIncomingMessageBatchSize = 10;
     }
 
     if (thread && incomingMessage) {
+        // TODO: Do this synchronously.
         dispatch_async(dispatch_get_main_queue(), ^{
             // In case we already have a read receipt for this new message (happens sometimes).
             OWSReadReceiptsProcessor *readReceiptsProcessor =

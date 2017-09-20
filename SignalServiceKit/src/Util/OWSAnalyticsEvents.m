@@ -297,11 +297,6 @@ NS_ASSUME_NONNULL_BEGIN
     return @"message_manager_error_oversize_message";
 }
 
-+ (NSString *)messageManagerErrorPrekeyBundleEnvelopeHasNoContent
-{
-    return @"message_manager_error_prekey_bundle_envelope_has_no_content";
-}
-
 + (NSString *)messageManagerErrorSyncMessageFromUnknownSource
 {
     return @"message_manager_error_sync_message_from_unknown_source";

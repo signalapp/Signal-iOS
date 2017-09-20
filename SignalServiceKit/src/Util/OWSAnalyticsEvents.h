@@ -126,8 +126,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)messageManagerErrorOversizeMessage;
 
-+ (NSString *)messageManagerErrorPrekeyBundleEnvelopeHasNoContent;
-
 + (NSString *)messageManagerErrorSyncMessageFromUnknownSource;
 
 + (NSString *)messageManagerErrorUntrustedIdentityKeyException;

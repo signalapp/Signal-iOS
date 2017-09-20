@@ -65,6 +65,7 @@ NS_SWIFT_NAME(MessageSender)
  * Send and resend text messages or resend messages with existing attachments.
  * If you haven't yet created the attachment, see the `sendAttachmentData:` variants.
  */
+// TODO: make transaction nonnull and remove `sendMessage:success:failure`
 - (void)sendMessage:(TSOutgoingMessage *)message
             success:(void (^)())successHandler
             failure:(void (^)(NSError *error))failureHandler;
