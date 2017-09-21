@@ -449,6 +449,8 @@ struct AudioSource: Hashable {
                                  mode: String? = nil,
                                  options: AVAudioSessionCategoryOptions = AVAudioSessionCategoryOptions(rawValue: 0)) {
 
+        AssertIsOnMainThread()
+
         let session = AVAudioSession.sharedInstance()
         var audioSessionChanged = false
         do {
@@ -500,7 +502,8 @@ struct AudioSource: Hashable {
 
         if audioSessionChanged {
             Logger.info("\(TAG) in \(#function)")
-            NotificationCenter.default.postNotificationNameAsync(CallAudioServiceSessionChanged, object: nil)
+            // Update call view synchronously; already on main thread.
+            NotificationCenter.default.post(name:CallAudioServiceSessionChanged, object: nil)
         }
     }
 }
