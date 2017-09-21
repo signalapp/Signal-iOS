@@ -3,6 +3,7 @@
 //
 
 #import "OWSReadReceiptsProcessor.h"
+#import "NSNotificationCenter+OWS.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSReadReceipt.h"
 #import "OWSSignalServiceProtos.pb.h"
@@ -131,11 +132,9 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
                                                     expirationStartedAt:readReceipt.timestamp];
 
                     // Fire event that will cancel any pending notifications for this message.
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [[NSNotificationCenter defaultCenter]
-                            postNotificationName:OWSReadReceiptsProcessorMarkedMessageAsReadNotification
-                                          object:otherMessage];
-                    });
+                    [[NSNotificationCenter defaultCenter]
+                     postNotificationNameAsync:OWSReadReceiptsProcessorMarkedMessageAsReadNotification
+                     object:otherMessage];
                 }
             }
 

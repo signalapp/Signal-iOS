@@ -5,6 +5,7 @@
 #import "TSAccountManager.h"
 #import "NSData+Base64.h"
 #import "NSData+hexString.h"
+#import "NSNotificationCenter+OWS.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSError.h"
 #import "SecurityUtils.h"
@@ -70,9 +71,9 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
 {
     _phoneNumberAwaitingVerification = phoneNumberAwaitingVerification;
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_LocalNumberDidChange
-                                                        object:nil
-                                                      userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalNumberDidChange
+                                                             object:nil
+                                                           userInfo:nil];
 }
 
 + (BOOL)isRegistered
@@ -104,9 +105,9 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
 
     [self storeLocalNumber:phoneNumber];
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_RegistrationStateDidChange
-                                                        object:nil
-                                                      userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_RegistrationStateDidChange
+                                                             object:nil
+                                                           userInfo:nil];
 }
 
 + (nullable NSString *)localNumber
@@ -365,9 +366,10 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
             // `kNSNotificationName_RegistrationStateDidChange` which is only safe to fire after
             // the data store is reset.
 
-            [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_RegistrationStateDidChange
-                                                                object:nil
-                                                              userInfo:nil];
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_RegistrationStateDidChange
+                                   object:nil
+                                 userInfo:nil];
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {

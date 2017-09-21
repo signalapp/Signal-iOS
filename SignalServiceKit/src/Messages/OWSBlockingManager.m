@@ -3,6 +3,7 @@
 //
 
 #import "OWSBlockingManager.h"
+#import "NSNotificationCenter+OWS.h"
 #import "OWSBlockedPhoneNumbersMessage.h"
 #import "OWSMessageSender.h"
 #import "TSStorageManager.h"
@@ -201,9 +202,9 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
             [self saveSyncedBlockedPhoneNumbers:blockedPhoneNumbers];
         }
 
-        [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_BlockedPhoneNumbersDidChange
-                                                            object:nil
-                                                          userInfo:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_BlockedPhoneNumbersDidChange
+                                                                 object:nil
+                                                               userInfo:nil];
     });
 }
 

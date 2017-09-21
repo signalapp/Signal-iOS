@@ -4,6 +4,7 @@
 
 #import "OWSIdentityManager.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "NSNotificationCenter+OWS.h"
 #import "NotificationsProtocol.h"
 #import "OWSError.h"
 #import "OWSMessageSender.h"
@@ -308,11 +309,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (void)fireIdentityStateChangeNotification
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationName_IdentityStateDidChange
-                                                            object:nil
-                                                          userInfo:nil];
-    });
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_IdentityStateDidChange
+                                                             object:nil
+                                                           userInfo:nil];
 }
 
 - (BOOL)isTrustedIdentityKey:(NSData *)identityKey
