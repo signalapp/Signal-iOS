@@ -74,6 +74,7 @@
 #import <SignalServiceKit/OWSCallMessageHandler.h>
 #import <SignalServiceKit/OWSCallOfferMessage.h>
 #import <SignalServiceKit/OWSContactsOutputStream.h>
+#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSEndSessionMessage.h>
 #import <SignalServiceKit/OWSError.h>

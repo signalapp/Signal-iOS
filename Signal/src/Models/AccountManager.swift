@@ -11,6 +11,9 @@ import PromiseKit
  */
 class AccountManager: NSObject {
     let TAG = "[AccountManager]"
+
+    let dbConnection: YapDatabaseConnection
+    let experienceUpgradeFinder: ExperienceUpgradeFinder
     let textSecureAccountManager: TSAccountManager
     let networkManager: TSNetworkManager
     let preferences: OWSPreferences
@@ -20,10 +23,12 @@ class AccountManager: NSObject {
         return PushManager.shared()
     }
 
-    required init(textSecureAccountManager: TSAccountManager, preferences: OWSPreferences) {
+    required init(textSecureAccountManager: TSAccountManager, preferences: OWSPreferences, storageManager: TSStorageManager) {
         self.networkManager = textSecureAccountManager.networkManager
         self.textSecureAccountManager = textSecureAccountManager
         self.preferences = preferences
+        self.dbConnection = storageManager.newDatabaseConnection()!
+        self.experienceUpgradeFinder = ExperienceUpgradeFinder()
     }
 
     // MARK: registration
@@ -70,7 +75,23 @@ class AccountManager: NSObject {
     private func completeRegistration() {
         Logger.info("\(self.TAG) in \(#function)")
         self.textSecureAccountManager.didRegister()
+        self.completeEnvironmentSetupForRegisteredUser()
+    }
+
+    public func completeEnvironmentSetupForRegisteredUser() {
         TSSocketManager.requestSocketOpen()
+
+        self.dbConnection.readWrite { transaction in
+            self.experienceUpgradeFinder.markAllAsSeen(transaction: transaction)
+        }
+
+        // Start running the disappearing messages job in case the newly registered user
+        // enables this feature.
+        //
+        // Note we can't currently dependency inject the OWSDisappearingMessagesJob because
+        // it sets up observers upon `init` which may not always be safe to run -
+        // e.g. if the app environment isn't fully launched or the user isn't registered.
+        OWSDisappearingMessagesJob.shared().startIfNecessary()
     }
 
     // MARK: Push Tokens
