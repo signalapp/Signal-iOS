@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         // Desktop currently sends delivery receipts for "unpersisted" messages
         // like group updates, so these errors are expected to a certain extent.
-        DDLogError(@"%@ Unexpected message with timestamp: %llu", self.tag, envelope.timestamp);
+        DDLogInfo(@"%@ Unexpected message with timestamp: %llu", self.tag, envelope.timestamp);
     }
 }
 

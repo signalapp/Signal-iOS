@@ -434,7 +434,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         //
         // That's key - we don't want to send any messages in response
         // to an incoming message until processing of that batch of messages
-        // is complete.
+        // is complete.  For example, we wouldn't want to auto-reply to a
+        // group info request before that group info request's batch was
+        // finished processing.  Otherwise, we might receive a delivery
+        // notice for a group update we hadn't yet saved to the db.
+        //
+        // So we're using YDB behavior to ensure this invariant, which is a bit
+        // unorthodox.
         [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut];
 
         OWSSendMessageOperation *sendMessageOperation =
@@ -1328,14 +1334,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // TODO: Why is this necessary?
         [message save];
     } else if (message.groupMetaMessage == TSGroupMessageQuit) {
-        // We want the info message to appear after the message.
-        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp + 1
+        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                          inThread:thread
                                       messageType:TSInfoMessageTypeGroupQuit
                                     customMessage:message.customMessage] save];
     } else {
-        // We want the info message to appear after the message.
-        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp + 1
+        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                          inThread:thread
                                       messageType:TSInfoMessageTypeGroupUpdate
                                     customMessage:message.customMessage] save];

@@ -43,6 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
 {
+    OWSAssert(timestamp > 0);
+
     self = [super initWithUniqueId:nil];
 
     if (!self) {
