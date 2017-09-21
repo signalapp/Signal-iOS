@@ -206,6 +206,7 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
 #pragma mark - Signal Messages
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)message inThread:(TSThread *)thread {
+    OWSAssert([NSThread isMainThread]);
     OWSAssert(message);
     OWSAssert(thread);
 

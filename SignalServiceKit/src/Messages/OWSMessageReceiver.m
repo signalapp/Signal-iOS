@@ -6,6 +6,7 @@
 #import "NSArray+OWS.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSMessageDecrypter.h"
+#import "OWSQueues.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSDatabaseView.h"
 #import "TSStorageManager.h"
@@ -105,27 +106,16 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     return self;
 }
 
-- (NSArray<OWSMessageDecryptJob *> *)nextJobsForBatchSize:(NSUInteger)maxBatchSize
+- (OWSMessageDecryptJob *_Nullable)nextJob
 {
-    NSMutableArray<OWSMessageDecryptJob *> *jobs = [NSMutableArray new];
+    __block OWSMessageDecryptJob *_Nullable job = nil;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         YapDatabaseViewTransaction *viewTransaction = [transaction ext:OWSMessageDecryptJobFinderExtensionName];
         OWSAssert(viewTransaction != nil);
-        [viewTransaction enumerateKeysAndObjectsInGroup:OWSMessageDecryptJobFinderExtensionGroup
-                                             usingBlock:^(NSString *_Nonnull collection,
-                                                 NSString *_Nonnull key,
-                                                 id _Nonnull object,
-                                                 NSUInteger index,
-                                                 BOOL *_Nonnull stop) {
-                                                 OWSMessageDecryptJob *job = object;
-                                                 [jobs addObject:job];
-                                                 if (jobs.count >= maxBatchSize) {
-                                                     *stop = YES;
-                                                 }
-                                             }];
+        job = [viewTransaction firstObjectInGroup:OWSMessageDecryptJobFinderExtensionGroup];
     }];
 
-    return [jobs copy];
+    return job;
 }
 
 - (void)addJobForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
@@ -135,10 +125,10 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     }];
 }
 
-- (void)removeJobsWithIds:(NSArray<NSString *> *)uniqueIds
+- (void)removeJobWithId:(NSString *)uniqueId
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [transaction removeObjectsForKeys:uniqueIds inCollection:[OWSMessageDecryptJob collection]];
+        [transaction removeObjectForKey:uniqueId inCollection:[OWSMessageDecryptJob collection]];
     }];
 }
 
@@ -260,6 +250,16 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 #pragma mark - instance methods
 
+- (dispatch_queue_t)serialQueue
+{
+    static dispatch_queue_t queue = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        queue = dispatch_queue_create("org.whispersystems.message.decrypt", DISPATCH_QUEUE_SERIAL);
+    });
+    return queue;
+}
+
 - (void)enqueueEnvelopeForProcessing:(OWSSignalServiceProtosEnvelope *)envelope
 {
     [self.finder addJobForEnvelope:envelope];
@@ -267,7 +267,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)drainQueue
 {
-    DispatchMainThreadSafe(^{
+    dispatch_async(self.serialQueue, ^{
         if ([TSDatabaseView hasPendingViewRegistrations]) {
             // We don't want to process incoming messages until database
             // view registration is complete.
@@ -285,75 +285,48 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)drainQueueWorkStep
 {
-    AssertIsOnMainThread();
+    AssertOnDispatchQueue(self.serialQueue);
 
-    NSArray<OWSMessageDecryptJob *> *jobs = [self.finder nextJobsForBatchSize:kIncomingMessageBatchSize];
-    OWSAssert(jobs);
-    if (jobs.count < 1) {
+    OWSMessageDecryptJob *_Nullable job = [self.finder nextJob];
+    if (!job) {
         self.isDrainingQueue = NO;
         DDLogVerbose(@"%@ Queue is drained.", self.tag);
         return;
     }
 
-    [self processJobs:jobs
-           completion:^{
-               dispatch_async(dispatch_get_main_queue(), ^{
-                   [self.finder removeJobsWithIds:jobs.uniqueIds];
-                   DDLogVerbose(@"%@ completed %zd jobs. %zd jobs left.",
-                       self.tag,
-                       jobs.count,
-                       [OWSMessageDecryptJob numberOfKeysInCollection]);
-                   [self drainQueueWorkStep];
-               });
-           }];
+    [self processJob:job
+          completion:^(BOOL success) {
+              [self.finder removeJobWithId:job.uniqueId];
+              DDLogVerbose(@"%@ %@ job. %lu jobs left.",
+                  self.tag,
+                  success ? @"decrypted" : @"failed to decrypt",
+                  (unsigned long)[OWSMessageDecryptJob numberOfKeysInCollection]);
+              [self drainQueueWorkStep];
+          }];
 }
 
-- (void)processJobs:(NSArray<OWSMessageDecryptJob *> *)jobs completion:(void (^)())completion
+- (void)processJob:(OWSMessageDecryptJob *)job completion:(void (^)(BOOL))completion
 {
-    [self processJobs:jobs
-         unprocessedJobs:[jobs mutableCopy]
-        plaintextDataMap:[NSMutableDictionary new]
-              completion:completion];
-}
+    AssertOnDispatchQueue(self.serialQueue);
+    OWSAssert(job);
 
-- (void)processJobs:(NSArray<OWSMessageDecryptJob *> *)jobs
-     unprocessedJobs:(NSMutableArray<OWSMessageDecryptJob *> *)unprocessedJobs
-    plaintextDataMap:(NSMutableDictionary<NSString *, NSData *> *)plaintextDataMap
-          completion:(void (^)())completion
-{
-    OWSAssert(jobs.count > 0);
-    OWSAssert(unprocessedJobs.count <= jobs.count);
+    OWSSignalServiceProtosEnvelope *envelope = job.envelopeProto;
+    [self.messageDecrypter decryptEnvelope:envelope
+        successBlock:^(NSData *_Nullable plaintextData) {
 
-    if (unprocessedJobs.count < 1) {
-        for (OWSMessageDecryptJob *job in jobs) {
-            NSData *_Nullable plaintextData = plaintextDataMap[job.uniqueId];
+            // We can't decrypt the same message twice, so we need to persist
+            // the decrypted envelope data ASAP to prevent data loss.
             [self.batchMessageProcessor enqueueEnvelopeData:job.envelopeData plaintextData:plaintextData];
-        }
-        completion();
-        return;
-    }
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        OWSAssert(unprocessedJobs.count > 0);
-        OWSMessageDecryptJob *job = unprocessedJobs.firstObject;
-        [unprocessedJobs removeObjectAtIndex:0];
-        [self.messageDecrypter decryptEnvelope:job.envelopeProto
-            successBlock:^(NSData *_Nullable plaintextData) {
-                if (plaintextData) {
-                    plaintextDataMap[job.uniqueId] = plaintextData;
-                }
-                [self processJobs:jobs
-                     unprocessedJobs:unprocessedJobs
-                    plaintextDataMap:plaintextDataMap
-                          completion:completion];
-            }
-            failureBlock:^{
-                [self processJobs:jobs
-                     unprocessedJobs:unprocessedJobs
-                    plaintextDataMap:plaintextDataMap
-                          completion:completion];
-            }];
-    });
+            dispatch_async(self.serialQueue, ^{
+                completion(YES);
+            });
+        }
+        failureBlock:^{
+            dispatch_async(self.serialQueue, ^{
+                completion(NO);
+            });
+        }];
 }
 
 #pragma mark Logging

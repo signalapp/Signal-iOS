@@ -247,7 +247,7 @@ NS_ASSUME_NONNULL_BEGIN
             NSData *plaintextData = [[cipher decrypt:cipherMessage] removePadding];
             successBlock(plaintextData);
         } @catch (NSException *exception) {
-            dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [self processException:exception envelope:envelope];
                 NSString *errorDescription = [NSString
                     stringWithFormat:@"Exception while decrypting %@: %@", cipherTypeName, exception.description];
@@ -260,8 +260,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)processException:(NSException *)exception envelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
-    OWSAssert([NSThread isMainThread]);
-
     DDLogError(@"%@ Got exception: %@ of type: %@ with reason: %@",
         self.tag,
         exception.description,
@@ -295,6 +293,7 @@ NS_ASSUME_NONNULL_BEGIN
             errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
         }
 
+        OWSAssert(errorMessage);
         [errorMessage saveWithTransaction:transaction];
     }];
 
@@ -306,7 +305,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)notifyForErrorMessage:(TSErrorMessage *)errorMessage withEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
     TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source];
-    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage inThread:contactThread];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage
+                                                                            inThread:contactThread];
+    });
 }
 
 #pragma mark - Logging

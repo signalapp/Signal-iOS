@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)interactionForTimestamp:(uint64_t)timestamp
                         withTransaction:(YapDatabaseReadWriteTransaction *)transaction {
+    OWSAssert(timestamp > 0);
+
     __block int counter = 0;
     __block TSInteraction *interaction;
 

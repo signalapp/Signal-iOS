@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // If there is an attachment + text, render the text here, as Signal-iOS renders two messages.
     if (attachmentsProcessor.hasSupportedAttachments && transcript.body && ![transcript.body isEqualToString:@""]) {
-        // render text *after* the attachment
+        // We want the text to appear after the attachment.
         uint64_t textMessageTimestamp = transcript.timestamp + 1;
         TSOutgoingMessage *textMessage = [[TSOutgoingMessage alloc] initWithTimestamp:textMessageTimestamp
                                                                              inThread:thread

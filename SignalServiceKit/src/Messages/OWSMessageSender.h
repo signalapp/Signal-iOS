@@ -69,10 +69,6 @@ NS_SWIFT_NAME(MessageSender)
 - (void)sendMessage:(TSOutgoingMessage *)message
             success:(void (^)())successHandler
             failure:(void (^)(NSError *error))failureHandler;
-- (void)sendMessage:(TSOutgoingMessage *)message
-        transaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
-            success:(void (^)())successHandler
-            failure:(void (^)(NSError *error))failureHandler;
 
 /**
  * Takes care of allocating and uploading the attachment, then sends the message.

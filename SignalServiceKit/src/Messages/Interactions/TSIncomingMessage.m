@@ -16,8 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSIncomingMessage ()
 
-@property (nonatomic, readonly) NSString *authorId;
-
 @property (nonatomic, getter=wasRead) BOOL read;
 
 @end

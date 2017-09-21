@@ -5,6 +5,7 @@
 #import "OWSBatchMessageProcessor.h"
 #import "NSArray+OWS.h"
 #import "OWSMessageManager.h"
+#import "OWSQueues.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSDatabaseView.h"
 #import "TSStorageManager.h"
@@ -132,9 +133,11 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSBatchMessageProc
 
 - (void)addJobWithEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
 {
+    // We need to persist the decrypted envelope data ASAP to prevent data loss.
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [[[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData plaintextData:plaintextData]
-            saveWithTransaction:transaction];
+        OWSMessageContentJob *job =
+            [[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData plaintextData:plaintextData];
+        [job saveWithTransaction:transaction];
     }];
 }
 
@@ -205,6 +208,18 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSBatchMessageProc
     [database registerExtension:[self databaseExtension] withName:OWSMessageContentJobFinderExtensionName];
 }
 
+#pragma mark Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
+}
+
 @end
 
 #pragma mark - Queue Processing
@@ -263,16 +278,27 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSBatchMessageProc
 
 #pragma mark - instance methods
 
+- (dispatch_queue_t)serialQueue
+{
+    static dispatch_queue_t queue = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        queue = dispatch_queue_create("org.whispersystems.message.process", DISPATCH_QUEUE_SERIAL);
+    });
+    return queue;
+}
+
 - (void)enqueueEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
 {
     OWSAssert(envelopeData);
 
+    // We need to persist the decrypted envelope data ASAP to prevent data loss.
     [self.finder addJobWithEnvelopeData:envelopeData plaintextData:plaintextData];
 }
 
 - (void)drainQueue
 {
-    DispatchMainThreadSafe(^{
+    dispatch_async(self.serialQueue, ^{
         if ([TSDatabaseView hasPendingViewRegistrations]) {
             // We don't want to process incoming messages until database
             // view registration is complete.
@@ -290,7 +316,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSBatchMessageProc
 
 - (void)drainQueueWorkStep
 {
-    AssertIsOnMainThread();
+    AssertOnDispatchQueue(self.serialQueue);
 
     NSArray<OWSMessageContentJob *> *jobs = [self.finder nextJobsForBatchSize:kIncomingMessageBatchSize];
     OWSAssert(jobs);
@@ -300,32 +326,35 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSBatchMessageProc
         return;
     }
 
-    [self processJobs:jobs
-           completion:^{
-               dispatch_async(dispatch_get_main_queue(), ^{
-                   [self.finder removeJobsWithIds:jobs.uniqueIds];
+    [self processJobs:jobs];
 
-                   DDLogVerbose(@"%@ completed %zd jobs. %zd jobs left.",
-                       self.tag,
-                       jobs.count,
-                       [OWSMessageContentJob numberOfKeysInCollection]);
-                   [self drainQueueWorkStep];
-               });
-           }];
+    [self.finder removeJobsWithIds:jobs.uniqueIds];
+
+    DDLogVerbose(@"%@ completed %zd jobs. %zd jobs left.",
+        self.tag,
+        jobs.count,
+        [OWSMessageContentJob numberOfKeysInCollection]);
+
+    // Wait a bit in hopes of increasing the batch size.
+    // This delay won't affect the first message to arrive when this queue is idle,
+    // so by definition we're receiving more than one message and can benefit from
+    // batching.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1f * NSEC_PER_SEC)), self.serialQueue, ^{
+        [self drainQueueWorkStep];
+    });
 }
 
-- (void)processJobs:(NSArray<OWSMessageContentJob *> *)jobs completion:(void (^)())completion
+- (void)processJobs:(NSArray<OWSMessageContentJob *> *)jobs
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            for (OWSMessageContentJob *job in jobs) {
-                [self.messagesManager processEnvelope:job.envelopeProto
-                                        plaintextData:job.plaintextData
-                                          transaction:transaction];
-            }
-        }];
-        completion();
-    });
+    AssertOnDispatchQueue(self.serialQueue);
+
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (OWSMessageContentJob *job in jobs) {
+            [self.messagesManager processEnvelope:job.envelopeProto
+                                    plaintextData:job.plaintextData
+                                      transaction:transaction];
+        }
+    }];
 }
 
 #pragma mark Logging
@@ -416,6 +445,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSBatchMessageProc
 {
     OWSAssert(envelopeData);
 
+    // We need to persist the decrypted envelope data ASAP to prevent data loss.
     [self.processingQueue enqueueEnvelopeData:envelopeData plaintextData:plaintextData];
     [self.processingQueue drainQueue];
 }
