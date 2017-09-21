@@ -132,6 +132,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSBatchMessageProc
 
 - (void)addJobWithEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
 {
+    // We need to persist the decrypted envelope data ASAP to prevent data loss.
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         OWSMessageContentJob *job =
             [[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData plaintextData:plaintextData];
@@ -280,6 +281,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSBatchMessageProc
 {
     OWSAssert(envelopeData);
 
+    // We need to persist the decrypted envelope data ASAP to prevent data loss.
     [self.finder addJobWithEnvelopeData:envelopeData plaintextData:plaintextData];
 }
 
@@ -322,7 +324,15 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSBatchMessageProc
                        self.tag,
                        jobs.count,
                        [OWSMessageContentJob numberOfKeysInCollection]);
-                   [self drainQueueWorkStep];
+
+                   // Wait a bit in hopes of increasing the batch size.
+                   // This delay won't affect the first message to arrive when this queue is idle,
+                   // so by definition we're receiving more than one message and can benefit from
+                   // batching.
+                   dispatch_after(
+                       dispatch_time(DISPATCH_TIME_NOW, (int64_t)0.1f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                           [self drainQueueWorkStep];
+                       });
                });
            }];
 }
@@ -429,6 +439,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSBatchMessageProc
 {
     OWSAssert(envelopeData);
 
+    // We need to persist the decrypted envelope data ASAP to prevent data loss.
     [self.processingQueue enqueueEnvelopeData:envelopeData plaintextData:plaintextData];
     [self.processingQueue drainQueue];
 }
