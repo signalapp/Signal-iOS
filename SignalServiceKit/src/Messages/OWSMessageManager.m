@@ -300,8 +300,10 @@ NS_ASSUME_NONNULL_BEGIN
                 failure:^(NSError *error) {
                     DDLogError(@"%@ Failed to send Request Group Info message with error: %@", self.tag, error);
                 }];
+            return;
         }
     }
+
     if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsEndSession) != 0) {
         [self handleEndSessionMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0) {
@@ -750,7 +752,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                             image:nil
                                                           groupId:dataMessage.group.id];
         TSGroupThread *gThread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
-        [gThread saveWithTransaction:transaction];
 
         switch (dataMessage.group.type) {
             case OWSSignalServiceProtosGroupContextTypeUpdate: {
