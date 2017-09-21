@@ -264,7 +264,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([message isKindOfClass:[TSIncomingMessage class]]) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-        NSString *contactName = [contactsManager displayNameForPhoneIdentifier:incomingMessage.authorId];
+        NSString *contactName = [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId];
 
         [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp
                                                                            thread:message.thread

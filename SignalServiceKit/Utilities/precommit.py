@@ -114,13 +114,35 @@ def sort_include_block(text, filepath, filename, file_extension):
         for include in includes:
             include.isInclude = False
 
+    # Make sure matching header is first.
+    matching_header_includes = []
+    other_includes = []
+    def is_matching_header(include):
+        filename_wo_ext = os.path.splitext(filename)[0]
+        include_filename_wo_ext = os.path.splitext(os.path.basename(include.body))[0]
+        return filename_wo_ext == include_filename_wo_ext
+    for include in includes:
+        if is_matching_header(include):
+            matching_header_includes.append(include)
+        else:
+            other_includes.append(include)
+    includes = other_includes
 
     def formatBlock(includes):
         lines = [include.format() for include in includes]
         lines = list(set(lines))
         def include_sorter(a, b):
-            return cmp(a.lower(), b.lower())
+            # return cmp(a.lower(), b.lower())
+            return cmp(a, b)
+        # print 'before'
+        # for line in lines:
+        #     print '\t', line
+        # print
         lines.sort(include_sorter)
+        # print 'after'
+        # for line in lines:
+        #     print '\t', line
+        # print
         # print
         # print 'filepath'
         # for line in lines:
@@ -132,6 +154,8 @@ def sort_include_block(text, filepath, filename, file_extension):
     includeQuotes = [include for include in includes if include.isInclude and include.isQuote]
     importAngles = [include for include in includes if (not include.isInclude) and not include.isQuote]
     importQuotes = [include for include in includes if (not include.isInclude) and include.isQuote]
+    if matching_header_includes:
+        blocks.append(formatBlock(matching_header_includes))
     if includeQuotes:
         blocks.append(formatBlock(includeQuotes))
     if includeAngles:
@@ -189,7 +213,7 @@ def find_matching_section(text, match_test):
     return text0, text1, text2
 
 
-def sort_matching_blocks(filepath, filename, file_extension, text, match_func, sort_func):
+def sort_matching_blocks(sort_name, filepath, filename, file_extension, text, match_func, sort_func):
     unprocessed = text
     processed = None
     while True:
@@ -230,6 +254,8 @@ def sort_matching_blocks(filepath, filename, file_extension, text, match_func, s
         else:
             break
 
+    if text != processed:
+        print sort_name, filepath
     return processed
 
 
@@ -249,17 +275,17 @@ def find_include_section(text):
 
 
 def sort_includes(filepath, filename, file_extension, text):
-    print 'sort_includes', filepath
+    # print 'sort_includes', filepath
     if file_extension not in ('.h', '.m', '.mm'):
         return text
-    return sort_matching_blocks(filepath, filename, file_extension, text, find_include_section, sort_include_block)
+    return sort_matching_blocks('sort_includes', filepath, filename, file_extension, text, find_include_section, sort_include_block)
 
 
 def sort_class_statements(filepath, filename, file_extension, text):
-    print 'sort_class_statements', filepath
+    # print 'sort_class_statements', filepath
     if file_extension not in ('.h', '.m', '.mm'):
         return text
-    return sort_matching_blocks(filepath, filename, file_extension, text, find_class_statement_section, sort_class_statement_block)
+    return sort_matching_blocks('sort_class_statements', filepath, filename, file_extension, text, find_class_statement_section, sort_class_statement_block)
 
 
 def splitall(path):

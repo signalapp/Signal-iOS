@@ -5,6 +5,7 @@
 #import "TSIncomingMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
+#import "OWSReadReceiptManager.h"
 #import "TSContactThread.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSGroupThread.h"
@@ -12,9 +13,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingMessageWasReadOnThisDeviceNotification";
-
 @interface TSIncomingMessage ()
+
+@property (nonatomic, readonly) NSString *authorId;
 
 @property (nonatomic, getter=wasRead) BOOL read;
 
@@ -92,15 +93,8 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
                                  if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
                                      TSIncomingMessage *message = (TSIncomingMessage *)interaction;
 
-                                     // authorId isn't set on all legacy messages, so we take
-                                     // extra measures to ensure we obtain a valid value.
-                                     NSString *messageAuthorId;
-                                     if (message.authorId) { // Group Thread
-                                         messageAuthorId = message.authorId;
-                                     } else { // Contact Thread
-                                         messageAuthorId =
-                                             [TSContactThread contactIdFromThreadId:message.uniqueThreadId];
-                                     }
+                                     NSString *messageAuthorId = message.messageAuthorId;
+                                     OWSAssert(messageAuthorId.length > 0);
 
                                      if ([messageAuthorId isEqualToString:authorId]) {
                                          foundMessage = message;
@@ -110,6 +104,22 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
                       usingTransaction:transaction];
 
     return foundMessage;
+}
+
+- (NSString *)messageAuthorId
+{
+    // authorId isn't set on all legacy messages, so we take
+    // extra measures to ensure we obtain a valid value.
+    NSString *messageAuthorId;
+    if (self.authorId) {
+        // Group Thread
+        messageAuthorId = self.authorId;
+    } else {
+        // Contact Thread
+        messageAuthorId = [TSContactThread contactIdFromThreadId:self.uniqueThreadId];
+    }
+    OWSAssert(messageAuthorId.length > 0);
+    return messageAuthorId;
 }
 
 #pragma mark - OWSReadTracking
@@ -139,12 +149,7 @@ NSString *const TSIncomingMessageWasReadOnThisDeviceNotification = @"TSIncomingM
     }
 
     if (sendReadReceipt) {
-        // Notification must happen outside of the transaction, else we'll likely crash when the notification receiver
-        // tries to do anything with the DB.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:TSIncomingMessageWasReadOnThisDeviceNotification
-                                                                object:self];
-        });
+        [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
     }
 }
 
