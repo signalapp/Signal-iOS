@@ -32,6 +32,7 @@
 #import "TSStorageManager+sessionStore.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
+#import "Threading.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/CipherMessage.h>
 #import <AxolotlKit/PreKeyBundle.h>
@@ -425,32 +426,35 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             success:(void (^)())successHandler
             failure:(void (^)(NSError *error))failureHandler
 {
-    [self sendMessage:message transaction:nil success:successHandler failure:failureHandler];
-}
-
-- (void)sendMessage:(TSOutgoingMessage *)message
-        transaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
-            success:(void (^)())successHandler
-            failure:(void (^)(NSError *error))failureHandler
-{
     OWSAssert(message);
 
-    if (transaction) {
-        [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut transaction:transaction];
-    } else {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        // This method will use a read/write transaction. This transaction
+        // will block until any open read/write transactions are complete.
+        //
+        // That's key - we don't want to send any messages in response
+        // to an incoming message until processing of that batch of messages
+        // is complete.
         [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut];
-    }
-    OWSSendMessageOperation *sendMessageOperation = [[OWSSendMessageOperation alloc] initWithMessage:message
-                                                                                       messageSender:self
-                                                                                             success:successHandler
-                                                                                             failure:failureHandler];
 
-    // We call `startBackgroundTask` here to prevent our app from suspending while being backgrounded
-    // until the operation is completed - at which point the OWSSendMessageOperation ends it's background task.
-    [sendMessageOperation startBackgroundTask];
+        OWSSendMessageOperation *sendMessageOperation =
+            [[OWSSendMessageOperation alloc] initWithMessage:message
+                                               messageSender:self
+                                                     success:successHandler
+                                                     failure:failureHandler];
 
-    NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
-    [sendingQueue addOperation:sendMessageOperation];
+        // startBackgroundTask must be called on the main thread.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // We call `startBackgroundTask` here to prevent our app from suspending while being backgrounded
+            // until the operation is completed - at which point the OWSSendMessageOperation ends it's background task.
+            [sendMessageOperation startBackgroundTask];
+
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
+                [sendingQueue addOperation:sendMessageOperation];
+            });
+        });
+    });
 }
 
 - (void)attemptToSendMessage:(TSOutgoingMessage *)message
@@ -556,9 +560,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         [message save];
 
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self sendMessage:message success:successHandler failure:failureHandler];
-        });
+        [self sendMessage:message success:successHandler failure:failureHandler];
     });
 }
 
@@ -1127,6 +1129,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         TSContactThread *cThread =
             [TSContactThread getOrCreateThreadWithContactId:contactId transaction:transaction];
         [cThread saveWithTransaction:transaction];
+
+        // We want the incoming message to appear after the outgoing message.
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initWithTimestamp:(outgoingMessage.timestamp + 1)
                                                 inThread:cThread
@@ -1324,12 +1328,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // TODO: Why is this necessary?
         [message save];
     } else if (message.groupMetaMessage == TSGroupMessageQuit) {
-        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
+        // We want the info message to appear after the message.
+        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp + 1
                                          inThread:thread
                                       messageType:TSInfoMessageTypeGroupQuit
                                     customMessage:message.customMessage] save];
     } else {
-        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
+        // We want the info message to appear after the message.
+        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp + 1
                                          inThread:thread
                                       messageType:TSInfoMessageTypeGroupUpdate
                                     customMessage:message.customMessage] save];

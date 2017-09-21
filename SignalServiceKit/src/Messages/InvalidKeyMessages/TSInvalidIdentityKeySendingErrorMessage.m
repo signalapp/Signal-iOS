@@ -30,7 +30,8 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                            forRecipient:(NSString *)recipientId
                            preKeyBundle:(PreKeyBundle *)preKeyBundle
 {
-    self = [super initWithTimestamp:message.timestamp
+    // We want the error message to appear after the message.
+    self = [super initWithTimestamp:message.timestamp + 1
                            inThread:thread
                   failedMessageType:TSErrorMessageWrongTrustedIdentityKey
                         recipientId:recipientId];

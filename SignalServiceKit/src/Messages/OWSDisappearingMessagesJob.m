@@ -266,12 +266,14 @@ NS_ASSUME_NONNULL_BEGIN
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
         NSString *contactName = [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId];
 
-        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp
+        // We want the info message to appear after the message.
+        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp + 1
                                                                            thread:message.thread
                                                                     configuration:disappearingMessagesConfiguration
                                                               createdByRemoteName:contactName] save];
     } else {
-        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp
+        // We want the info message to appear after the message.
+        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp + 1
                                                                            thread:message.thread
                                                                     configuration:disappearingMessagesConfiguration]
             save];

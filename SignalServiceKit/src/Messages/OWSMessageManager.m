@@ -191,7 +191,9 @@ NS_ASSUME_NONNULL_BEGIN
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)interaction;
         [outgoingMessage updateWithWasDeliveredWithTransaction:transaction];
     } else {
-        OWSFail(@"%@ Unexpected message with timestamp: %llu", self.tag, envelope.timestamp);
+        // Desktop currently sends delivery receipts for "unpersisted" messages
+        // like group updates, so these errors are expected to a certain extent.
+        DDLogError(@"%@ Unexpected message with timestamp: %llu", self.tag, envelope.timestamp);
     }
 }
 
@@ -292,7 +294,6 @@ NS_ASSUME_NONNULL_BEGIN
             OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
                 [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupId];
             [self.messageSender sendMessage:syncGroupsRequestMessage
-                transaction:transaction
                 success:^{
                     DDLogWarn(@"%@ Successfully sent Request Group Info message.", self.tag);
                 }
@@ -645,7 +646,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)sendGroupUpdateForThread:(TSGroupThread *)gThread message:(TSOutgoingMessage *)message
 {
-    OWSAssert([NSThread isMainThread]);
     OWSAssert(gThread);
     OWSAssert(gThread.groupModel);
     OWSAssert(message);
@@ -715,9 +715,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Only send this group update to the requester.
     [message updateWithSingleGroupRecipient:envelope.source transaction:transaction];
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self sendGroupUpdateForThread:gThread message:message];
-    });
+    [self sendGroupUpdateForThread:gThread message:message];
 }
 
 - (TSIncomingMessage *_Nullable)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
@@ -855,7 +853,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Other clients allow attachments to be sent along with body, we want the text displayed as a separate
         // message
         if ([attachmentIds count] > 0 && body != nil && body.length > 0) {
-            // We want the text to be displayed under the attachment
+            // We want the text to be displayed under the attachment.
             uint64_t textMessageTimestamp = timestamp + 1;
             TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
                                                                                  inThread:thread

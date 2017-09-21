@@ -561,7 +561,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (void)processIncomingSyncMessage:(OWSSignalServiceProtosVerified *)verified
 {
-
     NSString *recipientId = verified.destination;
     if (recipientId.length < 1) {
         OWSFail(@"Verification state sync message missing recipientId.");

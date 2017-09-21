@@ -133,8 +133,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSBatchMessageProc
 - (void)addJobWithEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [[[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData plaintextData:plaintextData]
-            saveWithTransaction:transaction];
+        OWSMessageContentJob *job =
+            [[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData plaintextData:plaintextData];
+        [job saveWithTransaction:transaction];
     }];
 }
 
@@ -203,6 +204,18 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSBatchMessageProc
         return;
     }
     [database registerExtension:[self databaseExtension] withName:OWSMessageContentJobFinderExtensionName];
+}
+
+#pragma mark Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end
