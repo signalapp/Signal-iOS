@@ -9,9 +9,6 @@
 
 @interface SignalsViewController : OWSViewController
 
-// TODO: Remove this property.
-@property (nonatomic) BOOL newlyRegisteredUser;
-
 - (void)presentThread:(TSThread *)thread
     keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
         callOnViewAppearing:(BOOL)callOnViewAppearing;

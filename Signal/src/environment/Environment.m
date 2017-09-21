@@ -61,8 +61,10 @@ static Environment *environment = nil;
 {
     @synchronized (self) {
         if (!_accountManager) {
-            _accountManager = [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                                                           preferences:self.preferences];
+            _accountManager =
+                [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
+                                                             preferences:self.preferences
+                                                          storageManager:[TSStorageManager sharedManager]];
         }
     }
 

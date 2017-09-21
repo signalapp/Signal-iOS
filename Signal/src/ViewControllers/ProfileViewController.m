@@ -435,7 +435,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 - (void)showHomeView
 {
     SignalsViewController *homeView = [SignalsViewController new];
-    homeView.newlyRegisteredUser = YES;
     SignalsNavigationController *navigationController =
         [[SignalsNavigationController alloc] initWithRootViewController:homeView];
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;

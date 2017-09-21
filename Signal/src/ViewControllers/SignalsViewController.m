@@ -25,7 +25,6 @@
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSMessagesManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -485,19 +484,11 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 
-    if (self.newlyRegisteredUser) {
-        [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
-            [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
-        }];
-        // Start running the disappearing messages job in case the newly registered user
-        // enables this feature
-        [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
-        [[OWSProfileManager sharedManager] ensureLocalProfileCached];
-    } else if (!self.viewHasEverAppeared) {
+    if (!self.viewHasEverAppeared) {
+        self.viewHasEverAppeared = YES;
+
         [self displayAnyUnseenUpgradeExperience];
     }
-
-    self.viewHasEverAppeared = YES;
 }
 
 #pragma mark - startup
