@@ -3,11 +3,11 @@
 //
 
 #import "OWSIncomingSentMessageTranscript.h"
+#import "OWSMessageManager.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
-#import "TSMessagesManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
