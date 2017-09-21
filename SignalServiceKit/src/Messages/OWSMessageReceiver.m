@@ -6,6 +6,7 @@
 #import "NSArray+OWS.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSMessageDecrypter.h"
+#import "OWSQueues.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSDatabaseView.h"
 #import "TSStorageManager.h"
@@ -249,6 +250,16 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 #pragma mark - instance methods
 
+- (dispatch_queue_t)serialQueue
+{
+    static dispatch_queue_t queue = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        queue = dispatch_queue_create("org.whispersystems.message.decrypt", DISPATCH_QUEUE_SERIAL);
+    });
+    return queue;
+}
+
 - (void)enqueueEnvelopeForProcessing:(OWSSignalServiceProtosEnvelope *)envelope
 {
     [self.finder addJobForEnvelope:envelope];
@@ -256,7 +267,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)drainQueue
 {
-    DispatchMainThreadSafe(^{
+    dispatch_async(self.serialQueue, ^{
         if ([TSDatabaseView hasPendingViewRegistrations]) {
             // We don't want to process incoming messages until database
             // view registration is complete.
@@ -274,7 +285,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)drainQueueWorkStep
 {
-    AssertIsOnMainThread();
+    AssertOnDispatchQueue(self.serialQueue);
 
     OWSMessageDecryptJob *_Nullable job = [self.finder nextJob];
     if (!job) {
@@ -296,27 +307,26 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)processJob:(OWSMessageDecryptJob *)job completion:(void (^)(BOOL))completion
 {
+    AssertOnDispatchQueue(self.serialQueue);
     OWSAssert(job);
 
     OWSSignalServiceProtosEnvelope *envelope = job.envelopeProto;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self.messageDecrypter decryptEnvelope:envelope
-            successBlock:^(NSData *_Nullable plaintextData) {
+    [self.messageDecrypter decryptEnvelope:envelope
+        successBlock:^(NSData *_Nullable plaintextData) {
 
-                // We can't decrypt the same message twice, so we need to persist
-                // the decrypted envelope data ASAP to prevent data loss.
-                [self.batchMessageProcessor enqueueEnvelopeData:job.envelopeData plaintextData:plaintextData];
+            // We can't decrypt the same message twice, so we need to persist
+            // the decrypted envelope data ASAP to prevent data loss.
+            [self.batchMessageProcessor enqueueEnvelopeData:job.envelopeData plaintextData:plaintextData];
 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(YES);
-                });
-            }
-            failureBlock:^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(NO);
-                });
-            }];
-    });
+            dispatch_async(self.serialQueue, ^{
+                completion(YES);
+            });
+        }
+        failureBlock:^{
+            dispatch_async(self.serialQueue, ^{
+                completion(NO);
+            });
+        }];
 }
 
 #pragma mark Logging
