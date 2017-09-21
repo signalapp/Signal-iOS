@@ -70,6 +70,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                  name:kNSNotificationName_DatabaseViewRegistrationComplete
                                                object:nil];
 
+    // Try to start processing.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self scheduleProcessing];
+    });
+
     return self;
 }
 
@@ -119,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
     {
         self.isProcessing = NO;
 
-        NSArray<OWSReadReceipt *> *readReceiptsToSend = [[self.toLinkedDevicesReadReceiptMap allValues] copy];
+        NSArray<OWSReadReceipt *> *readReceiptsToSend = [self.toLinkedDevicesReadReceiptMap allValues];
         [self.toLinkedDevicesReadReceiptMap removeAllObjects];
         if (readReceiptsToSend.count > 0) {
             OWSReadReceiptsMessage *message = [[OWSReadReceiptsMessage alloc] initWithReadReceipts:readReceiptsToSend];
@@ -143,19 +148,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     @synchronized(self)
     {
-        NSString *threadUniqueId = message.thread.uniqueId;
+        NSString *threadUniqueId = message.uniqueThreadId;
         OWSAssert(threadUniqueId.length > 0);
 
-        // Only groupthread sets authorId, thus this crappy code.
-        // TODO Refactor so that ALL incoming messages have an authorId.
-        NSString *messageAuthorId;
-        if (message.authorId) {
-            // Group Thread
-            messageAuthorId = message.authorId;
-        } else {
-            // Contact Thread
-            messageAuthorId = [TSContactThread contactIdFromThreadId:message.uniqueThreadId];
-        }
+        NSString *messageAuthorId = message.messageAuthorId;
         OWSAssert(messageAuthorId.length > 0);
 
         OWSReadReceipt *newReadReceipt =

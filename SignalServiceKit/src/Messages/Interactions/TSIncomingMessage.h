@@ -103,10 +103,10 @@ NS_ASSUME_NONNULL_BEGIN
                                        timestamp:(uint64_t)timestamp
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-@property (nonatomic, readonly) NSString *authorId;
-
 // This will be 0 for messages created before we were tracking sourceDeviceId
 @property (nonatomic, readonly) UInt32 sourceDeviceId;
+
+- (NSString *)messageAuthorId;
 
 @end
 

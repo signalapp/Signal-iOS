@@ -114,13 +114,35 @@ def sort_include_block(text, filepath, filename, file_extension):
         for include in includes:
             include.isInclude = False
 
+    # Make sure matching header is first.
+    matching_header_includes = []
+    other_includes = []
+    def is_matching_header(include):
+        filename_wo_ext = os.path.splitext(filename)[0]
+        include_filename_wo_ext = os.path.splitext(os.path.basename(include.body))[0]
+        return filename_wo_ext == include_filename_wo_ext
+    for include in includes:
+        if is_matching_header(include):
+            matching_header_includes.append(include)
+        else:
+            other_includes.append(include)
+    includes = other_includes
 
     def formatBlock(includes):
         lines = [include.format() for include in includes]
         lines = list(set(lines))
         def include_sorter(a, b):
-            return cmp(a.lower(), b.lower())
+            # return cmp(a.lower(), b.lower())
+            return cmp(a, b)
+        # print 'before'
+        # for line in lines:
+        #     print '\t', line
+        # print
         lines.sort(include_sorter)
+        # print 'after'
+        # for line in lines:
+        #     print '\t', line
+        # print
         # print
         # print 'filepath'
         # for line in lines:
@@ -132,6 +154,8 @@ def sort_include_block(text, filepath, filename, file_extension):
     includeQuotes = [include for include in includes if include.isInclude and include.isQuote]
     importAngles = [include for include in includes if (not include.isInclude) and not include.isQuote]
     importQuotes = [include for include in includes if (not include.isInclude) and include.isQuote]
+    if matching_header_includes:
+        blocks.append(formatBlock(matching_header_includes))
     if includeQuotes:
         blocks.append(formatBlock(includeQuotes))
     if includeAngles:

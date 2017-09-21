@@ -59,14 +59,8 @@ NSString *const OWSReadReceiptsProcessorMarkedMessageAsReadNotification =
 
 - (instancetype)initWithIncomingMessage:(TSIncomingMessage *)message storageManager:(TSStorageManager *)storageManager
 {
-    // authorId isn't set on all legacy messages, so we take
-    // extra measures to ensure we obtain a valid value.
-    NSString *messageAuthorId;
-    if (message.authorId) { // Group Thread
-        messageAuthorId = message.authorId;
-    } else { // Contact Thread
-        messageAuthorId = [TSContactThread contactIdFromThreadId:message.uniqueThreadId];
-    }
+    NSString *messageAuthorId = message.messageAuthorId;
+    OWSAssert(messageAuthorId.length > 0);
 
     OWSReadReceipt *readReceipt = [OWSReadReceipt firstWithSenderId:messageAuthorId timestamp:message.timestamp];
     if (readReceipt) {

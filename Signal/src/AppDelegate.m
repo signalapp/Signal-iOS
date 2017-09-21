@@ -30,6 +30,7 @@
 #import <SignalServiceKit/OWSFailedMessagesJob.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
@@ -809,6 +810,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [[OWSBatchMessageProcessor sharedInstance] handleAnyUnprocessedEnvelopesAsync];
 
     [OWSProfileManager.sharedManager fetchLocalUsersProfile];
+    // Make sure this manager is started.
+    [OWSReadReceiptManager sharedManager];
 }
 
 - (void)registrationStateDidChange

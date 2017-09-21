@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSIncomingMessage ()
 
+@property (nonatomic, readonly) NSString *authorId;
+
 @property (nonatomic, getter=wasRead) BOOL read;
 
 @end
@@ -91,15 +93,8 @@ NS_ASSUME_NONNULL_BEGIN
                                  if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
                                      TSIncomingMessage *message = (TSIncomingMessage *)interaction;
 
-                                     // authorId isn't set on all legacy messages, so we take
-                                     // extra measures to ensure we obtain a valid value.
-                                     NSString *messageAuthorId;
-                                     if (message.authorId) { // Group Thread
-                                         messageAuthorId = message.authorId;
-                                     } else { // Contact Thread
-                                         messageAuthorId =
-                                             [TSContactThread contactIdFromThreadId:message.uniqueThreadId];
-                                     }
+                                     NSString *messageAuthorId = message.messageAuthorId;
+                                     OWSAssert(messageAuthorId.length > 0);
 
                                      if ([messageAuthorId isEqualToString:authorId]) {
                                          foundMessage = message;
@@ -109,6 +104,22 @@ NS_ASSUME_NONNULL_BEGIN
                       usingTransaction:transaction];
 
     return foundMessage;
+}
+
+- (NSString *)messageAuthorId
+{
+    // authorId isn't set on all legacy messages, so we take
+    // extra measures to ensure we obtain a valid value.
+    NSString *messageAuthorId;
+    if (self.authorId) {
+        // Group Thread
+        messageAuthorId = self.authorId;
+    } else {
+        // Contact Thread
+        messageAuthorId = [TSContactThread contactIdFromThreadId:self.uniqueThreadId];
+    }
+    OWSAssert(messageAuthorId.length > 0);
+    return messageAuthorId;
 }
 
 #pragma mark - OWSReadTracking
@@ -138,8 +149,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (sendReadReceipt) {
-        // Notification must happen outside of the transaction, else we'll likely crash when the notification receiver
-        // tries to do anything with the DB.
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
     }
 }
