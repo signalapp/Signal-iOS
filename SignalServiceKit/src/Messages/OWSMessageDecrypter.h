@@ -17,7 +17,7 @@ typedef void (^DecryptFailureBlock)();
 + (instancetype)sharedManager;
 
 // decryptEnvelope: can be called from any thread.
-// successBlock & failureBlock may be called on any thread.
+// successBlock & failureBlock will be called an arbitrary thread.
 //
 // Exactly one of successBlock & failureBlock will be called,
 // once.
