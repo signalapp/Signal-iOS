@@ -246,7 +246,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 - (void)pushRegistry:(PKPushRegistry *)registry
     didUpdatePushCredentials:(PKPushCredentials *)credentials
                      forType:(NSString *)type {
-    [[PushManager sharedManager].pushKitNotificationFutureSource trySetResult:[credentials.token ows_tripToken]];
+    [self.pushKitNotificationFutureSource trySetResult:[credentials.token ows_tripToken]];
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry
@@ -284,6 +284,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 #pragma mark Register device for Push Notification locally
 
 - (TOCFuture *)registerPushNotificationFuture {
+    DDLogInfo(@"%@ in %s", self.tag, __PRETTY_FUNCTION__);
     self.pushNotificationFutureSource = [TOCFutureSource new];
     [UIApplication.sharedApplication registerForRemoteNotifications];
     return self.pushNotificationFutureSource.future;
@@ -298,23 +299,29 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
         return;
     }
 
+    DDLogInfo(@"%@ in %s", self.tag, __PRETTY_FUNCTION__);
     TOCFuture *requestPushTokenFuture = [self registerPushNotificationFuture];
 
     [requestPushTokenFuture thenDo:^(NSData *pushTokenData) {
-      NSString *pushToken = [pushTokenData ows_tripToken];
-      TOCFuture *pushKit  = [self registerPushKitNotificationFuture];
+        DDLogInfo(@"%@ in %s requestedPushTokenFuture", self.tag, __PRETTY_FUNCTION__);
+        NSString *pushToken = [pushTokenData ows_tripToken];
+        TOCFuture *pushKit = [self registerPushKitNotificationFuture];
 
-      [pushKit thenDo:^(NSString *voipToken) {
-        success(pushToken, voipToken);
-      }];
+        [pushKit thenDo:^(NSString *voipToken) {
+            DDLogInfo(@"%@ in %s requestedPushTokenFuture->PushKit", self.tag, __PRETTY_FUNCTION__);
+            DDLogInfo(@"%@ in %s", self.tag, __PRETTY_FUNCTION__);
+            success(pushToken, voipToken);
+        }];
 
-      [pushKit catchDo:^(NSError *error) {
-        failure(error);
-      }];
+        [pushKit catchDo:^(NSError *error) {
+            DDLogInfo(@"%@ in %s ERROR: requestedPushTokenFuture->PushKit", self.tag, __PRETTY_FUNCTION__);
+            failure(error);
+        }];
     }];
 
     [requestPushTokenFuture catchDo:^(NSError *error) {
-      failure(error);
+        DDLogInfo(@"%@ in %s ERROR: requestedPushTokenFuture", self.tag, __PRETTY_FUNCTION__);
+        failure(error);
     }];
 }
 

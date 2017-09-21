@@ -162,7 +162,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                 self.state = SocketManagerStateOpen;
                 return;
             case SR_CONNECTING:
-                DDLogVerbose(@"WebSocket is already connecting");
+                DDLogVerbose(@"%@ WebSocket is already connecting", self.tag);
                 self.state = SocketManagerStateConnecting;
                 return;
             default:
@@ -170,7 +170,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         }
     }
 
-    DDLogWarn(@"Creating new websocket");
+    DDLogWarn(@"%@ Creating new websocket", self.tag);
 
     // If socket is not already open or connecting, connect now.
     //
@@ -371,7 +371,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 - (void)processWebSocketRequestMessage:(WebSocketRequestMessage *)message {
     OWSAssert([NSThread isMainThread]);
 
-    DDLogInfo(@"Got message with verb: %@ and path: %@", message.verb, message.path);
+    DDLogInfo(@"%@ Got message with verb: %@ and path: %@", self.tag, message.verb, message.path);
 
     // If we receive a message over the socket while the app is in the background,
     // prolong how long the socket stays open.
@@ -383,7 +383,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:TSStorageManager.signalingKey];
 
         if (!decryptedPayload) {
-            DDLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
+            DDLogWarn(@"%@ Failed to decrypt incoming payload or bad HMAC", self.tag);
             [self sendWebSocketMessageAcknowledgement:message];
             return;
         }
@@ -394,7 +394,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         [self sendWebSocketMessageAcknowledgement:message];
 
     } else {
-        DDLogWarn(@"Unsupported WebSocket Request");
+        DDLogWarn(@"%@ Unsupported WebSocket Request", self.tag);
 
         [self sendWebSocketMessageAcknowledgement:message];
     }

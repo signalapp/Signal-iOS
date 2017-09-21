@@ -276,6 +276,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
+    // This is not being called?
     DDLogDebug(@"%@ Successfully registered for remote notifications with token: %@", self.tag, deviceToken);
     [PushManager.sharedManager.pushNotificationFutureSource trySetResult:deviceToken];
 }
@@ -293,6 +294,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)application:(UIApplication *)application
     didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    DDLogDebug(@"%@ in %s", self.tag, __PRETTY_FUNCTION__);
     [PushManager.sharedManager.userNotificationFutureSource trySetResult:notificationSettings];
 }
 
