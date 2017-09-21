@@ -66,6 +66,12 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
                       success:(void (^)())successBlock
                       failure:(void (^)(NSError *error))failureBlock;
 
+// Called once registration is complete - meaning the following have succeeded:
+// - obtained signal server credentials
+// - uploaded pre-keys
+// - uploaded push tokens
+- (void)didRegister;
+
 #if TARGET_OS_IPHONE
 
 /**

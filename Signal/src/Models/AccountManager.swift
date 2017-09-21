@@ -33,24 +33,22 @@ class AccountManager: NSObject {
     }
 
     func register(verificationCode: String) -> Promise<Void> {
-        let registrationPromise = firstly {
-            Promise { fulfill, reject in
-                if verificationCode.characters.count == 0 {
-                    let error = OWSErrorWithCodeDescription(.userError,
-                                                            NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
-                                                                              comment: "alert body during registration"))
-                    reject(error)
-                }
-                fulfill()
-            }
-        }.then {
-            Logger.debug("\(self.TAG) verification code looks well formed.")
-            return self.registerForTextSecure(verificationCode: verificationCode)
-        }.then {
-            return SyncPushTokensJob.run(pushManager: self.pushManager, accountManager: self, preferences: self.preferences)
-        }.then {
-            Logger.info("\(self.TAG) successfully registered for TextSecure")
+        guard verificationCode.characters.count > 0 else {
+            let error = OWSErrorWithCodeDescription(.userError,
+                                                    NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
+                                                                      comment: "alert body during registration"))
+            return Promise(error: error)
         }
+
+        Logger.debug("\(self.TAG) registering with signal server")
+        let registrationPromise: Promise<Void> = firstly {
+            self.registerForTextSecure(verificationCode: verificationCode)
+        }.then {
+            self.syncPushTokens()
+        }.then {
+            self.completeRegistration()
+        }
+
         registrationPromise.retainUntilComplete()
 
         return registrationPromise
@@ -62,6 +60,17 @@ class AccountManager: NSObject {
                                                         success:fulfill,
                                                         failure:reject)
         }
+    }
+
+    private func syncPushTokens() -> Promise<Void> {
+        Logger.info("\(self.TAG) in \(#function)")
+        return SyncPushTokensJob.run(pushManager: self.pushManager, accountManager: self, preferences: self.preferences)
+    }
+
+    private func completeRegistration() {
+        Logger.info("\(self.TAG) in \(#function)")
+        self.textSecureAccountManager.didRegister()
+        TSSocketManager.requestSocketOpen()
     }
 
     // MARK: Push Tokens
