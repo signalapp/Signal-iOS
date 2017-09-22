@@ -8,6 +8,7 @@
 #import "DebugUIMessages.h"
 #import "DebugUIMisc.h"
 #import "DebugUISessionState.h"
+#import "DebugUIStress.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSThread.h>
@@ -96,6 +97,8 @@ NS_ASSUME_NONNULL_BEGIN
             addObject:[self itemForSubsection:[DebugUICalling new] viewController:viewController thread:thread]];
     }
     [subsectionItems addObject:[self itemForSubsection:[DebugUIProfile new] viewController:viewController thread:thread]];
+    [subsectionItems
+        addObject:[self itemForSubsection:[DebugUIStress new] viewController:viewController thread:thread]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:thread]];
 
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];

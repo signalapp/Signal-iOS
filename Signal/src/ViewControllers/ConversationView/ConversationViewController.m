@@ -2,18 +2,18 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "ConversationViewController.h"
 #import "AppDelegate.h"
 #import "AttachmentSharing.h"
 #import "BlockListUIUtils.h"
 #import "BlockListViewController.h"
 #import "ContactsViewHelper.h"
-#import "ConversationViewController.h"
 #import "DebugUITableViewController.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
-#import "NewGroupViewController.h"
 #import "NSDate+millisecondTimeStamp.h"
+#import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSCall.h"
 #import "OWSContactOffersCell.h"
@@ -34,7 +34,6 @@
 #import "OWSUnreadIndicatorCell.h"
 #import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
-#import "ThreadUtil.h"
 #import "TSAttachmentPointer.h"
 #import "TSCall.h"
 #import "TSContactThread.h"
@@ -47,14 +46,15 @@
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSUnreadIndicatorInteraction.h"
+#import "ThreadUtil.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIViewController+CameraPermissions.h"
 #import "UIViewController+OWS.h"
 #import "ViewControllerUtils.h"
+#import <AVFoundation/AVFoundation.h>
 #import <AddressBookUI/AddressBookUI.h>
 #import <AssetsLibrary/AssetsLibrary.h>
-#import <AVFoundation/AVFoundation.h>
 #import <ContactsUI/CNContactViewController.h>
 #import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
 #import <JSQMessagesViewController/JSQMessagesBubbleImageFactory.h>
@@ -80,11 +80,11 @@
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
-#import <SignalServiceKit/Threading.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSNetworkManager.h>
+#import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabaseView.h>
 
 @import Photos;
@@ -648,6 +648,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self createScrollDownButton];
     [self createHeaderViews];
     [self addNotificationListeners];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [DebugUITableViewController presentDebugUIForThread:self.thread fromViewController:self];
+    });
 }
 
 - (void)registerCustomMessageNibs
