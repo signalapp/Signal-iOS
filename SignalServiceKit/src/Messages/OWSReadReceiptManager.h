@@ -9,7 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSIncomingMessage;
 @class TSOutgoingMessage;
 @class TSThread;
-@class YapDatabase;
 @class YapDatabaseReadWriteTransaction;
 
 // There are four kinds of read receipts:
@@ -60,10 +59,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)areReadReceiptsEnabled;
 - (void)setAreReadReceiptsEnabled:(BOOL)value;
-
-#pragma mark - Database Extension
-
-+ (void)asyncRegisterDatabaseExtension:(YapDatabase *)database;
 
 @end
 

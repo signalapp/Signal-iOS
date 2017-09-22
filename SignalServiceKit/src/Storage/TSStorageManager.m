@@ -20,7 +20,6 @@
 #import <SAMKeychain/SAMKeychain.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
-#import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <YapDatabase/YapDatabaseRelationship.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -343,7 +342,6 @@ void setDatabaseInitialized()
     OWSFailedAttachmentDownloadsJob *failedAttachmentDownloadsMessagesJob =
         [[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:self];
     [failedAttachmentDownloadsMessagesJob asyncRegisterDatabaseExtensions];
-    [OWSReadReceiptManager asyncRegisterDatabaseExtension:self.database];
 
     // NOTE: [TSDatabaseView asyncRegistrationCompletion] ensures that
     // kNSNotificationName_DatabaseViewRegistrationComplete is not fired until all
