@@ -464,7 +464,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
     OWSAssert(block);
 
-    OWSDynamicOutgoingMessage *message = [[OWSDynamicOutgoingMessage alloc] initWithBlock:block thread:thread];
+    OWSDynamicOutgoingMessage *message =
+        [[OWSDynamicOutgoingMessage alloc] initWithPlainTextDataBlock:block thread:thread];
 
     [self sendStressMessage:message];
 }
@@ -475,7 +476,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(block);
 
     OWSDynamicOutgoingMessage *message =
-        [[OWSDynamicOutgoingMessage alloc] initWithBlock:block timestamp:timestamp thread:thread];
+        [[OWSDynamicOutgoingMessage alloc] initWithPlainTextDataBlock:block timestamp:timestamp thread:thread];
 
     [self sendStressMessage:message];
 }

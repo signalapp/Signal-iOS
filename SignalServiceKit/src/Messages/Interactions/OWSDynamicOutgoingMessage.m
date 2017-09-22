@@ -18,14 +18,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDynamicOutgoingMessage
 
-- (instancetype)initWithBlock:(DynamicOutgoingMessageBlock)block thread:(nullable TSThread *)thread
+- (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block thread:(nullable TSThread *)thread
 {
-    return [self initWithBlock:block timestamp:[NSDate ows_millisecondTimeStamp] thread:thread];
+    return [self initWithPlainTextDataBlock:block timestamp:[NSDate ows_millisecondTimeStamp] thread:thread];
 }
 
-- (instancetype)initWithBlock:(DynamicOutgoingMessageBlock)block
-                    timestamp:(uint64_t)timestamp
-                       thread:(nullable TSThread *)thread
+- (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block
+                                 timestamp:(uint64_t)timestamp
+                                    thread:(nullable TSThread *)thread
 {
     self = [super initWithTimestamp:timestamp inThread:thread];
 
@@ -43,23 +43,13 @@ NS_ASSUME_NONNULL_BEGIN
     // There's no need to save this message, since it's not displayed to the user.
 }
 
-//- (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
-//{
-//    OWSSignalServiceProtosDataMessageBuilder *builder = [super dataMessageBuilder];
-//    [builder setFlags:OWSSignalServiceProtosDataMessageFlagsEndSession];
-//
-//    return builder;
-//}
-
 - (NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     NSData *plainTextData = self.block(recipient);
     OWSAssert(plainTextData);
     return plainTextData;
-    //    OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-    //    contentBuilder.dataMessage = [self buildDataMessage:recipient.recipientId];
-    //    return [[contentBuilder build] data];
 }
+
 @end
 
 NS_ASSUME_NONNULL_END
