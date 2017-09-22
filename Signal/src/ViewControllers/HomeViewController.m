@@ -7,7 +7,6 @@
 #import "AppSettingsViewController.h"
 #import "ConversationViewController.h"
 #import "InboxTableViewCell.h"
-#import "NSDate+millisecondTimeStamp.h"
 #import "NewContactThreadViewController.h"
 #import "OWSContactsManager.h"
 #import "OWSNavigationController.h"
@@ -23,6 +22,7 @@
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
+#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSMessageManager.h>

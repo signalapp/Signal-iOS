@@ -3,7 +3,7 @@
 //
 
 #import "TSOutgoingMessage.h"
-#import "NSDate+millisecondTimeStamp.h"
+#import "NSDate+OWS.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "ProfileManagerProtocol.h"

@@ -3,7 +3,7 @@
 //
 
 #import "OWSSyncGroupsMessage.h"
-#import "NSDate+millisecondTimeStamp.h"
+#import "NSDate+OWS.h"
 #import "OWSGroupsOutputStream.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachment.h"

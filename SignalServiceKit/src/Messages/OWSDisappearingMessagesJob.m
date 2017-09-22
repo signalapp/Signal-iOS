@@ -5,7 +5,6 @@
 #import "OWSDisappearingMessagesJob.h"
 #import "ContactsManagerProtocol.h"
 #import "NSDate+OWS.h"
-#import "NSDate+millisecondTimeStamp.h"
 #import "NSTimer+OWS.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"

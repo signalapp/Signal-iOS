@@ -3,7 +3,7 @@
 //
 
 #import "TSInteraction.h"
-#import "NSDate+millisecondTimeStamp.h"
+#import "NSDate+OWS.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSStorageManager+messageIDs.h"
 #import "TSThread.h"

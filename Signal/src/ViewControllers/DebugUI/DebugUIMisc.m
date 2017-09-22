@@ -61,13 +61,6 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIMisc clearHasDismissedOffers];
                                      }]];
-    if ([thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        [items addObject:[OWSTableItem itemWithTitle:@"Hallucinate twin group"
-                                         actionBlock:^{
-                                             [DebugUIMisc hallucinateTwinGroup:groupThread];
-                                         }]];
-    }
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
@@ -120,28 +113,6 @@ NS_ASSUME_NONNULL_BEGIN
                 }
             }
         }];
-}
-
-// Creates a new group (by cloning the current group) without informing the,
-// other members. This can be used to test "group info requests", etc.
-+ (void)hallucinateTwinGroup:(TSGroupThread *)groupThread
-{
-    __block TSGroupThread *thread;
-    [[TSStorageManager sharedManager].dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            TSGroupModel *groupModel =
-                [[TSGroupModel alloc] initWithTitle:[groupThread.groupModel.groupName stringByAppendingString:@" Copy"]
-                                          memberIds:[groupThread.groupModel.groupMemberIds mutableCopy]
-                                              image:groupThread.groupModel.groupImage
-                                            groupId:[SecurityUtils generateRandomBytes:16]];
-            thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
-        }];
-    OWSAssert(thread);
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [Environment presentConversationForThread:thread];
-
-    });
 }
 
 @end

@@ -8,7 +8,7 @@
 #import "OWSProfileManager.h"
 #import "Signal-Swift.h"
 #import "TSUnreadIndicatorInteraction.h"
-#import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
+#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalServiceKit/OWSBlockingManager.h>

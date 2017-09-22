@@ -19,7 +19,7 @@
 #import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
 #import "ViewControllerUtils.h"
-#import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
+#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/SignalAccount.h>

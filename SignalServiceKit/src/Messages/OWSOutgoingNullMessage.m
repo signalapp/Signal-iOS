@@ -4,10 +4,10 @@
 
 #import "OWSOutgoingNullMessage.h"
 #import "Cryptography.h"
-#import "NSDate+millisecondTimeStamp.h"
-#import "TSContactThread.h"
+#import "NSDate+OWS.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSVerificationStateSyncMessage.h"
+#import "TSContactThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
