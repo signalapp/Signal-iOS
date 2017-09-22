@@ -3,7 +3,7 @@
 //
 
 #import "OWSDisappearingMessagesFinder.h"
-#import "NSDate+millisecondTimeStamp.h"
+#import "NSDate+OWS.h"
 #import "TSMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"

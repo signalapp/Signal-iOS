@@ -2,8 +2,6 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
 #import "AppSettingsViewController.h"
 #import "AttachmentSharing.h"
 #import "DebugUIPage.h"
@@ -39,6 +37,7 @@
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
+#import <Foundation/Foundation.h>
 #import <JSQMessagesViewController/JSQMediaItem.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
@@ -53,7 +52,7 @@
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSData+Image.h>
-#import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
+#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAcknowledgeMessageDeliveryRequest.h>

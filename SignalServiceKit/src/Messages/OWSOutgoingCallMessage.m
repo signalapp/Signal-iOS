@@ -3,7 +3,7 @@
 //
 
 #import "OWSOutgoingCallMessage.h"
-#import "NSDate+millisecondTimeStamp.h"
+#import "NSDate+OWS.h"
 #import "OWSCallAnswerMessage.h"
 #import "OWSCallBusyMessage.h"
 #import "OWSCallHangupMessage.h"

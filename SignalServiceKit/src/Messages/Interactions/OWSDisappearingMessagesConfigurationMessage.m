@@ -1,8 +1,9 @@
-//  Created by Michael Kirk on 9/25/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSDisappearingMessagesConfigurationMessage.h"
-#import "NSDate+millisecondTimeStamp.h"
+#import "NSDate+OWS.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSSignalServiceProtos.pb.h"
 

@@ -5,14 +5,14 @@
 #import "OWSSyncContactsMessage.h"
 #import "Contact.h"
 #import "ContactsManagerProtocol.h"
-#import "NSDate+millisecondTimeStamp.h"
+#import "NSDate+OWS.h"
 #import "OWSContactsOutputStream.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "OWSIdentityManager.h"
+#import "OWSSignalServiceProtos.pb.h"
+#import "ProfileManagerProtocol.h"
 #import "SignalAccount.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
-#import "ProfileManagerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -3,7 +3,7 @@
 //
 
 #import "TSMessage.h"
-#import "NSDate+millisecondTimeStamp.h"
+#import "NSDate+OWS.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
 #import "TSThread.h"

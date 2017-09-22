@@ -3,7 +3,7 @@
 //
 
 #import "OWSDevice.h"
-#import "NSDate+millisecondTimeStamp.h"
+#import "NSDate+OWS.h"
 #import "OWSError.h"
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"

@@ -8,7 +8,7 @@
 #import "OWSContactsManager.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
-#import <SignalServiceKit/NSDate+millisecondTimeStamp.h>
+#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSReadReceiptsProcessor.h>

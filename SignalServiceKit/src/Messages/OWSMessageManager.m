@@ -6,7 +6,7 @@
 #import "ContactsManagerProtocol.h"
 #import "Cryptography.h"
 #import "MimeTypeUtil.h"
-#import "NSDate+millisecondTimeStamp.h"
+#import "NSDate+OWS.h"
 #import "NotificationsProtocol.h"
 #import "OWSAttachmentsProcessor.h"
 #import "OWSBlockingManager.h"

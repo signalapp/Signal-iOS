@@ -3,7 +3,7 @@
 //
 
 #import "OWSDynamicOutgoingMessage.h"
-#import "NSDate+millisecondTimeStamp.h"
+#import "NSDate+OWS.h"
 #import "OWSSignalServiceProtos.pb.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,9 +18,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDynamicOutgoingMessage
 
-- (instancetype)initWithBlock:(DynamicOutgoingMessageBlock)block inThread:(nullable TSThread *)thread
+- (instancetype)initWithBlock:(DynamicOutgoingMessageBlock)block thread:(nullable TSThread *)thread
 {
-    self = [super initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
+    return [self initWithBlock:block timestamp:[NSDate ows_millisecondTimeStamp] thread:thread];
+}
+
+- (instancetype)initWithBlock:(DynamicOutgoingMessageBlock)block
+                    timestamp:(uint64_t)timestamp
+                       thread:(nullable TSThread *)thread
+{
+    self = [super initWithTimestamp:timestamp inThread:thread];
 
     if (self) {
         _block = block;

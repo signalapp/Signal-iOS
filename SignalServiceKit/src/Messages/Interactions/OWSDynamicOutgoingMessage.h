@@ -13,7 +13,10 @@ typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(SignalRecipient *);
 
 @interface OWSDynamicOutgoingMessage : TSOutgoingMessage
 
-- (instancetype)initWithBlock:(DynamicOutgoingMessageBlock)block inThread:(nullable TSThread *)thread;
+- (instancetype)initWithBlock:(DynamicOutgoingMessageBlock)block thread:(nullable TSThread *)thread;
+- (instancetype)initWithBlock:(DynamicOutgoingMessageBlock)block
+                    timestamp:(uint64_t)timestamp
+                       thread:(nullable TSThread *)thread;
 
 @end
 
