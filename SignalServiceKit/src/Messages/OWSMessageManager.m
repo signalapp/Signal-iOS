@@ -186,23 +186,40 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(envelope);
     OWSAssert(transaction);
 
-    NSArray<TSOutgoingMessage *> *messages
-        = (NSArray<TSOutgoingMessage *> *)[TSInteraction interactionsWithTimestamp:envelope.timestamp
-                                                                           ofClass:[TSOutgoingMessage class]
-                                                                   withTransaction:transaction];
-    if (messages.count < 1) {
-        // Desktop currently sends delivery receipts for "unpersisted" messages
-        // like group updates, so these errors are expected to a certain extent.
-        DDLogInfo(@"%@ Missing message for delivery receipt: %llu", self.tag, envelope.timestamp);
-    } else {
-        if (messages.count > 1) {
-            DDLogInfo(@"%@ More than one message (%zd) for delivery receipt: %llu",
-                self.tag,
-                messages.count,
-                envelope.timestamp);
-        }
-        for (TSOutgoingMessage *outgoingMessage in messages) {
-            [outgoingMessage updateWithWasDeliveredWithTransaction:transaction];
+    [self processDeliveryReceipts:envelope.source
+                   sentTimestamps:@[
+                       @(envelope.timestamp),
+                   ]
+                      transaction:transaction];
+}
+
+- (void)processDeliveryReceipts:(NSString *)recipientId
+                 sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
+                    transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(recipientId);
+    OWSAssert(sentTimestamps);
+    OWSAssert(transaction);
+
+    for (NSNumber *nsTimestamp in sentTimestamps) {
+        uint64_t timestamp = [nsTimestamp unsignedLongLongValue];
+
+        NSArray<TSOutgoingMessage *> *messages
+            = (NSArray<TSOutgoingMessage *> *)[TSInteraction interactionsWithTimestamp:timestamp
+                                                                               ofClass:[TSOutgoingMessage class]
+                                                                       withTransaction:transaction];
+        if (messages.count < 1) {
+            // Desktop currently sends delivery receipts for "unpersisted" messages
+            // like group updates, so these errors are expected to a certain extent.
+            DDLogInfo(@"%@ Missing message for delivery receipt: %llu", self.tag, timestamp);
+        } else {
+            if (messages.count > 1) {
+                DDLogInfo(
+                    @"%@ More than one message (%zd) for delivery receipt: %llu", self.tag, messages.count, timestamp);
+            }
+            for (TSOutgoingMessage *outgoingMessage in messages) {
+                [outgoingMessage updateWithWasDeliveredWithTransaction:transaction];
+            }
         }
     }
 }
@@ -243,7 +260,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (content.hasNullMessage) {
             DDLogInfo(@"%@ Received null message.", self.tag);
         } else if (content.hasReceiptMessage) {
-            [self handleIncomingEnvelope:envelope withReceiptMessage:content.receiptMessage];
+            [self handleIncomingEnvelope:envelope withReceiptMessage:content.receiptMessage transaction:transaction];
         } else {
             DDLogWarn(@"%@ Ignoring envelope. Content with no known payload", self.tag);
         }
@@ -340,17 +357,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
             withReceiptMessage:(OWSSignalServiceProtosReceiptMessage *)receiptMessage
+                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(envelope);
     OWSAssert(receiptMessage);
+    OWSAssert(transaction);
+
+    PBArray *messageTimestamps = receiptMessage.timestamp;
+    NSMutableArray<NSNumber *> *sentTimestamps = [NSMutableArray new];
+    for (int i = 0; i < messageTimestamps.count; i++) {
+        UInt64 timestamp = [messageTimestamps uint64AtIndex:i];
+        [sentTimestamps addObject:@(timestamp)];
+    }
 
     switch (receiptMessage.type) {
         case OWSSignalServiceProtosReceiptMessageTypeDelivery:
-            DDLogInfo(@"%@ Ignoring receipt message with delivery receipt.", self.tag);
+            DDLogVerbose(@"%@ Processing receipt message with delivery receipts.", self.tag);
+            [self processDeliveryReceipts:envelope.source sentTimestamps:sentTimestamps transaction:transaction];
             return;
         case OWSSignalServiceProtosReceiptMessageTypeRead:
             DDLogVerbose(@"%@ Processing receipt message with read receipts.", self.tag);
-            [OWSReadReceiptManager.sharedManager processReadReceiptsFromRecipient:receiptMessage envelope:envelope];
+            [OWSReadReceiptManager.sharedManager processReadReceiptsFromRecipientId:envelope.source
+                                                                     sentTimestamps:sentTimestamps
+                                                                      readTimestamp:envelope.timestamp];
             break;
         default:
             DDLogInfo(@"%@ Ignoring receipt message of unknown type: %d.", self.tag, (int)receiptMessage.type);

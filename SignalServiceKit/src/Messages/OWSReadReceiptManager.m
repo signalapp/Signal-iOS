@@ -340,28 +340,22 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 #pragma mark - Read Receipts From Recipient
 
-- (void)processReadReceiptsFromRecipient:(OWSSignalServiceProtosReceiptMessage *)receiptMessage
-                                envelope:(OWSSignalServiceProtosEnvelope *)envelope
+- (void)processReadReceiptsFromRecipientId:(NSString *)recipientId
+                            sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
+                             readTimestamp:(uint64_t)readTimestamp
 {
-    OWSAssert(receiptMessage);
-    OWSAssert(envelope);
-    OWSAssert(receiptMessage.type == OWSSignalServiceProtosReceiptMessageTypeRead);
+    OWSAssert(recipientId.length > 0);
+    OWSAssert(sentTimestamps);
 
     if (![self areReadReceiptsEnabled]) {
         DDLogInfo(@"%@ Ignoring incoming receipt message as read receipts are disabled.", self.tag);
         return;
     }
 
-    NSString *recipientId = envelope.source;
-    OWSAssert(recipientId.length > 0);
-
-    PBArray *sentTimestamps = receiptMessage.timestamp;
-    UInt64 readTimestamp = envelope.timestamp;
-
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            for (int i = 0; i < sentTimestamps.count; i++) {
-                UInt64 sentTimestamp = [sentTimestamps uint64AtIndex:i];
+            for (NSNumber *nsSentTimestamp in sentTimestamps) {
+                UInt64 sentTimestamp = [nsSentTimestamp unsignedLongLongValue];
 
                 NSArray<TSOutgoingMessage *> *messages
                     = (NSArray<TSOutgoingMessage *> *)[TSInteraction interactionsWithTimestamp:sentTimestamp

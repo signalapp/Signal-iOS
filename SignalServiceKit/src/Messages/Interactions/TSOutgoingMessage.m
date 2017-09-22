@@ -317,13 +317,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                         }];
 }
 
-- (void)updateWithWasDelivered
-{
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self updateWithWasDeliveredWithTransaction:transaction];
-    }];
-}
-
 - (void)updateWithWasSentFromLinkedDeviceWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
