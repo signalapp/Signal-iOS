@@ -176,7 +176,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (void)updateWithWasSentFromLinkedDeviceWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithSingleGroupRecipient:(NSString *)singleGroupRecipient
                            transaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)updateWithReadRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithReadRecipientId:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - Sent Recipients
 

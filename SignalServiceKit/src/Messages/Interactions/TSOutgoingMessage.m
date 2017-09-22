@@ -411,7 +411,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     }];
 }
 
-- (void)updateWithReadRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithReadRecipientId:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(recipientId.length > 0);
     OWSAssert(transaction);

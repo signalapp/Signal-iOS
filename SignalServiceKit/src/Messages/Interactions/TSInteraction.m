@@ -12,28 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSInteraction
 
-+ (instancetype)interactionForTimestamp:(uint64_t)timestamp
-                        withTransaction:(YapDatabaseReadWriteTransaction *)transaction {
-    OWSAssert(timestamp > 0);
-
-    // Accept any interaction.
-    NSArray<TSInteraction *> *interactions = [self interactionsWithTimestamp:timestamp
-                                                                  withFilter:^(TSInteraction *interaction) {
-                                                                      return YES;
-                                                                  }
-                                                             withTransaction:transaction];
-
-    if (interactions.count < 1) {
-        // TODO: OWSFail()?
-        return nil;
-    }
-    if (interactions.count > 1) {
-        DDLogWarn(@"The database contains %zd colliding timestamps at: %lld.", interactions.count, timestamp);
-    }
-    TSInteraction *lastInteraction = interactions.lastObject;
-    return lastInteraction;
-}
-
 + (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
                                                 ofClass:(Class)clazz
                                         withTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -42,14 +20,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Accept any interaction.
     return [self interactionsWithTimestamp:timestamp
-                                withFilter:^(TSInteraction *interaction) {
-                                    return [interaction isKindOfClass:clazz];
-                                }
+                                    filter:^(TSInteraction *interaction) {
+                                        return [interaction isKindOfClass:clazz];
+                                    }
                            withTransaction:transaction];
 }
 
 + (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
-                                             withFilter:(BOOL (^_Nonnull)(TSInteraction *))filter
+                                                 filter:(BOOL (^_Nonnull)(TSInteraction *))filter
                                         withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(timestamp > 0);

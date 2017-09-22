@@ -104,17 +104,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (outgoingMessage.body.length < 1 && outgoingMessage.attachmentIds.count < 1) {
-        // TODO: Is this safe?
-        DDLogInfo(@"Ignoring message transcript for empty message.");
+        OWSFail(@"Ignoring message transcript for empty message.");
         return;
     }
 
-    // TODO: Refactor this logic.
+    // TODO: Refactor this logic. Most of it doesn't belong in `OWSMessageSender`.
     [self.messageSender handleMessageSentRemotely:outgoingMessage
                                            sentAt:transcript.expirationStartedAt
                                       transaction:transaction];
 
-    [self.readReceiptManager outgoingMessageFromLinkedDevice:outgoingMessage transaction:transaction];
+    [self.readReceiptManager updateOutgoingMessageFromLinkedDevice:outgoingMessage transaction:transaction];
 
     [attachmentsProcessor
         fetchAttachmentsForMessage:outgoingMessage

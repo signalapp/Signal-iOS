@@ -17,9 +17,81 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface TSRecipientReadReceipt : TSYapDatabaseObject
+
+@property (nonatomic, readonly) uint64_t timestamp;
+@property (nonatomic, readonly) NSSet<NSString *> *recipientIds;
+
+@end
+
+#pragma mark -
+
+@implementation TSRecipientReadReceipt
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+{
+    OWSAssert(timestamp > 0);
+
+    self = [super initWithUniqueId:[TSRecipientReadReceipt uniqueIdForTimestamp:timestamp]];
+
+    if (self) {
+        _timestamp = timestamp;
+        _recipientIds = [NSSet set];
+    }
+
+    return self;
+}
+
++ (NSString *)uniqueIdForTimestamp:(uint64_t)timestamp
+{
+    return [NSString stringWithFormat:@"%llu", timestamp];
+}
+
+- (void)addRecipientId:(NSString *)recipientId
+{
+    NSMutableSet<NSString *> *recipientIdsCopy = [self.recipientIds mutableCopy];
+    [recipientIdsCopy addObject:recipientId];
+    _recipientIds = [recipientIdsCopy copy];
+}
+
++ (void)addRecipientId:(NSString *)recipientId
+             timestamp:(uint64_t)timestamp
+           transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+
+    TSRecipientReadReceipt *_Nullable recipientReadReceipt =
+        [transaction objectForKey:[self uniqueIdForTimestamp:timestamp] inCollection:[self collection]];
+    if (!recipientReadReceipt) {
+        recipientReadReceipt = [[TSRecipientReadReceipt alloc] initWithTimestamp:timestamp];
+    }
+    [recipientReadReceipt addRecipientId:recipientId];
+    [recipientReadReceipt saveWithTransaction:transaction];
+}
+
++ (nullable NSSet<NSString *> *)recipientIdsForTimestamp:(uint64_t)timestamp
+                                             transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+
+    TSRecipientReadReceipt *_Nullable recipientReadReceipt =
+        [transaction objectForKey:[self uniqueIdForTimestamp:timestamp] inCollection:[self collection]];
+    return recipientReadReceipt.recipientIds;
+}
+
++ (void)removeRecipientIdsForTimestamp:(uint64_t)timestamp transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+
+    [transaction removeObjectForKey:[self uniqueIdForTimestamp:timestamp] inCollection:[self collection]];
+}
+
+@end
+
+#pragma mark -
+
 NSString *const OWSReadReceiptManagerCollection = @"OWSReadReceiptManagerCollection";
 NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabled";
-NSString *const OWSRecipientReadReceiptCollection = @"OWSRecipientReadReceiptCollection";
 
 @interface OWSReadReceiptManager ()
 
@@ -37,7 +109,7 @@ NSString *const OWSRecipientReadReceiptCollection = @"OWSRecipientReadReceiptCol
 // we will send to senders.
 //
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSMutableArray<NSNumber *> *> *toSenderReadReceiptMap;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSMutableSet<NSNumber *> *> *toSenderReadReceiptMap;
 
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
 @property (nonatomic) BOOL isProcessing;
@@ -168,16 +240,17 @@ NSString *const OWSRecipientReadReceiptCollection = @"OWSRecipientReadReceiptCol
             });
         }
 
-        NSArray<OWSReadReceipt *> *readReceiptsToSend = [[self.toLinkedDevicesReadReceiptMap allValues] copy];
+        NSArray<OWSReadReceipt *> *readReceiptsToSend = [self.toLinkedDevicesReadReceiptMap allValues];
         [self.toLinkedDevicesReadReceiptMap removeAllObjects];
         if (self.toSenderReadReceiptMap.count > 0) {
             for (NSString *recipientId in self.toSenderReadReceiptMap) {
-                NSArray<NSNumber *> *timestamps = self.toSenderReadReceiptMap[recipientId];
+                NSSet<NSNumber *> *timestamps = self.toSenderReadReceiptMap[recipientId];
                 OWSAssert(timestamps.count > 0);
 
                 TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
                 OWSReadReceiptsForSenderMessage *message =
-                    [[OWSReadReceiptsForSenderMessage alloc] initWithThread:thread messageTimestamps:timestamps];
+                    [[OWSReadReceiptsForSenderMessage alloc] initWithThread:thread
+                                                          messageTimestamps:timestamps.allObjects];
 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.messageSender sendMessage:message
@@ -274,9 +347,9 @@ NSString *const OWSRecipientReadReceiptCollection = @"OWSRecipientReadReceiptCol
 
             if ([self areReadReceiptsEnabled]) {
                 DDLogVerbose(@"%@ Enqueuing read receipt for sender.", self.tag);
-                NSMutableArray<NSNumber *> *_Nullable timestamps = self.toSenderReadReceiptMap[messageAuthorId];
+                NSMutableSet<NSNumber *> *_Nullable timestamps = self.toSenderReadReceiptMap[messageAuthorId];
                 if (!timestamps) {
-                    timestamps = [NSMutableArray new];
+                    timestamps = [NSMutableSet new];
                     self.toSenderReadReceiptMap[messageAuthorId] = timestamps;
                 }
                 [timestamps addObject:@(message.timestamp)];
@@ -320,42 +393,34 @@ NSString *const OWSRecipientReadReceiptCollection = @"OWSRecipientReadReceiptCol
                     // TODO: We might also need to "mark as read by recipient" any older messages
                     // from us in that thread.  Or maybe this state should hang on the thread?
                     for (TSOutgoingMessage *message in messages) {
-                        [message updateWithReadRecipient:recipientId transaction:transaction];
+                        [message updateWithReadRecipientId:recipientId transaction:transaction];
                     }
                 } else {
                     // Persist the read receipts so that we can apply them to outgoing messages
                     // that we learn about later through sync messages.
-                    NSString *storageKey = [NSString stringWithFormat:@"%llu", timestamp];
-                    NSSet<NSString *> *recipientIds =
-                        [transaction objectForKey:storageKey inCollection:OWSRecipientReadReceiptCollection];
-                    NSMutableSet<NSString *> *recipientIdsCopy
-                        = (recipientIds ? [recipientIds mutableCopy] : [NSMutableSet new]);
-                    [recipientIdsCopy addObject:recipientId];
-                    [transaction setObject:recipientIdsCopy
-                                    forKey:storageKey
-                              inCollection:OWSRecipientReadReceiptCollection];
+                    [TSRecipientReadReceipt addRecipientId:recipientId timestamp:timestamp transaction:transaction];
                 }
             }
         }];
     });
 }
 
-- (void)outgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
-                            transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
+                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(message);
     OWSAssert(transaction);
 
-    NSString *storageKey = [NSString stringWithFormat:@"%llu", message.timestamp];
-    NSSet<NSString *> *recipientIds =
-        [transaction objectForKey:storageKey inCollection:OWSRecipientReadReceiptCollection];
-    if (recipientIds) {
-        OWSAssert(recipientIds.count > 0);
-        for (NSString *recipientId in recipientIds) {
-            [message updateWithReadRecipient:recipientId transaction:transaction];
-        }
+    NSSet<NSString *> *_Nullable recipientIds =
+        [TSRecipientReadReceipt recipientIdsForTimestamp:message.timestamp transaction:transaction];
+    if (!recipientIds) {
+        return;
     }
-    [transaction removeObjectForKey:storageKey inCollection:OWSRecipientReadReceiptCollection];
+    OWSAssert(recipientIds.count > 0);
+    for (NSString *recipientId in recipientIds) {
+        [message updateWithReadRecipientId:recipientId transaction:transaction];
+    }
+    [TSRecipientReadReceipt removeRecipientIdsForTimestamp:message.timestamp transaction:transaction];
 }
 
 #pragma mark - Settings

@@ -39,8 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)processReadReceiptsFromRecipient:(OWSSignalServiceProtosReceiptMessage *)receiptMessage
                                 envelope:(OWSSignalServiceProtosEnvelope *)envelope;
 
-- (void)outgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
-                            transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
+                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This method cues this manager:
 //

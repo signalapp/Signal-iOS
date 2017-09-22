@@ -3,7 +3,7 @@
 //
 
 #import "OWSReadReceiptsForSenderMessage.h"
-#import "NSDate+millisecondTimeStamp.h"
+#import "NSDate+OWS.h"
 #import "OWSReadReceipt.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "SignalRecipient.h"
@@ -55,8 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSNumber *messageTimestamp in self.messageTimestamps) {
         [builder addTimestamp:[messageTimestamp unsignedLongLongValue]];
     }
-
-    // TODO: addLocalProfileKeyIfNecessary.
 
     return [builder build];
 }

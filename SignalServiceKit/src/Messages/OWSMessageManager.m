@@ -187,14 +187,24 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(envelope);
     OWSAssert(transaction);
 
-    TSInteraction *interaction = [TSInteraction interactionForTimestamp:envelope.timestamp withTransaction:transaction];
-    if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)interaction;
-        [outgoingMessage updateWithWasDeliveredWithTransaction:transaction];
-    } else {
+    NSArray<TSOutgoingMessage *> *messages
+        = (NSArray<TSOutgoingMessage *> *)[TSInteraction interactionsWithTimestamp:envelope.timestamp
+                                                                           ofClass:[TSOutgoingMessage class]
+                                                                   withTransaction:transaction];
+    if (messages.count < 1) {
         // Desktop currently sends delivery receipts for "unpersisted" messages
         // like group updates, so these errors are expected to a certain extent.
-        DDLogInfo(@"%@ Unexpected message with timestamp: %llu", self.tag, envelope.timestamp);
+        DDLogInfo(@"%@ Missing message for delivery receipt: %llu", self.tag, envelope.timestamp);
+    } else {
+        if (messages.count > 1) {
+            DDLogInfo(@"%@ More than one message (%zd) for delivery receipt: %llu",
+                self.tag,
+                messages.count,
+                envelope.timestamp);
+        }
+        for (TSOutgoingMessage *outgoingMessage in messages) {
+            [outgoingMessage updateWithWasDeliveredWithTransaction:transaction];
+        }
     }
 }
 
