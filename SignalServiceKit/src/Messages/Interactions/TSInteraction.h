@@ -26,8 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Utility Method
 
-+ (instancetype)interactionForTimestamp:(uint64_t)timestamp
-                        withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
+                                                ofClass:(Class)clazz
+                                        withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (NSDate *)dateForSorting;
 - (uint64_t)timestampForSorting;

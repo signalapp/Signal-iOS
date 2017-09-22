@@ -12,29 +12,42 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSInteraction
 
-+ (instancetype)interactionForTimestamp:(uint64_t)timestamp
-                        withTransaction:(YapDatabaseReadWriteTransaction *)transaction {
++ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
+                                                ofClass:(Class)clazz
+                                        withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
     OWSAssert(timestamp > 0);
 
-    __block int counter = 0;
-    __block TSInteraction *interaction;
+    // Accept any interaction.
+    return [self interactionsWithTimestamp:timestamp
+                                    filter:^(TSInteraction *interaction) {
+                                        return [interaction isKindOfClass:clazz];
+                                    }
+                           withTransaction:transaction];
+}
+
++ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
+                                                 filter:(BOOL (^_Nonnull)(TSInteraction *))filter
+                                        withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(timestamp > 0);
+
+    NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
 
     [TSDatabaseSecondaryIndexes
         enumerateMessagesWithTimestamp:timestamp
                              withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
 
-                                 if (counter != 0) {
-                                     DDLogWarn(@"The database contains two colliding timestamps at: %lld.", timestamp);
+                                 TSInteraction *interaction =
+                                     [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
+                                 if (!filter(interaction)) {
                                      return;
                                  }
-
-                                 interaction = [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
-
-                                 counter++;
+                                 [interactions addObject:interaction];
                              }
                       usingTransaction:transaction];
 
-    return interaction;
+    return [interactions copy];
 }
 
 + (NSString *)collection {

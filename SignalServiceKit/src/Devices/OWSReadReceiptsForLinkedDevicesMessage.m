@@ -2,19 +2,19 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSReadReceiptsMessage.h"
+#import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReadReceipt.h"
 #import "OWSSignalServiceProtos.pb.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSReadReceiptsMessage ()
+@interface OWSReadReceiptsForLinkedDevicesMessage ()
 
 @property (nonatomic, readonly) NSArray<OWSReadReceipt *> *readReceipts;
 
 @end
 
-@implementation OWSReadReceiptsMessage
+@implementation OWSReadReceiptsForLinkedDevicesMessage
 
 - (instancetype)initWithReadReceipts:(NSArray<OWSReadReceipt *> *)readReceipts
 {

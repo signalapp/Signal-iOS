@@ -196,8 +196,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     NSString *lastLaunchedAppVersion = AppVersion.instance.lastAppVersion;
     NSString *lastCompletedLaunchAppVersion = AppVersion.instance.lastCompletedLaunchAppVersion;
-    // Every time we change a database view in such a way that might cause a delay on launch,
-    // we need to bump this constant.
+    // Every time we change or add a database view in such a way that
+    // might cause a delay on launch, we need to bump this constant.
     //
     // We added a number of database views in v2.13.0.
     NSString *kLastVersionWithDatabaseViewChange = @"2.13.0";
@@ -833,7 +833,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [[OWSProfileManager sharedManager] ensureLocalProfileCached];
 
         // For non-legacy users, read receipts are on by default.
-        [[Environment preferences] setAreReadReceiptsEnabled:YES];
+        [OWSReadReceiptManager.sharedManager setAreReadReceiptsEnabled:YES];
     }
 }
 

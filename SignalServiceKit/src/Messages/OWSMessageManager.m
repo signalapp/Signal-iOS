@@ -18,6 +18,7 @@
 #import "OWSIncomingMessageFinder.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
+#import "OWSReadReceiptManager.h"
 #import "OWSReadReceiptsProcessor.h"
 #import "OWSRecordTranscriptJob.h"
 #import "OWSSyncContactsMessage.h"
@@ -186,14 +187,24 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(envelope);
     OWSAssert(transaction);
 
-    TSInteraction *interaction = [TSInteraction interactionForTimestamp:envelope.timestamp withTransaction:transaction];
-    if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)interaction;
-        [outgoingMessage updateWithWasDeliveredWithTransaction:transaction];
-    } else {
+    NSArray<TSOutgoingMessage *> *messages
+        = (NSArray<TSOutgoingMessage *> *)[TSInteraction interactionsWithTimestamp:envelope.timestamp
+                                                                           ofClass:[TSOutgoingMessage class]
+                                                                   withTransaction:transaction];
+    if (messages.count < 1) {
         // Desktop currently sends delivery receipts for "unpersisted" messages
         // like group updates, so these errors are expected to a certain extent.
-        DDLogInfo(@"%@ Unexpected message with timestamp: %llu", self.tag, envelope.timestamp);
+        DDLogInfo(@"%@ Missing message for delivery receipt: %llu", self.tag, envelope.timestamp);
+    } else {
+        if (messages.count > 1) {
+            DDLogInfo(@"%@ More than one message (%zd) for delivery receipt: %llu",
+                self.tag,
+                messages.count,
+                envelope.timestamp);
+        }
+        for (TSOutgoingMessage *outgoingMessage in messages) {
+            [outgoingMessage updateWithWasDeliveredWithTransaction:transaction];
+        }
     }
 }
 
@@ -232,6 +243,8 @@ NS_ASSUME_NONNULL_BEGIN
             [self handleIncomingEnvelope:envelope withCallMessage:content.callMessage];
         } else if (content.hasNullMessage) {
             DDLogInfo(@"%@ Received null message.", self.tag);
+        } else if (content.hasReceiptMessage) {
+            [self handleIncomingEnvelope:envelope withReceiptMessage:content.receiptMessage];
         } else {
             DDLogWarn(@"%@ Ignoring envelope. Content with no known payload", self.tag);
         }
@@ -324,6 +337,26 @@ NS_ASSUME_NONNULL_BEGIN
 - (id<ProfileManagerProtocol>)profileManager
 {
     return [TextSecureKitEnv sharedEnv].profileManager;
+}
+
+- (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+            withReceiptMessage:(OWSSignalServiceProtosReceiptMessage *)receiptMessage
+{
+    OWSAssert(envelope);
+    OWSAssert(receiptMessage);
+
+    switch (receiptMessage.type) {
+        case OWSSignalServiceProtosReceiptMessageTypeDelivery:
+            DDLogInfo(@"%@ Ignoring receipt message with delivery receipt.", self.tag);
+            return;
+        case OWSSignalServiceProtosReceiptMessageTypeRead:
+            DDLogVerbose(@"%@ Processing receipt message with read receipts.", self.tag);
+            [OWSReadReceiptManager.sharedManager processReadReceiptsFromRecipient:receiptMessage envelope:envelope];
+            break;
+        default:
+            DDLogInfo(@"%@ Ignoring receipt message of unknown type: %d.", self.tag, (int)receiptMessage.type);
+            return;
+    }
 }
 
 - (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
@@ -466,9 +499,7 @@ NS_ASSUME_NONNULL_BEGIN
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent relay:envelope.relay];
 
         OWSRecordTranscriptJob *recordJob =
-            [[OWSRecordTranscriptJob alloc] initWithIncomingSentMessageTranscript:transcript
-                                                                    messageSender:self.messageSender
-                                                                   networkManager:self.networkManager];
+            [[OWSRecordTranscriptJob alloc] initWithIncomingSentMessageTranscript:transcript];
 
         OWSSignalServiceProtosDataMessage *dataMessage = syncMessage.sent.message;
         OWSAssert(dataMessage);

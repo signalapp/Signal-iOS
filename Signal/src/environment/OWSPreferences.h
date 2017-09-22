@@ -52,9 +52,6 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 - (void)setIOSUpgradeNagVersion:(NSString *)value;
 - (nullable NSString *)iOSUpgradeNagVersion;
 
-- (BOOL)areReadReceiptsEnabled;
-- (void)setAreReadReceiptsEnabled:(BOOL)value;
-
 #pragma mark - Calling
 
 #pragma mark Callkit
