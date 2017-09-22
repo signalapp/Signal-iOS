@@ -104,6 +104,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 // This property won't be accurate for legacy messages.
 @property (atomic, readonly) BOOL isFromLinkedDevice;
 
+// Map of "recipient id"-to-"delivery time" of the recipients who have received the message.
+@property (atomic, readonly) NSDictionary<NSString *, NSNumber *> *recipientDeliveryMap;
+
 // Map of "recipient id"-to-"read time" of the recipients who have read the message.
 @property (atomic, readonly) NSDictionary<NSString *, NSNumber *> *recipientReadMap;
 
@@ -171,7 +174,10 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript;
 - (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithCustomMessage:(NSString *)customMessage;
-- (void)updateWithWasDeliveredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+// deliveryTimestamp is an optional parameter.
+- (void)updateWithDeliveredToRecipientId:(NSString *)recipientId
+                       deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
+                             transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithWasSentFromLinkedDeviceWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithSingleGroupRecipient:(NSString *)singleGroupRecipient
                            transaction:(YapDatabaseReadWriteTransaction *)transaction;

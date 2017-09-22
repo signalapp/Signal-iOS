@@ -186,15 +186,19 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(envelope);
     OWSAssert(transaction);
 
+    // Old-style delivery notices don't include a "delivery timestamp".
     [self processDeliveryReceipts:envelope.source
                    sentTimestamps:@[
                        @(envelope.timestamp),
                    ]
+                deliveryTimestamp:nil
                       transaction:transaction];
 }
 
+// deliveryTimestamp is an optional parameter.
 - (void)processDeliveryReceipts:(NSString *)recipientId
                  sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
+              deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(recipientId);
@@ -218,7 +222,9 @@ NS_ASSUME_NONNULL_BEGIN
                     @"%@ More than one message (%zd) for delivery receipt: %llu", self.tag, messages.count, timestamp);
             }
             for (TSOutgoingMessage *outgoingMessage in messages) {
-                [outgoingMessage updateWithWasDeliveredWithTransaction:transaction];
+                [outgoingMessage updateWithDeliveredToRecipientId:recipientId
+                                                deliveryTimestamp:deliveryTimestamp
+                                                      transaction:transaction];
             }
         }
     }
@@ -373,7 +379,10 @@ NS_ASSUME_NONNULL_BEGIN
     switch (receiptMessage.type) {
         case OWSSignalServiceProtosReceiptMessageTypeDelivery:
             DDLogVerbose(@"%@ Processing receipt message with delivery receipts.", self.tag);
-            [self processDeliveryReceipts:envelope.source sentTimestamps:sentTimestamps transaction:transaction];
+            [self processDeliveryReceipts:envelope.source
+                           sentTimestamps:sentTimestamps
+                        deliveryTimestamp:@(envelope.timestamp)
+                              transaction:transaction];
             return;
         case OWSSignalServiceProtosReceiptMessageTypeRead:
             DDLogVerbose(@"%@ Processing receipt message with read receipts.", self.tag);

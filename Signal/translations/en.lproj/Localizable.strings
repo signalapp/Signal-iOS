@@ -833,6 +833,9 @@
    message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Delivered";
 
+/* message status for messages delivered to the recipient. Embeds: {{the date and time the message was delivered}}. */
+"MESSAGE_STATUS_DELIVERED_WITH_TIMESTAMP_FORMAT" = "Delivered %@";
+
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "Sending failed. Tap for info.";
 

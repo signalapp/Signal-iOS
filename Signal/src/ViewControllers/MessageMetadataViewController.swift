@@ -293,8 +293,15 @@ class MessageMetadataViewController: OWSViewController {
                           MessageMetadataViewController.dateFormatter.string(from:readDate))
         }
 
-        // TODO: We don't currently track delivery state on a per-recipient basis.
-        //       We should.  NOTE: This work is in PR.
+        let recipientDeliveryMap = message.recipientDeliveryMap
+        if let deliveryTimestamp = recipientDeliveryMap[recipientId] {
+            assert(message.messageState == .sentToService)
+            let deliveryDate = NSDate.ows_date(withMillisecondsSince1970:deliveryTimestamp.uint64Value)
+            return String(format:NSLocalizedString("MESSAGE_STATUS_DELIVERED_WITH_TIMESTAMP_FORMAT",
+                                                   comment: "message status for messages delivered to the recipient. Embeds: {{the date and time the message was delivered}}."),
+                          dateFormatter.string(from:deliveryDate))
+        }
+
         if message.wasDelivered {
             return NSLocalizedString("MESSAGE_STATUS_DELIVERED",
                                      comment:"message status for message delivered to their recipient.")
