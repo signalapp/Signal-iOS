@@ -29,7 +29,6 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 @interface PushManager ()
 
-@property (nonatomic) TOCFutureSource *registerWithServerFutureSource;
 @property (nonatomic) NSMutableArray *currentNotifications;
 @property (nonatomic) UIBackgroundTaskIdentifier callBackgroundTask;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
@@ -78,6 +77,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
                                                                  signalService:signalService];
 
     _callBackgroundTask = UIBackgroundTaskInvalid;
+    // TODO: consolidate notification tracking with NotificationsManager, which also maintains a list of notifications.
     _currentNotifications = [NSMutableArray array];
 
     OWSSingletonAssert();
@@ -241,90 +241,6 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
         }];
 }
 
-#pragma mark PushKit
-
-- (void)pushRegistry:(PKPushRegistry *)registry
-    didUpdatePushCredentials:(PKPushCredentials *)credentials
-                     forType:(NSString *)type {
-    [self.pushKitNotificationFutureSource trySetResult:[credentials.token ows_tripToken]];
-}
-
-- (void)pushRegistry:(PKPushRegistry *)registry
-    didReceiveIncomingPushWithPayload:(PKPushPayload *)payload
-                              forType:(NSString *)type {
-
-    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
-
-    [self application:[UIApplication sharedApplication] didReceiveRemoteNotification:payload.dictionaryPayload];
-}
-
-- (TOCFuture *)registerPushKitNotificationFuture {
-    if ([self supportsVOIPPush]) {
-        self.pushKitNotificationFutureSource = [TOCFutureSource new];
-        PKPushRegistry *voipRegistry         = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
-        voipRegistry.delegate                = self;
-        voipRegistry.desiredPushTypes        = [NSSet setWithObject:PKPushTypeVoIP];
-        return self.pushKitNotificationFutureSource.future;
-    } else {
-        TOCFutureSource *futureSource = [TOCFutureSource new];
-        [futureSource trySetResult:nil];
-        [Environment.preferences setHasRegisteredVOIPPush:FALSE];
-        return futureSource.future;
-    }
-}
-
-- (BOOL)supportsVOIPPush {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(8, 2)) {
-        return YES;
-    } else {
-        return NO;
-    }
-}
-
-#pragma mark Register device for Push Notification locally
-
-- (TOCFuture *)registerPushNotificationFuture {
-    DDLogInfo(@"%@ in %s", self.tag, __PRETTY_FUNCTION__);
-    self.pushNotificationFutureSource = [TOCFutureSource new];
-    [UIApplication.sharedApplication registerForRemoteNotifications];
-    return self.pushNotificationFutureSource.future;
-}
-
-- (void)requestPushTokenWithSuccess:(pushTokensSuccessBlock)success failure:(failedPushRegistrationBlock)failure {
-    AssertIsOnMainThread();
-
-    if (!self.wantRemoteNotifications) {
-        DDLogWarn(@"%@ Using fake push tokens", self.tag);
-        success(@"fakePushToken", @"fakeVoipToken");
-        return;
-    }
-
-    DDLogInfo(@"%@ in %s", self.tag, __PRETTY_FUNCTION__);
-    TOCFuture *requestPushTokenFuture = [self registerPushNotificationFuture];
-
-    [requestPushTokenFuture thenDo:^(NSData *pushTokenData) {
-        DDLogInfo(@"%@ in %s requestedPushTokenFuture", self.tag, __PRETTY_FUNCTION__);
-        NSString *pushToken = [pushTokenData ows_tripToken];
-        TOCFuture *pushKit = [self registerPushKitNotificationFuture];
-
-        [pushKit thenDo:^(NSString *voipToken) {
-            DDLogInfo(@"%@ in %s requestedPushTokenFuture->PushKit", self.tag, __PRETTY_FUNCTION__);
-            DDLogInfo(@"%@ in %s", self.tag, __PRETTY_FUNCTION__);
-            success(pushToken, voipToken);
-        }];
-
-        [pushKit catchDo:^(NSError *error) {
-            DDLogInfo(@"%@ in %s ERROR: requestedPushTokenFuture->PushKit", self.tag, __PRETTY_FUNCTION__);
-            failure(error);
-        }];
-    }];
-
-    [requestPushTokenFuture catchDo:^(NSError *error) {
-        DDLogInfo(@"%@ in %s ERROR: requestedPushTokenFuture", self.tag, __PRETTY_FUNCTION__);
-        failure(error);
-    }];
-}
-
 - (UIUserNotificationCategory *)fullNewMessageNotificationCategory {
     UIMutableUserNotificationAction *action_markRead = [self markAsReadAction];
 
@@ -449,14 +365,6 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
 
 #pragma mark Util
 
-- (BOOL)wantRemoteNotifications {
-#if TARGET_IPHONE_SIMULATOR
-    return NO;
-#else
-    return YES;
-#endif
-}
-
 - (int)allNotificationTypes {
     return UIUserNotificationTypeAlert | UIUserNotificationTypeSound | UIUserNotificationTypeBadge;
 }
@@ -486,6 +394,7 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
     return NO;
 }
 
+// TODO: consolidate notification tracking with NotificationsManager, which also maintains a list of notifications.
 - (void)presentNotification:(UILocalNotification *)notification checkForCancel:(BOOL)checkForCancel
 {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -503,6 +412,7 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
     });
 }
 
+// TODO: consolidate notification tracking with NotificationsManager, which also maintains a list of notifications.
 - (void)cancelNotificationsWithThreadId:(NSString *)threadId
 {
     dispatch_async(dispatch_get_main_queue(), ^{

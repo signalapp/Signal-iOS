@@ -69,7 +69,7 @@ class AccountManager: NSObject {
 
     private func syncPushTokens() -> Promise<Void> {
         Logger.info("\(self.TAG) in \(#function)")
-        return SyncPushTokensJob.run(pushManager: self.pushManager, accountManager: self, preferences: self.preferences)
+        return SyncPushTokensJob.run(accountManager: self, preferences: self.preferences)
     }
 
     private func completeRegistration() {
