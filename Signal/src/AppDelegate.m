@@ -124,7 +124,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [self setupEnvironment];
 
     [UIUtil applySignalAppearence];
-    [[PushManager sharedManager] registerPushKitNotificationFuture];
 
     if (getenv("runningTests_dontStartApp")) {
         return YES;
@@ -273,24 +272,25 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 {
     // This is not being called?
     DDLogDebug(@"%@ Successfully registered for remote notifications with token: %@", self.tag, deviceToken);
-    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:deviceToken];
+    [PushRegistrationManager.sharedManager didReceiveVanillaPushToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
 #ifdef DEBUG
     DDLogWarn(@"%@ We're in debug mode. Faking success for remote registration with a fake push identifier", self.tag);
-    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:[[NSMutableData dataWithLength:32] copy]];
+    [PushRegistrationManager.sharedManager didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
 #else
-    [PushManager.sharedManager.pushNotificationFutureSource trySetFailure:error];
+    OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
+    [PushRegistrationManager.sharedManager didFailToReceiveVanillaPushTokenWithError:error];
 #endif
 }
 
 - (void)application:(UIApplication *)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
-    DDLogDebug(@"%@ in %s", self.tag, __PRETTY_FUNCTION__);
-    [PushManager.sharedManager.userNotificationFutureSource trySetResult:notificationSettings];
+    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+    DDLogDebug(@"%@ registered user notification settings", self.tag);
+    [PushRegistrationManager.sharedManager didRegisterUserNotificationSettings];
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -486,9 +486,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                     @"%@ running post launch block for registered user: %@", self.tag, [TSAccountManager localNumber]);
 
                 __unused AnyPromise *promise =
-                    [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
-                                              accountManager:[Environment getCurrent].accountManager
-                                                 preferences:[Environment preferences]];
+                    [OWSSyncPushTokensJob runWithAccountManager:[Environment getCurrent].accountManager
+                                                    preferences:[Environment preferences]];
 
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.

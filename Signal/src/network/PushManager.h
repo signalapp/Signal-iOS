@@ -2,10 +2,6 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <CollapsingFutures.h>
-#import <PushKit/PushKit.h>
-#import <UIKit/UIApplication.h>
-
 NS_ASSUME_NONNULL_BEGIN
 
 @class UILocalNotification;
@@ -37,38 +33,22 @@ typedef void (^failedPushRegistrationBlock)(NSError *error);
 typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken);
 
 /**
- *  The Push Manager is responsible for registering the device for Signal push notifications.
+ * The Push Manager is responsible for handling received push notifications.
  */
-
-@interface PushManager : NSObject <PKPushRegistryDelegate>
+@interface PushManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 
 + (PushManager *)sharedManager;
 
-/**
- *  Returns the Push Notification Token of this device
- *
- *  @param success Completion block that is passed the token as a parameter
- *  @param failure Failure block, executed when failed to get push token
- */
-- (void)requestPushTokenWithSuccess:(pushTokensSuccessBlock)success failure:(void (^)(NSError *))failure;
-
-/**
- *  Registers for Users Notifications. By doing this on launch, we are sure that the correct categories of user
- * notifications is registered.
- */
+///**
+// *  Registers for Users Notifications. By doing this on launch, we are sure that the correct categories of user
+// * notifications is registered.
+// */
+// TODO: move this to sync tokens job?
 - (void)validateUserNotificationSettings;
 
-/**
- *  The pushNotification and userNotificationFutureSource are accessed by the App Delegate after requested permissions.
- */
-@property (nullable, atomic, readwrite, strong) TOCFutureSource *pushNotificationFutureSource;
-@property (nullable, atomic, readwrite, strong) TOCFutureSource *userNotificationFutureSource;
-@property (nullable, atomic, readwrite, strong) TOCFutureSource *pushKitNotificationFutureSource;
 
-- (TOCFuture *)registerPushKitNotificationFuture;
-- (BOOL)supportsVOIPPush;
 // If checkForCancel is set, the notification will be delayed for
 // a moment.  If a relevant cancel notification is received in that window,
 // the notification will not be displayed.
