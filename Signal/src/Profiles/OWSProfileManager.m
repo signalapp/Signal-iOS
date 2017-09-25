@@ -813,23 +813,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(recipientId.length > 0);
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        @synchronized(self)
-        {
-            if ([self isUserInProfileWhitelist:recipientId]) {
-                return;
-            }
-
-            self.userProfileWhitelistCache[recipientId] = @(YES);
-            [self.dbConnection setBool:YES forKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
-        }
-
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                                                 object:nil
-                                                               userInfo:@{
-                                                                   kNSNotificationKey_ProfileRecipientId : recipientId,
-                                                               }];
-    });
+    [self addUsersToProfileWhitelist:@[ recipientId ]];
 }
 
 - (void)addUsersToProfileWhitelist:(NSArray<NSString *> *)recipientIds
@@ -851,24 +835,27 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 return;
             }
 
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                for (NSString *recipientId in recipientIds) {
-                    [transaction setObject:@(YES)
-                                    forKey:recipientId
-                              inCollection:kOWSProfileManager_UserWhitelistCollection];
-                    self.userProfileWhitelistCache[recipientId] = @(YES);
-                }
-            }];
+            for (NSString *recipientId in recipientIds) {
+                self.userProfileWhitelistCache[recipientId] = @(YES);
+            }
         }
 
-            for (NSString *recipientId in newRecipientIds) {
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                       object:nil
-                                     userInfo:@{
-                                         kNSNotificationKey_ProfileRecipientId : recipientId,
-                                     }];
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            for (NSString *recipientId in recipientIds) {
+                [transaction setObject:@(YES)
+                                forKey:recipientId
+                          inCollection:kOWSProfileManager_UserWhitelistCollection];
             }
+        }];
+
+        for (NSString *recipientId in newRecipientIds) {
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                   object:nil
+                                 userInfo:@{
+                                     kNSNotificationKey_ProfileRecipientId : recipientId,
+                                 }];
+        }
     });
 }
 
@@ -895,24 +882,24 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSAssert(groupId.length > 0);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *groupIdKey = [groupId hexadecimalString];
+
         @synchronized(self)
         {
-            NSString *groupIdKey = [groupId hexadecimalString];
-
             if ([self isGroupIdInProfileWhitelist:groupId]) {
                 return;
             }
 
-            [self.dbConnection setBool:YES forKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
             self.groupProfileWhitelistCache[groupIdKey] = @(YES);
-
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                   object:nil
-                                 userInfo:@{
-                                     kNSNotificationKey_ProfileGroupId : groupId,
-                                 }];
         }
+
+        [self.dbConnection setBool:YES forKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
+
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                                                 object:nil
+                                                               userInfo:@{
+                                                                   kNSNotificationKey_ProfileGroupId : groupId,
+                                                               }];
     });
 }
 
