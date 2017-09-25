@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSDeviceProvisioner.h"
 #import "OWSDeviceProvisioningCodeService.h"
@@ -62,6 +64,7 @@
     NSData *myPublicKey = [nullKey copy];
     NSData *myPrivateKey = [nullKey copy];
     NSData *theirPublicKey = [nullKey copy];
+    NSData *profileKey = [nullKey copy];
     NSString *accountIdentifier;
     NSString *theirEphemeralDeviceId;
 
@@ -72,6 +75,7 @@
                  theirPublicKey:theirPublicKey
          theirEphemeralDeviceId:theirEphemeralDeviceId
               accountIdentifier:accountIdentifier
+                     profileKey:profileKey
         provisioningCodeService:[[OWSFakeDeviceProvisioningCodeService alloc] initWithNetworkManager:networkManager]
             provisioningService:[[OWSFakeDeviceProvisioningService alloc] initWithNetworkManager:networkManager]];
 

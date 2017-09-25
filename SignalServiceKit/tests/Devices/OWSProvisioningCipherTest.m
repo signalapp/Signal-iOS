@@ -131,4 +131,25 @@
     XCTAssertEqualObjects(expectedOutput, actualOutput);
 }
 
+- (void)testPadding
+{
+    NSUInteger kBlockSize = 16;
+    for (int i = 0; i <= kBlockSize; i++) {
+        NSData *message = [Cryptography generateRandomBytes:i];
+
+
+        NSData *theirPublicKey = [self knownPublicKey];
+        ECKeyPair *ourKeyPair = [self knownKeyPair];
+        NSData *initializationVector = [self knownInitializationVector];
+
+        OWSProvisioningCipher *cipher = [[OWSProvisioningCipher alloc] initWithTheirPublicKey:theirPublicKey
+                                                                                   ourKeyPair:ourKeyPair
+                                                                         initializationVector:initializationVector];
+
+
+        NSData *actualOutput = [cipher encrypt:message];
+        XCTAssertNotNil(actualOutput, @"failed for message length: %d", i);
+    }
+}
+
 @end
