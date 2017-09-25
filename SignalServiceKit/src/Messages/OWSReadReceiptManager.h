@@ -57,6 +57,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Settings
 
+- (void)prepareCachedValues;
+
 - (BOOL)areReadReceiptsEnabled;
 - (void)setAreReadReceiptsEnabled:(BOOL)value;
 
