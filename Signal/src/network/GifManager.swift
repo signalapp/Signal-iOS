@@ -17,11 +17,11 @@ enum GiphyFormat {
     let url: NSURL
 
     init(format: GiphyFormat,
-        name: String,
-        width: UInt,
-        height: UInt,
-        fileSize: UInt,
-        url: NSURL) {
+         name: String,
+         width: UInt,
+         height: UInt,
+         fileSize: UInt,
+         url: NSURL) {
         self.format = format
         self.name = name
         self.width = width
@@ -86,7 +86,7 @@ enum GiphyFormat {
             Logger.error("\(GifManager.TAG) Couldn't create session manager.")
             return
         }
-        guard let baseUrl = NSURL(string:kGiphyBaseURL) else {
+        guard NSURL(string:kGiphyBaseURL) != nil else {
             Logger.error("\(GifManager.TAG) Invalid base URL.")
             return
         }
@@ -112,11 +112,11 @@ enum GiphyFormat {
                            parameters: {},
                            progress:nil,
                            success: { _, value in
-                            Logger.error("\(GifManager.TAG) ---- success: \(value)")
+                            Logger.error("\(GifManager.TAG) search request succeeded")
                             self.parseGiphyImages(responseJson:value)
         },
                            failure: { _, error in
-                            Logger.error("\(GifManager.TAG) ---- failure: \(error)")
+                            Logger.error("\(GifManager.TAG) search request failed: \(error)")
         })
     }
 
@@ -145,21 +145,21 @@ enum GiphyFormat {
 
     private func parseGiphyImage(imageDict: [String:Any]) -> GiphyImageInfo? {
         guard let giphyId = imageDict["id"] as? String else {
-            Logger.error("\(GifManager.TAG) Image dict missing id.")
+            Logger.warn("\(GifManager.TAG) Image dict missing id.")
             return nil
         }
         guard giphyId.characters.count > 0 else {
-            Logger.error("\(GifManager.TAG) Image dict has invalid id.")
+            Logger.warn("\(GifManager.TAG) Image dict has invalid id.")
             return nil
         }
         guard let renditionDicts = imageDict["images"] as? [String:Any] else {
-            Logger.error("\(GifManager.TAG) Image dict missing renditions.")
+            Logger.warn("\(GifManager.TAG) Image dict missing renditions.")
             return nil
         }
         var renditions = [GiphyRendition]()
         for (renditionName, renditionDict) in renditionDicts {
             guard let renditionDict = renditionDict as? [String:Any] else {
-                Logger.error("\(GifManager.TAG) Invalid rendition dict.")
+                Logger.warn("\(GifManager.TAG) Invalid rendition dict.")
                 continue
             }
             guard let rendition = parseGiphyRendition(renditionName:renditionName,
@@ -169,7 +169,7 @@ enum GiphyFormat {
             renditions.append(rendition)
         }
         guard renditions.count > 0 else {
-            Logger.error("\(GifManager.TAG) Image has no valid renditions.")
+            Logger.warn("\(GifManager.TAG) Image has no valid renditions.")
             return nil
         }
         Logger.debug("\(GifManager.TAG) Image successfully parsed.")
@@ -189,24 +189,24 @@ enum GiphyFormat {
             return nil
         }
         guard let urlString = renditionDict["url"] as? String else {
-            Logger.error("\(GifManager.TAG) Rendition missing url.")
+            Logger.debug("\(GifManager.TAG) Rendition missing url.")
             return nil
         }
         guard urlString.characters.count > 0 else {
-            Logger.error("\(GifManager.TAG) Rendition has invalid url.")
+            Logger.warn("\(GifManager.TAG) Rendition has invalid url.")
             return nil
         }
         guard let url = NSURL(string:urlString) else {
-            Logger.error("\(GifManager.TAG) Rendition url could not be parsed.")
+            Logger.warn("\(GifManager.TAG) Rendition url could not be parsed.")
             return nil
         }
         guard let fileExtension = url.pathExtension else {
-            Logger.error("\(GifManager.TAG) Rendition url missing file extension.")
+            Logger.warn("\(GifManager.TAG) Rendition url missing file extension.")
             return nil
         }
         Logger.error("\(GifManager.TAG) fileExtension: \(fileExtension).")
         guard fileExtension.lowercased() == "gif" else {
-            Logger.error("\(GifManager.TAG) Rendition has invalid type: \(fileExtension).")
+            Logger.debug("\(GifManager.TAG) Rendition has invalid type: \(fileExtension).")
             return nil
         }
 
@@ -233,19 +233,19 @@ enum GiphyFormat {
     //    }
     private func parsePositiveUInt(dict: [String:Any], key: String, typeName: String) -> UInt? {
         guard let value = dict[key] else {
-            Logger.error("\(GifManager.TAG) \(typeName) missing \(key).")
+            Logger.debug("\(GifManager.TAG) \(typeName) missing \(key).")
             return nil
         }
         guard let stringValue = value as? String else {
-            Logger.error("\(GifManager.TAG) \(typeName) has invalid \(key): \(value).")
+            Logger.warn("\(GifManager.TAG) \(typeName) has invalid \(key): \(value).")
             return nil
         }
         guard let parsedValue = UInt(stringValue) else {
-            Logger.error("\(GifManager.TAG) \(typeName) has invalid \(key): \(stringValue).")
+            Logger.warn("\(GifManager.TAG) \(typeName) has invalid \(key): \(stringValue).")
             return nil
         }
         guard parsedValue > 0 else {
-            Logger.error("\(GifManager.TAG) \(typeName) has non-positive \(key): \(parsedValue).")
+            Logger.debug("\(GifManager.TAG) \(typeName) has non-positive \(key): \(parsedValue).")
             return nil
         }
         return parsedValue
