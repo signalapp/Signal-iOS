@@ -490,6 +490,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.
                 [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
+
+                // TODO remove this once we're sure our app boot process is coherent.
+                // Currently this happens *before* db registration is complete when
+                // launching the app directly, but *after* db registration is complete when
+                // the app is launched in the background, e.g. from a voip notification.
                 [[OWSProfileManager sharedManager] ensureLocalProfileCached];
 
                 // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
@@ -749,6 +754,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+    if (!self.isEnvironmentSetup) {
+        OWSFail(@"%@ ignoring %s because environment is not yet set up.", self.tag, __PRETTY_FUNCTION__);
+        return;
+    }
+
     [AppStoreRating preventPromptAtNextTest];
     [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
 }
@@ -756,7 +766,13 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application
     handleActionWithIdentifier:(NSString *)identifier
           forLocalNotification:(UILocalNotification *)notification
-             completionHandler:(void (^)())completionHandler {
+             completionHandler:(void (^)())completionHandler
+{
+    if (!self.isEnvironmentSetup) {
+        OWSFail(@"%@ ignoring %s because environment is not yet set up.", self.tag, __PRETTY_FUNCTION__);
+        return;
+    }
+
     [[PushManager sharedManager] application:application
                   handleActionWithIdentifier:identifier
                         forLocalNotification:notification
@@ -767,7 +783,13 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     handleActionWithIdentifier:(NSString *)identifier
           forLocalNotification:(UILocalNotification *)notification
               withResponseInfo:(NSDictionary *)responseInfo
-             completionHandler:(void (^)())completionHandler {
+             completionHandler:(void (^)())completionHandler
+{
+    if (!self.isEnvironmentSetup) {
+        OWSFail(@"%@ ignoring %s because environment is not yet set up.", self.tag, __PRETTY_FUNCTION__);
+        return;
+    }
+
     [[PushManager sharedManager] application:application
                   handleActionWithIdentifier:identifier
                         forLocalNotification:notification
@@ -808,6 +830,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // If there were any messages in our local queue which we hadn't yet processed.
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
     [[OWSBatchMessageProcessor sharedInstance] handleAnyUnprocessedEnvelopesAsync];
+
+    [[OWSProfileManager sharedManager] ensureLocalProfileCached];
+
+    self.isEnvironmentSetup = YES;
 
     [OWSProfileManager.sharedManager fetchLocalUsersProfile];
     // Make sure this manager is started.
