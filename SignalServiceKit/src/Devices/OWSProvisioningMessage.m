@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSProvisioningCipher *cipher = [[OWSProvisioningCipher alloc] initWithTheirPublicKey:self.theirPublicKey];
     NSData *_Nullable encryptedProvisionMessage = [cipher encrypt:plainTextProvisionMessage];
     if (encryptedProvisionMessage == nil) {
-        DDLogError(@"Failed to encrypt provision message");
+        OWSFail(@"Failed to encrypt provision message");
         return nil;
     }
 
