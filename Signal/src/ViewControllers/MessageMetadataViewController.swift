@@ -6,11 +6,14 @@ import Foundation
 
 class MessageMetadataViewController: OWSViewController {
 
+    static let TAG = "[MessageMetadataViewController]"
     let TAG = "[MessageMetadataViewController]"
 
     // MARK: Properties
 
-    let message: TSMessage
+    let databaseConnection: YapDatabaseConnection
+
+    var message: TSMessage
 
     var mediaMessageView: MediaMessageView?
 
@@ -26,12 +29,14 @@ class MessageMetadataViewController: OWSViewController {
     @available(*, unavailable, message:"use message: constructor instead.")
     required init?(coder aDecoder: NSCoder) {
         self.message = TSMessage()
+        self.databaseConnection = TSStorageManager.shared().newDatabaseConnection()!
         super.init(coder: aDecoder)
         owsFail("\(self.TAG) invalid constructor")
     }
 
     required init(message: TSMessage) {
         self.message = message
+        self.databaseConnection = TSStorageManager.shared().newDatabaseConnection()!
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -40,10 +45,18 @@ class MessageMetadataViewController: OWSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.databaseConnection.beginLongLivedReadTransaction()
+        updateDBConnectionAndMessageToLatest()
+
         self.navigationItem.title = NSLocalizedString("MESSAGE_METADATA_VIEW_TITLE",
                                                       comment: "Title for the 'message metadata' view.")
 
         createViews()
+
+        NotificationCenter.default.addObserver(self,
+            selector:#selector(yapDatabaseModified),
+            name:NSNotification.Name.YapDatabaseModified,
+            object:nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -79,6 +92,39 @@ class MessageMetadataViewController: OWSViewController {
         contentView.autoPinTrailingToSuperView()
         contentView.autoPinEdge(toSuperviewEdge:.top)
         contentView.autoPinEdge(toSuperviewEdge:.bottom)
+
+        let hasAttachment = message.attachmentIds.count > 0
+
+        if hasAttachment {
+            let footer = UIToolbar()
+            footer.barTintColor = UIColor.ows_materialBlue()
+            view.addSubview(footer)
+            footer.autoPinWidthToSuperview(withMargin:0)
+            footer.autoPinEdge(.top, to:.bottom, of:scrollView)
+            footer.autoPin(toBottomLayoutGuideOf: self, withInset:0)
+
+            footer.items = [
+                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+                UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonPressed)),
+                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+            ]
+        } else {
+            scrollView.autoPin(toBottomLayoutGuideOf: self, withInset:0)
+        }
+
+        updateContent()
+    }
+
+    private func updateContent() {
+        guard let contentView = contentView else {
+            owsFail("\(TAG) Missing contentView")
+            return
+        }
+
+        // Remove any existing content views.
+        for subview in contentView.subviews {
+            subview.removeFromSuperview()
+        }
 
         var rows = [UIView]()
 
@@ -180,27 +226,6 @@ class MessageMetadataViewController: OWSViewController {
         if let mediaMessageView = mediaMessageView {
             mediaMessageView.autoPinToSquareAspectRatio()
         }
-
-        let hasAttachment = message.attachmentIds.count > 0
-
-        if hasAttachment {
-            let footer = UIToolbar()
-            footer.barTintColor = UIColor.ows_materialBlue()
-            view.addSubview(footer)
-            footer.autoPinWidthToSuperview(withMargin:0)
-            footer.autoPinEdge(.top, to:.bottom, of:scrollView)
-            footer.autoPin(toBottomLayoutGuideOf: self, withInset:0)
-
-            footer.items = [
-                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-                UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonPressed)),
-                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-            ]
-        } else {
-            scrollView.autoPin(toBottomLayoutGuideOf: self, withInset:0)
-        }
-
-        // TODO: We might want to add a footer with share/save/copy/etc.
     }
 
     private func addAttachmentRows() -> [UIView] {
@@ -398,5 +423,40 @@ class MessageMetadataViewController: OWSViewController {
         }
         let data = dataSource.data()
         UIPasteboard.general.setData(data, forPasteboardType:utiType)
+    }
+
+    // MARK: - Actions
+
+    // This method should be called after self.databaseConnection.beginLongLivedReadTransaction().
+    private func updateDBConnectionAndMessageToLatest() {
+
+        AssertIsOnMainThread()
+
+        self.databaseConnection.read { transaction in
+            guard let newMessage = TSInteraction.fetch(uniqueId:self.message.uniqueId, transaction:transaction) as? TSMessage else {
+                Logger.error("\(self.TAG) Couldn't reload message.")
+                return
+            }
+            self.message = newMessage
+        }
+    }
+
+    internal func yapDatabaseModified(notification: NSNotification) {
+//        Logger.info("\(TAG) in \(#function)")
+        AssertIsOnMainThread()
+
+        let notifications = self.databaseConnection.beginLongLivedReadTransaction()
+
+// TODO: I can't figure out what the !@#$%&^* auto-generated Swift interface to this method is.
+//        guard self.databaseConnection.hasChange(forKey:message.uniqueId,
+//                                                 inCollection:TSInteraction.collection,
+//                                                 inNotifications:notifications) else {
+//                                                    Logger.debug("\(TAG) No relevant changes.")
+//                                                    return
+//        }
+//        
+        updateDBConnectionAndMessageToLatest()
+
+        updateContent()
     }
 }
