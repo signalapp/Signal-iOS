@@ -6,7 +6,6 @@
 #import "NSDate+OWS.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
-#import "ProfileManagerProtocol.h"
 #import "ProtoBuf+OWS.h"
 #import "SignalRecipient.h"
 #import "TSAttachmentStream.h"

@@ -307,10 +307,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 _localUserProfile.profileKey = [OWSAES256Key generateRandomKey];
 
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    @synchronized(self)
-                    {
-                        [self saveUserProfile:_localUserProfile];
-                    }
+                    [self saveUserProfile:_localUserProfile];
                 });
             }
         }
@@ -534,21 +531,23 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     // TODO: Revisit this so that failed profile updates don't leave
     // the profile avatar blank, etc.
     void (^clearLocalAvatar)() = ^{
-        @synchronized(self)
-        {
-            UserProfile *userProfile = self.localUserProfile;
-            OWSAssert(userProfile);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            @synchronized(self)
+            {
+                UserProfile *userProfile = self.localUserProfile;
+                OWSAssert(userProfile);
 
-            // TODO remote avatarUrlPath changes as result of fetching form -
-            // we should probably invalidate it at that point, and refresh again when
-            // uploading file completes.
-            userProfile.avatarUrlPath = nil;
-            userProfile.avatarFileName = nil;
+                // TODO remote avatarUrlPath changes as result of fetching form -
+                // we should probably invalidate it at that point, and refresh again when
+                // uploading file completes.
+                userProfile.avatarUrlPath = nil;
+                userProfile.avatarFileName = nil;
 
-            [self saveUserProfile:userProfile];
+                [self saveUserProfile:userProfile];
 
-            self.localCachedAvatarImage = nil;
-        }
+                self.localCachedAvatarImage = nil;
+            }
+        });
     };
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -754,17 +753,19 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (void)regenerateLocalProfile
 {
-    @synchronized(self)
-    {
-        _localUserProfile = nil;
-        DDLogWarn(@"%@ Removing local user profile", self.tag);
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [transaction removeObjectForKey:kLocalProfileUniqueId inCollection:[UserProfile collection]];
-        }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @synchronized(self)
+        {
+            _localUserProfile = nil;
+            DDLogWarn(@"%@ Removing local user profile", self.tag);
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                [transaction removeObjectForKey:kLocalProfileUniqueId inCollection:[UserProfile collection]];
+            }];
 
-        // rebuild localUserProfile
-        OWSAssert(self.localUserProfile);
-    }
+            // rebuild localUserProfile
+            OWSAssert(self.localUserProfile);
+        }
+    });
 }
 
 - (void)addUserToProfileWhitelist:(NSString *)recipientId

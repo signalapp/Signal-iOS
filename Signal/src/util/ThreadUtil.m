@@ -149,6 +149,19 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *localNumber = [TSAccountManager localNumber];
     OWSAssert(localNumber.length > 0);
 
+    // Many OWSProfileManager methods aren't safe to call from inside a database
+    // transaction, so do this work now.
+    OWSProfileManager *profileManager = OWSProfileManager.sharedManager;
+    BOOL hasLocalProfile = [profileManager hasLocalProfile];
+    BOOL isThreadInProfileWhitelist = [profileManager isThreadInProfileWhitelist:thread];
+    BOOL hasUnwhitelistedMember = NO;
+    for (NSString *recipientId in thread.recipientIdentifiers) {
+        if (![profileManager isUserInProfileWhitelist:recipientId]) {
+            hasUnwhitelistedMember = YES;
+            break;
+        }
+    }
+
     ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
 
     [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -407,24 +420,14 @@ NS_ASSUME_NONNULL_BEGIN
             shouldHaveBlockOffer = NO;
         }
 
-        if (![OWSProfileManager.sharedManager hasLocalProfile] ||
-            [OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread]) {
+        if (!hasLocalProfile || isThreadInProfileWhitelist) {
             // Don't show offer if thread is local user hasn't configured their profile.
             // Don't show offer if thread is already in profile whitelist.
             shouldHaveAddToProfileWhitelistOffer = NO;
-        } else if (thread.isGroupThread) {
-            BOOL hasUnwhitelistedMember = NO;
-            for (NSString *recipientId in thread.recipientIdentifiers) {
-                if (![OWSProfileManager.sharedManager isUserInProfileWhitelist:recipientId]) {
-                    hasUnwhitelistedMember = YES;
-                    break;
-                }
-            }
-            if (!hasUnwhitelistedMember) {
-                // Don't show offer in group thread if all members are already individually
-                // whitelisted.
-                shouldHaveAddToProfileWhitelistOffer = NO;
-            }
+        } else if (thread.isGroupThread && !hasUnwhitelistedMember) {
+            // Don't show offer in group thread if all members are already individually
+            // whitelisted.
+            shouldHaveAddToProfileWhitelistOffer = NO;
         }
 
         BOOL shouldHaveContactOffers

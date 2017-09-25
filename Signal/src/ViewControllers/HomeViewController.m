@@ -10,7 +10,6 @@
 #import "NewContactThreadViewController.h"
 #import "OWSContactsManager.h"
 #import "OWSNavigationController.h"
-#import "OWSProfileManager.h"
 #import "ProfileViewController.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
