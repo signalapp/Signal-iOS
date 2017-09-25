@@ -836,8 +836,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     self.isEnvironmentSetup = YES;
 
     [OWSProfileManager.sharedManager fetchLocalUsersProfile];
-    // Make sure this manager is started.
-    [OWSReadReceiptManager sharedManager];
+    [[OWSReadReceiptManager sharedManager] prepareCachedValues];
 }
 
 - (void)registrationStateDidChange

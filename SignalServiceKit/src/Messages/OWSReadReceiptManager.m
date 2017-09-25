@@ -114,8 +114,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
 @property (nonatomic) BOOL isProcessing;
 
-// Should only be accessed while synchronized on the OWSReadReceiptManager.
-@property (nonatomic) NSNumber *areReadReceiptsEnabledCached;
+@property (atomic) NSNumber *areReadReceiptsEnabledCached;
 
 @end
 
@@ -425,32 +424,31 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 #pragma mark - Settings
 
+- (void)prepareCachedValues
+{
+    [self areReadReceiptsEnabled];
+}
+
 - (BOOL)areReadReceiptsEnabled
 {
-    @synchronized(self)
-    {
-        if (!self.areReadReceiptsEnabledCached) {
-            // Default to NO.
-            self.areReadReceiptsEnabledCached =
-                @([self.dbConnection boolForKey:OWSReadReceiptManagerAreReadReceiptsEnabled
-                                   inCollection:OWSReadReceiptManagerCollection]);
-        }
-
-        return [self.areReadReceiptsEnabledCached boolValue];
+    // We don't need to worry about races around this cached value.
+    if (!self.areReadReceiptsEnabledCached) {
+        // Default to NO.
+        self.areReadReceiptsEnabledCached = @([self.dbConnection boolForKey:OWSReadReceiptManagerAreReadReceiptsEnabled
+                                                               inCollection:OWSReadReceiptManagerCollection]);
     }
+
+    return [self.areReadReceiptsEnabledCached boolValue];
 }
 
 - (void)setAreReadReceiptsEnabled:(BOOL)value
 {
     DDLogInfo(@"%@ areReadReceiptsEnabled: %d.", self.tag, value);
 
-    @synchronized(self)
-    {
-        [self.dbConnection setBool:value
-                            forKey:OWSReadReceiptManagerAreReadReceiptsEnabled
-                      inCollection:OWSReadReceiptManagerCollection];
-        self.areReadReceiptsEnabledCached = @(value);
-    }
+    [self.dbConnection setBool:value
+                        forKey:OWSReadReceiptManagerAreReadReceiptsEnabled
+                  inCollection:OWSReadReceiptManagerCollection];
+    self.areReadReceiptsEnabledCached = @(value);
 }
 
 #pragma mark - Logging
