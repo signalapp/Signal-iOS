@@ -16,9 +16,9 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
 extern const NSUInteger kOWSProfileManager_NameDataLength;
 extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
-@class TSThread;
 @class OWSAES256Key;
 @class OWSMessageSender;
+@class TSThread;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSProfileManager : NSObject <ProfileManagerProtocol>
@@ -62,10 +62,6 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (void)regenerateLocalProfile;
 
 - (void)addThreadToProfileWhitelist:(TSThread *)thread;
-
-- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread;
-
-- (BOOL)isUserInProfileWhitelist:(NSString *)recipientId;
 
 - (void)setContactRecipientIds:(NSArray<NSString *> *)contactRecipientIds;
 
