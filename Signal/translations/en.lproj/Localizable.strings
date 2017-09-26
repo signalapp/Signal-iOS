@@ -601,6 +601,12 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Attachment";
 
+/* Title for the 'gif picker' dialog. */
+"GIF_PICKER_VIEW_TITLE" = "Gif Search";
+
+/* Placeholder text for the search field in gif view */
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Enter your search";
+
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar changed. ";
 
@@ -1294,6 +1300,9 @@
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Secure session was reset.";
+
+/* Label for 'select gif to attach' action sheet button */
+"SELECT_GIF_BUTTON" = "Gif";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Send Again";

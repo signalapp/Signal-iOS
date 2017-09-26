@@ -273,7 +273,12 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     [self updateBarButtonItems];
 
-    [GifManager.sharedInstance test];
+    //    [GifManager.sharedInstance test];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        TSThread *thread = [self threadForIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+        [self presentThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
+    });
 }
 
 - (void)updateBarButtonItems

@@ -662,6 +662,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self createScrollDownButton];
     [self createHeaderViews];
     [self addNotificationListeners];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self showGifPicker];
+    });
 }
 
 - (void)registerCustomMessageNibs
