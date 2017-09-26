@@ -55,6 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addRecipientId:(NSString *)recipientId timestamp:(uint64_t)timestamp
 {
+    OWSAssert(recipientId.length > 0);
+    OWSAssert(timestamp > 0);
+
     NSMutableDictionary<NSString *, NSNumber *> *recipientMapCopy = [self.recipientMap mutableCopy];
     recipientMapCopy[recipientId] = @(timestamp);
     _recipientMap = [recipientMapCopy copy];
@@ -434,6 +437,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssert(recipientMap.count > 0);
     for (NSString *recipientId in recipientMap) {
         NSNumber *nsReadTimestamp = recipientMap[recipientId];
+        OWSAssert(nsReadTimestamp);
         uint64_t readTimestamp = [nsReadTimestamp unsignedLongLongValue];
 
         [message updateWithReadRecipientId:recipientId readTimestamp:readTimestamp transaction:transaction];

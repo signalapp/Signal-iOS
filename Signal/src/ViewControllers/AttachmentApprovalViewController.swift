@@ -22,7 +22,7 @@ class AttachmentApprovalViewController: OWSViewController {
     @available(*, unavailable, message:"use attachment: constructor instead.")
     required init?(coder aDecoder: NSCoder) {
         self.attachment = SignalAttachment.empty()
-        mediaMessageView = MediaMessageView(attachment:attachment)
+        self.mediaMessageView = MediaMessageView(attachment:attachment)
         super.init(coder: aDecoder)
         owsFail("\(self.TAG) invalid constructor")
     }
@@ -31,9 +31,9 @@ class AttachmentApprovalViewController: OWSViewController {
         assert(!attachment.hasError)
         self.attachment = attachment
         self.successCompletion = successCompletion
-        mediaMessageView = MediaMessageView(attachment:attachment)
+        self.mediaMessageView = MediaMessageView(attachment:attachment)
         super.init(nibName: nil, bundle: nil)
-}
+    }
 
     // MARK: View Lifecycle
 

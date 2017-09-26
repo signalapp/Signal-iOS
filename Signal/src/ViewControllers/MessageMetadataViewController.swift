@@ -21,6 +21,14 @@ class MessageMetadataViewController: OWSViewController {
     var attachmentStream: TSAttachmentStream?
     var messageBody: String?
 
+    static let dateFormatter: DateFormatter = CreateDateFormatter()
+    private class func CreateDateFormatter() -> DateFormatter {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .short
+        dateFormatter.timeStyle = .long
+        return dateFormatter
+    }
+
     // MARK: Initializers
 
     @available(*, unavailable, message:"use message: constructor instead.")
@@ -68,19 +76,6 @@ class MessageMetadataViewController: OWSViewController {
         view.addSubview(scrollView)
         scrollView.autoPinWidthToSuperview(withMargin:0)
         scrollView.autoPin(toTopLayoutGuideOf: self, withInset:0)
-
-        let footer = UIToolbar()
-        footer.barTintColor = UIColor.ows_materialBlue()
-        view.addSubview(footer)
-        footer.autoPinWidthToSuperview(withMargin:0)
-        footer.autoPinEdge(.top, to:.bottom, of:scrollView)
-        footer.autoPin(toBottomLayoutGuideOf: self, withInset:0)
-
-        footer.items = [
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-            UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonPressed)),
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        ]
 
         // See notes on how to use UIScrollView with iOS Auto Layout:
         //
@@ -132,20 +127,16 @@ class MessageMetadataViewController: OWSViewController {
             }
         }
 
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .short
-        dateFormatter.timeStyle = .long
-
         let sentDate = NSDate.ows_date(withMillisecondsSince1970:message.timestamp)
         rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
                                                      comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
-                             value:dateFormatter.string(from:sentDate)))
+                             value:MessageMetadataViewController.dateFormatter.string(from:sentDate)))
 
         if let _ = message as? TSIncomingMessage {
             let receivedDate = message.dateForSorting()
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                                                          comment: "Label for the 'received date & time' field of the 'message metadata' view."),
-                                 value:dateFormatter.string(from:receivedDate)))
+                                 value:MessageMetadataViewController.dateFormatter.string(from:receivedDate)))
         }
 
         // TODO: We could include the "disappearing messages" state here.
@@ -171,6 +162,7 @@ class MessageMetadataViewController: OWSViewController {
                 rows.append(bodyLabel)
             } else {
                 // Neither attachment nor body.
+                owsFail("\(self.TAG) Message has neither attachment nor body.")
                 rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY",
                                                              comment: "Label for messages without a body or attachment in the 'message metadata' view."),
                                      value:""))
@@ -197,6 +189,25 @@ class MessageMetadataViewController: OWSViewController {
 
         if let mediaMessageView = mediaMessageView {
             mediaMessageView.autoPinToSquareAspectRatio()
+        }
+
+        let hasAttachment = message.attachmentIds.count > 0
+
+        if hasAttachment {
+            let footer = UIToolbar()
+            footer.barTintColor = UIColor.ows_materialBlue()
+            view.addSubview(footer)
+            footer.autoPinWidthToSuperview(withMargin:0)
+            footer.autoPinEdge(.top, to:.bottom, of:scrollView)
+            footer.autoPin(toBottomLayoutGuideOf: self, withInset:0)
+
+            footer.items = [
+                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+                UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonPressed)),
+                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+            ]
+        } else {
+            scrollView.autoPin(toBottomLayoutGuideOf: self, withInset:0)
         }
 
         // TODO: We might want to add a footer with share/save/copy/etc.
@@ -269,9 +280,9 @@ class MessageMetadataViewController: OWSViewController {
     }
 
     private func recipientStatus(forOutgoingMessage message: TSOutgoingMessage, recipientId: String) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .short
-        dateFormatter.timeStyle = .long
+        // Legacy messages don't have "recipient read" state or "per-recipient delivery" state,
+        // so we fall back to `TSOutgoingMessageState` which is not per-recipient and therefore
+        // might be misleading.
 
         let recipientReadMap = message.recipientReadMap
         if let readTimestamp = recipientReadMap[recipientId] {
@@ -279,11 +290,11 @@ class MessageMetadataViewController: OWSViewController {
             let readDate = NSDate.ows_date(withMillisecondsSince1970:readTimestamp.uint64Value)
             return String(format:NSLocalizedString("MESSAGE_STATUS_READ_WITH_TIMESTAMP_FORMAT",
                                                    comment: "message status for messages read by the recipient. Embeds: {{the date and time the message was read}}."),
-                          dateFormatter.string(from:readDate))
+                          MessageMetadataViewController.dateFormatter.string(from:readDate))
         }
 
         // TODO: We don't currently track delivery state on a per-recipient basis.
-        //       We should.
+        //       We should.  NOTE: This work is in PR.
         if message.wasDelivered {
             return NSLocalizedString("MESSAGE_STATUS_DELIVERED",
                                      comment:"message status for message delivered to their recipient.")
@@ -297,6 +308,8 @@ class MessageMetadataViewController: OWSViewController {
                 NSLocalizedString("MESSAGE_STATUS_SENT",
                                   comment:"message footer for sent messages")
         } else if message.hasAttachments() {
+            assert(message.messageState == .attemptingOut)
+
             return NSLocalizedString("MESSAGE_STATUS_UPLOADING",
                                      comment:"message footer while attachment is uploading")
         } else {
