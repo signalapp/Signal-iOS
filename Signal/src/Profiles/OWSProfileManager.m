@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // UserProfile properties may be read from any thread, but should
 // only be mutated when synchronized on the profile manager.
-@interface UserProfile : TSYapDatabaseObject <NSCopying>
+@interface UserProfile : TSYapDatabaseObject
 
 @property (atomic, readonly) NSString *recipientId;
 @property (atomic, nullable) OWSAES256Key *profileKey;
@@ -79,53 +79,6 @@ NS_ASSUME_NONNULL_BEGIN
     {
         _profileName = [profileName ows_stripped];
     }
-}
-
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(nullable NSZone *)zone
-{
-    UserProfile *copy = [[UserProfile alloc] initWithRecipientId:self.recipientId];
-    copy.profileKey = self.profileKey;
-    copy.profileName = self.profileName;
-    copy.avatarUrlPath = self.avatarUrlPath;
-    copy.avatarFileName = self.avatarFileName;
-    copy.lastUpdateDate = self.lastUpdateDate;
-    return copy;
-}
-
-#pragma mark - NSObject
-
-- (BOOL)areEqualStrings:(NSString *)left other:(NSString *)right
-{
-    if (!left && !right) {
-        return YES;
-    }
-    if (!left || !right) {
-        return NO;
-    }
-    return [left isEqualToString:right];
-}
-
-- (BOOL)areEqualKeys:(OWSAES256Key *)left other:(OWSAES256Key *)right
-{
-    if (!left && !right) {
-        return YES;
-    }
-    if (!left || !right) {
-        return NO;
-    }
-    return [left.keyData isEqual:right.keyData];
-}
-
-- (BOOL)isEqual:(UserProfile *)other
-{
-    // Don't bother comparing lastUpdateDate property.
-    return ([other isKindOfClass:[UserProfile class]] && [self areEqualStrings:self.recipientId other:other.recipientId]
-        && [self areEqualStrings:self.profileName other:other.profileName] &&
-        [self areEqualKeys:self.profileKey other:other.profileKey] &&
-        [self areEqualStrings:self.avatarUrlPath other:other.avatarUrlPath] &&
-        [self areEqualStrings:self.avatarFileName other:other.avatarFileName]);
 }
 
 @end
@@ -347,7 +300,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 DDLogInfo(@"%@ Building local profile.", self.tag);
                 _localUserProfile = [[UserProfile alloc] initWithRecipientId:kLocalProfileUniqueId];
                 _localUserProfile.profileKey = [OWSAES256Key generateRandomKey];
-                // Sync local profile to any linked device
+
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     @synchronized(self)
                     {
