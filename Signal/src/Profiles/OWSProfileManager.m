@@ -30,16 +30,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic, readonly) NSString *recipientId;
 @property (atomic, nullable) OWSAES256Key *profileKey;
-@property (nonatomic, nullable) NSString *profileName;
-@property (nonatomic, nullable) NSString *avatarUrlPath;
+@property (atomic, nullable) NSString *profileName;
+@property (atomic, nullable) NSString *avatarUrlPath;
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
-@property (nonatomic, nullable) NSString *avatarFileName;
+@property (atomic, nullable) NSString *avatarFileName;
 
 // This should reflect when either:
 //
 // * The last successful update finished.
 // * The current in-flight update began.
-@property (nonatomic, nullable) NSDate *lastUpdateDate;
+@property (atomic, nullable) NSDate *lastUpdateDate;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -48,6 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation UserProfile
+
+@synthesize profileName = _profileName;
 
 - (instancetype)initWithRecipientId:(NSString *)recipientId
 {
@@ -63,23 +65,20 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (nullable NSString *)profileName
+{
+    @synchronized(self)
+    {
+        return _profileName;
+    }
+}
+
 - (void)setProfileName:(nullable NSString *)profileName
 {
-    _profileName = [profileName ows_stripped];
-}
-
-#pragma mark - NSObject
-
-- (BOOL)isEqual:(UserProfile *)other
-{
-    return ([other isKindOfClass:[UserProfile class]] && [self.recipientId isEqualToString:other.recipientId] &&
-        [self.profileName isEqualToString:other.profileName] && [self.avatarUrlPath isEqualToString:other.avatarUrlPath] &&
-        [self.avatarFileName isEqualToString:other.avatarFileName]);
-}
-
-- (NSUInteger)hash
-{
-    return self.recipientId.hash ^ self.profileName.hash ^ self.avatarUrlPath.hash ^ self.avatarFileName.hash;
+    @synchronized(self)
+    {
+        _profileName = [profileName ows_stripped];
+    }
 }
 
 @end
@@ -234,42 +233,48 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(userProfile);
 
+    // Make a copy to use inside the transaction.
+    // To avoid deadlock, we want to avoid creating a new transaction while sync'd on self.
+    UserProfile *userProfileCopy;
     @synchronized(self)
     {
-        // Make sure to save on the local db connection for consistency.
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [userProfile saveWithTransaction:transaction];
-        }];
-
-        BOOL isLocalUserProfile = userProfile == self.localUserProfile;
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (isLocalUserProfile) {
-                [MultiDeviceProfileKeyUpdateJob runWithProfileKey:userProfile.profileKey
-                                                  identityManager:self.identityManager
-                                                    messageSender:self.messageSender
-                                                   profileManager:self];
-
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
-                                       object:nil
-                                     userInfo:nil];
-            } else {
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_OtherUsersProfileWillChange
-                                       object:nil
-                                     userInfo:@{
-                                         kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
-                                     }];
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_OtherUsersProfileDidChange
-                                       object:nil
-                                     userInfo:@{
-                                         kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
-                                     }];
-            }
-        });
+        userProfileCopy = [userProfile copy];
+        // Other threads may modify this profile's properties
+        OWSAssert([userProfile isEqual:userProfileCopy]);
     }
+
+    // Make sure to save on the local db connection for consistency.
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [userProfileCopy saveWithTransaction:transaction];
+    }];
+
+    BOOL isLocalUserProfile = userProfile == self.localUserProfile;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (isLocalUserProfile) {
+            [MultiDeviceProfileKeyUpdateJob runWithProfileKey:userProfile.profileKey
+                                              identityManager:self.identityManager
+                                                messageSender:self.messageSender
+                                               profileManager:self];
+
+            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
+                                                                     object:nil
+                                                                   userInfo:nil];
+        } else {
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_OtherUsersProfileWillChange
+                                   object:nil
+                                 userInfo:@{
+                                     kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
+                                 }];
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_OtherUsersProfileDidChange
+                                   object:nil
+                                 userInfo:@{
+                                     kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
+                                 }];
+        }
+    });
 }
 
 - (void)ensureLocalProfileCached
@@ -295,10 +300,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 DDLogInfo(@"%@ Building local profile.", self.tag);
                 _localUserProfile = [[UserProfile alloc] initWithRecipientId:kLocalProfileUniqueId];
                 _localUserProfile.profileKey = [OWSAES256Key generateRandomKey];
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                    [_localUserProfile saveWithTransaction:transaction];
-                }];
-                // Sync local profile to any linked device
+
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     @synchronized(self)
                     {
@@ -764,23 +766,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(recipientId.length > 0);
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        @synchronized(self)
-        {
-            if ([self isUserInProfileWhitelist:recipientId]) {
-                return;
-            }
-
-            self.userProfileWhitelistCache[recipientId] = @(YES);
-            [self.dbConnection setBool:YES forKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
-        }
-
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                                                 object:nil
-                                                               userInfo:@{
-                                                                   kNSNotificationKey_ProfileRecipientId : recipientId,
-                                                               }];
-    });
+    [self addUsersToProfileWhitelist:@[ recipientId ]];
 }
 
 - (void)addUsersToProfileWhitelist:(NSArray<NSString *> *)recipientIds
@@ -802,24 +788,27 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 return;
             }
 
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                for (NSString *recipientId in recipientIds) {
-                    [transaction setObject:@(YES)
-                                    forKey:recipientId
-                              inCollection:kOWSProfileManager_UserWhitelistCollection];
-                    self.userProfileWhitelistCache[recipientId] = @(YES);
-                }
-            }];
+            for (NSString *recipientId in recipientIds) {
+                self.userProfileWhitelistCache[recipientId] = @(YES);
+            }
         }
 
-            for (NSString *recipientId in newRecipientIds) {
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                       object:nil
-                                     userInfo:@{
-                                         kNSNotificationKey_ProfileRecipientId : recipientId,
-                                     }];
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            for (NSString *recipientId in recipientIds) {
+                [transaction setObject:@(YES)
+                                forKey:recipientId
+                          inCollection:kOWSProfileManager_UserWhitelistCollection];
             }
+        }];
+
+        for (NSString *recipientId in newRecipientIds) {
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                   object:nil
+                                 userInfo:@{
+                                     kNSNotificationKey_ProfileRecipientId : recipientId,
+                                 }];
+        }
     });
 }
 
@@ -846,24 +835,24 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSAssert(groupId.length > 0);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *groupIdKey = [groupId hexadecimalString];
+
         @synchronized(self)
         {
-            NSString *groupIdKey = [groupId hexadecimalString];
-
             if ([self isGroupIdInProfileWhitelist:groupId]) {
                 return;
             }
 
-            [self.dbConnection setBool:YES forKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
             self.groupProfileWhitelistCache[groupIdKey] = @(YES);
-
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                   object:nil
-                                 userInfo:@{
-                                     kNSNotificationKey_ProfileGroupId : groupId,
-                                 }];
         }
+
+        [self.dbConnection setBool:YES forKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
+
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                                                 object:nil
+                                                               userInfo:@{
+                                                                   kNSNotificationKey_ProfileGroupId : groupId,
+                                                               }];
     });
 }
 
