@@ -9,9 +9,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
-@class UIFont;
-@class SignalAccount;
 @class ImageCache;
+@class SignalAccount;
+@class UIFont;
 
 /**
  * Get latest Signal contacts, and be notified when they change.
@@ -74,7 +74,8 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSAttributedString *)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount font:(UIFont *_Nonnull)font;
 - (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font;
-- (NSAttributedString *)attributedStringForMessageFooterWithPhoneIdentifier:(NSString *)recipientId;
+- (NSString *)contactOrProfileNameForPhoneIdentifier:(NSString *)recipientId;
+- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId;
 - (NSAttributedString *)attributedStringForConversationTitleWithPhoneIdentifier:(NSString *)recipientId
                                                                     primaryFont:(UIFont *)primaryFont
                                                                   secondaryFont:(UIFont *)secondaryFont;

@@ -5,6 +5,8 @@
 #import "NSDate+OWS.h"
 #import <chrono>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation NSDate (millisecondTimeStamp)
 
 + (uint64_t)ows_millisecondTimeStamp
@@ -25,3 +27,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

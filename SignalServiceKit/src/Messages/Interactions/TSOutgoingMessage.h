@@ -104,8 +104,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 // This property won't be accurate for legacy messages.
 @property (atomic, readonly) BOOL isFromLinkedDevice;
 
-// The recipient ids of the recipients who have read the message.
-@property (atomic, readonly) NSSet<NSString *> *readRecipientIds;
+// Map of "recipient id"-to-"read time" of the recipients who have read the message.
+@property (atomic, readonly) NSDictionary<NSString *, NSNumber *> *recipientReadMap;
 
 /**
  * Signal Identifier (e.g. e164 number) or nil if in a group thread.
@@ -176,7 +176,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (void)updateWithWasSentFromLinkedDeviceWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithSingleGroupRecipient:(NSString *)singleGroupRecipient
                            transaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)updateWithReadRecipientId:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithReadRecipientId:(NSString *)recipientId
+                    readTimestamp:(uint64_t)readTimestamp
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - Sent Recipients
 

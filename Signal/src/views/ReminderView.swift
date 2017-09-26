@@ -64,6 +64,7 @@ class ReminderView: UIView {
         label.font = UIFont.ows_regularFont(withSize: 14)
         container.addSubview(label)
         label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
         label.autoPinEdge(toSuperviewEdge: .top)
         label.autoPinEdge(toSuperviewEdge: .left)
         label.autoPinEdge(toSuperviewEdge: .bottom)

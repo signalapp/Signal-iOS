@@ -5,6 +5,8 @@
 #import <PureLayout/PureLayout.h>
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 // A convenience method for doing responsive layout. Scales between two
 // reference values (for iPhone 5 and iPhone 7 Plus) to the current device
 // based on screen width, linearly interpolating.
@@ -100,3 +102,5 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (void)addRedBorderRecursively;
 
 @end
+
+NS_ASSUME_NONNULL_END

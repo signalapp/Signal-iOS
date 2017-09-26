@@ -5,6 +5,8 @@
 #import "OWSMath.h"
 #import "UIView+OWS.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 static inline CGFloat ScreenShortDimension()
 {
     return MIN([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
@@ -372,3 +374,5 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

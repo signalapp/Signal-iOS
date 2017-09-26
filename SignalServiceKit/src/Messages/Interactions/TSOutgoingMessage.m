@@ -39,7 +39,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 @property (atomic) TSGroupMetaMessage groupMetaMessage;
 
-@property (atomic) NSSet<NSString *> *readRecipientIds;
+@property (atomic) NSDictionary<NSString *, NSNumber *> *recipientReadMap;
 
 @end
 
@@ -411,18 +411,20 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     }];
 }
 
-- (void)updateWithReadRecipientId:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithReadRecipientId:(NSString *)recipientId
+                    readTimestamp:(uint64_t)readTimestamp
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(recipientId.length > 0);
     OWSAssert(transaction);
 
     [self applyChangeToSelfAndLatestOutgoingMessage:transaction
                                         changeBlock:^(TSOutgoingMessage *message) {
-                                            NSMutableSet<NSString *> *readRecipientIds
-                                                = (message.readRecipientIds ? [message.readRecipientIds mutableCopy]
-                                                                            : [NSMutableSet new]);
-                                            [readRecipientIds addObject:recipientId];
-                                            message.readRecipientIds = readRecipientIds;
+                                            NSMutableDictionary<NSString *, NSNumber *> *recipientReadMap
+                                                = (message.recipientReadMap ? [message.recipientReadMap mutableCopy]
+                                                                            : [NSMutableDictionary new]);
+                                            recipientReadMap[recipientId] = @(readTimestamp);
+                                            message.recipientReadMap = recipientReadMap;
                                         }];
 }
 
