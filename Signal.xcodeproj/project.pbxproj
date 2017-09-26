@@ -13,6 +13,7 @@
 		340CB2241EAC155C0001CAA1 /* ContactsViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CB2231EAC155C0001CAA1 /* ContactsViewHelper.m */; };
 		340CB2271EAC25820001CAA1 /* UpdateGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CB2261EAC25820001CAA1 /* UpdateGroupViewController.m */; };
 		341207271EE19F6A00463194 /* OWSSystemMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 341207261EE19F6A00463194 /* OWSSystemMessageCell.m */; };
+		341B057C1F78A3B5007D3F7A /* GifPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341B057B1F78A3B5007D3F7A /* GifPickerViewController.swift */; };
 		341BB7491DB727EE001E2975 /* JSQMediaItem+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 341BB7481DB727EE001E2975 /* JSQMediaItem+OWS.m */; };
 		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
 		342FCE6B1EF9C375002690AD /* OWS105AttachmentFilePaths.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FCE6A1EF9C375002690AD /* OWS105AttachmentFilePaths.m */; };
@@ -413,6 +414,7 @@
 		340CB2261EAC25820001CAA1 /* UpdateGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdateGroupViewController.m; sourceTree = "<group>"; };
 		341207251EE19F6A00463194 /* OWSSystemMessageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = OWSSystemMessageCell.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		341207261EE19F6A00463194 /* OWSSystemMessageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = OWSSystemMessageCell.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		341B057B1F78A3B5007D3F7A /* GifPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerViewController.swift; sourceTree = "<group>"; };
 		341BB7471DB727EE001E2975 /* JSQMediaItem+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JSQMediaItem+OWS.h"; sourceTree = "<group>"; };
 		341BB7481DB727EE001E2975 /* JSQMediaItem+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "JSQMediaItem+OWS.m"; sourceTree = "<group>"; };
 		341F2C0D1F2B8AE700D07D6B /* DebugUIMisc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMisc.h; sourceTree = "<group>"; };
@@ -1030,6 +1032,7 @@
 				34E8BF371EE9E2FD00F5F4CA /* FingerprintViewScanController.m */,
 				34B3F8471E8DF1700035BE1A /* FullImageViewController.h */,
 				34B3F8481E8DF1700035BE1A /* FullImageViewController.m */,
+				341B057B1F78A3B5007D3F7A /* GifPickerViewController.swift */,
 				34B3F86F1E8DF1700035BE1A /* HomeViewController.h */,
 				34B3F8701E8DF1700035BE1A /* HomeViewController.m */,
 				34B3F8491E8DF1700035BE1A /* InboxTableViewCell.h */,
@@ -2209,6 +2212,7 @@
 				34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */,
 				34D9134B1F62D4A500722898 /* SignalAttachment.swift in Sources */,
 				34B3F88E1E8DF1700035BE1A /* PrivacySettingsTableViewController.m in Sources */,
+				341B057C1F78A3B5007D3F7A /* GifPickerViewController.swift in Sources */,
 				4505C2C21E648F7A00CEBF41 /* ExperienceUpgradeFinder.swift in Sources */,
 				341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */,
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
