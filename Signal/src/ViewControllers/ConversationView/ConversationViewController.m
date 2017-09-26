@@ -737,7 +737,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [super viewWillAppear:animated];
 
-    // In case we're dismissing a CNContactViewController which requires default system appearance
+    // In case we're dismissing a CNContactViewController, or DocumentPicker which requires default system appearance
     [UIUtil applySignalAppearence];
 
     [self addVisibleListeners];
@@ -3199,7 +3199,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 #pragma mark - Attachment Picking: Documents
 
-- (void)showAttachmentDocumentPicker
+- (void)showAttachmentDocumentPickerMenu
 {
     NSString *allItems = (__bridge NSString *)kUTTypeItem;
     NSArray<NSString *> *documentTypes = @[ allItems ];
@@ -3209,6 +3209,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     UIDocumentMenuViewController *menuController =
         [[UIDocumentMenuViewController alloc] initWithDocumentTypes:documentTypes inMode:pickerMode];
     menuController.delegate = self;
+
     [self presentViewController:menuController animated:YES completion:nil];
 }
 
@@ -3257,6 +3258,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
 {
     documentPicker.delegate = self;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
+        // post iOS11, document picker has no blue header.
+        [UIUtil applyDefaultSystemAppearence];
+    }
     [self presentViewController:documentPicker animated:YES completion:nil];
 }
 
@@ -3265,6 +3270,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url
 {
     DDLogDebug(@"%@ Picked document at url: %@", self.tag, url);
+
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
+        // post iOS11, document picker has no blue header.
+        [UIUtil applySignalAppearence];
+    }
 
     NSString *type;
     NSError *typeError;
@@ -4086,7 +4096,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                            @"action sheet button title when choosing attachment type")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *_Nonnull action) {
-                                   [self showAttachmentDocumentPicker];
+                                   [self showAttachmentDocumentPickerMenu];
                                }];
     UIImage *chooseDocumentImage = [UIImage imageNamed:@"actionsheet_document_black"];
     OWSAssert(chooseDocumentImage);
