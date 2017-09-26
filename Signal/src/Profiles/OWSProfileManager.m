@@ -252,10 +252,15 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (isLocalUserProfile) {
-            [MultiDeviceProfileKeyUpdateJob runWithProfileKey:userProfile.profileKey
-                                              identityManager:self.identityManager
-                                                messageSender:self.messageSender
-                                               profileManager:self];
+            // We populate an initial (empty) profile on launch of a new install, but until
+            // we have a registered account, syncing will fail (and there could not be any
+            // linked device to sync to at this point anyway).
+            if ([TSAccountManager isRegistered]) {
+                [MultiDeviceProfileKeyUpdateJob runWithProfileKey:userProfile.profileKey
+                                                  identityManager:self.identityManager
+                                                    messageSender:self.messageSender
+                                                   profileManager:self];
+            }
 
             [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
                                                                      object:nil
