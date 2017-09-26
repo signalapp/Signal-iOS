@@ -4,7 +4,6 @@
 
 #import "OWSReadReceiptsForSenderMessage.h"
 #import "NSDate+OWS.h"
-#import "OWSReadReceipt.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "SignalRecipient.h"
 

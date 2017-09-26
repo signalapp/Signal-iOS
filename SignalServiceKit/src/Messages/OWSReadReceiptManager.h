@@ -6,10 +6,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosEnvelope;
 @class OWSSignalServiceProtosReceiptMessage;
+@class OWSSignalServiceProtosSyncMessageRead;
 @class TSIncomingMessage;
 @class TSOutgoingMessage;
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
+
+extern NSString *const kMessageMarkedAsReadNotification;
 
 // There are four kinds of read receipts:
 //
@@ -26,11 +29,13 @@ NS_ASSUME_NONNULL_BEGIN
 //    * These read receipts are saved so that they can be applied
 //      if they arrive before the corresponding message.
 //
-// TODO: Merge OWSReadReceiptsProcessor into this class.
+// This manager is responsible for handling and emitting all four kinds.
 @interface OWSReadReceiptManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)sharedManager;
+
+#pragma mark - Sender/Recipient Read Receipts
 
 // This method should be called when we receive a read receipt
 // from a user to whom we have sent a message.
@@ -41,6 +46,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
                                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+#pragma mark - Linked Device Read Receipts
+
+- (void)processReadReceiptsFromLinkedDevice:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos
+                                transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+- (void)updateIncomingMessage:(TSIncomingMessage *)message
+                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+#pragma mark - Locally Read
 
 // This method cues this manager:
 //

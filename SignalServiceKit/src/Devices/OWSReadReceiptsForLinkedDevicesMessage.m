@@ -3,20 +3,20 @@
 //
 
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
-#import "OWSReadReceipt.h"
+#import "OWSLinkedDeviceReadReceipt.h"
 #import "OWSSignalServiceProtos.pb.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSReadReceiptsForLinkedDevicesMessage ()
 
-@property (nonatomic, readonly) NSArray<OWSReadReceipt *> *readReceipts;
+@property (nonatomic, readonly) NSArray<OWSLinkedDeviceReadReceipt *> *readReceipts;
 
 @end
 
 @implementation OWSReadReceiptsForLinkedDevicesMessage
 
-- (instancetype)initWithReadReceipts:(NSArray<OWSReadReceipt *> *)readReceipts
+- (instancetype)initWithReadReceipts:(NSArray<OWSLinkedDeviceReadReceipt *> *)readReceipts
 {
     self = [super init];
     if (!self) {
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
 {
     OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
-    for (OWSReadReceipt *readReceipt in self.readReceipts) {
+    for (OWSLinkedDeviceReadReceipt *readReceipt in self.readReceipts) {
         OWSSignalServiceProtosSyncMessageReadBuilder *readProtoBuilder =
             [OWSSignalServiceProtosSyncMessageReadBuilder new];
         [readProtoBuilder setSender:readReceipt.senderId];

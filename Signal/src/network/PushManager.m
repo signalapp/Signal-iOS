@@ -11,7 +11,7 @@
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSReadReceiptsProcessor.h>
+#import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
@@ -85,7 +85,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleMessageRead:)
-                                                 name:OWSReadReceiptsProcessorMarkedMessageAsReadNotification
+                                                 name:kMessageMarkedAsReadNotification
                                                object:nil];
 
     return self;
@@ -93,6 +93,8 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 - (void)handleMessageRead:(NSNotification *)notification
 {
+    OWSAssert([NSThread isMainThread]);
+
     if ([notification.object isKindOfClass:[TSIncomingMessage class]]) {
         TSIncomingMessage *message = (TSIncomingMessage *)notification.object;
 
