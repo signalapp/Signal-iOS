@@ -46,18 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                }],
                                   ]]];
 
-    OWSTableSection *screenSecuritySection = [OWSTableSection new];
-    screenSecuritySection.headerTitle = NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"Section header");
-    screenSecuritySection.footerTitle = NSLocalizedString(@"SETTINGS_SCREEN_SECURITY_DETAIL", nil);
-    [screenSecuritySection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"")
-                                                               isOn:[Environment.preferences screenSecurityIsEnabled]
-                                                             target:weakSelf
-                                                           selector:@selector(didToggleScreenSecuritySwitch:)]];
-    [contents addSection:screenSecuritySection];
-
     OWSTableSection *readReceiptsSection = [OWSTableSection new];
-    readReceiptsSection.headerTitle
-        = NSLocalizedString(@"SETTINGS_READ_RECEIPTS_SECTION_TITLE", @"Title of the 'read receipts' settings section.");
     readReceiptsSection.footerTitle = NSLocalizedString(
         @"SETTINGS_READ_RECEIPTS_SECTION_FOOTER", @"An explanation of the 'read receipts' setting.");
     [readReceiptsSection
@@ -67,6 +56,15 @@ NS_ASSUME_NONNULL_BEGIN
                                           target:weakSelf
                                         selector:@selector(didToggleReadReceiptsSwitch:)]];
     [contents addSection:readReceiptsSection];
+
+    OWSTableSection *screenSecuritySection = [OWSTableSection new];
+    screenSecuritySection.headerTitle = NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"Section header");
+    screenSecuritySection.footerTitle = NSLocalizedString(@"SETTINGS_SCREEN_SECURITY_DETAIL", nil);
+    [screenSecuritySection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"")
+                                                               isOn:[Environment.preferences screenSecurityIsEnabled]
+                                                             target:weakSelf
+                                                           selector:@selector(didToggleScreenSecuritySwitch:)]];
+    [contents addSection:screenSecuritySection];
 
     // Allow calls to connect directly vs. using TURN exclusively
     OWSTableSection *callingSection = [OWSTableSection new];
