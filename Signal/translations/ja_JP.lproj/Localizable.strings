@@ -20,10 +20,10 @@
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "自分のプロフィールをこのグループと共有しますか？";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "このユーザーを連絡先に登録しますか？";
+"ADD_TO_CONTACTS_OFFER" = "この人を連絡先に登録しますか？";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "自身のプロフィールをこのユーザと共有しますか？";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "自分のプロフィールをこの人と共有しますか？";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "削除";
@@ -36,12 +36,6 @@
 
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "保存";
-
-/* A message for the alert shown while validating a signal account */
-"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "有効なSignalアカウントであることを確認中";
-
-/* A title for the alert shown while validating a signal account */
-"ALERT_VALIDATE_RECIPIENT_TITLE" = "認証中";
 
 /* registration button text */
 "ALREADY_HAVE_ACCOUNT_BUTTON" = "Signalに登録済みですか？";
@@ -241,7 +235,7 @@
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "今は結構です";
 
-/* Label for button that shows the privacy settings */
+/* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "プライバシー設定を表示する";
 
 /* notification action */
@@ -353,10 +347,10 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "消音をやめる";
 
 /* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "このグループにはあなたのプロフィールが見えます";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "こちらのプロフィールを閲覧可能";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "このユーザにはあなたのプロフィールが見えます";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "こちらのプロフィールを閲覧可能";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "プロフィールを共有する";
@@ -371,13 +365,13 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "連絡先に追加";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "自分のプロフィールをこのユーザーと共有する";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "自分のプロフィールをこの人と共有する";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "このユーザーは連絡先にいません";
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "この人は連絡先にいません";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "このユーザーを拒否する";
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "この人を拒否する";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "接触をリセットすると，今後%@から来るメッセージは受信しますが，破損した過去のメッセージは回復しません。";
@@ -460,6 +454,9 @@
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "コピー";
 
+/* Short name for edit menu item to show message metadata. */
+"EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Info";
+
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "保存する";
 
@@ -520,6 +517,9 @@
 /* Error mesage indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "相手を拒否しているのでメッセージを送れませんでした";
 
+/* Error mesage indicating that message send failed due to failed attachment write */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed due to failed attachment write.";
+
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "インターネットに接続できませんでした。Wi-Fiのネットワークを変えるか，モバイルデータ通信を使ってみてください。";
 
@@ -536,7 +536,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "不明なエラーが発生しました";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "連絡先はSignalのユーザではありません";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "連絡先はSignalのユーザーではありません";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "重複メッセージを受信しました";
@@ -615,9 +615,6 @@
 
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "グループが作成されました";
-
-/* No comment provided by engineer. */
-"GROUP_CREATING" = "グループの作成";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "追加できなかったメンバーがいます。タップしてやり直してください。";
@@ -787,11 +784,66 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "新しいメッセージ";
 
-/* message footer for delivered messages */
+/* Label for file size of attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "File Size";
+
+/* Label for the MIME type of attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME type";
+
+/* Label for 'missing' attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "Missing Attachment";
+
+/* Label for 'not yet downloaded' attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "Not yet downloaded";
+
+/* Label for the message body in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_BODY_LABEL" = "Message";
+
+/* Label for the 'group name' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_GROUP_NAME" = "Group";
+
+/* Label for media messages of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_MEDIA" = "Media";
+
+/* Label for messages without a body or attachment in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Message has no content or attachment.";
+
+/* Label for the 'received date & time' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Received";
+
+/* Label for the 'recipient' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_RECIPIENT" = "Recipient";
+
+/* Label for the 'sender' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SENDER" = "Sender";
+
+/* Label for the 'sent date & time' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Sent";
+
+/* Label for the original filename of any attachment in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Filename";
+
+/* Title for the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_TITLE" = "Message";
+
+/* Label for voice messages of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_VOICE_MESSAGE" = "Voice Note";
+
+/* message footer for delivered messages
+   message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "配信済み";
+
+/* message status for messages delivered to the recipient. Embeds: {{the date and time the message was delivered}}. */
+"MESSAGE_STATUS_DELIVERED_WITH_TIMESTAMP_FORMAT" = "Delivered %@";
 
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "送信に失敗しました。詳細はタップで。";
+
+/* message status for messages read by the recipient. Embeds: {{the date and time the message was read}}. */
+"MESSAGE_STATUS_READ_WITH_TIMESTAMP_FORMAT" = "Read %@";
+
+/* message status while message is sending. */
+"MESSAGE_STATUS_SENDING" = "Sending...";
 
 /* message footer for sent messages */
 "MESSAGE_STATUS_SENT" = "送信済み";
@@ -1109,7 +1161,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "アイコン";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "プロフィールは新しく会話を始める際に相手に見えますし，プロフィールを共有するユーザーやグループにも見えます。";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "プロフィールは新しく会話を始める際に相手に見えますし，プロフィールを共有する人やグループにも見えます。";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "詳細はここにあります。";
@@ -1387,6 +1439,15 @@
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "プライバシー";
 
+/* Label for the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPT" = "Send Read Receipts";
+
+/* An explanation of the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Read receipts let you see when others have read your message - and let them see when you have read their messages.";
+
+/* Title of the 'read receipts' settings section. */
+"SETTINGS_READ_RECEIPTS_SECTION_TITLE" = "Read Receipts";
+
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "画面表示を安全にする";
 
@@ -1552,7 +1613,7 @@
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "SMSでコードを再送する";
 
-/* button text during registration to submit your SMS verification code */
+/* button text during registration to submit your SMS verification code. */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "認証コードを入力する";
 
 /* Label indicating the phone number currently being verified. */

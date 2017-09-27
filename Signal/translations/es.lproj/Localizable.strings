@@ -37,12 +37,6 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "Guardar";
 
-/* A message for the alert shown while validating a signal account */
-"ALERT_VALIDATE_RECIPIENT_MESSAGE" = "Comprobando si la cuenta de Signal es válida.";
-
-/* A title for the alert shown while validating a signal account */
-"ALERT_VALIDATE_RECIPIENT_TITLE" = "Comprobando";
-
 /* registration button text */
 "ALREADY_HAVE_ACCOUNT_BUTTON" = "¿Número ya registrado en Signal?";
 
@@ -241,7 +235,7 @@
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Ahora no";
 
-/* Label for button that shows the privacy settings */
+/* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Mostrar ajustes de privacidad";
 
 /* notification action */
@@ -460,6 +454,9 @@
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Copiar";
 
+/* Short name for edit menu item to show message metadata. */
+"EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Info";
+
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Guardar";
 
@@ -519,6 +516,9 @@
 
 /* Error mesage indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Fallo al enviar mensaje: Contactos bloqueados.";
+
+/* Error mesage indicating that message send failed due to failed attachment write */
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed due to failed attachment write.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal no ha podido conectarse a internet. Prueba a conectarte desde otra red WiFi o usa la red de datos de tu operador.";
@@ -615,9 +615,6 @@
 
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "Grupo creado.";
-
-/* No comment provided by engineer. */
-"GROUP_CREATING" = "Creando nuevo grupo";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "No se han podido añadir todos los miembros al grupo. Toca para probar de nuevo.";
@@ -787,11 +784,66 @@
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nuevo mensaje";
 
-/* message footer for delivered messages */
+/* Label for file size of attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "File Size";
+
+/* Label for the MIME type of attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME type";
+
+/* Label for 'missing' attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "Missing Attachment";
+
+/* Label for 'not yet downloaded' attachments in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "Not yet downloaded";
+
+/* Label for the message body in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_BODY_LABEL" = "Message";
+
+/* Label for the 'group name' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_GROUP_NAME" = "Group";
+
+/* Label for media messages of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_MEDIA" = "Media";
+
+/* Label for messages without a body or attachment in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Message has no content or attachment.";
+
+/* Label for the 'received date & time' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Received";
+
+/* Label for the 'recipient' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_RECIPIENT" = "Recipient";
+
+/* Label for the 'sender' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SENDER" = "Sender";
+
+/* Label for the 'sent date & time' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Sent";
+
+/* Label for the original filename of any attachment in the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Filename";
+
+/* Title for the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_TITLE" = "Message";
+
+/* Label for voice messages of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_VOICE_MESSAGE" = "Voice Note";
+
+/* message footer for delivered messages
+   message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Entregado";
+
+/* message status for messages delivered to the recipient. Embeds: {{the date and time the message was delivered}}. */
+"MESSAGE_STATUS_DELIVERED_WITH_TIMESTAMP_FORMAT" = "Delivered %@";
 
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "Fallo al enviar. Toca para más información.";
+
+/* message status for messages read by the recipient. Embeds: {{the date and time the message was read}}. */
+"MESSAGE_STATUS_READ_WITH_TIMESTAMP_FORMAT" = "Read %@";
+
+/* message status while message is sending. */
+"MESSAGE_STATUS_SENDING" = "Sending...";
 
 /* message footer for sent messages */
 "MESSAGE_STATUS_SENT" = "Enviado";
@@ -1387,6 +1439,15 @@
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Privacidad";
 
+/* Label for the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPT" = "Send Read Receipts";
+
+/* An explanation of the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Read receipts let you see when others have read your message - and let them see when you have read their messages.";
+
+/* Title of the 'read receipts' settings section. */
+"SETTINGS_READ_RECEIPTS_SECTION_TITLE" = "Read Receipts";
+
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Habilitar pantalla de seguridad";
 
@@ -1552,7 +1613,7 @@
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Solicitar código de nuevo";
 
-/* button text during registration to submit your SMS verification code */
+/* button text during registration to submit your SMS verification code. */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Comprobar código";
 
 /* Label indicating the phone number currently being verified. */
