@@ -186,8 +186,21 @@ void setDatabaseInitialized()
 
 - (nullable Class)unarchiver:(NSKeyedUnarchiver *)unarchiver cannotDecodeObjectOfClassName:(NSString *)name originalClasses:(NSArray<NSString *> *)classNames
 {
+    DDLogVerbose(@"%@ Could not decode object: %@", self.tag, name);
     OWSProdError([OWSAnalyticsEvents storageErrorCouldNotDecodeClass]);
     return [OWSUnknownObject class];
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

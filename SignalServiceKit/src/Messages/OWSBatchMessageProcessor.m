@@ -24,20 +24,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSMessageContentJob : TSYapDatabaseObject
 
 @property (nonatomic, readonly) NSDate *createdAt;
+@property (nonatomic, readonly) NSData *envelopeData;
+@property (nonatomic, readonly, nullable) NSData *plaintextData;
 
 - (instancetype)initWithEnvelopeData:(NSData *)envelopeData
                        plaintextData:(NSData *_Nullable)plaintextData NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 - (OWSSignalServiceProtosEnvelope *)envelopeProto;
-
-@end
-
-#pragma mark -
-
-@interface OWSMessageContentJob ()
-
-@property (nonatomic, readonly) NSData *envelopeData;
-@property (nonatomic, readonly, nullable) NSData *plaintextData;
 
 @end
 
@@ -66,6 +60,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
+
 - (OWSSignalServiceProtosEnvelope *)envelopeProto
 {
     return [OWSSignalServiceProtosEnvelope parseFromData:self.envelopeData];
@@ -75,8 +74,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Finder
 
-NSString *const OWSMessageContentJobFinderExtensionName = @"OWSBatchMessageProcessingFinderExtensionName";
-NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSBatchMessageProcessingFinderExtensionGroup";
+NSString *const OWSMessageContentJobFinderExtensionName = @"OWSMessageContentJobFinderExtensionName";
+NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJobFinderExtensionGroup";
 
 @interface OWSMessageContentJobFinder : NSObject
 

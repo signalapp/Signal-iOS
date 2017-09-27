@@ -18,25 +18,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#pragma mark - Persisted data model
-
-@class OWSSignalServiceProtosEnvelope;
-
 @interface OWSMessageDecryptJob : TSYapDatabaseObject
 
 @property (nonatomic, readonly) NSDate *createdAt;
+@property (nonatomic, readonly) NSData *envelopeData;
 
 - (instancetype)initWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 - (OWSSignalServiceProtosEnvelope *)envelopeProto;
-
-@end
-
-#pragma mark -
-
-@interface OWSMessageDecryptJob ()
-
-@property (nonatomic, readonly) NSData *envelopeData;
 
 @end
 
@@ -62,6 +52,11 @@ NS_ASSUME_NONNULL_BEGIN
     _createdAt = [NSDate new];
 
     return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
 }
 
 - (OWSSignalServiceProtosEnvelope *)envelopeProto
@@ -102,6 +97,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     }
 
     _dbConnection = dbConnection;
+
+    [NSKeyedUnarchiver setClass:[OWSMessageDecryptJob class] forClassName:[OWSMessageDecryptJob collection]];
 
     return self;
 }
