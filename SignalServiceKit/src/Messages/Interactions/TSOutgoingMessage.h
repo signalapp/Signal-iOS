@@ -110,6 +110,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 // Map of "recipient id"-to-"read time" of the recipients who have read the message.
 @property (atomic, readonly) NSDictionary<NSString *, NSNumber *> *recipientReadMap;
 
+@property (nonatomic, readonly) BOOL isSilent;
+
 /**
  * Signal Identifier (e.g. e164 number) or nil if in a group thread.
  */

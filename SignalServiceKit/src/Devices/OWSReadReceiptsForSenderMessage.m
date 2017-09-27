@@ -36,6 +36,13 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (BOOL)isSilent
+{
+    // Avoid "phantom messages" for "recipient read receipts".
+
+    return YES;
+}
+
 - (NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     OWSAssert(recipient);

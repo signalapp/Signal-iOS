@@ -228,6 +228,11 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     }
 }
 
+- (BOOL)isSilent
+{
+    return NO;
+}
+
 #pragma mark - Update Methods
 
 // This method does the work for the "updateWith..." methods.  Please see

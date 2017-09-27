@@ -112,6 +112,13 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (BOOL)isSilent
+{
+    // Avoid "phantom messages" for "outgoing call messages".
+
+    return YES;
+}
+
 //
 ///**
 // * override thread accessor in superclass, since this model is never saved.
