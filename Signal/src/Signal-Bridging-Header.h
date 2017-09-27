@@ -4,6 +4,7 @@
 
 #import "AppSettingsViewController.h"
 #import "AttachmentSharing.h"
+#import "ContactTableViewCell.h"
 #import "DateUtil.h"
 #import "DebugUIPage.h"
 #import "Environment.h"

@@ -11,6 +11,8 @@ class MessageMetadataViewController: OWSViewController {
 
     // MARK: Properties
 
+    let contactsManager: OWSContactsManager
+    
     let databaseConnection: YapDatabaseConnection
 
     var message: TSMessage
@@ -28,6 +30,7 @@ class MessageMetadataViewController: OWSViewController {
 
     @available(*, unavailable, message:"use message: constructor instead.")
     required init?(coder aDecoder: NSCoder) {
+        self.contactsManager = Environment.getCurrent().contactsManager
         self.message = TSMessage()
         self.databaseConnection = TSStorageManager.shared().newDatabaseConnection()!
         super.init(coder: aDecoder)
@@ -35,6 +38,7 @@ class MessageMetadataViewController: OWSViewController {
     }
 
     required init(message: TSMessage) {
+        self.contactsManager = Environment.getCurrent().contactsManager
         self.message = message
         self.databaseConnection = TSStorageManager.shared().newDatabaseConnection()!
         super.init(nibName: nil, bundle: nil)
@@ -92,6 +96,7 @@ class MessageMetadataViewController: OWSViewController {
         contentView.autoPinTrailingToSuperView()
         contentView.autoPinEdge(toSuperviewEdge:.top)
         contentView.autoPinEdge(toSuperviewEdge:.bottom)
+        scrollView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
         let hasAttachment = message.attachmentIds.count > 0
 
@@ -127,21 +132,8 @@ class MessageMetadataViewController: OWSViewController {
         }
 
         var rows = [UIView]()
-
         let contactsManager = Environment.getCurrent().contactsManager!
-
-        // Group?
         let thread = message.thread
-        if let groupThread = thread as? TSGroupThread {
-            var groupName = groupThread.name()
-            if groupName.characters.count < 1 {
-                groupName = NSLocalizedString("NEW_GROUP_DEFAULT_TITLE", comment: "")
-            }
-
-            rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_GROUP_NAME",
-                                                         comment: "Label for the 'group name' field of the 'message metadata' view."),
-                                 value:groupName))
-        }
 
         // Sender?
         if let incomingMessage = message as? TSIncomingMessage {
@@ -154,14 +146,33 @@ class MessageMetadataViewController: OWSViewController {
 
         // Recipient(s)
         if let outgoingMessage = message as? TSOutgoingMessage {
+
+            // TODO: It'd be nice to inset these dividers from the edge of the screen.
+            let addDivider = {
+                let divider = UIView()
+                divider.backgroundColor = UIColor(white:0.9, alpha:1.0)
+                divider.autoSetDimension(.height, toSize:0.5)
+                rows.append(divider)
+            }
+
+            addDivider()
+
             for recipientId in thread.recipientIdentifiers {
-                let recipientName = contactsManager.contactOrProfileName(forPhoneIdentifier:recipientId)
                 let recipientStatus = self.recipientStatus(forOutgoingMessage: outgoingMessage, recipientId: recipientId)
 
-                rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECIPIENT",
-                                                             comment: "Label for the 'recipient' field of the 'message metadata' view."),
-                                     value:recipientName,
-                                     subtitle:recipientStatus))
+                let cell = ContactTableViewCell()
+                cell.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
+                let statusLabel = UILabel()
+                statusLabel.text = recipientStatus
+                statusLabel.textColor = UIColor.ows_darkGray()
+                statusLabel.font = UIFont.ows_footnote()
+                statusLabel.sizeToFit()
+                cell.accessoryView = statusLabel
+                cell.autoSetDimension(.height, toSize:ContactTableViewCell.rowHeight())
+                cell.setContentHuggingLow()
+                rows.append(cell)
+
+                addDivider()
             }
         }
 
@@ -365,8 +376,8 @@ class MessageMetadataViewController: OWSViewController {
         let valueLabel = self.valueLabel(text:value)
         row.addSubview(nameLabel)
         row.addSubview(valueLabel)
-        nameLabel.autoPinLeadingToSuperView()
-        valueLabel.autoPinTrailingToSuperView()
+        nameLabel.autoPinLeadingToSuperView(withMargin:20)
+        valueLabel.autoPinTrailingToSuperView(withMargin:20)
         valueLabel.autoPinLeading(toTrailingOf:nameLabel, margin: 10)
         nameLabel.autoPinEdge(toSuperviewEdge:.top)
         valueLabel.autoPinEdge(toSuperviewEdge:.top)
