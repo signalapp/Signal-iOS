@@ -325,7 +325,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                                             ? [message.recipientDeliveryMap mutableCopy]
                                                             : [NSMutableDictionary new]);
                                                 recipientDeliveryMap[recipientId] = deliveryTimestamp;
-                                                message.recipientDeliveryMap = recipientDeliveryMap;
+                                                message.recipientDeliveryMap = [recipientDeliveryMap copy];
                                             }
 
                                             [message setWasDelivered:YES];
@@ -431,7 +431,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                                 = (message.recipientReadMap ? [message.recipientReadMap mutableCopy]
                                                                             : [NSMutableDictionary new]);
                                             recipientReadMap[recipientId] = @(readTimestamp);
-                                            message.recipientReadMap = recipientReadMap;
+                                            message.recipientReadMap = [recipientReadMap copy];
                                         }];
 }
 

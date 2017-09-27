@@ -299,7 +299,7 @@ class MessageMetadataViewController: OWSViewController {
             let deliveryDate = NSDate.ows_date(withMillisecondsSince1970:deliveryTimestamp.uint64Value)
             return String(format:NSLocalizedString("MESSAGE_STATUS_DELIVERED_WITH_TIMESTAMP_FORMAT",
                                                    comment: "message status for messages delivered to the recipient. Embeds: {{the date and time the message was delivered}}."),
-                          dateFormatter.string(from:deliveryDate))
+                          MessageMetadataViewController.dateFormatter.string(from:deliveryDate))
         }
 
         if message.wasDelivered {

@@ -187,19 +187,22 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(transaction);
 
     // Old-style delivery notices don't include a "delivery timestamp".
-    [self processDeliveryReceipts:envelope.source
-                   sentTimestamps:@[
-                       @(envelope.timestamp),
-                   ]
-                deliveryTimestamp:nil
-                      transaction:transaction];
+    [self processDeliveryReceiptsFromRecipientId:envelope.source
+                                  sentTimestamps:@[
+                                      @(envelope.timestamp),
+                                  ]
+                               deliveryTimestamp:nil
+                                     transaction:transaction];
 }
 
-// deliveryTimestamp is an optional parameter.
-- (void)processDeliveryReceipts:(NSString *)recipientId
-                 sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
-              deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
-                    transaction:(YapDatabaseReadWriteTransaction *)transaction
+// deliveryTimestamp is an optional parameter, since legacy
+// delivery receipts don't have a "delivery timestamp".  Those
+// messages repurpose the "timestamp" field to indicate when the
+// corresponding message was originally sent.
+- (void)processDeliveryReceiptsFromRecipientId:(NSString *)recipientId
+                                sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
+                             deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
+                                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(recipientId);
     OWSAssert(sentTimestamps);
@@ -213,8 +216,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                ofClass:[TSOutgoingMessage class]
                                                                        withTransaction:transaction];
         if (messages.count < 1) {
-            // Desktop currently sends delivery receipts for "unpersisted" messages
+            // The service sends delivery receipts for "unpersisted" messages
             // like group updates, so these errors are expected to a certain extent.
+            //
+            // TODO: persist "early" delivery receipts.
             DDLogInfo(@"%@ Missing message for delivery receipt: %llu", self.tag, timestamp);
         } else {
             if (messages.count > 1) {
@@ -379,10 +384,10 @@ NS_ASSUME_NONNULL_BEGIN
     switch (receiptMessage.type) {
         case OWSSignalServiceProtosReceiptMessageTypeDelivery:
             DDLogVerbose(@"%@ Processing receipt message with delivery receipts.", self.tag);
-            [self processDeliveryReceipts:envelope.source
-                           sentTimestamps:sentTimestamps
-                        deliveryTimestamp:@(envelope.timestamp)
-                              transaction:transaction];
+            [self processDeliveryReceiptsFromRecipientId:envelope.source
+                                          sentTimestamps:sentTimestamps
+                                       deliveryTimestamp:@(envelope.timestamp)
+                                             transaction:transaction];
             return;
         case OWSSignalServiceProtosReceiptMessageTypeRead:
             DDLogVerbose(@"%@ Processing receipt message with read receipts.", self.tag);
