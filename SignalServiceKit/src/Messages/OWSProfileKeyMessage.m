@@ -36,10 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Once we've shared our profile key with a user (perhaps due to being
         // a member of a whitelisted group), make sure they're whitelisted.
         id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-        // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [profileManager addUserToProfileWhitelist:recipientId];
-        });
+        [profileManager addUserToProfileWhitelist:recipientId];
     }
 
     return [builder build];
