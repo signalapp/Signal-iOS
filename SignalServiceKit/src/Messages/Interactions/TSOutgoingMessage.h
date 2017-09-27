@@ -104,6 +104,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 // This property won't be accurate for legacy messages.
 @property (atomic, readonly) BOOL isFromLinkedDevice;
 
+// Map of "recipient id"-to-"delivery time" of the recipients who have received the message.
+@property (atomic, readonly) NSDictionary<NSString *, NSNumber *> *recipientDeliveryMap;
+
 // Map of "recipient id"-to-"read time" of the recipients who have read the message.
 @property (atomic, readonly) NSDictionary<NSString *, NSNumber *> *recipientReadMap;
 
@@ -171,8 +174,13 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript;
 - (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithCustomMessage:(NSString *)customMessage;
-- (void)updateWithWasDeliveredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)updateWithWasDelivered;
+// deliveryTimestamp is an optional parameter, since legacy
+// delivery receipts don't have a "delivery timestamp".  Those
+// messages repurpose the "timestamp" field to indicate when the
+// corresponding message was originally sent.
+- (void)updateWithDeliveredToRecipientId:(NSString *)recipientId
+                       deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
+                             transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithWasSentFromLinkedDeviceWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithSingleGroupRecipient:(NSString *)singleGroupRecipient
                            transaction:(YapDatabaseReadWriteTransaction *)transaction;

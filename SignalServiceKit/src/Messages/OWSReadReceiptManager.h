@@ -4,8 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosEnvelope;
-@class OWSSignalServiceProtosReceiptMessage;
 @class OWSSignalServiceProtosSyncMessageRead;
 @class TSIncomingMessage;
 @class TSOutgoingMessage;
@@ -41,8 +39,9 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 // from a user to whom we have sent a message.
 //
 // This method can be called from any thread.
-- (void)processReadReceiptsFromRecipient:(OWSSignalServiceProtosReceiptMessage *)receiptMessage
-                                envelope:(OWSSignalServiceProtosEnvelope *)envelope;
+- (void)processReadReceiptsFromRecipientId:(NSString *)recipientId
+                            sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
+                             readTimestamp:(uint64_t)readTimestamp;
 
 - (void)applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
                                                      transaction:(YapDatabaseReadWriteTransaction *)transaction;

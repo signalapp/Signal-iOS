@@ -38,6 +38,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 @property (atomic) TSGroupMetaMessage groupMetaMessage;
 
+@property (atomic) NSDictionary<NSString *, NSNumber *> *recipientDeliveryMap;
+
 @property (atomic) NSDictionary<NSString *, NSNumber *> *recipientReadMap;
 
 @end
@@ -307,21 +309,27 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     }];
 }
 
-- (void)updateWithWasDeliveredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithDeliveredToRecipientId:(NSString *)recipientId
+                       deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
+                             transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssert(recipientId.length > 0);
     OWSAssert(transaction);
 
     [self applyChangeToSelfAndLatestOutgoingMessage:transaction
                                         changeBlock:^(TSOutgoingMessage *message) {
+
+                                            if (deliveryTimestamp) {
+                                                NSMutableDictionary<NSString *, NSNumber *> *recipientDeliveryMap
+                                                    = (message.recipientDeliveryMap
+                                                            ? [message.recipientDeliveryMap mutableCopy]
+                                                            : [NSMutableDictionary new]);
+                                                recipientDeliveryMap[recipientId] = deliveryTimestamp;
+                                                message.recipientDeliveryMap = [recipientDeliveryMap copy];
+                                            }
+
                                             [message setWasDelivered:YES];
                                         }];
-}
-
-- (void)updateWithWasDelivered
-{
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self updateWithWasDeliveredWithTransaction:transaction];
-    }];
 }
 
 - (void)updateWithWasSentFromLinkedDeviceWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -423,7 +431,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                                 = (message.recipientReadMap ? [message.recipientReadMap mutableCopy]
                                                                             : [NSMutableDictionary new]);
                                             recipientReadMap[recipientId] = @(readTimestamp);
-                                            message.recipientReadMap = recipientReadMap;
+                                            message.recipientReadMap = [recipientReadMap copy];
                                         }];
 }
 
