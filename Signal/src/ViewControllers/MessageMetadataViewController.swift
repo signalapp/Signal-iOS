@@ -447,14 +447,13 @@ class MessageMetadataViewController: OWSViewController {
 
         let notifications = self.databaseConnection.beginLongLivedReadTransaction()
 
-// TODO: I can't figure out what the !@#$%&^* auto-generated Swift interface to this method is.
-//        guard self.databaseConnection.hasChange(forKey:message.uniqueId,
-//                                                 inCollection:TSInteraction.collection,
-//                                                 inNotifications:notifications) else {
-//                                                    Logger.debug("\(TAG) No relevant changes.")
-//                                                    return
-//        }
-//        
+        guard self.databaseConnection.hasChange(forKey:message.uniqueId,
+                                                 inCollection:TSInteraction.collection(),
+                                                 in:notifications) else {
+                                                    Logger.debug("\(TAG) No relevant changes.")
+                                                    return
+        }
+
         updateDBConnectionAndMessageToLatest()
 
         updateContent()
