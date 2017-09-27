@@ -1759,7 +1759,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     forItemAtIndexPath:(NSIndexPath *)indexPath
             withSender:(id)sender
 {
-    OWSAssert(indexPath);
+    if (!indexPath) {
+        // Sometimes this method is called when long-pressing in the body of a text message,
+        // especially during animations.
+        return NO;
+    }
 
     id<OWSMessageData> messageData = [self messageAtIndexPath:indexPath];
     return [messageData canPerformEditingAction:action];
