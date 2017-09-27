@@ -113,7 +113,8 @@ NS_ASSUME_NONNULL_BEGIN
                                            sentAt:transcript.expirationStartedAt
                                       transaction:transaction];
 
-    [self.readReceiptManager updateOutgoingMessageFromLinkedDevice:outgoingMessage transaction:transaction];
+    [self.readReceiptManager applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:outgoingMessage
+                                                                          transaction:transaction];
 
     [attachmentsProcessor
         fetchAttachmentsForMessage:outgoingMessage

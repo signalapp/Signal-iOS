@@ -19,7 +19,6 @@
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
 #import "OWSReadReceiptManager.h"
-#import "OWSReadReceiptsProcessor.h"
 #import "OWSRecordTranscriptJob.h"
 #import "OWSSyncContactsMessage.h"
 #import "OWSSyncGroupsMessage.h"
@@ -570,10 +569,8 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.read.count > 0) {
         DDLogInfo(@"%@ Received %ld read receipt(s)", self.tag, (u_long)syncMessage.read.count);
 
-        OWSReadReceiptsProcessor *readReceiptsProcessor =
-            [[OWSReadReceiptsProcessor alloc] initWithReadReceiptProtos:syncMessage.read
-                                                         storageManager:self.storageManager];
-        [readReceiptsProcessor processWithTransaction:transaction];
+        [OWSReadReceiptManager.sharedManager processReadReceiptsFromLinkedDevice:syncMessage.read
+                                                                     transaction:transaction];
     } else if (syncMessage.hasVerified) {
         DDLogInfo(@"%@ Received verification state for %@", self.tag, syncMessage.verified.destination);
         // TODO: Do this synchronously.
@@ -900,14 +897,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (thread && incomingMessage) {
+        // In case we already have a read receipt for this new message (this happens sometimes).
+        [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
+                                                                          transaction:transaction];
+
         // TODO: Do this synchronously.
         dispatch_async(dispatch_get_main_queue(), ^{
-            // In case we already have a read receipt for this new message (happens sometimes).
-            OWSReadReceiptsProcessor *readReceiptsProcessor =
-                [[OWSReadReceiptsProcessor alloc] initWithIncomingMessage:incomingMessage
-                                                           storageManager:self.storageManager];
-            [readReceiptsProcessor process];
-
             [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:incomingMessage
                                                                     contactsManager:self.contactsManager];
 

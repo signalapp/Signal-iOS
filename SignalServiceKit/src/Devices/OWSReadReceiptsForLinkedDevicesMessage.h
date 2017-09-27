@@ -6,11 +6,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSReadReceipt;
+@class OWSLinkedDeviceReadReceipt;
 
 @interface OWSReadReceiptsForLinkedDevicesMessage : OWSOutgoingSyncMessage
 
-- (instancetype)initWithReadReceipts:(NSArray<OWSReadReceipt *> *)readReceipts;
+- (instancetype)initWithReadReceipts:(NSArray<OWSLinkedDeviceReadReceipt *> *)readReceipts;
 
 @end
 

@@ -168,13 +168,13 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 
 - (void)fireProgressNotification:(CGFloat)progress attachmentId:(NSString *)attachmentId
 {
-        NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-        [notificationCenter postNotificationNameAsync:kAttachmentUploadProgressNotification
-                                               object:nil
-                                             userInfo:@{
-                                                 kAttachmentUploadProgressKey : @(progress),
-                                                 kAttachmentUploadAttachmentIDKey : attachmentId
-                                             }];
+    NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+    [notificationCenter postNotificationNameAsync:kAttachmentUploadProgressNotification
+                                           object:nil
+                                         userInfo:@{
+                                             kAttachmentUploadProgressKey : @(progress),
+                                             kAttachmentUploadAttachmentIDKey : attachmentId
+                                         }];
 }
 
 #pragma mark - Logging

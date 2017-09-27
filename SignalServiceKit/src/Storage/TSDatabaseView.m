@@ -442,12 +442,10 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [TSDatabaseView.sharedInstance setAreAllAsyncRegistrationsComplete];
 
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_DatabaseViewRegistrationComplete
-                                       object:nil
-                                     userInfo:nil];
-            });
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_DatabaseViewRegistrationComplete
+                                   object:nil
+                                 userInfo:nil];
         }];
 }
 

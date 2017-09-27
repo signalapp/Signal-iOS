@@ -3,8 +3,9 @@
 //
 
 #import "OWSReadReceiptManager.h"
+#import "NSNotificationCenter+OWS.h"
+#import "OWSLinkedDeviceReadReceipt.h"
 #import "OWSMessageSender.h"
-#import "OWSReadReceipt.h"
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReadReceiptsForSenderMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
@@ -16,6 +17,8 @@
 #import "Threading.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMarkedAsReadNotification";
 
 @interface TSRecipientReadReceipt : TSYapDatabaseObject
 
@@ -115,7 +118,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 // we will send to our linked devices.
 //
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSReadReceipt *> *toLinkedDevicesReadReceiptMap;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSLinkedDeviceReadReceipt *> *toLinkedDevicesReadReceiptMap;
 
 // A map of "recipient id"-to-"timestamp list" for read receipts that
 // we will send to senders.
@@ -211,7 +214,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
             // Process read receipts every N seconds.
             //
-            // We want a value high enough to allow us to effectively deduplicate,
+            // We want a value high enough to allow us to effectively de-duplicate,
             // read receipts without being so high that we risk not sending read
             // receipts due to app exit.
             const CGFloat kProcessingFrequencySeconds = 3.f;
@@ -288,46 +291,10 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            NSMutableArray<id<OWSReadTracking>> *interactions = [NSMutableArray new];
-
-            [[TSDatabaseView unseenDatabaseViewExtension:transaction]
-                enumerateRowsInGroup:thread.uniqueId
-                          usingBlock:^(NSString *collection,
-                              NSString *key,
-                              id object,
-                              id metadata,
-                              NSUInteger index,
-                              BOOL *stop) {
-
-                              if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                                  OWSFail(
-                                      @"Expected to conform to OWSReadTracking: object with class: %@ collection: %@ "
-                                      @"key: %@",
-                                      [object class],
-                                      collection,
-                                      key);
-                                  return;
-                              }
-                              id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
-
-                              if (possiblyRead.timestampForSorting > timestamp) {
-                                  *stop = YES;
-                                  return;
-                              }
-
-                              OWSAssert(!possiblyRead.read);
-                              if (!possiblyRead.read) {
-                                  [interactions addObject:possiblyRead];
-                              }
-                          }];
-
-            if (interactions.count < 1) {
-                return;
-            }
-            DDLogError(@"Marking %zd messages as read.", interactions.count);
-            for (id<OWSReadTracking> possiblyRead in interactions) {
-                [possiblyRead markAsReadWithTransaction:transaction sendReadReceipt:YES updateExpiration:YES];
-            }
+            [self markAsReadBeforeTimestamp:timestamp
+                                     thread:thread
+                                   wasLocal:YES
+                                transaction:transaction];
         }];
     });
 }
@@ -343,13 +310,13 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             NSString *messageAuthorId = message.messageAuthorId;
             OWSAssert(messageAuthorId.length > 0);
 
-            OWSReadReceipt *newReadReceipt =
-                [[OWSReadReceipt alloc] initWithSenderId:messageAuthorId timestamp:message.timestamp];
+            OWSLinkedDeviceReadReceipt *newReadReceipt =
+                [[OWSLinkedDeviceReadReceipt alloc] initWithSenderId:messageAuthorId timestamp:message.timestamp];
 
-            OWSReadReceipt *_Nullable oldReadReceipt = self.toLinkedDevicesReadReceiptMap[threadUniqueId];
+            OWSLinkedDeviceReadReceipt *_Nullable oldReadReceipt = self.toLinkedDevicesReadReceiptMap[threadUniqueId];
             if (oldReadReceipt && oldReadReceipt.timestamp > newReadReceipt.timestamp) {
-                // If there's an existing read receipt for the same thread with
-                // a newer timestamp, discard the new read receipt.
+                // If there's an existing "linked device" read receipt for the same thread with
+                // a newer timestamp, discard this "linked device" read receipt.
                 DDLogVerbose(@"%@ Ignoring redundant read receipt for linked devices.", self.tag);
             } else {
                 DDLogVerbose(@"%@ Enqueuing read receipt for linked devices.", self.tag);
@@ -422,8 +389,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     });
 }
 
-- (void)updateOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
-                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
+                                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(message);
     OWSAssert(transaction);
@@ -443,6 +410,144 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         [message updateWithReadRecipientId:recipientId readTimestamp:readTimestamp transaction:transaction];
     }
     [TSRecipientReadReceipt removeRecipientIdsForTimestamp:message.timestamp transaction:transaction];
+}
+
+#pragma mark - Linked Device Read Receipts
+
+- (void)applyEarlyReadReceiptsForIncomingMessage:(TSIncomingMessage *)message
+                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(message);
+    OWSAssert(transaction);
+
+    NSString *senderId = message.messageAuthorId;
+    uint64_t timestamp = message.timestamp;
+    if (senderId.length < 1 || timestamp < 1) {
+        OWSFail(@"%@ Invalid incoming message: %@ %llu", self.tag, senderId, timestamp);
+        return;
+    }
+
+    OWSLinkedDeviceReadReceipt *_Nullable readReceipt =
+        [OWSLinkedDeviceReadReceipt findLinkedDeviceReadReceiptWithSenderId:senderId
+                                                                  timestamp:timestamp
+                                                                transaction:transaction];
+    if (!readReceipt) {
+        return;
+    }
+    [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:YES];
+    [readReceipt removeWithTransaction:transaction];
+
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
+                                                             object:message];
+}
+
+- (void)processReadReceiptsFromLinkedDevice:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos
+                                transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(readReceiptProtos);
+    OWSAssert(transaction);
+
+    for (OWSSignalServiceProtosSyncMessageRead *readReceiptProto in readReceiptProtos) {
+        NSString *_Nullable senderId = readReceiptProto.sender;
+        uint64_t timestamp = readReceiptProto.timestamp;
+        BOOL isValid = senderId.length > 0 && timestamp > 0;
+        if (!isValid) {
+            continue;
+        }
+        
+        NSArray<TSIncomingMessage *> *messages = (NSArray<TSIncomingMessage *> *) [TSInteraction interactionsWithTimestamp:timestamp
+                                                                                                                   ofClass:[TSIncomingMessage class]
+                                                                                                           withTransaction:transaction];
+        if (messages.count > 0) {
+            for (TSIncomingMessage *message in messages) {
+                OWSAssert([message isKindOfClass:[TSIncomingMessage class]]);
+                        
+                [self markAsReadOnLinkedDevice:message
+                                   transaction:transaction];
+            }
+        } else {
+            // Received read receipt for unknown incoming message.
+            // Persist in case we receive the incoming message later.
+            OWSLinkedDeviceReadReceipt *readReceipt = [[OWSLinkedDeviceReadReceipt alloc] initWithSenderId:senderId timestamp:timestamp];
+            [readReceipt saveWithTransaction:transaction];
+        }
+    }
+}
+
+- (void)markAsReadOnLinkedDevice:(TSIncomingMessage *)message
+                     transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(message);
+    OWSAssert(transaction);
+    
+    [self markAsReadBeforeTimestamp:message.timestamp
+                             thread:message.thread
+                           wasLocal:NO
+                        transaction:transaction];
+}
+
+#pragma mark - Mark As Read
+
+- (void)markAsReadBeforeTimestamp:(uint64_t)timestamp
+                           thread:(TSThread *)thread
+                         wasLocal:(BOOL)wasLocal
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(timestamp > 0);
+    OWSAssert(thread);
+    OWSAssert(transaction);
+    
+    NSMutableArray<id<OWSReadTracking>> *interactions = [NSMutableArray new];
+    
+    [[TSDatabaseView unseenDatabaseViewExtension:transaction]
+     enumerateRowsInGroup:thread.uniqueId
+     usingBlock:^(NSString *collection,
+                  NSString *key,
+                  id object,
+                  id metadata,
+                  NSUInteger index,
+                  BOOL *stop) {
+         
+         if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
+             OWSFail(
+                     @"Expected to conform to OWSReadTracking: object with class: %@ collection: %@ "
+                     @"key: %@",
+                     [object class],
+                     collection,
+                     key);
+             return;
+         }
+         id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
+         
+         if (possiblyRead.timestampForSorting > timestamp) {
+             *stop = YES;
+             return;
+         }
+         
+         OWSAssert(!possiblyRead.read);
+         if (!possiblyRead.read) {
+             [interactions addObject:possiblyRead];
+         }
+     }];
+    
+    if (interactions.count < 1) {
+        return;
+    }
+    
+    if (wasLocal) {
+        DDLogError(@"Marking %zd messages as read locally.", interactions.count);
+    } else {
+        DDLogError(@"Marking %zd messages as read by linked device.", interactions.count);
+    }
+    for (id<OWSReadTracking> possiblyRead in interactions) {
+        [possiblyRead markAsReadWithTransaction:transaction sendReadReceipt:wasLocal updateExpiration:YES];
+        
+        if ([possiblyRead isKindOfClass:[TSIncomingMessage class]]) {
+            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)possiblyRead;
+            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
+                                                                     object:incomingMessage];
+        }
+    }
 }
 
 #pragma mark - Settings

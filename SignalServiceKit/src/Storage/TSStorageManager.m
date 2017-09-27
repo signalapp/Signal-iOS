@@ -9,7 +9,6 @@
 #import "OWSFailedAttachmentDownloadsJob.h"
 #import "OWSFailedMessagesJob.h"
 #import "OWSIncomingMessageFinder.h"
-#import "OWSReadReceipt.h"
 #import "SignalRecipient.h"
 #import "TSAttachmentStream.h"
 #import "TSDatabaseSecondaryIndexes.h"
@@ -332,10 +331,9 @@ void setDatabaseInitialized()
     [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView];
     [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView];
 
-    // Register extensions which aren't essential for rendering threads async
+    // Register extensions which aren't essential for rendering threads async.
     [[OWSIncomingMessageFinder new] asyncRegisterExtension];
     [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView];
-    [OWSReadReceipt asyncRegisterIndexOnSenderIdAndTimestampWithDatabase:self.database];
     [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
     OWSFailedMessagesJob *failedMessagesJob = [[OWSFailedMessagesJob alloc] initWithStorageManager:self];
     [failedMessagesJob asyncRegisterDatabaseExtensions];
