@@ -121,12 +121,12 @@ class MessageMetadataViewController: OWSViewController {
 
         rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
                                                      comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
-                             value:DateUtil.formatPastTimestampRelative(toNow:message.timestamp)))
+                             value:DateUtil.formatPastTimestampRelativeToNow(message.timestamp)))
 
         if let _ = message as? TSIncomingMessage {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                                                          comment: "Label for the 'received date & time' field of the 'message metadata' view."),
-                                 value:DateUtil.formatPastTimestampRelative(toNow:message.timestampForSorting())))
+                                 value:DateUtil.formatPastTimestampRelativeToNow(message.timestampForSorting())))
         }
 
         // TODO: We could include the "disappearing messages" state here.
@@ -279,7 +279,7 @@ class MessageMetadataViewController: OWSViewController {
             assert(message.messageState == .sentToService)
             return NSLocalizedString("MESSAGE_STATUS_READ", comment:"message footer for read messages").rtlSafeAppend(" ", referenceView:self.view)
             .rtlSafeAppend(
-                DateUtil.formatPastTimestampRelative(toNow:readTimestamp.uint64Value), referenceView:self.view)
+                DateUtil.formatPastTimestampRelativeToNow(readTimestamp.uint64Value), referenceView:self.view)
         }
 
         let recipientDeliveryMap = message.recipientDeliveryMap
@@ -288,7 +288,7 @@ class MessageMetadataViewController: OWSViewController {
             return NSLocalizedString("MESSAGE_STATUS_DELIVERED",
                                      comment:"message status for message delivered to their recipient.").rtlSafeAppend(" ", referenceView:self.view)
                 .rtlSafeAppend(
-                    DateUtil.formatPastTimestampRelative(toNow:deliveryTimestamp.uint64Value), referenceView:self.view)
+                    DateUtil.formatPastTimestampRelativeToNow(deliveryTimestamp.uint64Value), referenceView:self.view)
         }
 
         if message.wasDelivered {

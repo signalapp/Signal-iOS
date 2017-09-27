@@ -10,6 +10,7 @@
 + (BOOL)dateIsOlderThanOneWeek:(NSDate *)date;
 + (BOOL)dateIsToday:(NSDate *)date;
 
-+ (NSString *)formatPastTimestampRelativeToNow:(uint64_t)pastTimestamp;
++ (NSString *)formatPastTimestampRelativeToNow:(uint64_t)pastTimestamp
+    NS_SWIFT_NAME(formatPastTimestampRelativeToNow(_:));
 
 @end

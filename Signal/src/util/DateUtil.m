@@ -10,25 +10,37 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 @implementation DateUtil
 
 + (NSDateFormatter *)dateFormatter {
-    NSDateFormatter *formatter = [NSDateFormatter new];
-    [formatter setLocale:[NSLocale currentLocale]];
-    [formatter setTimeStyle:NSDateFormatterNoStyle];
-    [formatter setDateStyle:NSDateFormatterShortStyle];
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        [formatter setTimeStyle:NSDateFormatterNoStyle];
+        [formatter setDateStyle:NSDateFormatterShortStyle];
+    });
     return formatter;
 }
 
 + (NSDateFormatter *)weekdayFormatter {
-    NSDateFormatter *formatter = [NSDateFormatter new];
-    [formatter setLocale:[NSLocale currentLocale]];
-    [formatter setDateFormat:DATE_FORMAT_WEEKDAY];
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        [formatter setDateFormat:DATE_FORMAT_WEEKDAY];
+    });
     return formatter;
 }
 
 + (NSDateFormatter *)timeFormatter {
-    NSDateFormatter *formatter = [NSDateFormatter new];
-    [formatter setLocale:[NSLocale currentLocale]];
-    [formatter setTimeStyle:NSDateFormatterShortStyle];
-    [formatter setDateStyle:NSDateFormatterNoStyle];
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        [formatter setTimeStyle:NSDateFormatterShortStyle];
+        [formatter setDateStyle:NSDateFormatterNoStyle];
+    });
     return formatter;
 }
 
@@ -59,7 +71,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
     uint64_t nowTimestamp = [NSDate ows_millisecondTimeStamp];
     if (pastTimestamp >= nowTimestamp) {
-        OWSCFail(@"%@ Unexpected timestamp", self.tag);
+        OWSFail(@"%@ Unexpected timestamp", self.tag);
         return NSLocalizedString(@"TIME_NOW", @"Indicates that the event happened now.");
     }
 
