@@ -98,7 +98,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     _dbConnection = dbConnection;
 
-    [NSKeyedUnarchiver setClass:[OWSMessageDecryptJob class] forClassName:[OWSMessageDecryptJob collection]];
+    [OWSMessageDecryptJobFinder registerLegacyClasses];
 
     return self;
 }
@@ -177,9 +177,18 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     return [[YapDatabaseView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"1" options:options];
 }
 
++ (void)registerLegacyClasses
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [NSKeyedUnarchiver setClass:[OWSMessageDecryptJob class] forClassName:[OWSMessageDecryptJob collection]];
+    });
+}
 
 + (void)syncRegisterDatabaseExtension:(YapDatabase *)database
 {
+    [self registerLegacyClasses];
+
     YapDatabaseView *existingView = [database registeredExtension:OWSMessageDecryptJobFinderExtensionName];
     if (existingView) {
         OWSFail(@"%@ was already initialized.", OWSMessageDecryptJobFinderExtensionName);
