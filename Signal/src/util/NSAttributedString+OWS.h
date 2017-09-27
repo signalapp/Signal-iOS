@@ -4,6 +4,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface NSString (OWS)
+
+- (NSString *)rtlSafeAppend:(NSString *)string referenceView:(UIView *)referenceView;
+
+@end
+
 @interface NSAttributedString (OWS)
 
 - (NSAttributedString *)rtlSafeAppend:(NSAttributedString *)string referenceView:(UIView *)referenceView;

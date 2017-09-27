@@ -839,6 +839,9 @@
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "Sending failed. Tap for info.";
 
+/* message footer for read messages */
+"MESSAGE_STATUS_READ" = "Read";
+
 /* message status for messages read by the recipient. Embeds: {{the date and time the message was read}}. */
 "MESSAGE_STATUS_READ_WITH_TIMESTAMP_FORMAT" = "Read %@";
 
@@ -1519,6 +1522,9 @@
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ weeks";
+
+/* Indicates that the event happened now. */
+"TIME_NOW" = "Now";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Cancel";
