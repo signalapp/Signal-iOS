@@ -7,7 +7,8 @@ import Foundation
 enum ExperienceUpgradeId: String {
     case videoCalling = "001",
     callKit = "002",
-    introducingProfiles = "003"
+    introducingProfiles = "003",
+    introducingReadReceipts = "004"
 }
 
 class ExperienceUpgradeFinder: NSObject {
@@ -34,6 +35,13 @@ class ExperienceUpgradeFinder: NSObject {
                                  image:#imageLiteral(resourceName: "introductory_splash_profile"))
     }
 
+    var introducingReadReceipts: ExperienceUpgrade {
+        return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingReadReceipts.rawValue,
+                                 title: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE", comment: "Header for upgrade experience"),
+                                 body: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION", comment: "Description of new profile feature for upgrading (existing) users"),
+                                 image:#imageLiteral(resourceName: "introductory_splash_read_receipts"))
+    }
+
     // Keep these ordered by increasing uniqueId.
     private var allExperienceUpgrades: [ExperienceUpgrade] {
         return [
@@ -43,7 +51,8 @@ class ExperienceUpgradeFinder: NSObject {
             //
             // videoCalling,
             // (UIDevice.current.supportsCallKit ? callKit : nil),
-            introducingProfiles
+            //  introducingProfiles,
+            introducingReadReceipts
         ].flatMap { $0 }
     }
 
