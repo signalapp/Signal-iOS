@@ -85,7 +85,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleMessageRead:)
-                                                 name:kMessageMarkedAsReadNotification
+                                                 name:kIncomingMessageMarkedAsReadNotification
                                                object:nil];
 
     return self;

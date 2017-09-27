@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
 
-extern NSString *const kMessageMarkedAsReadNotification;
+extern NSString *const kIncomingMessageMarkedAsReadNotification;
 
 // There are four kinds of read receipts:
 //
@@ -44,16 +44,16 @@ extern NSString *const kMessageMarkedAsReadNotification;
 - (void)processReadReceiptsFromRecipient:(OWSSignalServiceProtosReceiptMessage *)receiptMessage
                                 envelope:(OWSSignalServiceProtosEnvelope *)envelope;
 
-- (void)updateOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
-                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
+                                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - Linked Device Read Receipts
 
 - (void)processReadReceiptsFromLinkedDevice:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos
                                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (void)updateIncomingMessage:(TSIncomingMessage *)message
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)applyEarlyReadReceiptsForIncomingMessage:(TSIncomingMessage *)message
+                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - Locally Read
 

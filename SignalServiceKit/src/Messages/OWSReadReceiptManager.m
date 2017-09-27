@@ -18,7 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kMessageMarkedAsReadNotification = @"kMessageMarkedAsReadNotification";
+NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMarkedAsReadNotification";
 
 @interface TSRecipientReadReceipt : TSYapDatabaseObject
 
@@ -315,8 +315,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
             OWSLinkedDeviceReadReceipt *_Nullable oldReadReceipt = self.toLinkedDevicesReadReceiptMap[threadUniqueId];
             if (oldReadReceipt && oldReadReceipt.timestamp > newReadReceipt.timestamp) {
-                // If there's an existing read receipt for the same thread with
-                // a newer timestamp, discard the new read receipt.
+                // If there's an existing "linked device" read receipt for the same thread with
+                // a newer timestamp, discard this "linked device" read receipt.
                 DDLogVerbose(@"%@ Ignoring redundant read receipt for linked devices.", self.tag);
             } else {
                 DDLogVerbose(@"%@ Enqueuing read receipt for linked devices.", self.tag);
@@ -389,8 +389,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     });
 }
 
-- (void)updateOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
-                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
+                                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(message);
     OWSAssert(transaction);
@@ -414,8 +414,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 #pragma mark - Linked Device Read Receipts
 
-- (void)updateIncomingMessage:(TSIncomingMessage *)message
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)applyEarlyReadReceiptsForIncomingMessage:(TSIncomingMessage *)message
+                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(message);
     OWSAssert(transaction);
@@ -427,19 +427,18 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         return;
     }
 
-    OWSLinkedDeviceReadReceipt *_Nullable readReceipt = [OWSLinkedDeviceReadReceipt linkedDeviceReadReceiptWithSenderId:senderId
-                                                                                                              timestamp:timestamp];
+    OWSLinkedDeviceReadReceipt *_Nullable readReceipt =
+        [OWSLinkedDeviceReadReceipt findLinkedDeviceReadReceiptWithSenderId:senderId
+                                                                  timestamp:timestamp
+                                                                transaction:transaction];
     if (!readReceipt) {
         return;
     }
     [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:YES];
     [readReceipt removeWithTransaction:transaction];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter]
-         postNotificationNameAsync:kMessageMarkedAsReadNotification
-         object:message];
-    });
+
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
+                                                             object:message];
 }
 
 - (void)processReadReceiptsFromLinkedDevice:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos
@@ -545,11 +544,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         
         if ([possiblyRead isKindOfClass:[TSIncomingMessage class]]) {
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)possiblyRead;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter]
-                 postNotificationNameAsync:kMessageMarkedAsReadNotification
-                 object:incomingMessage];
-            });
+            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
+                                                                     object:incomingMessage];
         }
     }
 }

@@ -27,13 +27,18 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(senderId.length > 0 && timestamp > 0);
 
-    return [NSString stringWithFormat:@"%@ %llu", senderId, timestamp];
+    return [NSString stringWithFormat:@"%@-%llu", senderId, timestamp];
 }
 
-+ (nullable OWSLinkedDeviceReadReceipt *)linkedDeviceReadReceiptWithSenderId:(NSString *)senderId
-                                                                   timestamp:(uint64_t)timestamp
++ (nullable OWSLinkedDeviceReadReceipt *)findLinkedDeviceReadReceiptWithSenderId:(NSString *)senderId
+                                                                       timestamp:(uint64_t)timestamp
+                                                                     transaction:
+                                                                         (YapDatabaseReadTransaction *)transaction
 {
-    return [OWSLinkedDeviceReadReceipt fetchObjectWithUniqueID:[self uniqueIdForSenderId:senderId timestamp:timestamp]];
+    OWSAssert(transaction);
+
+    return [OWSLinkedDeviceReadReceipt fetchObjectWithUniqueID:[self uniqueIdForSenderId:senderId timestamp:timestamp]
+                                                   transaction:transaction];
 }
 
 #pragma mark - Logging

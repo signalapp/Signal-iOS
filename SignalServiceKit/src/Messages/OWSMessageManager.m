@@ -898,8 +898,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (thread && incomingMessage) {
         // In case we already have a read receipt for this new message (this happens sometimes).
-        [OWSReadReceiptManager.sharedManager updateIncomingMessage:incomingMessage
-                                                       transaction:transaction];
+        [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
+                                                                          transaction:transaction];
 
         // TODO: Do this synchronously.
         dispatch_async(dispatch_get_main_queue(), ^{

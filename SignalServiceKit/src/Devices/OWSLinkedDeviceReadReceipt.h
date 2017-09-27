@@ -13,8 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithSenderId:(NSString *)senderId timestamp:(uint64_t)timestamp;
 
-+ (nullable OWSLinkedDeviceReadReceipt *)linkedDeviceReadReceiptWithSenderId:(NSString *)senderId
-                                                                   timestamp:(uint64_t)timestamp;
++ (nullable OWSLinkedDeviceReadReceipt *)findLinkedDeviceReadReceiptWithSenderId:(NSString *)senderId
+                                                                       timestamp:(uint64_t)timestamp
+                                                                     transaction:
+                                                                         (YapDatabaseReadTransaction *)transaction;
 
 @end
 
