@@ -21,14 +21,6 @@ class MessageMetadataViewController: OWSViewController {
     var attachmentStream: TSAttachmentStream?
     var messageBody: String?
 
-    static let dateFormatter: DateFormatter = CreateDateFormatter()
-    private class func CreateDateFormatter() -> DateFormatter {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .short
-        dateFormatter.timeStyle = .long
-        return dateFormatter
-    }
-
     // MARK: Initializers
 
     @available(*, unavailable, message:"use message: constructor instead.")
@@ -127,16 +119,14 @@ class MessageMetadataViewController: OWSViewController {
             }
         }
 
-        let sentDate = NSDate.ows_date(withMillisecondsSince1970:message.timestamp)
         rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
                                                      comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
-                             value:MessageMetadataViewController.dateFormatter.string(from:sentDate)))
+                             value:DateUtil.formatPastTimestampRelativeToNow(message.timestamp)))
 
         if let _ = message as? TSIncomingMessage {
-            let receivedDate = message.dateForSorting()
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                                                          comment: "Label for the 'received date & time' field of the 'message metadata' view."),
-                                 value:MessageMetadataViewController.dateFormatter.string(from:receivedDate)))
+                                 value:DateUtil.formatPastTimestampRelativeToNow(message.timestampForSorting())))
         }
 
         // TODO: We could include the "disappearing messages" state here.
@@ -287,19 +277,18 @@ class MessageMetadataViewController: OWSViewController {
         let recipientReadMap = message.recipientReadMap
         if let readTimestamp = recipientReadMap[recipientId] {
             assert(message.messageState == .sentToService)
-            let readDate = NSDate.ows_date(withMillisecondsSince1970:readTimestamp.uint64Value)
-            return String(format:NSLocalizedString("MESSAGE_STATUS_READ_WITH_TIMESTAMP_FORMAT",
-                                                   comment: "message status for messages read by the recipient. Embeds: {{the date and time the message was read}}."),
-                          MessageMetadataViewController.dateFormatter.string(from:readDate))
+            return NSLocalizedString("MESSAGE_STATUS_READ", comment:"message footer for read messages").rtlSafeAppend(" ", referenceView:self.view)
+            .rtlSafeAppend(
+                DateUtil.formatPastTimestampRelativeToNow(readTimestamp.uint64Value), referenceView:self.view)
         }
 
         let recipientDeliveryMap = message.recipientDeliveryMap
         if let deliveryTimestamp = recipientDeliveryMap[recipientId] {
             assert(message.messageState == .sentToService)
-            let deliveryDate = NSDate.ows_date(withMillisecondsSince1970:deliveryTimestamp.uint64Value)
-            return String(format:NSLocalizedString("MESSAGE_STATUS_DELIVERED_WITH_TIMESTAMP_FORMAT",
-                                                   comment: "message status for messages delivered to the recipient. Embeds: {{the date and time the message was delivered}}."),
-                          MessageMetadataViewController.dateFormatter.string(from:deliveryDate))
+            return NSLocalizedString("MESSAGE_STATUS_DELIVERED",
+                                     comment:"message status for message delivered to their recipient.").rtlSafeAppend(" ", referenceView:self.view)
+                .rtlSafeAppend(
+                    DateUtil.formatPastTimestampRelativeToNow(deliveryTimestamp.uint64Value), referenceView:self.view)
         }
 
         if message.wasDelivered {

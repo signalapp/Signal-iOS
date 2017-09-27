@@ -435,6 +435,17 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                         }];
 }
 
+- (nullable NSNumber *)firstRecipientReadTimestamp
+{
+    NSNumber *result = nil;
+    for (NSNumber *timestamp in self.recipientReadMap.allValues) {
+        if (!result || (result.unsignedLongLongValue > timestamp.unsignedLongLongValue)) {
+            result = timestamp;
+        }
+    }
+    return result;
+}
+
 #pragma mark -
 
 - (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder

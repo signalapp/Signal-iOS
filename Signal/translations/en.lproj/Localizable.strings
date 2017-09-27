@@ -833,14 +833,11 @@
    message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Delivered";
 
-/* message status for messages delivered to the recipient. Embeds: {{the date and time the message was delivered}}. */
-"MESSAGE_STATUS_DELIVERED_WITH_TIMESTAMP_FORMAT" = "Delivered %@";
-
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "Sending failed. Tap for info.";
 
-/* message status for messages read by the recipient. Embeds: {{the date and time the message was read}}. */
-"MESSAGE_STATUS_READ_WITH_TIMESTAMP_FORMAT" = "Read %@";
+/* message footer for read messages */
+"MESSAGE_STATUS_READ" = "Read";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Sending...";
@@ -1519,6 +1516,9 @@
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ weeks";
+
+/* Indicates that the event happened now. */
+"TIME_NOW" = "Now";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Cancel";

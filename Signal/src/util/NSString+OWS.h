@@ -6,4 +6,6 @@
 
 - (NSString *)ows_stripped;
 
+- (NSString *)rtlSafeAppend:(NSString *)string referenceView:(UIView *)referenceView;
+
 @end

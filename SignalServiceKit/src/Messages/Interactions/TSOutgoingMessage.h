@@ -187,6 +187,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (void)updateWithReadRecipientId:(NSString *)recipientId
                     readTimestamp:(uint64_t)readTimestamp
                       transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (nullable NSNumber *)firstRecipientReadTimestamp;
 
 #pragma mark - Sent Recipients
 

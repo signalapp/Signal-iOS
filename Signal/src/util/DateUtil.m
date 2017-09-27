@@ -10,25 +10,37 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 @implementation DateUtil
 
 + (NSDateFormatter *)dateFormatter {
-    NSDateFormatter *formatter = [NSDateFormatter new];
-    [formatter setLocale:[NSLocale currentLocale]];
-    [formatter setTimeStyle:NSDateFormatterNoStyle];
-    [formatter setDateStyle:NSDateFormatterShortStyle];
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        [formatter setTimeStyle:NSDateFormatterNoStyle];
+        [formatter setDateStyle:NSDateFormatterShortStyle];
+    });
     return formatter;
 }
 
 + (NSDateFormatter *)weekdayFormatter {
-    NSDateFormatter *formatter = [NSDateFormatter new];
-    [formatter setLocale:[NSLocale currentLocale]];
-    [formatter setDateFormat:DATE_FORMAT_WEEKDAY];
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        [formatter setDateFormat:DATE_FORMAT_WEEKDAY];
+    });
     return formatter;
 }
 
 + (NSDateFormatter *)timeFormatter {
-    NSDateFormatter *formatter = [NSDateFormatter new];
-    [formatter setLocale:[NSLocale currentLocale]];
-    [formatter setTimeStyle:NSDateFormatterShortStyle];
-    [formatter setDateStyle:NSDateFormatterNoStyle];
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        [formatter setTimeStyle:NSDateFormatterShortStyle];
+        [formatter setDateStyle:NSDateFormatterNoStyle];
+    });
     return formatter;
 }
 
@@ -51,6 +63,38 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
 + (BOOL)dateIsToday:(NSDate *)date {
     return [self date:[NSDate date] isEqualToDateIgnoringTime:date];
+}
+
++ (NSString *)formatPastTimestampRelativeToNow:(uint64_t)pastTimestamp
+{
+    OWSCAssert(pastTimestamp > 0);
+
+    uint64_t nowTimestamp = [NSDate ows_millisecondTimeStamp];
+    if (pastTimestamp >= nowTimestamp) {
+        OWSFail(@"%@ Unexpected timestamp", self.tag);
+        return NSLocalizedString(@"TIME_NOW", @"Indicates that the event happened now.");
+    }
+
+    NSDate *pastDate = [NSDate ows_dateWithMillisecondsSince1970:pastTimestamp];
+    if ([self dateIsToday:pastDate]) {
+        return [[self timeFormatter] stringFromDate:pastDate];
+    } else if (![self dateIsOlderThanOneWeek:pastDate]) {
+        return [[self weekdayFormatter] stringFromDate:pastDate];
+    } else {
+        return [[self dateFormatter] stringFromDate:pastDate];
+    }
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

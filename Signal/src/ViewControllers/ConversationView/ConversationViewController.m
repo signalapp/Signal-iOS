@@ -8,6 +8,7 @@
 #import "BlockListUIUtils.h"
 #import "BlockListViewController.h"
 #import "ContactsViewHelper.h"
+#import "DateUtil.h"
 #import "DebugUITableViewController.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
@@ -2151,22 +2152,22 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             return [[NSAttributedString alloc]
                 initWithString:NSLocalizedString(@"MESSAGE_STATUS_FAILED", @"message footer for failed messages")];
         } else if (outgoingMessage.messageState == TSOutgoingMessageStateSentToService) {
-            NSString *text = (outgoingMessage.wasDelivered
-                    ? NSLocalizedString(@"MESSAGE_STATUS_DELIVERED", @"message footer for delivered messages")
-                    : NSLocalizedString(@"MESSAGE_STATUS_SENT", @"message footer for sent messages"));
-            NSAttributedString *result = [[NSAttributedString alloc] initWithString:text];
-            if ([OWSReadReceiptManager.sharedManager areReadReceiptsEnabled] && outgoingMessage.wasDelivered
-                && outgoingMessage.recipientReadMap.count > 0) {
-                NSAttributedString *checkmark = [[NSAttributedString alloc]
-                    initWithString:@"\uf00c "
-                        attributes:@{
-                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:10.f],
-                            NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
-                        }];
-                NSAttributedString *spacing = [[NSAttributedString alloc] initWithString:@" "];
-                result = [[checkmark rtlSafeAppend:spacing referenceView:self.view] rtlSafeAppend:result
-                                                                                    referenceView:self.view];
+            NSString *text;
+            if (outgoingMessage.wasDelivered) {
+                NSNumber *_Nullable firstRecipientReadTimestamp = [outgoingMessage firstRecipientReadTimestamp];
+                if ([OWSReadReceiptManager.sharedManager areReadReceiptsEnabled] && firstRecipientReadTimestamp) {
+                    text = NSLocalizedString(@"MESSAGE_STATUS_READ", @"message footer for read messages");
+                    text = [text rtlSafeAppend:@" " referenceView:self.view];
+                    text = [text rtlSafeAppend:[DateUtil formatPastTimestampRelativeToNow:firstRecipientReadTimestamp
+                                                                                              .unsignedLongLongValue]
+                                 referenceView:self.view];
+                } else {
+                    text = NSLocalizedString(@"MESSAGE_STATUS_DELIVERED", @"message footer for delivered messages");
+                }
+            } else {
+                text = NSLocalizedString(@"MESSAGE_STATUS_SENT", @"message footer for sent messages");
             }
+            NSAttributedString *result = [[NSAttributedString alloc] initWithString:text];
 
             // Show when it's the last message in the thread
             if (indexPath.item == [self.collectionView numberOfItemsInSection:indexPath.section] - 1) {
