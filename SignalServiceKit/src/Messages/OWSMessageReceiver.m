@@ -181,6 +181,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        // We've renamed OWSMessageProcessingJob to OWSMessageDecryptJob.
         [NSKeyedUnarchiver setClass:[OWSMessageDecryptJob class] forClassName:[OWSMessageDecryptJob collection]];
     });
 }
