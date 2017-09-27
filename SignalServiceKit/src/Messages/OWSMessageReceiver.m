@@ -18,25 +18,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#pragma mark - Persisted data model
-
-@class OWSSignalServiceProtosEnvelope;
-
 @interface OWSMessageDecryptJob : TSYapDatabaseObject
 
 @property (nonatomic, readonly) NSDate *createdAt;
+@property (nonatomic, readonly) NSData *envelopeData;
 
 - (instancetype)initWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 - (OWSSignalServiceProtosEnvelope *)envelopeProto;
-
-@end
-
-#pragma mark -
-
-@interface OWSMessageDecryptJob ()
-
-@property (nonatomic, readonly) NSData *envelopeData;
 
 @end
 
@@ -64,6 +54,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
+
 - (OWSSignalServiceProtosEnvelope *)envelopeProto
 {
     return [OWSSignalServiceProtosEnvelope parseFromData:self.envelopeData];
@@ -73,8 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Finder
 
-NSString *const OWSMessageDecryptJobFinderExtensionName = @"OWSMessageProcessingJobFinderExtensionName";
-NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessingJobFinderExtensionGroup";
+NSString *const OWSMessageDecryptJobFinderExtensionName = @"OWSMessageProcessingJobFinderExtensionName2";
+NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessingJobFinderExtensionGroup2";
 
 @interface OWSMessageDecryptJobFinder : NSObject
 
@@ -102,6 +97,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     }
 
     _dbConnection = dbConnection;
+
+    [OWSMessageDecryptJobFinder registerLegacyClasses];
 
     return self;
 }
@@ -180,9 +177,19 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     return [[YapDatabaseView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"1" options:options];
 }
 
++ (void)registerLegacyClasses
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // We've renamed OWSMessageProcessingJob to OWSMessageDecryptJob.
+        [NSKeyedUnarchiver setClass:[OWSMessageDecryptJob class] forClassName:[OWSMessageDecryptJob collection]];
+    });
+}
 
 + (void)syncRegisterDatabaseExtension:(YapDatabase *)database
 {
+    [self registerLegacyClasses];
+
     YapDatabaseView *existingView = [database registeredExtension:OWSMessageDecryptJobFinderExtensionName];
     if (existingView) {
         OWSFail(@"%@ was already initialized.", OWSMessageDecryptJobFinderExtensionName);
