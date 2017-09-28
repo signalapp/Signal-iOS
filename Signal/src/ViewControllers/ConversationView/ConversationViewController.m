@@ -1541,7 +1541,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 + (JSQMessagesBubbleImageFactory *)sharedBubbleImageFactory
 {
-
+    AssertIsOnMainThread();
+    
     static JSQMessagesBubbleImageFactory *bubbleImageFactory;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -1553,6 +1554,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 + (JSQMessagesBubbleImage *)outgoingBubbleImageData
 {
+    AssertIsOnMainThread();
+    
     static JSQMessagesBubbleImage *bubbleImage;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -1565,6 +1568,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 + (JSQMessagesBubbleImage *)incomingBubbleImageData
 {
+    AssertIsOnMainThread();
+    
     static JSQMessagesBubbleImage *bubbleImage;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -1577,6 +1582,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 + (JSQMessagesBubbleImage *)currentlyOutgoingBubbleImageData
 {
+    AssertIsOnMainThread();
+    
     static JSQMessagesBubbleImage *bubbleImage;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -1589,6 +1596,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 + (JSQMessagesBubbleImage *)outgoingMessageFailedImageData
 {
+    AssertIsOnMainThread();
+    
     static JSQMessagesBubbleImage *bubbleImage;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
