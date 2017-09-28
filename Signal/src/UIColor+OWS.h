@@ -4,6 +4,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface UIColor (OWS)
 
 + (UIColor *)ows_signalBrandBlueColor;
@@ -26,3 +28,5 @@
 - (UIColor *)blendWithColor:(UIColor *)otherColor alpha:(CGFloat)alpha;
 
 @end
+
+NS_ASSUME_NONNULL_END

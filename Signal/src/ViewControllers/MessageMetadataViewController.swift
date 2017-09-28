@@ -24,6 +24,8 @@ class MessageMetadataViewController: OWSViewController {
 
     let databaseConnection: YapDatabaseConnection
 
+    let bubbleFactory = OWSMessagesBubbleImageFactory()
+
     var message: TSMessage
 
     var mediaMessageView: MediaMessageView?
@@ -280,16 +282,18 @@ class MessageMetadataViewController: OWSViewController {
                 bodyLabel.numberOfLines = 10
                 bodyLabel.lineBreakMode = .byWordWrapping
 
-                let bubbleImageData = isIncoming ? ConversationViewController.incomingBubbleImageData() : ConversationViewController.outgoingBubbleImageData()
+                let bubbleImageData = isIncoming ? bubbleFactory.incoming : bubbleFactory.outgoing
+
                 let leadingMargin: CGFloat = isIncoming ? 15 : 10
                 let trailingMargin: CGFloat = isIncoming ? 10 : 15
 
-                let bubbleView = UIImageView(image: bubbleImageData!.messageBubbleImage)
+                let bubbleView = UIImageView(image: bubbleImageData.messageBubbleImage)
 
                 bubbleView.layer.cornerRadius = 10
                 bubbleView.addSubview(bodyLabel)
-                bodyLabel.autoPinLeadingToSuperView(withMargin: leadingMargin)
-                bodyLabel.autoPinTrailingToSuperView(withMargin: trailingMargin)
+
+                bodyLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: leadingMargin)
+                bodyLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: trailingMargin)
                 bodyLabel.autoPinHeightToSuperview(withMargin: 10)
 
                 // Try to hug content both horizontally and vertically, but *prefer* wide and short, to narrow and tall.
