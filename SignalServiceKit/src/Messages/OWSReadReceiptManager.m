@@ -466,8 +466,10 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 {
     OWSAssert(message);
     OWSAssert(transaction);
-    
-    [self markAsReadBeforeTimestamp:message.timestamp
+
+    // Use timestampForSorting which reflects local sort order, rather than timestamp
+    // which reflect sender time.
+    [self markAsReadBeforeTimestamp:message.timestampForSorting
                              thread:message.thread
                            wasLocal:NO
                         transaction:transaction];
