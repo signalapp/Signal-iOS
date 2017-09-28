@@ -12,6 +12,9 @@ TARGETS="Signal/src ${SSK_DIR}"
 TMP="$(mktemp -d)"
 STRINGFILE="Signal/translations/en.lproj/Localizable.strings"
 
+# Assert preconditions before we do any work
+# We're more likely to notice errors this way
+
 for TARGET_DIR in $TARGETS
 do
 
@@ -21,6 +24,14 @@ if [ ! -d $TARGET_DIR ]; then
 fi
 
 done
+
+JSQ_STRINGS_PATH="../JSQMessagesViewController/JSQMessagesViewController/Assets/JSQMessagesAssets.bundle/Base.lproj/JSQMessages.strings"
+if [ ! -f $JSQ_STRINGS_PATH ]; then
+  echo "[!] Error. Expected to find strings for JSQMessagesViewController at ${JSQ_STRINGS_PATH}"
+  exit 1
+fi
+
+# Now that we've check all our pre-conditions, proceed with the work.
 
 # Search directories for .m & .h files and collect string definitions with genstrings
 find $TARGETS -name "*.m" -print0 -o -name "*.h" -print0 -o -name "*.swift" -print0 | xargs -0 genstrings -o $TMP
@@ -52,12 +63,6 @@ echo "$OLDUTF8" | grep -Eo '^".*"' | \
 # now defunct JSQMessagesView project.
 
 echo "Copying strings from JSQMessagesViewController"
-JSQ_STRINGS_PATH="../JSQMessagesViewController/JSQMessagesViewController/Assets/JSQMessagesAssets.bundle/Base.lproj/JSQMessages.strings"
-if [ ! -f $JSQ_STRINGS_PATH ]; then
-  echo "[!] Error. Expected to find strings for JSQMessagesViewController at ${JSQ_STRINGS_PATH}"
-  exit 1
-fi
-
 echo "
 // Strings Copied in from JSQMessagesViewController" >> $STRINGFILE
 cat $JSQ_STRINGS_PATH  | grep -v "^//" >> $STRINGFILE
