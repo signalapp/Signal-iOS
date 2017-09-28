@@ -206,45 +206,46 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
 #pragma mark - Signal Messages
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)message inThread:(TSThread *)thread {
-    OWSAssert([NSThread isMainThread]);
     OWSAssert(message);
     OWSAssert(thread);
 
-    if (thread.isMuted) {
-        return;
-    }
-
-    BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
-
-    NSString *messageDescription = message.description;
-
-    if (([UIApplication sharedApplication].applicationState != UIApplicationStateActive) && messageDescription) {
-        UILocalNotification *notification = [[UILocalNotification alloc] init];
-        notification.userInfo             = @{Signal_Thread_UserInfo_Key : thread.uniqueId};
-        if (shouldPlaySound) {
-            notification.soundName = kNotificationsManagerNewMesssageSoundName;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (thread.isMuted) {
+            return;
         }
 
-        NSString *alertBodyString = @"";
+        BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
 
-        NSString *authorName = [thread name];
-        switch (self.notificationPreviewType) {
-            case NotificationNamePreview:
-            case NotificationNameNoPreview:
-                alertBodyString = [NSString stringWithFormat:@"%@: %@", authorName, messageDescription];
-                break;
-            case NotificationNoNameNoPreview:
-                alertBodyString = messageDescription;
-                break;
-        }
-        notification.alertBody = alertBodyString;
+        NSString *messageDescription = message.description;
 
-        [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
-    } else {
-        if (shouldPlaySound && [Environment.preferences soundInForeground]) {
-            AudioServicesPlayAlertSound(_newMessageSound);
+        if (([UIApplication sharedApplication].applicationState != UIApplicationStateActive) && messageDescription) {
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            notification.userInfo = @{ Signal_Thread_UserInfo_Key : thread.uniqueId };
+            if (shouldPlaySound) {
+                notification.soundName = kNotificationsManagerNewMesssageSoundName;
+            }
+
+            NSString *alertBodyString = @"";
+
+            NSString *authorName = [thread name];
+            switch (self.notificationPreviewType) {
+                case NotificationNamePreview:
+                case NotificationNameNoPreview:
+                    alertBodyString = [NSString stringWithFormat:@"%@: %@", authorName, messageDescription];
+                    break;
+                case NotificationNoNameNoPreview:
+                    alertBodyString = messageDescription;
+                    break;
+            }
+            notification.alertBody = alertBodyString;
+
+            [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
+        } else {
+            if (shouldPlaySound && [Environment.preferences soundInForeground]) {
+                AudioServicesPlayAlertSound(_newMessageSound);
+            }
         }
-    }
+    });
 }
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage *)message
@@ -255,83 +256,87 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
     OWSAssert(thread);
     OWSAssert(contactsManager);
 
-    if (thread.isMuted) {
-        return;
-    }
-
-    BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
-
-    NSString *messageDescription = message.description;
-    NSString *senderName = [contactsManager displayNameForPhoneIdentifier:message.authorId];
-    NSString *groupName = [thread.name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    if (groupName.length < 1) {
-        groupName = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
-    }
-
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {
-        UILocalNotification *notification = [[UILocalNotification alloc] init];
-        if (shouldPlaySound) {
-            notification.soundName = kNotificationsManagerNewMesssageSoundName;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (thread.isMuted) {
+            return;
         }
 
-        switch (self.notificationPreviewType) {
-            case NotificationNamePreview: {
+        BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
 
-                // Don't reply from lockscreen if anyone in this conversation is
-                // "no longer verified".
-                BOOL isNoLongerVerified = NO;
-                for (NSString *recipientId in thread.recipientIdentifiers) {
-                    if ([OWSIdentityManager.sharedManager verificationStateForRecipientId:recipientId]
-                        == OWSVerificationStateNoLongerVerified) {
-                        isNoLongerVerified = YES;
-                        break;
+        NSString *messageDescription = message.description;
+        NSString *senderName = [contactsManager displayNameForPhoneIdentifier:message.authorId];
+        NSString *groupName = [thread.name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        if (groupName.length < 1) {
+            groupName = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
+        }
+
+        if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            if (shouldPlaySound) {
+                notification.soundName = kNotificationsManagerNewMesssageSoundName;
+            }
+
+            switch (self.notificationPreviewType) {
+                case NotificationNamePreview: {
+
+                    // Don't reply from lockscreen if anyone in this conversation is
+                    // "no longer verified".
+                    BOOL isNoLongerVerified = NO;
+                    for (NSString *recipientId in thread.recipientIdentifiers) {
+                        if ([OWSIdentityManager.sharedManager verificationStateForRecipientId:recipientId]
+                            == OWSVerificationStateNoLongerVerified) {
+                            isNoLongerVerified = YES;
+                            break;
+                        }
                     }
-                }
 
-                notification.category = (isNoLongerVerified ? Signal_Full_New_Message_Category_No_Longer_Verified
-                                                            : Signal_Full_New_Message_Category);
-                notification.userInfo =
-                    @{Signal_Thread_UserInfo_Key : thread.uniqueId, Signal_Message_UserInfo_Key : message.uniqueId};
+                    notification.category = (isNoLongerVerified ? Signal_Full_New_Message_Category_No_Longer_Verified
+                                                                : Signal_Full_New_Message_Category);
+                    notification.userInfo = @{
+                        Signal_Thread_UserInfo_Key : thread.uniqueId,
+                        Signal_Message_UserInfo_Key : message.uniqueId
+                    };
 
-                if ([thread isGroupThread]) {
-                    NSString *threadName = [NSString stringWithFormat:@"\"%@\"", groupName];
-                    // TODO: Format parameters might change order in l10n.  We should use named parameters.
-                    notification.alertBody =
-                        [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil),
-                                  senderName,
-                                  threadName,
-                                  messageDescription];
-                } else {
-                    notification.alertBody = [NSString stringWithFormat:@"%@: %@", senderName, messageDescription];
+                    if ([thread isGroupThread]) {
+                        NSString *threadName = [NSString stringWithFormat:@"\"%@\"", groupName];
+                        // TODO: Format parameters might change order in l10n.  We should use named parameters.
+                        notification.alertBody =
+                            [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil),
+                                      senderName,
+                                      threadName,
+                                      messageDescription];
+                    } else {
+                        notification.alertBody = [NSString stringWithFormat:@"%@: %@", senderName, messageDescription];
+                    }
+                    break;
                 }
-                break;
+                case NotificationNameNoPreview: {
+                    notification.userInfo = @{ Signal_Thread_UserInfo_Key : thread.uniqueId };
+                    if ([thread isGroupThread]) {
+                        notification.alertBody = [NSString
+                            stringWithFormat:@"%@ \"%@\"", NSLocalizedString(@"APN_MESSAGE_IN_GROUP", nil), groupName];
+                    } else {
+                        notification.alertBody = [NSString
+                            stringWithFormat:@"%@ %@", NSLocalizedString(@"APN_MESSAGE_FROM", nil), senderName];
+                    }
+                    break;
+                }
+                case NotificationNoNameNoPreview:
+                    notification.alertBody = NSLocalizedString(@"APN_Message", nil);
+                    break;
+                default:
+                    DDLogWarn(@"unknown notification preview type: %lu", (unsigned long)self.notificationPreviewType);
+                    notification.alertBody = NSLocalizedString(@"APN_Message", nil);
+                    break;
             }
-            case NotificationNameNoPreview: {
-                notification.userInfo = @{Signal_Thread_UserInfo_Key : thread.uniqueId};
-                if ([thread isGroupThread]) {
-                    notification.alertBody = [NSString
-                        stringWithFormat:@"%@ \"%@\"", NSLocalizedString(@"APN_MESSAGE_IN_GROUP", nil), groupName];
-                } else {
-                    notification.alertBody =
-                        [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"APN_MESSAGE_FROM", nil), senderName];
-                }
-                break;
-            }
-            case NotificationNoNameNoPreview:
-                notification.alertBody = NSLocalizedString(@"APN_Message", nil);
-                break;
-            default:
-                DDLogWarn(@"unknown notification preview type: %lu", (unsigned long)self.notificationPreviewType);
-                notification.alertBody = NSLocalizedString(@"APN_Message", nil);
-                break;
-        }
 
-        [[PushManager sharedManager] presentNotification:notification checkForCancel:YES];
-    } else {
-        if (shouldPlaySound && [Environment.preferences soundInForeground]) {
-            AudioServicesPlayAlertSound(_newMessageSound);
+            [[PushManager sharedManager] presentNotification:notification checkForCancel:YES];
+        } else {
+            if (shouldPlaySound && [Environment.preferences soundInForeground]) {
+                AudioServicesPlayAlertSound(_newMessageSound);
+            }
         }
-    }
+    });
 }
 
 - (BOOL)shouldPlaySoundForNotification

@@ -495,7 +495,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                       // This will save the message.
                       [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 
-                      dispatch_async(dispatch_get_main_queue(), ^{
+                      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                           if (model.groupImage) {
                               NSData *data = UIImagePNGRepresentation(model.groupImage);
                               DataSource *_Nullable dataSource =

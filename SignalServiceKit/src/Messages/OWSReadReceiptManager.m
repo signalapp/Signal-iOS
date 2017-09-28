@@ -178,9 +178,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                                object:nil];
 
     // Try to start processing.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self scheduleProcessing];
-    });
+    [self scheduleProcessing];
 
     return self;
 }
@@ -198,7 +196,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 // Schedules a processing pass, unless one is already scheduled.
 - (void)scheduleProcessing
 {
-    DispatchMainThreadSafe(^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
             if ([TSDatabaseView hasPendingViewRegistrations]) {
@@ -241,17 +239,15 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             OWSReadReceiptsForLinkedDevicesMessage *message =
                 [[OWSReadReceiptsForLinkedDevicesMessage alloc] initWithReadReceipts:readReceiptsForLinkedDevices];
 
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.messageSender sendMessage:message
-                    success:^{
-                        DDLogInfo(@"%@ Successfully sent %zd read receipt to linked devices.",
-                            self.tag,
-                            readReceiptsForLinkedDevices.count);
-                    }
-                    failure:^(NSError *error) {
-                        DDLogError(@"%@ Failed to send read receipt to linked devices with error: %@", self.tag, error);
-                    }];
-            });
+            [self.messageSender sendMessage:message
+                success:^{
+                    DDLogInfo(@"%@ Successfully sent %zd read receipt to linked devices.",
+                        self.tag,
+                        readReceiptsForLinkedDevices.count);
+                }
+                failure:^(NSError *error) {
+                    DDLogError(@"%@ Failed to send read receipt to linked devices with error: %@", self.tag, error);
+                }];
         }
 
         NSArray<OWSReadReceipt *> *readReceiptsToSend = [self.toLinkedDevicesReadReceiptMap allValues];
@@ -266,17 +262,14 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                     [[OWSReadReceiptsForSenderMessage alloc] initWithThread:thread
                                                           messageTimestamps:timestamps.allObjects];
 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.messageSender sendMessage:message
-                        success:^{
-                            DDLogInfo(@"%@ Successfully sent %zd read receipts to sender.",
-                                self.tag,
-                                readReceiptsToSend.count);
-                        }
-                        failure:^(NSError *error) {
-                            DDLogError(@"%@ Failed to send read receipts to sender with error: %@", self.tag, error);
-                        }];
-                });
+                [self.messageSender sendMessage:message
+                    success:^{
+                        DDLogInfo(
+                            @"%@ Successfully sent %zd read receipts to sender.", self.tag, readReceiptsToSend.count);
+                    }
+                    failure:^(NSError *error) {
+                        DDLogError(@"%@ Failed to send read receipts to sender with error: %@", self.tag, error);
+                    }];
             }
             [self.toSenderReadReceiptMap removeAllObjects];
         }

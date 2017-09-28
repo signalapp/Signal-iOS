@@ -305,10 +305,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)notifyForErrorMessage:(TSErrorMessage *)errorMessage withEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
     TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage
-                                                                            inThread:contactThread];
-    });
+    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage inThread:contactThread];
 }
 
 #pragma mark - Logging
