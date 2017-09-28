@@ -110,6 +110,9 @@ PODS:
     - YapDatabase/SQLCipher/Core
   - YapDatabase/SQLCipher/Extensions/Views (2.9.3):
     - YapDatabase/SQLCipher/Core
+  - YYImage (1.0.4):
+    - YYImage/Core (= 1.0.4)
+  - YYImage/Core (1.0.4)
 
 DEPENDENCIES:
   - ATAppUpdater
@@ -120,6 +123,7 @@ DEPENDENCIES:
   - Reachability
   - SignalServiceKit (from `.`)
   - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
+  - YYImage
 
 EXTERNAL SOURCES:
   AxolotlKit:
@@ -170,7 +174,8 @@ SPEC CHECKSUMS:
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: cd911121580ff16675f65ad742a9eb0ab4d9e266
+  YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 2f847bb25e70d1d376f38cf21ae08624fa6ed67d
+PODFILE CHECKSUM: 00831faaa7677029090c311c00ceadaa44f65c0f
 
 COCOAPODS: 1.2.1

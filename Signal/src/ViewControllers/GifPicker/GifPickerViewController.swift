@@ -5,9 +5,7 @@
 import Foundation
 //import MediaPlayer
 
-class GifPickerViewController: OWSViewController, UISearchBarDelegate
-    //, OWSAudioAttachmentPlayerDelegate
-{
+class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
     let TAG = "[GifPickerViewController]"
 
     // MARK: Properties
@@ -15,20 +13,11 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate
     let searchBar: UISearchBar
     let layout: GifPickerLayout
     let collectionView: UICollectionView
+    var logoImageView: UIImageView?
 
-    //    let attachment: SignalAttachment
-    //
-    //    var successCompletion : (() -> Void)?
-    //
-    //    var videoPlayer: MPMoviePlayerController?
-    //
-    //    var audioPlayer: OWSAudioAttachmentPlayer?
-    //    var audioStatusLabel: UILabel?
-    //    var audioPlayButton: UIButton?
-    //    var isAudioPlayingFlag = false
-    //    var isAudioPaused = false
-    //    var audioProgressSeconds: CGFloat = 0
-    //    var audioDurationSeconds: CGFloat = 0
+    var imageInfos = [GiphyImageInfo]()
+
+    private let kCellReuseIdentifier = "kCellReuseIdentifier"
 
     // MARK: Initializers
 
@@ -57,7 +46,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor.black
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem:.stop,
                                                                 target:self,
@@ -68,37 +57,76 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate
         createViews()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        search(query:"funny")
+
+//        self.view.layoutSubviews()
+//        updateImageLayout()
+    }
+
     // MARK: Views
 
     private func createViews() {
-        //        @property (nonatomic, readonly) UISearchBar *searchBar;
 
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor.black
 
         // Search
-        searchBar.searchBarStyle = .minimal
+//        searchBar.searchBarStyle = .minimal
+        searchBar.searchBarStyle = .default
         searchBar.delegate = self
         searchBar.placeholder = NSLocalizedString("GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
                                                   comment:"Placeholder text for the search field in gif view")
-        searchBar.backgroundColor = UIColor.white
+//        searchBar.backgroundColor = UIColor(white:0.6, alpha:1.0)
+//        searchBar.backgroundColor = UIColor.white
+//        searchBar.backgroundColor = UIColor.black
+//        searchBar.barTintColor = UIColor.red
+        searchBar.isTranslucent = false
+//        searchBar.backgroundColor = UIColor.white
+        searchBar.backgroundImage = UIImage(color:UIColor.clear)
+        searchBar.barTintColor = UIColor.black
+        searchBar.tintColor = UIColor.white
         self.view.addSubview(searchBar)
         searchBar.autoPinWidthToSuperview()
         searchBar.autoPin(toTopLayoutGuideOf: self, withInset:0)
         //        [searchBar sizeToFit];
 
-//        self.collectionView.delegate = self
-//        self.collectionView.dataSource = self
+        self.collectionView.delegate = self
+        self.collectionView.dataSource = self
+        self.collectionView.backgroundColor = UIColor.black
+        self.collectionView.register(GifPickerCell.self, forCellWithReuseIdentifier: kCellReuseIdentifier)
         self.view.addSubview(self.collectionView)
         self.collectionView.autoPinWidthToSuperview()
         self.collectionView.autoPinEdge(.top, to:.bottom, of:searchBar)
         self.collectionView.autoPin(toBottomLayoutGuideOf: self, withInset:0)
 
+        let logoImage = UIImage(named:"giphy_logo")
+        let logoImageView = UIImageView(image:logoImage)
+        self.logoImageView = logoImageView
+        self.view.addSubview(logoImageView)
+        logoImageView.autoCenterInSuperview()
+
         self.updateContents()
         //        [self updateTableContents];
     }
 
-    private func updateContents() {
+    private func setContentVisible(_ isVisible: Bool) {
+        self.collectionView.isHidden = !isVisible
+        if let logoImageView = self.logoImageView {
+            logoImageView.isHidden = isVisible
+        }
+    }
 
+    private func updateContents() {
+        if imageInfos.count < 1 {
+            setContentVisible(false)
+        } else {
+            setContentVisible(true)
+        }
+
+        self.collectionView.collectionViewLayout.invalidateLayout()
+        self.collectionView.reloadData()
     }
 
     //    override func viewDidLoad() {
@@ -457,70 +485,66 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate
     //            successCompletion?()
     //        })
     //    }
-    //
-    //    func audioPlayButtonPressed(sender: UIButton) {
-    //        audioPlayer?.togglePlayState()
-    //    }
-    //
-    //    // MARK: - OWSAudioAttachmentPlayerDelegate
-    //
-    //    public func isAudioPlaying() -> Bool {
-    //        return isAudioPlayingFlag
-    //    }
-    //
-    //    public func setIsAudioPlaying(_ isAudioPlaying: Bool) {
-    //        isAudioPlayingFlag = isAudioPlaying
-    //
-    //        updateAudioStatusLabel()
-    //    }
-    //
-    //    public func isPaused() -> Bool {
-    //        return isAudioPaused
-    //    }
-    //
-    //    public func setIsPaused(_ isPaused: Bool) {
-    //        isAudioPaused = isPaused
-    //    }
-    //
-    //    public func setAudioProgress(_ progress: CGFloat, duration: CGFloat) {
-    //        audioProgressSeconds = progress
-    //        audioDurationSeconds = duration
-    //
-    //        updateAudioStatusLabel()
-    //    }
-    //
-    //    private func updateAudioStatusLabel() {
-    //        guard let audioStatusLabel = self.audioStatusLabel else {
-    //            owsFail("Missing audio status label")
-    //            return
-    //        }
-    //
-    //        if isAudioPlayingFlag && audioProgressSeconds > 0 && audioDurationSeconds > 0 {
-    //            audioStatusLabel.text = String(format:"%@ / %@",
-    //                ViewControllerUtils.formatDurationSeconds(Int(round(self.audioProgressSeconds))),
-    //                ViewControllerUtils.formatDurationSeconds(Int(round(self.audioDurationSeconds))))
-    //        } else {
-    //            audioStatusLabel.text = " "
-    //        }
-    //    }
-    //
-    //    public func setAudioIconToPlay() {
-    //        let image = UIImage(named:"audio_play_black_large")?.withRenderingMode(.alwaysTemplate)
-    //        assert(image != nil)
-    //        audioPlayButton?.setImage(image, for:.normal)
-    //        audioPlayButton?.imageView?.tintColor = UIColor.ows_materialBlue()
-    //    }
-    //
-    //    public func setAudioIconToPause() {
-    //        let image = UIImage(named:"audio_pause_black_large")?.withRenderingMode(.alwaysTemplate)
-    //        assert(image != nil)
-    //        audioPlayButton?.setImage(image, for:.normal)
-    //        audioPlayButton?.imageView?.tintColor = UIColor.ows_materialBlue()
-    //    }
+
+    // MARK: - UICollectionViewDataSource
+
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return imageInfos.count
+    }
+
+    // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
+    public  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let imageInfo = imageInfos[indexPath.row]
+
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier:kCellReuseIdentifier, for: indexPath) as! GifPickerCell
+        cell.imageInfo = imageInfo
+        return cell
+    }
+
+    // MARK: - UICollectionViewDelegate
+
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let imageInfo = imageInfos[indexPath.row]
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+
+    }
 
     // MARK: - Event Handlers
 
     func donePressed(sender: UIButton) {
         dismiss(animated: true, completion:nil)
+    }
+
+    // MARK: - UISearchBarDelegate
+
+    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        // TODO: We could do progressive search as the user types.
+    }
+
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let text = searchBar.text else {
+            // TODO: Alert?
+            return
+        }
+        search(query:text)
+    }
+
+    private func search(query: String) {
+        GifManager.sharedInstance.search(query: query, success: { [weak self] imageInfos in
+            guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.TAG) search complete")
+            strongSelf.imageInfos = imageInfos
+            strongSelf.updateContents()
+        },
+            failure: { [weak self] in
+                guard let strongSelf = self else { return }
+                Logger.info("\(strongSelf.TAG) search failed.")
+        })
     }
 }

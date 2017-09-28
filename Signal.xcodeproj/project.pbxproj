@@ -91,6 +91,7 @@
 		34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CE88E61F2FB9A10098030F /* ProfileViewController.m */; };
 		34CE88EC1F3237260098030F /* OWSProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CE88EA1F3237260098030F /* OWSProfileManager.m */; };
 		34CE88ED1F3237260098030F /* ProfileFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CE88EB1F3237260098030F /* ProfileFetcherJob.swift */; };
+		34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F04F1F7D45A60066283D /* GifPickerCell.swift */; };
 		34D5CC961EA6AFAD005515DB /* OWSContactsSyncing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CC951EA6AFAD005515DB /* OWSContactsSyncing.m */; };
 		34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */; };
 		34D5CCB11EAE7E7F005515DB /* SelectRecipientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCB01EAE7E7F005515DB /* SelectRecipientViewController.m */; };
@@ -549,6 +550,7 @@
 		34CE88E91F3237260098030F /* OWSProfileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSProfileManager.h; sourceTree = "<group>"; };
 		34CE88EA1F3237260098030F /* OWSProfileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProfileManager.m; sourceTree = "<group>"; };
 		34CE88EB1F3237260098030F /* ProfileFetcherJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileFetcherJob.swift; sourceTree = "<group>"; };
+		34D1F04F1F7D45A60066283D /* GifPickerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerCell.swift; sourceTree = "<group>"; };
 		34D5CC941EA6AFAD005515DB /* OWSContactsSyncing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsSyncing.h; sourceTree = "<group>"; };
 		34D5CC951EA6AFAD005515DB /* OWSContactsSyncing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSyncing.m; sourceTree = "<group>"; };
 		34D5CC981EA6EB79005515DB /* OWSMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageCollectionViewCell.h; sourceTree = "<group>"; };
@@ -1132,6 +1134,7 @@
 		34BECE2C1F7ABCE000D7438D /* GifPicker */ = {
 			isa = PBXGroup;
 			children = (
+				34D1F04F1F7D45A60066283D /* GifPickerCell.swift */,
 				34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */,
 				34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */,
 			);
@@ -2220,6 +2223,7 @@
 				34B3F8741E8DF1700035BE1A /* AttachmentSharing.m in Sources */,
 				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,
 				45C9DEB81DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift in Sources */,
+				34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */,
 				34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */,
 				34D9134B1F62D4A500722898 /* SignalAttachment.swift in Sources */,
 				34B3F88E1E8DF1700035BE1A /* PrivacySettingsTableViewController.m in Sources */,

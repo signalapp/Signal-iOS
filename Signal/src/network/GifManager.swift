@@ -40,6 +40,42 @@ enum GiphyFormat {
         self.giphyId = giphyId
         self.renditions = renditions
     }
+
+    let kMaxDimension = UInt(618)
+    let kMinDimension = UInt(101)
+    let kMaxFileSize = SignalAttachment.kMaxFileSizeAnimatedImage
+
+    public func pickGifRendition() -> GiphyRendition? {
+        var bestRendition: GiphyRendition?
+
+        for rendition in renditions {
+            guard rendition.format == .gif else {
+                continue
+            }
+            guard !rendition.name.hasSuffix("_still")
+                else {
+                    continue
+            }
+            guard rendition.width >= kMinDimension &&
+                rendition.width <= kMaxDimension &&
+                rendition.height >= kMinDimension &&
+                rendition.height <= kMaxDimension &&
+                rendition.fileSize <= kMaxFileSize
+                else {
+                    continue
+            }
+
+            if let currentBestRendition = bestRendition {
+                if rendition.width > currentBestRendition.width {
+                    bestRendition = rendition
+                }
+            } else {
+                bestRendition = rendition
+            }
+        }
+
+        return bestRendition
+    }
 }
 
 @objc class GifManager: NSObject {
@@ -81,13 +117,23 @@ enum GiphyFormat {
         return sessionManager
     }
 
+    // TODO:
     public func test() {
+        search(query:"monkey",
+               success: { _ in
+        }, failure: {
+        })
+    }
+
+    public func search(query: String, success: @escaping (([GiphyImageInfo]) -> Void), failure: @escaping (() -> Void)) {
         guard let sessionManager = giphySessionManager() else {
             Logger.error("\(GifManager.TAG) Couldn't create session manager.")
+            failure()
             return
         }
         guard NSURL(string:kGiphyBaseURL) != nil else {
             Logger.error("\(GifManager.TAG) Invalid base URL.")
+            failure()
             return
         }
 
@@ -96,27 +142,27 @@ enum GiphyFormat {
         let kGiphyPageSize = 200
         // TODO:
         let kGiphyPageOffset = 0
-        // TODO:
-        let query = "monkey"
-        // TODO:
         guard let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
             Logger.error("\(GifManager.TAG) Could not URL encode query: \(query).")
+            failure()
             return
         }
-        //        Logger.error("\(GifManager.TAG) queryEncoded: \(queryEncoded) \(queryEncoded).")
         let urlString = "/v1/gifs/search?api_key=\(kGiphyApiKey)&offset=\(kGiphyPageOffset)&limit=\(kGiphyPageSize)&q=\(queryEncoded)"
-        //        Logger.error("\(GifManager.TAG) urlString: \(urlString).")
-        //        Logger.error("\(GifManager.TAG) baseUrl: \(baseUrl).")
 
         sessionManager.get(urlString,
                            parameters: {},
                            progress:nil,
                            success: { _, value in
                             Logger.error("\(GifManager.TAG) search request succeeded")
-                            self.parseGiphyImages(responseJson:value)
+                            guard let imageInfos = self.parseGiphyImages(responseJson:value) else {
+                                failure()
+                                return
+                            }
+                            success(imageInfos)
         },
                            failure: { _, error in
                             Logger.error("\(GifManager.TAG) search request failed: \(error)")
+                            failure()
         })
     }
 
@@ -172,7 +218,7 @@ enum GiphyFormat {
             Logger.warn("\(GifManager.TAG) Image has no valid renditions.")
             return nil
         }
-        Logger.debug("\(GifManager.TAG) Image successfully parsed.")
+//        Logger.debug("\(GifManager.TAG) Image successfully parsed.")
         return GiphyImageInfo(giphyId : giphyId,
                               renditions : renditions)
     }
@@ -204,13 +250,12 @@ enum GiphyFormat {
             Logger.warn("\(GifManager.TAG) Rendition url missing file extension.")
             return nil
         }
-        Logger.error("\(GifManager.TAG) fileExtension: \(fileExtension).")
         guard fileExtension.lowercased() == "gif" else {
-            Logger.debug("\(GifManager.TAG) Rendition has invalid type: \(fileExtension).")
+//            Logger.verbose("\(GifManager.TAG) Rendition has invalid type: \(fileExtension).")
             return nil
         }
 
-        Logger.debug("\(GifManager.TAG) Rendition successfully parsed.")
+//        Logger.debug("\(GifManager.TAG) Rendition successfully parsed.")
         return GiphyRendition(
             format : .gif,
             name : renditionName,
@@ -221,6 +266,8 @@ enum GiphyFormat {
         )
     }
 
+    // Giphy API results are often incompl
+    //
     //    {
     //    height = 65;
     //    mp4 = "https://media3.giphy.com/media/42YlR8u9gV5Cw/100w.mp4";
@@ -233,19 +280,19 @@ enum GiphyFormat {
     //    }
     private func parsePositiveUInt(dict: [String:Any], key: String, typeName: String) -> UInt? {
         guard let value = dict[key] else {
-            Logger.debug("\(GifManager.TAG) \(typeName) missing \(key).")
+//            Logger.verbose("\(GifManager.TAG) \(typeName) missing \(key).")
             return nil
         }
         guard let stringValue = value as? String else {
-            Logger.warn("\(GifManager.TAG) \(typeName) has invalid \(key): \(value).")
+//            Logger.verbose("\(GifManager.TAG) \(typeName) has invalid \(key): \(value).")
             return nil
         }
         guard let parsedValue = UInt(stringValue) else {
-            Logger.warn("\(GifManager.TAG) \(typeName) has invalid \(key): \(stringValue).")
+//            Logger.verbose("\(GifManager.TAG) \(typeName) has invalid \(key): \(stringValue).")
             return nil
         }
         guard parsedValue > 0 else {
-            Logger.debug("\(GifManager.TAG) \(typeName) has non-positive \(key): \(parsedValue).")
+            Logger.verbose("\(GifManager.TAG) \(typeName) has non-positive \(key): \(parsedValue).")
             return nil
         }
         return parsedValue
