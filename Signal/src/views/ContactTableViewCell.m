@@ -52,6 +52,11 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     return NSStringFromClass(self.class);
 }
 
+- (CGSize)intrinsicContentSize
+{
+    return CGSizeMake(self.width, ContactTableViewCell.rowHeight);
+}
+
 + (CGFloat)rowHeight
 {
     return 59.f;
