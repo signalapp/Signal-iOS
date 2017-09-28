@@ -1437,7 +1437,7 @@
 "SETTINGS_PRIVACY_TITLE" = "Privacy";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Send Read Receipts";
+"SETTINGS_READ_RECEIPT" = "Read Receipts";
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Read receipts let you see when others have read your message - and let them see when you have read their messages.";
