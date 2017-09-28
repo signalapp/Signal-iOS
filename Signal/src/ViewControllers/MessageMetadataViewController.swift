@@ -430,12 +430,12 @@ class MessageMetadataViewController: OWSViewController {
             let statusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED", comment:"message footer for failed messages")
             return (.failed, statusMessage)
         } else if outgoingMessage.messageState == .sentToService ||
-            message.wasSent(toRecipient:recipientId) {
+            outgoingMessage.wasSent(toRecipient:recipientId) {
             let statusMessage =
                 NSLocalizedString("MESSAGE_STATUS_SENT",
                                   comment:"message footer for sent messages")
             return (.sent, statusMessage)
-        } else if message.hasAttachments() {
+        } else if outgoingMessage.hasAttachments() {
             assert(outgoingMessage.messageState == .attemptingOut)
 
             let statusMessage = NSLocalizedString("MESSAGE_STATUS_UPLOADING",
