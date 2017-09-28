@@ -9,10 +9,19 @@ class MessageMetadataViewController: OWSViewController {
     static let TAG = "[MessageMetadataViewController]"
     let TAG = "[MessageMetadataViewController]"
 
+    enum MessageRecipientState {
+        case uploading
+        case sending
+        case sent
+        case delivered
+        case read
+        case failed
+    }
+
     // MARK: Properties
 
     let contactsManager: OWSContactsManager
-    
+
     let databaseConnection: YapDatabaseConnection
 
     var message: TSMessage
@@ -22,6 +31,7 @@ class MessageMetadataViewController: OWSViewController {
     var scrollView: UIScrollView?
     var contentView: UIView?
 
+    var attachment: TSAttachment?
     var dataSource: DataSource?
     var attachmentStream: TSAttachmentStream?
     var messageBody: String?
@@ -135,6 +145,9 @@ class MessageMetadataViewController: OWSViewController {
         let contactsManager = Environment.getCurrent().contactsManager!
         let thread = message.thread
 
+        // Content
+        rows += addContentRows()
+
         // Sender?
         if let incomingMessage = message as? TSIncomingMessage {
             let senderId = incomingMessage.authorId
@@ -147,32 +160,65 @@ class MessageMetadataViewController: OWSViewController {
         // Recipient(s)
         if let outgoingMessage = message as? TSOutgoingMessage {
 
-            // TODO: It'd be nice to inset these dividers from the edge of the screen.
-            let addDivider = {
-                let divider = UIView()
-                divider.backgroundColor = UIColor(white:0.9, alpha:1.0)
-                divider.autoSetDimension(.height, toSize:0.5)
-                rows.append(divider)
-            }
+            let recipientStatusGroups: [MessageRecipientState] = [
+                .read,
+                .uploading,
+                .delivered,
+                .sent,
+                .sending,
+                .failed
+            ]
+            for recipientStatusGroup in recipientStatusGroups {
+                var groupRows = [UIView]()
 
-            addDivider()
+                // TODO: It'd be nice to inset these dividers from the edge of the screen.
+                let addDivider = {
+                    let divider = UIView()
+                    divider.backgroundColor = UIColor(white:0.9, alpha:1.0)
+                    divider.autoSetDimension(.height, toSize:0.5)
+                    groupRows.append(divider)
+                }
 
-            for recipientId in thread.recipientIdentifiers {
-                let recipientStatus = self.recipientStatus(forOutgoingMessage: outgoingMessage, recipientId: recipientId)
+                for recipientId in thread.recipientIdentifiers {
+                    let (recipientStatus, statusMessage) = self.recipientStatus(forOutgoingMessage: outgoingMessage, recipientId: recipientId)
 
-                let cell = ContactTableViewCell()
-                cell.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
-                let statusLabel = UILabel()
-                statusLabel.text = recipientStatus
-                statusLabel.textColor = UIColor.ows_darkGray()
-                statusLabel.font = UIFont.ows_footnote()
-                statusLabel.sizeToFit()
-                cell.accessoryView = statusLabel
-                cell.autoSetDimension(.height, toSize:ContactTableViewCell.rowHeight())
-                cell.setContentHuggingLow()
-                rows.append(cell)
+                    guard recipientStatus == recipientStatusGroup else {
+                        continue
+                    }
 
-                addDivider()
+                    if groupRows.count < 1 {
+                        groupRows.append(valueRow(name: MessageRecipientStateName(recipientStatusGroup),
+                                                  value:""))
+
+                        addDivider()
+                    }
+
+                    let cell = ContactTableViewCell()
+                    cell.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
+                    let statusLabel = UILabel()
+                    statusLabel.text = statusMessage
+                    statusLabel.textColor = UIColor.ows_darkGray()
+                    statusLabel.font = UIFont.ows_footnote()
+                    statusLabel.sizeToFit()
+                    cell.accessoryView = statusLabel
+                    cell.autoSetDimension(.height, toSize:ContactTableViewCell.rowHeight())
+                    cell.setContentHuggingLow()
+                    groupRows.append(cell)
+                }
+
+                if groupRows.count > 0 {
+                    addDivider()
+
+                    let spacer = UIView()
+                    spacer.autoSetDimension(.height, toSize:10)
+                    groupRows.append(spacer)
+                }
+
+                Logger.verbose("\(groupRows.count) rows for \(recipientStatusGroup)")
+                guard groupRows.count > 0 else {
+                    continue
+                }
+                rows += groupRows
             }
         }
 
@@ -180,41 +226,15 @@ class MessageMetadataViewController: OWSViewController {
                                                      comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
                              value:DateUtil.formatPastTimestampRelativeToNow(message.timestamp)))
 
-        if let _ = message as? TSIncomingMessage {
+        if message as? TSIncomingMessage != nil {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                                                          comment: "Label for the 'received date & time' field of the 'message metadata' view."),
                                  value:DateUtil.formatPastTimestampRelativeToNow(message.timestampForSorting())))
         }
 
+        rows += addAttachmentMetadataRows()
+
         // TODO: We could include the "disappearing messages" state here.
-
-        if message.attachmentIds.count > 0 {
-            rows += addAttachmentRows()
-        } else if let messageBody = message.body {
-            // TODO: We should also display "oversize text messages" in a
-            //       similar way.
-            if messageBody.characters.count > 0 {
-                self.messageBody = messageBody
-
-                rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_BODY_LABEL",
-                                                             comment: "Label for the message body in the 'message metadata' view."),
-                                     value:""))
-
-                let bodyLabel = UILabel()
-                bodyLabel.textColor = UIColor.black
-                bodyLabel.font = UIFont.ows_regularFont(withSize:14)
-                bodyLabel.text = messageBody
-                bodyLabel.numberOfLines = 0
-                bodyLabel.lineBreakMode = .byWordWrapping
-                rows.append(bodyLabel)
-            } else {
-                // Neither attachment nor body.
-                owsFail("\(self.TAG) Message has neither attachment nor body.")
-                rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY",
-                                                             comment: "Label for messages without a body or attachment in the 'message metadata' view."),
-                                     value:""))
-            }
-        }
 
         var lastRow: UIView?
         for row in rows {
@@ -239,6 +259,40 @@ class MessageMetadataViewController: OWSViewController {
         }
     }
 
+    private func addContentRows() -> [UIView] {
+        var rows = [UIView]()
+
+        if message.attachmentIds.count > 0 {
+            rows += addAttachmentRows()
+        } else if let messageBody = message.body {
+            // TODO: We should also display "oversize text messages" in a
+            //       similar way.
+            if messageBody.characters.count > 0 {
+                self.messageBody = messageBody
+
+                let bodyLabel = UILabel()
+                bodyLabel.textColor = UIColor.black
+                bodyLabel.font = UIFont.ows_regularFont(withSize:14)
+                bodyLabel.text = messageBody
+                bodyLabel.numberOfLines = 0
+                bodyLabel.lineBreakMode = .byWordWrapping
+                rows.append(bodyLabel)
+            } else {
+                // Neither attachment nor body.
+                owsFail("\(self.TAG) Message has neither attachment nor body.")
+                rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY",
+                                                             comment: "Label for messages without a body or attachment in the 'message metadata' view."),
+                                     value:""))
+            }
+        }
+
+        let spacer = UIView()
+        spacer.autoSetDimension(.height, toSize:15)
+        rows.append(spacer)
+
+        return rows
+    }
+
     private func addAttachmentRows() -> [UIView] {
         var rows = [UIView]()
 
@@ -251,17 +305,7 @@ class MessageMetadataViewController: OWSViewController {
             owsFail("Missing attachment")
             return rows
         }
-
-        let contentType = attachment.contentType
-        rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE",
-                                                     comment: "Label for the MIME type of attachments in the 'message metadata' view."),
-                             value:contentType))
-
-        if let sourceFilename = attachment.sourceFilename {
-            rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SOURCE_FILENAME",
-                                                         comment: "Label for the original filename of any attachment in the 'message metadata' view."),
-                                 value:sourceFilename))
-        }
+        self.attachment = attachment
 
         guard let attachmentStream = attachment as? TSAttachmentStream else {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED",
@@ -282,21 +326,8 @@ class MessageMetadataViewController: OWSViewController {
             return rows
         }
 
-        let fileSize = dataSource.dataLength()
-        rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
-                                                     comment: "Label for file size of attachments in the 'message metadata' view."),
-                             value:ViewControllerUtils.formatFileSize(UInt(fileSize))))
-
+        let contentType = attachment.contentType
         if let dataUTI = MIMETypeUtil.utiType(forMIMEType:contentType) {
-            if attachment.isVoiceMessage() {
-                rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_VOICE_MESSAGE",
-                                                             comment: "Label for voice messages of the 'message metadata' view."),
-                                     value:""))
-            } else {
-                rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_MEDIA",
-                                                             comment: "Label for media messages of the 'message metadata' view."),
-                                     value:""))
-            }
             let attachment = SignalAttachment(dataSource : dataSource, dataUTI: dataUTI)
             let mediaMessageView = MediaMessageView(attachment:attachment)
             self.mediaMessageView = mediaMessageView
@@ -305,7 +336,33 @@ class MessageMetadataViewController: OWSViewController {
         return rows
     }
 
-    private func recipientStatus(forOutgoingMessage message: TSOutgoingMessage, recipientId: String) -> String {
+    private func addAttachmentMetadataRows() -> [UIView] {
+        var rows = [UIView]()
+
+        if let attachment = self.attachment {
+            let contentType = attachment.contentType
+            rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE",
+                                                         comment: "Label for the MIME type of attachments in the 'message metadata' view."),
+                                 value:contentType))
+
+            if let sourceFilename = attachment.sourceFilename {
+                rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SOURCE_FILENAME",
+                                                             comment: "Label for the original filename of any attachment in the 'message metadata' view."),
+                                     value:sourceFilename))
+            }
+        }
+
+        if let dataSource = self.dataSource {
+            let fileSize = dataSource.dataLength()
+            rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
+                                                         comment: "Label for file size of attachments in the 'message metadata' view."),
+                                 value:ViewControllerUtils.formatFileSize(UInt(fileSize))))
+        }
+
+        return rows
+    }
+
+    private func recipientStatus(forOutgoingMessage message: TSOutgoingMessage, recipientId: String) -> (MessageRecipientState, String) {
         // Legacy messages don't have "recipient read" state or "per-recipient delivery" state,
         // so we fall back to `TSOutgoingMessageState` which is not per-recipient and therefore
         // might be misleading.
@@ -313,42 +370,49 @@ class MessageMetadataViewController: OWSViewController {
         let recipientReadMap = message.recipientReadMap
         if let readTimestamp = recipientReadMap[recipientId] {
             assert(message.messageState == .sentToService)
-            return NSLocalizedString("MESSAGE_STATUS_READ", comment:"message footer for read messages").rtlSafeAppend(" ", referenceView:self.view)
-            .rtlSafeAppend(
-                DateUtil.formatPastTimestampRelativeToNow(readTimestamp.uint64Value), referenceView:self.view)
+            let statusMessage = NSLocalizedString("MESSAGE_STATUS_READ", comment:"message footer for read messages").rtlSafeAppend(" ", referenceView:self.view)
+                .rtlSafeAppend(
+                    DateUtil.formatPastTimestampRelativeToNow(readTimestamp.uint64Value), referenceView:self.view)
+            return (.read, statusMessage)
         }
 
         let recipientDeliveryMap = message.recipientDeliveryMap
         if let deliveryTimestamp = recipientDeliveryMap[recipientId] {
             assert(message.messageState == .sentToService)
-            return NSLocalizedString("MESSAGE_STATUS_DELIVERED",
+            let statusMessage = NSLocalizedString("MESSAGE_STATUS_DELIVERED",
                                      comment:"message status for message delivered to their recipient.").rtlSafeAppend(" ", referenceView:self.view)
                 .rtlSafeAppend(
                     DateUtil.formatPastTimestampRelativeToNow(deliveryTimestamp.uint64Value), referenceView:self.view)
+            return (.delivered, statusMessage)
         }
 
         if message.wasDelivered {
-            return NSLocalizedString("MESSAGE_STATUS_DELIVERED",
+            let statusMessage = NSLocalizedString("MESSAGE_STATUS_DELIVERED",
                                      comment:"message status for message delivered to their recipient.")
+            return (.delivered, statusMessage)
         }
 
         if message.messageState == .unsent {
-            return NSLocalizedString("MESSAGE_STATUS_FAILED", comment:"message footer for failed messages")
-        } else if (message.messageState == .sentToService ||
-            message.wasSent(toRecipient:recipientId)) {
-            return
+            let statusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED", comment:"message footer for failed messages")
+            return (.failed, statusMessage)
+        } else if message.messageState == .sentToService ||
+            message.wasSent(toRecipient:recipientId) {
+            let statusMessage =
                 NSLocalizedString("MESSAGE_STATUS_SENT",
                                   comment:"message footer for sent messages")
+            return (.sent, statusMessage)
         } else if message.hasAttachments() {
             assert(message.messageState == .attemptingOut)
 
-            return NSLocalizedString("MESSAGE_STATUS_UPLOADING",
+            let statusMessage = NSLocalizedString("MESSAGE_STATUS_UPLOADING",
                                      comment:"message footer while attachment is uploading")
+            return (.uploading, statusMessage)
         } else {
             assert(message.messageState == .attemptingOut)
 
-            return NSLocalizedString("MESSAGE_STATUS_SENDING",
+            let statusMessage = NSLocalizedString("MESSAGE_STATUS_SENDING",
                                      comment:"message status while message is sending.")
+            return (.sending, statusMessage)
         }
     }
 
@@ -453,7 +517,6 @@ class MessageMetadataViewController: OWSViewController {
     }
 
     internal func yapDatabaseModified(notification: NSNotification) {
-//        Logger.info("\(TAG) in \(#function)")
         AssertIsOnMainThread()
 
         let notifications = self.databaseConnection.beginLongLivedReadTransaction()
@@ -468,5 +531,28 @@ class MessageMetadataViewController: OWSViewController {
         updateDBConnectionAndMessageToLatest()
 
         updateContent()
+    }
+
+    private func MessageRecipientStateName(_ value: MessageRecipientState) -> String {
+        switch value {
+        case .uploading:
+            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING",
+                              comment: "Status label for messages which are uploading.")
+        case .sending:
+            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING",
+                              comment: "Status label for messages which are sending.")
+        case .sent:
+            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT",
+                              comment: "Status label for messages which are sent.")
+        case .delivered:
+            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED",
+                              comment: "Status label for messages which are delivered.")
+        case .read:
+            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ",
+                              comment: "Status label for messages which are read.")
+        case .failed:
+            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED",
+                              comment: "Status label for messages which are failed.")
+        }
     }
 }

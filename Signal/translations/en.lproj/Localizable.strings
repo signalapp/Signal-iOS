@@ -796,23 +796,32 @@
 /* Label for 'not yet downloaded' attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "Not yet downloaded";
 
-/* Label for the message body in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_BODY_LABEL" = "Message";
-
-/* Label for the 'group name' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_GROUP_NAME" = "Group";
-
 /* Label for media messages of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_MEDIA" = "Media";
+
+/* Delivered */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Delivered";
+
+/* Failed */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Failed";
+
+/* Read */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Read";
+
+/* Sending */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending";
+
+/* Sent */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Sent";
+
+/* Uploading */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Uploading";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Message has no content or attachment.";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Received";
-
-/* Label for the 'recipient' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_RECIPIENT" = "Recipient";
 
 /* Label for the 'sender' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SENDER" = "Sender";
@@ -1442,9 +1451,6 @@
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Read receipts let you see when others have read your message - and let them see when you have read their messages.";
 
-/* Title of the 'read receipts' settings section. */
-"SETTINGS_READ_RECEIPTS_SECTION_TITLE" = "Read Receipts";
-
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Enable Screen Security";
 
@@ -1516,9 +1522,6 @@
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ weeks";
-
-/* Indicates that the event happened now. */
-"TIME_NOW" = "Now";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Cancel";
@@ -1663,20 +1666,3 @@
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@.";
-
-// Strings Copied in from JSQMessagesViewController
-
-
-"load_earlier_messages" = "Load Earlier Messages";
-
-"send" = "Send";
-
-"new_message" = "New Message";
-
-"text_message_accessibility_label" = "%@: %@";
-
-"media_message_accessibility_label" = "%@: media message";
-
-"accessory_button_accessibility_label" = "Share media";
-
-"new_message_received_accessibility_announcement" = "New message received";

@@ -5,6 +5,8 @@
 #import "NSString+OWS.h"
 #import "UIView+OWS.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation NSString (OWS)
 
 - (NSString *)ows_stripped
@@ -25,3 +27,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
