@@ -3,7 +3,6 @@
 //
 
 #import "OWSPreferences.h"
-#import "TSGroupModel.h"
 #import "TSStorageHeaders.h"
 
 /**
@@ -14,6 +13,7 @@
  *
  **/
 
+@class TSThread;
 @class UINavigationController;
 @class OWSContactsManager;
 @class OutboundCallInitiator;
@@ -64,6 +64,7 @@
 + (void)presentConversationForRecipientId:(NSString *)recipientId;
 + (void)presentConversationForRecipientId:(NSString *)recipientId withCompose:(BOOL)compose;
 + (void)callRecipientId:(NSString *)recipientId;
-+ (void)presentConversationForThread:(TSGroupThread *)groupThread;
++ (void)presentConversationForThreadId:(NSString *)threadId;
++ (void)presentConversationForThread:(TSThread *)thread;
 
 @end
