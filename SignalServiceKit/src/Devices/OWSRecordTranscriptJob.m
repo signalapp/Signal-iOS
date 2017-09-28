@@ -4,8 +4,8 @@
 
 #import "OWSRecordTranscriptJob.h"
 #import "OWSAttachmentsProcessor.h"
+#import "OWSDisappearingMessagesJob.h"
 #import "OWSIncomingSentMessageTranscript.h"
-#import "OWSMessageSender.h"
 #import "OWSReadReceiptManager.h"
 #import "TSInfoMessage.h"
 #import "TSNetworkManager.h"
@@ -17,10 +17,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSRecordTranscriptJob ()
 
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;
+@property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 
 @property (nonatomic, readonly) OWSIncomingSentMessageTranscript *incomingSentMessageTranscript;
 
@@ -31,17 +31,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
 {
     return [self initWithIncomingSentMessageTranscript:incomingSentMessageTranscript
-                                         messageSender:[TextSecureKitEnv sharedEnv].messageSender
                                         networkManager:TSNetworkManager.sharedManager
                                         storageManager:TSStorageManager.sharedManager
-                                    readReceiptManager:OWSReadReceiptManager.sharedManager];
+                                    readReceiptManager:OWSReadReceiptManager.sharedManager
+                                       contactsManager:[TextSecureKitEnv sharedEnv].contactsManager];
 }
 
 - (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
-                                        messageSender:(OWSMessageSender *)messageSender
                                        networkManager:(TSNetworkManager *)networkManager
                                        storageManager:(TSStorageManager *)storageManager
                                    readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
+                                      contactsManager:(id<ContactsManagerProtocol>)contactsManager
 {
     self = [super init];
     if (!self) {
@@ -49,10 +49,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _incomingSentMessageTranscript = incomingSentMessageTranscript;
-    _messageSender = messageSender;
     _networkManager = networkManager;
     _storageManager = storageManager;
     _readReceiptManager = readReceiptManager;
+    _contactsManager = contactsManager;
 
     return self;
 }
@@ -98,7 +98,8 @@ NS_ASSUME_NONNULL_BEGIN
                                      expireStartedAt:transcript.expirationStartedAt];
 
     if (transcript.isExpirationTimerUpdate) {
-        [self.messageSender becomeConsistentWithDisappearingConfigurationForMessage:outgoingMessage];
+        [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:outgoingMessage
+                                                                contactsManager:self.contactsManager];
         // early return to avoid saving an empty incoming message.
         return;
     }
@@ -108,11 +109,11 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // TODO: Refactor this logic. Most of it doesn't belong in `OWSMessageSender`.
-    [self.messageSender handleMessageSentRemotely:outgoingMessage
-                                           sentAt:transcript.expirationStartedAt
-                                      transaction:transaction];
-
+    [outgoingMessage updateWithWasSentFromLinkedDeviceWithTransaction:transaction];
+    [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:outgoingMessage
+                                                            contactsManager:self.contactsManager];
+    [OWSDisappearingMessagesJob setExpirationForMessage:outgoingMessage
+                                    expirationStartedAt:transcript.expirationStartedAt];
     [self.readReceiptManager applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:outgoingMessage
                                                                           transaction:transaction];
 
