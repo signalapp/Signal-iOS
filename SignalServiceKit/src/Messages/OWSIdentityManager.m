@@ -495,11 +495,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 [messages addObject:message];
             }
             if (messages.count > 0) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    for (OWSVerificationStateSyncMessage *message in messages) {
-                        [self sendSyncVerificationStateMessage:message];
-                    }
-                });
+                for (OWSVerificationStateSyncMessage *message in messages) {
+                    [self sendSyncVerificationStateMessage:message];
+                }
             }
         }
     });
@@ -509,7 +507,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     OWSAssert(message);
     OWSAssert(message.verificationForRecipientId.length > 0);
-    OWSAssert([NSThread isMainThread]);
 
     TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:message.verificationForRecipientId];
     
@@ -519,20 +516,17 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                                    verificationStateSyncMessage:message];
     [self.messageSender sendMessage:nullMessage
         success:^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                DDLogInfo(@"%@ Successfully sent verification state NullMessage", self.tag);
-                [self.messageSender sendMessage:message
-                    success:^{
-                        DDLogInfo(@"%@ Successfully sent verification state sync message", self.tag);
+            DDLogInfo(@"%@ Successfully sent verification state NullMessage", self.tag);
+            [self.messageSender sendMessage:message
+                success:^{
+                    DDLogInfo(@"%@ Successfully sent verification state sync message", self.tag);
 
-                        // Record that this verification state was successfully synced.
-                        [self clearSyncMessageForRecipientId:message.verificationForRecipientId];
-                    }
-                    failure:^(NSError *error) {
-                        DDLogError(
-                            @"%@ Failed to send verification state sync message with error: %@", self.tag, error);
-                    }];
-            });
+                    // Record that this verification state was successfully synced.
+                    [self clearSyncMessageForRecipientId:message.verificationForRecipientId];
+                }
+                failure:^(NSError *error) {
+                    DDLogError(@"%@ Failed to send verification state sync message with error: %@", self.tag, error);
+                }];
         }
         failure:^(NSError *_Nonnull error) {
             DDLogError(@"%@ Failed to send verification state NullMessage with error: %@", self.tag, error);
@@ -575,26 +569,28 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
     NSData *identityKey = [rawIdentityKey removeKeyType];
 
-    switch (verified.state) {
-        case OWSSignalServiceProtosVerifiedStateDefault:
-            [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateDefault
-                                                 recipientId:recipientId
-                                                 identityKey:identityKey
-                                         overwriteOnConflict:NO];
-            break;
-        case OWSSignalServiceProtosVerifiedStateVerified:
-            [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateVerified
-                                                 recipientId:recipientId
-                                                 identityKey:identityKey
-                                         overwriteOnConflict:YES];
-            break;
-        case OWSSignalServiceProtosVerifiedStateUnverified:
-            OWSFail(@"Verification state sync message for recipientId: %@ has unexpected value: %@.",
-                recipientId,
-                OWSVerificationStateToString(OWSVerificationStateNoLongerVerified));
-            return;
-    }
-    [self fireIdentityStateChangeNotification];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        switch (verified.state) {
+            case OWSSignalServiceProtosVerifiedStateDefault:
+                [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateDefault
+                                                     recipientId:recipientId
+                                                     identityKey:identityKey
+                                             overwriteOnConflict:NO];
+                break;
+            case OWSSignalServiceProtosVerifiedStateVerified:
+                [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateVerified
+                                                     recipientId:recipientId
+                                                     identityKey:identityKey
+                                             overwriteOnConflict:YES];
+                break;
+            case OWSSignalServiceProtosVerifiedStateUnverified:
+                OWSFail(@"Verification state sync message for recipientId: %@ has unexpected value: %@.",
+                    recipientId,
+                    OWSVerificationStateToString(OWSVerificationStateNoLongerVerified));
+                return;
+        }
+        [self fireIdentityStateChangeNotification];
+    });
 }
 
 - (void)tryToApplyVerificationStateFromSyncMessage:(OWSVerificationState)verificationState

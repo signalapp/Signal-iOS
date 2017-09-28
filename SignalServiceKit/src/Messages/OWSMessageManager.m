@@ -604,9 +604,8 @@ NS_ASSUME_NONNULL_BEGIN
             DDLogWarn(@"%@ ignoring unsupported sync request message", self.tag);
         }
     } else if (syncMessage.hasBlocked) {
-        // TODO: Do this synchronously.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            NSArray<NSString *> *blockedPhoneNumbers = [syncMessage.blocked.numbers copy];
+        NSArray<NSString *> *blockedPhoneNumbers = [syncMessage.blocked.numbers copy];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [_blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers sendSyncMessage:NO];
         });
     } else if (syncMessage.read.count > 0) {
@@ -616,10 +615,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      transaction:transaction];
     } else if (syncMessage.hasVerified) {
         DDLogInfo(@"%@ Received verification state for %@", self.tag, syncMessage.verified.destination);
-        // TODO: Do this synchronously.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.identityManager processIncomingSyncMessage:syncMessage.verified];
-        });
+        [self.identityManager processIncomingSyncMessage:syncMessage.verified];
     } else {
         DDLogWarn(@"%@ Ignoring unsupported sync message.", self.tag);
     }
@@ -944,18 +940,15 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
                                                                           transaction:transaction];
 
-        // TODO: Do this synchronously.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:incomingMessage
-                                                                    contactsManager:self.contactsManager];
+        [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:incomingMessage
+                                                                contactsManager:self.contactsManager];
 
-            // Update thread preview in inbox
-            [thread touch];
+        // Update thread preview in inbox
+        [thread touchWithTransaction:transaction];
 
-            [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForIncomingMessage:incomingMessage
-                                                                                   inThread:thread
-                                                                            contactsManager:self.contactsManager];
-        });
+        [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForIncomingMessage:incomingMessage
+                                                                               inThread:thread
+                                                                        contactsManager:self.contactsManager];
     }
 
     return incomingMessage;

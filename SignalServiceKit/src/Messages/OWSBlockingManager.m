@@ -183,7 +183,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
                           forKey:kOWSBlockingManager_BlockedPhoneNumbersKey
                     inCollection:kOWSBlockingManager_BlockedPhoneNumbersCollection];
 
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (sendSyncMessage) {
             [self sendBlockedPhoneNumbersMessage:blockedPhoneNumbers];
         } else {
@@ -238,9 +238,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
     NSSet *syncedBlockedPhoneNumberSet = [[NSSet alloc] initWithArray:(syncedBlockedPhoneNumbers ?: [NSArray new])];
     if (![_blockedPhoneNumberSet isEqualToSet:syncedBlockedPhoneNumberSet]) {
         DDLogInfo(@"%@ retrying sync of blocked phone numbers", self.tag);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self sendBlockedPhoneNumbersMessage:self.blockedPhoneNumbers];
-        });
+        [self sendBlockedPhoneNumbersMessage:self.blockedPhoneNumbers];
     }
 }
 

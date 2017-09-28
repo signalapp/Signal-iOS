@@ -178,7 +178,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                                object:nil];
 
     // Try to start processing.
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self scheduleProcessing];
     });
 
@@ -198,33 +198,30 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 // Schedules a processing pass, unless one is already scheduled.
 - (void)scheduleProcessing
 {
-    DispatchMainThreadSafe(^{
-        @synchronized(self)
-        {
-            if ([TSDatabaseView hasPendingViewRegistrations]) {
-                DDLogInfo(
-                    @"%@ Deferring read receipt processing due to pending database view registrations.", self.tag);
-                return;
-            }
-            if (self.isProcessing) {
-                return;
-            }
-
-            self.isProcessing = YES;
-
-            // Process read receipts every N seconds.
-            //
-            // We want a value high enough to allow us to effectively de-duplicate,
-            // read receipts without being so high that we risk not sending read
-            // receipts due to app exit.
-            const CGFloat kProcessingFrequencySeconds = 3.f;
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kProcessingFrequencySeconds * NSEC_PER_SEC)),
-                dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                ^{
-                    [self process];
-                });
+    @synchronized(self)
+    {
+        if ([TSDatabaseView hasPendingViewRegistrations]) {
+            DDLogInfo(@"%@ Deferring read receipt processing due to pending database view registrations.", self.tag);
+            return;
         }
-    });
+        if (self.isProcessing) {
+            return;
+        }
+
+        self.isProcessing = YES;
+
+        // Process read receipts every N seconds.
+        //
+        // We want a value high enough to allow us to effectively de-duplicate,
+        // read receipts without being so high that we risk not sending read
+        // receipts due to app exit.
+        const CGFloat kProcessingFrequencySeconds = 3.f;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kProcessingFrequencySeconds * NSEC_PER_SEC)),
+            dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+            ^{
+                [self process];
+            });
+    }
 }
 
 - (void)process
@@ -241,17 +238,15 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             OWSReadReceiptsForLinkedDevicesMessage *message =
                 [[OWSReadReceiptsForLinkedDevicesMessage alloc] initWithReadReceipts:readReceiptsForLinkedDevices];
 
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.messageSender sendMessage:message
-                    success:^{
-                        DDLogInfo(@"%@ Successfully sent %zd read receipt to linked devices.",
-                            self.tag,
-                            readReceiptsForLinkedDevices.count);
-                    }
-                    failure:^(NSError *error) {
-                        DDLogError(@"%@ Failed to send read receipt to linked devices with error: %@", self.tag, error);
-                    }];
-            });
+            [self.messageSender sendMessage:message
+                success:^{
+                    DDLogInfo(@"%@ Successfully sent %zd read receipt to linked devices.",
+                        self.tag,
+                        readReceiptsForLinkedDevices.count);
+                }
+                failure:^(NSError *error) {
+                    DDLogError(@"%@ Failed to send read receipt to linked devices with error: %@", self.tag, error);
+                }];
         }
 
         NSArray<OWSReadReceipt *> *readReceiptsToSend = [self.toLinkedDevicesReadReceiptMap allValues];
@@ -266,17 +261,14 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                     [[OWSReadReceiptsForSenderMessage alloc] initWithThread:thread
                                                           messageTimestamps:timestamps.allObjects];
 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.messageSender sendMessage:message
-                        success:^{
-                            DDLogInfo(@"%@ Successfully sent %zd read receipts to sender.",
-                                self.tag,
-                                readReceiptsToSend.count);
-                        }
-                        failure:^(NSError *error) {
-                            DDLogError(@"%@ Failed to send read receipts to sender with error: %@", self.tag, error);
-                        }];
-                });
+                [self.messageSender sendMessage:message
+                    success:^{
+                        DDLogInfo(
+                            @"%@ Successfully sent %zd read receipts to sender.", self.tag, readReceiptsToSend.count);
+                    }
+                    failure:^(NSError *error) {
+                        DDLogError(@"%@ Failed to send read receipts to sender with error: %@", self.tag, error);
+                    }];
             }
             [self.toSenderReadReceiptMap removeAllObjects];
         }
