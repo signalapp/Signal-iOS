@@ -4075,6 +4075,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     uint64_t lastVisibleTimestamp = self.lastVisibleTimestamp;
 
+    if (lastVisibleTimestamp == 0) {
+        // No visible messages yet. New Thread.
+        return;
+    }
     [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeTimestamp:lastVisibleTimestamp thread:self.thread];
 }
 
