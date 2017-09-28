@@ -130,7 +130,7 @@ EXTERNAL SOURCES:
   OpenSSL:
     :git: https://github.com/WhisperSystems/OpenSSL-Pod
   SignalServiceKit:
-    :path: .
+    :path: "."
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
 

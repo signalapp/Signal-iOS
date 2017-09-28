@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSStorageManager;
 @class YapDatabaseReadWriteTransaction;
 
+@protocol ContactsManagerProtocol;
+
 // This job is used to process "outgoing message" notifications from linked devices.
 @interface OWSRecordTranscriptJob : NSObject
 
@@ -22,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        networkManager:(TSNetworkManager *)networkManager
                                        storageManager:(TSStorageManager *)storageManager
                                    readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
+                                      contactsManager:(id<ContactsManagerProtocol>)contactsManager
     NS_DESIGNATED_INITIALIZER;
 
 - (void)runWithAttachmentHandler:(void (^)(TSAttachmentStream *attachmentStream))attachmentHandler

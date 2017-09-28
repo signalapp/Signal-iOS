@@ -1100,18 +1100,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [OWSDisappearingMessagesJob setExpirationForMessage:message];
 }
 
-- (void)handleMessageSentRemotely:(TSOutgoingMessage *)message
-                           sentAt:(uint64_t)sentAt
-                      transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssert(message);
-    OWSAssert(transaction);
-
-    [message updateWithWasSentFromLinkedDeviceWithTransaction:transaction];
-    [self becomeConsistentWithDisappearingConfigurationForMessage:message];
-    [OWSDisappearingMessagesJob setExpirationForMessage:message expirationStartedAt:sentAt];
-}
-
 - (void)becomeConsistentWithDisappearingConfigurationForMessage:(TSOutgoingMessage *)outgoingMessage
 {
     [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:outgoingMessage

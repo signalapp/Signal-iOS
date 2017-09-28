@@ -91,10 +91,6 @@ NS_SWIFT_NAME(MessageSender)
                             success:(void (^)())successHandler
                             failure:(void (^)(NSError *error))failureHandler;
 
-- (void)handleMessageSentRemotely:(TSOutgoingMessage *)message
-                           sentAt:(uint64_t)sentAt
-                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
 /**
  * Set local configuration to match that of the of `outgoingMessage`'s sender
  *
