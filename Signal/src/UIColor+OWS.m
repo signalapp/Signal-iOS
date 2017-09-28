@@ -6,6 +6,8 @@
 #import "OWSMath.h"
 #import "UIColor+OWS.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation UIColor (OWS)
 
 + (UIColor *)ows_signalBrandBlueColor
@@ -154,3 +156,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
