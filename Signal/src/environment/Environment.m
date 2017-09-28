@@ -215,6 +215,19 @@ static Environment *environment = nil;
     });
 }
 
++ (void)presentConversationForThreadId:(NSString *)threadId
+{
+    OWSAssert(threadId.length > 0);
+
+    TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
+    if (thread == nil) {
+        OWSFail(@"%@ unable to find thread with id: %@", self.tag, threadId);
+        return;
+    }
+
+    [self presentConversationForThread:thread];
+}
+
 + (void)presentConversationForThread:(TSThread *)thread
 {
     [self presentConversationForThread:thread keyboardOnViewAppearing:YES callOnViewAppearing:NO];

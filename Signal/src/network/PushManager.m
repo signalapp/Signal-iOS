@@ -135,8 +135,11 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
 
     NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
-    if (threadId && [TSThread fetchObjectWithUniqueID:threadId]) {
-        [Environment presentConversationForRecipientId:threadId];
+
+    if (threadId) {
+        [Environment presentConversationForThreadId:threadId];
+    } else {
+        OWSFail(@"%@ threadId was unexpectedly nil in %s", self.tag, __PRETTY_FUNCTION__);
     }
 }
 
@@ -231,12 +234,21 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
         completionHandler();
     } else if ([identifier isEqualToString:PushManagerActionsShowThread]) {
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
-        [Environment presentConversationForRecipientId:threadId];
+
+        if (threadId) {
+            [Environment presentConversationForThreadId:threadId];
+        } else {
+            OWSFail(@"%@ threadId was unexpectedly nil in action with identifier: %@", self.tag, identifier);
+        }
         completionHandler();
     } else {
         OWSFail(@"%@ Unhandled action with identifier: %@", self.tag, identifier);
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
-        [Environment presentConversationForRecipientId:threadId];
+        if (threadId) {
+            [Environment presentConversationForThreadId:threadId];
+        } else {
+            OWSFail(@"%@ threadId was unexpectedly nil in action with identifier: %@", self.tag, identifier);
+        }
         completionHandler();
     }
 }

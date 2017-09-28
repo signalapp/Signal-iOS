@@ -66,8 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:thread];
     [ThreadUtil sendMessageWithAttachment:self.attachment inThread:thread messageSender:self.messageSender];
-
-    [Environment presentConversationForRecipientId:thread.uniqueId];
+    [Environment presentConversationForThread:thread];
 }
 
 - (BOOL)canSelectBlockedContact
