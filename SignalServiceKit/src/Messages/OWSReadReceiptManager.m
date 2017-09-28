@@ -178,9 +178,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                                object:nil];
 
     // Try to start processing.
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self scheduleProcessing];
-    });
+    [self scheduleProcessing];
 
     return self;
 }
@@ -198,30 +196,33 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 // Schedules a processing pass, unless one is already scheduled.
 - (void)scheduleProcessing
 {
-    @synchronized(self)
-    {
-        if ([TSDatabaseView hasPendingViewRegistrations]) {
-            DDLogInfo(@"%@ Deferring read receipt processing due to pending database view registrations.", self.tag);
-            return;
-        }
-        if (self.isProcessing) {
-            return;
-        }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @synchronized(self)
+        {
+            if ([TSDatabaseView hasPendingViewRegistrations]) {
+                DDLogInfo(
+                    @"%@ Deferring read receipt processing due to pending database view registrations.", self.tag);
+                return;
+            }
+            if (self.isProcessing) {
+                return;
+            }
 
-        self.isProcessing = YES;
+            self.isProcessing = YES;
 
-        // Process read receipts every N seconds.
-        //
-        // We want a value high enough to allow us to effectively de-duplicate,
-        // read receipts without being so high that we risk not sending read
-        // receipts due to app exit.
-        const CGFloat kProcessingFrequencySeconds = 3.f;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kProcessingFrequencySeconds * NSEC_PER_SEC)),
-            dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-            ^{
-                [self process];
-            });
-    }
+            // Process read receipts every N seconds.
+            //
+            // We want a value high enough to allow us to effectively de-duplicate,
+            // read receipts without being so high that we risk not sending read
+            // receipts due to app exit.
+            const CGFloat kProcessingFrequencySeconds = 3.f;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kProcessingFrequencySeconds * NSEC_PER_SEC)),
+                dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                ^{
+                    [self process];
+                });
+        }
+    });
 }
 
 - (void)process
