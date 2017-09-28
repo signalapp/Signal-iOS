@@ -210,10 +210,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     self.activateButton = activateButton;
     [contentView addSubview:activateButton];
     [activateButton autoPinLeadingAndTrailingToSuperview];
-    [activateButton autoPinEdge:ALEdgeTop
-                         toEdge:ALEdgeBottom
-                         ofView:separatorView2
-                     withOffset:ScaleFromIPhone5To7Plus(12.f, 15.f)];
+    [activateButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:separatorView2 withOffset:ScaleFromIPhone5(24)];
     [activateButton autoSetDimension:ALDimensionHeight toSize:kActivateButtonHeight];
 
     UIActivityIndicatorView *spinnerView =
@@ -225,22 +222,6 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [spinnerView autoSetDimension:ALDimensionHeight toSize:20.f];
     [spinnerView autoPinTrailingToSuperViewWithMargin:20.f];
     [spinnerView stopAnimating];
-
-    // Existing Account Button
-    UIButton *existingAccountButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [existingAccountButton setTitle:NSLocalizedString(@"ALREADY_HAVE_ACCOUNT_BUTTON", @"registration button text")
-                           forState:UIControlStateNormal];
-    [existingAccountButton setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
-    existingAccountButton.titleLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints - 2.f];
-    [existingAccountButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
-    [existingAccountButton setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
-    [contentView addSubview:existingAccountButton];
-    [existingAccountButton autoPinLeadingAndTrailingToSuperview];
-    [existingAccountButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:activateButton withOffset:9.f];
-    [existingAccountButton autoSetDimension:ALDimensionHeight toSize:36.f];
-    [existingAccountButton addTarget:self
-                              action:@selector(didTapExistingUserButton:)
-                    forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -296,18 +277,6 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 }
 
 #pragma mark - Actions
-
-- (void)didTapExistingUserButton:(id)sender
-{
-    DDLogInfo(@"called %s", __PRETTY_FUNCTION__);
-
-    [OWSAlerts
-        showAlertWithTitle:
-            [NSString stringWithFormat:NSLocalizedString(@"EXISTING_USER_REGISTRATION_ALERT_TITLE",
-                                           @"during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\""),
-                      [UIDevice currentDevice].localizedModel]
-                   message:NSLocalizedString(@"EXISTING_USER_REGISTRATION_ALERT_BODY", @"during registration")];
-}
 
 - (void)sendCodeAction
 {
