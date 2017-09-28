@@ -5,7 +5,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSIncomingSentMessageTranscript;
-@class OWSMessageSender;
 @class OWSReadReceiptManager;
 @class TSAttachmentStream;
 @class TSNetworkManager;
@@ -20,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript;
 - (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
-                                        messageSender:(OWSMessageSender *)messageSender
                                        networkManager:(TSNetworkManager *)networkManager
                                        storageManager:(TSStorageManager *)storageManager
                                    readReceiptManager:(OWSReadReceiptManager *)readReceiptManager

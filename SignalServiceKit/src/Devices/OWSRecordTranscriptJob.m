@@ -6,7 +6,6 @@
 #import "OWSAttachmentsProcessor.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSIncomingSentMessageTranscript.h"
-#import "OWSMessageSender.h"
 #import "OWSReadReceiptManager.h"
 #import "TSInfoMessage.h"
 #import "TSNetworkManager.h"
@@ -18,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSRecordTranscriptJob ()
 
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
 @property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;
@@ -33,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
 {
     return [self initWithIncomingSentMessageTranscript:incomingSentMessageTranscript
-                                         messageSender:[TextSecureKitEnv sharedEnv].messageSender
                                         networkManager:TSNetworkManager.sharedManager
                                         storageManager:TSStorageManager.sharedManager
                                     readReceiptManager:OWSReadReceiptManager.sharedManager
@@ -41,7 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
-                                        messageSender:(OWSMessageSender *)messageSender
                                        networkManager:(TSNetworkManager *)networkManager
                                        storageManager:(TSStorageManager *)storageManager
                                    readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
@@ -53,7 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _incomingSentMessageTranscript = incomingSentMessageTranscript;
-    _messageSender = messageSender;
     _networkManager = networkManager;
     _storageManager = storageManager;
     _readReceiptManager = readReceiptManager;
@@ -103,7 +98,8 @@ NS_ASSUME_NONNULL_BEGIN
                                      expireStartedAt:transcript.expirationStartedAt];
 
     if (transcript.isExpirationTimerUpdate) {
-        [self.messageSender becomeConsistentWithDisappearingConfigurationForMessage:outgoingMessage];
+        [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:outgoingMessage
+                                                                contactsManager:self.contactsManager];
         // early return to avoid saving an empty incoming message.
         return;
     }
