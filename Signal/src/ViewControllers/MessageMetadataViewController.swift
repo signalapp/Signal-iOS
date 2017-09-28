@@ -280,13 +280,24 @@ class MessageMetadataViewController: OWSViewController {
                 bodyLabel.numberOfLines = 10
                 bodyLabel.lineBreakMode = .byWordWrapping
 
-                let bubbleView = UIView()
-                bubbleView.backgroundColor = isIncoming ? UIColor.jsq_messageBubbleLightGray() : UIColor.ows_materialBlue()
+                let bubbleImageData = isIncoming ? ConversationViewController.incomingBubbleImageData() : ConversationViewController.outgoingBubbleImageData()
+                let leadingMargin: CGFloat = isIncoming ? 15 : 10
+                let trailingMargin: CGFloat = isIncoming ? 10 : 15
+
+                let bubbleView = UIImageView(image: bubbleImageData!.messageBubbleImage)
+
                 bubbleView.layer.cornerRadius = 10
                 bubbleView.addSubview(bodyLabel)
-                bodyLabel.autoPinLeadingToSuperView(withMargin:10)
-                bodyLabel.autoPinTrailingToSuperView(withMargin:10)
-                bodyLabel.autoPinHeightToSuperview(withMargin:10)
+                bodyLabel.autoPinLeadingToSuperView(withMargin: leadingMargin)
+                bodyLabel.autoPinTrailingToSuperView(withMargin: trailingMargin)
+                bodyLabel.autoPinHeightToSuperview(withMargin: 10)
+
+                // Try to hug content both horizontally and vertically, but *prefer* wide and short, to narrow and tall.
+                // While never exceeding max width, and never cropping content.
+                bodyLabel.setContentHuggingPriority(UILayoutPriorityDefaultLow, for: .horizontal)
+                bodyLabel.setContentHuggingPriority(UILayoutPriorityDefaultHigh, for: .vertical)
+                bodyLabel.setContentCompressionResistancePriority(UILayoutPriorityRequired, for: .vertical)
+                bodyLabel.autoSetDimension(.width, toSize:ScaleFromIPhone5(210), relation:.lessThanOrEqual)
 
                 let bubbleSpacer = UIView()
 
@@ -295,8 +306,6 @@ class MessageMetadataViewController: OWSViewController {
                 row.addSubview(bubbleSpacer)
 
                 bubbleView.autoPinHeightToSuperview()
-                bubbleView.setContentHuggingHorizontalHigh()
-                bubbleView.setCompressionResistanceHigh()
                 bubbleSpacer.autoPinHeightToSuperview()
                 bubbleSpacer.setContentHuggingLow()
 

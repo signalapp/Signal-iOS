@@ -5,6 +5,7 @@
 #import <JSQMessagesViewController/JSQMessagesViewController.h>
 
 @class TSThread;
+@class JSQMessagesBubbleImage;
 
 extern NSString *const ConversationViewControllerDidAppearNotification;
 
@@ -22,5 +23,12 @@ extern NSString *const ConversationViewControllerDidAppearNotification;
 
 - (void)peekSetup;
 - (void)popped;
+
+#pragma mark shared bubble styles
+
++ (JSQMessagesBubbleImage *)outgoingBubbleImageData;
++ (JSQMessagesBubbleImage *)incomingBubbleImageData;
++ (JSQMessagesBubbleImage *)currentlyOutgoingBubbleImageData;
++ (JSQMessagesBubbleImage *)outgoingMessageFailedImageData;
 
 @end

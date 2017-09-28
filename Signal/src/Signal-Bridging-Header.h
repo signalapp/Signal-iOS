@@ -5,6 +5,7 @@
 #import "AppSettingsViewController.h"
 #import "AttachmentSharing.h"
 #import "ContactTableViewCell.h"
+#import "ConversationViewController.h"
 #import "DateUtil.h"
 #import "DebugUIPage.h"
 #import "Environment.h"
@@ -42,6 +43,7 @@
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <Foundation/Foundation.h>
 #import <JSQMessagesViewController/JSQMediaItem.h>
+#import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
 #import <JSQSystemSoundPlayer.h>

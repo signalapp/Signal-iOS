@@ -259,11 +259,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic) YapDatabaseViewMappings *messageMappings;
 
-@property (nonatomic) JSQMessagesBubbleImage *outgoingBubbleImageData;
-@property (nonatomic) JSQMessagesBubbleImage *incomingBubbleImageData;
-@property (nonatomic) JSQMessagesBubbleImage *currentlyOutgoingBubbleImageData;
-@property (nonatomic) JSQMessagesBubbleImage *outgoingMessageFailedImageData;
-
 @property (nonatomic) MPMoviePlayerController *videoPlayer;
 @property (nonatomic) AVAudioRecorder *audioRecorder;
 @property (nonatomic) OWSAudioAttachmentPlayer *audioAttachmentPlayer;
@@ -1541,15 +1536,75 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         self.collectionView.collectionViewLayout.messageBubbleLeftRightMargin = 80.0f;
     }
 
-    // Bubbles
     self.collectionView.collectionViewLayout.bubbleSizeCalculator = [OWSMessagesBubblesSizeCalculator new];
-    JSQMessagesBubbleImageFactory *bubbleFactory = [[JSQMessagesBubbleImageFactory alloc] init];
-    self.incomingBubbleImageData =
-        [bubbleFactory incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
-    self.outgoingBubbleImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]];
-    self.currentlyOutgoingBubbleImageData =
-        [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
-    self.outgoingMessageFailedImageData = [bubbleFactory outgoingMessagesBubbleImageWithColor:[UIColor grayColor]];
+}
+
++ (JSQMessagesBubbleImageFactory *)sharedBubbleImageFactory
+{
+    AssertIsOnMainThread();
+    
+    static JSQMessagesBubbleImageFactory *bubbleImageFactory;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        bubbleImageFactory = [JSQMessagesBubbleImageFactory new];
+    });
+
+    return bubbleImageFactory;
+}
+
++ (JSQMessagesBubbleImage *)outgoingBubbleImageData
+{
+    AssertIsOnMainThread();
+    
+    static JSQMessagesBubbleImage *bubbleImage;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        bubbleImage =
+            [[self sharedBubbleImageFactory] outgoingMessagesBubbleImageWithColor:[UIColor ows_materialBlueColor]];
+    });
+
+    return bubbleImage;
+}
+
++ (JSQMessagesBubbleImage *)incomingBubbleImageData
+{
+    AssertIsOnMainThread();
+    
+    static JSQMessagesBubbleImage *bubbleImage;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        bubbleImage = [[self sharedBubbleImageFactory]
+            incomingMessagesBubbleImageWithColor:[UIColor jsq_messageBubbleLightGrayColor]];
+    });
+
+    return bubbleImage;
+}
+
++ (JSQMessagesBubbleImage *)currentlyOutgoingBubbleImageData
+{
+    AssertIsOnMainThread();
+    
+    static JSQMessagesBubbleImage *bubbleImage;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        bubbleImage =
+            [[self sharedBubbleImageFactory] outgoingMessagesBubbleImageWithColor:[UIColor ows_fadedBlueColor]];
+    });
+
+    return bubbleImage;
+}
+
++ (JSQMessagesBubbleImage *)outgoingMessageFailedImageData
+{
+    AssertIsOnMainThread();
+    
+    static JSQMessagesBubbleImage *bubbleImage;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        bubbleImage = [[self sharedBubbleImageFactory] outgoingMessagesBubbleImageWithColor:[UIColor grayColor]];
+    });
+
+    return bubbleImage;
 }
 
 #pragma mark - Identity
@@ -1831,19 +1886,19 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
         switch (outgoingMessage.messageState) {
             case TSOutgoingMessageStateUnsent:
-                return self.outgoingMessageFailedImageData;
+                return [[self class] outgoingMessageFailedImageData];
             case TSOutgoingMessageStateAttemptingOut:
-                return self.currentlyOutgoingBubbleImageData;
+                return [[self class] currentlyOutgoingBubbleImageData];
             case TSOutgoingMessageStateSent_OBSOLETE:
             case TSOutgoingMessageStateDelivered_OBSOLETE:
                 OWSFail(@"%@ Obsolete message state.", self.tag);
-                return self.outgoingBubbleImageData;
+                return [[self class] outgoingBubbleImageData];
             case TSOutgoingMessageStateSentToService:
-                return self.outgoingBubbleImageData;
+                return [[self class] outgoingBubbleImageData];
         }
     }
 
-    return self.incomingBubbleImageData;
+    return [[self class] incomingBubbleImageData];
 }
 
 - (id<JSQMessageAvatarImageDataSource>)collectionView:(JSQMessagesCollectionView *)collectionView
