@@ -270,13 +270,29 @@ class MessageMetadataViewController: OWSViewController {
             if messageBody.characters.count > 0 {
                 self.messageBody = messageBody
 
+                let isIncoming = self.message as? TSIncomingMessage != nil
+
                 let bodyLabel = UILabel()
-                bodyLabel.textColor = UIColor.black
-                bodyLabel.font = UIFont.ows_regularFont(withSize:14)
+                bodyLabel.textColor = isIncoming ? UIColor.black : UIColor.white
+                bodyLabel.font = UIFont.ows_regularFont(withSize:16)
                 bodyLabel.text = messageBody
-                bodyLabel.numberOfLines = 0
+                bodyLabel.numberOfLines = 10
                 bodyLabel.lineBreakMode = .byWordWrapping
-                rows.append(bodyLabel)
+
+                let bubbleView = UIView()
+                bubbleView.backgroundColor = isIncoming ? UIColor.gray : UIColor.ows_materialBlue()
+                bubbleView.layer.cornerRadius = 10
+                bubbleView.addSubview(bodyLabel)
+                bodyLabel.autoPinLeadingToSuperView(withMargin:10)
+                bodyLabel.autoPinTrailingToSuperView(withMargin:10)
+                bodyLabel.autoPinHeightToSuperview(withMargin:10)
+
+                let row = UIView()
+                row.addSubview(bubbleView)
+                bubbleView.autoPinLeadingToSuperView(withMargin:10)
+                bubbleView.autoPinTrailingToSuperView(withMargin:10)
+                bubbleView.autoPinHeightToSuperview()
+                rows.append(row)
             } else {
                 // Neither attachment nor body.
                 owsFail("\(self.TAG) Message has neither attachment nor body.")
