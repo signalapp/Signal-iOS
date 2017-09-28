@@ -5,7 +5,7 @@
 import Foundation
 //import MediaPlayer
 
-class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
+class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate {
     let TAG = "[GifPickerViewController]"
 
     // MARK: Properties
@@ -39,6 +39,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         //        self.attachment = attachment
         //        self.successCompletion = successCompletion
         super.init(nibName: nil, bundle: nil)
+        self.layout.delegate = self
     }
 
     // MARK: View Lifecycle
@@ -92,6 +93,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         searchBar.autoPin(toTopLayoutGuideOf: self, withInset:0)
         //        [searchBar sizeToFit];
 
+//        if #available(iOS 10, *) {
+//            self.collectionView.isPrefetchingEnabled = false
+//        }
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         self.collectionView.backgroundColor = UIColor.black
@@ -546,5 +550,11 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                 guard let strongSelf = self else { return }
                 Logger.info("\(strongSelf.TAG) search failed.")
         })
+    }
+
+    // MARK: - GifPickerLayoutDelegate
+
+    func imageInfosForLayout() -> [GiphyImageInfo] {
+        return imageInfos
     }
 }

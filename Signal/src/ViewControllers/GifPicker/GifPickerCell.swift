@@ -3,59 +3,39 @@
 //
 
 import Foundation
-//import MediaPlayer
 
-class GifPickerCell: UICollectionViewCell
-    //, OWSAudioAttachmentPlayerDelegate
-{
+class GifPickerCell: UICollectionViewCell {
     let TAG = "[GifPickerCell]"
 
     // MARK: Properties
 
     var imageInfo: GiphyImageInfo?
-//
-//    let searchBar: UISearchBar
-//    let layout: GifPickerLayout
-//    let collectionView: UICollectionView
-//    var logoImageView : UIImageView?
-//    
-//    var imageInfos = [GiphyImageInfo]()
-//    
-//    //    let attachment: SignalAttachment
-//    //
-//    //    var successCompletion : (() -> Void)?
-//    //
-//    //    var videoPlayer: MPMoviePlayerController?
-//    //
-//    //    var audioPlayer: OWSAudioAttachmentPlayer?
-//    //    var audioStatusLabel: UILabel?
-//    //    var audioPlayButton: UIButton?
-//    //    var isAudioPlayingFlag = false
-//    //    var isAudioPaused = false
-//    //    var audioProgressSeconds: CGFloat = 0
-//    //    var audioDurationSeconds: CGFloat = 0
-//
+
 //    // MARK: Initializers
 //
-//    @available(*, unavailable, message:"use attachment: constructor instead.")
-//    required init?(coder aDecoder: NSCoder) {
+    @available(*, unavailable, message:"use other constructor instead.")
+    required init?(coder aDecoder: NSCoder) {
 //        self.searchBar = UISearchBar()
 //        self.layout = GifPickerLayout()
 //        self.collectionView = UICollectionView(frame:CGRect.zero, collectionViewLayout:self.layout)
 //        //        self.attachment = SignalAttachment.empty()
-//        super.init(coder: aDecoder)
-//        owsFail("\(self.TAG) invalid constructor")
-//    }
-//
-//    required init() {
+        super.init(coder: aDecoder)
+        owsFail("\(self.TAG) invalid constructor")
+    }
+
+    override init(frame: CGRect) {
 //        self.searchBar = UISearchBar()
 //        self.layout = GifPickerLayout()
 //        self.collectionView = UICollectionView(frame:CGRect.zero, collectionViewLayout:self.layout)
 //        //        assert(!attachment.hasError)
 //        //        self.attachment = attachment
 //        //        self.successCompletion = successCompletion
-//        super.init(nibName: nil, bundle: nil)
-//    }
+        super.init(frame: frame)
+
+        self.backgroundColor = UIColor.white
+        // TODO:
+        self.backgroundColor = UIColor.red
+    }
 
     override func prepareForReuse() {
         super.prepareForReuse()

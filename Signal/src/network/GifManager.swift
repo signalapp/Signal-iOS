@@ -34,11 +34,14 @@ enum GiphyFormat {
 @objc class GiphyImageInfo: NSObject {
     let giphyId: String
     let renditions: [GiphyRendition]
+    let originalRendition: GiphyRendition
 
     init(giphyId: String,
-         renditions: [GiphyRendition]) {
+         renditions: [GiphyRendition],
+         originalRendition: GiphyRendition) {
         self.giphyId = giphyId
         self.renditions = renditions
+        self.originalRendition = originalRendition
     }
 
     let kMaxDimension = UInt(618)
@@ -218,9 +221,25 @@ enum GiphyFormat {
             Logger.warn("\(GifManager.TAG) Image has no valid renditions.")
             return nil
         }
+
+        guard let originalRendition = findOriginalRendition(renditions:renditions) else {
+            Logger.warn("\(GifManager.TAG) Image has no original rendition.")
+            return nil
+        }
+
 //        Logger.debug("\(GifManager.TAG) Image successfully parsed.")
         return GiphyImageInfo(giphyId : giphyId,
-                              renditions : renditions)
+                              renditions : renditions,
+                              originalRendition: originalRendition)
+    }
+
+    private func findOriginalRendition(renditions: [GiphyRendition]) -> GiphyRendition? {
+        for rendition in renditions {
+            if rendition.name == "original" {
+                return rendition
+            }
+        }
+        return nil
     }
 
     private func parseGiphyRendition(renditionName: String,
