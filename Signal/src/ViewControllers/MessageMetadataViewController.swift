@@ -276,22 +276,40 @@ class MessageMetadataViewController: OWSViewController {
                 bodyLabel.textColor = isIncoming ? UIColor.black : UIColor.white
                 bodyLabel.font = UIFont.ows_regularFont(withSize:16)
                 bodyLabel.text = messageBody
+                // Only show the first N lines.
                 bodyLabel.numberOfLines = 10
                 bodyLabel.lineBreakMode = .byWordWrapping
 
                 let bubbleView = UIView()
-                bubbleView.backgroundColor = isIncoming ? UIColor.gray : UIColor.ows_materialBlue()
+                bubbleView.backgroundColor = isIncoming ? UIColor.jsq_messageBubbleLightGray() : UIColor.ows_materialBlue()
                 bubbleView.layer.cornerRadius = 10
                 bubbleView.addSubview(bodyLabel)
                 bodyLabel.autoPinLeadingToSuperView(withMargin:10)
                 bodyLabel.autoPinTrailingToSuperView(withMargin:10)
                 bodyLabel.autoPinHeightToSuperview(withMargin:10)
 
+                let bubbleSpacer = UIView()
+
                 let row = UIView()
                 row.addSubview(bubbleView)
-                bubbleView.autoPinLeadingToSuperView(withMargin:10)
-                bubbleView.autoPinTrailingToSuperView(withMargin:10)
+                row.addSubview(bubbleSpacer)
+
                 bubbleView.autoPinHeightToSuperview()
+                bubbleView.setContentHuggingHorizontalHigh()
+                bubbleView.setCompressionResistanceHigh()
+                bubbleSpacer.autoPinHeightToSuperview()
+                bubbleSpacer.setContentHuggingLow()
+
+                if isIncoming {
+                    bubbleView.autoPinLeadingToSuperView(withMargin:10)
+                    bubbleSpacer.autoPinLeading(toTrailingOf:bubbleView)
+                    bubbleSpacer.autoPinTrailingToSuperView(withMargin:10)
+                } else {
+                    bubbleSpacer.autoPinLeadingToSuperView(withMargin:10)
+                    bubbleView.autoPinLeading(toTrailingOf:bubbleSpacer)
+                    bubbleView.autoPinTrailingToSuperView(withMargin:10)
+                }
+
                 rows.append(row)
             } else {
                 // Neither attachment nor body.
