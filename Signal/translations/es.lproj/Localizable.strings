@@ -37,9 +37,6 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "Guardar";
 
-/* registration button text */
-"ALREADY_HAVE_ACCOUNT_BUTTON" = "¿Número ya registrado en Signal?";
-
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Responder";
 
@@ -455,7 +452,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Copiar";
 
 /* Short name for edit menu item to show message metadata. */
-"EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Info";
+"EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Información";
 
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Guardar";
@@ -518,13 +515,13 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Fallo al enviar mensaje: Contactos bloqueados.";
 
 /* Error mesage indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed due to failed attachment write.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Fallo al enviar por problemas con el adjunto.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal no ha podido conectarse a internet. Prueba a conectarte desde otra red WiFi o usa la red de datos de tu operador.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Fallo al enviar mensaje por falta de receptores válidos.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Fallo al enviar mensaje por falta de destinatarios válidos.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Este dispositivo ya no está registrado con tu número de teléfono. Tienes que eliminar y reinstalar Signal.";
@@ -542,7 +539,7 @@
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Mensaje duplicado.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "La clave del contacto no es válida.";
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "La clave del destinatario no es válida.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_MESSAGE" = "Mensaje cifrado con clave desincronizada. Toca para reiniciar la sesión segura.";
@@ -564,12 +561,6 @@
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Las cifras de seguridad han cambiado. Toca para verificar.";
-
-/* during registration */
-"EXISTING_USER_REGISTRATION_ALERT_BODY" = "Tu número de teléfono solo se puede registrar con Signal en un único dispositivo móvil. ";
-
-/* during registration, embeds {{device type}}, e.g. \"iPhone\" or \"iPad\" */
-"EXISTING_USER_REGISTRATION_ALERT_TITLE" = "Al activar este %@ se desactivarán todos los dispositivos registrados bajo este número de teléfono.";
 
 /* Message for the alert indicating the 'export with signal' file had an invalid filename. */
 "EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Nombre de archivo inválido.";
@@ -785,65 +776,65 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nuevo mensaje";
 
 /* Label for file size of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "File Size";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Tamaño de archivo";
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME type";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "Tipo MIME";
 
 /* Label for 'missing' attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "Missing Attachment";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "Adjunto no presente";
 
 /* Label for 'not yet downloaded' attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "Not yet downloaded";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "Adjunto no descargado";
 
-/* Label for the message body in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_BODY_LABEL" = "Message";
+/* Status label for messages which are delivered. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Delivered";
 
-/* Label for the 'group name' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_GROUP_NAME" = "Group";
+/* Status label for messages which are failed. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Failed";
 
-/* Label for media messages of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_MEDIA" = "Media";
+/* Status label for messages which are read. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Read";
+
+/* Status label for messages which are sending. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending";
+
+/* Status label for messages which are sent. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Sent";
+
+/* Status label for messages which are uploading. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Uploading";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Message has no content or attachment.";
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "El mensaje está vacío.";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Received";
-
-/* Label for the 'recipient' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_RECIPIENT" = "Recipient";
+"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Recibido";
 
 /* Label for the 'sender' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENDER" = "Sender";
+"MESSAGE_METADATA_VIEW_SENDER" = "Remitente";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Sent";
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Enviado";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Filename";
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Nombre de archivo";
 
 /* Title for the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_TITLE" = "Message";
-
-/* Label for voice messages of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_VOICE_MESSAGE" = "Voice Note";
+"MESSAGE_METADATA_VIEW_TITLE" = "Mensaje";
 
 /* message footer for delivered messages
    message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Entregado";
 
-/* message status for messages delivered to the recipient. Embeds: {{the date and time the message was delivered}}. */
-"MESSAGE_STATUS_DELIVERED_WITH_TIMESTAMP_FORMAT" = "Delivered %@";
-
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "Fallo al enviar. Toca para más información.";
 
-/* message status for messages read by the recipient. Embeds: {{the date and time the message was read}}. */
-"MESSAGE_STATUS_READ_WITH_TIMESTAMP_FORMAT" = "Read %@";
+/* message footer for read messages */
+"MESSAGE_STATUS_READ" = "Read";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sending...";
+"MESSAGE_STATUS_SENDING" = "Enviando ...";
 
 /* message footer for sent messages */
 "MESSAGE_STATUS_SENT" = "Enviado";
@@ -1010,10 +1001,10 @@
 "NOTIFICATIONS_SECTION_INAPP" = "Con Signal en primer plano";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Contacto y mensaje";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Remitente y mensaje";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Sólo contacto";
+"NOTIFICATIONS_SENDER_ONLY" = "Sólo remitente";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Ver";
@@ -1311,7 +1302,7 @@
 "SEND_BUTTON_TITLE" = "Enviar";
 
 /* Header title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Selecciona un contacto para enviar:";
+"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Selecciona un destinatario para enviar:";
 
 /* Title for the 'send external file' view. */
 "SEND_EXTERNAL_FILE_VIEW_TITLE" = "Enviar archivo";
@@ -1440,13 +1431,10 @@
 "SETTINGS_PRIVACY_TITLE" = "Privacidad";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Send Read Receipts";
+"SETTINGS_READ_RECEIPT" = "Read Receipts";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Read receipts let you see when others have read your message - and let them see when you have read their messages.";
-
-/* Title of the 'read receipts' settings section. */
-"SETTINGS_READ_RECEIPTS_SECTION_TITLE" = "Read Receipts";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all conversations.";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Habilitar pantalla de seguridad";
