@@ -1,5 +1,6 @@
-//  Created by Frederic Jacobs on 18/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSMessageServiceParams.h"
 #import "NSData+Base64.h"
@@ -16,6 +17,7 @@
                  recipientId:(NSString *)destination
                       device:(int)deviceId
                      content:(NSData *)content
+                    isSilent:(BOOL)isSilent
               registrationId:(int)registrationId
 {
     self = [super init];
@@ -29,6 +31,7 @@
     _destinationDeviceId = deviceId;
     _destinationRegistrationId = registrationId;
     _content = [content base64EncodedString];
+    _silent = isSilent;
 
     return self;
 }

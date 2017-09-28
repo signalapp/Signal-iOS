@@ -879,7 +879,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSArray<NSDictionary *> *deviceMessages;
     @try {
-        deviceMessages = [self deviceMessages:message forRecipient:recipient inThread:thread];
+        deviceMessages = [self deviceMessages:message forRecipient:recipient];
     } @catch (NSException *exception) {
         deviceMessages = @[];
         if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
@@ -1173,8 +1173,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (NSArray<NSDictionary *> *)deviceMessages:(TSOutgoingMessage *)message
                                forRecipient:(SignalRecipient *)recipient
-                                   inThread:(TSThread *)thread
 {
+    OWSAssert(message);
+    OWSAssert(recipient);
+
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
 
     NSData *plainText = [message buildPlainTextData:recipient];
@@ -1191,7 +1193,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     messageDict = [self encryptedMessageWithPlaintext:plainText
                                                           toRecipient:recipient.uniqueId
                                                              deviceId:deviceNumber
-                                                        keyingStorage:[TSStorageManager sharedManager]];
+                                                        keyingStorage:self.storageManager
+                                                             isSilent:message.isSilent];
                 } @catch (NSException *exception) {
                     encryptionException = exception;
                 }
@@ -1225,7 +1228,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                     toRecipient:(NSString *)identifier
                                        deviceId:(NSNumber *)deviceNumber
                                   keyingStorage:(TSStorageManager *)storage
+                                       isSilent:(BOOL)isSilent
 {
+    OWSAssert(plainText);
+    OWSAssert(identifier.length > 0);
+    OWSAssert(deviceNumber);
+    OWSAssert(storage);
+
     if (![storage containsSession:identifier deviceId:[deviceNumber intValue]]) {
         __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         __block PreKeyBundle *_Nullable bundle;
@@ -1305,6 +1314,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                                recipientId:identifier
                                                                                     device:[deviceNumber intValue]
                                                                                    content:serializedMessage
+                                                                                  isSilent:isSilent
                                                                             registrationId:cipher.remoteRegistrationId];
 
     NSError *error;
