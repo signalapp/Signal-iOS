@@ -70,13 +70,10 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     OWSCAssert(pastTimestamp > 0);
 
     uint64_t nowTimestamp = [NSDate ows_millisecondTimeStamp];
-    if (pastTimestamp >= nowTimestamp) {
-        OWSFail(@"%@ Unexpected timestamp", self.tag);
-        return NSLocalizedString(@"TIME_NOW", @"Indicates that the event happened now.");
-    }
+    BOOL isFutureTimestamp = pastTimestamp >= nowTimestamp;
 
     NSDate *pastDate = [NSDate ows_dateWithMillisecondsSince1970:pastTimestamp];
-    if ([self dateIsToday:pastDate]) {
+    if (isFutureTimestamp || [self dateIsToday:pastDate]) {
         return [[self timeFormatter] stringFromDate:pastDate];
     } else if (![self dateIsOlderThanOneWeek:pastDate]) {
         return [[self weekdayFormatter] stringFromDate:pastDate];
