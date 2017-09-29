@@ -490,7 +490,9 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 {
     [super viewDidAppear:animated];
 
-    if (!self.newlyRegisteredUser && !self.viewHasEverAppeared) {
+    if (self.newlyRegisteredUser) {
+        [self markAllUpgradeExperiencesAsSeen];
+    } else if (!self.viewHasEverAppeared) {
         [self displayAnyUnseenUpgradeExperience];
     }
 
