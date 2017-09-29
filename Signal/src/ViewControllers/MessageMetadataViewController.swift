@@ -162,6 +162,8 @@ class MessageMetadataViewController: OWSViewController {
         // Recipient(s)
         if let outgoingMessage = message as? TSOutgoingMessage {
 
+            let isGroupThread = message.thread.isGroupThread()
+
             let recipientStatusGroups: [MessageRecipientState] = [
                 .read,
                 .uploading,
@@ -189,8 +191,10 @@ class MessageMetadataViewController: OWSViewController {
                     }
 
                     if groupRows.count < 1 {
-                        groupRows.append(valueRow(name: MessageRecipientStateName(recipientStatusGroup),
-                                                  value:""))
+                        if isGroupThread {
+                            groupRows.append(valueRow(name: MessageRecipientStateName(recipientStatusGroup),
+                                                      value:""))
+                        }
 
                         addDivider()
                     }
