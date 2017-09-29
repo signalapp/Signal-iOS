@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Niet nu";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Nieuw veiligheidsnummer aanvaarden";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Nieuw veiligheidsnummer accepteren";
 
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Toevoegen";
@@ -755,7 +755,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Koppelen van apparaat mislukt";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
+"LIST_GROUP_MEMBERS_ACTION" = "Groepsleden";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logging";
@@ -1134,7 +1134,7 @@
 "PROFILE_NAME_LABEL_FORMAT" = "~%@";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Profielavatar instelle";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Profielavatar instellen";
 
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Avatar wissen";
@@ -1260,7 +1260,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "Weigeren";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "Het telefoonnummer dat je probeert te registeren is al geregistreerd op een andere server, deregistreer op de andere server en probeer opnieuw.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Het telefoonnummer dat je probeert te registreren is al geregistreerd op een andere server, wis deze op de andere server en probeer het s.v.p. opnieuw.";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Opnieuw registreren voor push-notificaties";
@@ -1573,6 +1573,15 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Klaar voor je close-up?";
+
+/* Description of new profile feature for upgrading (existing) users */
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "You now have the option of seeing and sharing when messages have been read.";
+
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Enable read receipts in your privacy settings.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Introducing Read Receipts";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal ondersteunt nu beveiligde videogesprekken. Maak gewoon een oproep en tik op de cameraknop om een videogesprek te beginnen.";

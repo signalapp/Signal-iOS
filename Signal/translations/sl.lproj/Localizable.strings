@@ -755,7 +755,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Povezava naprave ni bila uspešna";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
+"LIST_GROUP_MEMBERS_ACTION" = "Člani skupine";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Beleženje";
@@ -1573,6 +1573,15 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Ste pripravljeni za fotografiranje?";
+
+/* Description of new profile feature for upgrading (existing) users */
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Odslej lahko vidite ali je prejemnik prebral vaše sporočilo in on lahko vidi ali ste vi prebrali njegova.";
+
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Potrdila o ogledu lahko vklopite v nastavitvah zasebnosti.";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Predstavljamo vam Potrdila o ogledu";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Aplikacija Signal zdaj omogoča tudi varne video klice. Za uporabo začnite z običajnim glasovnim klicem in nato tapnite na gumb s kamero.";
