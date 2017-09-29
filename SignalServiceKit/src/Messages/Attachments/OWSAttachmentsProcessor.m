@@ -363,16 +363,20 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
             hasCheckedContentLength = YES;
         }
         success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
-            if (![responseObject isKindOfClass:[NSData class]]) {
-                DDLogError(@"%@ Failed retrieval of attachment. Response had unexpected format.", self.tag);
-                NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                return failureHandler(task, error);
-            }
-            successHandler((NSData *)responseObject);
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                if (![responseObject isKindOfClass:[NSData class]]) {
+                    DDLogError(@"%@ Failed retrieval of attachment. Response had unexpected format.", self.tag);
+                    NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
+                    return failureHandler(task, error);
+                }
+                successHandler((NSData *)responseObject);
+            });
         }
         failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
-            DDLogError(@"Failed to retrieve attachment with error: %@", error.description);
-            return failureHandler(task, error);
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                DDLogError(@"Failed to retrieve attachment with error: %@", error.description);
+                return failureHandler(task, error);
+            });
         }];
 }
 

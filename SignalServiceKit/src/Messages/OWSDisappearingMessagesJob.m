@@ -224,59 +224,62 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
                                     contactsManager:(id<ContactsManagerProtocol>)contactsManager
 {
-    dispatch_async(self.serialQueue, ^{
         [[self sharedJob] becomeConsistentWithConfigurationForMessage:message contactsManager:contactsManager];
-    });
 }
 
 - (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
                                     contactsManager:(id<ContactsManagerProtocol>)contactsManager
 {
-    // Become eventually consistent in the case that the remote changed their settings at the same time.
-    // Also in case remote doesn't support expiring messages
-    OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-        [OWSDisappearingMessagesConfiguration fetchOrCreateDefaultWithThreadId:message.uniqueThreadId];
+    OWSAssert(message);
+    OWSAssert(contactsManager);
 
-    BOOL changed = NO;
-    if (message.expiresInSeconds == 0) {
-        if (disappearingMessagesConfiguration.isEnabled) {
+    dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
+        // Become eventually consistent in the case that the remote changed their settings at the same time.
+        // Also in case remote doesn't support expiring messages
+        OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+            [OWSDisappearingMessagesConfiguration fetchOrCreateDefaultWithThreadId:message.uniqueThreadId];
+
+        BOOL changed = NO;
+        if (message.expiresInSeconds == 0) {
+            if (disappearingMessagesConfiguration.isEnabled) {
+                changed = YES;
+                DDLogWarn(@"%@ Received remote message which had no expiration set, disabling our expiration to become "
+                          @"consistent.",
+                    self.tag);
+                disappearingMessagesConfiguration.enabled = NO;
+                [disappearingMessagesConfiguration save];
+            }
+        } else if (message.expiresInSeconds != disappearingMessagesConfiguration.durationSeconds) {
             changed = YES;
-            DDLogWarn(@"%@ Received remote message which had no expiration set, disabling our expiration to become "
+            DDLogInfo(@"%@ Received remote message with different expiration set, updating our expiration to become "
                       @"consistent.",
                 self.tag);
-            disappearingMessagesConfiguration.enabled = NO;
+            disappearingMessagesConfiguration.enabled = YES;
+            disappearingMessagesConfiguration.durationSeconds = message.expiresInSeconds;
             [disappearingMessagesConfiguration save];
         }
-    } else if (message.expiresInSeconds != disappearingMessagesConfiguration.durationSeconds) {
-        changed = YES;
-        DDLogInfo(
-            @"%@ Received remote message with different expiration set, updating our expiration to become consistent.",
-            self.tag);
-        disappearingMessagesConfiguration.enabled = YES;
-        disappearingMessagesConfiguration.durationSeconds = message.expiresInSeconds;
-        [disappearingMessagesConfiguration save];
-    }
 
-    if (!changed) {
-        return;
-    }
+        if (!changed) {
+            return;
+        }
 
-    if ([message isKindOfClass:[TSIncomingMessage class]]) {
-        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-        NSString *contactName = [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId];
+        if ([message isKindOfClass:[TSIncomingMessage class]]) {
+            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
+            NSString *contactName = [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId];
 
-        // We want the info message to appear _before_ the message.
-        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp - 1
-                                                                           thread:message.thread
-                                                                    configuration:disappearingMessagesConfiguration
-                                                              createdByRemoteName:contactName] save];
-    } else {
-        // We want the info message to appear _before_ the message.
-        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp - 1
-                                                                           thread:message.thread
-                                                                    configuration:disappearingMessagesConfiguration]
-            save];
-    }
+            // We want the info message to appear _before_ the message.
+            [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp - 1
+                                                                               thread:message.thread
+                                                                        configuration:disappearingMessagesConfiguration
+                                                                  createdByRemoteName:contactName] save];
+        } else {
+            // We want the info message to appear _before_ the message.
+            [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp - 1
+                                                                               thread:message.thread
+                                                                        configuration:disappearingMessagesConfiguration]
+                save];
+        }
+    });
 }
 
 - (void)startIfNecessary

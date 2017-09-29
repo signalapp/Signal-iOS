@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)description;
 
+- (TSThread *)threadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 /**
  * When an interaction is updated, it often affects the UI for it's containing thread. Touching it's thread will notify
  * any observers so they can redraw any related UI.
