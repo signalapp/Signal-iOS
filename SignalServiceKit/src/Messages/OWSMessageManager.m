@@ -948,7 +948,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForIncomingMessage:incomingMessage
                                                                                inThread:thread
-                                                                        contactsManager:self.contactsManager];
+                                                                        contactsManager:self.contactsManager
+                                                                            transaction:transaction];
     }
 
     return incomingMessage;
