@@ -210,17 +210,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
             self.isProcessing = YES;
 
-            // Process read receipts every N seconds.
-            //
-            // We want a value high enough to allow us to effectively de-duplicate,
-            // read receipts without being so high that we risk not sending read
-            // receipts due to app exit.
-            const CGFloat kProcessingFrequencySeconds = 3.f;
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kProcessingFrequencySeconds * NSEC_PER_SEC)),
-                dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                ^{
-                    [self process];
-                });
+            [self process];
         }
     });
 }
@@ -231,9 +221,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     {
         DDLogVerbose(@"%@ Processing read receipts.", self.tag);
 
-        self.isProcessing = NO;
-
-        NSArray<OWSReadReceipt *> *readReceiptsForLinkedDevices = [self.toLinkedDevicesReadReceiptMap allValues];
+        NSArray<OWSLinkedDeviceReadReceipt *> *readReceiptsForLinkedDevices =
+            [self.toLinkedDevicesReadReceiptMap allValues];
         [self.toLinkedDevicesReadReceiptMap removeAllObjects];
         if (readReceiptsForLinkedDevices.count > 0) {
             OWSReadReceiptsForLinkedDevicesMessage *message =
@@ -250,11 +239,12 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 }];
         }
 
-        NSArray<OWSReadReceipt *> *readReceiptsToSend = [self.toLinkedDevicesReadReceiptMap allValues];
-        [self.toLinkedDevicesReadReceiptMap removeAllObjects];
-        if (self.toSenderReadReceiptMap.count > 0) {
-            for (NSString *recipientId in self.toSenderReadReceiptMap) {
-                NSSet<NSNumber *> *timestamps = self.toSenderReadReceiptMap[recipientId];
+        NSDictionary<NSString *, NSMutableSet<NSNumber *> *> *toSenderReadReceiptMap =
+            [self.toSenderReadReceiptMap copy];
+        [self.toSenderReadReceiptMap removeAllObjects];
+        if (toSenderReadReceiptMap.count > 0) {
+            for (NSString *recipientId in toSenderReadReceiptMap) {
+                NSSet<NSNumber *> *timestamps = toSenderReadReceiptMap[recipientId];
                 OWSAssert(timestamps.count > 0);
 
                 TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
@@ -264,14 +254,32 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
                 [self.messageSender sendMessage:message
                     success:^{
-                        DDLogInfo(
-                            @"%@ Successfully sent %zd read receipts to sender.", self.tag, readReceiptsToSend.count);
+                        DDLogInfo(@"%@ Successfully sent %zd read receipts to sender.", self.tag, timestamps.count);
                     }
                     failure:^(NSError *error) {
                         DDLogError(@"%@ Failed to send read receipts to sender with error: %@", self.tag, error);
                     }];
             }
             [self.toSenderReadReceiptMap removeAllObjects];
+        }
+
+        BOOL didWork = (readReceiptsForLinkedDevices.count > 0 || toSenderReadReceiptMap.count > 0);
+
+        if (didWork) {
+            // Wait N seconds before processing read receipts again.
+            // This allows time for a batch to accumulate.
+            //
+            // We want a value high enough to allow us to effectively de-duplicate,
+            // read receipts without being so high that we risk not sending read
+            // receipts due to app exit.
+            const CGFloat kProcessingFrequencySeconds = 3.f;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kProcessingFrequencySeconds * NSEC_PER_SEC)),
+                dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                ^{
+                    [self process];
+                });
+        } else {
+            self.isProcessing = NO;
         }
     }
 }
