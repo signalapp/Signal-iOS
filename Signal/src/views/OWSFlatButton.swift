@@ -99,7 +99,9 @@ import Foundation
     }
 
     public class func fontForHeight(_ height: CGFloat) -> UIFont {
-        let fontPointSize = round(height * 0.45)
+        // Cap the "button height" at 40pt or button text can look
+        // excessively large.
+        let fontPointSize = round(min(40, height) * 0.45)
         return UIFont.ows_mediumFont(withSize:fontPointSize)!
     }
 
