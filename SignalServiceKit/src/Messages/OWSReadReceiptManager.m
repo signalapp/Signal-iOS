@@ -221,7 +221,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     {
         DDLogVerbose(@"%@ Processing read receipts.", self.tag);
 
-        // OWSReadReceipt
         NSArray<OWSLinkedDeviceReadReceipt *> *readReceiptsForLinkedDevices =
             [self.toLinkedDevicesReadReceiptMap allValues];
         [self.toLinkedDevicesReadReceiptMap removeAllObjects];
