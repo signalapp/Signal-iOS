@@ -512,11 +512,19 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-
+        guard let cell = cell as? GifPickerCell else {
+            owsFail("\(TAG) unexpected cell.")
+            return
+        }
+        cell.shouldLoad = true
     }
 
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-
+        guard let cell = cell as? GifPickerCell else {
+            owsFail("\(TAG) unexpected cell.")
+            return
+        }
+        cell.shouldLoad = false
     }
 
     // MARK: - Event Handlers
