@@ -317,6 +317,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 {
     AssertOnDispatchQueue(self.serialQueue);
 
+    // We want a value that is just high enough to yield perf benefits.
+    const NSUInteger kIncomingMessageBatchSize = 16;
+
     NSArray<OWSMessageContentJob *> *jobs = [self.finder nextJobsForBatchSize:kIncomingMessageBatchSize];
     OWSAssert(jobs);
     if (jobs.count < 1) {
