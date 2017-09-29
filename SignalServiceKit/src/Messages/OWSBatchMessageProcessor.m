@@ -338,7 +338,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     // This delay won't affect the first message to arrive when this queue is idle,
     // so by definition we're receiving more than one message and can benefit from
     // batching.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1f * NSEC_PER_SEC)), self.serialQueue, ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), self.serialQueue, ^{
         [self drainQueueWorkStep];
     });
 }
