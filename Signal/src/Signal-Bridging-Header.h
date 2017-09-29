@@ -109,3 +109,4 @@
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>
 #import <WebRTC/RTCEAGLVideoView.h>
+#import <YYImage/YYImage.h>

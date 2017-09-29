@@ -415,10 +415,7 @@ extension URLSessionTask {
 
     // MARK: Rendition Download
 
-//    private static let serialQueue = DispatchQueue(label: "org.signal.gif.download")
-
     // TODO: Use a proper cache.
-    // TODO: Write to cache.
     private var assetMap = [NSURL: GiphyAsset]()
     // TODO: We could use a proper queue.
     private var assetRequestQueue = [GiphyAssetRequest]()
@@ -461,7 +458,6 @@ extension URLSessionTask {
         AssertIsOnMainThread()
 
         DispatchQueue.main.async {
-//        GifManager.serialQueue.async {
             guard !self.isDownloading else {
                 return
             }

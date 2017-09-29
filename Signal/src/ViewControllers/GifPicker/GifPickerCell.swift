@@ -27,31 +27,18 @@ class GifPickerCell: UICollectionViewCell {
 
     var assetRequest: GiphyAssetRequest?
     var asset: GiphyAsset?
+    var imageView: YYAnimatedImageView?
 
     // MARK: Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-//        self.searchBar = UISearchBar()
-//        self.layout = GifPickerLayout()
-//        self.collectionView = UICollectionView(frame:CGRect.zero, collectionViewLayout:self.layout)
-//        //        self.attachment = SignalAttachment.empty()
         super.init(coder: aDecoder)
         owsFail("\(self.TAG) invalid constructor")
     }
 
     override init(frame: CGRect) {
-//        self.searchBar = UISearchBar()
-//        self.layout = GifPickerLayout()
-//        self.collectionView = UICollectionView(frame:CGRect.zero, collectionViewLayout:self.layout)
-//        //        assert(!attachment.hasError)
-//        //        self.attachment = attachment
-//        //        self.successCompletion = successCompletion
         super.init(frame: frame)
-
-        self.backgroundColor = UIColor.white
-        // TODO:
-        self.backgroundColor = UIColor.red
     }
 
     override func prepareForReuse() {
@@ -62,9 +49,8 @@ class GifPickerCell: UICollectionViewCell {
         asset = nil
         assetRequest?.cancel()
         assetRequest = nil
-
-        // TODO:
-        self.backgroundColor = UIColor.red
+        imageView?.removeFromSuperview()
+        imageView = nil
     }
 
     private func clearAssetRequest() {
@@ -96,12 +82,28 @@ class GifPickerCell: UICollectionViewCell {
                                         guard let strongSelf = self else { return }
                                         strongSelf.clearAssetRequest()
                                         strongSelf.asset = asset
-                                        // TODO:
-                                        strongSelf.backgroundColor = UIColor.blue
+                                        strongSelf.tryToDisplayAsset()
             },
                                        failure: { [weak self] in
                                         guard let strongSelf = self else { return }
                                         strongSelf.clearAssetRequest()
         })
+    }
+
+    private func tryToDisplayAsset() {
+        guard let asset = asset else {
+            owsFail("\(TAG) missing asset.")
+            return
+        }
+        guard let image = YYImage(contentsOfFile:asset.filePath) else {
+            owsFail("\(TAG) could not load asset.")
+            return
+        }
+        let imageView = YYAnimatedImageView()
+        self.imageView = imageView
+        imageView.image = image
+        self.contentView.addSubview(imageView)
+        imageView.autoPinWidthToSuperview()
+        imageView.autoPinHeightToSuperview()
     }
 }
