@@ -251,10 +251,14 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage *)message
                             inThread:(TSThread *)thread
                      contactsManager:(id<ContactsManagerProtocol>)contactsManager
+                         transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(message);
     OWSAssert(thread);
     OWSAssert(contactsManager);
+
+    // While batch processing, some of the necessary changes have not been commited.
+    NSString *messageDescription = [message previewTextWithTransaction:transaction];
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (thread.isMuted) {
@@ -263,7 +267,6 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
 
         BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
 
-        NSString *messageDescription = message.description;
         NSString *senderName = [contactsManager displayNameForPhoneIdentifier:message.authorId];
         NSString *groupName = [thread.name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         if (groupName.length < 1) {
