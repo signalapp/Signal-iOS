@@ -11,6 +11,7 @@
 
 #pragma mark - debug
 
+- (void)resetSessionStore;
 - (void)printAllSessions;
 
 @end

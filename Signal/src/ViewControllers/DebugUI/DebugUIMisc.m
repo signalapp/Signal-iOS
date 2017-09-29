@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import "OWSCountryMetadata.h"
 #import "OWSTableViewController.h"
+#import "RegistrationViewController.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <AFNetworking/AFNetworking.h>
@@ -20,6 +21,12 @@
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface TSAccountManager (Debug)
+
+- (void)resetForRegistration;
+
+@end
 
 @implementation DebugUIMisc
 
@@ -61,6 +68,41 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIMisc clearHasDismissedOffers];
                                      }]];
+
+    [items addObject:[OWSTableItem
+                         itemWithTitle:@"Re-register"
+                           actionBlock:^{
+
+                               [OWSAlerts
+                                   showConfirmationAlertWithTitle:@"Re-register?"
+                                                          message:@"If you proceed, you will not lose any of your "
+                                                                  @"current messages, but your account will be "
+                                                                  @"deactivated until you complete re-registration."
+                                                     proceedTitle:@"Proceed"
+                                                    proceedAction:^(UIAlertAction *_Nonnull action) {
+                                                        DDLogError(@"Re-registering.");
+
+                                                        [[TSAccountManager sharedInstance] resetForRegistration];
+                                                        OWSSyncPushTokensJob *syncPushTokensJob = [
+                                                            [OWSSyncPushTokensJob alloc]
+                                                            initWithPushManager:[PushManager sharedManager]
+                                                                 accountManager:[Environment getCurrent].accountManager
+                                                                    preferences:[Environment getCurrent].preferences];
+                                                        syncPushTokensJob.uploadOnlyIfStale = NO;
+                                                        __unused id promise = [syncPushTokensJob run];
+
+                                                        RegistrationViewController *viewController =
+                                                            [RegistrationViewController new];
+                                                        OWSNavigationController *navigationController =
+                                                            [[OWSNavigationController alloc]
+                                                                initWithRootViewController:viewController];
+                                                        navigationController.navigationBarHidden = YES;
+                                                        [UIApplication sharedApplication]
+                                                            .delegate.window.rootViewController
+                                                            = navigationController;
+                                                    }];
+                           }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
