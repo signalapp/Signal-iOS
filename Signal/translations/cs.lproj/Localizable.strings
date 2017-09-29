@@ -755,7 +755,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Propojení zařízení selhalo";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Vypsat členy skupiny";
+"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logování";

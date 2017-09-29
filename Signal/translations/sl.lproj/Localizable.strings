@@ -755,7 +755,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Povezava naprave ni bila uspešna";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Prikaži člane skupine";
+"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Beleženje";

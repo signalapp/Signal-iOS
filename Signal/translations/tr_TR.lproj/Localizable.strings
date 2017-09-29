@@ -755,7 +755,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Cihaz bağlaması başarısız oldu";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Grup Üyeleri göster";
+"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Kayıt altına alma";

@@ -755,7 +755,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "การเชื่อมโยงอุปกรณ์ล้มเหลว";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "รายชื่อสมาชิกกลุ่ม";
+"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "การบันทึก";

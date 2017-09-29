@@ -137,7 +137,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Ficheiro non soportado.";
 
 /* Short text label for a voice message attachment, used for thread preview and on lockscreen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Voice Message";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Mensaxe de voz";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
@@ -197,7 +197,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Bloquear: %@?";
 
 /* Label for generic done button. */
-"BUTTON_DONE" = "Done";
+"BUTTON_DONE" = "Feito";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to make calls and record voice messages. You can grant this permission in the Settings app.";
@@ -215,13 +215,13 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Label for call button for alert offering to call a user. */
-"CALL_USER_ALERT_CALL_BUTTON" = "Call";
+"CALL_USER_ALERT_CALL_BUTTON" = "Chamar";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Would you like to call %@?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "¿Queres chamar a %@?";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "Call?";
+"CALL_USER_ALERT_TITLE" = "¿Chamar?";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Podes responder ás chamadas directamente dende a pantalla de bloqueo e ver o nome e o número de télefono das chamadas entrantes se cambias os teus axustes.\n\nPara máis detalles accede aos axustes de privacidade.";
@@ -248,10 +248,10 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Error";
 
 /* Title for the 'censorship circumvention country' view. */
-"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Select Country";
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Escoller país";
 
 /* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "Comprarar co Portapapeis";
+"COMPARE_SAFETY_NUMBER_ACTION" = "Comparar co Portapapeis";
 
 /* Multiline label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "To see which of your contacts are Signal users, allow contacts access in your system settings.";
@@ -284,7 +284,7 @@
 "CONTACT_CELL_IS_BLOCKED" = "Bloqueado";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Not Verified";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Non verificado";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Número non rexistrado";
@@ -338,7 +338,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "ata %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Create New Contact";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Crear Novo Contacto";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Desilenciar";
@@ -437,7 +437,7 @@
 "EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Members";
 
 /* An indicator that a user is a new member of the group. */
-"EDIT_GROUP_NEW_MEMBER_LABEL" = "Added";
+"EDIT_GROUP_NEW_MEMBER_LABEL" = "Engadido";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "Update";
@@ -461,7 +461,7 @@
 "EDIT_ITEM_SHARE_ACTION" = "Compartir";
 
 /* No comment provided by engineer. */
-"EDIT_TXT" = "Edit";
+"EDIT_TXT" = "Editar";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Ola:\n\nUltimamente estou usando Signal no meu iPhone para poder ter conversas privadas. Gustaríame que ti tamén o instalases, para así estar seguros de que tan só ti e máis eu podemos ler as nosas mensaxes ou escoitar as nosas chamadas.\n\nSignal está dispoñible para iPhones e Android. Descárgao aquí: %@\n\nSignal funciona como a túa aplicación para mensaxes estándar. Podemos enviar fotos e vídeos, facer chamadas, e ter conversas en grupo. O mellor de todo é que nadie pode ver o contido das nosas conversas, nin sequera a xente que desarrolla Signal!\n\nPodes aprender máis sobre Open Whisper Systems, a xente que desarrolla Signal, aquí: %@";
@@ -530,7 +530,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Erro do servidor. Téntao de novo máis tarde.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occurred.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Produciuse un erro descoñecido.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Este contacto non usa Signal.";
@@ -557,7 +557,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Your safety number with %@ has changed.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "An unknown error occurred.";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "Produciuse un erro descoñecido.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Chave de identidade cambiada. Toca para verificar.";
@@ -620,7 +620,7 @@
 "GROUP_MEMBER_LEFT" = " %@ abandonou o grupo. ";
 
 /* Button label to add information to an unknown contact */
-"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Add Contact";
+"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Engadir Contacto";
 
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Chamar";
@@ -755,7 +755,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Erro ao vincular o dispositivo";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Membros do grupo";
+"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Rexistro";
@@ -794,7 +794,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Failed";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Read";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Lido";
 
 /* Status label for messages which are sending. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending";
@@ -831,7 +831,7 @@
 "MESSAGE_STATUS_FAILED" = "Sending failed. Tap for info.";
 
 /* message footer for read messages */
-"MESSAGE_STATUS_READ" = "Read";
+"MESSAGE_STATUS_READ" = "Lido";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Sending...";
@@ -873,7 +873,7 @@
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Toca para acceder aos axustes";
 
 /* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "Unread Messages";
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "Mensaxes non lidas";
 
 /* Messages that indicates that there are more unseen messages including safety number changes that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}}. */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT" = "There are more unread messages (including safety number changes) above. Tap \"%@\" to see them.";

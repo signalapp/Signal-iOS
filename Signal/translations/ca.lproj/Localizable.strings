@@ -755,7 +755,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "No s'ha pogut enllaçar el dispositiu";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Mostra la llista de membres";
+"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Registres";

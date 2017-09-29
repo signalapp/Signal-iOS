@@ -755,7 +755,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Laitteen yhdistäminen epäonnistui";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Näytä ryhmän jäsenet";
+"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Lokit";

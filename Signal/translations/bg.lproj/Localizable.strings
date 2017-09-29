@@ -755,7 +755,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Свързването на Устройство се Провали";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Списък на Членовете на Групата";
+"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Регистри";

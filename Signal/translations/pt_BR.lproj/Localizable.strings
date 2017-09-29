@@ -755,7 +755,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Conexão do Dispositivo Falhou";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Listar Membros do Grupo";
+"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Registros";
