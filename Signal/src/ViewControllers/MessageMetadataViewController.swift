@@ -209,6 +209,7 @@ class MessageMetadataViewController: OWSViewController {
                     cell.accessoryView = statusLabel
                     cell.autoSetDimension(.height, toSize:ContactTableViewCell.rowHeight())
                     cell.setContentHuggingLow()
+                    cell.isUserInteractionEnabled = false
                     groupRows.append(cell)
                 }
 
