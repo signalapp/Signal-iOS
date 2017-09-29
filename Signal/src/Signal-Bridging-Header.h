@@ -33,6 +33,7 @@
 #import "PushManager.h"
 #import "Release.h"
 #import "TSMessageAdapter.h"
+#import "ThreadUtil.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIImage+OWS.h"

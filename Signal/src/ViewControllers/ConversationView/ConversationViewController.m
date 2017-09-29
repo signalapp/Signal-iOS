@@ -3211,7 +3211,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)showGifPicker
 {
-    GifPickerViewController *view = [GifPickerViewController new];
+    GifPickerViewController *view =
+        [[GifPickerViewController alloc] initWithThread:self.thread messageSender:self.messageSender];
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:view];
     [self presentViewController:navigationController animated:YES completion:nil];
 }

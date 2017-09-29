@@ -75,7 +75,7 @@ class GifPickerCell: UICollectionViewCell {
             clearAssetRequest()
             return
         }
-        Logger.verbose("\(TAG) picked rendition: \(rendition.name)")
+//        Logger.verbose("\(TAG) picked rendition: \(rendition.name)")
 
         assetRequest = GifDownloader.sharedInstance.downloadAssetAsync(rendition:rendition,
                                        success: { [weak self] asset in

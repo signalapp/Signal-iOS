@@ -5,8 +5,9 @@
 import Foundation
 import ObjectiveC
 
+// There's no UTI type for webp!
 enum GiphyFormat {
-    case gif, webp, mp4
+    case gif, mp4
 }
 
 @objc class GiphyRendition: NSObject {
@@ -29,6 +30,24 @@ enum GiphyFormat {
         self.height = height
         self.fileSize = fileSize
         self.url = url
+    }
+
+    public func fileExtension() -> String {
+        switch format {
+        case .gif:
+            return "gif"
+        case .mp4:
+            return "mp4"
+        }
+    }
+
+    public func utiType() -> String {
+        switch format {
+        case .gif:
+            return kUTTypeGIF as String
+        case .mp4:
+            return kUTTypeMPEG4 as String
+        }
     }
 }
 
@@ -124,14 +143,6 @@ enum GiphyFormat {
         sessionManager.responseSerializer = AFJSONResponseSerializer()
 
         return sessionManager
-    }
-
-    // TODO:
-    public func test() {
-        search(query:"monkey",
-               success: { _ in
-        }, failure: {
-        })
     }
 
     // MARK: Search

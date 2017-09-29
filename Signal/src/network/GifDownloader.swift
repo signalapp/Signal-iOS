@@ -244,23 +244,12 @@ extension URLSessionTask {
             assetRequest.failure()
             return
         }
-        Logger.verbose("\(GifDownloader.TAG) download succeeded: \(assetRequest.rendition.url)")
+//        Logger.verbose("\(GifDownloader.TAG) download succeeded: \(assetRequest.rendition.url)")
         let asset = GiphyAsset(rendition: assetRequest.rendition, filePath : assetFilePath)
         assetRequest.success(asset)
     }
 
     // MARK: URLSessionDownloadDelegate
-
-    private func fileExtension(forFormat format: GiphyFormat) -> String {
-        switch format {
-        case .gif:
-            return "gif"
-        case .webp:
-            return "webp"
-        case .mp4:
-            return "mp4"
-        }
-    }
 
     public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         let assetRequest = downloadTask.assetRequest
@@ -271,7 +260,7 @@ extension URLSessionTask {
         }
 
         let dirPath = NSTemporaryDirectory()
-        let fileExtension = self.fileExtension(forFormat:assetRequest.rendition.format)
+        let fileExtension = assetRequest.rendition.fileExtension()
         let fileName = (NSUUID().uuidString as NSString).appendingPathExtension(fileExtension)!
         let filePath = (dirPath as NSString).appendingPathComponent(fileName)
 
