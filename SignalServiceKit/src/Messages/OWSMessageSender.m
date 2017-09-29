@@ -600,9 +600,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                success:(void (^)())successHandler
                failure:(RetryableFailureHandler)failureHandler
 {
-    TSThread *thread = message.thread;
-
     dispatch_async([OWSDispatch sendingQueue], ^{
+        TSThread *thread = message.thread;
+
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *gThread = (TSGroupThread *)thread;
 
