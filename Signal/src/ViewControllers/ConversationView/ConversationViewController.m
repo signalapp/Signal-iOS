@@ -3094,32 +3094,40 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)createScrollDownButton
 {
-    const CGFloat kScrollDownButtonSize = ScaleFromIPhone5To7Plus(35.f, 40.f);
+    const CGFloat kCircleSize = ScaleFromIPhone5To7Plus(35.f, 40.f);
+
+    UILabel *iconLabel = [UILabel new];
+    iconLabel.attributedText =
+        [[NSAttributedString alloc] initWithString:@"\uf103"
+                                        attributes:@{
+                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:kCircleSize * 0.8f],
+                                            NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
+                                            NSBaselineOffsetAttributeName : @(-0.5f),
+                                        }];
+
+    UIView *circleView = [UIView new];
+    circleView.backgroundColor = [UIColor colorWithWhite:0.95f alpha:1.f];
+    circleView.layer.cornerRadius = kCircleSize * 0.5f;
+    circleView.layer.shadowColor = [UIColor colorWithWhite:0.5f alpha:1.f].CGColor;
+    circleView.layer.shadowOffset = CGSizeMake(+1.f, +2.f);
+    circleView.layer.shadowRadius = 1.5f;
+    circleView.layer.shadowOpacity = 0.35f;
+    [circleView autoSetDimension:ALDimensionWidth toSize:kCircleSize];
+    [circleView autoSetDimension:ALDimensionHeight toSize:kCircleSize];
+
+    const CGFloat kButtonSize = kCircleSize + 15.f;
     UIButton *scrollDownButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.scrollDownButton = scrollDownButton;
-    scrollDownButton.backgroundColor = [UIColor colorWithWhite:0.95f alpha:1.f];
-    scrollDownButton.frame = CGRectMake(0, 0, kScrollDownButtonSize, kScrollDownButtonSize);
-    scrollDownButton.layer.cornerRadius = kScrollDownButtonSize * 0.5f;
-    scrollDownButton.layer.shadowColor = [UIColor colorWithWhite:0.5f alpha:1.f].CGColor;
-    scrollDownButton.layer.shadowOffset = CGSizeMake(+1.f, +2.f);
-    scrollDownButton.layer.shadowRadius = 1.5f;
-    scrollDownButton.layer.shadowOpacity = 0.35f;
     [scrollDownButton addTarget:self
                          action:@selector(scrollDownButtonTapped)
                forControlEvents:UIControlEventTouchUpInside];
+    scrollDownButton.frame = CGRectMake(0, 0, kButtonSize, kButtonSize);
     [self.view addSubview:self.scrollDownButton];
 
-    NSAttributedString *labelString = [[NSAttributedString alloc]
-        initWithString:@"\uf103"
-            attributes:@{
-                NSFontAttributeName : [UIFont ows_fontAwesomeFont:kScrollDownButtonSize * 0.8f],
-                NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
-                NSBaselineOffsetAttributeName : @(-0.5f),
-            }];
-    [scrollDownButton setAttributedTitle:labelString forState:UIControlStateNormal];
-    [scrollDownButton setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
-    scrollDownButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
-    scrollDownButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    [scrollDownButton addSubview:circleView];
+    [scrollDownButton addSubview:iconLabel];
+    [circleView autoCenterInSuperview];
+    [iconLabel autoCenterInSuperview];
 
     [self updateLastVisibleTimestamp];
 }
@@ -3158,13 +3166,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (shouldShowScrollDownButton) {
         self.scrollDownButton.hidden = NO;
 
-        const CGFloat kHMargin = 15.f;
-        const CGFloat kVMargin = 15.f;
-        self.scrollDownButton.frame
-            = CGRectMake(self.scrollDownButton.superview.width - (self.scrollDownButton.width + kHMargin),
-                self.inputToolbar.top - (self.scrollDownButton.height + kVMargin),
-                self.scrollDownButton.width,
-                self.scrollDownButton.height);
+        self.scrollDownButton.frame = CGRectMake(self.scrollDownButton.superview.width - self.scrollDownButton.width,
+            self.inputToolbar.top - self.scrollDownButton.height,
+            self.scrollDownButton.width,
+            self.scrollDownButton.height);
     } else {
         self.scrollDownButton.hidden = YES;
     }
