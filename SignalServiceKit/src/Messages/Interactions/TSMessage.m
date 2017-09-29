@@ -199,6 +199,22 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
     }
 }
 
+- (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    if ([self hasAttachments]) {
+        NSString *attachmentId = self.attachmentIds[0];
+        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+        if (attachment) {
+            return attachment.description;
+        } else {
+            return NSLocalizedString(@"UNKNOWN_ATTACHMENT_LABEL", @"In Inbox view, last message label for thread with corrupted attachment.");
+        }
+    } else {
+        return self.body;
+    }
+}
+
+// TODO deprecate this and implement something like previewTextWithTransaction: for all TSInteractions
 - (NSString *)description
 {
     if ([self hasAttachments]) {
