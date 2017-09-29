@@ -130,20 +130,33 @@ extension URLSessionTask {
             return nil
         }
 
+        var hasRequestCompleted = false
         let assetRequest = GiphyAssetRequest(rendition:rendition,
                                              success : { asset in
                                                 DispatchQueue.main.async {
+                                                    // Ensure we call success or failure exactly once.
+                                                    guard !hasRequestCompleted else {
+                                                        return
+                                                    }
+                                                    hasRequestCompleted = true
+
                                                     self.assetMap[rendition.url] = asset
-                                                    success(asset)
                                                     self.isDownloading = false
                                                     self.downloadIfNecessary()
+                                                    success(asset)
                                                 }
         },
                                              failure : {
                                                 DispatchQueue.main.async {
-                                                    failure()
+                                                    // Ensure we call success or failure exactly once.
+                                                    guard !hasRequestCompleted else {
+                                                        return
+                                                    }
+                                                    hasRequestCompleted = true
+
                                                     self.isDownloading = false
                                                     self.downloadIfNecessary()
+                                                    failure()
                                                 }
         })
         assetRequestQueue.append(assetRequest)
@@ -207,6 +220,7 @@ extension URLSessionTask {
         let assetRequest = task.assetRequest
         guard !assetRequest.wasCancelled else {
             task.cancel()
+            assetRequest.failure()
             return
         }
         if let error = error {
@@ -252,6 +266,7 @@ extension URLSessionTask {
         let assetRequest = downloadTask.assetRequest
         guard !assetRequest.wasCancelled else {
             downloadTask.cancel()
+            assetRequest.failure()
             return
         }
 
@@ -272,6 +287,7 @@ extension URLSessionTask {
         let assetRequest = downloadTask.assetRequest
         guard !assetRequest.wasCancelled else {
             downloadTask.cancel()
+            assetRequest.failure()
             return
         }
     }
@@ -280,6 +296,7 @@ extension URLSessionTask {
         let assetRequest = downloadTask.assetRequest
         guard !assetRequest.wasCancelled else {
             downloadTask.cancel()
+            assetRequest.failure()
             return
         }
     }
