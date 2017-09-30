@@ -65,12 +65,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         createViews()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        search(query:"funny")
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -84,28 +78,18 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         view.backgroundColor = UIColor.black
 
         // Search
-//        searchBar.searchBarStyle = .minimal
         searchBar.searchBarStyle = .default
         searchBar.delegate = self
         searchBar.placeholder = NSLocalizedString("GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
                                                   comment:"Placeholder text for the search field in gif view")
-//        searchBar.backgroundColor = UIColor(white:0.6, alpha:1.0)
-//        searchBar.backgroundColor = UIColor.white
-//        searchBar.backgroundColor = UIColor.black
-//        searchBar.barTintColor = UIColor.red
         searchBar.isTranslucent = false
-//        searchBar.backgroundColor = UIColor.white
         searchBar.backgroundImage = UIImage(color:UIColor.clear)
         searchBar.barTintColor = UIColor.black
         searchBar.tintColor = UIColor.white
         self.view.addSubview(searchBar)
         searchBar.autoPinWidthToSuperview()
         searchBar.autoPin(toTopLayoutGuideOf: self, withInset:0)
-        //        [searchBar sizeToFit];
 
-//        if #available(iOS 10, *) {
-//            self.collectionView.isPrefetchingEnabled = false
-//        }
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         self.collectionView.backgroundColor = UIColor.black

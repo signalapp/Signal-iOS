@@ -87,31 +87,25 @@ class GifPickerCell: UICollectionViewCell {
         }
         guard let fullRendition = imageInfo.pickGifRendition() else {
             Logger.warn("\(TAG) could not pick gif rendition: \(imageInfo.giphyId)")
-//            imageInfo.log()
             clearAssetRequest()
             return
         }
         guard let stillRendition = imageInfo.pickStillRendition() else {
             Logger.warn("\(TAG) could not pick still rendition: \(imageInfo.giphyId)")
-//            imageInfo.log()
             clearAssetRequest()
             return
         }
-//        Logger.verbose("picked full: \(fullRendition.name)")
-//        Logger.verbose("picked still: \(stillRendition.name)")
 
         if stillAsset == nil && fullAsset == nil && stillAssetRequest == nil {
             stillAssetRequest = GifDownloader.sharedInstance.downloadAssetAsync(rendition:stillRendition,
                                                                                 priority:.high,
                                                                                 success: { [weak self] asset in
-//                                                                                    Logger.verbose("downloaded still")
                                                                                     guard let strongSelf = self else { return }
                                                                                     strongSelf.clearStillAssetRequest()
                                                                                     strongSelf.stillAsset = asset
                                                                                     strongSelf.tryToDisplayAsset()
                 },
                                                                                 failure: { [weak self] in
-//                                                                                    Logger.verbose("failed to download still")
                                                                                     guard let strongSelf = self else { return }
                                                                                     strongSelf.clearStillAssetRequest()
             })
@@ -120,14 +114,12 @@ class GifPickerCell: UICollectionViewCell {
             fullAssetRequest = GifDownloader.sharedInstance.downloadAssetAsync(rendition:fullRendition,
                                                                                priority:.low,
                                                                                success: { [weak self] asset in
-//                                                                                Logger.verbose("downloaded full")
                                                                                 guard let strongSelf = self else { return }
                                                                                 strongSelf.clearAssetRequest()
                                                                                 strongSelf.fullAsset = asset
                                                                                 strongSelf.tryToDisplayAsset()
                 },
                                                                                failure: { [weak self] in
-//                                                                                Logger.verbose("failed to download full")
                                                                                 guard let strongSelf = self else { return }
                                                                                 strongSelf.clearAssetRequest()
             })

@@ -77,6 +77,10 @@ enum GiphyFormat {
     let kMinDimension = UInt(101)
     let kMaxFileSize = UInt(3 * 1024 * 1024)
 
+    private enum PickingStrategy {
+        case smallerIsBetter, largerIsBetter
+    }
+
     public func log() {
         Logger.verbose("giphyId: \(giphyId), \(renditions.count)")
         for rendition in renditions {
@@ -85,14 +89,23 @@ enum GiphyFormat {
     }
 
     public func pickStillRendition() -> GiphyRendition? {
-        return pickRendition(isStill:true)
+        return pickRendition(isStill:true, pickingStrategy:.smallerIsBetter, maxFileSize:kMaxFileSize)
     }
 
     public func pickGifRendition() -> GiphyRendition? {
-        return pickRendition(isStill:false)
+        // Try to pick a small file...
+        if let rendition = pickRendition(isStill:false, pickingStrategy:.largerIsBetter, maxFileSize:kMaxFileSize) {
+            return rendition
+        }
+        // ...but gradually relax the file restriction...
+        if let rendition = pickRendition(isStill:false, pickingStrategy:.smallerIsBetter, maxFileSize:kMaxFileSize * 2) {
+            return rendition
+        }
+        // ...and relax even more.
+        return pickRendition(isStill:false, pickingStrategy:.smallerIsBetter, maxFileSize:kMaxFileSize * 3)
     }
 
-    private func pickRendition(isStill: Bool) -> GiphyRendition? {
+    private func pickRendition(isStill: Bool, pickingStrategy: PickingStrategy, maxFileSize: UInt) -> GiphyRendition? {
         var bestRendition: GiphyRendition?
 
         for rendition in renditions {
@@ -106,7 +119,7 @@ enum GiphyFormat {
                 // Accept renditions without a valid file size.
                 guard rendition.width >= kMinDimension &&
                     rendition.height >= kMinDimension &&
-                    rendition.fileSize <= kMaxFileSize
+                    rendition.fileSize <= maxFileSize
                     else {
                         continue
                 }
@@ -125,14 +138,14 @@ enum GiphyFormat {
                     rendition.height >= kMinDimension &&
                     rendition.height <= kMaxDimension &&
                     rendition.fileSize > 0 &&
-                    rendition.fileSize <= kMaxFileSize
+                    rendition.fileSize <= maxFileSize
                     else {
                         continue
                 }
             }
 
             if let currentBestRendition = bestRendition {
-                if isStill {
+                if pickingStrategy == .smallerIsBetter {
                     if rendition.width < currentBestRendition.width {
                         bestRendition = rendition
                     }
@@ -174,7 +187,6 @@ enum GiphyFormat {
         }
         // TODO: Is this right?
         let sessionConf = URLSessionConfiguration.ephemeral
-        // TODO: Is this right?
         sessionConf.connectionProxyDictionary = [
             kCFProxyHostNameKey as String: "giphy-proxy-production.whispersystems.org",
             kCFProxyPortNumberKey as String: "80",
@@ -235,8 +247,6 @@ enum GiphyFormat {
     // MARK: Parse API Responses
 
     private func parseGiphyImages(responseJson:Any?) -> [GiphyImageInfo]? {
-//        Logger.verbose("\(responseJson)")
-
         guard let responseJson = responseJson else {
             Logger.error("\(GifManager.TAG) Missing response.")
             return nil
@@ -295,7 +305,6 @@ enum GiphyFormat {
             return nil
         }
 
-//        Logger.debug("\(GifManager.TAG) Image successfully parsed.")
         return GiphyImageInfo(giphyId : giphyId,
                               renditions : renditions,
                               originalRendition: originalRendition)
@@ -322,7 +331,6 @@ enum GiphyFormat {
         // Be lenient when parsing file sizes - we don't require them for stills.
         let fileSize = parseLenientUInt(dict:renditionDict, key:"size")
         guard let urlString = renditionDict["url"] as? String else {
-//            Logger.debug("\(GifManager.TAG) Rendition missing url.")
             return nil
         }
         guard urlString.characters.count > 0 else {
@@ -350,12 +358,7 @@ enum GiphyFormat {
             Logger.warn("\(GifManager.TAG) Invalid file extension: \(fileExtension).")
             return nil
         }
-//        guard fileExtension.lowercased() == "gif" else {
-////            Logger.verbose("\(GifManager.TAG) Rendition has invalid type: \(fileExtension).")
-//            return nil
-//        }
 
-//        Logger.debug("\(GifManager.TAG) Rendition successfully parsed.")
         return GiphyRendition(
             format : format,
             name : renditionName,
@@ -366,27 +369,14 @@ enum GiphyFormat {
         )
     }
 
-    //    {
-    //    height = 65;
-    //    mp4 = "https://media3.giphy.com/media/42YlR8u9gV5Cw/100w.mp4";
-    //    "mp4_size" = 34584;
-    //    size = 246393;
-    //    url = "https://media3.giphy.com/media/42YlR8u9gV5Cw/100w.gif";
-    //    webp = "https://media3.giphy.com/media/42YlR8u9gV5Cw/100w.webp";
-    //    "webp_size" = 63656;
-    //    width = 100;
-    //    }
     private func parsePositiveUInt(dict: [String:Any], key: String, typeName: String) -> UInt? {
         guard let value = dict[key] else {
-            //            Logger.verbose("\(GifManager.TAG) \(typeName) missing \(key).")
             return nil
         }
         guard let stringValue = value as? String else {
-            //            Logger.verbose("\(GifManager.TAG) \(typeName) has invalid \(key): \(value).")
             return nil
         }
         guard let parsedValue = UInt(stringValue) else {
-            //            Logger.verbose("\(GifManager.TAG) \(typeName) has invalid \(key): \(stringValue).")
             return nil
         }
         guard parsedValue > 0 else {
