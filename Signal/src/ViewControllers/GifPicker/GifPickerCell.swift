@@ -25,8 +25,10 @@ class GifPickerCell: UICollectionViewCell {
         }
     }
 
-    var assetRequest: GiphyAssetRequest?
-    var asset: GiphyAsset?
+    var stillAssetRequest: GiphyAssetRequest?
+    var stillAsset: GiphyAsset?
+    var fullAssetRequest: GiphyAssetRequest?
+    var fullAsset: GiphyAsset?
     var imageView: YYAnimatedImageView?
 
     // MARK: Initializers
@@ -46,16 +48,29 @@ class GifPickerCell: UICollectionViewCell {
 
         imageInfo = nil
         shouldLoad = false
-        asset = nil
-        assetRequest?.cancel()
-        assetRequest = nil
+        stillAsset = nil
+        stillAssetRequest?.cancel()
+        stillAssetRequest = nil
+        fullAsset = nil
+        fullAssetRequest?.cancel()
+        fullAssetRequest = nil
         imageView?.removeFromSuperview()
         imageView = nil
     }
 
+    private func clearStillAssetRequest() {
+        stillAssetRequest?.cancel()
+        stillAssetRequest = nil
+    }
+
+    private func clearFullAssetRequest() {
+        fullAssetRequest?.cancel()
+        fullAssetRequest = nil
+    }
+
     private func clearAssetRequest() {
-        assetRequest?.cancel()
-        assetRequest = nil
+        clearStillAssetRequest()
+        clearFullAssetRequest()
     }
 
     private func ensureLoad() {
@@ -67,31 +82,60 @@ class GifPickerCell: UICollectionViewCell {
             clearAssetRequest()
             return
         }
-        guard self.assetRequest == nil else {
+        guard self.fullAsset == nil else {
             return
         }
-        guard let rendition = imageInfo.pickGifRendition() else {
-            Logger.warn("\(TAG) could not pick rendition")
+        guard let fullRendition = imageInfo.pickGifRendition() else {
+            Logger.warn("\(TAG) could not pick gif rendition: \(imageInfo.giphyId)")
+//            imageInfo.log()
             clearAssetRequest()
             return
         }
-//        Logger.verbose("\(TAG) picked rendition: \(rendition.name)")
+        guard let stillRendition = imageInfo.pickStillRendition() else {
+            Logger.warn("\(TAG) could not pick still rendition: \(imageInfo.giphyId)")
+//            imageInfo.log()
+            clearAssetRequest()
+            return
+        }
+//        Logger.verbose("picked full: \(fullRendition.name)")
+//        Logger.verbose("picked still: \(stillRendition.name)")
 
-        assetRequest = GifDownloader.sharedInstance.downloadAssetAsync(rendition:rendition,
-                                       success: { [weak self] asset in
-                                        guard let strongSelf = self else { return }
-                                        strongSelf.clearAssetRequest()
-                                        strongSelf.asset = asset
-                                        strongSelf.tryToDisplayAsset()
-            },
-                                       failure: { [weak self] in
-                                        guard let strongSelf = self else { return }
-                                        strongSelf.clearAssetRequest()
-        })
+        if stillAsset == nil && fullAsset == nil && stillAssetRequest == nil {
+            stillAssetRequest = GifDownloader.sharedInstance.downloadAssetAsync(rendition:stillRendition,
+                                                                                priority:.high,
+                                                                                success: { [weak self] asset in
+//                                                                                    Logger.verbose("downloaded still")
+                                                                                    guard let strongSelf = self else { return }
+                                                                                    strongSelf.clearStillAssetRequest()
+                                                                                    strongSelf.stillAsset = asset
+                                                                                    strongSelf.tryToDisplayAsset()
+                },
+                                                                                failure: { [weak self] in
+//                                                                                    Logger.verbose("failed to download still")
+                                                                                    guard let strongSelf = self else { return }
+                                                                                    strongSelf.clearStillAssetRequest()
+            })
+        }
+        if fullAsset == nil && fullAssetRequest == nil {
+            fullAssetRequest = GifDownloader.sharedInstance.downloadAssetAsync(rendition:fullRendition,
+                                                                               priority:.low,
+                                                                               success: { [weak self] asset in
+//                                                                                Logger.verbose("downloaded full")
+                                                                                guard let strongSelf = self else { return }
+                                                                                strongSelf.clearAssetRequest()
+                                                                                strongSelf.fullAsset = asset
+                                                                                strongSelf.tryToDisplayAsset()
+                },
+                                                                               failure: { [weak self] in
+//                                                                                Logger.verbose("failed to download full")
+                                                                                guard let strongSelf = self else { return }
+                                                                                strongSelf.clearAssetRequest()
+            })
+        }
     }
 
     private func tryToDisplayAsset() {
-        guard let asset = asset else {
+        guard let asset = pickBestAsset() else {
             owsFail("\(TAG) missing asset.")
             return
         }
@@ -99,11 +143,27 @@ class GifPickerCell: UICollectionViewCell {
             owsFail("\(TAG) could not load asset.")
             return
         }
-        let imageView = YYAnimatedImageView()
-        self.imageView = imageView
+        if imageView == nil {
+            let imageView = YYAnimatedImageView()
+            self.imageView = imageView
+            self.contentView.addSubview(imageView)
+            imageView.autoPinWidthToSuperview()
+            imageView.autoPinHeightToSuperview()
+        }
+        guard let imageView = imageView else {
+            owsFail("\(TAG) missing imageview.")
+            return
+        }
         imageView.image = image
-        self.contentView.addSubview(imageView)
-        imageView.autoPinWidthToSuperview()
-        imageView.autoPinHeightToSuperview()
+    }
+
+    private func pickBestAsset() -> GiphyAsset? {
+        if let fullAsset = fullAsset {
+            return fullAsset
+        }
+        if let stillAsset = stillAsset {
+            return stillAsset
+        }
+        return nil
     }
 }

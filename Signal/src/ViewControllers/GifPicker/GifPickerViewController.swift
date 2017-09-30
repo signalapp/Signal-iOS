@@ -164,7 +164,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             owsFail("\(TAG) unexpected cell.")
             return
         }
-        guard let asset = cell.asset else {
+        guard let asset = cell.fullAsset else {
             Logger.info("\(TAG) unload cell selected.")
             return
         }

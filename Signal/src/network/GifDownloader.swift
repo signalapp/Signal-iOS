@@ -5,20 +5,27 @@
 import Foundation
 import ObjectiveC
 
+enum GiphyRequestPriority {
+    case low, high
+}
+
 @objc class GiphyAssetRequest: NSObject {
     static let TAG = "[GiphyAssetRequest]"
 
     let rendition: GiphyRendition
+    let priority: GiphyRequestPriority
     let success: ((GiphyAsset) -> Void)
     let failure: (() -> Void)
     var wasCancelled = false
     var assetFilePath: String?
 
     init(rendition: GiphyRendition,
+         priority: GiphyRequestPriority,
          success:@escaping ((GiphyAsset) -> Void),
          failure:@escaping (() -> Void)
         ) {
         self.rendition = rendition
+        self.priority = priority
         self.success = success
         self.failure = failure
     }
@@ -121,6 +128,7 @@ extension URLSessionTask {
     // The success and failure handlers are always called on main queue.
     // The success and failure handlers may be called synchronously on cache hit.
     public func downloadAssetAsync(rendition: GiphyRendition,
+                                   priority: GiphyRequestPriority,
                               success:@escaping ((GiphyAsset) -> Void),
                               failure:@escaping (() -> Void)) -> GiphyAssetRequest? {
         AssertIsOnMainThread()
@@ -132,6 +140,7 @@ extension URLSessionTask {
 
         var hasRequestCompleted = false
         let assetRequest = GiphyAssetRequest(rendition:rendition,
+                                             priority:priority,
                                              success : { asset in
                                                 DispatchQueue.main.async {
                                                     // Ensure we call success or failure exactly once.
@@ -171,14 +180,9 @@ extension URLSessionTask {
             guard !self.isDownloading else {
                 return
             }
-            guard self.assetRequestQueue.count > 0 else {
+            guard let assetRequest = self.popNextAssetRequest() else {
                 return
             }
-            guard let assetRequest = self.assetRequestQueue.first else {
-                owsFail("\(GiphyAsset.TAG) could not pop asset requests")
-                return
-            }
-            self.assetRequestQueue.removeFirst()
             guard !assetRequest.wasCancelled else {
                 DispatchQueue.main.async {
                     self.downloadIfNecessary()
@@ -188,7 +192,7 @@ extension URLSessionTask {
             self.isDownloading = true
 
             if let asset = self.assetMap[assetRequest.rendition.url] {
-                // Deferred cache hit, avoids re-downloading assets already in the 
+                // Deferred cache hit, avoids re-downloading assets already in the
                 // asset cache.
                 assetRequest.success(asset)
                 return
@@ -204,6 +208,22 @@ extension URLSessionTask {
             task.assetRequest = assetRequest
             task.resume()
         }
+    }
+
+    private func popNextAssetRequest() -> GiphyAssetRequest? {
+        AssertIsOnMainThread()
+
+//        var result : GiphyAssetRequest?
+        for priority in [GiphyRequestPriority.high, GiphyRequestPriority.low] {
+            for (assetRequestIndex, assetRequest) in assetRequestQueue.enumerated() {
+                if assetRequest.priority == priority {
+                    assetRequestQueue.remove(at:assetRequestIndex)
+                    return assetRequest
+                }
+            }
+        }
+
+        return nil
     }
 
     // MARK: URLSessionDataDelegate

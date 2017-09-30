@@ -7,7 +7,7 @@ import ObjectiveC
 
 // There's no UTI type for webp!
 enum GiphyFormat {
-    case gif, mp4
+    case gif, mp4, jpg
 }
 
 @objc class GiphyRendition: NSObject {
@@ -38,6 +38,8 @@ enum GiphyFormat {
             return "gif"
         case .mp4:
             return "mp4"
+        case .jpg:
+            return "jpg"
         }
     }
 
@@ -47,7 +49,13 @@ enum GiphyFormat {
             return kUTTypeGIF as String
         case .mp4:
             return kUTTypeMPEG4 as String
+        case .jpg:
+            return kUTTypeJPEG as String
         }
+    }
+
+    public func log() {
+        Logger.verbose("\t \(format), \(name), \(width), \(height), \(fileSize)")
     }
 }
 
@@ -69,33 +77,67 @@ enum GiphyFormat {
     let kMinDimension = UInt(101)
     let kMaxFileSize = UInt(3 * 1024 * 1024)
 
+    public func log() {
+        Logger.verbose("giphyId: \(giphyId), \(renditions.count)")
+        for rendition in renditions {
+            rendition.log()
+        }
+    }
+
+    public func pickStillRendition() -> GiphyRendition? {
+        return pickRendition(isStill:true)
+    }
+
     public func pickGifRendition() -> GiphyRendition? {
+        return pickRendition(isStill:false)
+    }
+
+    private func pickRendition(isStill: Bool) -> GiphyRendition? {
         var bestRendition: GiphyRendition?
 
         for rendition in renditions {
-            guard rendition.format == .gif else {
-                continue
-            }
-            guard !rendition.name.hasSuffix("_still")
-                else {
+            if isStill {
+                guard [.gif, .jpg].contains(rendition.format) else {
                     continue
-            }
-            guard !rendition.name.hasSuffix("_downsampled")
-                else {
+                }
+                guard rendition.name.hasSuffix("_still") else {
+                        continue
+                }
+                guard rendition.width >= kMinDimension &&
+                    rendition.height >= kMinDimension &&
+                    rendition.fileSize <= kMaxFileSize
+                    else {
+                        continue
+                }
+            } else {
+                guard rendition.format == .gif else {
                     continue
-            }
-            guard rendition.width >= kMinDimension &&
-                rendition.width <= kMaxDimension &&
-                rendition.height >= kMinDimension &&
-                rendition.height <= kMaxDimension &&
-                rendition.fileSize <= kMaxFileSize
-                else {
-                    continue
+                }
+                guard !rendition.name.hasSuffix("_still") else {
+                        continue
+                }
+                guard !rendition.name.hasSuffix("_downsampled") else {
+                        continue
+                }
+                guard rendition.width >= kMinDimension &&
+                    rendition.width <= kMaxDimension &&
+                    rendition.height >= kMinDimension &&
+                    rendition.height <= kMaxDimension &&
+                    rendition.fileSize <= kMaxFileSize
+                    else {
+                        continue
+                }
             }
 
             if let currentBestRendition = bestRendition {
-                if rendition.width > currentBestRendition.width {
-                    bestRendition = rendition
+                if isStill {
+                    if rendition.width < currentBestRendition.width {
+                        bestRendition = rendition
+                    }
+                } else {
+                    if rendition.width > currentBestRendition.width {
+                        bestRendition = rendition
+                    }
                 }
             } else {
                 bestRendition = rendition
@@ -191,6 +233,8 @@ enum GiphyFormat {
     // MARK: Parse API Responses
 
     private func parseGiphyImages(responseJson:Any?) -> [GiphyImageInfo]? {
+//        Logger.verbose("\(responseJson)")
+
         guard let responseJson = responseJson else {
             Logger.error("\(GifManager.TAG) Missing response.")
             return nil
@@ -292,14 +336,27 @@ enum GiphyFormat {
             Logger.warn("\(GifManager.TAG) Rendition url missing file extension.")
             return nil
         }
-        guard fileExtension.lowercased() == "gif" else {
-//            Logger.verbose("\(GifManager.TAG) Rendition has invalid type: \(fileExtension).")
+        var format = GiphyFormat.gif
+        if fileExtension.lowercased() == "gif" {
+            format = .gif
+        } else if fileExtension.lowercased() == "jpg" {
+            format = .jpg
+        } else if fileExtension.lowercased() == "mp4" {
+            format = .mp4
+        } else if fileExtension.lowercased() == "webp" {
+            return nil
+        } else {
+            Logger.warn("\(GifManager.TAG) Invalid file extension: \(fileExtension).")
             return nil
         }
+//        guard fileExtension.lowercased() == "gif" else {
+////            Logger.verbose("\(GifManager.TAG) Rendition has invalid type: \(fileExtension).")
+//            return nil
+//        }
 
 //        Logger.debug("\(GifManager.TAG) Rendition successfully parsed.")
         return GiphyRendition(
-            format : .gif,
+            format : format,
             name : renditionName,
             width : width,
             height : height,
