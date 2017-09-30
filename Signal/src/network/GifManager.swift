@@ -103,6 +103,7 @@ enum GiphyFormat {
                 guard rendition.name.hasSuffix("_still") else {
                         continue
                 }
+                // Accept renditions without a valid file size.
                 guard rendition.width >= kMinDimension &&
                     rendition.height >= kMinDimension &&
                     rendition.fileSize <= kMaxFileSize
@@ -123,6 +124,7 @@ enum GiphyFormat {
                     rendition.width <= kMaxDimension &&
                     rendition.height >= kMinDimension &&
                     rendition.height <= kMaxDimension &&
+                    rendition.fileSize > 0 &&
                     rendition.fileSize <= kMaxFileSize
                     else {
                         continue
@@ -317,11 +319,10 @@ enum GiphyFormat {
         guard let height = parsePositiveUInt(dict:renditionDict, key:"height", typeName:"rendition") else {
             return nil
         }
-        guard let fileSize = parsePositiveUInt(dict:renditionDict, key:"size", typeName:"rendition") else {
-            return nil
-        }
+        // Be lenient when parsing file sizes - we don't require them for stills.
+        let fileSize = parseLenientUInt(dict:renditionDict, key:"size")
         guard let urlString = renditionDict["url"] as? String else {
-            Logger.debug("\(GifManager.TAG) Rendition missing url.")
+//            Logger.debug("\(GifManager.TAG) Rendition missing url.")
             return nil
         }
         guard urlString.characters.count > 0 else {
@@ -377,20 +378,35 @@ enum GiphyFormat {
     //    }
     private func parsePositiveUInt(dict: [String:Any], key: String, typeName: String) -> UInt? {
         guard let value = dict[key] else {
-//            Logger.verbose("\(GifManager.TAG) \(typeName) missing \(key).")
+            //            Logger.verbose("\(GifManager.TAG) \(typeName) missing \(key).")
             return nil
         }
         guard let stringValue = value as? String else {
-//            Logger.verbose("\(GifManager.TAG) \(typeName) has invalid \(key): \(value).")
+            //            Logger.verbose("\(GifManager.TAG) \(typeName) has invalid \(key): \(value).")
             return nil
         }
         guard let parsedValue = UInt(stringValue) else {
-//            Logger.verbose("\(GifManager.TAG) \(typeName) has invalid \(key): \(stringValue).")
+            //            Logger.verbose("\(GifManager.TAG) \(typeName) has invalid \(key): \(stringValue).")
             return nil
         }
         guard parsedValue > 0 else {
             Logger.verbose("\(GifManager.TAG) \(typeName) has non-positive \(key): \(parsedValue).")
             return nil
+        }
+        return parsedValue
+    }
+
+    private func parseLenientUInt(dict: [String:Any], key: String) -> UInt {
+        let defaultValue = UInt(0)
+
+        guard let value = dict[key] else {
+            return defaultValue
+        }
+        guard let stringValue = value as? String else {
+            return defaultValue
+        }
+        guard let parsedValue = UInt(stringValue) else {
+            return defaultValue
         }
         return parsedValue
     }
