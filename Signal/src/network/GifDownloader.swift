@@ -133,10 +133,6 @@ extension URLSessionTask {
     private let kGiphyBaseURL = "https://api.giphy.com/"
 
     private func giphyDownloadSession() -> URLSession? {
-//        guard let baseUrl = NSURL(string:kGiphyBaseURL) else {
-//            Logger.error("\(GifDownloader.TAG) Invalid base URL.")
-//            return nil
-//        }
         // TODO: Is this right?
         let configuration = URLSessionConfiguration.ephemeral
         // TODO: Is this right?
@@ -244,7 +240,6 @@ extension URLSessionTask {
     private func popNextAssetRequest() -> GiphyAssetRequest? {
         AssertIsOnMainThread()
 
-//        var result : GiphyAssetRequest?
         for priority in [GiphyRequestPriority.high, GiphyRequestPriority.low] {
             for (assetRequestIndex, assetRequest) in assetRequestQueue.enumerated() {
                 if assetRequest.priority == priority {
@@ -295,7 +290,6 @@ extension URLSessionTask {
             assetRequest.failure()
             return
         }
-//        Logger.verbose("\(GifDownloader.TAG) download succeeded: \(assetRequest.rendition.url)")
         let asset = GiphyAsset(rendition: assetRequest.rendition, filePath : assetFilePath)
         assetRequest.success(asset)
     }
