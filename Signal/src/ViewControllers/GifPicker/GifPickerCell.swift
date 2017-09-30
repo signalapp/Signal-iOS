@@ -105,7 +105,7 @@ class GifPickerCell: UICollectionViewCell {
         }
 
         if stillAsset == nil && fullAsset == nil && stillAssetRequest == nil {
-            stillAssetRequest = GifDownloader.sharedInstance.downloadAssetAsync(rendition:stillRendition,
+            stillAssetRequest = GifDownloader.sharedInstance.requestAsset(rendition:stillRendition,
                                                                                 priority:.high,
                                                                                 success: { [weak self] asset in
                                                                                     guard let strongSelf = self else { return }
@@ -119,7 +119,7 @@ class GifPickerCell: UICollectionViewCell {
             })
         }
         if fullAsset == nil && fullAssetRequest == nil {
-            fullAssetRequest = GifDownloader.sharedInstance.downloadAssetAsync(rendition:fullRendition,
+            fullAssetRequest = GifDownloader.sharedInstance.requestAsset(rendition:fullRendition,
                                                                                priority:.low,
                                                                                success: { [weak self] asset in
                                                                                 guard let strongSelf = self else { return }

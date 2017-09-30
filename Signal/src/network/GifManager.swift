@@ -10,6 +10,11 @@ enum GiphyFormat {
     case gif, mp4, jpg
 }
 
+// Represents a "rendition" of a GIF.
+// Giphy offers a plethora of renditions for each image.
+// They vary in content size (i.e. width,  height), 
+// format (.jpg, .gif, .mp4, webp, etc.),
+// quality, etc.
 @objc class GiphyRendition: NSObject {
     let format: GiphyFormat
     let name: String
@@ -59,9 +64,12 @@ enum GiphyFormat {
     }
 }
 
+// Represents a single Giphy image.
 @objc class GiphyImageInfo: NSObject {
     let giphyId: String
     let renditions: [GiphyRendition]
+    // We special-case the "original" rendition because it is the 
+    // source of truth for the aspect ratio of the image.
     let originalRendition: GiphyRendition
 
     init(giphyId: String,
@@ -89,6 +97,7 @@ enum GiphyFormat {
     }
 
     public func pickStillRendition() -> GiphyRendition? {
+        // Stills are just temporary placeholders, so use the smallest still possible.
         return pickRendition(isStill:true, pickingStrategy:.smallerIsBetter, maxFileSize:kMaxFileSize)
     }
 
@@ -101,22 +110,32 @@ enum GiphyFormat {
         if let rendition = pickRendition(isStill:false, pickingStrategy:.smallerIsBetter, maxFileSize:kMaxFileSize * 2) {
             return rendition
         }
-        // ...and relax even more.
+        // ...and relax even more until we find an animated rendition.
         return pickRendition(isStill:false, pickingStrategy:.smallerIsBetter, maxFileSize:kMaxFileSize * 3)
     }
 
+    // Picking a rendition must be done very carefully.
+    //
+    // * We want to avoid incomplete renditions.
+    // * We want to pick a rendition of "just good enough" quality.
     private func pickRendition(isStill: Bool, pickingStrategy: PickingStrategy, maxFileSize: UInt) -> GiphyRendition? {
         var bestRendition: GiphyRendition?
 
         for rendition in renditions {
             if isStill {
+                // Accept GIF or JPEG stills.  In practice we'll
+                // usually select a JPEG since they'll be smaller.
                 guard [.gif, .jpg].contains(rendition.format) else {
                     continue
                 }
+                // Only consider still renditions.
                 guard rendition.name.hasSuffix("_still") else {
                         continue
                 }
                 // Accept renditions without a valid file size.
+                //
+                // Don't worry about max content size; still images are tiny in comparison
+                // with animated renditions.
                 guard rendition.width >= kMinDimension &&
                     rendition.height >= kMinDimension &&
                     rendition.fileSize <= maxFileSize
@@ -124,12 +143,15 @@ enum GiphyFormat {
                         continue
                 }
             } else {
+                // Only use GIFs for animated renditions.
                 guard rendition.format == .gif else {
                     continue
                 }
+                // Ignore stills.
                 guard !rendition.name.hasSuffix("_still") else {
                         continue
                 }
+                // Ignore "downsampled" renditions which skip frames, etc.
                 guard !rendition.name.hasSuffix("_downsampled") else {
                         continue
                 }
@@ -145,11 +167,21 @@ enum GiphyFormat {
             }
 
             if let currentBestRendition = bestRendition {
-                if pickingStrategy == .smallerIsBetter {
+                if rendition.width == currentBestRendition.width &&
+                    rendition.fileSize > 0 &&
+                    currentBestRendition.fileSize > 0 &&
+                    rendition.fileSize < currentBestRendition.fileSize {
+                    // If two renditions have the same content size, prefer
+                    // the rendition with the smaller file size, e.g.
+                    // prefer JPEG over GIF for stills.
+                    bestRendition = rendition
+                } else if pickingStrategy == .smallerIsBetter {
+                    // "Smaller is better"
                     if rendition.width < currentBestRendition.width {
                         bestRendition = rendition
                     }
                 } else {
+                    // "Larger is better"
                     if rendition.width > currentBestRendition.width {
                         bestRendition = rendition
                     }
@@ -215,7 +247,9 @@ enum GiphyFormat {
             return
         }
 
-        // TODO: Should we use a separate API key?
+        // This is the Signal Android API key.
+        //
+        // TODO: Should Signal iOS use a separate API key?
         let kGiphyApiKey = "3o6ZsYH6U6Eri53TXy"
         let kGiphyPageSize = 200
         // TODO:
@@ -320,6 +354,8 @@ enum GiphyFormat {
     }
 
     // Giphy API results are often incomplete or malformed, so we need to be defensive.
+    //
+    // We should discard renditions which are missing or have invalid properties.
     private func parseGiphyRendition(renditionName: String,
                                      renditionDict: [String:Any]) -> GiphyRendition? {
         guard let width = parsePositiveUInt(dict:renditionDict, key:"width", typeName:"rendition") else {

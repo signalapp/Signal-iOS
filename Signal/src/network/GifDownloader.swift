@@ -5,6 +5,7 @@
 import Foundation
 import ObjectiveC
 
+// Stills should be loaded before full GIFs.
 enum GiphyRequestPriority {
     case low, high
 }
@@ -148,16 +149,16 @@ class LRUCache<KeyType: Hashable & Equatable, ValueType> {
     }
 }
 
-private var URLSessionTask_GiphyAssetRequest: UInt8 = 0
+private var URLSessionTaskGiphyAssetRequest: UInt8 = 0
 
 // This extension is used to punch an asset request onto a download task.
 extension URLSessionTask {
     var assetRequest: GiphyAssetRequest {
         get {
-            return objc_getAssociatedObject(self, &URLSessionTask_GiphyAssetRequest) as! GiphyAssetRequest
+            return objc_getAssociatedObject(self, &URLSessionTaskGiphyAssetRequest) as! GiphyAssetRequest
         }
         set {
-            objc_setAssociatedObject(self, &URLSessionTask_GiphyAssetRequest, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &URLSessionTaskGiphyAssetRequest, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 }
@@ -197,11 +198,11 @@ extension URLSessionTask {
         return session
     }
 
-    // 100 entries of which at least half will probably be stills.  
-    // Actual animated GIFs will usually be less than 3 MB so the 
+    // 100 entries of which at least half will probably be stills.
+    // Actual animated GIFs will usually be less than 3 MB so the
     // max size of the cache on disk should be ~150 MB.  Bear in mind
     // that assets are not always deleted on disk as soon as they are
-    // evacuated from the cache; if a cache consumer (e.g. view) is 
+    // evacuated from the cache; if a cache consumer (e.g. view) is
     // still using the asset, the asset won't be deleted on disk until
     // it is no longer in use.
     private var assetMap = LRUCache<NSURL, GiphyAsset>(maxSize:100)
@@ -212,24 +213,28 @@ extension URLSessionTask {
     private var activeAssetRequests = Set<GiphyAssetRequest>()
 
     // The success and failure handlers are always called on main queue.
-    // The success and failure handlers may be called synchronously on cache hit.
-    public func downloadAssetAsync(rendition: GiphyRendition,
-                                   priority: GiphyRequestPriority,
-                              success:@escaping ((GiphyAsset) -> Void),
-                              failure:@escaping (() -> Void)) -> GiphyAssetRequest? {
+    // The success handler may be called synchronously on cache hit.
+    public func requestAsset(rendition: GiphyRendition,
+                             priority: GiphyRequestPriority,
+                             success:@escaping ((GiphyAsset) -> Void),
+                             failure:@escaping (() -> Void)) -> GiphyAssetRequest? {
         AssertIsOnMainThread()
 
         if let asset = assetMap.get(key:rendition.url) {
+            // Synchronous cache hit.
             success(asset)
             return nil
         }
 
+        // Cache miss.
+        //
+        // Asset requests are done queued and performed asynchronously.
         let assetRequest = GiphyAssetRequest(rendition:rendition,
                                              priority:priority,
-                                             success : success,
-                                             failure : failure)
+                                             success:success,
+                                             failure:failure)
         assetRequestQueue.append(assetRequest)
-        downloadIfNecessary()
+        startRequestIfNecessary()
         return assetRequest
     }
 
@@ -238,7 +243,7 @@ extension URLSessionTask {
             self.assetMap.set(key:assetRequest.rendition.url, value:asset)
             self.activeAssetRequests.remove(assetRequest)
             assetRequest.requestDidSucceed(asset:asset)
-            self.downloadIfNecessary()
+            self.startRequestIfNecessary()
         }
     }
 
@@ -246,11 +251,11 @@ extension URLSessionTask {
         DispatchQueue.main.async {
             self.activeAssetRequests.remove(assetRequest)
             assetRequest.requestDidFail()
-            self.downloadIfNecessary()
+            self.startRequestIfNecessary()
         }
     }
 
-    private func downloadIfNecessary() {
+    private func startRequestIfNecessary() {
         AssertIsOnMainThread()
 
         DispatchQueue.main.async {
@@ -262,7 +267,7 @@ extension URLSessionTask {
             }
             guard !assetRequest.wasCancelled else {
                 // Discard the cancelled asset request and try again.
-                self.downloadIfNecessary()
+                self.startRequestIfNecessary()
                 return
             }
             self.activeAssetRequests.insert(assetRequest)
@@ -276,11 +281,12 @@ extension URLSessionTask {
             }
 
             guard let downloadSession = self.giphyDownloadSession() else {
-                Logger.error("\(GifDownloader.TAG) Couldn't create session manager.")
+                owsFail("\(GifDownloader.TAG) Couldn't create session manager.")
                 self.assetRequestDidFail(assetRequest:assetRequest)
                 return
             }
 
+            // Start a download task.
             let task = downloadSession.downloadTask(with:assetRequest.rendition.url as URL)
             task.assetRequest = assetRequest
             task.resume()
@@ -290,6 +296,8 @@ extension URLSessionTask {
     private func popNextAssetRequest() -> GiphyAssetRequest? {
         AssertIsOnMainThread()
 
+        // Prefer the first "high" priority request, 
+        // fall back to the first "low" priority request.
         for priority in [GiphyRequestPriority.high, GiphyRequestPriority.low] {
             for (assetRequestIndex, assetRequest) in assetRequestQueue.enumerated() {
                 if assetRequest.priority == priority {
@@ -354,6 +362,8 @@ extension URLSessionTask {
             return
         }
 
+        // We write assets to the temporary directory so that iOS can clean them up.
+        // We try to eagerly clean up these assets when they are no longer in use.
         let dirPath = NSTemporaryDirectory()
         let fileExtension = assetRequest.rendition.fileExtension()
         let fileName = (NSUUID().uuidString as NSString).appendingPathExtension(fileExtension)!
