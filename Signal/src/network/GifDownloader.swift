@@ -60,6 +60,46 @@ enum GiphyRequestPriority {
     }
 }
 
+class LRUCache<KeyType: Hashable & Equatable, ValueType> {
+
+    private var cacheMap = [KeyType: ValueType]()
+    private var cacheOrder = [KeyType]()
+    private let maxSize: Int
+
+    init(maxSize: Int) {
+        self.maxSize = maxSize
+    }
+
+    public func get(key: KeyType) -> ValueType? {
+        guard let value = cacheMap[key] else {
+            return nil
+        }
+
+        // Update cache order.
+        cacheOrder = cacheOrder.filter { $0 != key }
+        cacheOrder.append(key)
+
+        return value
+    }
+
+    public func set(key: KeyType, value: ValueType) {
+        cacheMap[key] = value
+
+        // Update cache order.
+        cacheOrder = cacheOrder.filter { $0 != key }
+        cacheOrder.append(key)
+
+        while cacheOrder.count > maxSize {
+            guard let staleKey = cacheOrder.first else {
+                owsFail("Cache ordering unexpectedly empty")
+                return
+            }
+            cacheOrder.removeFirst()
+            cacheMap.removeValue(forKey:staleKey)
+        }
+    }
+}
+
 private var URLSessionTask_GiphyAssetRequest: UInt8 = 0
 
 extension URLSessionTask {
@@ -109,18 +149,9 @@ extension URLSessionTask {
         configuration.requestCachePolicy = .reloadIgnoringCacheData
         let session = URLSession(configuration:configuration, delegate:self, delegateQueue:operationQueue)
         return session
-//        NSURLSession * session = [NSURLSession sessionWithConfiguration:configuration];
-//
-//        let sessionManager = AFHTTPSessionManager(baseURL:baseUrl as URL,
-//                                                  sessionConfiguration:sessionConf)
-//        sessionManager.requestSerializer = AFJSONRequestSerializer()
-//        sessionManager.responseSerializer = AFJSONResponseSerializer()
-//        
-//        return sessionManager
     }
 
-    // TODO: Use a proper cache.
-    private var assetMap = [NSURL: GiphyAsset]()
+    private var assetMap = LRUCache<NSURL, GiphyAsset>(maxSize:100)
     // TODO: We could use a proper queue.
     private var assetRequestQueue = [GiphyAssetRequest]()
     private var isDownloading = false
@@ -133,7 +164,7 @@ extension URLSessionTask {
                               failure:@escaping (() -> Void)) -> GiphyAssetRequest? {
         AssertIsOnMainThread()
 
-        if let asset = assetMap[rendition.url] {
+        if let asset = assetMap.get(key:rendition.url) {
             success(asset)
             return nil
         }
@@ -149,7 +180,7 @@ extension URLSessionTask {
                                                     }
                                                     hasRequestCompleted = true
 
-                                                    self.assetMap[rendition.url] = asset
+                                                    self.assetMap.set(key:rendition.url, value:asset)
                                                     self.isDownloading = false
                                                     self.downloadIfNecessary()
                                                     success(asset)
@@ -191,7 +222,7 @@ extension URLSessionTask {
             }
             self.isDownloading = true
 
-            if let asset = self.assetMap[assetRequest.rendition.url] {
+            if let asset = self.assetMap.get(key:assetRequest.rendition.url) {
                 // Deferred cache hit, avoids re-downloading assets already in the
                 // asset cache.
                 assetRequest.success(asset)
