@@ -9,14 +9,22 @@ enum GiphyRequestPriority {
     case low, high
 }
 
+// Represents a request to download a GIF.
+//
+// Should be cancelled if no longer necessary.
 @objc class GiphyAssetRequest: NSObject {
     static let TAG = "[GiphyAssetRequest]"
 
     let rendition: GiphyRendition
     let priority: GiphyRequestPriority
-    let success: ((GiphyAsset) -> Void)
-    let failure: (() -> Void)
+    // Exactly one of success or failure should be called once,
+    // on the main thread _unless_ this request is cancelled before
+    // the request succeeds or fails.
+    private var success: ((GiphyAsset) -> Void)
+    private var failure: (() -> Void)
+
     var wasCancelled = false
+    // This property is an internal implementation detail of the download process.
     var assetFilePath: String?
 
     init(rendition: GiphyRendition,
@@ -31,10 +39,48 @@ enum GiphyRequestPriority {
     }
 
     public func cancel() {
+        AssertIsOnMainThread()
+
         wasCancelled = true
+
+        // Don't call the callbacks if the request is cancelled.
+        clearCallbacks()
+    }
+
+    private func clearCallbacks() {
+        AssertIsOnMainThread()
+
+        // Replace success and failure with no-ops.
+        success = { _ in
+        }
+        failure = {
+        }
+    }
+
+    public func requestDidSucceed(asset: GiphyAsset) {
+        AssertIsOnMainThread()
+
+        success(asset)
+
+        // Only one of the callbacks should be called, and only once.
+        clearCallbacks()
+    }
+
+    public func requestDidFail() {
+        AssertIsOnMainThread()
+
+        failure()
+
+        // Only one of the callbacks should be called, and only once.
+        clearCallbacks()
     }
 }
 
+// Represents a downloaded gif asset.
+//
+// The blob on disk is cleaned up when this instance is deallocated,
+// so consumers of this resource should retain a strong reference to
+// this instance as long as they are using the asset.
 @objc class GiphyAsset: NSObject {
     static let TAG = "[GiphyAsset]"
 
@@ -48,6 +94,7 @@ enum GiphyRequestPriority {
     }
 
     deinit {
+        // Clean up on the asset on disk.
         let filePathCopy = filePath
         DispatchQueue.global().async {
             do {
@@ -60,6 +107,7 @@ enum GiphyRequestPriority {
     }
 }
 
+// A simple LRU cache bounded by the number of entries.
 class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
     private var cacheMap = [KeyType: ValueType]()
@@ -102,6 +150,7 @@ class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
 private var URLSessionTask_GiphyAssetRequest: UInt8 = 0
 
+// This extension is used to punch an asset request onto a download task.
 extension URLSessionTask {
     var assetRequest: GiphyAssetRequest {
         get {
@@ -121,6 +170,7 @@ extension URLSessionTask {
 
     static let sharedInstance = GifDownloader()
 
+    // A private queue used for download task callbacks.
     private let operationQueue = OperationQueue()
 
     // Force usage as a singleton
@@ -147,10 +197,19 @@ extension URLSessionTask {
         return session
     }
 
+    // 100 entries of which at least half will probably be stills.  
+    // Actual animated GIFs will usually be less than 3 MB so the 
+    // max size of the cache on disk should be ~150 MB.  Bear in mind
+    // that assets are not always deleted on disk as soon as they are
+    // evacuated from the cache; if a cache consumer (e.g. view) is 
+    // still using the asset, the asset won't be deleted on disk until
+    // it is no longer in use.
     private var assetMap = LRUCache<NSURL, GiphyAsset>(maxSize:100)
-    // TODO: We could use a proper queue.
+    // TODO: We could use a proper queue, e.g. implemented with a linked
+    // list.
     private var assetRequestQueue = [GiphyAssetRequest]()
-    private var isDownloading = false
+    private let kMaxAssetRequestCount = 3
+    private var activeAssetRequests = Set<GiphyAssetRequest>()
 
     // The success and failure handlers are always called on main queue.
     // The success and failure handlers may be called synchronously on cache hit.
@@ -165,69 +224,60 @@ extension URLSessionTask {
             return nil
         }
 
-        var hasRequestCompleted = false
         let assetRequest = GiphyAssetRequest(rendition:rendition,
                                              priority:priority,
-                                             success : { asset in
-                                                DispatchQueue.main.async {
-                                                    // Ensure we call success or failure exactly once.
-                                                    guard !hasRequestCompleted else {
-                                                        return
-                                                    }
-                                                    hasRequestCompleted = true
-
-                                                    self.assetMap.set(key:rendition.url, value:asset)
-                                                    self.isDownloading = false
-                                                    self.downloadIfNecessary()
-                                                    success(asset)
-                                                }
-        },
-                                             failure : {
-                                                DispatchQueue.main.async {
-                                                    // Ensure we call success or failure exactly once.
-                                                    guard !hasRequestCompleted else {
-                                                        return
-                                                    }
-                                                    hasRequestCompleted = true
-
-                                                    self.isDownloading = false
-                                                    self.downloadIfNecessary()
-                                                    failure()
-                                                }
-        })
+                                             success : success,
+                                             failure : failure)
         assetRequestQueue.append(assetRequest)
         downloadIfNecessary()
         return assetRequest
+    }
+
+    private func assetRequestDidSucceed(assetRequest: GiphyAssetRequest, asset: GiphyAsset) {
+        DispatchQueue.main.async {
+            self.assetMap.set(key:assetRequest.rendition.url, value:asset)
+            self.activeAssetRequests.remove(assetRequest)
+            assetRequest.requestDidSucceed(asset:asset)
+            self.downloadIfNecessary()
+        }
+    }
+
+    private func assetRequestDidFail(assetRequest: GiphyAssetRequest) {
+        DispatchQueue.main.async {
+            self.activeAssetRequests.remove(assetRequest)
+            assetRequest.requestDidFail()
+            self.downloadIfNecessary()
+        }
     }
 
     private func downloadIfNecessary() {
         AssertIsOnMainThread()
 
         DispatchQueue.main.async {
-            guard !self.isDownloading else {
+            guard self.activeAssetRequests.count < self.kMaxAssetRequestCount else {
                 return
             }
             guard let assetRequest = self.popNextAssetRequest() else {
                 return
             }
             guard !assetRequest.wasCancelled else {
-                DispatchQueue.main.async {
-                    self.downloadIfNecessary()
-                }
+                // Discard the cancelled asset request and try again.
+                self.downloadIfNecessary()
                 return
             }
-            self.isDownloading = true
+            self.activeAssetRequests.insert(assetRequest)
 
             if let asset = self.assetMap.get(key:assetRequest.rendition.url) {
                 // Deferred cache hit, avoids re-downloading assets already in the
                 // asset cache.
-                assetRequest.success(asset)
+
+                self.assetRequestDidSucceed(assetRequest : assetRequest, asset: asset)
                 return
             }
 
             guard let downloadSession = self.giphyDownloadSession() else {
                 Logger.error("\(GifDownloader.TAG) Couldn't create session manager.")
-                assetRequest.failure()
+                self.assetRequestDidFail(assetRequest:assetRequest)
                 return
             }
 
@@ -266,32 +316,32 @@ extension URLSessionTask {
         let assetRequest = task.assetRequest
         guard !assetRequest.wasCancelled else {
             task.cancel()
-            assetRequest.failure()
+            assetRequestDidFail(assetRequest:assetRequest)
             return
         }
         if let error = error {
             Logger.error("\(GifDownloader.TAG) download failed with error: \(error)")
-            assetRequest.failure()
+            assetRequestDidFail(assetRequest:assetRequest)
             return
         }
         guard let httpResponse = task.response as? HTTPURLResponse else {
             Logger.error("\(GifDownloader.TAG) missing or unexpected response: \(task.response)")
-            assetRequest.failure()
+            assetRequestDidFail(assetRequest:assetRequest)
             return
         }
         let statusCode = httpResponse.statusCode
         guard statusCode >= 200 && statusCode < 400 else {
             Logger.error("\(GifDownloader.TAG) response has invalid status code: \(statusCode)")
-            assetRequest.failure()
+            assetRequestDidFail(assetRequest:assetRequest)
             return
         }
         guard let assetFilePath = assetRequest.assetFilePath else {
             Logger.error("\(GifDownloader.TAG) task is missing asset file")
-            assetRequest.failure()
+            assetRequestDidFail(assetRequest:assetRequest)
             return
         }
         let asset = GiphyAsset(rendition: assetRequest.rendition, filePath : assetFilePath)
-        assetRequest.success(asset)
+        assetRequestDidSucceed(assetRequest : assetRequest, asset: asset)
     }
 
     // MARK: URLSessionDownloadDelegate
@@ -300,7 +350,7 @@ extension URLSessionTask {
         let assetRequest = downloadTask.assetRequest
         guard !assetRequest.wasCancelled else {
             downloadTask.cancel()
-            assetRequest.failure()
+            assetRequestDidFail(assetRequest:assetRequest)
             return
         }
 
@@ -321,7 +371,7 @@ extension URLSessionTask {
         let assetRequest = downloadTask.assetRequest
         guard !assetRequest.wasCancelled else {
             downloadTask.cancel()
-            assetRequest.failure()
+            assetRequestDidFail(assetRequest:assetRequest)
             return
         }
     }
@@ -330,7 +380,7 @@ extension URLSessionTask {
         let assetRequest = downloadTask.assetRequest
         guard !assetRequest.wasCancelled else {
             downloadTask.cancel()
-            assetRequest.failure()
+            assetRequestDidFail(assetRequest:assetRequest)
             return
         }
     }

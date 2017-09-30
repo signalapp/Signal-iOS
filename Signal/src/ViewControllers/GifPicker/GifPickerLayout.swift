@@ -8,6 +8,7 @@ protocol GifPickerLayoutDelegate: class {
     func imageInfosForLayout() -> [GiphyImageInfo]
 }
 
+// A Pinterest-style waterfall layout.
 class GifPickerLayout: UICollectionViewLayout {
     let TAG = "[GifPickerLayout]"
 
@@ -69,16 +70,17 @@ class GifPickerLayout: UICollectionViewLayout {
         // due to rounding error.
         let totalHSpacing = totalViewWidth - ((2 * hMargin) + (columnCount * columnWidth))
 
+        // columnXs are the left edge of each column.
         var columnXs = [UInt]()
+        // columnYs are the top edge of the next cell in each column.
         var columnYs = [UInt]()
-        // Note that columnIndex is a one-based index, not a zero-based index.
-        for columnIndex in 1...columnCount {
-            var columnX = hMargin + (columnWidth * (columnIndex - 1))
+        for columnIndex in 0...columnCount-1 {
+            var columnX = hMargin + (columnWidth * columnIndex)
             if columnCount > 1 {
                 // We want to unevenly distribute the hSpacing between the columns
                 // so that the left and right margins are equal, which is non-trivial
                 // due to rounding error.
-                columnX += ((totalHSpacing * (columnIndex - 1)) / (columnCount - 1))
+                columnX += ((totalHSpacing * columnIndex) / (columnCount - 1))
             }
             columnXs.append(columnX)
             columnYs.append(vMargin)
@@ -86,6 +88,7 @@ class GifPickerLayout: UICollectionViewLayout {
 
         // Always layout all items.
         let imageInfos = delegate.imageInfosForLayout()
+        var contentBottom = vMargin
         for (cellIndex, imageInfo) in imageInfos.enumerated() {
             // Select a column by finding the "highest, leftmost" column.
             var column = 0
@@ -107,13 +110,11 @@ class GifPickerLayout: UICollectionViewLayout {
             itemAttributesMap[UInt(cellIndex)] = itemAttributes
 
             columnYs[column] = cellY + cellHeight + vSpacing
+            contentBottom = max(contentBottom, cellY + cellHeight)
         }
 
-        var contentHeight = vMargin
-        for columnY in columnYs {
-            contentHeight = max(contentHeight, columnY)
-        }
-        contentHeight += vMargin
+        // Add bottom margin.
+        let contentHeight = contentBottom + vMargin
         contentSize = CGSize(width:CGFloat(totalViewWidth), height:CGFloat(contentHeight))
     }
 

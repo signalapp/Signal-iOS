@@ -17,6 +17,10 @@ class GifPickerCell: UICollectionViewCell {
         }
     }
 
+    // Loading and playing GIFs is quite expensive (network, memory, cpu). 
+    // Here's a bit of logic to not preload offscreen cells that are prefetched.
+    //
+    // TODO: Go a step farther and stop playback of cells that scroll offscreen.
     var shouldLoad = false {
         didSet {
             AssertIsOnMainThread()
@@ -25,6 +29,8 @@ class GifPickerCell: UICollectionViewCell {
         }
     }
 
+    // We do "progressive" loading by loading stills (jpg or gif) and "full" gifs. 
+    // This is critical on cellular connections.
     var stillAssetRequest: GiphyAssetRequest?
     var stillAsset: GiphyAsset?
     var fullAssetRequest: GiphyAssetRequest?
@@ -85,6 +91,8 @@ class GifPickerCell: UICollectionViewCell {
         guard self.fullAsset == nil else {
             return
         }
+        // The Giphy API returns a slew of "renditions" for a given image. 
+        // It's critical that we carefully "pick" the best rendition to use.
         guard let fullRendition = imageInfo.pickGifRendition() else {
             Logger.warn("\(TAG) could not pick gif rendition: \(imageInfo.giphyId)")
             clearAssetRequest()

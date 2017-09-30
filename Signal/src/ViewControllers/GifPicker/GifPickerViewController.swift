@@ -132,7 +132,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         return imageInfos.count
     }
 
-    // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
     public  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let imageInfo = imageInfos[indexPath.row]
 

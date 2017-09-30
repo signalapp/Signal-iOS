@@ -134,7 +134,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
     DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
 
-    NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
+    NSString *_Nullable threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
 
     if (threadId) {
         [Environment presentConversationForThreadId:threadId];
