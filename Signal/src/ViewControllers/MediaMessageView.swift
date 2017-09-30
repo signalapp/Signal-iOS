@@ -138,16 +138,19 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     private func createAnimatedPreview() {
         guard attachment.isValidImage else {
-            return
-        }
-        let data = attachment.data
-        // Use Flipboard FLAnimatedImage library to display gifs
-        guard let animatedImage = FLAnimatedImage(gifData:data) else {
             createGenericPreview()
             return
         }
-        let animatedImageView = FLAnimatedImageView()
-        animatedImageView.animatedImage = animatedImage
+        guard let dataUrl = attachment.dataUrl else {
+            createGenericPreview()
+            return
+        }
+        guard let image = YYImage(contentsOfFile:dataUrl.path) else {
+            createGenericPreview()
+            return
+        }
+        let animatedImageView = YYAnimatedImageView()
+        animatedImageView.image = image
         animatedImageView.contentMode = .scaleAspectFit
         self.addSubview(animatedImageView)
         animatedImageView.autoPinWidthToSuperview()

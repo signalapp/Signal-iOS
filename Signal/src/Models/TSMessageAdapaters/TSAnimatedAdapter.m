@@ -4,7 +4,6 @@
 
 #import "TSAnimatedAdapter.h"
 #import "AttachmentUploadView.h"
-#import "FLAnimatedImage.h"
 #import "JSQMediaItem+OWS.h"
 #import "TSAttachmentStream.h"
 #import "UIColor+OWS.h"
@@ -13,12 +12,13 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Image.h>
+#import <YYImage/YYImage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TSAnimatedAdapter ()
 
-@property (nonatomic, nullable) FLAnimatedImageView *cachedImageView;
+@property (nonatomic, nullable) YYAnimatedImageView *cachedImageView;
 @property (nonatomic) TSAttachmentStream *attachment;
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 @property (nonatomic) BOOL incoming;
@@ -101,20 +101,19 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([NSThread isMainThread]);
 
     if (self.cachedImageView == nil) {
-        // Use Flipboard FLAnimatedImage library to display gifs
-        NSData *fileData = [NSData dataWithContentsOfURL:[self.attachment mediaURL]];
-        if (!fileData) {
-            DDLogError(@"%@ Could not load image: %@", [self tag], [self.attachment mediaURL]);
+        NSString *_Nullable filePath = [self.attachment filePath];
+        if (![NSData ows_isValidImageAtPath:filePath]) {
+            return nil;
+        }
+        YYImage *_Nullable animatedGif = filePath ? [YYImage imageWithContentsOfFile:filePath] : nil;
+        if (!animatedGif) {
+            DDLogError(@"%@ Could not load image: %@", [self tag], filePath);
             UIView *view = [UIView new];
             view.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
             return view;
         }
-        if (![fileData ows_isValidImage]) {
-            return nil;
-        }
-        FLAnimatedImage *animatedGif = [FLAnimatedImage animatedImageWithGIFData:fileData];
-        FLAnimatedImageView *imageView = [[FLAnimatedImageView alloc] init];
-        imageView.animatedImage        = animatedGif;
+        YYAnimatedImageView *imageView = [[YYAnimatedImageView alloc] init];
+        imageView.image = animatedGif;
         CGSize size                    = [self mediaViewDisplaySize];
         imageView.contentMode          = UIViewContentModeScaleAspectFill;
         imageView.frame                = CGRectMake(0.0, 0.0, size.width, size.height);
