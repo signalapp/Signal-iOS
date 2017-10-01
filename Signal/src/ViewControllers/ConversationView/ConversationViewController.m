@@ -238,7 +238,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     UIImagePickerControllerDelegate,
     UINavigationControllerDelegate,
     UITextViewDelegate,
-    JSQLayoutDelegate>
+    JSQLayoutDelegate,
+    GifPickerViewControllerDelegate>
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) TSMessageAdapter *lastDeliveredMessage;
@@ -1685,40 +1686,37 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 
-    if (text.length > 0) {
-        if ([Environment.preferences soundInForeground]) {
-            [JSQSystemSoundPlayer jsq_playMessageSentSound];
-        }
-        // Limit outgoing text messages to 16kb.
-        //
-        // We convert large text messages to attachments
-        // which are presented as normal text messages.
-        const NSUInteger kOversizeTextMessageSizeThreshold = 16 * 1024;
-        BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-        TSOutgoingMessage *message;
-        if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
-            DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
-            SignalAttachment *attachment =
-                [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
-            message =
-                [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
-        } else {
-            message = [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
-        }
-        [self updateLastVisibleTimestamp:message.timestampForSorting];
+    if (text.length < 1) {
+        return;
+    }
 
-        self.lastMessageSentDate = [NSDate new];
-        [self clearUnreadMessagesIndicator];
+    // Limit outgoing text messages to 16kb.
+    //
+    // We convert large text messages to attachments
+    // which are presented as normal text messages.
+    const NSUInteger kOversizeTextMessageSizeThreshold = 16 * 1024;
+    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    TSOutgoingMessage *message;
+    if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
+        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
+        SignalAttachment *attachment =
+            [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
+        message =
+            [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
+    } else {
+        message = [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
+    }
 
-        if (updateKeyboardState) {
-            [self toggleDefaultKeyboard];
-        }
-        [self clearDraft];
-        [self finishSendingMessage];
-        [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
-        if (didAddToProfileWhitelist) {
-            [self ensureDynamicInteractions];
-        }
+    [self messageWasSent:message];
+
+    if (updateKeyboardState) {
+        [self toggleDefaultKeyboard];
+    }
+    [self clearDraft];
+    [self finishSendingMessage];
+    [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
+    if (didAddToProfileWhitelist) {
+        [self ensureDynamicInteractions];
     }
 }
 
@@ -3209,8 +3207,40 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     GifPickerViewController *view =
         [[GifPickerViewController alloc] initWithThread:self.thread messageSender:self.messageSender];
+    view.delegate = self;
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:view];
     [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+#pragma mark GifPickerViewControllerDelegate
+
+- (void)gifPickerWillSend
+{
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+}
+
+- (void)gifPickerDidSendWithOutgoingMessage:(TSOutgoingMessage *)message
+{
+    [self messageWasSent:message];
+
+    [self ensureDynamicInteractions];
+}
+
+- (void)messageWasSent:(TSOutgoingMessage *)message
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(message);
+
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [message saveWithTransaction:transaction];
+    }];
+    [self updateLastVisibleTimestamp:message.timestampForSorting];
+    self.lastMessageSentDate = [NSDate new];
+    [self clearUnreadMessagesIndicator];
+
+    if ([Environment.preferences soundInForeground]) {
+        [JSQSystemSoundPlayer jsq_playMessageSentSound];
+    }
 }
 
 #pragma mark UIDocumentMenuDelegate
@@ -3488,12 +3518,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message =
         [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [message saveWithTransaction:transaction];
-    }];
-    [self updateLastVisibleTimestamp:message.timestampForSorting];
-    self.lastMessageSentDate = [NSDate new];
-    [self clearUnreadMessagesIndicator];
+
+    [self messageWasSent:message];
+
     if (didAddToProfileWhitelist) {
         [self ensureDynamicInteractions];
     }

@@ -4,10 +4,18 @@
 
 import Foundation
 
+@objc
+protocol GifPickerViewControllerDelegate: class {
+    func gifPickerWillSend()
+    func gifPickerDidSend(outgoingMessage: TSOutgoingMessage)
+}
+
 class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate {
     let TAG = "[GifPickerViewController]"
 
     // MARK: Properties
+
+    public weak var delegate: GifPickerViewControllerDelegate?
 
     var thread: TSThread?
     var messageSender: MessageSender?
@@ -166,7 +174,12 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             owsFail("\(TAG) Missing messageSender.")
             return
         }
-        ThreadUtil.sendMessage(with: attachment, in: thread, messageSender: messageSender)
+
+        self.delegate?.gifPickerWillSend()
+
+        let outgoingMessage = ThreadUtil.sendMessage(with: attachment, in: thread, messageSender: messageSender)
+
+        self.delegate?.gifPickerDidSend(outgoingMessage: outgoingMessage)
 
         dismiss(animated: true, completion:nil)
     }
