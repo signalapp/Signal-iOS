@@ -1575,13 +1575,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Pasiruošę artimesniam bendravimui?";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "You now have the option of seeing and sharing when messages have been read.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Dabar, turite galimybę matyti kada žinutės būna perskaitomos ir galite rodyti tai kitiems.";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Enable read receipts in your privacy settings.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Įjunkite pranešimus apie žinučių skaitymą savo privatumo nustatymuose.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Introducing Read Receipts";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Pristatome pranešimus apie žinučių skaitymą";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Dabar, Signal palaiko saugius vaizdo skambučius. Tiesiog, pradėkite skambutį kaip įprasta, bakstelėkite kameros mygtuką ir pamojuokite.";

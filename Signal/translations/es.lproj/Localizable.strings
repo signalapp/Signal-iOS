@@ -1434,7 +1434,7 @@
 "SETTINGS_READ_RECEIPT" = "Notificaciones de lectura";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Ver y compartir cuando los mensajes han sido leídos. Este ajuste es opcional y aplica a todas las conversaciones.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Al activar puedes ver cuando tus mensajes han sido leídos y hacer saber a tus remitentes cuándo has leído los suyos. Este ajuste es opcional y se aplica a todos los chats.";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Habilitar pantalla de seguridad";
@@ -1575,13 +1575,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "¿List@ para tu retrato?";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "You now have the option of seeing and sharing when messages have been read.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Ahora tienes la opción de comprobar cuando tus mensajes han sido leídos y de hacer saber a tus remitentes cuándo has leído sus mensajes.";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Enable read receipts in your privacy settings.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Activar notificaciones de lectura en ajustes";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Introducing Read Receipts";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Nuevo: Notificaciones de lectura";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Ahora Signal permite hacer vídeollamadas seguras. Inicia simplemente una llamada de Signal, toca el botón de la cámara y saluda.";
