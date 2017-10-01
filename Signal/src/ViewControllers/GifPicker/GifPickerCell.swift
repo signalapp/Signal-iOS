@@ -111,8 +111,9 @@ class GifPickerCell: UICollectionViewCell {
             return
         }
 
+        // Start still asset request if necessary.
         if stillAsset == nil && fullAsset == nil && stillAssetRequest == nil {
-            stillAssetRequest = GifDownloader.sharedInstance.requestAsset(rendition:stillRendition,
+            stillAssetRequest = GiphyDownloader.sharedInstance.requestAsset(rendition:stillRendition,
                                                                                 priority:.high,
                                                                                 success: { [weak self] assetRequest, asset in
                                                                                     guard let strongSelf = self else { return }
@@ -133,8 +134,10 @@ class GifPickerCell: UICollectionViewCell {
                                                                                     strongSelf.clearStillAssetRequest()
             })
         }
+
+        // Start full asset request if necessary.
         if fullAsset == nil && fullAssetRequest == nil {
-            fullAssetRequest = GifDownloader.sharedInstance.requestAsset(rendition:fullRendition,
+            fullAssetRequest = GiphyDownloader.sharedInstance.requestAsset(rendition:fullRendition,
                                                                                priority:.low,
                                                                                success: { [weak self] assetRequest, asset in
                                                                                 guard let strongSelf = self else { return }

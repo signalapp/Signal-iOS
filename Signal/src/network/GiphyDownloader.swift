@@ -160,13 +160,13 @@ extension URLSessionTask {
     }
 }
 
-@objc class GifDownloader: NSObject, URLSessionTaskDelegate, URLSessionDownloadDelegate {
+@objc class GiphyDownloader: NSObject, URLSessionTaskDelegate, URLSessionDownloadDelegate {
 
     // MARK: - Properties
 
-    static let TAG = "[GifDownloader]"
+    static let TAG = "[GiphyDownloader]"
 
-    static let sharedInstance = GifDownloader()
+    static let sharedInstance = GiphyDownloader()
 
     // A private queue used for download task callbacks.
     private let operationQueue = OperationQueue()
@@ -287,7 +287,7 @@ extension URLSessionTask {
             }
 
             guard let downloadSession = self.giphyDownloadSession() else {
-                owsFail("\(GifDownloader.TAG) Couldn't create session manager.")
+                owsFail("\(GiphyDownloader.TAG) Couldn't create session manager.")
                 self.assetRequestDidFail(assetRequest:assetRequest)
                 return
             }
@@ -302,18 +302,21 @@ extension URLSessionTask {
     private func popNextAssetRequest() -> GiphyAssetRequest? {
         AssertIsOnMainThread()
 
-        // Prefer the first "high" priority request, 
+        var activeAssetRequestURLs = Set<NSURL>()
+        for assetRequest in activeAssetRequests {
+            activeAssetRequestURLs.insert(assetRequest.rendition.url)
+        }
+
+        // Prefer the first "high" priority request;
         // fall back to the first "low" priority request.
-        //
-        // TODO: We could refine this logic to defer requests if
-        //       there is already an active asset request with the
-        //       same URL.
         for priority in [GiphyRequestPriority.high, GiphyRequestPriority.low] {
-            for (assetRequestIndex, assetRequest) in assetRequestQueue.enumerated() {
-                if assetRequest.priority == priority {
-                    assetRequestQueue.remove(at:assetRequestIndex)
-                    return assetRequest
+            for (assetRequestIndex, assetRequest) in assetRequestQueue.enumerated() where assetRequest.priority == priority {
+                guard !activeAssetRequestURLs.contains(assetRequest.rendition.url) else {
+                    // Defer requests if there is already an active asset request with the same URL.
+                    continue
                 }
+                assetRequestQueue.remove(at:assetRequestIndex)
+                return assetRequest
             }
         }
 
@@ -338,23 +341,23 @@ extension URLSessionTask {
             return
         }
         if let error = error {
-            Logger.error("\(GifDownloader.TAG) download failed with error: \(error)")
+            Logger.error("\(GiphyDownloader.TAG) download failed with error: \(error)")
             assetRequestDidFail(assetRequest:assetRequest)
             return
         }
         guard let httpResponse = task.response as? HTTPURLResponse else {
-            Logger.error("\(GifDownloader.TAG) missing or unexpected response: \(task.response)")
+            Logger.error("\(GiphyDownloader.TAG) missing or unexpected response: \(task.response)")
             assetRequestDidFail(assetRequest:assetRequest)
             return
         }
         let statusCode = httpResponse.statusCode
         guard statusCode >= 200 && statusCode < 400 else {
-            Logger.error("\(GifDownloader.TAG) response has invalid status code: \(statusCode)")
+            Logger.error("\(GiphyDownloader.TAG) response has invalid status code: \(statusCode)")
             assetRequestDidFail(assetRequest:assetRequest)
             return
         }
         guard let assetFilePath = assetRequest.assetFilePath else {
-            Logger.error("\(GifDownloader.TAG) task is missing asset file")
+            Logger.error("\(GiphyDownloader.TAG) task is missing asset file")
             assetRequestDidFail(assetRequest:assetRequest)
             return
         }

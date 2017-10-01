@@ -188,8 +188,12 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     public  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let imageInfo = imageInfos[indexPath.row]
 
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier:kCellReuseIdentifier, for: indexPath) as! GifPickerCell
-        cell.imageInfo = imageInfo
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier:kCellReuseIdentifier, for: indexPath)
+        guard let gifCell = cell as? GifPickerCell else {
+            owsFail("\(TAG) Unexpected cell type.")
+            return cell
+        }
+        gifCell.imageInfo = imageInfo
         return cell
     }
 
@@ -274,7 +278,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         updateContents()
         self.collectionView.contentOffset = CGPoint.zero
 
-        GifManager.sharedInstance.search(query: query, success: { [weak self] imageInfos in
+        GiphyAPI.sharedInstance.search(query: query, success: { [weak self] imageInfos in
             guard let strongSelf = self else { return }
             Logger.info("\(strongSelf.TAG) search complete")
             strongSelf.imageInfos = imageInfos
