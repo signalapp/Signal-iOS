@@ -99,6 +99,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.collectionView.autoPinEdge(.top, to:.bottom, of:searchBar)
         self.collectionView.autoPin(toBottomLayoutGuideOf: self, withInset:0)
 
+        // The Giphy API requires us to "show their trademark prominently" in our GIF experience.
         let logoImage = UIImage(named:"giphy_logo")
         let logoImageView = UIImageView(image:logoImage)
         self.logoImageView = logoImageView
