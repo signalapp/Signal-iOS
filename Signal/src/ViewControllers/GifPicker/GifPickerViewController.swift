@@ -177,7 +177,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             return
         }
         // We only want to load the cells which are on-screen.
-        cell.shouldLoad = true
+        cell.isCellVisible = true
     }
 
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -185,7 +185,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             owsFail("\(TAG) unexpected cell.")
             return
         }
-        cell.shouldLoad = false
+        cell.isCellVisible = false
     }
 
     // MARK: - Event Handlers

@@ -13,19 +13,17 @@ class GifPickerCell: UICollectionViewCell {
         didSet {
             AssertIsOnMainThread()
 
-            ensureLoad()
+            ensureCellState()
         }
     }
 
     // Loading and playing GIFs is quite expensive (network, memory, cpu). 
     // Here's a bit of logic to not preload offscreen cells that are prefetched.
-    //
-    // TODO: Go a step farther and stop playback of cells that scroll offscreen.
-    var shouldLoad = false {
+    var isCellVisible = false {
         didSet {
             AssertIsOnMainThread()
 
-            ensureLoad()
+            ensureCellState()
         }
     }
 
@@ -53,7 +51,7 @@ class GifPickerCell: UICollectionViewCell {
         super.prepareForReuse()
 
         imageInfo = nil
-        shouldLoad = false
+        isCellVisible = false
         stillAsset = nil
         stillAssetRequest?.cancel()
         stillAssetRequest = nil
@@ -74,18 +72,22 @@ class GifPickerCell: UICollectionViewCell {
         fullAssetRequest = nil
     }
 
-    private func clearAssetRequest() {
+    private func clearAssetRequests() {
         clearStillAssetRequest()
         clearFullAssetRequest()
     }
 
-    private func ensureLoad() {
-        guard shouldLoad else {
-            clearAssetRequest()
+    private func ensureCellState() {
+        guard isCellVisible else {
+            // Cancel any outstanding requests.
+            clearAssetRequests()
+            // Clear image view so we don't animate offscreen GIFs.
+            imageView?.removeFromSuperview()
+            imageView = nil
             return
         }
         guard let imageInfo = imageInfo else {
-            clearAssetRequest()
+            clearAssetRequests()
             return
         }
         guard self.fullAsset == nil else {
@@ -95,41 +97,58 @@ class GifPickerCell: UICollectionViewCell {
         // It's critical that we carefully "pick" the best rendition to use.
         guard let fullRendition = imageInfo.pickGifRendition() else {
             Logger.warn("\(TAG) could not pick gif rendition: \(imageInfo.giphyId)")
-            clearAssetRequest()
+            clearAssetRequests()
             return
         }
         guard let stillRendition = imageInfo.pickStillRendition() else {
             Logger.warn("\(TAG) could not pick still rendition: \(imageInfo.giphyId)")
-            clearAssetRequest()
+            clearAssetRequests()
             return
         }
 
         if stillAsset == nil && fullAsset == nil && stillAssetRequest == nil {
             stillAssetRequest = GifDownloader.sharedInstance.requestAsset(rendition:stillRendition,
                                                                                 priority:.high,
-                                                                                success: { [weak self] asset in
+                                                                                success: { [weak self] assetRequest, asset in
                                                                                     guard let strongSelf = self else { return }
+                                                                                    if assetRequest != nil && assetRequest != strongSelf.stillAssetRequest {
+                                                                                        // Ignore obsolete requests.
+                                                                                        return
+                                                                                    }
                                                                                     strongSelf.clearStillAssetRequest()
                                                                                     strongSelf.stillAsset = asset
                                                                                     strongSelf.tryToDisplayAsset()
                 },
-                                                                                failure: { [weak self] in
+                                                                                failure: { [weak self] assetRequest in
                                                                                     guard let strongSelf = self else { return }
+                                                                                    if assetRequest != strongSelf.stillAssetRequest {
+                                                                                        // Ignore obsolete requests.
+                                                                                        return
+                                                                                    }
                                                                                     strongSelf.clearStillAssetRequest()
             })
         }
         if fullAsset == nil && fullAssetRequest == nil {
             fullAssetRequest = GifDownloader.sharedInstance.requestAsset(rendition:fullRendition,
                                                                                priority:.low,
-                                                                               success: { [weak self] asset in
+                                                                               success: { [weak self] assetRequest, asset in
                                                                                 guard let strongSelf = self else { return }
-                                                                                strongSelf.clearAssetRequest()
+                                                                                if assetRequest != nil && assetRequest != strongSelf.fullAssetRequest {
+                                                                                    // Ignore obsolete requests.
+                                                                                    return
+                                                                                }
+                                                                                // If we have the full asset, we don't need the still asset.
+                                                                                strongSelf.clearAssetRequests()
                                                                                 strongSelf.fullAsset = asset
                                                                                 strongSelf.tryToDisplayAsset()
                 },
-                                                                               failure: { [weak self] in
+                                                                               failure: { [weak self] assetRequest in
                                                                                 guard let strongSelf = self else { return }
-                                                                                strongSelf.clearAssetRequest()
+                                                                                if assetRequest != strongSelf.fullAssetRequest {
+                                                                                    // Ignore obsolete requests.
+                                                                                    return
+                                                                                }
+                                                                                strongSelf.clearFullAssetRequest()
             })
         }
     }

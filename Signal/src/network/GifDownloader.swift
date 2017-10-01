@@ -21,8 +21,8 @@ enum GiphyRequestPriority {
     // Exactly one of success or failure should be called once,
     // on the main thread _unless_ this request is cancelled before
     // the request succeeds or fails.
-    private var success: ((GiphyAsset) -> Void)
-    private var failure: (() -> Void)
+    private var success: ((GiphyAssetRequest?, GiphyAsset) -> Void)?
+    private var failure: ((GiphyAssetRequest) -> Void)?
 
     var wasCancelled = false
     // This property is an internal implementation detail of the download process.
@@ -30,8 +30,8 @@ enum GiphyRequestPriority {
 
     init(rendition: GiphyRendition,
          priority: GiphyRequestPriority,
-         success:@escaping ((GiphyAsset) -> Void),
-         failure:@escaping (() -> Void)
+         success:@escaping ((GiphyAssetRequest?, GiphyAsset) -> Void),
+         failure:@escaping ((GiphyAssetRequest) -> Void)
         ) {
         self.rendition = rendition
         self.priority = priority
@@ -51,17 +51,14 @@ enum GiphyRequestPriority {
     private func clearCallbacks() {
         AssertIsOnMainThread()
 
-        // Replace success and failure with no-ops.
-        success = { _ in
-        }
-        failure = {
-        }
+        success = nil
+        failure = nil
     }
 
     public func requestDidSucceed(asset: GiphyAsset) {
         AssertIsOnMainThread()
 
-        success(asset)
+        success?(self, asset)
 
         // Only one of the callbacks should be called, and only once.
         clearCallbacks()
@@ -70,7 +67,7 @@ enum GiphyRequestPriority {
     public func requestDidFail() {
         AssertIsOnMainThread()
 
-        failure()
+        failure?(self)
 
         // Only one of the callbacks should be called, and only once.
         clearCallbacks()
@@ -212,17 +209,19 @@ extension URLSessionTask {
     private let kMaxAssetRequestCount = 3
     private var activeAssetRequests = Set<GiphyAssetRequest>()
 
-    // The success and failure handlers are always called on main queue.
-    // The success handler may be called synchronously on cache hit.
+    // The success and failure callbacks are always called on main queue.
+    //
+    // The success callbacks may be called synchronously on cache hit, in 
+    // which case the GiphyAssetRequest parameter will be nil.
     public func requestAsset(rendition: GiphyRendition,
                              priority: GiphyRequestPriority,
-                             success:@escaping ((GiphyAsset) -> Void),
-                             failure:@escaping (() -> Void)) -> GiphyAssetRequest? {
+                             success:@escaping ((GiphyAssetRequest?, GiphyAsset) -> Void),
+                             failure:@escaping ((GiphyAssetRequest) -> Void)) -> GiphyAssetRequest? {
         AssertIsOnMainThread()
 
         if let asset = assetMap.get(key:rendition.url) {
             // Synchronous cache hit.
-            success(asset)
+            success(nil, asset)
             return nil
         }
 
