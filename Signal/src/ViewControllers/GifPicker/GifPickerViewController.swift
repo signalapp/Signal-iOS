@@ -254,12 +254,15 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     // MARK: - UISearchBarDelegate
 
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        // TODO: We could do progressive search as the user types.
+        // Don't do progressive search for GIFs; the network burden would be excessive.
     }
 
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let text = searchBar.text else {
-            // TODO: Alert?
+            OWSAlerts.showAlert(withTitle: NSLocalizedString("ALERT_ERROR_TITLE",
+                                                             comment: ""),
+                                message: NSLocalizedString("GIF_PICKER_VIEW_MISSING_QUERY",
+                                                           comment: "Alert message shown when user tries to search for GIFs without entering any search terms."))
             return
         }
         search(query:text)

@@ -601,6 +601,9 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Attachment";
 
+/* Please enter your search. */
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Please enter your search.";
+
 /* Title for the 'gif picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "Gif Search";
 

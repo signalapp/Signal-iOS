@@ -4081,14 +4081,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 #ifdef DEBUG
     UIAlertAction *gifAction =
-        // TODO:
+        // TODO: What should the final copy be?
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SELECT_GIF_BUTTON",
                                            @"Label for 'select gif to attach' action sheet button")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *_Nonnull action) {
                                    [self showGifPicker];
                                }];
-    // TODO:
+    // TODO: What should the final icon be?
     UIImage *gifImage = [UIImage imageNamed:@"actionsheet_gif_black"];
     OWSAssert(gifImage);
     [gifAction setValue:gifImage forKey:@"image"];

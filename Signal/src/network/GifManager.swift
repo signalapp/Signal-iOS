@@ -80,7 +80,7 @@ enum GiphyFormat {
         self.originalRendition = originalRendition
     }
 
-    // TODO:
+    // TODO: We may need to tweak these constants.
     let kMaxDimension = UInt(618)
     let kMinDimension = UInt(101)
     let kMaxFileSize = UInt(3 * 1024 * 1024)
@@ -217,7 +217,8 @@ enum GiphyFormat {
             Logger.error("\(GifManager.TAG) Invalid base URL.")
             return nil
         }
-        // TODO: Is this right?
+        // TODO: We need to verify that this session configuration properly
+        //       proxies all requests.
         let sessionConf = URLSessionConfiguration.ephemeral
         sessionConf.connectionProxyDictionary = [
             kCFProxyHostNameKey as String: "giphy-proxy-production.whispersystems.org",
@@ -252,7 +253,6 @@ enum GiphyFormat {
         // TODO: Should Signal iOS use a separate API key?
         let kGiphyApiKey = "3o6ZsYH6U6Eri53TXy"
         let kGiphyPageSize = 200
-        // TODO:
         let kGiphyPageOffset = 0
         guard let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
             Logger.error("\(GifManager.TAG) Could not URL encode query: \(query).")
