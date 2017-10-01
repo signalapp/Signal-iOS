@@ -77,7 +77,7 @@ class GifPickerCell: UICollectionViewCell {
         clearFullAssetRequest()
     }
 
-    private func ensureCellState() {
+    public func ensureCellState() {
         guard isCellVisible else {
             // Cancel any outstanding requests.
             clearAssetRequests()

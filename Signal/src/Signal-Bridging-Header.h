@@ -49,6 +49,7 @@
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
 #import <JSQSystemSoundPlayer.h>
 #import <PureLayout/PureLayout.h>
+#import <Reachability/Reachability.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/Asserts.h>
 #import <SignalServiceKit/Contact.h>

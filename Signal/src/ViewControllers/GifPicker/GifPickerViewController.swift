@@ -27,6 +27,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     var imageInfos = [GiphyImageInfo]()
 
+    var reachability: Reachability?
+
     private let kCellReuseIdentifier = "kCellReuseIdentifier"
 
     // MARK: Initializers
@@ -57,6 +59,38 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.layout.delegate = self
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    func didBecomeActive() {
+        AssertIsOnMainThread()
+
+        Logger.info("\(self.TAG) \(#function)")
+
+        // Prod cells to try to load when app becomes active.
+        ensureCellState()
+    }
+
+    func reachabilityChanged() {
+        AssertIsOnMainThread()
+
+        Logger.info("\(self.TAG) \(#function)")
+
+        // Prod cells to try to load when connectivity changes.
+        ensureCellState()
+    }
+
+    func ensureCellState() {
+        for cell in self.collectionView.visibleCells {
+            guard let cell = cell as? GifPickerCell else {
+                owsFail("\(TAG) unexpected cell.")
+                return
+            }
+            cell.ensureCellState()
+        }
+    }
+
     // MARK: View Lifecycle
 
     override func viewDidLoad() {
@@ -71,6 +105,16 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                                       comment: "Title for the 'gif picker' dialog.")
 
         createViews()
+
+        reachability = Reachability.forInternetConnection()
+        NotificationCenter.default.addObserver(self,
+                                               selector:#selector(reachabilityChanged),
+                                               name:NSNotification.Name.reachabilityChanged,
+                                               object:nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector:#selector(didBecomeActive),
+                                               name:NSNotification.Name.UIApplicationDidBecomeActive,
+                                               object:nil)
     }
 
     override func viewDidAppear(_ animated: Bool) {

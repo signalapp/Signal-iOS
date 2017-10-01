@@ -269,11 +269,18 @@ extension URLSessionTask {
                 self.startRequestIfNecessary()
                 return
             }
+            guard UIApplication.shared.applicationState == .active else {
+                // If app is not active, fail the asset request.
+                self.assetRequestDidFail(assetRequest:assetRequest)
+                self.startRequestIfNecessary()
+                return
+            }
+
             self.activeAssetRequests.insert(assetRequest)
 
             if let asset = self.assetMap.get(key:assetRequest.rendition.url) {
-                // Deferred cache hit, avoids re-downloading assets already in the
-                // asset cache.
+                // Deferred cache hit, avoids re-downloading assets that were
+                // downloaded while this request was queued.
 
                 self.assetRequestDidSucceed(assetRequest : assetRequest, asset: asset)
                 return
@@ -297,6 +304,10 @@ extension URLSessionTask {
 
         // Prefer the first "high" priority request, 
         // fall back to the first "low" priority request.
+        //
+        // TODO: We could refine this logic to defer requests if
+        //       there is already an active asset request with the
+        //       same URL.
         for priority in [GiphyRequestPriority.high, GiphyRequestPriority.low] {
             for (assetRequestIndex, assetRequest) in assetRequestQueue.enumerated() {
                 if assetRequest.priority == priority {
