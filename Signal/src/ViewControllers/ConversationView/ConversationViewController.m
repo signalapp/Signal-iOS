@@ -3115,9 +3115,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                             NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
                                             NSBaselineOffsetAttributeName : @(-0.5f),
                                         }];
+    iconLabel.userInteractionEnabled = NO;
 
     UIView *circleView = [UIView new];
     circleView.backgroundColor = [UIColor colorWithWhite:0.95f alpha:1.f];
+    circleView.userInteractionEnabled = NO;
     circleView.layer.cornerRadius = kCircleSize * 0.5f;
     circleView.layer.shadowColor = [UIColor colorWithWhite:0.5f alpha:1.f].CGColor;
     circleView.layer.shadowOffset = CGSizeMake(+1.f, +2.f);
