@@ -47,6 +47,11 @@ class GifPickerCell: UICollectionViewCell {
         super.init(frame: frame)
     }
 
+    deinit {
+        stillAssetRequest?.cancel()
+        fullAssetRequest?.cancel()
+    }
+
     override func prepareForReuse() {
         super.prepareForReuse()
 
@@ -112,7 +117,7 @@ class GifPickerCell: UICollectionViewCell {
                                                                                 success: { [weak self] assetRequest, asset in
                                                                                     guard let strongSelf = self else { return }
                                                                                     if assetRequest != nil && assetRequest != strongSelf.stillAssetRequest {
-                                                                                        // Ignore obsolete requests.
+                                                                                        owsFail("Obsolete request callback.")
                                                                                         return
                                                                                     }
                                                                                     strongSelf.clearStillAssetRequest()
@@ -122,7 +127,7 @@ class GifPickerCell: UICollectionViewCell {
                                                                                 failure: { [weak self] assetRequest in
                                                                                     guard let strongSelf = self else { return }
                                                                                     if assetRequest != strongSelf.stillAssetRequest {
-                                                                                        // Ignore obsolete requests.
+                                                                                        owsFail("Obsolete request callback.")
                                                                                         return
                                                                                     }
                                                                                     strongSelf.clearStillAssetRequest()
@@ -134,7 +139,7 @@ class GifPickerCell: UICollectionViewCell {
                                                                                success: { [weak self] assetRequest, asset in
                                                                                 guard let strongSelf = self else { return }
                                                                                 if assetRequest != nil && assetRequest != strongSelf.fullAssetRequest {
-                                                                                    // Ignore obsolete requests.
+                                                                                    owsFail("Obsolete request callback.")
                                                                                     return
                                                                                 }
                                                                                 // If we have the full asset, we don't need the still asset.
@@ -145,7 +150,7 @@ class GifPickerCell: UICollectionViewCell {
                                                                                failure: { [weak self] assetRequest in
                                                                                 guard let strongSelf = self else { return }
                                                                                 if assetRequest != strongSelf.fullAssetRequest {
-                                                                                    // Ignore obsolete requests.
+                                                                                    owsFail("Obsolete request callback.")
                                                                                     return
                                                                                 }
                                                                                 strongSelf.clearFullAssetRequest()
