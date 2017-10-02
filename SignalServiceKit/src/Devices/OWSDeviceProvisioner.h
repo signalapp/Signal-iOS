@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
              theirEphemeralDeviceId:(NSString *)ephemeralDeviceId
                   accountIdentifier:(NSString *)accountIdentifier
                          profileKey:(NSData *)profileKey
+                readReceiptsEnabled:(BOOL)areReadReceiptsEnabled
             provisioningCodeService:(OWSDeviceProvisioningCodeService *)provisioningCodeService
                 provisioningService:(OWSDeviceProvisioningService *)provisioningService NS_DESIGNATED_INITIALIZER;
 
@@ -25,7 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
                      theirPublicKey:(NSData *)theirPublicKey
              theirEphemeralDeviceId:(NSString *)ephemeralDeviceId
                   accountIdentifier:(NSString *)accountIdentifier
-                         profileKey:(NSData *)profileKey;
+                         profileKey:(NSData *)profileKey
+                readReceiptsEnabled:(BOOL)areReadReceiptsEnabled;
 
 - (void)provisionWithSuccess:(void (^)())successCallback failure:(void (^)(NSError *))failureCallback;
 

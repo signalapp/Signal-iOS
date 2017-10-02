@@ -127,14 +127,17 @@
 #define ProvisionMessage_provisioningCode @"provisioningCode"
 #define ProvisionMessage_userAgent @"userAgent"
 #define ProvisionMessage_profileKey @"profileKey"
+#define ProvisionMessage_readReceipts @"readReceipts"
 @interface OWSProvisioningProtosProvisionMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
+  BOOL hasReadReceipts_:1;
   BOOL hasNumber_:1;
   BOOL hasProvisioningCode_:1;
   BOOL hasUserAgent_:1;
   BOOL hasIdentityKeyPublic_:1;
   BOOL hasIdentityKeyPrivate_:1;
   BOOL hasProfileKey_:1;
+  BOOL readReceipts_:1;
   NSString* number;
   NSString* provisioningCode;
   NSString* userAgent;
@@ -148,12 +151,14 @@
 - (BOOL) hasProvisioningCode;
 - (BOOL) hasUserAgent;
 - (BOOL) hasProfileKey;
+- (BOOL) hasReadReceipts;
 @property (readonly, strong) NSData* identityKeyPublic;
 @property (readonly, strong) NSData* identityKeyPrivate;
 @property (readonly, strong) NSString* number;
 @property (readonly, strong) NSString* provisioningCode;
 @property (readonly, strong) NSString* userAgent;
 @property (readonly, strong) NSData* profileKey;
+- (BOOL) readReceipts;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -219,6 +224,11 @@
 - (NSData*) profileKey;
 - (OWSProvisioningProtosProvisionMessageBuilder*) setProfileKey:(NSData*) value;
 - (OWSProvisioningProtosProvisionMessageBuilder*) clearProfileKey;
+
+- (BOOL) hasReadReceipts;
+- (BOOL) readReceipts;
+- (OWSProvisioningProtosProvisionMessageBuilder*) setReadReceipts:(BOOL) value;
+- (OWSProvisioningProtosProvisionMessageBuilder*) clearReadReceipts;
 @end
 
 

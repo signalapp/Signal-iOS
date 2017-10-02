@@ -20,6 +20,7 @@
 #import "OWSMessageSender.h"
 #import "OWSReadReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
+#import "OWSSyncConfigurationMessage.h"
 #import "OWSSyncContactsMessage.h"
 #import "OWSSyncGroupsMessage.h"
 #import "OWSSyncGroupsRequestMessage.h"
@@ -348,7 +349,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self handleEndSessionMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0) {
         [self handleExpirationTimerUpdateMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
-    } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsProfileKey) != 0) {
+    } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsProfileKeyUpdate) != 0) {
         [self handleProfileKeyMessageWithEnvelope:envelope dataMessage:dataMessage];
     } else if (dataMessage.attachments.count > 0) {
         [self handleReceivedMediaWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
@@ -599,6 +600,20 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 failure:^(NSError *error) {
                     DDLogError(@"%@ Failed to send Groups response syncMessage with error: %@", self.tag, error);
+                }];
+        } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeBlocked) {
+            // TODO
+            DDLogWarn(@"%@ Received unsupported request for block list", self.tag);
+        } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeConfiguration) {
+            BOOL areReadReceiptsEnabled = [[OWSReadReceiptManager sharedManager] areReadReceiptsEnabled];
+            OWSSyncConfigurationMessage *syncConfigurationMessage =
+                [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled];
+            [self.messageSender sendMessage:syncConfigurationMessage
+                success:^{
+                    DDLogInfo(@"%@ Successfully sent Configuration response syncMessage.", self.tag);
+                }
+                failure:^(NSError *error) {
+                    DDLogError(@"%@ Failed to send Configuration response syncMessage with error: %@", self.tag, error);
                 }];
         } else {
             DDLogWarn(@"%@ ignoring unsupported sync request message", self.tag);

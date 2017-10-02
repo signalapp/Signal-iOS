@@ -24,4 +24,5 @@ message ProvisionMessage {
   optional string provisioningCode   = 4;
   optional string userAgent          = 5;
   optional bytes  profileKey         = 6;
+  optional bool   readReceipts       = 7;
 }

@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
     [builder addLocalProfileKey];
-    [builder setFlags:OWSSignalServiceProtosDataMessageFlagsProfileKey];
+    [builder setFlags:OWSSignalServiceProtosDataMessageFlagsProfileKeyUpdate];
     
     if (recipientId.length > 0) {
         // Once we've shared our profile key with a user (perhaps due to being
