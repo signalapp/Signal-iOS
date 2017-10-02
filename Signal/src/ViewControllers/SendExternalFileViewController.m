@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
     [fileView addSubview:imageView];
     [imageView autoSetDimension:ALDimensionWidth toSize:imageSize];
     [imageView autoSetDimension:ALDimensionHeight toSize:imageSize];
-    [imageView autoPinLeadingToSuperView];
+    [imageView autoPinLeadingToSuperview];
     [imageView autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [imageView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
     [fileView addSubview:fileNameLabel];
     [fileNameLabel autoAlignAxis:ALAxisHorizontal toSameAxisOfView:imageView];
     [fileNameLabel autoPinLeadingToTrailingOfView:imageView margin:imageLabelSpacing];
-    [fileNameLabel autoPinTrailingToSuperView];
+    [fileNameLabel autoPinTrailingToSuperview];
 
     [header addSubview:searchBar];
     [searchBar autoPinWidthToSuperview];

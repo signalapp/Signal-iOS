@@ -130,7 +130,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     countryNameLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [countryRow addSubview:countryNameLabel];
     [countryNameLabel autoVCenterInSuperview];
-    [countryNameLabel autoPinLeadingToSuperView];
+    [countryNameLabel autoPinLeadingToSuperview];
 
     UILabel *countryCodeLabel = [UILabel new];
     self.countryCodeLabel = countryCodeLabel;
@@ -138,7 +138,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     countryCodeLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints + 2.f];
     [countryRow addSubview:countryCodeLabel];
     [countryCodeLabel autoVCenterInSuperview];
-    [countryCodeLabel autoPinTrailingToSuperView];
+    [countryCodeLabel autoPinTrailingToSuperview];
 
     UIView *separatorView1 = [UIView new];
     separatorView1.backgroundColor = [UIColor colorWithWhite:0.75f alpha:1.f];
@@ -161,7 +161,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     phoneNumberLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [phoneNumberRow addSubview:phoneNumberLabel];
     [phoneNumberLabel autoVCenterInSuperview];
-    [phoneNumberLabel autoPinLeadingToSuperView];
+    [phoneNumberLabel autoPinLeadingToSuperview];
 
     UITextField *phoneNumberTextField = [UITextField new];
     phoneNumberTextField.textAlignment = NSTextAlignmentRight;
@@ -174,14 +174,14 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     phoneNumberTextField.font = [UIFont ows_mediumFontWithSize:fontSizePoints + 2];
     [phoneNumberRow addSubview:phoneNumberTextField];
     [phoneNumberTextField autoVCenterInSuperview];
-    [phoneNumberTextField autoPinTrailingToSuperView];
+    [phoneNumberTextField autoPinTrailingToSuperview];
 
     UILabel *examplePhoneNumberLabel = [UILabel new];
     self.examplePhoneNumberLabel = examplePhoneNumberLabel;
     examplePhoneNumberLabel.font = [UIFont ows_regularFontWithSize:fontSizePoints - 2.f];
     examplePhoneNumberLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
     [contentView addSubview:examplePhoneNumberLabel];
-    [examplePhoneNumberLabel autoPinTrailingToSuperView];
+    [examplePhoneNumberLabel autoPinTrailingToSuperview];
     [examplePhoneNumberLabel autoPinEdge:ALEdgeTop
                                   toEdge:ALEdgeBottom
                                   ofView:phoneNumberTextField
@@ -220,7 +220,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [spinnerView autoVCenterInSuperview];
     [spinnerView autoSetDimension:ALDimensionWidth toSize:20.f];
     [spinnerView autoSetDimension:ALDimensionHeight toSize:20.f];
-    [spinnerView autoPinTrailingToSuperViewWithMargin:20.f];
+    [spinnerView autoPinTrailingToSuperviewWithMargin:20.f];
     [spinnerView stopAnimating];
 }
 

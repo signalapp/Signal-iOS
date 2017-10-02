@@ -27,6 +27,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (void)autoPinHeightToSuperviewWithMargin:(CGFloat)margin;
 - (void)autoPinHeightToSuperview;
 
+- (void)autoPinToSuperviewEdges;
+
 - (void)autoHCenterInSuperview;
 - (void)autoVCenterInSuperview;
 
@@ -76,10 +78,10 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 // NOTE: the margin values are inverted in RTL layouts.
 - (BOOL)isRTL;
 - (NSArray<NSLayoutConstraint *> *)autoPinLeadingAndTrailingToSuperview;
-- (NSLayoutConstraint *)autoPinLeadingToSuperView;
-- (NSLayoutConstraint *)autoPinLeadingToSuperViewWithMargin:(CGFloat)margin;
-- (NSLayoutConstraint *)autoPinTrailingToSuperView;
-- (NSLayoutConstraint *)autoPinTrailingToSuperViewWithMargin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinLeadingToSuperview;
+- (NSLayoutConstraint *)autoPinLeadingToSuperviewWithMargin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinTrailingToSuperview;
+- (NSLayoutConstraint *)autoPinTrailingToSuperviewWithMargin:(CGFloat)margin;
 - (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view;
 - (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin;
 - (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view;

@@ -391,8 +391,7 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     self.tableView.dataSource = self;
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.view addSubview:self.tableView];
-    [self.tableView autoPinWidthToSuperview];
-    [self.tableView autoPinHeightToSuperview];
+    [self.tableView autoPinToSuperviewEdges];
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kOWSTableCellIdentifier];
 }

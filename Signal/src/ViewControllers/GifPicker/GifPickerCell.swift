@@ -37,16 +37,6 @@ class GifPickerCell: UICollectionViewCell {
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use other constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        owsFail("\(self.TAG) invalid constructor")
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-
     deinit {
         stillAssetRequest?.cancel()
         fullAssetRequest?.cancel()
@@ -87,8 +77,7 @@ class GifPickerCell: UICollectionViewCell {
             // Cancel any outstanding requests.
             clearAssetRequests()
             // Clear image view so we don't animate offscreen GIFs.
-            imageView?.removeFromSuperview()
-            imageView = nil
+            imageView?.image = nil
             return
         }
         guard let imageInfo = imageInfo else {
@@ -174,8 +163,7 @@ class GifPickerCell: UICollectionViewCell {
             let imageView = YYAnimatedImageView()
             self.imageView = imageView
             self.contentView.addSubview(imageView)
-            imageView.autoPinWidthToSuperview()
-            imageView.autoPinHeightToSuperview()
+            imageView.autoPinToSuperviewEdges()
         }
         guard let imageView = imageView else {
             owsFail("\(TAG) missing imageview.")

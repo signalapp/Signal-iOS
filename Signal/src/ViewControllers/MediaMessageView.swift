@@ -153,8 +153,7 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         animatedImageView.image = image
         animatedImageView.contentMode = .scaleAspectFit
         self.addSubview(animatedImageView)
-        animatedImageView.autoPinWidthToSuperview()
-        animatedImageView.autoPinHeightToSuperview()
+        animatedImageView.autoPinToSuperviewEdges()
     }
 
     private func createImagePreview() {
@@ -172,8 +171,7 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         imageView.layer.magnificationFilter = kCAFilterTrilinear
         imageView.contentMode = .scaleAspectFit
         self.addSubview(imageView)
-        imageView.autoPinWidthToSuperview()
-        imageView.autoPinHeightToSuperview()
+        imageView.autoPinToSuperviewEdges()
     }
 
     private func createVideoPreview() {
@@ -192,8 +190,7 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
         self.addSubview(videoPlayer.view)
         self.videoPlayer = videoPlayer
-        videoPlayer.view.autoPinWidthToSuperview()
-        videoPlayer.view.autoPinHeightToSuperview()
+        videoPlayer.view.autoPinToSuperviewEdges()
     }
 
     private func createGenericPreview() {

@@ -62,8 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.voiceMemoContentView = [UIView new];
     [self.voiceMemoUI addSubview:self.voiceMemoContentView];
-    [self.voiceMemoContentView autoPinWidthToSuperview];
-    [self.voiceMemoContentView autoPinHeightToSuperview];
+    [self.voiceMemoContentView autoPinToSuperviewEdges];
 
     self.recordingLabel = [UILabel new];
     self.recordingLabel.textColor = [UIColor ows_destructiveRedColor];
@@ -143,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
     [whiteIconView autoCenterInSuperview];
 
     [imageView autoVCenterInSuperview];
-    [imageView autoPinLeadingToSuperViewWithMargin:10.f];
+    [imageView autoPinLeadingToSuperviewWithMargin:10.f];
     [self.recordingLabel autoVCenterInSuperview];
     [self.recordingLabel autoPinLeadingToTrailingOfView:imageView margin:5.f];
     [cancelLabel autoVCenterInSuperview];

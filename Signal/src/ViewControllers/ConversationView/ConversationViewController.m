@@ -988,7 +988,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [bannerView addSubview:closeButton];
     const CGFloat kBannerCloseButtonPadding = 8.f;
     [closeButton autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kBannerCloseButtonPadding];
-    [closeButton autoPinTrailingToSuperViewWithMargin:kBannerCloseButtonPadding];
+    [closeButton autoPinTrailingToSuperviewWithMargin:kBannerCloseButtonPadding];
     [closeButton autoSetDimension:ALDimensionWidth toSize:closeIcon.size.width];
     [closeButton autoSetDimension:ALDimensionHeight toSize:closeIcon.size.height];
 
@@ -996,7 +996,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [label autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:5];
     [label autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:5];
     const CGFloat kBannerHPadding = 15.f;
-    [label autoPinLeadingToSuperViewWithMargin:kBannerHPadding];
+    [label autoPinLeadingToSuperviewWithMargin:kBannerHPadding];
     const CGFloat kBannerHSpacing = 10.f;
     [closeButton autoPinLeadingToTrailingOfView:label margin:kBannerHSpacing];
 
@@ -1336,7 +1336,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // bar button items, but it means we'll probably need separate RTL and LTR
     // flavors of these assets.
     [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-6];
-    [_backButtonUnreadCountView autoPinLeadingToSuperViewWithMargin:1];
+    [_backButtonUnreadCountView autoPinLeadingToSuperviewWithMargin:1];
     [_backButtonUnreadCountView autoSetDimension:ALDimensionHeight toSize:self.unreadCountViewDiameter];
     // We set a min width, but we will also pin to our subview label, so we can grow to accommodate multiple digits.
     [_backButtonUnreadCountView autoSetDimension:ALDimensionWidth

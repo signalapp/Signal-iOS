@@ -542,18 +542,18 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             // Dark blurred background.
             blurView.autoPinEdgesToSuperviewEdges()
 
-            localVideoView.autoPinTrailingToSuperView(withMargin: videoPreviewHMargin)
+            localVideoView.autoPinTrailingToSuperview(withMargin: videoPreviewHMargin)
             localVideoView.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
             let localVideoSize = ScaleFromIPhone5To7Plus(80, 100)
             localVideoView.autoSetDimension(.width, toSize:localVideoSize)
             localVideoView.autoSetDimension(.height, toSize:localVideoSize)
 
             contactNameLabel.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
-            contactNameLabel.autoPinLeadingToSuperView(withMargin: contactHMargin)
+            contactNameLabel.autoPinLeadingToSuperview(withMargin: contactHMargin)
             contactNameLabel.setContentHuggingVerticalHigh()
 
             callStatusLabel.autoPinEdge(.top, to:.bottom, of:contactNameLabel, withOffset:contactVSpacing)
-            callStatusLabel.autoPinLeadingToSuperView(withMargin: contactHMargin)
+            callStatusLabel.autoPinLeadingToSuperview(withMargin: contactHMargin)
             callStatusLabel.setContentHuggingVerticalHigh()
 
             contactAvatarView.autoPinEdge(.top, to:.bottom, of:callStatusLabel, withOffset:+avatarTopSpacing)
@@ -645,8 +645,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         if localVideoView.isHidden {
             let contactHMargin = CGFloat(5)
-            constraints.append(contactNameLabel.autoPinTrailingToSuperView(withMargin: contactHMargin))
-            constraints.append(callStatusLabel.autoPinTrailingToSuperView(withMargin: contactHMargin))
+            constraints.append(contactNameLabel.autoPinTrailingToSuperview(withMargin: contactHMargin))
+            constraints.append(callStatusLabel.autoPinTrailingToSuperview(withMargin: contactHMargin))
         } else {
             let spacing = CGFloat(10)
             constraints.append(localVideoView.autoPinLeading(toTrailingOf: contactNameLabel, margin: spacing))
