@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import ObjectiveC
 
 // There's no UTI type for webp!
 enum GiphyFormat {
@@ -37,7 +36,7 @@ enum GiphyFormat {
         self.url = url
     }
 
-    public func fileExtension() -> String {
+    public var fileExtension: String {
         switch format {
         case .gif:
             return "gif"
@@ -48,7 +47,7 @@ enum GiphyFormat {
         }
     }
 
-    public func utiType() -> String {
+    public var utiType: String {
         switch format {
         case .gif:
             return kUTTypeGIF as String
@@ -57,6 +56,14 @@ enum GiphyFormat {
         case .jpg:
             return kUTTypeJPEG as String
         }
+    }
+
+    public var isStill: Bool {
+        return name.hasSuffix("_still")
+    }
+
+    public var isDownsampled: Bool {
+        return name.hasSuffix("_downsampled")
     }
 
     public func log() {
@@ -101,7 +108,7 @@ enum GiphyFormat {
         return pickRendition(isStill:true, pickingStrategy:.smallerIsBetter, maxFileSize:kMaxFileSize)
     }
 
-    public func pickGifRendition() -> GiphyRendition? {
+    public func pickAnimatedRendition() -> GiphyRendition? {
         // Try to pick a small file...
         if let rendition = pickRendition(isStill:false, pickingStrategy:.largerIsBetter, maxFileSize:kMaxFileSize) {
             return rendition
@@ -129,10 +136,12 @@ enum GiphyFormat {
                     continue
                 }
                 // Only consider still renditions.
-                guard rendition.name.hasSuffix("_still") else {
+                guard rendition.isStill else {
                         continue
                 }
-                // Accept renditions without a valid file size.
+                // Accept still renditions without a valid file size.  Note that fileSize
+                // will be zero for renditions without a valid file size, so they will pass
+                // the maxFileSize test.
                 //
                 // Don't worry about max content size; still images are tiny in comparison
                 // with animated renditions.
@@ -148,11 +157,11 @@ enum GiphyFormat {
                     continue
                 }
                 // Ignore stills.
-                guard !rendition.name.hasSuffix("_still") else {
+                guard !rendition.isStill else {
                         continue
                 }
                 // Ignore "downsampled" renditions which skip frames, etc.
-                guard !rendition.name.hasSuffix("_downsampled") else {
+                guard !rendition.isDownsampled else {
                         continue
                 }
                 guard rendition.width >= kMinDimension &&
@@ -200,6 +209,7 @@ enum GiphyFormat {
     // MARK: - Properties
 
     static let TAG = "[GiphyAPI]"
+    let TAG = "[GiphyAPI]"
 
     static let sharedInstance = GiphyAPI()
 
@@ -214,7 +224,7 @@ enum GiphyFormat {
 
     private func giphyAPISessionManager() -> AFHTTPSessionManager? {
         guard let baseUrl = NSURL(string:kGiphyBaseURL) else {
-            Logger.error("\(GiphyAPI.TAG) Invalid base URL.")
+            Logger.error("\(TAG) Invalid base URL.")
             return nil
         }
         // TODO: We need to verify that this session configuration properly
@@ -236,15 +246,15 @@ enum GiphyFormat {
 
     // MARK: Search
 
-    public func search(query: String, success: @escaping (([GiphyImageInfo]) -> Void), failure: @escaping (() -> Void)) {
+    public func search(query: String, success: @escaping (([GiphyImageInfo]) -> Void), failure: @escaping ((NSError?) -> Void)) {
         guard let sessionManager = giphyAPISessionManager() else {
-            Logger.error("\(GiphyAPI.TAG) Couldn't create session manager.")
-            failure()
+            Logger.error("\(TAG) Couldn't create session manager.")
+            failure(nil)
             return
         }
         guard NSURL(string:kGiphyBaseURL) != nil else {
-            Logger.error("\(GiphyAPI.TAG) Invalid base URL.")
-            failure()
+            Logger.error("\(TAG) Invalid base URL.")
+            failure(nil)
             return
         }
 
@@ -255,8 +265,8 @@ enum GiphyFormat {
         let kGiphyPageSize = 200
         let kGiphyPageOffset = 0
         guard let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
-            Logger.error("\(GiphyAPI.TAG) Could not URL encode query: \(query).")
-            failure()
+            Logger.error("\(TAG) Could not URL encode query: \(query).")
+            failure(nil)
             return
         }
         let urlString = "/v1/gifs/search?api_key=\(kGiphyApiKey)&offset=\(kGiphyPageOffset)&limit=\(kGiphyPageSize)&q=\(queryEncoded)"
@@ -267,14 +277,14 @@ enum GiphyFormat {
                            success: { _, value in
                             Logger.error("\(GiphyAPI.TAG) search request succeeded")
                             guard let imageInfos = self.parseGiphyImages(responseJson:value) else {
-                                failure()
+                                failure(nil)
                                 return
                             }
                             success(imageInfos)
         },
                            failure: { _, error in
                             Logger.error("\(GiphyAPI.TAG) search request failed: \(error)")
-                            failure()
+                            failure(error as NSError)
         })
     }
 
@@ -282,45 +292,40 @@ enum GiphyFormat {
 
     private func parseGiphyImages(responseJson:Any?) -> [GiphyImageInfo]? {
         guard let responseJson = responseJson else {
-            Logger.error("\(GiphyAPI.TAG) Missing response.")
+            Logger.error("\(TAG) Missing response.")
             return nil
         }
         guard let responseDict = responseJson as? [String:Any] else {
-            Logger.error("\(GiphyAPI.TAG) Invalid response.")
+            Logger.error("\(TAG) Invalid response.")
             return nil
         }
         guard let imageDicts = responseDict["data"] as? [[String:Any]] else {
-            Logger.error("\(GiphyAPI.TAG) Invalid response data.")
+            Logger.error("\(TAG) Invalid response data.")
             return nil
         }
-        var result = [GiphyImageInfo]()
-        for imageDict in imageDicts {
-            guard let imageInfo = parseGiphyImage(imageDict:imageDict) else {
-                continue
-            }
-            result.append(imageInfo)
+        return imageDicts.flatMap { imageDict in
+            return parseGiphyImage(imageDict: imageDict)
         }
-        return result
     }
 
     // Giphy API results are often incomplete or malformed, so we need to be defensive.
     private func parseGiphyImage(imageDict: [String:Any]) -> GiphyImageInfo? {
         guard let giphyId = imageDict["id"] as? String else {
-            Logger.warn("\(GiphyAPI.TAG) Image dict missing id.")
+            Logger.warn("\(TAG) Image dict missing id.")
             return nil
         }
         guard giphyId.characters.count > 0 else {
-            Logger.warn("\(GiphyAPI.TAG) Image dict has invalid id.")
+            Logger.warn("\(TAG) Image dict has invalid id.")
             return nil
         }
         guard let renditionDicts = imageDict["images"] as? [String:Any] else {
-            Logger.warn("\(GiphyAPI.TAG) Image dict missing renditions.")
+            Logger.warn("\(TAG) Image dict missing renditions.")
             return nil
         }
         var renditions = [GiphyRendition]()
         for (renditionName, renditionDict) in renditionDicts {
             guard let renditionDict = renditionDict as? [String:Any] else {
-                Logger.warn("\(GiphyAPI.TAG) Invalid rendition dict.")
+                Logger.warn("\(TAG) Invalid rendition dict.")
                 continue
             }
             guard let rendition = parseGiphyRendition(renditionName:renditionName,
@@ -330,12 +335,12 @@ enum GiphyFormat {
             renditions.append(rendition)
         }
         guard renditions.count > 0 else {
-            Logger.warn("\(GiphyAPI.TAG) Image has no valid renditions.")
+            Logger.warn("\(TAG) Image has no valid renditions.")
             return nil
         }
 
         guard let originalRendition = findOriginalRendition(renditions:renditions) else {
-            Logger.warn("\(GiphyAPI.TAG) Image has no original rendition.")
+            Logger.warn("\(TAG) Image has no original rendition.")
             return nil
         }
 
@@ -368,28 +373,28 @@ enum GiphyFormat {
             return nil
         }
         guard urlString.characters.count > 0 else {
-            Logger.warn("\(GiphyAPI.TAG) Rendition has invalid url.")
+            Logger.warn("\(TAG) Rendition has invalid url.")
             return nil
         }
         guard let url = NSURL(string:urlString) else {
-            Logger.warn("\(GiphyAPI.TAG) Rendition url could not be parsed.")
+            Logger.warn("\(TAG) Rendition url could not be parsed.")
             return nil
         }
-        guard let fileExtension = url.pathExtension else {
-            Logger.warn("\(GiphyAPI.TAG) Rendition url missing file extension.")
+        guard let fileExtension = url.pathExtension?.lowercased() else {
+            Logger.warn("\(TAG) Rendition url missing file extension.")
             return nil
         }
         var format = GiphyFormat.gif
-        if fileExtension.lowercased() == "gif" {
+        if fileExtension == "gif" {
             format = .gif
-        } else if fileExtension.lowercased() == "jpg" {
+        } else if fileExtension == "jpg" {
             format = .jpg
-        } else if fileExtension.lowercased() == "mp4" {
+        } else if fileExtension == "mp4" {
             format = .mp4
-        } else if fileExtension.lowercased() == "webp" {
+        } else if fileExtension == "webp" {
             return nil
         } else {
-            Logger.warn("\(GiphyAPI.TAG) Invalid file extension: \(fileExtension).")
+            Logger.warn("\(TAG) Invalid file extension: \(fileExtension).")
             return nil
         }
 
@@ -414,7 +419,7 @@ enum GiphyFormat {
             return nil
         }
         guard parsedValue > 0 else {
-            Logger.verbose("\(GiphyAPI.TAG) \(typeName) has non-positive \(key): \(parsedValue).")
+            Logger.verbose("\(TAG) \(typeName) has non-positive \(key): \(parsedValue).")
             return nil
         }
         return parsedValue

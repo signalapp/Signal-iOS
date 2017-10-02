@@ -98,7 +98,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         view.backgroundColor = UIColor.black
 
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem:.stop,
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem:.cancel,
                                                                 target:self,
                                                                 action:#selector(donePressed))
         self.navigationItem.title = NSLocalizedString("GIF_PICKER_VIEW_TITLE",
@@ -134,10 +134,12 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         searchBar.delegate = self
         searchBar.placeholder = NSLocalizedString("GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
                                                   comment:"Placeholder text for the search field in gif view")
+        // Style the search bar so that it looks appropriate against a black background.
         searchBar.isTranslucent = false
         searchBar.backgroundImage = UIImage(color:UIColor.clear)
         searchBar.barTintColor = UIColor.black
         searchBar.tintColor = UIColor.white
+
         self.view.addSubview(searchBar)
         searchBar.autoPinWidthToSuperview()
         searchBar.autoPin(toTopLayoutGuideOf: self, withInset:0)
@@ -204,7 +206,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             owsFail("\(TAG) unexpected cell.")
             return
         }
-        guard let asset = cell.fullAsset else {
+        guard let asset = cell.animatedAsset else {
             Logger.info("\(TAG) unload cell selected.")
             return
         }
@@ -213,7 +215,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             owsFail("\(TAG) couldn't load asset.")
             return
         }
-        let attachment = SignalAttachment(dataSource : dataSource, dataUTI: asset.rendition.utiType())
+        let attachment = SignalAttachment(dataSource : dataSource, dataUTI: asset.rendition.utiType)
         guard let thread = thread else {
             owsFail("\(TAG) Missing thread.")
             return
@@ -284,9 +286,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             strongSelf.imageInfos = imageInfos
             strongSelf.updateContents()
         },
-            failure: { [weak self] in
+            failure: { [weak self] _ in
                 guard let strongSelf = self else { return }
                 Logger.info("\(strongSelf.TAG) search failed.")
+                // TODO: Present this error to the user.
         })
     }
 

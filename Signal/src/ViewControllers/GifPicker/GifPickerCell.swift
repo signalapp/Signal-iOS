@@ -27,19 +27,19 @@ class GifPickerCell: UICollectionViewCell {
         }
     }
 
-    // We do "progressive" loading by loading stills (jpg or gif) and "full" gifs. 
+    // We do "progressive" loading by loading stills (jpg or gif) and "animated" gifs.
     // This is critical on cellular connections.
     var stillAssetRequest: GiphyAssetRequest?
     var stillAsset: GiphyAsset?
-    var fullAssetRequest: GiphyAssetRequest?
-    var fullAsset: GiphyAsset?
+    var animatedAssetRequest: GiphyAssetRequest?
+    var animatedAsset: GiphyAsset?
     var imageView: YYAnimatedImageView?
 
     // MARK: Initializers
 
     deinit {
         stillAssetRequest?.cancel()
-        fullAssetRequest?.cancel()
+        animatedAssetRequest?.cancel()
     }
 
     override func prepareForReuse() {
@@ -50,9 +50,9 @@ class GifPickerCell: UICollectionViewCell {
         stillAsset = nil
         stillAssetRequest?.cancel()
         stillAssetRequest = nil
-        fullAsset = nil
-        fullAssetRequest?.cancel()
-        fullAssetRequest = nil
+        animatedAsset = nil
+        animatedAssetRequest?.cancel()
+        animatedAssetRequest = nil
         imageView?.removeFromSuperview()
         imageView = nil
     }
@@ -62,14 +62,14 @@ class GifPickerCell: UICollectionViewCell {
         stillAssetRequest = nil
     }
 
-    private func clearFullAssetRequest() {
-        fullAssetRequest?.cancel()
-        fullAssetRequest = nil
+    private func clearanimatedAssetRequest() {
+        animatedAssetRequest?.cancel()
+        animatedAssetRequest = nil
     }
 
     private func clearAssetRequests() {
         clearStillAssetRequest()
-        clearFullAssetRequest()
+        clearanimatedAssetRequest()
     }
 
     public func ensureCellState() {
@@ -84,12 +84,12 @@ class GifPickerCell: UICollectionViewCell {
             clearAssetRequests()
             return
         }
-        guard self.fullAsset == nil else {
+        guard self.animatedAsset == nil else {
             return
         }
         // The Giphy API returns a slew of "renditions" for a given image. 
         // It's critical that we carefully "pick" the best rendition to use.
-        guard let fullRendition = imageInfo.pickGifRendition() else {
+        guard let animatedRendition = imageInfo.pickAnimatedRendition() else {
             Logger.warn("\(TAG) could not pick gif rendition: \(imageInfo.giphyId)")
             clearAssetRequests()
             return
@@ -101,7 +101,7 @@ class GifPickerCell: UICollectionViewCell {
         }
 
         // Start still asset request if necessary.
-        if stillAsset == nil && fullAsset == nil && stillAssetRequest == nil {
+        if stillAsset == nil && animatedAsset == nil && stillAssetRequest == nil {
             stillAssetRequest = GiphyDownloader.sharedInstance.requestAsset(rendition:stillRendition,
                                                                                 priority:.high,
                                                                                 success: { [weak self] assetRequest, asset in
@@ -124,28 +124,28 @@ class GifPickerCell: UICollectionViewCell {
             })
         }
 
-        // Start full asset request if necessary.
-        if fullAsset == nil && fullAssetRequest == nil {
-            fullAssetRequest = GiphyDownloader.sharedInstance.requestAsset(rendition:fullRendition,
+        // Start animated asset request if necessary.
+        if animatedAsset == nil && animatedAssetRequest == nil {
+            animatedAssetRequest = GiphyDownloader.sharedInstance.requestAsset(rendition:animatedRendition,
                                                                                priority:.low,
                                                                                success: { [weak self] assetRequest, asset in
                                                                                 guard let strongSelf = self else { return }
-                                                                                if assetRequest != nil && assetRequest != strongSelf.fullAssetRequest {
+                                                                                if assetRequest != nil && assetRequest != strongSelf.animatedAssetRequest {
                                                                                     owsFail("Obsolete request callback.")
                                                                                     return
                                                                                 }
-                                                                                // If we have the full asset, we don't need the still asset.
+                                                                                // If we have the animated asset, we don't need the still asset.
                                                                                 strongSelf.clearAssetRequests()
-                                                                                strongSelf.fullAsset = asset
+                                                                                strongSelf.animatedAsset = asset
                                                                                 strongSelf.tryToDisplayAsset()
                 },
                                                                                failure: { [weak self] assetRequest in
                                                                                 guard let strongSelf = self else { return }
-                                                                                if assetRequest != strongSelf.fullAssetRequest {
+                                                                                if assetRequest != strongSelf.animatedAssetRequest {
                                                                                     owsFail("Obsolete request callback.")
                                                                                     return
                                                                                 }
-                                                                                strongSelf.clearFullAssetRequest()
+                                                                                strongSelf.clearanimatedAssetRequest()
             })
         }
     }
@@ -173,12 +173,6 @@ class GifPickerCell: UICollectionViewCell {
     }
 
     private func pickBestAsset() -> GiphyAsset? {
-        if let fullAsset = fullAsset {
-            return fullAsset
-        }
-        if let stillAsset = stillAsset {
-            return stillAsset
-        }
-        return nil
+        return animatedAsset ?? stillAsset
     }
 }

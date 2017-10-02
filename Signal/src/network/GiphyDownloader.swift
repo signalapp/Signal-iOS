@@ -378,7 +378,7 @@ extension URLSessionTask {
         // We write assets to the temporary directory so that iOS can clean them up.
         // We try to eagerly clean up these assets when they are no longer in use.
         let dirPath = NSTemporaryDirectory()
-        let fileExtension = assetRequest.rendition.fileExtension()
+        let fileExtension = assetRequest.rendition.fileExtension
         let fileName = (NSUUID().uuidString as NSString).appendingPathExtension(fileExtension)!
         let filePath = (dirPath as NSString).appendingPathComponent(fileName)
 
