@@ -8,6 +8,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
+// Fired when the list of contact phone numbers changes, not when
+// other contact properties change.
+extern NSString *const OWSContactsManagerContactListDidChangeNotification;
 
 @class ImageCache;
 @class SignalAccount;

@@ -17,7 +17,9 @@
 @import Contacts;
 
 NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
-    @"OWSContactsManagerSignalAccountsDidChangeNotification";
+@"OWSContactsManagerSignalAccountsDidChangeNotification";
+NSString *const OWSContactsManagerContactListDidChangeNotification =
+@"OWSContactsManagerContactListDidChangeNotification";
 
 NSString *const kTSStorageManager_AccountDisplayNames = @"kTSStorageManager_AccountDisplayNames";
 NSString *const kTSStorageManager_AccountFirstNames = @"kTSStorageManager_AccountFirstNames";
@@ -53,6 +55,7 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
     // TODO: We need to configure the limits of this cache.
     _avatarCache = [ImageCache new];
     _allContacts = @[];
+    _allContactsMap = @{};
     _signalAccountMap = @{};
     _signalAccounts = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
@@ -175,6 +178,8 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
         }
 
         dispatch_async(dispatch_get_main_queue(), ^{
+            BOOL didContactListChange = ![self.allContactsMap isEqual:allContactsMap];
+            
             self.allContacts = contacts;
             self.allContactsMap = [allContactsMap copy];
 
@@ -185,6 +190,12 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
             [self updateSignalAccounts];
 
             [self updateCachedDisplayNames];
+            
+            if (didContactListChange) {
+                [[NSNotificationCenter defaultCenter]
+                 postNotificationNameAsync:OWSContactsManagerContactListDidChangeNotification
+                 object:nil];
+            }
         });
     });
 }

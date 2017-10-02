@@ -423,8 +423,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                  name:kNSNotificationName_ProfileWhitelistDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(signalAccountsDidChange:)
-                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
+                                             selector:@selector(contactsDidChange:)
+                                                 name:OWSContactsManagerContactListDidChangeNotification
                                                object:nil];
 }
 
@@ -446,7 +446,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
 }
 
-- (void)signalAccountsDidChange:(NSNotification *)notification
+- (void)contactsDidChange:(NSNotification *)notification
 {
     OWSAssert([NSThread isMainThread]);
 
