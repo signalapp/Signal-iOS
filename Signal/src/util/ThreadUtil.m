@@ -385,8 +385,8 @@ NS_ASSUME_NONNULL_BEGIN
                     shouldHaveAddToProfileWhitelistOffer = NO;
                 }
 
-                SignalAccount *signalAccount = contactsManager.signalAccountMap[recipientId];
-                if (signalAccount) {
+                BOOL isContact = contactsManager.allContactsMap[recipientId] != nil;
+                if (isContact) {
                     // Only create "add to contacts" offers for non-contacts.
                     shouldHaveAddToContactsOffer = NO;
                     // Only create block offers for non-contacts.
