@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
                      theirPublicKey:(NSData *)theirPublicKey
                   accountIdentifier:(NSString *)accountIdentifier
                          profileKey:(NSData *)profileKey
+                readReceiptsEnabled:(BOOL)areReadReceiptsEnabled
                    provisioningCode:(NSString *)provisioningCode;
 
 - (nullable NSData *)buildEncryptedMessageBody;

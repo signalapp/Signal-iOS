@@ -11,6 +11,7 @@
 #import <SignalServiceKit/ECKeyPair+OWSPrivateKey.h>
 #import <SignalServiceKit/OWSDeviceProvisioner.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -20,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutlet UIView *qrScanningView;
 @property (strong, nonatomic) IBOutlet UILabel *scanningInstructionsLabel;
 @property (strong, nonatomic) OWSQRCodeScanningViewController *qrScanningController;
+@property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;
 
 @end
 
@@ -44,6 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSProfileManager *)profileManager
 {
     return [OWSProfileManager sharedManager];
+}
+
+- (OWSReadReceiptManager *)readReceiptManager
+{
+    return [OWSReadReceiptManager sharedManager];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -141,13 +148,15 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *myPrivateKey = identityKeyPair.ows_privateKey;
     NSString *accountIdentifier = [TSAccountManager localNumber];
     NSData *myProfileKeyData = self.profileManager.localProfileKey.keyData;
+    BOOL areReadReceiptsEnabled = self.readReceiptManager.areReadReceiptsEnabled;
 
     OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc] initWithMyPublicKey:myPublicKey
                                                                              myPrivateKey:myPrivateKey
                                                                            theirPublicKey:parser.publicKey
                                                                    theirEphemeralDeviceId:parser.ephemeralDeviceId
                                                                         accountIdentifier:accountIdentifier
-                                                                               profileKey:myProfileKeyData];
+                                                                               profileKey:myProfileKeyData
+                                                                      readReceiptsEnabled:areReadReceiptsEnabled];
 
     [provisioner provisionWithSuccess:^{
         DDLogInfo(@"Successfully provisioned device.");
