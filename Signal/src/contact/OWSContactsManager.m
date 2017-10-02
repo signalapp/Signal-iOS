@@ -16,14 +16,14 @@
 
 @import Contacts;
 
-NSString *const OWSContactsManagerSignalAccountsDidChangeNotification =
-@"OWSContactsManagerSignalAccountsDidChangeNotification";
-NSString *const OWSContactsManagerContactListDidChangeNotification =
-@"OWSContactsManagerContactListDidChangeNotification";
+NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
+    = @"OWSContactsManagerSignalAccountsDidChangeNotification";
 
 NSString *const kTSStorageManager_AccountDisplayNames = @"kTSStorageManager_AccountDisplayNames";
 NSString *const kTSStorageManager_AccountFirstNames = @"kTSStorageManager_AccountFirstNames";
 NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_AccountLastNames";
+NSString *const kTSStorageManager_OWSContactsManager = @"kTSStorageManager_OWSContactsManager";
+NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownContactRecipientIds";
 
 @interface OWSContactsManager () <SystemContactsFetcherDelegate>
 
@@ -36,6 +36,7 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
 @property (atomic) NSDictionary<NSString *, Contact *> *allContactsMap;
 @property (atomic) NSArray<SignalAccount *> *signalAccounts;
 @property (atomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
+@property (atomic) NSArray<NSString *> *lastKnownContactRecipientIds;
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 
 @property (atomic) NSDictionary<NSString *, NSString *> *cachedAccountNameMap;
@@ -58,6 +59,7 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
     _allContactsMap = @{};
     _signalAccountMap = @{};
     _signalAccounts = @[];
+    _lastKnownContactRecipientIds = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
 
@@ -66,6 +68,18 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
     [self loadCachedDisplayNames];
 
     return self;
+}
+
+- (void)loadLastKnownContactRecipientIds
+{
+    [TSStorageManager.sharedManager.newDatabaseConnection readWithBlock:^(
+        YapDatabaseReadTransaction *_Nonnull transaction) {
+        NSArray<NSString *> *_Nullable value = [transaction objectForKey:kTSStorageManager_lastKnownContactRecipientIds
+                                                            inCollection:kTSStorageManager_OWSContactsManager];
+        if (value) {
+            self.lastKnownContactRecipientIds = value;
+        }
+    }];
 }
 
 #pragma mark - System Contact Fetching
@@ -178,8 +192,6 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
         }
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            BOOL didContactListChange = ![self.allContactsMap isEqual:allContactsMap];
-            
             self.allContacts = contacts;
             self.allContactsMap = [allContactsMap copy];
 
@@ -190,12 +202,6 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
             [self updateSignalAccounts];
 
             [self updateCachedDisplayNames];
-            
-            if (didContactListChange) {
-                [[NSNotificationCenter defaultCenter]
-                 postNotificationNameAsync:OWSContactsManagerContactListDidChangeNotification
-                 object:nil];
-            }
         });
     });
 }
@@ -237,7 +243,16 @@ NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_Account
             }
         }
 
+        NSArray<NSString *> *lastKnownContactRecipientIds = [signalAccountMap allKeys];
+        [TSStorageManager.sharedManager.newDatabaseConnection
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                [transaction setObject:lastKnownContactRecipientIds
+                                forKey:kTSStorageManager_lastKnownContactRecipientIds
+                          inCollection:kTSStorageManager_OWSContactsManager];
+            }];
+
         dispatch_async(dispatch_get_main_queue(), ^{
+            self.lastKnownContactRecipientIds = lastKnownContactRecipientIds;
             self.signalAccountMap = [signalAccountMap copy];
             self.signalAccounts = [signalAccounts copy];
 
