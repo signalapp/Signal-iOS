@@ -91,7 +91,7 @@ NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope)
         [description appendString:@"EndSession"];
     } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0) {
         [description appendString:@"ExpirationTimerUpdate"];
-    } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsProfileKey) != 0) {
+    } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsProfileKeyUpdate) != 0) {
         [description appendString:@"ProfileKey"];
     } else if (dataMessage.attachments.count > 0) {
         [description appendString:@"MessageWithAttachment"];

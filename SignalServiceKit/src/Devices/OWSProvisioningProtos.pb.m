@@ -283,6 +283,7 @@ static OWSProvisioningProtosProvisionEnvelope* defaultOWSProvisioningProtosProvi
 @property (strong) NSString* provisioningCode;
 @property (strong) NSString* userAgent;
 @property (strong) NSData* profileKey;
+@property BOOL readReceipts;
 @end
 
 @implementation OWSProvisioningProtosProvisionMessage
@@ -329,6 +330,18 @@ static OWSProvisioningProtosProvisionEnvelope* defaultOWSProvisioningProtosProvi
   hasProfileKey_ = !!_value_;
 }
 @synthesize profileKey;
+- (BOOL) hasReadReceipts {
+  return !!hasReadReceipts_;
+}
+- (void) setHasReadReceipts:(BOOL) _value_ {
+  hasReadReceipts_ = !!_value_;
+}
+- (BOOL) readReceipts {
+  return !!readReceipts_;
+}
+- (void) setReadReceipts:(BOOL) _value_ {
+  readReceipts_ = !!_value_;
+}
 - (instancetype) init {
   if ((self = [super init])) {
     self.identityKeyPublic = [NSData data];
@@ -337,6 +350,7 @@ static OWSProvisioningProtosProvisionEnvelope* defaultOWSProvisioningProtosProvi
     self.provisioningCode = @"";
     self.userAgent = @"";
     self.profileKey = [NSData data];
+    self.readReceipts = NO;
   }
   return self;
 }
@@ -374,6 +388,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   if (self.hasProfileKey) {
     [output writeData:6 value:self.profileKey];
   }
+  if (self.hasReadReceipts) {
+    [output writeBool:7 value:self.readReceipts];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -400,6 +417,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   }
   if (self.hasProfileKey) {
     size_ += computeDataSize(6, self.profileKey);
+  }
+  if (self.hasReadReceipts) {
+    size_ += computeBoolSize(7, self.readReceipts);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -454,6 +474,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   if (self.hasProfileKey) {
     [output appendFormat:@"%@%@: %@\n", indent, @"profileKey", self.profileKey];
   }
+  if (self.hasReadReceipts) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"readReceipts", [NSNumber numberWithBool:self.readReceipts]];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -474,6 +497,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   }
   if (self.hasProfileKey) {
     [dictionary setObject: self.profileKey forKey: @"profileKey"];
+  }
+  if (self.hasReadReceipts) {
+    [dictionary setObject: [NSNumber numberWithBool:self.readReceipts] forKey: @"readReceipts"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -498,6 +524,8 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
       (!self.hasUserAgent || [self.userAgent isEqual:otherMessage.userAgent]) &&
       self.hasProfileKey == otherMessage.hasProfileKey &&
       (!self.hasProfileKey || [self.profileKey isEqual:otherMessage.profileKey]) &&
+      self.hasReadReceipts == otherMessage.hasReadReceipts &&
+      (!self.hasReadReceipts || self.readReceipts == otherMessage.readReceipts) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -519,6 +547,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   }
   if (self.hasProfileKey) {
     hashCode = hashCode * 31 + [self.profileKey hash];
+  }
+  if (self.hasReadReceipts) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.readReceipts] hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -581,6 +612,9 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
   if (other.hasProfileKey) {
     [self setProfileKey:other.profileKey];
   }
+  if (other.hasReadReceipts) {
+    [self setReadReceipts:other.readReceipts];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -624,6 +658,10 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
       }
       case 50: {
         [self setProfileKey:[input readData]];
+        break;
+      }
+      case 56: {
+        [self setReadReceipts:[input readBool]];
         break;
       }
     }
@@ -723,6 +761,22 @@ static OWSProvisioningProtosProvisionMessage* defaultOWSProvisioningProtosProvis
 - (OWSProvisioningProtosProvisionMessageBuilder*) clearProfileKey {
   resultProvisionMessage.hasProfileKey = NO;
   resultProvisionMessage.profileKey = [NSData data];
+  return self;
+}
+- (BOOL) hasReadReceipts {
+  return resultProvisionMessage.hasReadReceipts;
+}
+- (BOOL) readReceipts {
+  return resultProvisionMessage.readReceipts;
+}
+- (OWSProvisioningProtosProvisionMessageBuilder*) setReadReceipts:(BOOL) value {
+  resultProvisionMessage.hasReadReceipts = YES;
+  resultProvisionMessage.readReceipts = value;
+  return self;
+}
+- (OWSProvisioningProtosProvisionMessageBuilder*) clearReadReceipts {
+  resultProvisionMessage.hasReadReceipts = NO;
+  resultProvisionMessage.readReceipts = NO;
   return self;
 }
 @end

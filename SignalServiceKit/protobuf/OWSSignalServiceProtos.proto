@@ -31,21 +31,11 @@ message Envelope {
 }
 
 message Content {
-  optional DataMessage    dataMessage = 1;
-  optional SyncMessage    syncMessage = 2;
-  optional CallMessage    callMessage = 3;
-  optional NullMessage    nullMessage = 4;
+  optional DataMessage    dataMessage    = 1;
+  optional SyncMessage    syncMessage    = 2;
+  optional CallMessage    callMessage    = 3;
+  optional NullMessage    nullMessage    = 4;
   optional ReceiptMessage receiptMessage = 5;
-}
-
-message ReceiptMessage {
-  enum Type {
-    DELIVERY = 0;
-    READ     = 1;
-  }
-
-  optional Type   type      = 1;
-  repeated uint64 timestamp = 2;
 }
 
 message CallMessage {
@@ -91,9 +81,9 @@ message CallMessage {
 
 message DataMessage {
   enum Flags {
-    END_SESSION = 1;
+    END_SESSION             = 1;
     EXPIRATION_TIMER_UPDATE = 2;
-    PROFILE_KEY = 4;
+    PROFILE_KEY_UPDATE      = 4;
   }
 
   optional string             body        = 1;
@@ -106,6 +96,16 @@ message DataMessage {
 
 message NullMessage {
   optional bytes padding = 1;
+}
+
+message ReceiptMessage {
+  enum Type {
+    DELIVERY = 0;
+    READ     = 1;
+  }
+
+  optional Type   type      = 1;
+  repeated uint64 timestamp = 2;
 }
 
 message Verified {
@@ -130,7 +130,7 @@ message SyncMessage {
   }
 
   message Contacts {
-    optional AttachmentPointer blob = 1;
+    optional AttachmentPointer blob     = 1;
     optional bool              isComplete = 2 [default = false];
   }
 
@@ -144,10 +144,11 @@ message SyncMessage {
 
   message Request {
     enum Type {
-      UNKNOWN  = 0;
-      CONTACTS = 1;
-      GROUPS   = 2;
-      BLOCKED  = 3;
+      UNKNOWN       = 0;
+      CONTACTS      = 1;
+      GROUPS        = 2;
+      BLOCKED       = 3;
+      CONFIGURATION = 4;
     }
 
     optional Type type = 1;
@@ -158,14 +159,19 @@ message SyncMessage {
     optional uint64 timestamp = 2;
   }
 
-  optional Sent     sent     = 1;
-  optional Contacts contacts = 2;
-  optional Groups   groups   = 3;
-  optional Request  request  = 4;
-  repeated Read     read     = 5;
-  optional Blocked  blocked  = 6;
-  optional Verified verified = 7;
-  optional bytes    padding  = 8;
+  message Configuration {
+    optional bool readReceipts = 1;
+  }
+
+  optional Sent          sent          = 1;
+  optional Contacts      contacts      = 2;
+  optional Groups        groups        = 3;
+  optional Request       request       = 4;
+  repeated Read          read          = 5;
+  optional Blocked       blocked       = 6;
+  optional Verified      verified      = 7;
+  optional Configuration configuration = 9;
+  optional bytes         padding       = 8;
 }
 
 message AttachmentPointer {
