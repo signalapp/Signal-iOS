@@ -48,8 +48,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSArray<NSLayoutConstraint *> *)autoPinLeadingAndTrailingToSuperview
 {
     NSArray<NSLayoutConstraint *> *result = @[
-        [self autoPinLeadingToSuperView],
-        [self autoPinTrailingToSuperView],
+        [self autoPinLeadingToSuperview],
+        [self autoPinTrailingToSuperview],
     ];
     return result;
 }
@@ -64,6 +64,12 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     [self autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.superview];
     [self autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.superview];
+}
+
+- (void)autoPinToSuperviewEdges
+{
+    [self autoPinWidthToSuperview];
+    [self autoPinHeightToSuperview];
 }
 
 - (void)autoHCenterInSuperview
@@ -228,12 +234,12 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     }
 }
 
-- (NSLayoutConstraint *)autoPinLeadingToSuperView
+- (NSLayoutConstraint *)autoPinLeadingToSuperview
 {
-    return [self autoPinLeadingToSuperViewWithMargin:0];
+    return [self autoPinLeadingToSuperviewWithMargin:0];
 }
 
-- (NSLayoutConstraint *)autoPinLeadingToSuperViewWithMargin:(CGFloat)margin
+- (NSLayoutConstraint *)autoPinLeadingToSuperviewWithMargin:(CGFloat)margin
 {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
         NSLayoutConstraint *constraint =
@@ -247,12 +253,12 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     }
 }
 
-- (NSLayoutConstraint *)autoPinTrailingToSuperView
+- (NSLayoutConstraint *)autoPinTrailingToSuperview
 {
-    return [self autoPinTrailingToSuperViewWithMargin:0];
+    return [self autoPinTrailingToSuperviewWithMargin:0];
 }
 
-- (NSLayoutConstraint *)autoPinTrailingToSuperViewWithMargin:(CGFloat)margin
+- (NSLayoutConstraint *)autoPinTrailingToSuperviewWithMargin:(CGFloat)margin
 {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
         NSLayoutConstraint *constraint =

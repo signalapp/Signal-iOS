@@ -238,7 +238,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     UIImagePickerControllerDelegate,
     UINavigationControllerDelegate,
     UITextViewDelegate,
-    JSQLayoutDelegate>
+    JSQLayoutDelegate,
+    GifPickerViewControllerDelegate>
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) TSMessageAdapter *lastDeliveredMessage;
@@ -987,7 +988,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [bannerView addSubview:closeButton];
     const CGFloat kBannerCloseButtonPadding = 8.f;
     [closeButton autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kBannerCloseButtonPadding];
-    [closeButton autoPinTrailingToSuperViewWithMargin:kBannerCloseButtonPadding];
+    [closeButton autoPinTrailingToSuperviewWithMargin:kBannerCloseButtonPadding];
     [closeButton autoSetDimension:ALDimensionWidth toSize:closeIcon.size.width];
     [closeButton autoSetDimension:ALDimensionHeight toSize:closeIcon.size.height];
 
@@ -995,7 +996,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [label autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:5];
     [label autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:5];
     const CGFloat kBannerHPadding = 15.f;
-    [label autoPinLeadingToSuperViewWithMargin:kBannerHPadding];
+    [label autoPinLeadingToSuperviewWithMargin:kBannerHPadding];
     const CGFloat kBannerHSpacing = 10.f;
     [closeButton autoPinLeadingToTrailingOfView:label margin:kBannerHSpacing];
 
@@ -1335,7 +1336,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // bar button items, but it means we'll probably need separate RTL and LTR
     // flavors of these assets.
     [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-6];
-    [_backButtonUnreadCountView autoPinLeadingToSuperViewWithMargin:1];
+    [_backButtonUnreadCountView autoPinLeadingToSuperviewWithMargin:1];
     [_backButtonUnreadCountView autoSetDimension:ALDimensionHeight toSize:self.unreadCountViewDiameter];
     // We set a min width, but we will also pin to our subview label, so we can grow to accommodate multiple digits.
     [_backButtonUnreadCountView autoSetDimension:ALDimensionWidth
@@ -1685,40 +1686,37 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 
-    if (text.length > 0) {
-        if ([Environment.preferences soundInForeground]) {
-            [JSQSystemSoundPlayer jsq_playMessageSentSound];
-        }
-        // Limit outgoing text messages to 16kb.
-        //
-        // We convert large text messages to attachments
-        // which are presented as normal text messages.
-        const NSUInteger kOversizeTextMessageSizeThreshold = 16 * 1024;
-        BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-        TSOutgoingMessage *message;
-        if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
-            DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
-            SignalAttachment *attachment =
-                [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
-            message =
-                [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
-        } else {
-            message = [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
-        }
-        [self updateLastVisibleTimestamp:message.timestampForSorting];
+    if (text.length < 1) {
+        return;
+    }
 
-        self.lastMessageSentDate = [NSDate new];
-        [self clearUnreadMessagesIndicator];
+    // Limit outgoing text messages to 16kb.
+    //
+    // We convert large text messages to attachments
+    // which are presented as normal text messages.
+    const NSUInteger kOversizeTextMessageSizeThreshold = 16 * 1024;
+    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    TSOutgoingMessage *message;
+    if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
+        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
+        SignalAttachment *attachment =
+            [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
+        message =
+            [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
+    } else {
+        message = [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
+    }
 
-        if (updateKeyboardState) {
-            [self toggleDefaultKeyboard];
-        }
-        [self clearDraft];
-        [self finishSendingMessage];
-        [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
-        if (didAddToProfileWhitelist) {
-            [self ensureDynamicInteractions];
-        }
+    [self messageWasSent:message];
+
+    if (updateKeyboardState) {
+        [self toggleDefaultKeyboard];
+    }
+    [self clearDraft];
+    [self finishSendingMessage];
+    [((OWSMessagesToolbarContentView *)self.inputToolbar.contentView)ensureSubviews];
+    if (didAddToProfileWhitelist) {
+        [self ensureDynamicInteractions];
     }
 }
 
@@ -3203,6 +3201,48 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self presentViewController:menuController animated:YES completion:nil];
 }
 
+#pragma mark - Attachment Picking: GIFs
+
+- (void)showGifPicker
+{
+    GifPickerViewController *view =
+        [[GifPickerViewController alloc] initWithThread:self.thread messageSender:self.messageSender];
+    view.delegate = self;
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:view];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+#pragma mark GifPickerViewControllerDelegate
+
+- (void)gifPickerWillSend
+{
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+}
+
+- (void)gifPickerDidSendWithOutgoingMessage:(TSOutgoingMessage *)message
+{
+    [self messageWasSent:message];
+
+    [self ensureDynamicInteractions];
+}
+
+- (void)messageWasSent:(TSOutgoingMessage *)message
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(message);
+
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [message saveWithTransaction:transaction];
+    }];
+    [self updateLastVisibleTimestamp:message.timestampForSorting];
+    self.lastMessageSentDate = [NSDate new];
+    [self clearUnreadMessagesIndicator];
+
+    if ([Environment.preferences soundInForeground]) {
+        [JSQSystemSoundPlayer jsq_playMessageSentSound];
+    }
+}
+
 #pragma mark UIDocumentMenuDelegate
 
 - (void)documentMenu:(UIDocumentMenuViewController *)documentMenu
@@ -3478,12 +3518,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message =
         [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [message saveWithTransaction:transaction];
-    }];
-    [self updateLastVisibleTimestamp:message.timestampForSorting];
-    self.lastMessageSentDate = [NSDate new];
-    [self clearUnreadMessagesIndicator];
+
+    [self messageWasSent:message];
+
     if (didAddToProfileWhitelist) {
         [self ensureDynamicInteractions];
     }
@@ -4041,6 +4078,22 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     OWSAssert(chooseDocumentImage);
     [chooseDocumentAction setValue:chooseDocumentImage forKey:@"image"];
     [actionSheetController addAction:chooseDocumentAction];
+
+#ifdef DEBUG
+    UIAlertAction *gifAction =
+        // TODO: What should the final copy be?
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"SELECT_GIF_BUTTON",
+                                           @"Label for 'select gif to attach' action sheet button")
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *_Nonnull action) {
+                                   [self showGifPicker];
+                               }];
+    // TODO: What should the final icon be?
+    UIImage *gifImage = [UIImage imageNamed:@"actionsheet_gif_black"];
+    OWSAssert(gifImage);
+    [gifAction setValue:gifImage forKey:@"image"];
+    [actionSheetController addAction:gifAction];
+#endif
 
     [self presentViewController:actionSheetController animated:true completion:nil];
 }

@@ -113,7 +113,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     nameLabel.textColor = [UIColor blackColor];
     nameLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [nameRow addSubview:nameLabel];
-    [nameLabel autoPinLeadingToSuperView];
+    [nameLabel autoPinLeadingToSuperview];
     [nameLabel autoPinHeightToSuperviewWithMargin:5.f];
 
     UITextField *nameTextField = [UITextField new];
@@ -129,7 +129,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [nameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     [nameRow addSubview:nameTextField];
     [nameTextField autoPinLeadingToTrailingOfView:nameLabel margin:10.f];
-    [nameTextField autoPinTrailingToSuperView];
+    [nameTextField autoPinTrailingToSuperview];
     [nameTextField autoVCenterInSuperview];
 
     // Avatar
@@ -146,7 +146,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     avatarLabel.textColor = [UIColor blackColor];
     avatarLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [avatarRow addSubview:avatarLabel];
-    [avatarLabel autoPinLeadingToSuperView];
+    [avatarLabel autoPinLeadingToSuperview];
     [avatarLabel autoVCenterInSuperview];
 
     self.avatarView = [AvatarImageView new];
@@ -157,7 +157,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [avatarRow addSubview:self.avatarView];
     [avatarRow addSubview:self.cameraImageView];
     [self updateAvatarView];
-    [self.avatarView autoPinTrailingToSuperView];
+    [self.avatarView autoPinTrailingToSuperview];
     [self.avatarView autoPinLeadingToTrailingOfView:avatarLabel margin:10.f];
     const CGFloat kAvatarSizePoints = 50.f;
     const CGFloat kAvatarVMargin = 4.f;
@@ -198,8 +198,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     infoLabel.numberOfLines = 0;
     infoLabel.lineBreakMode = NSLineBreakByWordWrapping;
     [infoRow addSubview:infoLabel];
-    [infoLabel autoPinLeadingToSuperView];
-    [infoLabel autoPinTrailingToSuperView];
+    [infoLabel autoPinLeadingToSuperview];
+    [infoLabel autoPinTrailingToSuperview];
     [infoLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:10.f];
     [infoLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f];
 
@@ -237,8 +237,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         } else {
             [row autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:15.f];
         }
-        [row autoPinLeadingToSuperViewWithMargin:18.f];
-        [row autoPinTrailingToSuperViewWithMargin:18.f];
+        [row autoPinLeadingToSuperviewWithMargin:18.f];
+        [row autoPinTrailingToSuperviewWithMargin:18.f];
         lastRow = row;
 
         if (lastRow == nameRow || lastRow == avatarRow) {
@@ -246,8 +246,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
             separator.backgroundColor = [UIColor colorWithWhite:0.9f alpha:1.f];
             [contentView addSubview:separator];
             [separator autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastRow withOffset:5.f];
-            [separator autoPinLeadingToSuperViewWithMargin:18.f];
-            [separator autoPinTrailingToSuperViewWithMargin:18.f];
+            [separator autoPinLeadingToSuperviewWithMargin:18.f];
+            [separator autoPinTrailingToSuperviewWithMargin:18.f];
             [separator autoSetDimension:ALDimensionHeight toSize:1.f];
             lastRow = separator;
         }

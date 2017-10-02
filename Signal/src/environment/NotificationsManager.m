@@ -90,12 +90,16 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
  */
 - (void)presentMissedCall:(SignalCall *)call callerName:(NSString *)callerName
 {
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
+    OWSAssert(thread != nil);
+
     UILocalNotification *notification = [UILocalNotification new];
     notification.category = PushManagerCategoriesMissedCall;
     NSString *localCallId = call.localId.UUIDString;
     notification.userInfo = @{
         PushManagerUserInfoKeysLocalCallId : localCallId,
-        PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber
+        PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber,
+        Signal_Thread_UserInfo_Key : thread.uniqueId
     };
 
     if ([self shouldPlaySoundForNotification]) {

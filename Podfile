@@ -12,6 +12,7 @@ target 'Signal' do
     pod 'Reachability'
     pod 'SignalServiceKit',           path: '.'
     pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git'
+	pod 'YYImage'
     target 'SignalTests' do
       inherit! :search_paths
     end

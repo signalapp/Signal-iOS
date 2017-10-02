@@ -242,7 +242,7 @@
     }
     [cell.contentView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
-    [avatarView autoPinLeadingToSuperView];
+    [avatarView autoPinLeadingToSuperview];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
 
@@ -286,7 +286,7 @@
     subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [nameView addSubview:subtitleLabel];
     [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel];
-    [subtitleLabel autoPinLeadingToSuperView];
+    [subtitleLabel autoPinLeadingToSuperview];
     [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     UIImage *disclosureImage = [UIImage imageNamed:(self.view.isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
@@ -296,7 +296,7 @@
     disclosureButton.tintColor = [UIColor colorWithRGBHex:0xcccccc];
     [cell.contentView addSubview:disclosureButton];
     [disclosureButton autoVCenterInSuperview];
-    [disclosureButton autoPinTrailingToSuperView];
+    [disclosureButton autoPinTrailingToSuperview];
     [disclosureButton autoPinLeadingToTrailingOfView:nameView margin:16.f];
 
     return cell;

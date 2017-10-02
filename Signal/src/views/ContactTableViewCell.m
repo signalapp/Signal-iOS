@@ -90,7 +90,7 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     [_nameContainerView addSubview:self.subtitle];
 
     [_avatarView autoVCenterInSuperview];
-    [_avatarView autoPinLeadingToSuperView];
+    [_avatarView autoPinLeadingToSuperview];
     [_avatarView autoSetDimension:ALDimensionWidth toSize:kContactTableViewCellAvatarSize];
     [_avatarView autoSetDimension:ALDimensionHeight toSize:kContactTableViewCellAvatarSize];
 
@@ -108,7 +108,7 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 
     [_nameContainerView autoVCenterInSuperview];
     [_nameContainerView autoPinLeadingToTrailingOfView:_avatarView margin:12.f];
-    [_nameContainerView autoPinTrailingToSuperView];
+    [_nameContainerView autoPinTrailingToSuperview];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];

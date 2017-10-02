@@ -42,8 +42,7 @@ import Foundation
     private func createContent() {
         self.addSubview(button)
         button.addTarget(self, action:#selector(buttonPressed), for:.touchUpInside)
-        button.autoPinWidthToSuperview()
-        button.autoPinHeightToSuperview()
+        button.autoPinToSuperviewEdges()
     }
 
     public class func button(title: String,

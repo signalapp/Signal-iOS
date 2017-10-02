@@ -104,8 +104,8 @@ class MessageMetadataViewController: OWSViewController {
         let contentView = UIView.container()
         self.contentView = contentView
         scrollView.addSubview(contentView)
-        contentView.autoPinLeadingToSuperView()
-        contentView.autoPinTrailingToSuperView()
+        contentView.autoPinLeadingToSuperview()
+        contentView.autoPinTrailingToSuperview()
         contentView.autoPinEdge(toSuperviewEdge:.top)
         contentView.autoPinEdge(toSuperviewEdge:.bottom)
         scrollView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -246,8 +246,8 @@ class MessageMetadataViewController: OWSViewController {
         var lastRow: UIView?
         for row in rows {
             contentView.addSubview(row)
-            row.autoPinLeadingToSuperView()
-            row.autoPinTrailingToSuperView()
+            row.autoPinLeadingToSuperview()
+            row.autoPinTrailingToSuperview()
 
             if let lastRow = lastRow {
                 row.autoPinEdge(.top, to:.bottom, of:lastRow, withOffset:5)
@@ -319,13 +319,13 @@ class MessageMetadataViewController: OWSViewController {
                 bubbleSpacer.setContentHuggingLow()
 
                 if isIncoming {
-                    bubbleView.autoPinLeadingToSuperView(withMargin:10)
+                    bubbleView.autoPinLeadingToSuperview(withMargin:10)
                     bubbleSpacer.autoPinLeading(toTrailingOf:bubbleView)
-                    bubbleSpacer.autoPinTrailingToSuperView(withMargin:10)
+                    bubbleSpacer.autoPinTrailingToSuperview(withMargin:10)
                 } else {
-                    bubbleSpacer.autoPinLeadingToSuperView(withMargin:10)
+                    bubbleSpacer.autoPinLeadingToSuperview(withMargin:10)
                     bubbleView.autoPinLeading(toTrailingOf:bubbleSpacer)
-                    bubbleView.autoPinTrailingToSuperView(withMargin:10)
+                    bubbleView.autoPinTrailingToSuperview(withMargin:10)
                 }
 
                 rows.append(row)
@@ -492,8 +492,8 @@ class MessageMetadataViewController: OWSViewController {
         let valueLabel = self.valueLabel(text:value)
         row.addSubview(nameLabel)
         row.addSubview(valueLabel)
-        nameLabel.autoPinLeadingToSuperView(withMargin:20)
-        valueLabel.autoPinTrailingToSuperView(withMargin:20)
+        nameLabel.autoPinLeadingToSuperview(withMargin:20)
+        valueLabel.autoPinTrailingToSuperview(withMargin:20)
         valueLabel.autoPinLeading(toTrailingOf:nameLabel, margin: 10)
         nameLabel.autoPinEdge(toSuperviewEdge:.top)
         valueLabel.autoPinEdge(toSuperviewEdge:.top)
@@ -502,7 +502,7 @@ class MessageMetadataViewController: OWSViewController {
             let subtitleLabel = self.valueLabel(text:subtitle)
             subtitleLabel.textColor = UIColor.ows_darkGray()
             row.addSubview(subtitleLabel)
-            subtitleLabel.autoPinTrailingToSuperView()
+            subtitleLabel.autoPinTrailingToSuperview()
             subtitleLabel.autoPinLeading(toTrailingOf:nameLabel, margin: 10)
             subtitleLabel.autoPinEdge(.top, to:.bottom, of:valueLabel, withOffset:1)
             subtitleLabel.autoPinEdge(toSuperviewEdge:.bottom)

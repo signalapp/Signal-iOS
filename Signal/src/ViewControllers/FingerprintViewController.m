@@ -283,8 +283,7 @@ typedef void (^CustomLayoutBlock)();
         layer.path = [UIBezierPath bezierPathWithOvalInRect:circle].CGPath;
     }];
     [fingerprintView addSubview:fingerprintCircle];
-    [fingerprintCircle autoPinWidthToSuperview];
-    [fingerprintCircle autoPinHeightToSuperview];
+    [fingerprintCircle autoPinToSuperviewEdges];
 
     UIImageView *fingerprintImageView = [UIImageView new];
     fingerprintImageView.image = self.fingerprint.image;
