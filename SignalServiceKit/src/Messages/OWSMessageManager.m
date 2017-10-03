@@ -461,7 +461,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupThread *_Nullable groupThread =
         [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
     if (!groupThread) {
-        [self sendGroupInfoRequest:dataMessage.group.id envelope:envelope transaction:transaction];
+        OWSFail(@"%@ Missing group for group avatar update", self.tag);
         return;
     }
 
@@ -585,7 +585,7 @@ NS_ASSUME_NONNULL_BEGIN
                     TSGroupThread *_Nullable groupThread =
                         [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
                     if (!groupThread) {
-                        [self sendGroupInfoRequest:dataMessage.group.id envelope:envelope transaction:transaction];
+                        OWSFail(@"%@ ignoring sync group avatar update for unknown group.", self.tag);
                         return;
                     }
 
@@ -915,8 +915,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
             case OWSSignalServiceProtosGroupContextTypeDeliver: {
                 if (!oldGroupThread) {
-                    DDLogInfo(@"%@ ignoring quit group message from unknown group.", self.tag);
-                    [self sendGroupInfoRequest:groupId envelope:envelope transaction:transaction];
+                    OWSFail(@"%@ ignoring quit group message from unknown group.", self.tag);
                     return nil;
                 }
 
