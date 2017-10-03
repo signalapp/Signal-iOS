@@ -23,7 +23,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     let searchBar: UISearchBar
     let layout: GifPickerLayout
     let collectionView: UICollectionView
-    var logoImageView: UIImageView?
 
     var imageInfos = [GiphyImageInfo]()
 
@@ -96,8 +95,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = UIColor.black
-
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem:.cancel,
                                                                 target:self,
                                                                 action:#selector(donePressed))
@@ -127,18 +124,14 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     private func createViews() {
 
-        view.backgroundColor = UIColor.black
+        view.backgroundColor = UIColor.white
 
         // Search
-        searchBar.searchBarStyle = .default
+        searchBar.searchBarStyle = .minimal
         searchBar.delegate = self
         searchBar.placeholder = NSLocalizedString("GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
                                                   comment:"Placeholder text for the search field in gif view")
-        // Style the search bar so that it looks appropriate against a black background.
-        searchBar.isTranslucent = false
-        searchBar.backgroundImage = UIImage(color:UIColor.clear)
-        searchBar.barTintColor = UIColor.black
-        searchBar.tintColor = UIColor.white
+        searchBar.backgroundColor = UIColor.white
 
         self.view.addSubview(searchBar)
         searchBar.autoPinWidthToSuperview()
@@ -146,37 +139,30 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
-        self.collectionView.backgroundColor = UIColor.black
+        self.collectionView.backgroundColor = UIColor.white
         self.collectionView.register(GifPickerCell.self, forCellWithReuseIdentifier: kCellReuseIdentifier)
         self.view.addSubview(self.collectionView)
         self.collectionView.autoPinWidthToSuperview()
         self.collectionView.autoPinEdge(.top, to:.bottom, of:searchBar)
-        self.collectionView.autoPin(toBottomLayoutGuideOf: self, withInset:0)
+
+        let bottomBanner = UIView()
+        bottomBanner.backgroundColor = UIColor.black
+        self.view.addSubview(bottomBanner)
+        bottomBanner.autoPinWidthToSuperview()
+        bottomBanner.autoPinEdge(.top, to:.bottom, of:self.collectionView)
+        bottomBanner.autoPin(toBottomLayoutGuideOf: self, withInset:0)
 
         // The Giphy API requires us to "show their trademark prominently" in our GIF experience.
-        let logoImage = UIImage(named:"giphy_logo")
+        let logoImage = UIImage(named:"giphy_logo_2")
         let logoImageView = UIImageView(image:logoImage)
-        self.logoImageView = logoImageView
-        self.view.addSubview(logoImageView)
-        logoImageView.autoCenterInSuperview()
+        bottomBanner.addSubview(logoImageView)
+        logoImageView.autoPinHeightToSuperview(withMargin:3)
+        logoImageView.autoHCenterInSuperview()
 
         self.updateContents()
     }
 
-    private func setContentVisible(_ isVisible: Bool) {
-        self.collectionView.isHidden = !isVisible
-        if let logoImageView = self.logoImageView {
-            logoImageView.isHidden = isVisible
-        }
-    }
-
     private func updateContents() {
-        if imageInfos.count < 1 {
-            setContentVisible(false)
-        } else {
-            setContentVisible(true)
-        }
-
         self.collectionView.collectionViewLayout.invalidateLayout()
         self.collectionView.reloadData()
     }
