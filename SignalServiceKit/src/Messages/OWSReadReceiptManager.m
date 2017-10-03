@@ -560,9 +560,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     // We don't need to worry about races around this cached value.
     if (!self.areReadReceiptsEnabledCached) {
         // Default to NO.
-        self.areReadReceiptsEnabledCached =
-            @([self.dbConnection boolForKey:OWSReadReceiptManagerAreReadReceiptsEnabled
-                               inCollection:OWSReadReceiptManagerAreReadReceiptsEnabled]);
+        self.areReadReceiptsEnabledCached = @([self.dbConnection boolForKey:OWSReadReceiptManagerAreReadReceiptsEnabled
+                                                               inCollection:OWSReadReceiptManagerCollection]);
     }
 
     return [self.areReadReceiptsEnabledCached boolValue];
@@ -574,7 +573,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
             // Default to NO.
             self.areReadReceiptsEnabledCached = [transaction objectForKey:OWSReadReceiptManagerAreReadReceiptsEnabled
-                                                             inCollection:OWSReadReceiptManagerAreReadReceiptsEnabled];
+                                                             inCollection:OWSReadReceiptManagerCollection];
         }];
     }
 
