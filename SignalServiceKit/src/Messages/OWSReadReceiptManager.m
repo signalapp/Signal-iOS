@@ -9,6 +9,7 @@
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReadReceiptsForSenderMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "OWSSyncConfigurationMessage.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
@@ -568,11 +569,22 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (void)setAreReadReceiptsEnabled:(BOOL)value
 {
-    DDLogInfo(@"%@ areReadReceiptsEnabled: %d.", self.tag, value);
+    DDLogInfo(@"%@ setAreReadReceiptsEnabled: %d.", self.tag, value);
 
     [self.dbConnection setBool:value
                         forKey:OWSReadReceiptManagerAreReadReceiptsEnabled
                   inCollection:OWSReadReceiptManagerCollection];
+
+    OWSSyncConfigurationMessage *syncConfigurationMessage =
+        [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:value];
+    [self.messageSender sendMessage:syncConfigurationMessage
+        success:^{
+            DDLogInfo(@"%@ Successfully sent Configuration syncMessage.", self.tag);
+        }
+        failure:^(NSError *error) {
+            DDLogError(@"%@ Failed to send Configuration syncMessage with error: %@", self.tag, error);
+        }];
+
     self.areReadReceiptsEnabledCached = @(value);
 }
 
