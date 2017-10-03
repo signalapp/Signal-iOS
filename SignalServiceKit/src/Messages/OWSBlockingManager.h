@@ -25,6 +25,8 @@ extern NSString *const kNSNotificationName_BlockedPhoneNumbersDidChange;
 
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId;
 
+- (void)syncBlockedPhoneNumbers;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -225,6 +225,15 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
     [self observeNotifications];
 }
 
+- (void)syncBlockedPhoneNumbers
+{
+    OWSAssert(_blockedPhoneNumberSet);
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self sendBlockedPhoneNumbersMessage:self.blockedPhoneNumbers];
+    });
+}
+
 // This method should only be called from within a synchronized block.
 - (void)syncBlockedPhoneNumbersIfNecessary
 {
