@@ -9,6 +9,7 @@
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReadReceiptsForSenderMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "OWSSyncConfigurationMessage.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
@@ -559,8 +560,22 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     // We don't need to worry about races around this cached value.
     if (!self.areReadReceiptsEnabledCached) {
         // Default to NO.
-        self.areReadReceiptsEnabledCached = @([self.dbConnection boolForKey:OWSReadReceiptManagerAreReadReceiptsEnabled
-                                                               inCollection:OWSReadReceiptManagerCollection]);
+        self.areReadReceiptsEnabledCached =
+            @([self.dbConnection boolForKey:OWSReadReceiptManagerAreReadReceiptsEnabled
+                               inCollection:OWSReadReceiptManagerAreReadReceiptsEnabled]);
+    }
+
+    return [self.areReadReceiptsEnabledCached boolValue];
+}
+
+- (BOOL)areReadReceiptsEnabledWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    if (!self.areReadReceiptsEnabledCached) {
+        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+            // Default to NO.
+            self.areReadReceiptsEnabledCached = [transaction objectForKey:OWSReadReceiptManagerAreReadReceiptsEnabled
+                                                             inCollection:OWSReadReceiptManagerAreReadReceiptsEnabled];
+        }];
     }
 
     return [self.areReadReceiptsEnabledCached boolValue];
@@ -568,11 +583,22 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (void)setAreReadReceiptsEnabled:(BOOL)value
 {
-    DDLogInfo(@"%@ areReadReceiptsEnabled: %d.", self.tag, value);
+    DDLogInfo(@"%@ setAreReadReceiptsEnabled: %d.", self.tag, value);
 
     [self.dbConnection setBool:value
                         forKey:OWSReadReceiptManagerAreReadReceiptsEnabled
                   inCollection:OWSReadReceiptManagerCollection];
+
+    OWSSyncConfigurationMessage *syncConfigurationMessage =
+        [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:value];
+    [self.messageSender sendMessage:syncConfigurationMessage
+        success:^{
+            DDLogInfo(@"%@ Successfully sent Configuration syncMessage.", self.tag);
+        }
+        failure:^(NSError *error) {
+            DDLogError(@"%@ Failed to send Configuration syncMessage with error: %@", self.tag, error);
+        }];
+
     self.areReadReceiptsEnabledCached = @(value);
 }
 

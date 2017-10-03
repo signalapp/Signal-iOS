@@ -605,7 +605,8 @@ NS_ASSUME_NONNULL_BEGIN
             // TODO
             DDLogWarn(@"%@ Received unsupported request for block list", self.tag);
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeConfiguration) {
-            BOOL areReadReceiptsEnabled = [[OWSReadReceiptManager sharedManager] areReadReceiptsEnabled];
+            BOOL areReadReceiptsEnabled =
+                [[OWSReadReceiptManager sharedManager] areReadReceiptsEnabledWithTransaction:transaction];
             OWSSyncConfigurationMessage *syncConfigurationMessage =
                 [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled];
             [self.messageSender sendMessage:syncConfigurationMessage

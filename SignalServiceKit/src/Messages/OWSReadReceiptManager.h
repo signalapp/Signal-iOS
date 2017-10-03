@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSOutgoingMessage;
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
+@class YapDatabaseReadTransaction;
 
 extern NSString *const kIncomingMessageMarkedAsReadNotification;
 
@@ -74,6 +75,7 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 - (void)prepareCachedValues;
 
 - (BOOL)areReadReceiptsEnabled;
+- (BOOL)areReadReceiptsEnabledWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (void)setAreReadReceiptsEnabled:(BOOL)value;
 
 @end
