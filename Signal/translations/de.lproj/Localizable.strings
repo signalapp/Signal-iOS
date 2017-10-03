@@ -602,13 +602,13 @@
 "GENERIC_ATTACHMENT_LABEL" = "Anhang";
 
 /* Please enter your search. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Please enter your search.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Bitte gib deine Suche ein.";
 
 /* Title for the 'gif picker' dialog. */
-"GIF_PICKER_VIEW_TITLE" = "GIF Search";
+"GIF_PICKER_VIEW_TITLE" = "GIF-Suche";
 
 /* Placeholder text for the search field in gif view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Enter your search";
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Gib deine Suche ein";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar geändert.";
@@ -1623,7 +1623,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Code via SMS erneut senden";
 
 /* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Verifikationscode senden";
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Senden";
 
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Gib den an %@ gesendeten Verifikationscode ein.";
