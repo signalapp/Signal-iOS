@@ -117,6 +117,8 @@ NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope)
             [description appendString:@"GroupRequest"];
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeBlocked) {
             [description appendString:@"BlockedRequest"];
+        } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeConfiguration) {
+            [description appendString:@"ConfigurationRequest"];
         } else {
             // Shouldn't happen
             OWSFail(@"Unknown sync message request type");
