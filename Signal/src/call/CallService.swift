@@ -209,7 +209,7 @@ protocol CallServiceObserver: class {
         didSet {
             AssertIsOnMainThread()
 
-            Logger.info("\(self.TAG) \(#function)")
+            Logger.info("\(self.TAG) \(#function): \(isRemoteVideoEnabled)")
 
             fireDidUpdateVideoTracks()
         }
