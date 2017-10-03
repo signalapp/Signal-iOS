@@ -3126,7 +3126,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [circleView autoSetDimension:ALDimensionWidth toSize:kCircleSize];
     [circleView autoSetDimension:ALDimensionHeight toSize:kCircleSize];
 
-    const CGFloat kButtonSize = kCircleSize + 15.f;
+    const CGFloat kButtonSize = kCircleSize + 2 * 15.f;
     UIButton *scrollDownButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.scrollDownButton = scrollDownButton;
     [scrollDownButton addTarget:self
