@@ -208,6 +208,9 @@
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Call";
 
+/* Text shown on call screen in place of remote video */
+"CALL_REMOTE_VIDEO_DISABLED" = "Please upgrade to iOS 9 or newer to see remote video.";
+
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
 
@@ -601,7 +604,7 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Attachment";
 
-/* Please enter your search. */
+/* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "Please enter your search.";
 
 /* Title for the 'gif picker' dialog. */
