@@ -45,6 +45,7 @@
 //        super.init()
 //    }
 //}
+
 - (instancetype)init
 {
     self = [super init];
@@ -65,6 +66,8 @@
     }
     
     [self addSubview:_adaptee];
+
+    _adaptee.layoutMargins = UIEdgeInsetsZero;
     [_adaptee autoPinEdgesToSuperviewEdges];
 
     return self;

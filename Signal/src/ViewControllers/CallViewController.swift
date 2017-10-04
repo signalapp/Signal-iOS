@@ -617,6 +617,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
 
     internal func updateRemoteVideoLayout() {
         remoteVideoView.isHidden = !self.hasRemoteVideoTrack
+        self.remoteVideoView.setSize(self.view.frame.size)
         self.remoteVideoView.updateRemoteVideoLayout()
         updateCallUI(callState: call.state)
     }
