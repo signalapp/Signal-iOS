@@ -102,6 +102,15 @@ NS_ASSUME_NONNULL_BEGIN
             _videoRenderer = [[RTCMTLVideoView alloc] initWithFrame:CGRectZero];
             [self addSubview:_videoRenderer];
             [_videoRenderer autoPinEdgesToSuperviewEdges];
+            // HACK: Although RTCMTLVideo view is positioned to the top edge of the screen
+            // It's inner (private) MTKView is below the status bar.
+            for (UIView *subview in [_videoRenderer subviews]) {
+                if ([subview isKindOfClass:[MTKView class]]) {
+                    [subview autoPinEdgesToSuperviewEdges];
+                } else {
+                    OWSFail(@"New subviews added to MTLVideoView. Reconsider this hack.");
+                }
+            }
         }
     }
 #elif defined(__arm64__)
