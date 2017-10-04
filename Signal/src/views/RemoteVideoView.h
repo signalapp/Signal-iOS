@@ -5,8 +5,8 @@
 #import <WebRTC/RTCVideoRenderer.h>
 
 /**
- * Drives the full screen remote video, this class is backed by either the modern MetalKit backed view on supported
- * systems or the leagacy EAGL view. MetalKit is supported on 64bit systems running iOS8 or newer.
+ * Drives the full screen remote video. This is *not* a swift class
+ * so we can take advantage of some compile time constants from WebRTC
  */
 @interface RemoteVideoView : UIView <RTCVideoRenderer>
 

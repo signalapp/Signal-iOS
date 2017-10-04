@@ -8,7 +8,6 @@ import PromiseKit
 
 // TODO: Add category so that button handlers can be defined where button is created.
 // TODO: Ensure buttons enabled & disabled as necessary.
-//class CallViewController: OWSViewController, CallObserver, CallServiceObserver, RTCEAGLVideoViewDelegate {
 class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
 
     let TAG = "[CallViewController]"
@@ -231,10 +230,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
     }
 
     func createVideoViews() {
-        localVideoView = RTCCameraPreviewView()
         remoteVideoView = RemoteVideoView()
-
         remoteVideoView.isUserInteractionEnabled = false
+        localVideoView = RTCCameraPreviewView()
 
         remoteVideoView.isHidden = true
         localVideoView.isHidden = true

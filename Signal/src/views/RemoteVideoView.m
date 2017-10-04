@@ -79,12 +79,13 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    // On iOS8: prints a message saying the feature is unavailable.
     if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
         _videoRenderer = [NullVideoRenderer new];
     }
 
+    // On 64-bit, iOS9+: uses the MetalKit backed view for improved battery/rendering performance.
     if (_videoRenderer == nil) {
-// This class is defined in objc in order to access this compile time macro
 // Currently RTC only supports metal on 64bit machines
 #if defined(RTC_SUPPORTS_METAL)
     // RTCMTLVideoView requires the MTKView class, available in the iOS9+ MetalKit framework
@@ -94,7 +95,9 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
     }
 
+    // On 32-bit: uses the legacy EAGL backed view.
     if (_videoRenderer == nil) {
+        OWSAssert(!__arm64__);
         RTCEAGLVideoView *eaglVideoView = [[RTCEAGLVideoView alloc] initWithFrame:CGRectZero];
         eaglVideoView.delegate = self;
         _videoRenderer = eaglVideoView;
