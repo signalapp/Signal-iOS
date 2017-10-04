@@ -811,11 +811,21 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    // Ensure sender is in the group.
     if (![gThread.groupModel.groupMemberIds containsObject:envelope.source]) {
         DDLogWarn(@"%@ Ignoring 'Request Group Info' message for non-member of group. %@ not in %@",
             self.tag,
             envelope.source,
             gThread.groupModel.groupMemberIds);
+        return;
+    }
+
+    // Ensure we are in the group.
+    OWSAssert([TSAccountManager isRegistered]);
+    NSString *localNumber = [TSAccountManager localNumber];
+    if (![gThread.groupModel.groupMemberIds containsObject:localNumber]) {
+        DDLogWarn(@"%@ Ignoring 'Request Group Info' message for group we no longer belong to.", self.tag);
+        return;
     }
 
     NSString *updateGroupInfo =
