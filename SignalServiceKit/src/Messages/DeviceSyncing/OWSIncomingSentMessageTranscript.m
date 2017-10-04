@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (TSThread *)threadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (self.dataMessage.hasGroup) {
-        return [TSGroupThread getOrCreateThreadWithGroupIdData:self.dataMessage.group.id transaction:transaction];
+        return [TSGroupThread getOrCreateThreadWithGroupId:self.dataMessage.group.id transaction:transaction];
     } else {
         return [TSContactThread getOrCreateThreadWithContactId:self.recipientId transaction:transaction];
     }

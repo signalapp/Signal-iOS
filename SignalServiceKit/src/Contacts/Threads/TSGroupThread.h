@@ -18,11 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (instancetype)getOrCreateThreadWithGroupIdData:(NSData *)groupId;
-+ (instancetype)getOrCreateThreadWithGroupIdData:(NSData *)groupId
-                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId;
++ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
+                                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (instancetype)threadWithGroupModel:(TSGroupModel *)groupModel transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(YapDatabaseReadTransaction *)transaction;
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
 

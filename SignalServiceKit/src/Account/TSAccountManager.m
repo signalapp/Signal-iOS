@@ -108,6 +108,10 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_RegistrationStateDidChange
                                                              object:nil
                                                            userInfo:nil];
+
+    // Warm these cached values.
+    [self isRegistered];
+    [self localNumber];
 }
 
 + (nullable NSString *)localNumber

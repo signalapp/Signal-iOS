@@ -1495,15 +1495,26 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                            }]];
     }
 
-    [subtitleText
-        appendAttributedString:[[NSAttributedString alloc]
-                                   initWithString:NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
-                                                      @"The subtitle for the messages view title indicates that the "
-                                                      @"title can be tapped to access settings for this conversation.")
-                                       attributes:@{
-                                           NSFontAttributeName : [UIFont ows_regularFontWithSize:9.f],
-                                           NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
-                                       }]];
+    if (self.userLeftGroup) {
+        [subtitleText
+            appendAttributedString:[[NSAttributedString alloc]
+                                       initWithString:NSLocalizedString(@"GROUP_YOU_LEFT", @"")
+                                           attributes:@{
+                                               NSFontAttributeName : [UIFont ows_regularFontWithSize:9.f],
+                                               NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
+                                           }]];
+    } else {
+        [subtitleText appendAttributedString:
+                          [[NSAttributedString alloc]
+                              initWithString:NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
+                                                 @"The subtitle for the messages view title indicates that the "
+                                                 @"title can be tapped to access settings for this conversation.")
+                                  attributes:@{
+                                      NSFontAttributeName : [UIFont ows_regularFontWithSize:9.f],
+                                      NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
+                                  }]];
+    }
+
     self.navigationBarSubtitleLabel.attributedText = subtitleText;
     [self.navigationBarSubtitleLabel sizeToFit];
 }
@@ -3649,7 +3660,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             TSGroupThread *gThread = (TSGroupThread *)self.thread;
 
             if (gThread.groupModel) {
-                self.thread = [TSGroupThread threadWithGroupModel:gThread.groupModel transaction:transaction];
+                TSGroupThread *_Nullable updatedThread =
+                    [TSGroupThread threadWithGroupId:gThread.groupModel.groupId transaction:transaction];
+                if (updatedThread) {
+                    self.thread = updatedThread;
+                } else {
+                    OWSFail(@"%@ Could not reload thread.", self.tag);
+                }
             }
         }];
         [self setNavigationTitle];
