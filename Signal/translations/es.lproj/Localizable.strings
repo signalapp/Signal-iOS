@@ -1623,7 +1623,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Solicitar código de nuevo";
 
 /* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Comprobar código";
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Comprobar";
 
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Introduce el código que hemos enviado a %@.";

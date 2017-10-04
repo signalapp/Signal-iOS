@@ -1623,7 +1623,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Iš naujo siųsti kodą SMS žinute";
 
 /* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Pateikti patvirtinimo kodą";
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Pateikti";
 
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Įveskite patvirtinimo kodą, kurį mes išsiuntėme jums į %@.";

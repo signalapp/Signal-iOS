@@ -515,7 +515,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kunde inte skicka meddelande eftersom du blockerat användaren";
 
 /* Error mesage indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed due to failed attachment write.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Misslyckades, skrivfel för bifogad fil.";
 
 /* Generic error used whenver Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal kunde inte nå ut på internet. Försök igen från ett annat trådlöst nätverk eller använd mobildata.";
@@ -602,13 +602,13 @@
 "GENERIC_ATTACHMENT_LABEL" = "Bilaga";
 
 /* Please enter your search. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Please enter your search.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Skriv vad du söker.";
 
 /* Title for the 'gif picker' dialog. */
-"GIF_PICKER_VIEW_TITLE" = "GIF Search";
+"GIF_PICKER_VIEW_TITLE" = "GIF sökning";
 
 /* Placeholder text for the search field in gif view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Enter your search";
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Skriv vad du söker";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar ändrad.";
@@ -764,7 +764,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Misslyckades länka enhet";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
+"LIST_GROUP_MEMBERS_ACTION" = "Gruppmedlemmar";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Loggning";
@@ -785,52 +785,52 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nytt meddelande";
 
 /* Label for file size of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "File Size";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Filstorlek";
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME type";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME-typ";
 
 /* Label for 'missing' attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "Missing Attachment";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "Saknar bifogad fil";
 
 /* Label for 'not yet downloaded' attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "Not yet downloaded";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "Inte hämtad än";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Levererad";
 
 /* Status label for messages which are failed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Failed";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Misslyckades";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Read";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Läst";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Skickar";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Skickad";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Uploading";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Skickar iväg";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Message has no content or attachment.";
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Meddelandet har inget innehåll eller bifogad fil";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Received";
+"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Mottaget";
 
 /* Label for the 'sender' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENDER" = "Sender";
+"MESSAGE_METADATA_VIEW_SENDER" = "Avsändare";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Sent";
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Skickat";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Filename";
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Filnamn";
 
 /* Title for the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_TITLE" = "Message";
+"MESSAGE_METADATA_VIEW_TITLE" = "Meddelande";
 
 /* message footer for delivered messages
    message status for message delivered to their recipient. */
@@ -840,10 +840,10 @@
 "MESSAGE_STATUS_FAILED" = "Kunde inte skicka. Tryck för mer info.";
 
 /* message footer for read messages */
-"MESSAGE_STATUS_READ" = "Read";
+"MESSAGE_STATUS_READ" = "Läst";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sending...";
+"MESSAGE_STATUS_SENDING" = "Skickar...";
 
 /* message footer for sent messages */
 "MESSAGE_STATUS_SENT" = "Skickat";
@@ -1443,10 +1443,10 @@
 "SETTINGS_PRIVACY_TITLE" = "Integritetsskydd";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Read Receipts";
+"SETTINGS_READ_RECEIPT" = "Läskvittens";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all conversations.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Visa och dela när meddelanden har lästs. Inställningen är valfri och påverkar alla konversationer.";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Aktivera skärmsäkerhet";
@@ -1587,13 +1587,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Redo för en närbild?";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "You now have the option of seeing and sharing when messages have been read.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Du har nu möjligheten att visa och dela när meddelanden har blivit lästa.";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Enable read receipts in your privacy settings.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Aktivera läskvittens i inställningarna för integritetsskydd.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Introducing Read Receipts";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Introducerar Läskvittens";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal har nu stöd för säkra videosamtal. Påbörja ett samtal som vanligt, tryck på kameraknappen och vinka hej.";
@@ -1623,7 +1623,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Skicka koden igen via SMS";
 
 /* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Skicka verifieringskod";
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Skicka";
 
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Skriv verifieringskoden vi skickade till %@.";

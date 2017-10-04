@@ -1446,7 +1446,7 @@
 "SETTINGS_READ_RECEIPT" = "Potvrde o čitanju";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Pogledajte i dijelite kada su poruke pročitane. Ova je postavka je neobavezna i primjenjuje se na sve razgovore.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Pogledajte i dijelite kada su poruke pročitane. Ova postavka je neobavezna i primjenjuje se na sve razgovore.";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Omogući sigurnost zaslona";
@@ -1623,7 +1623,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Ponovo pošalji kôd SMS-om";
 
 /* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Pošalji potvrdni kôd";
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Potvrdi";
 
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Unesite potvrdni kôd koji smo poslali na %@.";

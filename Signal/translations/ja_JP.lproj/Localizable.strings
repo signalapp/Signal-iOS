@@ -1,5 +1,5 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "今は結構です";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "今は結構ですしない";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "新しい安全番号を受け入れる";
@@ -932,7 +932,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "１つのアカウントで使用できるデバイス数の上限を超えています。デバイスをどれか削除してからデバイスの追加を再度行ってください。";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "消音すると通知されなくなります";
+"MUTE_BEHAVIOR_EXPLANATION" = "消音にすると通知が行われなくなります。";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "とばす";
@@ -1446,13 +1446,13 @@
 "SETTINGS_READ_RECEIPT" = "既読確認";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "メッセージが既読かどうかを確認・共有する。この選択はすべての会話に適用される。";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "メッセージが既読かどうかを確認・共有します。この選択はすべての会話に適用されます。";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "画面表示を安全にする";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Signalの画面をアプリ変更時に表示しない";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Signalの画面をアプリ変更時に表示しません。";
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "通話をiOSに統合すると，Signalでの通話がiOSのロック画面や通話履歴に表示されます。通話相手の名前と番号を表示することも可能になります。ただしiCloudが有効の場合は，通話履歴がAppleと共有されます。";
@@ -1623,7 +1623,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "SMSでコードを再送する";
 
 /* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "認証コードを入力する";
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "提出";
 
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "%@に送信された認証コードを入力してください";
