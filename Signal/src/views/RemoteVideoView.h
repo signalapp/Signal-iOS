@@ -10,6 +10,4 @@
  */
 @interface RemoteVideoView : UIView <RTCVideoRenderer>
 
-- (void)updateRemoteVideoLayout;
-
 @end
