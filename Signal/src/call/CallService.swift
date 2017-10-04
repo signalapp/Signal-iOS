@@ -1043,10 +1043,8 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let call = self.call else {
-            // This should never happen; return to a known good state.
-            owsFail("\(TAG) call was unexpectedly nil in \(#function)")
-            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file:#file, function:#function, line:#line)
-            handleFailedCurrentCall(error: CallError.assertionError(description:"\(TAG) call unexpectedly nil in \(#function)"))
+            // This can happen after a call has ended. Reproducible on iOS11, when the other party ends the call.
+            Logger.info("\(TAG) ignoring mute request for obsolete call")
             return
         }
 
