@@ -418,7 +418,8 @@ struct AudioSource: Hashable {
 
         guard let availableInputs = session.availableInputs else {
             // I'm not sure when this would happen.
-            owsFail("No available inputs or inputs not ready")
+            // TODO this happens when the call ends (at leas ton iOS8)
+//            owsFail("No available inputs or inputs not ready")
             return [AudioSource.builtInSpeaker]
         }
 

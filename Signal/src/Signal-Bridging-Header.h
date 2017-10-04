@@ -32,6 +32,7 @@
 #import "ProfileViewController.h"
 #import "PushManager.h"
 #import "Release.h"
+#import "RemoteVideoView.h"
 #import "TSMessageAdapter.h"
 #import "ThreadUtil.h"
 #import "UIColor+OWS.h"
@@ -110,11 +111,4 @@
 #import <SignalServiceKit/TSThread.h>
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>
-#import <WebRTC/RTCEAGLVideoView.h>
-#import <WebRTC/RTCMTLVideoView.h>
-#import <WebRTC/RTCVideoRenderer.h>
 #import <YYImage/YYImage.h>
-
-@interface RTCMTLVideoView (MakePrivatePublic)
-+ (BOOL)isMetalAvailable;
-@end
