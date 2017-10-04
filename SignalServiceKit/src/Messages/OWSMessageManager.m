@@ -602,8 +602,8 @@ NS_ASSUME_NONNULL_BEGIN
                     DDLogError(@"%@ Failed to send Groups response syncMessage with error: %@", self.tag, error);
                 }];
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeBlocked) {
-            // TODO
-            DDLogWarn(@"%@ Received unsupported request for block list", self.tag);
+            DDLogInfo(@"%@ Received request for block list", self.tag);
+            [_blockingManager syncBlockedPhoneNumbers];
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeConfiguration) {
             BOOL areReadReceiptsEnabled =
                 [[OWSReadReceiptManager sharedManager] areReadReceiptsEnabledWithTransaction:transaction];
