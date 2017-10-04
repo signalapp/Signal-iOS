@@ -307,23 +307,20 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (dataMessage.hasGroup) {
-        TSGroupThread *_Nullable gThread =
+        TSGroupThread *_Nullable groupThread =
             [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
-        BOOL unknownGroup = NO;
-        if (gThread == nil && dataMessage.group.type != OWSSignalServiceProtosGroupContextTypeUpdate) {
-            unknownGroup = YES;
-        }
-        if (unknownGroup) {
-            if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeRequestInfo) {
-                DDLogInfo(@"%@ Ignoring group info request for unknown group from: %@", self.tag, envelope.source);
+
+        if (!groupThread) {
+            // Unknown group.
+            if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate) {
+                // Accept group updates for unknown groups.
+            } else if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeDeliver) {
+                [self sendGroupInfoRequest:dataMessage.group.id envelope:envelope transaction:transaction];
                 return;
-            } else if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeQuit) {
-                DDLogInfo(@"%@ Ignoring group quit for unknown group from: %@", self.tag, envelope.source);
+            } else {
+                DDLogInfo(@"%@ Ignoring group message for unknown group from: %@", self.tag, envelope.source);
                 return;
             }
-
-            [self sendGroupInfoRequest:dataMessage.group.id envelope:envelope transaction:transaction];
-            return;
         }
     }
 
@@ -846,13 +843,6 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *body = dataMessage.body;
     NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
 
-    __block TSIncomingMessage *_Nullable incomingMessage;
-    __block TSThread *thread;
-
-    // Do this outside of a transaction to avoid deadlock
-    OWSAssert([TSAccountManager isRegistered]);
-    NSString *localNumber = [TSAccountManager localNumber];
-
     if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeRequestInfo) {
         [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
         return nil;
@@ -866,9 +856,9 @@ NS_ASSUME_NONNULL_BEGIN
         // We distinguish between the old group state (if any) and the new group state.
         TSGroupThread *_Nullable oldGroupThread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];
         if (oldGroupThread) {
-            // Don't trust other clients; ensure all known group members leave the group
-            // _unless_ it is a "quit" message in which case we should explicitly remove
-            // just the quiting member below.
+            // Don't trust other clients; ensure all known group members remain in the
+            // group unless it is a "quit" message in which case we should only remove
+            // the quiting member below.
             [newMemberIds addObjectsFromArray:oldGroupThread.groupModel.groupMemberIds];
         }
 
@@ -880,7 +870,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                 TSGroupModel *newGroupModel = [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
                                                                         memberIds:[newMemberIds.allObjects mutableCopy]
-                                                                            image:nil
+                                                                            image:oldGroupThread.groupModel.groupImage
                                                                           groupId:dataMessage.group.id];
                 NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
                                                                                   contactsManager:self.contactsManager];
@@ -891,8 +881,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                  inThread:newGroupThread
                                               messageType:TSInfoMessageTypeGroupUpdate
                                             customMessage:updateGroupInfo] saveWithTransaction:transaction];
-                thread = newGroupThread;
-                break;
+                return nil;
             }
             case OWSSignalServiceProtosGroupContextTypeQuit: {
                 if (!oldGroupThread) {
@@ -910,12 +899,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                  inThread:oldGroupThread
                                               messageType:TSInfoMessageTypeGroupUpdate
                                             customMessage:updateGroupInfo] saveWithTransaction:transaction];
-                thread = oldGroupThread;
-                break;
+                return nil;
             }
             case OWSSignalServiceProtosGroupContextTypeDeliver: {
                 if (!oldGroupThread) {
-                    OWSFail(@"%@ ignoring quit group message from unknown group.", self.tag);
+                    OWSFail(@"%@ ignoring deliver group message from unknown group.", self.tag);
                     return nil;
                 }
 
@@ -933,17 +921,21 @@ NS_ASSUME_NONNULL_BEGIN
                     envelopeAddress(envelope),
                     groupId,
                     (unsigned long)timestamp);
-                incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
-                                                                      inThread:oldGroupThread
-                                                                      authorId:envelope.source
-                                                                sourceDeviceId:envelope.sourceDevice
-                                                                   messageBody:body
-                                                                 attachmentIds:attachmentIds
-                                                              expiresInSeconds:dataMessage.expireTimer];
-
-                [incomingMessage saveWithTransaction:transaction];
-                thread = oldGroupThread;
-                break;
+                TSIncomingMessage *incomingMessage =
+                    [[TSIncomingMessage alloc] initWithTimestamp:timestamp
+                                                        inThread:oldGroupThread
+                                                        authorId:envelope.source
+                                                  sourceDeviceId:envelope.sourceDevice
+                                                     messageBody:body
+                                                   attachmentIds:attachmentIds
+                                                expiresInSeconds:dataMessage.expireTimer];
+                [self finalizeIncomingMessage:incomingMessage
+                                       thread:oldGroupThread
+                                     envelope:envelope
+                                  dataMessage:dataMessage
+                                attachmentIds:attachmentIds
+                                  transaction:transaction];
+                return incomingMessage;
             }
             default: {
                 DDLogWarn(@"%@ Ignoring unknown group message type: %d", self.tag, (int)dataMessage.group.type);
@@ -963,69 +955,97 @@ NS_ASSUME_NONNULL_BEGIN
             self.tag,
             envelopeAddress(envelope),
             (unsigned long)timestamp);
-        TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source
-                                                                       transaction:transaction
-                                                                             relay:envelope.relay];
+        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source
+                                                                      transaction:transaction
+                                                                            relay:envelope.relay];
 
-        incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
-                                                              inThread:cThread
-                                                              authorId:[cThread contactIdentifier]
-                                                        sourceDeviceId:envelope.sourceDevice
-                                                           messageBody:body
-                                                         attachmentIds:attachmentIds
-                                                      expiresInSeconds:dataMessage.expireTimer];
-
-        [incomingMessage saveWithTransaction:transaction];
-        thread = cThread;
-    }
-
-    OWSAssert(thread);
-    OWSAssert(incomingMessage);
-
-    if (thread && incomingMessage) {
-        // Any messages sent from the current user - from this device or another - should be
-        // automatically marked as read.
-        BOOL shouldMarkMessageAsRead = [envelope.source isEqualToString:localNumber];
-        if (shouldMarkMessageAsRead) {
-            // Don't send a read receipt for messages sent by ourselves.
-            [incomingMessage markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:YES];
-        }
-
-        DDLogDebug(@"%@ shouldMarkMessageAsRead: %d (%@)", self.tag, shouldMarkMessageAsRead, envelope.source);
-
-        // Other clients allow attachments to be sent along with body, we want the text displayed as a separate
-        // message
-        if ([attachmentIds count] > 0 && body != nil && body.length > 0) {
-            // We want the text to be displayed under the attachment.
-            uint64_t textMessageTimestamp = timestamp + 1;
-            TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
+        TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
                                                                                  inThread:thread
-                                                                                 authorId:envelope.source
+                                                                                 authorId:[thread contactIdentifier]
                                                                            sourceDeviceId:envelope.sourceDevice
                                                                               messageBody:body
-                                                                            attachmentIds:@[]
+                                                                            attachmentIds:attachmentIds
                                                                          expiresInSeconds:dataMessage.expireTimer];
-            DDLogDebug(@"%@ incoming extra text message: %@", self.tag, incomingMessage.debugDescription);
-            [textMessage saveWithTransaction:transaction];
-        }
+        [self finalizeIncomingMessage:incomingMessage
+                               thread:thread
+                             envelope:envelope
+                          dataMessage:dataMessage
+                        attachmentIds:attachmentIds
+                          transaction:transaction];
+        return incomingMessage;
+    }
+}
 
-        // In case we already have a read receipt for this new message (this happens sometimes).
-        [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
-                                                                          transaction:transaction];
+- (void)finalizeIncomingMessage:(TSIncomingMessage *)incomingMessage
+                         thread:(TSThread *)thread
+                       envelope:(OWSSignalServiceProtosEnvelope *)envelope
+                    dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                  attachmentIds:(NSArray<NSString *> *)attachmentIds
+                    transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(thread);
+    OWSAssert(incomingMessage);
+    OWSAssert(envelope);
+    OWSAssert(dataMessage);
+    OWSAssert(attachmentIds);
+    OWSAssert(transaction);
 
-        [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:incomingMessage
-                                                                contactsManager:self.contactsManager];
+    OWSAssert([TSAccountManager isRegistered]);
+    NSString *localNumber = [TSAccountManager localNumber];
+    NSString *body = dataMessage.body;
+    uint64_t timestamp = envelope.timestamp;
 
-        // Update thread preview in inbox
-        [thread touchWithTransaction:transaction];
-
-        [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForIncomingMessage:incomingMessage
-                                                                               inThread:thread
-                                                                        contactsManager:self.contactsManager
-                                                                            transaction:transaction];
+    if (!thread) {
+        OWSFail(@"%@ Can't finalize without thread", self.tag);
+        return;
+    }
+    if (!incomingMessage) {
+        OWSFail(@"%@ Can't finalize missing message", self.tag);
+        return;
     }
 
-    return incomingMessage;
+    [incomingMessage saveWithTransaction:transaction];
+
+    // Any messages sent from the current user - from this device or another - should be
+    // automatically marked as read.
+    BOOL shouldMarkMessageAsRead = [envelope.source isEqualToString:localNumber];
+    if (shouldMarkMessageAsRead) {
+        // Don't send a read receipt for messages sent by ourselves.
+        [incomingMessage markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:YES];
+    }
+
+    DDLogDebug(@"%@ shouldMarkMessageAsRead: %d (%@)", self.tag, shouldMarkMessageAsRead, envelope.source);
+
+    // Other clients allow attachments to be sent along with body, we want the text displayed as a separate
+    // message
+    if ([attachmentIds count] > 0 && body != nil && body.length > 0) {
+        // We want the text to be displayed under the attachment.
+        uint64_t textMessageTimestamp = timestamp + 1;
+        TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
+                                                                             inThread:thread
+                                                                             authorId:envelope.source
+                                                                       sourceDeviceId:envelope.sourceDevice
+                                                                          messageBody:body
+                                                                        attachmentIds:@[]
+                                                                     expiresInSeconds:dataMessage.expireTimer];
+        DDLogDebug(@"%@ incoming extra text message: %@", self.tag, incomingMessage.debugDescription);
+        [textMessage saveWithTransaction:transaction];
+    }
+
+    // In case we already have a read receipt for this new message (this happens sometimes).
+    [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
+                                                                      transaction:transaction];
+
+    [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:incomingMessage
+                                                            contactsManager:self.contactsManager];
+
+    // Update thread preview in inbox
+    [thread touchWithTransaction:transaction];
+
+    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForIncomingMessage:incomingMessage
+                                                                           inThread:thread
+                                                                    contactsManager:self.contactsManager
+                                                                        transaction:transaction];
 }
 
 #pragma mark - helpers
