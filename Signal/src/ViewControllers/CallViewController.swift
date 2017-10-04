@@ -65,11 +65,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
     var localVideoView: RTCCameraPreviewView!
     weak var localVideoTrack: RTCVideoTrack?
     weak var remoteVideoTrack: RTCVideoTrack?
-
-    // TODO delete?
-    var remoteVideoSize: CGSize! = CGSize.zero
-    // TODO delete?
-    var remoteVideoConstraints: [NSLayoutConstraint] = []
     var localVideoConstraints: [NSLayoutConstraint] = []
 
     var shouldRemoteVideoControlsBeHidden = false {
@@ -237,30 +232,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
 
     func createVideoViews() {
         localVideoView = RTCCameraPreviewView()
-
-//        if isMetalAvailable {
-//            if #available(iOS 9, *) {
-//                remoteVideoView = RTCMTLVideoView(frame: CGRect(x: 50, y: 50, width: 200, height: 300))
-////                remoteVideoView.setSize(self.view.frame.size)
-//            } else {
-//                owsFail("metal should only be available on ios9+")
-//            }
-//        } else {
-//            let eaglVideoView = RTCEAGLVideoView()
-//            eaglVideoView.delegate = self
-//            remoteVideoView = eaglVideoView
-//        }
-//
-//        guard let remoteVideoView = self.remoteVideoView else {
-//            owsFail("Failed to make remoteVideoView")
-//            return
-//        }
-
         remoteVideoView = RemoteVideoView()
 
-        remoteVideoView.backgroundColor = UIColor.yellow
         remoteVideoView.isUserInteractionEnabled = false
-        remoteVideoView.layoutMargins = UIEdgeInsets.zero
 
         remoteVideoView.isHidden = true
         localVideoView.isHidden = true
@@ -618,7 +592,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
     internal func updateRemoteVideoLayout() {
         remoteVideoView.isHidden = !self.hasRemoteVideoTrack
         self.remoteVideoView.setSize(self.view.frame.size)
-        self.remoteVideoView.updateRemoteVideoLayout()
         updateCallUI(callState: call.state)
     }
 
@@ -990,10 +963,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
         self.remoteVideoTrack?.add(remoteVideoView)
         shouldRemoteVideoControlsBeHidden = false
 
-        if remoteVideoTrack == nil {
-            remoteVideoSize = CGSize.zero
-        }
-
         updateRemoteVideoLayout()
     }
 
@@ -1056,53 +1025,4 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
         updateLocalVideoTrack(localVideoTrack: localVideoTrack)
         updateRemoteVideoTrack(remoteVideoTrack: remoteVideoTrack)
     }
-//
-//    // MARK: - RTCEAGLVideoViewDelegate
-//
-//    internal func videoView(_ videoView: RTCEAGLVideoView, didChangeVideoSize size: CGSize) {
-//        AssertIsOnMainThread()
-//        assert(!isMetalAvailable)
-//
-//        if videoView != remoteVideoView {
-//            return
-//        }
-//
-//        Logger.info("\(TAG) \(#function): \(size)")
-//
-//        remoteVideoSize = size
-//        updateRemoteVideoLayout()
-//    }
 }
-
-//protocol RemoteVideoViewAdaptee: RTCVideoRenderer {
-//
-//}
-//
-//class RemoteVideoViewAdapter: UIView, RTCVideoRenderer {
-//    let adaptee: RemoteVideoViewAdaptee
-//
-//    var isMetalAvailable: Bool {
-//        // MetalKit is available on 64bit devices running iOS9+
-//        if #available(iOS 9, *) {
-//            return objc_getClass("RTCMTLVideoView") != nil && RTCMTLVideoView.isMetalAvailable()
-//        } else {
-//            return false
-//        }
-//    }
-//        
-//    init() {
-//        #if defined(RTC_SUPPORTS_METAL)
-//            if #available(iOS 9, *) {
-//            adaptee = RTCMTLVideoView(frame: CGRect.zero)
-//        }
-//        #endif
-//
-//        if adaptee == nil {
-//            let eaglVideoView = RTCEAGLVideoView()
-//            eaglVideoView.delegate = self
-//            adaptee = eaglVideoView
-//        }
-//
-//        super.init()
-//    }
-//}
