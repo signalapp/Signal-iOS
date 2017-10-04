@@ -100,6 +100,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinToSquareAspectRatio
 {
+    return [self autoPinToAspectRatio:1.0];
+}
+
+- (NSLayoutConstraint *)autoPinToAspectRatio:(CGFloat)ratio
+{
     self.translatesAutoresizingMaskIntoConstraints = NO;
 
     NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:self
@@ -107,7 +112,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
                                                                   relatedBy:NSLayoutRelationEqual
                                                                      toItem:self
                                                                   attribute:NSLayoutAttributeHeight
-                                                                 multiplier:1.f
+                                                                 multiplier:ratio
                                                                    constant:0.f];
     [constraint autoInstall];
     return constraint;
