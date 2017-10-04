@@ -45,6 +45,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     private let kCellReuseIdentifier = "kCellReuseIdentifier"
 
+    var progressiveSearchTimer: Timer?
+
     // MARK: Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
@@ -75,6 +77,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+
+        progressiveSearchTimer?.invalidate()
     }
 
     func didBecomeActive() {
@@ -133,6 +137,13 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         super.viewDidAppear(animated)
 
         self.searchBar.becomeFirstResponder()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        progressiveSearchTimer?.invalidate()
+        progressiveSearchTimer = nil
     }
 
     // MARK: Views
@@ -340,7 +351,22 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     // MARK: - UISearchBarDelegate
 
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        // Don't do progressive search for GIFs; the network burden would be excessive.
+        // Clear error messages immediately.
+        if viewMode == .error || viewMode == .noResults {
+            viewMode = .idle
+        }
+
+        // Do progressive search after a delay.
+        progressiveSearchTimer?.invalidate()
+        progressiveSearchTimer = nil
+        let kProgressiveSearchDelaySeconds = 2.0
+        progressiveSearchTimer = WeakTimer.scheduledTimer(timeInterval: kProgressiveSearchDelaySeconds, target: self, userInfo: nil, repeats: true) { [weak self] _ in
+            guard let strongSelf = self else {
+                return
+            }
+
+            strongSelf.tryToSearch()
+        }
     }
 
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -348,6 +374,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     public func tryToSearch() {
+        progressiveSearchTimer?.invalidate()
+        progressiveSearchTimer = nil
+
         guard let text = searchBar.text else {
             OWSAlerts.showAlert(withTitle: NSLocalizedString("ALERT_ERROR_TITLE",
                                                              comment: ""),
@@ -359,6 +388,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     private func search(query: String) {
+        Logger.info("\(TAG) searching: \(query)")
+
+        progressiveSearchTimer?.invalidate()
+        progressiveSearchTimer = nil
         self.searchBar.resignFirstResponder()
         imageInfos = []
         viewMode = .searching
