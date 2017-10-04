@@ -62,29 +62,35 @@ class GifPickerCell: UICollectionViewCell {
         stillAssetRequest = nil
     }
 
-    private func clearanimatedAssetRequest() {
+    private func clearAnimatedAssetRequest() {
         animatedAssetRequest?.cancel()
         animatedAssetRequest = nil
     }
 
     private func clearAssetRequests() {
         clearStillAssetRequest()
-        clearanimatedAssetRequest()
+        clearAnimatedAssetRequest()
     }
 
     public func ensureCellState() {
+        ensureLoadState()
+        ensureViewState()
+    }
+
+    public func ensureLoadState() {
         guard isCellVisible else {
-            // Cancel any outstanding requests.
+            // Don't load if cell is not visible.
             clearAssetRequests()
-            // Clear image view so we don't animate offscreen GIFs.
-            imageView?.image = nil
             return
         }
         guard let imageInfo = imageInfo else {
+            // Don't load if cell is not configured.
             clearAssetRequests()
             return
         }
         guard self.animatedAsset == nil else {
+            // Don't load if cell is already loaded.
+            clearAssetRequests()
             return
         }
         // The Giphy API returns a slew of "renditions" for a given image. 
@@ -101,7 +107,9 @@ class GifPickerCell: UICollectionViewCell {
         }
 
         // Start still asset request if necessary.
-        if stillAsset == nil && animatedAsset == nil && stillAssetRequest == nil {
+        if stillAsset != nil || animatedAsset != nil {
+            clearStillAssetRequest()
+        } else if stillAssetRequest == nil {
             stillAssetRequest = GiphyDownloader.sharedInstance.requestAsset(rendition:stillRendition,
                                                                                 priority:.high,
                                                                                 success: { [weak self] assetRequest, asset in
@@ -112,7 +120,7 @@ class GifPickerCell: UICollectionViewCell {
                                                                                     }
                                                                                     strongSelf.clearStillAssetRequest()
                                                                                     strongSelf.stillAsset = asset
-                                                                                    strongSelf.tryToDisplayAsset()
+                                                                                    strongSelf.ensureViewState()
                 },
                                                                                 failure: { [weak self] assetRequest in
                                                                                     guard let strongSelf = self else { return }
@@ -125,7 +133,9 @@ class GifPickerCell: UICollectionViewCell {
         }
 
         // Start animated asset request if necessary.
-        if animatedAsset == nil && animatedAssetRequest == nil {
+        if animatedAsset != nil {
+            clearAnimatedAssetRequest()
+        } else if animatedAssetRequest == nil {
             animatedAssetRequest = GiphyDownloader.sharedInstance.requestAsset(rendition:animatedRendition,
                                                                                priority:.low,
                                                                                success: { [weak self] assetRequest, asset in
@@ -137,7 +147,7 @@ class GifPickerCell: UICollectionViewCell {
                                                                                 // If we have the animated asset, we don't need the still asset.
                                                                                 strongSelf.clearAssetRequests()
                                                                                 strongSelf.animatedAsset = asset
-                                                                                strongSelf.tryToDisplayAsset()
+                                                                                strongSelf.ensureViewState()
                 },
                                                                                failure: { [weak self] assetRequest in
                                                                                 guard let strongSelf = self else { return }
@@ -145,18 +155,24 @@ class GifPickerCell: UICollectionViewCell {
                                                                                     owsFail("Obsolete request callback.")
                                                                                     return
                                                                                 }
-                                                                                strongSelf.clearanimatedAssetRequest()
+                                                                                strongSelf.clearAnimatedAssetRequest()
             })
         }
     }
 
-    private func tryToDisplayAsset() {
+    private func ensureViewState() {
+        guard isCellVisible else {
+            // Clear image view so we don't animate offscreen GIFs.
+            clearViewState()
+            return
+        }
         guard let asset = pickBestAsset() else {
-            owsFail("\(TAG) missing asset.")
+            clearViewState()
             return
         }
         guard let image = YYImage(contentsOfFile:asset.filePath) else {
             owsFail("\(TAG) could not load asset.")
+            clearViewState()
             return
         }
         if imageView == nil {
@@ -167,9 +183,16 @@ class GifPickerCell: UICollectionViewCell {
         }
         guard let imageView = imageView else {
             owsFail("\(TAG) missing imageview.")
+            clearViewState()
             return
         }
         imageView.image = image
+        self.backgroundColor = nil
+    }
+
+    private func clearViewState() {
+        imageView?.image = nil
+        self.backgroundColor = UIColor(white:0.95, alpha:1.0)
     }
 
     private func pickBestAsset() -> GiphyAsset? {
