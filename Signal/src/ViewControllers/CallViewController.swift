@@ -8,7 +8,8 @@ import PromiseKit
 
 // TODO: Add category so that button handlers can be defined where button is created.
 // TODO: Ensure buttons enabled & disabled as necessary.
-class CallViewController: OWSViewController, CallObserver, CallServiceObserver, RTCEAGLVideoViewDelegate {
+//class CallViewController: OWSViewController, CallObserver, CallServiceObserver, RTCEAGLVideoViewDelegate {
+class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
 
     let TAG = "[CallViewController]"
 
@@ -60,14 +61,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: Video Views
 
-//    var remoteVideoView: RTCEAGLVideoView!
-    var remoteVideoView: (UIView & RTCVideoRenderer)!
-//    var remoteVideoView = UIView()
-//    var remoteVideoRenderView: (UIView & RTCVideoRenderer)!
+    var remoteVideoView: RemoteVideoView!
     var localVideoView: RTCCameraPreviewView!
     weak var localVideoTrack: RTCVideoTrack?
     weak var remoteVideoTrack: RTCVideoTrack?
+
+    // TODO delete?
     var remoteVideoSize: CGSize! = CGSize.zero
+    // TODO delete?
     var remoteVideoConstraints: [NSLayoutConstraint] = []
     var localVideoConstraints: [NSLayoutConstraint] = []
 
@@ -236,37 +237,35 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     func createVideoViews() {
         localVideoView = RTCCameraPreviewView()
-        
-        if #available(iOS 9, *) {
-            if RTCMTLVideoView.isMetalAvailable() {
-                remoteVideoView = RTCMTLVideoView(frame: CGRect(x: 50, y: 50, width: 200, height: 300))
-                remoteVideoView.setSize(self.view.frame.size)
-            }
-        }
 
-        // Fallback on earlier versions
-        if remoteVideoView == nil {
-            let eaglVideoView = RTCEAGLVideoView()
-            eaglVideoView.delegate = self
-            remoteVideoView = eaglVideoView
-        }
+//        if isMetalAvailable {
+//            if #available(iOS 9, *) {
+//                remoteVideoView = RTCMTLVideoView(frame: CGRect(x: 50, y: 50, width: 200, height: 300))
+////                remoteVideoView.setSize(self.view.frame.size)
+//            } else {
+//                owsFail("metal should only be available on ios9+")
+//            }
+//        } else {
+//            let eaglVideoView = RTCEAGLVideoView()
+//            eaglVideoView.delegate = self
+//            remoteVideoView = eaglVideoView
+//        }
+//
+//        guard let remoteVideoView = self.remoteVideoView else {
+//            owsFail("Failed to make remoteVideoView")
+//            return
+//        }
 
-        guard let remoteVideoView = self.remoteVideoView else {
-            owsFail("Failed to make remoteVideoView")
-            return
-        }
+        remoteVideoView = RemoteVideoView()
 
         remoteVideoView.backgroundColor = UIColor.yellow
         remoteVideoView.isUserInteractionEnabled = false
         remoteVideoView.layoutMargins = UIEdgeInsets.zero
 
         remoteVideoView.isHidden = true
-//        remoteVideoView.isHidden = false
         localVideoView.isHidden = true
         self.view.addSubview(remoteVideoView)
         self.view.addSubview(localVideoView)
-
-        remoteVideoView.autoPinEdgesToSuperviewEdges()
     }
 
     func createContactViews() {
@@ -575,6 +574,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             localVideoView.autoSetDimension(.width, toSize:localVideoSize)
             localVideoView.autoSetDimension(.height, toSize:localVideoSize)
 
+            remoteVideoView.autoPinEdgesToSuperviewEdges()
+
             contactNameLabel.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
             contactNameLabel.autoPinLeadingToSuperview(withMargin: contactHMargin)
             contactNameLabel.setContentHuggingVerticalHigh()
@@ -615,67 +616,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     internal func updateRemoteVideoLayout() {
-//        return
-//
-//        switch self.remoteVideoView {
-//        case let videoView as RTCMTLVideoView:
-//            videoView.frame = self.remoteVideView.bounds
-//        default:
-        if #available(iOS 9, *) {
-            if let mtlView = remoteVideoView as? RTCMTLVideoView {
-                mtlView.setSize(self.view.frame.size)
-            }
-        }
-        
-        NSLayoutConstraint.deactivate(self.remoteVideoConstraints)
-        
-        var constraints: [NSLayoutConstraint] = []
-        if (self.hasRemoteVideoTrack) {
-            // We fill the screen with the remote video. The remote video's
-            // aspect ratio may not (and in fact will very rarely) match the
-            // aspect ratio of the current device, so parts of the remote
-            // video will be hidden offscreen.
-            //
-            // It's better to trim the remote video than to adopt a letterboxed
-            // layout.
-            if remoteVideoSize.width > 0 && remoteVideoSize.height > 0 &&
-                self.view.bounds.size.width > 0 && self.view.bounds.size.height > 0 {
-
-                var remoteVideoWidth = self.view.bounds.size.width
-                var remoteVideoHeight = self.view.bounds.size.height
-                if remoteVideoSize.width / self.view.bounds.size.width > remoteVideoSize.height / self.view.bounds.size.height {
-                    remoteVideoWidth = round(self.view.bounds.size.height * remoteVideoSize.width / remoteVideoSize.height)
-                } else {
-                    remoteVideoHeight = round(self.view.bounds.size.width * remoteVideoSize.height / remoteVideoSize.width)
-                }
-                constraints.append(remoteVideoView.autoSetDimension(.width, toSize:remoteVideoWidth))
-                constraints.append(remoteVideoView.autoSetDimension(.height, toSize:remoteVideoHeight))
-                constraints += remoteVideoView.autoCenterInSuperview()
-
-                remoteVideoView.frame = CGRect(origin:CGPoint.zero,
-                                               size:CGSize(width:remoteVideoWidth,
-                                                           height:remoteVideoHeight))
-
-                remoteVideoView.isHidden = false
-            } else {
-                remoteVideoView.frame = self.view.bounds
-                remoteVideoView.isHidden = false
-            }
-        } else {
-            constraints += remoteVideoView.autoPinEdgesToSuperviewEdges()
-            remoteVideoView.isHidden = true
-        }
-        self.remoteVideoConstraints = constraints
-
-        // We need to force relayout to occur immediately (and not
-        // wait for a UIKit layout/render pass) or the remoteVideoView
-        // (which presumably is updating its CALayer directly) will 
-        // ocassionally appear to have bad frames.
-        remoteVideoView.setNeedsLayout()
-        remoteVideoView.superview?.setNeedsLayout()
-        remoteVideoView.layoutIfNeeded()
-        remoteVideoView.superview?.layoutIfNeeded()
-
+        remoteVideoView.isHidden = !self.hasRemoteVideoTrack
+        self.remoteVideoView.updateRemoteVideoLayout()
         updateCallUI(callState: call.state)
     }
 
@@ -1033,6 +975,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     var hasRemoteVideoTrack: Bool {
         return self.remoteVideoTrack != nil
     }
+
     internal func updateRemoteVideoTrack(remoteVideoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
         guard self.remoteVideoTrack != remoteVideoTrack else {
@@ -1112,22 +1055,53 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         updateLocalVideoTrack(localVideoTrack: localVideoTrack)
         updateRemoteVideoTrack(remoteVideoTrack: remoteVideoTrack)
     }
-
-    // MARK: - RTCEAGLVideoViewDelegate
-
-    internal func videoView(_ videoView: RTCEAGLVideoView, didChangeVideoSize size: CGSize) {
-        AssertIsOnMainThread()
-        if #available(iOS 9, *) {
-            assert(!RTCMTLVideoView.isMetalAvailable())
-        }
-
-        if videoView != remoteVideoView {
-            return
-        }
-
-        Logger.info("\(TAG) \(#function): \(size)")
-
-        remoteVideoSize = size
-        updateRemoteVideoLayout()
-    }
+//
+//    // MARK: - RTCEAGLVideoViewDelegate
+//
+//    internal func videoView(_ videoView: RTCEAGLVideoView, didChangeVideoSize size: CGSize) {
+//        AssertIsOnMainThread()
+//        assert(!isMetalAvailable)
+//
+//        if videoView != remoteVideoView {
+//            return
+//        }
+//
+//        Logger.info("\(TAG) \(#function): \(size)")
+//
+//        remoteVideoSize = size
+//        updateRemoteVideoLayout()
+//    }
 }
+
+//protocol RemoteVideoViewAdaptee: RTCVideoRenderer {
+//
+//}
+//
+//class RemoteVideoViewAdapter: UIView, RTCVideoRenderer {
+//    let adaptee: RemoteVideoViewAdaptee
+//
+//    var isMetalAvailable: Bool {
+//        // MetalKit is available on 64bit devices running iOS9+
+//        if #available(iOS 9, *) {
+//            return objc_getClass("RTCMTLVideoView") != nil && RTCMTLVideoView.isMetalAvailable()
+//        } else {
+//            return false
+//        }
+//    }
+//        
+//    init() {
+//        #if defined(RTC_SUPPORTS_METAL)
+//            if #available(iOS 9, *) {
+//            adaptee = RTCMTLVideoView(frame: CGRect.zero)
+//        }
+//        #endif
+//
+//        if adaptee == nil {
+//            let eaglVideoView = RTCEAGLVideoView()
+//            eaglVideoView.delegate = self
+//            adaptee = eaglVideoView
+//        }
+//
+//        super.init()
+//    }
+//}
