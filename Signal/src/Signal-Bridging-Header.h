@@ -8,7 +8,6 @@
 #import "DateUtil.h"
 #import "DebugUIPage.h"
 #import "Environment.h"
-#import "FLAnimatedImage.h"
 #import "FingerprintViewController.h"
 #import "HomeViewController.h"
 #import "NSString+OWS.h"
