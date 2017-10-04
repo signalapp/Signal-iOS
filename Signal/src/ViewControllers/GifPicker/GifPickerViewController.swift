@@ -15,6 +15,18 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     // MARK: Properties
 
+    enum ViewMode {
+        case idle, searching, results, noResults, error
+    }
+
+    private var viewMode = ViewMode.idle {
+        didSet {
+            Logger.info("\(TAG) viewMode: \(viewMode)")
+
+            updateContents()
+        }
+    }
+
     public weak var delegate: GifPickerViewControllerDelegate?
 
     var thread: TSThread?
@@ -23,6 +35,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     let searchBar: UISearchBar
     let layout: GifPickerLayout
     let collectionView: UICollectionView
+    var noResultsView: UILabel?
+    var searchErrorView: UILabel?
+    var activityIndicator: UIActivityIndicatorView?
 
     var imageInfos = [GiphyImageInfo]()
 
@@ -159,12 +174,91 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         logoImageView.autoPinHeightToSuperview(withMargin:3)
         logoImageView.autoHCenterInSuperview()
 
+        let noResultsView = createErrorLabel(text:NSLocalizedString("GIF_VIEW_SEARCH_NO_RESULTS",
+                                                                    comment:"Indicates that the user's search had no results."))
+        self.noResultsView = noResultsView
+        self.view.addSubview(noResultsView)
+        noResultsView.autoPinWidthToSuperview(withMargin:20)
+        noResultsView.autoVCenterInSuperview()
+
+        let searchErrorView = createErrorLabel(text:NSLocalizedString("GIF_VIEW_SEARCH_ERROR",
+                                                                      comment:"Indicates that an error occured while searching."))
+        self.searchErrorView = searchErrorView
+        self.view.addSubview(searchErrorView)
+        searchErrorView.autoPinWidthToSuperview(withMargin:20)
+        searchErrorView.autoVCenterInSuperview()
+
+        searchErrorView.isUserInteractionEnabled = true
+        searchErrorView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(retryTapped)))
+
+        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle:.gray)
+        self.activityIndicator = activityIndicator
+        self.view.addSubview(activityIndicator)
+        activityIndicator.autoCenterInSuperview()
+
         self.updateContents()
     }
 
+    private func createErrorLabel(text: String) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.textColor = UIColor.black
+        label.font = UIFont.ows_mediumFont(withSize:20)
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        return label
+    }
+
     private func updateContents() {
-        self.collectionView.collectionViewLayout.invalidateLayout()
-        self.collectionView.reloadData()
+        guard let noResultsView = self.noResultsView else {
+            owsFail("Missing noResultsView")
+            return
+        }
+        guard let searchErrorView = self.searchErrorView else {
+            owsFail("Missing searchErrorView")
+            return
+        }
+        guard let activityIndicator = self.activityIndicator else {
+            owsFail("Missing activityIndicator")
+            return
+        }
+
+        switch viewMode {
+        case .idle:
+            self.collectionView.isHidden = true
+            noResultsView.isHidden = true
+            searchErrorView.isHidden = true
+            activityIndicator.isHidden = true
+            activityIndicator.stopAnimating()
+        case .searching:
+            self.collectionView.isHidden = true
+            noResultsView.isHidden = true
+            searchErrorView.isHidden = true
+            activityIndicator.isHidden = false
+            activityIndicator.startAnimating()
+        case .results:
+            self.collectionView.isHidden = false
+            noResultsView.isHidden = true
+            searchErrorView.isHidden = true
+            activityIndicator.isHidden = true
+            activityIndicator.stopAnimating()
+
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.reloadData()
+        case .noResults:
+            self.collectionView.isHidden = true
+            noResultsView.isHidden = false
+            searchErrorView.isHidden = true
+            activityIndicator.isHidden = true
+            activityIndicator.stopAnimating()
+        case .error:
+            self.collectionView.isHidden = true
+            noResultsView.isHidden = true
+            searchErrorView.isHidden = false
+            activityIndicator.isHidden = true
+            activityIndicator.stopAnimating()
+        }
     }
 
     // MARK: - UICollectionViewDataSource
@@ -250,6 +344,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        tryToSearch()
+    }
+
+    public func tryToSearch() {
         guard let text = searchBar.text else {
             OWSAlerts.showAlert(withTitle: NSLocalizedString("ALERT_ERROR_TITLE",
                                                              comment: ""),
@@ -263,19 +361,24 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     private func search(query: String) {
         self.searchBar.resignFirstResponder()
         imageInfos = []
-        updateContents()
+        viewMode = .searching
         self.collectionView.contentOffset = CGPoint.zero
 
         GiphyAPI.sharedInstance.search(query: query, success: { [weak self] imageInfos in
             guard let strongSelf = self else { return }
             Logger.info("\(strongSelf.TAG) search complete")
             strongSelf.imageInfos = imageInfos
-            strongSelf.updateContents()
+            if imageInfos.count > 0 {
+                strongSelf.viewMode = .results
+            } else {
+                strongSelf.viewMode = .noResults
+            }
         },
             failure: { [weak self] _ in
                 guard let strongSelf = self else { return }
                 Logger.info("\(strongSelf.TAG) search failed.")
                 // TODO: Present this error to the user.
+                strongSelf.viewMode = .error
         })
     }
 
@@ -283,5 +386,17 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     func imageInfosForLayout() -> [GiphyImageInfo] {
         return imageInfos
+    }
+
+    // MARK: - Event Handlers
+
+    func retryTapped(sender: UIGestureRecognizer) {
+        guard sender.state == .recognized else {
+            return
+        }
+        guard viewMode == .error else {
+            return
+        }
+        tryToSearch()
     }
 }
