@@ -59,6 +59,8 @@ NS_ASSUME_NONNULL_BEGIN
              @"+20": @"google.com.eg",
              // Oman
              @"+968": @"google.com.om",
+             // Qatar
+             @"+974": @"google.com.qa",
              // UAE
              @"+971": @"google.ae",
              };
