@@ -8,7 +8,7 @@ import PromiseKit
 
 // TODO: Add category so that button handlers can be defined where button is created.
 // TODO: Ensure buttons enabled & disabled as necessary.
-class CallViewController: OWSViewController, CallObserver, CallServiceObserver, RTCEAGLVideoViewDelegate {
+class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
 
     let TAG = "[CallViewController]"
 
@@ -60,12 +60,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: Video Views
 
-    var remoteVideoView: RTCEAGLVideoView!
+    var remoteVideoView: RemoteVideoView!
     var localVideoView: RTCCameraPreviewView!
     weak var localVideoTrack: RTCVideoTrack?
     weak var remoteVideoTrack: RTCVideoTrack?
-    var remoteVideoSize: CGSize! = CGSize.zero
-    var remoteVideoConstraints: [NSLayoutConstraint] = []
     var localVideoConstraints: [NSLayoutConstraint] = []
 
     var shouldRemoteVideoControlsBeHidden = false {
@@ -232,10 +230,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func createVideoViews() {
-        remoteVideoView = RTCEAGLVideoView()
-        remoteVideoView.delegate = self
+        remoteVideoView = RemoteVideoView()
         remoteVideoView.isUserInteractionEnabled = false
         localVideoView = RTCCameraPreviewView()
+
         remoteVideoView.isHidden = true
         localVideoView.isHidden = true
         self.view.addSubview(remoteVideoView)
@@ -548,6 +546,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             localVideoView.autoSetDimension(.width, toSize:localVideoSize)
             localVideoView.autoSetDimension(.height, toSize:localVideoSize)
 
+            remoteVideoView.autoPinEdgesToSuperviewEdges()
+
             contactNameLabel.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
             contactNameLabel.autoPinLeadingToSuperview(withMargin: contactHMargin)
             contactNameLabel.setContentHuggingVerticalHigh()
@@ -588,52 +588,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     internal func updateRemoteVideoLayout() {
-        NSLayoutConstraint.deactivate(self.remoteVideoConstraints)
-
-        var constraints: [NSLayoutConstraint] = []
-
-        // We fill the screen with the remote video. The remote video's
-        // aspect ratio may not (and in fact will very rarely) match the 
-        // aspect ratio of the current device, so parts of the remote
-        // video will be hidden offscreen.  
-        //
-        // It's better to trim the remote video than to adopt a letterboxed
-        // layout.
-        if remoteVideoSize.width > 0 && remoteVideoSize.height > 0 &&
-            self.view.bounds.size.width > 0 && self.view.bounds.size.height > 0 {
-
-            var remoteVideoWidth = self.view.bounds.size.width
-            var remoteVideoHeight = self.view.bounds.size.height
-            if remoteVideoSize.width / self.view.bounds.size.width > remoteVideoSize.height / self.view.bounds.size.height {
-                remoteVideoWidth = round(self.view.bounds.size.height * remoteVideoSize.width / remoteVideoSize.height)
-            } else {
-                remoteVideoHeight = round(self.view.bounds.size.width * remoteVideoSize.height / remoteVideoSize.width)
-            }
-            constraints.append(remoteVideoView.autoSetDimension(.width, toSize:remoteVideoWidth))
-            constraints.append(remoteVideoView.autoSetDimension(.height, toSize:remoteVideoHeight))
-            constraints += remoteVideoView.autoCenterInSuperview()
-
-            remoteVideoView.frame = CGRect(origin:CGPoint.zero,
-                                           size:CGSize(width:remoteVideoWidth,
-                                                       height:remoteVideoHeight))
-
-            remoteVideoView.isHidden = false
-        } else {
-            constraints += remoteVideoView.autoPinEdgesToSuperviewEdges()
-            remoteVideoView.isHidden = true
-        }
-
-        self.remoteVideoConstraints = constraints
-
-        // We need to force relayout to occur immediately (and not
-        // wait for a UIKit layout/render pass) or the remoteVideoView
-        // (which presumably is updating its CALayer directly) will 
-        // ocassionally appear to have bad frames.
-        remoteVideoView.setNeedsLayout()
-        remoteVideoView.superview?.setNeedsLayout()
-        remoteVideoView.layoutIfNeeded()
-        remoteVideoView.superview?.layoutIfNeeded()
-
+        remoteVideoView.isHidden = !self.hasRemoteVideoTrack
         updateCallUI(callState: call.state)
     }
 
@@ -988,6 +943,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         updateLocalVideoLayout()
     }
 
+    var hasRemoteVideoTrack: Bool {
+        return self.remoteVideoTrack != nil
+    }
+
     internal func updateRemoteVideoTrack(remoteVideoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
         guard self.remoteVideoTrack != remoteVideoTrack else {
@@ -1000,10 +959,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         self.remoteVideoTrack = remoteVideoTrack
         self.remoteVideoTrack?.add(remoteVideoView)
         shouldRemoteVideoControlsBeHidden = false
-
-        if remoteVideoTrack == nil {
-            remoteVideoSize = CGSize.zero
-        }
 
         updateRemoteVideoLayout()
     }
@@ -1064,22 +1019,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                                        remoteVideoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
 
-        updateLocalVideoTrack(localVideoTrack:localVideoTrack)
-        updateRemoteVideoTrack(remoteVideoTrack:remoteVideoTrack)
-    }
-
-    // MARK: - RTCEAGLVideoViewDelegate
-
-    internal func videoView(_ videoView: RTCEAGLVideoView, didChangeVideoSize size: CGSize) {
-        AssertIsOnMainThread()
-
-        if videoView != remoteVideoView {
-            return
-        }
-
-        Logger.info("\(TAG) \(#function): \(size)")
-
-        remoteVideoSize = size
-        updateRemoteVideoLayout()
+        updateLocalVideoTrack(localVideoTrack: localVideoTrack)
+        updateRemoteVideoTrack(remoteVideoTrack: remoteVideoTrack)
     }
 }

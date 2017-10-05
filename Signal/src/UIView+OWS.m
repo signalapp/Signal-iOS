@@ -100,14 +100,24 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinToSquareAspectRatio
 {
-    self.translatesAutoresizingMaskIntoConstraints = NO;
+    return [self autoPinToAspectRatio:1.0];
+}
 
+- (NSLayoutConstraint *)autoPinToAspectRatio:(CGFloat)ratio
+{
+    // Clamp to ensure view has reasonable aspect ratio.
+    CGFloat clampedRatio = Clamp(ratio, 0.5, 95.0);
+    if (clampedRatio != ratio) {
+        OWSFail(@"Invalid aspect ratio: %f for view: %@", ratio, self);
+    }
+
+    self.translatesAutoresizingMaskIntoConstraints = NO;
     NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:self
                                                                   attribute:NSLayoutAttributeWidth
                                                                   relatedBy:NSLayoutRelationEqual
                                                                      toItem:self
                                                                   attribute:NSLayoutAttributeHeight
-                                                                 multiplier:1.f
+                                                                 multiplier:clampedRatio
                                                                    constant:0.f];
     [constraint autoInstall];
     return constraint;
