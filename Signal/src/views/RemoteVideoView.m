@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     label.textAlignment = NSTextAlignmentCenter;
     label.font = [UIFont ows_boldFontWithSize:ScaleFromIPhone5(20)];
     label.textColor = UIColor.whiteColor;
+    label.lineBreakMode = NSLineBreakByWordWrapping;
 
     [self addSubview:label];
     [label autoVCenterInSuperview];
