@@ -63,7 +63,7 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
 
 - (void)appLaunchDidComplete
 {
-    DDLogInfo(@"appLaunchDidComplete");
+    DDLogInfo(@"%@ appLaunchDidComplete", self.tag);
 
     self.lastCompletedLaunchAppVersion = self.currentAppVersion;
 
@@ -76,6 +76,18 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
 - (BOOL)isFirstLaunch
 {
     return self.firstAppVersion != nil;
+}
+
+#pragma mark - Logging
+
++ (NSString *)tag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)tag
+{
+    return self.class.tag;
 }
 
 @end

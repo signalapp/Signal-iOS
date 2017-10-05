@@ -407,7 +407,7 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
 
 - (void)validateUserNotificationSettings
 {
-    DDLogInfo(@"%@ in %s", self.tag, __PRETTY_FUNCTION__);
+    DDLogInfo(@"%@ in %s", self.tag, __FUNCTION__);
     UIUserNotificationSettings *settings = [UIUserNotificationSettings
         settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
               categories:[NSSet setWithObjects:[self fullNewMessageNotificationCategory],

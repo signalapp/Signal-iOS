@@ -484,11 +484,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 DDLogInfo(
                     @"%@ running post launch block for registered user: %@", self.tag, [TSAccountManager localNumber]);
-
-                __unused AnyPromise *promise =
-                    [OWSSyncPushTokensJob runWithAccountManager:[Environment getCurrent].accountManager
-                                                    preferences:[Environment preferences]];
-
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.
                 [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
@@ -809,10 +804,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)databaseViewRegistrationComplete
 {
-    DDLogInfo(@"databaseViewRegistrationComplete");
+    DDLogInfo(@"%@ databaseViewRegistrationComplete", self.tag);
 
     if ([TSAccountManager isRegistered]) {
-        DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
+        DDLogInfo(@"%@ localNumber: %@", self.tag, [TSAccountManager localNumber]);
+
+        __unused AnyPromise *promise =
+            [OWSSyncPushTokensJob runWithAccountManager:[Environment getCurrent].accountManager
+                                            preferences:[Environment preferences]];
     }
 
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
@@ -859,7 +858,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)ensureRootViewController
 {
-    DDLogInfo(@"ensureRootViewController");
+    DDLogInfo(@"%@ ensureRootViewController", self.tag);
 
     if ([TSDatabaseView hasPendingViewRegistrations] || self.hasInitialRootViewController) {
         return;
