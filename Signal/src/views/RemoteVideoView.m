@@ -152,6 +152,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)videoView:(RTCEAGLVideoView *)videoView didChangeVideoSize:(CGSize)remoteVideoSize
 {
     AssertIsOnMainThread();
+    if (remoteVideoSize.height <= 0) {
+        OWSFail(@"Illegal video height: %f", remoteVideoSize.height);
+        return;
+    }
+
     CGFloat aspectRatio = remoteVideoSize.width / remoteVideoSize.height;
 
     DDLogVerbose(@"%@ Remote video size: width: %f height: %f ratio: %f",
