@@ -107,7 +107,10 @@ NS_ASSUME_NONNULL_BEGIN
             // It's inner (private) MTKView is below the status bar.
             for (UIView *subview in [_videoRenderer subviews]) {
                 if ([subview isKindOfClass:[MTKView class]]) {
-                    [subview autoPinEdgesToSuperviewEdges];
+                    [NSLayoutConstraint autoSetPriority:UILayoutPriorityRequired
+                                         forConstraints:^{
+                                             [subview autoPinEdgesToSuperviewEdges];
+                                         }];
                 } else {
                     OWSFail(@"New subviews added to MTLVideoView. Reconsider this hack.");
                 }
@@ -174,6 +177,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (remoteVideoSize.width > 0 && remoteVideoSize.height > 0 && containingView.bounds.size.width > 0
         && containingView.bounds.size.height > 0) {
 
+        // to approximate "scale to fill" contentMode
+        // - Pin aspect ratio
+        // - Width and height is *at least* as wide as superview
         [constraints addObject:[videoView autoPinToAspectRatio:aspectRatio]];
         [constraints addObject:[videoView autoSetDimension:ALDimensionWidth
                                                     toSize:containingView.width
@@ -182,6 +188,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                     toSize:containingView.height
                                                   relation:NSLayoutRelationGreaterThanOrEqual]];
         [constraints addObjectsFromArray:[videoView autoCenterInSuperview]];
+
+        // Low priority constraints force view to be no larger than necessary.
+        [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
+                             forConstraints:^{
+                                 [constraints addObjectsFromArray:[videoView autoPinEdgesToSuperviewEdges]];
+                             }];
+
     } else {
         [constraints addObjectsFromArray:[videoView autoPinEdgesToSuperviewEdges]];
     }
