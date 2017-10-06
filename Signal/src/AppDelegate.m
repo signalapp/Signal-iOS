@@ -271,13 +271,13 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    DDLogDebug(@"%@ registered vanilla push token: %@", self.tag, deviceToken);
+    DDLogInfo(@"%@ registered vanilla push token: %@", self.tag, deviceToken);
     [PushManager.sharedManager.pushNotificationFutureSource trySetResult:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    DDLogDebug(@"%@ failed to register vanilla push token with error: %@", self.tag, error);
+    DDLogError(@"%@ failed to register vanilla push token with error: %@", self.tag, error);
 #ifdef DEBUG
     DDLogWarn(@"%@ We're in debug mode. Faking success for remote registration with a fake push identifier", self.tag);
     [PushManager.sharedManager.pushNotificationFutureSource trySetResult:[[NSMutableData dataWithLength:32] copy]];
@@ -290,7 +290,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application
     didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
-    DDLogDebug(@"%@ registered user notification settings", self.tag);
+    DDLogInfo(@"%@ registered user notification settings", self.tag);
     [PushManager.sharedManager.userNotificationFutureSource trySetResult:notificationSettings];
 }
 
