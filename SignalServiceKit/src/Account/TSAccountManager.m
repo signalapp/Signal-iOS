@@ -290,11 +290,6 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
                                                                                forNumber:phoneNumber
                                                                             signalingKey:signalingKey
                                                                                  authKey:authToken];
-    void (^completedRegistrationBlock)() = ^{
-        [self didRegister];
-        [TSSocketManager requestSocketOpen];
-        successBlock();
-    };
 
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -304,9 +299,10 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
             switch (statuscode) {
                 case 200:
                 case 204: {
+                    DDLogInfo(@"%@ Verification code accepted.", self.tag);
                     [TSStorageManager storeServerToken:authToken signalingKey:signalingKey];
                     [TSPreKeyManager registerPreKeysWithMode:RefreshPreKeysMode_SignedAndOneTime
-                                                     success:completedRegistrationBlock
+                                                     success:successBlock
                                                      failure:failureBlock];
                     break;
                 }
