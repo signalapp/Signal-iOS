@@ -818,6 +818,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if ([TSAccountManager isRegistered]) {
         DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
 
+        // Fetch messages as soon as possible after launching. In particular, when
+        // launching from the background, without this, we end up waiting some extra
+        // seconds before receiving an actionable push notification.
+        [[Environment getCurrent].messageFetcherJob runAsync];
+
         // This should happen at any launch, background or foreground.
         __unused AnyPromise *promise = [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
                                                                  accountManager:[Environment getCurrent].accountManager

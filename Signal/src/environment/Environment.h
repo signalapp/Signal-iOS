@@ -27,6 +27,7 @@
 @class CallService;
 @class OWSMessageSender;
 @class NotificationsManager;
+@class OWSMessageFetcherJob;
 
 @interface Environment : NSObject
 
@@ -46,7 +47,7 @@
 @property (nonatomic, readonly) NotificationsManager *notificationsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSPreferences *preferences;
-
+@property (nonatomic, readonly) OWSMessageFetcherJob *messageFetcherJob;
 
 @property (nonatomic, readonly) HomeViewController *homeViewController;
 @property (nonatomic, readonly, weak) UINavigationController *signUpFlowNavigationController;
