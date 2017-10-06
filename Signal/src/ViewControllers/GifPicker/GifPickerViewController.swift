@@ -168,7 +168,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         bottomBanner.autoPin(toBottomLayoutGuideOf: self, withInset:0)
 
         // The Giphy API requires us to "show their trademark prominently" in our GIF experience.
-        let logoImage = UIImage(named:"giphy_logo_2")
+        let logoImage = UIImage(named:"giphy_logo")
         let logoImageView = UIImageView(image:logoImage)
         bottomBanner.addSubview(logoImageView)
         logoImageView.autoPinHeightToSuperview(withMargin:3)
