@@ -8,7 +8,7 @@
  * See YapDatabaseLogging.h for more information.
 **/
 #if DEBUG
-  static const int ydbLogLevel = YDB_LOG_LEVEL_VERBOSE | YDB_LOG_FLAG_TRACE;
+  static const int ydbLogLevel = YDB_LOG_LEVEL_WARN; // YDB_LOG_LEVEL_VERBOSE | YDB_LOG_FLAG_TRACE;
 #else
   static const int ydbLogLevel = YDB_LOG_LEVEL_WARN;
 #endif
