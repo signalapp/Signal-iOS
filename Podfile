@@ -2,16 +2,19 @@ platform :ios, '8.0'
 source 'https://github.com/CocoaPods/Specs.git'
 
 target 'Signal' do
-    pod 'ATAppUpdater'
+	pod '25519', :inhibit_warnings => true
+    pod 'Mantle', :inhibit_warnings => true	
+	pod 'YapDatabase/SQLCipher', '~> 2.9.3', :inhibit_warnings => true	
+    pod 'ATAppUpdater', :inhibit_warnings => true
     pod 'AxolotlKit',                 git: 'https://github.com/WhisperSystems/SignalProtocolKit.git'
     #pod 'AxolotlKit',                 path: '../SignalProtocolKit'
-    pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'signal-master'
+    pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'signal-master', :inhibit_warnings => true
     #pod 'JSQMessagesViewController',   path: '../JSQMessagesViewController'
-    pod 'PureLayout'
-    pod 'OpenSSL',                    git: 'https://github.com/WhisperSystems/OpenSSL-Pod'
-    pod 'Reachability'
+    pod 'PureLayout', :inhibit_warnings => true
+    pod 'OpenSSL',                    git: 'https://github.com/WhisperSystems/OpenSSL-Pod', :inhibit_warnings => true
+    pod 'Reachability', :inhibit_warnings => true
     pod 'SignalServiceKit',           path: '.'
-    pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git'
+    pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git', :inhibit_warnings => true
     pod 'YYImage'
     target 'SignalTests' do
       inherit! :search_paths
