@@ -210,7 +210,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     self.activateButton = activateButton;
     [contentView addSubview:activateButton];
     [activateButton autoPinLeadingAndTrailingToSuperview];
-    [activateButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:separatorView2 withOffset:ScaleFromIPhone5(24)];
+    [activateButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:separatorView2 withOffset:15];
     [activateButton autoSetDimension:ALDimensionHeight toSize:kActivateButtonHeight];
 
     UIActivityIndicatorView *spinnerView =
