@@ -271,23 +271,26 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    DDLogDebug(@"%@ Successfully registered for remote notifications with token: %@", self.tag, deviceToken);
+    DDLogInfo(@"%@ registered vanilla push token: %@", self.tag, deviceToken);
     [PushManager.sharedManager.pushNotificationFutureSource trySetResult:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
+    DDLogError(@"%@ failed to register vanilla push token with error: %@", self.tag, error);
 #ifdef DEBUG
     DDLogWarn(@"%@ We're in debug mode. Faking success for remote registration with a fake push identifier", self.tag);
     [PushManager.sharedManager.pushNotificationFutureSource trySetResult:[[NSMutableData dataWithLength:32] copy]];
 #else
+    OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
     [PushManager.sharedManager.pushNotificationFutureSource trySetFailure:error];
 #endif
 }
 
 - (void)application:(UIApplication *)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+    DDLogInfo(@"%@ registered user notification settings", self.tag);
     [PushManager.sharedManager.userNotificationFutureSource trySetResult:notificationSettings];
 }
 
@@ -480,13 +483,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                DDLogInfo(
-                    @"%@ running post launch block for registered user: %@", self.tag, [TSAccountManager localNumber]);
-                __unused AnyPromise *promise =
-                    [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
-                                              accountManager:[Environment getCurrent].accountManager
-                                                 preferences:[Environment preferences]];
-
+                DDLogInfo(@"%@ running post launch block for registered user: %@", self.tag, [TSAccountManager localNumber]);
+                
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.
                 [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
@@ -819,6 +817,16 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     if ([TSAccountManager isRegistered]) {
         DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
+
+        // Fetch messages as soon as possible after launching. In particular, when
+        // launching from the background, without this, we end up waiting some extra
+        // seconds before receiving an actionable push notification.
+        [[Environment getCurrent].messageFetcherJob runAsync];
+
+        // This should happen at any launch, background or foreground.
+        __unused AnyPromise *promise = [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
+                                                                 accountManager:[Environment getCurrent].accountManager
+                                                                    preferences:[Environment preferences]];
     }
 
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];

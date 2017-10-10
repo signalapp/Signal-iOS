@@ -13,6 +13,8 @@
 #import "TSGroupThread.h"
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/Threading.h>
+#import <SignalServiceKit/OWSSignalService.h>
+#import <SignalServiceKit/OWSMessageReceiver.h>
 
 static Environment *environment = nil;
 
@@ -23,6 +25,7 @@ static Environment *environment = nil;
             callService = _callService,
             contactsManager = _contactsManager,
             contactsUpdater = _contactsUpdater,
+            messageFetcherJob = _messageFetcherJob,
             messageSender = _messageSender,
             networkManager = _networkManager,
             notificationsManager = _notificationsManager,
@@ -135,6 +138,20 @@ static Environment *environment = nil;
 {
     OWSAssert(_networkManager != nil);
     return _networkManager;
+}
+
+- (OWSMessageFetcherJob *)messageFetcherJob
+{
+    @synchronized(self)
+    {
+        if (!_messageFetcherJob) {
+            _messageFetcherJob =
+                [[OWSMessageFetcherJob alloc] initWithMessageReceiver:[OWSMessageReceiver sharedInstance]
+                                                       networkManager:self.networkManager
+                                                        signalService:[OWSSignalService sharedInstance]];
+        }
+    }
+    return _messageFetcherJob;
 }
 
 - (OWSMessageSender *)messageSender

@@ -52,18 +52,16 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 - (instancetype)initDefault
 {
-    return [self initWithNetworkManager:[Environment getCurrent].networkManager
-                         storageManager:[TSStorageManager sharedManager]
-                          callUIAdapter:[Environment getCurrent].callService.callUIAdapter
-                        messageReceiver:[OWSMessageReceiver sharedInstance]
-                          messageSender:[Environment getCurrent].messageSender];
+    return [self initWithMessageFetcherJob:[Environment getCurrent].messageFetcherJob
+                            storageManager:[TSStorageManager sharedManager]
+                             callUIAdapter:[Environment getCurrent].callService.callUIAdapter
+                             messageSender:[Environment getCurrent].messageSender];
 }
 
-- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        storageManager:(TSStorageManager *)storageManager
-                         callUIAdapter:(CallUIAdapter *)callUIAdapter
-                       messageReceiver:(OWSMessageReceiver *)messageReceiver
-                         messageSender:(OWSMessageSender *)messageSender
+- (instancetype)initWithMessageFetcherJob:(OWSMessageFetcherJob *)messageFetcherJob
+                           storageManager:(TSStorageManager *)storageManager
+                            callUIAdapter:(CallUIAdapter *)callUIAdapter
+                            messageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
     if (!self) {
@@ -72,12 +70,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
     _callUIAdapter = callUIAdapter;
     _messageSender = messageSender;
-
-    OWSSignalService *signalService = [OWSSignalService sharedInstance];
-    _messageFetcherJob = [[OWSMessageFetcherJob alloc] initWithMessageReceiver:messageReceiver
-                                                                networkManager:networkManager
-                                                                 signalService:signalService];
-
+    _messageFetcherJob = messageFetcherJob;
     _callBackgroundTask = UIBackgroundTaskInvalid;
     _currentNotifications = [NSMutableArray array];
 
