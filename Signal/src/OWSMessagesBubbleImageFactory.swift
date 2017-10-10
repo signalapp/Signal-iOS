@@ -9,6 +9,8 @@ class OWSMessagesBubbleImageFactory: NSObject {
 
     let jsqFactory = JSQMessagesBubbleImageFactory()!
 
+    // TODO: UIView is a little bit expensive to instantiate.
+    //       Can we cache this value?
     var isRTL: Bool {
         return UIView().isRTL()
     }

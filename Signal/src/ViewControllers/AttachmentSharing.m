@@ -4,6 +4,7 @@
 
 #import "AttachmentSharing.h"
 #import "TSAttachmentStream.h"
+#import "Threading.h"
 #import "UIUtil.h"
 
 @implementation AttachmentSharing
@@ -11,50 +12,64 @@
 + (void)showShareUIForAttachment:(TSAttachmentStream *)stream {
     OWSAssert(stream);
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [AttachmentSharing showShareUIForURL:stream.mediaURL];
-    });
+    [self showShareUIForURL:stream.mediaURL];
 }
 
 + (void)showShareUIForURL:(NSURL *)url {
-    AssertIsOnMainThread();
     OWSAssert(url);
 
-    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[
-                                                                                                                 url,
-                                                                                                                  ]
-                                                                                         applicationActivities:@[
-                                                                                                                 ]];
+    [AttachmentSharing showShareUIForActivityItems:@[
+        url,
+    ]];
+}
 
-    [activityViewController setCompletionWithItemsHandler:^(UIActivityType __nullable activityType,
-        BOOL completed,
-        NSArray *__nullable returnedItems,
-        NSError *__nullable activityError) {
++ (void)showShareUIForActivityItems:(NSArray *)activityItems
+{
+    OWSAssert(activityItems);
 
-        DDLogDebug(@"%@ applying signal appearence", self.tag);
-        [UIUtil applySignalAppearence];
+    DispatchMainThreadSafe(^{
+        UIActivityViewController *activityViewController =
+            [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:@[]];
 
-        if (activityError) {
-            DDLogInfo(@"%@ Failed to share with activityError: %@", self.tag, activityError);
-        } else if (completed) {
-            DDLogInfo(@"%@ Did share with activityType: %@", self.tag, activityType);
+        [activityViewController setCompletionWithItemsHandler:^(UIActivityType __nullable activityType,
+            BOOL completed,
+            NSArray *__nullable returnedItems,
+            NSError *__nullable activityError) {
+
+            DDLogDebug(@"%@ applying signal appearence", self.tag);
+            [UIUtil applySignalAppearence];
+
+            if (activityError) {
+                DDLogInfo(@"%@ Failed to share with activityError: %@", self.tag, activityError);
+            } else if (completed) {
+                DDLogInfo(@"%@ Did share with activityType: %@", self.tag, activityType);
+            }
+        }];
+
+        // Find the frontmost presented UIViewController from which to present the
+        // share view.
+        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+        UIViewController *fromViewController = window.rootViewController;
+        while (fromViewController.presentedViewController) {
+            fromViewController = fromViewController.presentedViewController;
         }
-    }];
+        OWSAssert(fromViewController);
+        [fromViewController presentViewController:activityViewController
+                                         animated:YES
+                                       completion:^{
+                                           DDLogDebug(@"%@ applying default system appearence", self.tag);
+                                           [UIUtil applyDefaultSystemAppearence];
+                                       }];
+    });
+}
 
-    // Find the frontmost presented UIViewController from which to present the
-    // share view.
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    UIViewController *fromViewController = window.rootViewController;
-    while (fromViewController.presentedViewController) {
-        fromViewController = fromViewController.presentedViewController;
-    }
-    OWSAssert(fromViewController);
-    [fromViewController presentViewController:activityViewController
-                                     animated:YES
-                                   completion:^{
-                                       DDLogDebug(@"%@ applying default system appearence", self.tag);
-                                       [UIUtil applyDefaultSystemAppearence];
-                                   }];
++ (void)showShareUIForText:(NSString *)text
+{
+    OWSAssert(text);
+
+    [AttachmentSharing showShareUIForActivityItems:@[
+        text,
+    ]];
 }
 
 #pragma mark - Logging

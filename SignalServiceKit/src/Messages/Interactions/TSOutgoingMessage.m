@@ -233,6 +233,11 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     return NO;
 }
 
+- (OWSInteractionType)interactionType
+{
+    return OWSInteractionType_OutgoingMessage;
+}
+
 #pragma mark - Update Methods
 
 // This method does the work for the "updateWith..." methods.  Please see

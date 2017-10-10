@@ -106,6 +106,8 @@ enum GiphyRequestPriority {
 }
 
 // A simple LRU cache bounded by the number of entries.
+//
+// TODO: We might want to observe memory pressure notifications.
 class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
     private var cacheMap = [KeyType: ValueType]()

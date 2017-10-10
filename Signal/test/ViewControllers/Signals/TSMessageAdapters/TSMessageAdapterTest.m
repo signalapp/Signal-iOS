@@ -3,7 +3,6 @@
 //
 
 #import "TSAttachmentStream.h"
-#import "TSContentAdapters.h"
 #import "TSOutgoingMessage.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <XCTest/XCTest.h>

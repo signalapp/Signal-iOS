@@ -8,6 +8,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSThread;
 
+typedef NS_ENUM(NSInteger, OWSInteractionType) {
+    OWSInteractionType_Unknown,
+    OWSInteractionType_IncomingMessage,
+    OWSInteractionType_OutgoingMessage,
+    OWSInteractionType_Error,
+    OWSInteractionType_Call,
+    OWSInteractionType_Info,
+    OWSInteractionType_UnreadIndicator,
+    OWSInteractionType_Offer,
+};
+
 @interface TSInteraction : TSYapDatabaseObject
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
@@ -16,7 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSThread *thread;
 @property (nonatomic, readonly) uint64_t timestamp;
 
-- (NSString *)description;
+- (BOOL)isDynamicInteraction;
+
+- (OWSInteractionType)interactionType;
 
 - (TSThread *)threadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 

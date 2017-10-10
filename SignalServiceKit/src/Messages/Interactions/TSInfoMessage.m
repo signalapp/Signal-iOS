@@ -85,6 +85,11 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
                                messageType:TSInfoMessageUserNotRegistered];
 }
 
+- (OWSInteractionType)interactionType
+{
+    return OWSInteractionType_Info;
+}
+
 - (NSString *)description {
     switch (_messageType) {
         case TSInfoMessageTypeSessionDidEnd:

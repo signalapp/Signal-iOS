@@ -121,6 +121,11 @@ NS_ASSUME_NONNULL_BEGIN
     return messageAuthorId;
 }
 
+- (OWSInteractionType)interactionType
+{
+    return OWSInteractionType_IncomingMessage;
+}
+
 #pragma mark - OWSReadTracking
 
 - (BOOL)shouldAffectUnreadCounts
