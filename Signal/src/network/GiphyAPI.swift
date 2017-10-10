@@ -261,7 +261,7 @@ enum GiphyFormat {
         // This is the Signal Android API key.
         //
         // TODO: Should Signal iOS use a separate API key?
-        let kGiphyApiKey = "3o6ZsYH6U6Eri53TXy"
+        let kGiphyApiKey = "ZsUpUm2L6cVbvei347EQNp7HrROjbOdc"
         let kGiphyPageSize = 200
         let kGiphyPageOffset = 0
         guard let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
