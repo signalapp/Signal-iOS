@@ -5,13 +5,6 @@
 #ifndef TextSecureKit_TSStorageKeys_h
 #define TextSecureKit_TSStorageKeys_h
 
-#pragma mark User Account Keys
-
-#define TSStorageUserAccountCollection @"TSStorageUserAccountCollection"
-
-#define TSStorageServerAuthToken @"TSStorageServerAuthToken"
-#define TSStorageServerSignalingKey @"TSStorageServerSignalingKey"
-
 /**
  *  Preferences exposed to the user
  */

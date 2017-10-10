@@ -4,7 +4,6 @@
 
 #import "TSAttributes.h"
 #import "TSAccountManager.h"
-#import "TSStorageManager+keyingMaterial.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

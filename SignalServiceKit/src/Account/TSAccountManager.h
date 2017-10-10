@@ -43,6 +43,22 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 - (nullable NSString *)localNumber;
 
 /**
+ *  Symmetric key that's used to encrypt message payloads from the server,
+ *
+ *  @return signaling key
+ */
++ (nullable NSString *)signalingKey;
+- (nullable NSString *)signalingKey;
+
+/**
+ *  The server auth token allows the Signal client to connect to the Signal server
+ *
+ *  @return server authentication token
+ */
++ (nullable NSString *)serverAuthToken;
+- (nullable NSString *)serverAuthToken;
+
+/**
  *  The registration ID is unique to an installation of TextSecure, it allows to know if the app was reinstalled
  *
  *  @return registrationID;

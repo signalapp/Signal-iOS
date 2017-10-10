@@ -3,9 +3,8 @@
 //
 
 #import "TSRequest.h"
-
+#import "TSAccountManager.h"
 #import "TSConstants.h"
-#import "TSStorageManager+keyingMaterial.h"
 
 @implementation TSRequest
 
@@ -37,7 +36,8 @@
 #pragma clang diagnostic pop
 
 - (void)makeAuthenticatedRequest {
-    [self.parameters addEntriesFromDictionary:@{ @"Authorization" : [TSStorageManager serverAuthToken] }];
+    OWSAssert([TSAccountManager serverAuthToken]);
+    [self.parameters addEntriesFromDictionary:@{ @"Authorization" : [TSAccountManager serverAuthToken] }];
 }
 
 @end

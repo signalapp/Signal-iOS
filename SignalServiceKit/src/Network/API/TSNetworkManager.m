@@ -6,7 +6,6 @@
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSSignalService.h"
 #import "TSAccountManager.h"
-#import "TSStorageManager+keyingMaterial.h"
 #import "TSVerifyCodeRequest.h"
 #import <AFNetworking/AFNetworking.h>
 
@@ -74,7 +73,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         if (![request isKindOfClass:[TSRequestVerificationCodeRequest class]]) {
             [sessionManager.requestSerializer
                 setAuthorizationHeaderFieldWithUsername:[TSAccountManager localNumber]
-                                               password:[TSStorageManager serverAuthToken]];
+                                               password:[TSAccountManager serverAuthToken]];
         }
 
         if ([request.HTTPMethod isEqualToString:@"GET"]) {
