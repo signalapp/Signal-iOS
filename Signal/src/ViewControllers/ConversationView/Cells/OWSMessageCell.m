@@ -6,12 +6,12 @@
 #import "AttachmentSharing.h"
 #import "AttachmentUploadView.h"
 #import "ConversationViewItem.h"
+#import "NSAttributedString+OWS.h"
 #import "OWSAudioMessageView.h"
 #import "OWSGenericAttachmentView.h"
-#import "UIColor+OWS.h"
-
-//#import <AssetsLibrary/AssetsLibrary.h>
 #import "Signal-Swift.h"
+#import "UIColor+OWS.h"
+#import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
 
 //#import "OWSExpirationTimerView.h"
@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSMessageCell ()
 
 // The text label is used so frequently that we always keep one around.
+@property (nonatomic) UIView *payloadView;
+@property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) UILabel *textLabel;
 @property (nonatomic, nullable) UIImageView *bubbleImageView;
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
@@ -30,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) AttachmentPointerView *attachmentPointerView;
 @property (nonatomic, nullable) OWSGenericAttachmentView *attachmentView;
 @property (nonatomic, nullable) OWSAudioMessageView *audioMessageView;
+@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *dateHeaderConstraints;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *contentConstraints;
 
 //@property (strong, nonatomic) OWSExpirationTimerView *expirationTimerView;
@@ -58,10 +61,19 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.contentView.backgroundColor = [UIColor whiteColor];
 
+    self.payloadView = [UIView containerView];
+    [self.contentView addSubview:self.payloadView];
+
+    self.dateHeaderLabel = [UILabel new];
+    self.dateHeaderLabel.font = [UIFont ows_regularFontWithSize:16.f];
+    self.dateHeaderLabel.textAlignment = NSTextAlignmentCenter;
+    self.dateHeaderLabel.textColor = [UIColor lightGrayColor];
+    [self.contentView addSubview:self.dateHeaderLabel];
+
     self.bubbleImageView = [UIImageView new];
     self.bubbleImageView.layoutMargins = UIEdgeInsetsZero;
     self.bubbleImageView.userInteractionEnabled = NO;
-    [self.contentView addSubview:self.bubbleImageView];
+    [self.payloadView addSubview:self.bubbleImageView];
     [self.bubbleImageView autoPinToSuperviewEdges];
 
     self.textLabel = [UILabel new];
@@ -75,6 +87,12 @@ NS_ASSUME_NONNULL_BEGIN
     // Hide these views by default.
     self.bubbleImageView.hidden = YES;
     self.textLabel.hidden = YES;
+    self.dateHeaderLabel.hidden = YES;
+
+    [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.payloadView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
+    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self.payloadView autoPinWidthToSuperview];
 
     UITapGestureRecognizer *tap =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
@@ -122,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self.viewItem.contentSize;
 }
 
-- (void)loadForDisplay
+- (void)loadForDisplay:(int)contentWidth
 {
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
@@ -134,6 +152,8 @@ NS_ASSUME_NONNULL_BEGIN
     JSQMessagesBubbleImage *bubbleImageData
         = isIncoming ? [self.bubbleFactory incoming] : [self.bubbleFactory outgoing];
     self.bubbleImageView.image = bubbleImageData.messageBubbleImage;
+
+    [self updateDateHeader:contentWidth];
 
     switch (self.cellType) {
         case OWSMessageCellType_TextMessage:
@@ -176,6 +196,80 @@ NS_ASSUME_NONNULL_BEGIN
     //        NSLog(@"textLabel: %@", NSStringFromCGRect(self.textLabel.frame));
     //        NSLog(@"bubbleImageView: %@", NSStringFromCGRect(self.bubbleImageView.frame));
     //    });
+}
+
+- (void)updateDateHeader:(int)contentWidth
+{
+    static NSDateFormatter *dateHeaderDateFormatter = nil;
+    static NSDateFormatter *dateHeaderTimeFormatter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dateHeaderDateFormatter = [NSDateFormatter new];
+        [dateHeaderDateFormatter setLocale:[NSLocale currentLocale]];
+        [dateHeaderDateFormatter setDoesRelativeDateFormatting:YES];
+        [dateHeaderDateFormatter setDateStyle:NSDateFormatterMediumStyle];
+        [dateHeaderDateFormatter setTimeStyle:NSDateFormatterNoStyle];
+
+        dateHeaderTimeFormatter = [NSDateFormatter new];
+        [dateHeaderTimeFormatter setLocale:[NSLocale currentLocale]];
+        [dateHeaderTimeFormatter setDoesRelativeDateFormatting:YES];
+        [dateHeaderTimeFormatter setDateStyle:NSDateFormatterNoStyle];
+        [dateHeaderTimeFormatter setTimeStyle:NSDateFormatterShortStyle];
+    });
+
+    if (self.viewItem.shouldShowDate) {
+        NSDate *date = self.viewItem.interaction.dateForSorting;
+        NSString *dateString = [dateHeaderDateFormatter stringFromDate:date];
+        NSString *timeString = [dateHeaderTimeFormatter stringFromDate:date];
+
+        NSAttributedString *attributedText = [NSAttributedString new];
+        attributedText = [attributedText rtlSafeAppend:dateString
+                                            attributes:@{
+                                                NSFontAttributeName : self.dateHeaderDateFont,
+                                                NSForegroundColorAttributeName : [UIColor lightGrayColor],
+                                            }
+                                         referenceView:self];
+        attributedText = [attributedText rtlSafeAppend:@" "
+                                            attributes:@{
+                                                NSFontAttributeName : self.dateHeaderDateFont,
+                                            }
+                                         referenceView:self];
+        attributedText = [attributedText rtlSafeAppend:timeString
+                                            attributes:@{
+                                                NSFontAttributeName : self.dateHeaderTimeFont,
+                                                NSForegroundColorAttributeName : [UIColor lightGrayColor],
+                                            }
+                                         referenceView:self];
+
+        self.dateHeaderLabel.attributedText = attributedText;
+        self.dateHeaderLabel.hidden = NO;
+
+        self.dateHeaderConstraints = @[
+            // Date headers should be visually centered within the conversation view,
+            // so they need to extend outside the cell's boundaries.
+            [self.dateHeaderLabel autoSetDimension:ALDimensionWidth toSize:contentWidth],
+            (self.isIncoming ? [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading]
+                             : [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTrailing]),
+            [self.dateHeaderLabel autoSetDimension:ALDimensionHeight toSize:self.dateHeaderHeight],
+        ];
+    } else {
+        self.dateHeaderLabel.hidden = YES;
+        self.dateHeaderConstraints = @[
+            [self.dateHeaderLabel autoSetDimension:ALDimensionHeight toSize:0],
+        ];
+    }
+}
+
+- (UIFont *)dateHeaderDateFont
+{
+    // TODO: Refine.
+    return [UIFont boldSystemFontOfSize:12.0f];
+}
+
+- (UIFont *)dateHeaderTimeFont
+{
+    // TODO: Refine.
+    return [UIFont systemFontOfSize:12.0f];
 }
 
 - (void)loadForTextDisplay
@@ -313,7 +407,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(view);
 
     view.userInteractionEnabled = NO;
-    [self.contentView addSubview:view];
+    [self.payloadView addSubview:view];
     self.contentConstraints = [view autoPinToSuperviewEdges];
     [self cropViewToBubbbleShape:view];
     if (self.isMediaBeingSent) {
@@ -378,7 +472,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.customView = [UIView new];
     self.customView.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
     self.customView.userInteractionEnabled = NO;
-    [self.contentView addSubview:self.customView];
+    [self.payloadView addSubview:self.customView];
     self.contentConstraints = [self.customView autoPinToSuperviewEdges];
     [self cropViewToBubbbleShape:self.customView];
 }
@@ -390,6 +484,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     const int maxMessageWidth = (int)floor(contentWidth * 0.7f);
 
+    CGSize cellSize = CGSizeZero;
     switch (self.cellType) {
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage: {
@@ -401,9 +496,9 @@ NS_ASSUME_NONNULL_BEGIN
 
             self.textLabel.text = self.textMessage;
             CGSize textSize = [self.textLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
-            CGSize result = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
+            cellSize = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
                 (CGFloat)ceil(textSize.height + textVMargin * 2));
-            return result;
+            break;
         }
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
@@ -422,18 +517,34 @@ NS_ASSUME_NONNULL_BEGIN
                 mediaWidth = (CGFloat)round(maxMediaHeight * self.contentSize.width / self.contentSize.height);
                 mediaHeight = (CGFloat)round(maxMediaHeight);
             }
-            CGSize result = CGSizeMake(mediaWidth, mediaHeight);
-            return result;
+            cellSize = CGSizeMake(mediaWidth, mediaHeight);
+            break;
         }
         case OWSMessageCellType_Audio:
-            return CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
+            cellSize = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
+            break;
         case OWSMessageCellType_GenericAttachment:
-            return CGSizeMake(maxMessageWidth, [OWSGenericAttachmentView bubbleHeight]);
+            cellSize = CGSizeMake(maxMessageWidth, [OWSGenericAttachmentView bubbleHeight]);
+            break;
         case OWSMessageCellType_DownloadingAttachment:
-            return CGSizeMake(200, 90);
+            cellSize = CGSizeMake(200, 90);
+            break;
     }
 
-    return CGSizeMake(maxMessageWidth, maxMessageWidth);
+    OWSAssert(cellSize.width > 0 && cellSize.height > 0);
+
+    cellSize.height += self.dateHeaderHeight;
+
+    return cellSize;
+}
+
+- (CGFloat)dateHeaderHeight
+{
+    if (self.viewItem.shouldShowDate) {
+        return MAX(self.dateHeaderDateFont.lineHeight, self.dateHeaderTimeFont.lineHeight);
+    } else {
+        return 0.f;
+    }
 }
 
 - (BOOL)isIncoming
@@ -489,8 +600,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     [NSLayoutConstraint deactivateConstraints:self.contentConstraints];
     self.contentConstraints = nil;
+    [NSLayoutConstraint deactivateConstraints:self.dateHeaderConstraints];
+    self.dateHeaderConstraints = nil;
 
     // The text label is used so frequently that we always keep one around.
+    self.dateHeaderLabel.text = nil;
+    self.dateHeaderLabel.hidden = YES;
     self.textLabel.text = nil;
     self.textLabel.hidden = YES;
     self.bubbleImageView.image = nil;

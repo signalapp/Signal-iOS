@@ -36,6 +36,8 @@ typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
 
 @property (nonatomic, weak) id<ConversationViewLayoutDelegate> delegate;
 
+@property (nonatomic, readonly) int contentWidth;
+
 @end
 
 NS_ASSUME_NONNULL_END

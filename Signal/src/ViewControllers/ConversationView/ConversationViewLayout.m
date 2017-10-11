@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 // unnecessary layout pass.
 @property (nonatomic) BOOL hasLayout;
 
+@property (nonatomic) int contentWidth;
+
 @end
 
 #pragma mark -
@@ -85,6 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
     const int vSpacing = 5;
     const int viewWidth = (int)floor(self.collectionView.bounds.size.width);
     const int contentWidth = (int)floor(viewWidth - 2 * hInset);
+    self.contentWidth = contentWidth;
 
     NSArray<id<ConversationViewLayoutItem>> *layoutItems = self.delegate.layoutItems;
 

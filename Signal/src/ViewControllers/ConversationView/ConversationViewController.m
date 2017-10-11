@@ -156,6 +156,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 @property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
+@property (nonatomic, readonly) ConversationViewLayout *layout;
 
 @property (nonatomic) NSArray<ConversationViewItem *> *viewItems;
 @property (nonatomic) NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemMap;
@@ -462,11 +463,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)createContents
 {
-    ConversationViewLayout *layout = [ConversationViewLayout new];
-    layout.delegate = self;
+    _layout = [ConversationViewLayout new];
+    self.layout.delegate = self;
     // We use the root view bounds as the initial frame for the collection
     // view so that its contents can be laid out immediately.
-    _collectionView = [[ConversationCollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:layout];
+    _collectionView =
+        [[ConversationCollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:self.layout];
     self.collectionView.layoutDelegate = self;
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
@@ -3921,13 +3923,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     cell.viewItem = viewItem;
     cell.delegate = self;
 
-    // TODO: Could we move this inside the cell base class?
-    if (viewItem.shouldShowDate) {
-        cell.messageDateHeaderText = [[JSQMessagesTimestampFormatter sharedFormatter]
-            attributedTimestampForDate:viewItem.interaction.dateForSorting];
-    }
-
-    [cell loadForDisplay];
+    [cell loadForDisplay:self.layout.contentWidth];
 
     return cell;
 
