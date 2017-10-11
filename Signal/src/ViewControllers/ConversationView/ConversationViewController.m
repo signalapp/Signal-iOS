@@ -2769,7 +2769,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    [self reloadViewItems];
+    NSMutableSet<NSNumber *> *rowsThatChangedSize = [[self reloadViewItems] mutableCopy];
+    for (NSNumber *row in rowsThatChangedSize) {
+        DDLogError(@"might reload: %@", row);
+    }
 
     BOOL wasAtBottom = [self isScrolledToBottom];
     // We want sending messages to feel snappy.  So, if the only
@@ -2783,35 +2786,23 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     __block BOOL scrollToBottom = wasAtBottom;
 
     [self.collectionView performBatchUpdates:^{
-        // TODO: We need to reload neighbords of changed cells.
-        void (^reloadNeighbors)(NSIndexPath *) = ^(NSIndexPath *indexPath) {
-            //            if (indexPath.row > 0) {
-            //                [self.collectionView reloadItemsAtIndexPaths:@[ [NSIndexPath indexPathForRow:indexPath.row
-            //                - 1
-            //                                                                                   inSection:0] ]];
-            //            }
-            //            if (indexPath.row + 1 < (NSInteger) self.viewItems.count) {
-            //                [self.collectionView reloadItemsAtIndexPaths:@[ [NSIndexPath indexPathForRow:indexPath.row
-            //                + 1
-            //                                                                                   inSection:0] ]];
-            //            }
-        };
-
         for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
-                    DDLogError(@".... YapDatabaseViewChangeDelete: %@", rowChange.collectionKey);
+                    DDLogError(
+                        @".... YapDatabaseViewChangeDelete: %@, %@", rowChange.collectionKey, rowChange.indexPath);
 
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
-
+                    [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
                     YapCollectionKey *collectionKey = rowChange.collectionKey;
                     OWSAssert(collectionKey.key.length > 0);
-                    reloadNeighbors(rowChange.indexPath);
                     break;
                 }
                 case YapDatabaseViewChangeInsert: {
-                    DDLogError(@".... YapDatabaseViewChangeInsert: %@", rowChange.collectionKey);
+                    DDLogError(
+                        @".... YapDatabaseViewChangeInsert: %@, %@", rowChange.collectionKey, rowChange.newIndexPath);
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
+                    [rowsThatChangedSize removeObject:@(rowChange.newIndexPath.row)];
 
                     TSInteraction *interaction = [self interactionAtIndexPath:rowChange.newIndexPath];
                     if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
@@ -2821,19 +2812,20 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                             shouldAnimateScrollToBottom = NO;
                         }
                     }
-                    reloadNeighbors(rowChange.newIndexPath);
                     break;
                 }
                 case YapDatabaseViewChangeMove: {
-                    DDLogError(@".... YapDatabaseViewChangeMove: %@", rowChange.collectionKey);
+                    DDLogError(@".... YapDatabaseViewChangeMove: %@, %@, %@",
+                        rowChange.collectionKey,
+                        rowChange.indexPath,
+                        rowChange.newIndexPath);
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
-                    reloadNeighbors(rowChange.indexPath);
-                    reloadNeighbors(rowChange.newIndexPath);
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
-                    DDLogError(@".... YapDatabaseViewChangeUpdate: %@", rowChange.collectionKey);
+                    DDLogError(
+                        @".... YapDatabaseViewChangeUpdate: %@, %@", rowChange.collectionKey, rowChange.indexPath);
                     YapCollectionKey *collectionKey = rowChange.collectionKey;
                     OWSAssert(collectionKey.key.length > 0);
                     if (collectionKey.key) {
@@ -2841,11 +2833,19 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                         [self reloadViewItem:viewItem];
                     }
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
-                    reloadNeighbors(rowChange.indexPath);
+                    [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
                     break;
                 }
             }
         }
+
+        // The changes performed above may affect the size of neighboring cells,
+        // as they may affect which cells show "date" headers or "status" footers.
+        NSMutableArray<NSIndexPath *> *rowsToReload = [NSMutableArray new];
+        for (NSNumber *row in rowsThatChangedSize) {
+            [rowsToReload addObject:[NSIndexPath indexPathForRow:row.integerValue inSection:0]];
+        }
+        [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
     }
         completion:^(BOOL success) {
             OWSAssert([NSThread isMainThread]);
@@ -3595,7 +3595,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
     if (text.length < 1) {
         return;
@@ -3810,7 +3810,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 // This is a key method.  It builds or rebuilds the list of
 // cell view models.
-- (void)reloadViewItems
+//
+// Returns a list of the rows which may have changed size and
+// need to be reloaded if we're doing an incremental update
+// of the view.
+- (NSSet<NSNumber *> *)reloadViewItems
 {
     NSMutableArray<ConversationViewItem *> *viewItems = [NSMutableArray new];
     NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemMap = [NSMutableDictionary new];
@@ -3828,29 +3832,46 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             OWSAssert(interaction);
 
             ConversationViewItem *_Nullable viewItem = self.viewItemMap[interaction.uniqueId];
-            if (!viewItem) {
+            if (viewItem) {
+                viewItem.lastRow = viewItem.row;
+            } else {
                 viewItem = [[ConversationViewItem alloc] initWithTSInteraction:interaction];
             }
+            viewItem.row = (NSInteger)row;
             [viewItems addObject:viewItem];
             OWSAssert(!viewItemMap[interaction.uniqueId]);
             viewItemMap[interaction.uniqueId] = viewItem;
         }
     }];
 
+    NSMutableSet<NSNumber *> *rowsThatChangedSize = [NSMutableSet new];
+
     // Update the "shouldShowDate" property of the view items.
-    int row = 0;
-    BOOL shouldShowDateOnNextViewItem = NO;
+    BOOL shouldShowDateOnNextViewItem = YES;
     uint64_t previousViewItemTimestamp = 0;
     for (ConversationViewItem *viewItem in viewItems) {
-        if (row == 0) {
-            viewItem.shouldShowDate = YES;
-            shouldShowDateOnNextViewItem = NO;
-        } else if (viewItem.interaction.interactionType == OWSInteractionType_UnreadIndicator
-            || viewItem.interaction.interactionType == OWSInteractionType_Offer) {
-            viewItem.shouldShowDate = NO;
+        BOOL canShowDate = NO;
+        switch (viewItem.interaction.interactionType) {
+            case OWSInteractionType_Unknown:
+            case OWSInteractionType_UnreadIndicator:
+            case OWSInteractionType_Offer:
+                canShowDate = NO;
+                break;
+            case OWSInteractionType_IncomingMessage:
+            case OWSInteractionType_OutgoingMessage:
+            case OWSInteractionType_Error:
+            case OWSInteractionType_Info:
+            case OWSInteractionType_Call:
+                canShowDate = YES;
+                break;
+        }
+
+        BOOL shouldShowDate = NO;
+        if (!canShowDate) {
+            shouldShowDate = NO;
             shouldShowDateOnNextViewItem = YES;
         } else if (shouldShowDateOnNextViewItem) {
-            viewItem.shouldShowDate = YES;
+            shouldShowDate = YES;
             shouldShowDateOnNextViewItem = NO;
         } else {
             uint64_t viewItemTimestamp = viewItem.interaction.timestampForSorting;
@@ -3859,16 +3880,26 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             uint64_t timeDifferenceMs = viewItemTimestamp - previousViewItemTimestamp;
             static const uint64_t kShowTimeIntervalMs = 5 * kMinuteInMs;
             if (timeDifferenceMs > kShowTimeIntervalMs) {
-                viewItem.shouldShowDate = YES;
+                shouldShowDate = YES;
             }
             shouldShowDateOnNextViewItem = NO;
         }
+        if (viewItem.shouldShowDate != shouldShowDate) {
+            // If this is an existing view item and it has changed size,
+            // note that so that we can reload this cell while doing
+            // incremental updates.
+            if (viewItem.lastRow != NSNotFound) {
+                [rowsThatChangedSize addObject:@(viewItem.lastRow)];
+            }
+        }
+        viewItem.shouldShowDate = shouldShowDate;
         previousViewItemTimestamp = viewItem.interaction.timestampForSorting;
-        row++;
     }
 
     self.viewItems = viewItems;
     self.viewItemMap = viewItemMap;
+
+    return [rowsThatChangedSize copy];
 }
 
 // Whenever an interaction is modified, we need to reload it from the DB

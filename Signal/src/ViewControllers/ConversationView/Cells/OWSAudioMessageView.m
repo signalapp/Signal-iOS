@@ -220,7 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
         filename = [[self.attachmentStream filePath] lastPathComponent];
     }
     NSString *topText = [[filename stringByDeletingPathExtension]
-        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     if (topText.length < 1) {
         topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType].uppercaseString;
     }

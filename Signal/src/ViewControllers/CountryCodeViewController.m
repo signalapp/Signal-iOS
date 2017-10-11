@@ -143,7 +143,7 @@
 - (void)searchTextDidChange
 {
     NSString *searchText =
-        [self.searchBar.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        [self.searchBar.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
     self.countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:searchText];
 

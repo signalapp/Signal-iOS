@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)trimmedText
 {
-    return [self.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return [self.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 // TODO:

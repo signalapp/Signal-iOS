@@ -56,10 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(!self.textLabel);
 
-    //    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.layoutMargins = UIEdgeInsetsZero;
-
-    self.contentView.backgroundColor = [UIColor whiteColor];
 
     self.payloadView = [UIView containerView];
     [self.contentView addSubview:self.payloadView];

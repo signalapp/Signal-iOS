@@ -281,7 +281,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 - (void)sendCodeAction
 {
     NSString *phoneNumberText =
-        [_phoneNumberTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        [_phoneNumberTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     if (phoneNumberText.length < 1) {
         [OWSAlerts
             showAlertWithTitle:NSLocalizedString(@"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE",

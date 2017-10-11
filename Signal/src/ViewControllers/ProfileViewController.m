@@ -410,7 +410,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (NSString *)normalizedProfileName
 {
-    return [self.nameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return [self.nameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 - (void)updateProfileCompleted
