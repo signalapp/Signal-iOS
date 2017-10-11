@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
+    // We use incoming/outgoing, not left/right to support RTL.
     ConversationViewLayoutAlignment_Incoming,
     ConversationViewLayoutAlignment_Outgoing,
     ConversationViewLayoutAlignment_FullWidth,
@@ -29,6 +30,8 @@ typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
 
 #pragma mark -
 
+// A new lean and efficient layout for conversation view designed to
+// handle our edge cases (e.g. full-width unread indicators, etc.).
 @interface ConversationViewLayout : UICollectionViewLayout
 
 @property (nonatomic, weak) id<ConversationViewLayoutDelegate> delegate;

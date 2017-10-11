@@ -12,11 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGSize contentSize;
 @property (nonatomic, readonly) NSMutableDictionary<NSNumber *, UICollectionViewLayoutAttributes *> *itemAttributesMap;
 
-// This may be redundant with logic in UICollectionViewLayout, but
-// it can't hurt and it ensures that we can safely & cheaply call
-// prepareLayout from view logic to ensure that we always have a
-// valid layout without incurring any of the (great) expense of
-// performing an unnecessary layout pass.
+// This dirty flag may be redundant with logic in UICollectionViewLayout,
+// but it can't hurt and it ensures that we can safely & cheaply call
+// prepareLayout from view logic to ensure that we always have a¸valid
+// layout without incurring any of the (great) expense of performing an
+// unnecessary layout pass.
 @property (nonatomic) BOOL hasLayout;
 
 @end

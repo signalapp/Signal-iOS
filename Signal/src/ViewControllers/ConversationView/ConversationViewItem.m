@@ -217,6 +217,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - View State
 
+// TODO: Now that we're caching the displayable text on the view items,
+//       I don't think we need this cache any more.
 - (NSCache *)displayableTextCache
 {
     static NSCache *cache = nil;
@@ -285,7 +287,6 @@ NS_ASSUME_NONNULL_BEGIN
     TSMessage *interaction = (TSMessage *)self.interaction;
     if (interaction.body.length > 0) {
         self.messageCellType = OWSMessageCellType_TextMessage;
-        // TODO: This can be expensive.  Should we cache it on the view item?
         self.textMessage = [self displayableTextForText:interaction.body interactionId:interaction.uniqueId];
         return;
     } else {
@@ -297,7 +298,6 @@ NS_ASSUME_NONNULL_BEGIN
 
                 if ([attachment.contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
                     self.messageCellType = OWSMessageCellType_OversizeTextMessage;
-                    // TODO: This can be expensive.  Should we cache it on the view item?
                     self.textMessage = [self displayableTextForAttachmentStream:self.attachmentStream
                                                                   interactionId:interaction.uniqueId];
                     return;
