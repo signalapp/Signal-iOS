@@ -525,7 +525,20 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             [[Environment getCurrent].contactsManager fetchSystemContactsIfAlreadyAuthorized];
             // This will fetch new messages, if we're using domain fronting.
             [[PushManager sharedManager] applicationDidBecomeActive];
+
+            if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
+                DDLogInfo(
+                    @"%@ Retrying to register for remote notifications since user hasn't registered yet.", self.tag);
+                // Push tokens don't normally change while the app is launched, so checking once during launch is
+                // usually sufficient, but e.g. on iOS11, users who have disabled "Allow Notifications" and disabled
+                // "Background App Refresh" will not be able to obtain an APN token. Enabling those settings does not
+                // restart the app, so we check every activation for users who haven't yet registered.
+                __unused AnyPromise *promise =
+                    [OWSSyncPushTokensJob runWithAccountManager:[Environment getCurrent].accountManager
+                                                    preferences:[Environment preferences]];
+            }
         });
+        
     }
 
     DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.tag);

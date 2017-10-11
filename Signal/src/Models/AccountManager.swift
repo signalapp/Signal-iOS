@@ -46,6 +46,17 @@ class AccountManager: NSObject {
             self.registerForTextSecure(verificationCode: verificationCode)
         }.then {
             self.syncPushTokens()
+        }.recover { (error) -> Promise<Void> in
+            switch error {
+            case PushRegistrationError.pushNotSupported(let description):
+                // This can happen with:
+                // - simulators, none of which support receiving push notifications
+                // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
+                Logger.info("\(self.TAG) Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
+                return self.registerForManualMessageFetching()
+            default:
+                throw error
+            }
         }.then {
             self.completeRegistration()
         }
@@ -73,26 +84,20 @@ class AccountManager: NSObject {
         self.textSecureAccountManager.didRegister()
     }
 
-    // MARK: Push Tokens
+    // MARK: Message Delivery
 
     func updatePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
-        return firstly {
-            return self.updateTextSecurePushTokens(pushToken: pushToken, voipToken: voipToken)
-        }.then {
-            Logger.info("\(self.TAG) Successfully updated text secure push tokens.")
-            // TODO code cleanup - convert to `return Promise(value: nil)` and test
-            return Promise { fulfill, _ in
-                fulfill()
-            }
-        }
-    }
-
-    private func updateTextSecurePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
         return Promise { fulfill, reject in
             self.textSecureAccountManager.registerForPushNotifications(pushToken:pushToken,
                                                                        voipToken:voipToken,
                                                                        success:fulfill,
                                                                        failure:reject)
+        }
+    }
+
+    func registerForManualMessageFetching() -> Promise<Void> {
+        return Promise { fulfill, reject in
+            self.textSecureAccountManager.registerForManualMessageFetching(success:fulfill, failure:reject)
         }
     }
 

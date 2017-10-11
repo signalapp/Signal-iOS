@@ -274,6 +274,20 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
     [self registerWithPhoneNumber:number success:successBlock failure:failureBlock smsVerification:NO];
 }
 
+- (void)registerForManualMessageFetchingWithSuccess:(void (^)())successBlock
+                                            failure:(void (^)(NSError *error))failureBlock
+{
+    TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithManualMessageFetching:YES];
+    [self.networkManager makeRequest:request
+                             success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+                                 DDLogInfo(@"%@ updated server with account attributes to enableManualFetching", self.tag);
+                                 successBlock();
+                             } failure:^(NSURLSessionDataTask * _Nonnull task, NSError * _Nonnull error) {
+                                 DDLogInfo(@"%@ failed to updat server with account attributes with error: %@", self.tag, error);
+                                 failureBlock(error);
+                             }];
+}
+
 - (void)verifyAccountWithCode:(NSString *)verificationCode
                       success:(void (^)())successBlock
                       failure:(void (^)(NSError *error))failureBlock

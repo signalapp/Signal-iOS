@@ -65,7 +65,7 @@ class SyncPushTokensJob: NSObject {
                 return self.recordPushTokensLocally(pushToken:pushToken, voipToken:voipToken)
             }
         }.then {
-            Logger.info("\(self.TAG) in \(#function): succeeded")
+            Logger.info("\(self.TAG) completed successfully.")
         }.catch { error in
             Logger.error("\(self.TAG) in \(#function): Failed with error: \(error).")
         }

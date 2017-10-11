@@ -6,6 +6,12 @@ import Foundation
 import PromiseKit
 import PushKit
 
+public enum PushRegistrationError: Error {
+    case assertionError(description: String)
+    case pushNotSupported(description: String)
+    case timeout
+}
+
 /**
  * Singleton used to integrate with push notification services - registration and routing received remote notifications.
  */
@@ -26,15 +32,16 @@ import PushKit
         super.init()
     }
 
-    private enum PushRegistrationManagerError: Error {
-        case assertionError(description: String)
-    }
+    private var userNotificationSettingsPromise: Promise<Void>?
+    private var fulfillUserNotificationSettingsPromise: (() -> Void)?
 
-    private var voipRegistry: PKPushRegistry?
+    private var vanillaTokenPromise: Promise<Data>?
     private var fulfillVanillaTokenPromise: ((Data) -> Void)?
     private var rejectVanillaTokenPromise: ((Error) -> Void)?
+
+    private var voipRegistry: PKPushRegistry?
+    private var voipTokenPromise: Promise<Data>?
     private var fulfillVoipTokenPromise: ((Data) -> Void)?
-    private var fulfillRegisterUserNotificationSettingsPromise: (() -> Void)?
 
     // MARK: Public interface
 
@@ -43,8 +50,7 @@ import PushKit
 
         return self.registerUserNotificationSettings().then {
             guard !Platform.isSimulator else {
-                Logger.warn("\(self.TAG) Using fake push tokens for simulator")
-                return Promise(value: (pushToken: "fakePushToken", voipToken: "fakeVoipToken"))
+                throw PushRegistrationError.pushNotSupported(description:"Push not supported on simulators")
             }
 
             return self.registerForVanillaPushToken().then { vanillaPushToken in
@@ -62,12 +68,12 @@ import PushKit
     // we register user notification settings.
     @objc
     public func didRegisterUserNotificationSettings() {
-        guard let fulfillRegisterUserNotificationSettingsPromise = self.fulfillRegisterUserNotificationSettingsPromise else {
+        guard let fulfillUserNotificationSettingsPromise = self.fulfillUserNotificationSettingsPromise else {
             owsFail("\(TAG) promise completion in \(#function) unexpectedly nil")
             return
         }
 
-        fulfillRegisterUserNotificationSettingsPromise()
+        fulfillUserNotificationSettingsPromise()
     }
 
     // MARK: Vanilla push token
@@ -128,13 +134,15 @@ import PushKit
     private func registerUserNotificationSettings() -> Promise<Void> {
         AssertIsOnMainThread()
 
-        guard fulfillRegisterUserNotificationSettingsPromise == nil else {
+        guard self.userNotificationSettingsPromise == nil else {
+            let promise = self.userNotificationSettingsPromise!
             Logger.info("\(TAG) already registered user notification settings")
-            return Promise(value: ())
+            return promise
         }
 
         let (promise, fulfill, _) = Promise<Void>.pending()
-        self.fulfillRegisterUserNotificationSettingsPromise = fulfill
+        self.userNotificationSettingsPromise = promise
+        self.fulfillUserNotificationSettingsPromise = fulfill
 
         Logger.info("\(TAG) registering user notification settings")
 
@@ -143,18 +151,81 @@ import PushKit
         return promise
     }
 
+    /**
+     * work around for iOS11 bug, wherein for users who have disabled notifications
+     * and background fetch, the AppDelegate will neither succeed nor fail at registering
+     * for a vanilla push token.
+     */
+    private var isSusceptibleToFailedPushRegistration: Bool {
+        // Only affects iOS11 users
+        guard #available(iOS 11.0, *) else {
+            return false
+        }
+
+        // Only affects users who have disabled both: background refresh *and* notifications
+        guard UIApplication.shared.backgroundRefreshStatus == .denied else {
+            return false
+        }
+
+        guard let notificationSettings = UIApplication.shared.currentUserNotificationSettings else {
+            return false
+        }
+
+        guard notificationSettings.types == [] else {
+            return false
+        }
+
+        return true
+    }
+
     private func registerForVanillaPushToken() -> Promise<String> {
         Logger.info("\(self.TAG) in \(#function)")
         AssertIsOnMainThread()
 
+        guard self.vanillaTokenPromise == nil else {
+            let promise = vanillaTokenPromise!
+            assert(promise.isPending)
+            Logger.info("\(TAG) alreay pending promise for vanilla push token")
+            return promise.then { $0.hexEncodedString }
+        }
+
+        // No pending vanilla token yet. Create a new promise
         let (promise, fulfill, reject) = Promise<Data>.pending()
+        self.vanillaTokenPromise = promise
         self.fulfillVanillaTokenPromise = fulfill
         self.rejectVanillaTokenPromise = reject
         UIApplication.shared.registerForRemoteNotifications()
 
-        return promise.then { (pushTokenData: Data) -> String in
+        let kTimeout: TimeInterval = 10
+        let timeout: Promise<Data> = after(seconds: kTimeout).then { throw PushRegistrationError.timeout }
+        let promiseWithTimeout: Promise<Data> = race(promise, timeout)
+
+        return promiseWithTimeout.recover { error -> Promise<Data> in
+            switch error {
+            case PushRegistrationError.timeout:
+                if self.isSusceptibleToFailedPushRegistration {
+                    // If we've timed out on a device known to be susceptible to failures, quit trying
+                    // so the user doesn't remain indefinitely hung for no good reason.
+                    throw PushRegistrationError.pushNotSupported(description: "Device configuration disallows push notifications")
+                } else {
+                    // Sometimes registration can just take a while.
+                    // If we're not on a device known to be susceptible to push registration failure,
+                    // just return the original promise.
+                    return promise
+                }
+            default:
+                throw error
+            }
+        }.then { (pushTokenData: Data) -> String in
+            if self.isSusceptibleToFailedPushRegistration {
+                // Sentinal in case this bug is fixed.
+                owsFail("Device was unexpectedly able to complete push registration even though it was susceptible to failure.")
+            }
+
             Logger.info("\(self.TAG) successfully registered for vanilla push notifications")
-            return pushTokenData.hexEncodedString()
+            return pushTokenData.hexEncodedString
+        }.always {
+            self.vanillaTokenPromise = nil
         }
     }
 
@@ -162,8 +233,15 @@ import PushKit
         AssertIsOnMainThread()
         Logger.info("\(self.TAG) in \(#function)")
 
-        // Voip token not yet registered, assign promise.
+        guard self.voipTokenPromise == nil else {
+            let promise = self.voipTokenPromise!
+            assert(promise.isPending)
+            return promise.then { $0.hexEncodedString }
+        }
+
+        // No pending voip token yet. Create a new promise
         let (promise, fulfill, reject) = Promise<Data>.pending()
+        self.voipTokenPromise = promise
         self.fulfillVoipTokenPromise = fulfill
 
         if self.voipRegistry == nil {
@@ -177,10 +255,10 @@ import PushKit
 
         guard let voipRegistry = self.voipRegistry else {
             owsFail("\(TAG) failed to initialize voipRegistry in \(#function)")
-            reject(PushRegistrationManagerError.assertionError(description: "\(TAG) failed to initialize voipRegistry in \(#function)"))
+            reject(PushRegistrationError.assertionError(description: "\(TAG) failed to initialize voipRegistry in \(#function)"))
             return promise.then { _ in
-                // coerce expected type of returned promise - we don't really care about the value, since this promise has been rejected.
-                // in practice this shouldn't happen
+                // coerce expected type of returned promise - we don't really care about the value,
+                // since this promise has been rejected. In practice this shouldn't happen
                 String()
             }
         }
@@ -194,14 +272,16 @@ import PushKit
 
         return promise.then { (voipTokenData: Data) -> String in
             Logger.info("\(self.TAG) successfully registered for voip push notifications")
-            return voipTokenData.hexEncodedString()
+            return voipTokenData.hexEncodedString
+        }.always {
+            self.voipTokenPromise = nil
         }
     }
 }
 
 // We transmit pushToken data as hex encoded string to the server
 fileprivate extension Data {
-    func hexEncodedString() -> String {
+    var hexEncodedString: String {
         return map { String(format: "%02hhx", $0) }.joined()
     }
 }

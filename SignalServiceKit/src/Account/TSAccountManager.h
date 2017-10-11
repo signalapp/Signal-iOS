@@ -65,6 +65,9 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
                       success:(void (^)())successBlock
                       failure:(void (^)(NSError *error))failureBlock;
 
+- (void)registerForManualMessageFetchingWithSuccess:(void (^)())successBlock
+                                            failure:(void (^)(NSError *error))failureBlock;
+
 // Called once registration is complete - meaning the following have succeeded:
 // - obtained signal server credentials
 // - uploaded pre-keys

@@ -142,7 +142,7 @@
 
       __block BOOL success;
 
-      TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithUpdatedAttributesWithVoice];
+      TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithManualMessageFetching:NO];
       [[TSNetworkManager sharedManager] makeRequest:request
           success:^(NSURLSessionDataTask *task, id responseObject) {
               success = YES;

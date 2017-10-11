@@ -23,7 +23,7 @@ static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
     DDLogWarn(@"%@ running migration...", self.tag);
     if ([TSAccountManager isRegistered]) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithUpdatedAttributesWithVoice];
+            TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithManualMessageFetching:NO];
             [[TSNetworkManager sharedManager] makeRequest:request
                 success:^(NSURLSessionDataTask *task, id responseObject) {
                     DDLogInfo(@"%@ successfully ran", self.tag);
