@@ -242,43 +242,45 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         // Other threads may modify this profile's properties
         OWSAssert([userProfile isEqual:userProfileCopy]);
     }
-
-    // Make sure to save on the local db connection for consistency.
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [userProfileCopy saveWithTransaction:transaction];
-    }];
-
-    BOOL isLocalUserProfile = userProfile == self.localUserProfile;
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (isLocalUserProfile) {
-            // We populate an initial (empty) profile on launch of a new install, but until
-            // we have a registered account, syncing will fail (and there could not be any
-            // linked device to sync to at this point anyway).
-            if ([TSAccountManager isRegistered]) {
-                [MultiDeviceProfileKeyUpdateJob runWithProfileKey:userProfile.profileKey
-                                                  identityManager:self.identityManager
-                                                    messageSender:self.messageSender
-                                                   profileManager:self];
+ 
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        // Make sure to save on the local db connection for consistency.
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [userProfileCopy saveWithTransaction:transaction];
+        }];
+        
+        BOOL isLocalUserProfile = userProfile == self.localUserProfile;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (isLocalUserProfile) {
+                // We populate an initial (empty) profile on launch of a new install, but until
+                // we have a registered account, syncing will fail (and there could not be any
+                // linked device to sync to at this point anyway).
+                if ([TSAccountManager isRegistered]) {
+                    [MultiDeviceProfileKeyUpdateJob runWithProfileKey:userProfile.profileKey
+                                                      identityManager:self.identityManager
+                                                        messageSender:self.messageSender
+                                                       profileManager:self];
+                }
+                
+                [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
+                                                                         object:nil
+                                                                       userInfo:nil];
+            } else {
+                [[NSNotificationCenter defaultCenter]
+                 postNotificationNameAsync:kNSNotificationName_OtherUsersProfileWillChange
+                 object:nil
+                 userInfo:@{
+                            kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
+                            }];
+                [[NSNotificationCenter defaultCenter]
+                 postNotificationNameAsync:kNSNotificationName_OtherUsersProfileDidChange
+                 object:nil
+                 userInfo:@{
+                            kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
+                            }];
             }
-
-            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
-                                                                     object:nil
-                                                                   userInfo:nil];
-        } else {
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationName_OtherUsersProfileWillChange
-                                   object:nil
-                                 userInfo:@{
-                                     kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
-                                 }];
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationName_OtherUsersProfileDidChange
-                                   object:nil
-                                 userInfo:@{
-                                     kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
-                                 }];
-        }
+        });
     });
 }
 
