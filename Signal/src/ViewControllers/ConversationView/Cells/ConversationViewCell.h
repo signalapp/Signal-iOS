@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplay;
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth maxMessageWidth:(int)maxMessageWidth;
+- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth;
 
 @end
 

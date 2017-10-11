@@ -387,10 +387,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self cropViewToBubbbleShape:self.customView];
 }
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth maxMessageWidth:(int)maxMessageWidth
+- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
 {
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+
+    const int maxMessageWidth = (int)floor(contentWidth * 0.7f);
 
     switch (self.cellType) {
         case OWSMessageCellType_TextMessage:
@@ -399,16 +401,12 @@ NS_ASSUME_NONNULL_BEGIN
             CGFloat leftMargin = isRTL ? self.textTrailingMargin : self.textLeadingMargin;
             CGFloat rightMargin = isRTL ? self.textLeadingMargin : self.textTrailingMargin;
             CGFloat textVMargin = self.textVMargin;
-            CGFloat maxTextWidth = maxMessageWidth - (leftMargin + rightMargin);
+            const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
 
             self.textLabel.text = self.textMessage;
             CGSize textSize = [self.textLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
             CGSize result = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
                 (CGFloat)ceil(textSize.height + textVMargin * 2));
-            //        NSLog(@"???? %@", self.viewItem.interaction.debugDescription);
-            //        NSLog(@"\t %@", messageBody);
-            //        NSLog(@"textSize: %@", NSStringFromCGSize(textSize));
-            //        NSLog(@"result: %@", NSStringFromCGSize(result));
             return result;
         }
         case OWSMessageCellType_StillImage:
@@ -420,19 +418,15 @@ NS_ASSUME_NONNULL_BEGIN
             // TODO: Adjust this behavior.
             // TODO: This behavior is a bit different than the old behavior defined
             //       in JSQMediaItem+OWS.h.  Let's discuss.
-            const CGFloat maxContentWidth = maxMessageWidth;
-            const CGFloat maxContentHeight = maxMessageWidth;
-            CGFloat contentWidth = (CGFloat)round(maxContentWidth);
-            CGFloat contentHeight = (CGFloat)round(maxContentWidth * self.contentSize.height / self.contentSize.width);
-            if (contentHeight > maxContentHeight) {
-                contentWidth = (CGFloat)round(maxContentHeight * self.contentSize.width / self.contentSize.height);
-                contentHeight = (CGFloat)round(maxContentHeight);
+            const CGFloat maxMediaWidth = maxMessageWidth;
+            const CGFloat maxMediaHeight = maxMessageWidth;
+            CGFloat mediaWidth = (CGFloat)round(maxMediaWidth);
+            CGFloat mediaHeight = (CGFloat)round(maxMediaWidth * self.contentSize.height / self.contentSize.width);
+            if (mediaHeight > maxMediaHeight) {
+                mediaWidth = (CGFloat)round(maxMediaHeight * self.contentSize.width / self.contentSize.height);
+                mediaHeight = (CGFloat)round(maxMediaHeight);
             }
-            CGSize result = CGSizeMake(contentWidth, contentHeight);
-            //            DDLogError(@"measuring: %@ %@ %@", self.viewItem.interaction.uniqueId,
-            //            self.viewItem.interaction.description, self.attachmentStream.contentType); DDLogError(@"\t
-            //            contentSize: %@", NSStringFromCGSize(self.contentSize)); DDLogError(@"\t result: %@",
-            //            NSStringFromCGSize(result));
+            CGSize result = CGSizeMake(mediaWidth, mediaHeight);
             return result;
         }
         case OWSMessageCellType_Audio:

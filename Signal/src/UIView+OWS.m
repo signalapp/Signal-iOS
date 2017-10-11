@@ -294,7 +294,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
         constraint.active = YES;
         return constraint;
     } else {
-        //        CGFloat oldMargin = margin;
         margin += (self.isRTL ? self.superview.layoutMargins.left : self.superview.layoutMargins.right);
         return [self autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:margin];
     }

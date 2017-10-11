@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.cachedCellSize = nil;
 }
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth maxMessageWidth:(int)maxMessageWidth
+- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
 {
     OWSAssert([NSThread isMainThread]);
 
@@ -85,16 +85,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self.cachedCellSize) {
         ConversationViewCell *_Nullable measurementCell = [self measurementCell];
         measurementCell.viewItem = self;
-        cellSize = [measurementCell cellSizeForViewWidth:viewWidth maxMessageWidth:maxMessageWidth];
+        cellSize = [measurementCell cellSizeForViewWidth:viewWidth contentWidth:contentWidth];
         self.cachedCellSize = [NSValue valueWithCGSize:cellSize];
         [measurementCell prepareForReuse];
-
-        //        DDLogError(@"cellSizeForViewWidth: %@ %@", self.interaction.uniqueId, self.interaction.description);
-        //        DDLogError(@"\t fresh cellSize: %@", NSStringFromCGSize(cellSize));
     } else {
         cellSize = [self.cachedCellSize CGSizeValue];
-        //        DDLogError(@"cellSizeForViewWidth: %@ %@", self.interaction.uniqueId, self.interaction.description);
-        //        DDLogError(@"\t cached cellSize: %@", NSStringFromCGSize(cellSize));
     }
     return cellSize;
 }

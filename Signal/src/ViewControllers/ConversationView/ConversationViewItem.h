@@ -26,6 +26,13 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
 @class TSAttachmentStream;
 @class TSInteraction;
 
+// This is a ViewModel for cells in the conversation view.
+//
+// The lifetime of this class is the lifetime of that cell
+// in the load window of the conversation view.
+//
+// Critically, this class implements ConversationViewLayoutItem
+// and does caching of the cell's size.
 @interface ConversationViewItem : NSObject <ConversationViewLayoutItem, OWSAudioAttachmentPlayerDelegate>
 
 @property (nonatomic, readonly) TSInteraction *interaction;
@@ -51,11 +58,6 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
 @property (nonatomic, nullable) NSNumber *audioDurationSeconds;
 
 - (CGFloat)audioProgressSeconds;
-
-//#pragma mark - Menu Actions
-//
-//- (BOOL)canPerformEditingAction:(SEL)selector;
-//- (void)performEditingAction:(SEL)selector;
 
 #pragma mark - Expiration
 

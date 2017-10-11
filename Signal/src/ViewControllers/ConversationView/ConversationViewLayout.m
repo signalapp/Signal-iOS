@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
     const int hInset = 10;
     const int vSpacing = 5;
     const int viewWidth = (int)floor(self.collectionView.bounds.size.width);
-    const int maxMessageWidth = (int)floor((viewWidth - 2 * hInset) * 0.7f);
+    const int contentWidth = (int)floor(viewWidth - 2 * hInset);
 
     NSArray<id<ConversationViewLayoutItem>> *layoutItems = self.delegate.layoutItems;
 
@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSInteger row = 0;
     for (id<ConversationViewLayoutItem> layoutItem in layoutItems) {
-        CGSize layoutSize = [layoutItem cellSizeForViewWidth:viewWidth maxMessageWidth:maxMessageWidth];
+        CGSize layoutSize = [layoutItem cellSizeForViewWidth:viewWidth contentWidth:contentWidth];
 
         layoutSize.width = MIN(viewWidth, floor(layoutSize.width));
         layoutSize.height = floor(layoutSize.height);

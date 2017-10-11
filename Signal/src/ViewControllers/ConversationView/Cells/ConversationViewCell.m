@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSFail(@"%@ This method should be overridden.", self.logTag);
 }
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth maxMessageWidth:(int)maxMessageWidth
+- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
 {
     OWSFail(@"%@ This method should be overridden.", self.logTag);
     return CGSizeZero;

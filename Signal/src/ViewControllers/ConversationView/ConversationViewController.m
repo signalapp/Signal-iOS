@@ -22,7 +22,6 @@
 #import "NSAttributedString+OWS.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
-#import "OWSCall.h"
 #import "OWSContactOffersCell.h"
 #import "OWSContactOffersInteraction.h"
 #import "OWSContactsManager.h"
@@ -3826,6 +3825,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 #pragma mark - View Items
 
+// This is a key method.  It builds or rebuilds the list of
+// cell view models.
 - (void)reloadViewItems
 {
     NSMutableArray<ConversationViewItem *> *viewItems = [NSMutableArray new];
@@ -3887,6 +3888,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.viewItemMap = viewItemMap;
 }
 
+// Whenever an interaction is modified, we need to reload it from the DB
+// and update the corresponding view item.
 - (void)reloadViewItem:(ConversationViewItem *)viewItem
 {
     OWSAssert([NSThread isMainThread]);
