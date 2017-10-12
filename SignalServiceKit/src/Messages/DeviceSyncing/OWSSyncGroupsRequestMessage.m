@@ -43,6 +43,13 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (BOOL)isSilent
+{
+    // Avoid "phantom messages"
+
+    return YES;
+}
+
 - (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
 {
     OWSSignalServiceProtosGroupContextBuilder *groupContextBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
