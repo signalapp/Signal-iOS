@@ -614,13 +614,21 @@ NS_ASSUME_NONNULL_BEGIN
             // TODO: Adjust this behavior.
             // TODO: This behavior is a bit different than the old behavior defined
             //       in JSQMediaItem+OWS.h.  Let's discuss.
+
+            CGFloat contentAspectRatio = self.contentSize.width / self.contentSize.height;
+            // Clamp the aspect ratio so that very thin/wide content is presented
+            // in a reasonable way.
+            const CGFloat minAspectRatio = 0.25f;
+            const CGFloat maxAspectRatio = 1 / minAspectRatio;
+            contentAspectRatio = MAX(minAspectRatio, MIN(maxAspectRatio, contentAspectRatio));
+
             const CGFloat maxMediaWidth = maxMessageWidth;
             const CGFloat maxMediaHeight = maxMessageWidth;
-            CGFloat mediaWidth = (CGFloat)round(maxMediaWidth);
-            CGFloat mediaHeight = (CGFloat)round(maxMediaWidth * self.contentSize.height / self.contentSize.width);
-            if (mediaHeight > maxMediaHeight) {
-                mediaWidth = (CGFloat)round(maxMediaHeight * self.contentSize.width / self.contentSize.height);
-                mediaHeight = (CGFloat)round(maxMediaHeight);
+            CGFloat mediaWidth = (CGFloat)round(maxMediaHeight * contentAspectRatio);
+            CGFloat mediaHeight = (CGFloat)round(maxMediaHeight);
+            if (mediaWidth > maxMediaWidth) {
+                mediaWidth = (CGFloat)round(maxMediaWidth);
+                mediaHeight = (CGFloat)round(maxMediaWidth / contentAspectRatio);
             }
             cellSize = CGSizeMake(mediaWidth, mediaHeight);
             break;
