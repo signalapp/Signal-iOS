@@ -6,8 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSExpirationTimerView;
-
 @interface OWSMessageCell : ConversationViewCell
 
 @end

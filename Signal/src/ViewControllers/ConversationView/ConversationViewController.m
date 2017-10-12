@@ -2762,6 +2762,24 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
+    // We need to reload any modified interactions _before_ we call
+    // reloadViewItems.
+    for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
+        switch (rowChange.type) {
+            case YapDatabaseViewChangeUpdate: {
+                YapCollectionKey *collectionKey = rowChange.collectionKey;
+                OWSAssert(collectionKey.key.length > 0);
+                if (collectionKey.key) {
+                    ConversationViewItem *viewItem = self.viewItemMap[collectionKey.key];
+                    [self reloadInteractionForViewItem:viewItem];
+                }
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
     NSMutableSet<NSNumber *> *rowsThatChangedSize = [[self reloadViewItems] mutableCopy];
 
     BOOL wasAtBottom = [self isScrolledToBottom];
@@ -2816,12 +2834,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 case YapDatabaseViewChangeUpdate: {
                     DDLogError(
                         @".... YapDatabaseViewChangeUpdate: %@, %@", rowChange.collectionKey, rowChange.indexPath);
-                    YapCollectionKey *collectionKey = rowChange.collectionKey;
-                    OWSAssert(collectionKey.key.length > 0);
-                    if (collectionKey.key) {
-                        ConversationViewItem *viewItem = self.viewItemMap[collectionKey.key];
-                        [self reloadViewItem:viewItem];
-                    }
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
                     break;
@@ -3931,7 +3943,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 // Whenever an interaction is modified, we need to reload it from the DB
 // and update the corresponding view item.
-- (void)reloadViewItem:(ConversationViewItem *)viewItem
+- (void)reloadInteractionForViewItem:(ConversationViewItem *)viewItem
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(viewItem);
