@@ -602,7 +602,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Adjunto";
 
 /* Please enter your search. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Introduce tu búsqueda.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Introducir búsqueda.";
 
 /* Title for the 'gif picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "Buscar GIFs";

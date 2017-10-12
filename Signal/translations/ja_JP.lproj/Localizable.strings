@@ -53,7 +53,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@の%@：%@";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "名前を入力してください";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "プロフィール名を入力してください";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "バージョン%@がApp Storeに出ています";
@@ -371,7 +371,7 @@
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "この人を拒否する";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "接触をリセットすると，今後%@から来るメッセージは受信しますが，破損した過去のメッセージは回復しません。";
+"CORRUPTED_SESSION_DESCRIPTION" = "セッションをリセットすると，今後%@から来るメッセージは受信しますが，破損した過去のメッセージは回復しません。";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "国番号を選択してください";
@@ -1230,7 +1230,7 @@
 "REGISTRATION_ERROR" = "登録エラー";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "口座を開始するには，お送りしたコードの確認を行ってください。";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "アカウントを有効化するには，お送りしたコードの確認を行ってください。";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "サポートされていない形式の電話番号です。サポートに連絡してください。";
@@ -1449,7 +1449,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "メッセージが既読かどうかを確認・共有します。この選択はすべての会話に適用されます。";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "画面表示を安全にする";
+"SETTINGS_SCREEN_SECURITY" = "スクリーンセキュリティを有効化";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Signalの画面をアプリ変更時に表示しません。";
@@ -1566,7 +1566,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "グループのメンバーは削除できません。本人が離脱するか，グループを新たに作成してください。";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "できません";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "許可されていません";
 
 /* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "通話をiOSに統合することで，ロック画面から直接電話に出ることが可能になります。既定では通話の匿名化が行われますので，プライバシーも保たれます。";
