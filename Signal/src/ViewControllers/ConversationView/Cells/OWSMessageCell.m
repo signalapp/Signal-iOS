@@ -292,10 +292,6 @@ NS_ASSUME_NONNULL_BEGIN
                 = (self.isIncoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_fadedBlueColor]);
             break;
         case TSAttachmentPointerStateDownloading:
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(attachmentDownloadProgress:)
-                                                         name:kAttachmentDownloadProgressNotification
-                                                       object:nil];
             self.customView.backgroundColor
                 = (self.isIncoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_fadedBlueColor]);
             break;
@@ -491,7 +487,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super prepareForReuse];
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [NSLayoutConstraint deactivateConstraints:self.contentConstraints];
     self.contentConstraints = nil;
 
@@ -574,20 +569,6 @@ NS_ASSUME_NONNULL_BEGIN
 //{
 //    [self.expirationTimerView stopTimer];
 //}
-
-#pragma mark - Notifications:
-
-// TODO: Move this logic into AttachmentPointerView.
-- (void)attachmentDownloadProgress:(NSNotification *)notification
-{
-    NSNumber *progress = notification.userInfo[kAttachmentDownloadProgressKey];
-    NSString *attachmentId = notification.userInfo[kAttachmentDownloadAttachmentIDKey];
-    if (!self.attachmentPointer || ![self.attachmentPointer.uniqueId isEqualToString:attachmentId]) {
-        OWSFail(@"%@ Unexpected attachment progress notification: %@", self.logTag, attachmentId);
-        return;
-    }
-    self.attachmentPointerView.progress = progress.floatValue;
-}
 
 #pragma mark - Gesture recognizers
 

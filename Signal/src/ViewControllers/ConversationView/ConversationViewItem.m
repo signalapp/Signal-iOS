@@ -15,6 +15,28 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
+{
+    switch (cellType) {
+        case OWSMessageCellType_TextMessage:
+            return @"OWSMessageCellType_TextMessage";
+        case OWSMessageCellType_OversizeTextMessage:
+            return @"OWSMessageCellType_OversizeTextMessage";
+        case OWSMessageCellType_StillImage:
+            return @"OWSMessageCellType_StillImage";
+        case OWSMessageCellType_AnimatedImage:
+            return @"OWSMessageCellType_AnimatedImage";
+        case OWSMessageCellType_Audio:
+            return @"OWSMessageCellType_Audio";
+        case OWSMessageCellType_Video:
+            return @"OWSMessageCellType_Video";
+        case OWSMessageCellType_GenericAttachment:
+            return @"OWSMessageCellType_GenericAttachment";
+        case OWSMessageCellType_DownloadingAttachment:
+            return @"OWSMessageCellType_DownloadingAttachment";
+    }
+}
+
 @interface ConversationViewItem ()
 
 @property (nonatomic, nullable) NSValue *cachedCellSize;
@@ -57,6 +79,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(interaction);
 
     _interaction = interaction;
+
+    self.hasViewState = NO;
+    self.messageCellType = OWSMessageCellType_Unknown;
+    self.textMessage = nil;
+    self.attachmentStream = nil;
+    self.attachmentPointer = nil;
+    self.contentSize = CGSizeZero;
 
     [self clearCachedLayoutState];
 }

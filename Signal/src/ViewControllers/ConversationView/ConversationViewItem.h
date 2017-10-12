@@ -20,6 +20,8 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_Unknown = OWSMessageCellType_TextMessage,
 };
 
+NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
+
 @class ConversationViewCell;
 @class OWSAudioMessageView;
 @class TSAttachmentPointer;

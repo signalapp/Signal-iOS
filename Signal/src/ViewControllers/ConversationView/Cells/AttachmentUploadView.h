@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^AttachmentStateBlock)(BOOL isAttachmentReady);
 
-// This entity is used by display download progress for incoming
+// This entity is used to display download progress for incoming
 // attachments in conversation view cells.
 //
 // During attachment uploads we want to:

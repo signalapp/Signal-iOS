@@ -119,6 +119,18 @@ NS_ASSUME_NONNULL_BEGIN
     return CGSizeMake(UIViewNoIntrinsicMetric, 16);
 }
 
+#pragma mark - Logging
+
++ (NSString *)logTag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)logTag
+{
+    return self.class.logTag;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

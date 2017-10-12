@@ -23,6 +23,15 @@
     ]];
 }
 
++ (void)showShareUIForText:(NSString *)text
+{
+    OWSAssert(text);
+    
+    [AttachmentSharing showShareUIForActivityItems:@[
+                                                     text,
+                                                     ]];
+}
+
 + (void)showShareUIForActivityItems:(NSArray *)activityItems
 {
     OWSAssert(activityItems);
@@ -61,15 +70,6 @@
                                            [UIUtil applyDefaultSystemAppearence];
                                        }];
     });
-}
-
-+ (void)showShareUIForText:(NSString *)text
-{
-    OWSAssert(text);
-
-    [AttachmentSharing showShareUIForActivityItems:@[
-        text,
-    ]];
 }
 
 #pragma mark - Logging
