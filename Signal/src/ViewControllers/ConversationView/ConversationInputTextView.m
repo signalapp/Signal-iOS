@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.dataDetectorTypes = UIDataDetectorTypeNone;
         self.keyboardAppearance = UIKeyboardAppearanceDefault;
         self.keyboardType = UIKeyboardTypeDefault;
-        self.returnKeyType = UIReturnKeyDefault;
+        self.returnKeyType = UIReturnKeySend;
 
         self.text = nil;
 
