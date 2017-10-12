@@ -10,9 +10,15 @@ extern const CGFloat kExpirationTimerViewSize;
 
 @interface OWSExpirationTimerView : UIView
 
-- (void)startTimerWithExpiration:(uint64_t)expirationTimestamp initialDurationSeconds:(uint32_t)initialDurationSeconds;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder NS_UNAVAILABLE;
+- (instancetype)initWithExpiration:(uint64_t)expirationTimestamp
+            initialDurationSeconds:(uint32_t)initialDurationSeconds NS_DESIGNATED_INITIALIZER;
 
-- (void)stopTimer;
+- (void)ensureAnimations;
+
+- (void)clearAnimations;
 
 @end
 

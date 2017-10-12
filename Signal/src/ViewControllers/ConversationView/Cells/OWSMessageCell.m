@@ -319,7 +319,10 @@ NS_ASSUME_NONNULL_BEGIN
     
     if (hasExpirationTimer)
     {
-        self.expirationTimerView = [OWSExpirationTimerView new];
+        uint64_t expirationTimestamp = message.expiresAt;
+        uint32_t expiresInSeconds = message.expiresInSeconds;
+        self.expirationTimerView = [[OWSExpirationTimerView alloc] initWithExpiration:expirationTimestamp
+                                                               initialDurationSeconds:expiresInSeconds];
         [self.footerView addSubview:self.expirationTimerView];
     }
     if (attributedText) {
@@ -731,8 +734,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioMessageView removeFromSuperview];
     self.audioMessageView = nil;
     self.attachmentUploadView = nil;
-    if (self.expirationTimerView)
-    [self.expirationTimerView stopTimer];
+    [self.expirationTimerView clearAnimations];
     [self.expirationTimerView removeFromSuperview];
     self.expirationTimerView = nil;
 }
@@ -784,15 +786,12 @@ NS_ASSUME_NONNULL_BEGIN
     if (isCellVisible) {
         TSMessage *message = (TSMessage *)self.viewItem.interaction;
         if (message.shouldStartExpireTimer) {
-            uint64_t expirationTimestamp = message.expiresAt;
-            uint32_t expiresInSeconds = message.expiresInSeconds;
-            [self.expirationTimerView startTimerWithExpiration:expirationTimestamp
-                                              initialDurationSeconds:expiresInSeconds];
+            [self.expirationTimerView ensureAnimations];
         } else {
-            [self.expirationTimerView stopTimer];
+            [self.expirationTimerView clearAnimations];
         }
     } else {
-        [self.expirationTimerView stopTimer];
+        [self.expirationTimerView clearAnimations];
     }
 }
 

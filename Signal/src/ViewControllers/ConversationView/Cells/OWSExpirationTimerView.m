@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const CGFloat kExpirationTimerViewSize = 22.f;
+const CGFloat kExpirationTimerViewSize = 16.f;
 
 @interface OWSExpirationTimerView ()
 
@@ -36,24 +36,15 @@ const CGFloat kExpirationTimerViewSize = 22.f;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (instancetype)initWithFrame:(CGRect)frame
+- (instancetype)initWithExpiration:(uint64_t)expirationTimestamp initialDurationSeconds:(uint32_t)initialDurationSeconds
 {
-    self = [super initWithFrame:frame];
+    self = [super initWithFrame:CGRectZero];
     if (!self) {
         return self;
     }
 
-    [self commonInit];
-
-    return self;
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
+    self.expirationTimestamp = expirationTimestamp;
+    self.initialDurationSeconds = initialDurationSeconds;
 
     [self commonInit];
 
@@ -73,35 +64,25 @@ const CGFloat kExpirationTimerViewSize = 22.f;
     _fullHourglassImageView = [[UIImageView alloc] initWithImage:hourglassFullImage];
     self.fullHourglassImageView.tintColor = [UIColor lightGrayColor];
     [self addSubview:self.fullHourglassImageView];
-    
-    [self.emptyHourglassImageView autoPinHeightToSuperviewWithMargin:3.f];
+
+    [self.emptyHourglassImageView autoPinHeightToSuperviewWithMargin:2.f];
     [self.emptyHourglassImageView autoHCenterInSuperview];
     [self.emptyHourglassImageView autoPinToSquareAspectRatio];
-    [self.fullHourglassImageView autoPinHeightToSuperviewWithMargin:3.f];
+    [self.fullHourglassImageView autoPinHeightToSuperviewWithMargin:2.f];
     [self.fullHourglassImageView autoHCenterInSuperview];
     [self.fullHourglassImageView autoPinToSquareAspectRatio];
     [self autoSetDimension:ALDimensionWidth toSize:kExpirationTimerViewSize];
     [self autoSetDimension:ALDimensionHeight toSize:kExpirationTimerViewSize];
 }
 
-- (void)startTimerWithExpiration:(uint64_t)expirationTimestamp initialDurationSeconds:(uint32_t)initialDurationSeconds
-{
-    OWSAssert([NSThread isMainThread]);
-
-    self.expirationTimestamp = expirationTimestamp;
-    self.initialDurationSeconds = initialDurationSeconds;
-    
-    [self ensureAnimations];
-}
-
 - (void)clearAnimations
 {
+    [self.layer removeAllAnimations];
     [self.maskLayer removeAllAnimations];
     [self.maskLayer removeFromSuperlayer];
     self.maskLayer = nil;
     [self.fullHourglassImageView.layer.mask removeFromSuperlayer];
     self.fullHourglassImageView.layer.mask = nil;
-    [self.layer removeAllAnimations];
     self.layer.opacity = 1.f;
     self.emptyHourglassImageView.hidden = YES;
     self.fullHourglassImageView.hidden = YES;
@@ -145,14 +126,17 @@ const CGFloat kExpirationTimerViewSize = 22.f;
         
         // Flashing animation.
         [UIView animateWithDuration:0.5f
-                              delay:0.f
-                            options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionAutoreverse | UIViewAnimationOptionRepeat
-                         animations:^{
-                             self.layer.opacity = 0.f;
-                         } completion:nil];
+            delay:0.f
+            options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionAutoreverse | UIViewAnimationOptionRepeat
+            animations:^{
+                self.layer.opacity = 0.f;
+            }
+            completion:^(BOOL finished) {
+                self.layer.opacity = 1.f;
+            }];
         return;
     }
-    
+
     self.emptyHourglassImageView.hidden = NO;
     self.fullHourglassImageView.hidden = NO;
 
@@ -193,13 +177,6 @@ const CGFloat kExpirationTimerViewSize = 22.f;
                                                              selector:@selector(ensureAnimations)
                                                              userInfo:nil
                                                               repeats:NO];
-}
-
-- (void)stopTimer
-{
-    OWSAssert([NSThread isMainThread]);
-
-    [self clearAnimations];
 }
 
 #pragma mark - Logging
