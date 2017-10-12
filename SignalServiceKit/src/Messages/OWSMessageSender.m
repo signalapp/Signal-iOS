@@ -843,7 +843,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             success:(void (^)())successHandler
             failure:(RetryableFailureHandler)failureHandler
 {
-    DDLogDebug(@"%@ sending message to service: %@", self.tag, message.debugDescription);
+    DDLogInfo(@"%@ attempting to send message: %@, timestamp: %llu, recipient: %@",
+        self.tag,
+        message.class,
+        message.timestamp,
+        recipient.uniqueId);
     AssertIsOnSendingQueue();
 
     if ([TSPreKeyManager isAppLockedDueToPreKeyUpdateFailures]) {
