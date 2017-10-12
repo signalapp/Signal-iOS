@@ -548,7 +548,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)cropViewToBubbbleShape:(UIView *)view
 {
-    view.frame = self.bounds;
+    [self layoutIfNeeded];
+    view.frame = self.payloadView.bounds;
     [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:view isOutgoing:!self.isIncoming];
 }
 
