@@ -19,7 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageCell ()
 
-// The text label is used so frequently that we always keep one around.
+// The nullable properties are created as needed.
+// The non-nullable properties are so frequently used that it's easier
+// to always keep one around.
 @property (nonatomic) UIView *payloadView;
 @property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) UILabel *textLabel;
