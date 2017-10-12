@@ -4096,7 +4096,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [chooseDocumentAction setValue:chooseDocumentImage forKey:@"image"];
     [actionSheetController addAction:chooseDocumentAction];
 
-#ifdef DEBUG
     UIAlertAction *gifAction =
         // TODO: What should the final copy be?
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SELECT_GIF_BUTTON",
@@ -4110,7 +4109,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     OWSAssert(gifImage);
     [gifAction setValue:gifImage forKey:@"image"];
     [actionSheetController addAction:gifAction];
-#endif
 
     [self presentViewController:actionSheetController animated:true completion:nil];
 }
