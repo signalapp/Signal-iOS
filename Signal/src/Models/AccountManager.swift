@@ -11,6 +11,7 @@ import PromiseKit
  */
 class AccountManager: NSObject {
     let TAG = "[AccountManager]"
+
     let textSecureAccountManager: TSAccountManager
     let networkManager: TSNetworkManager
     let preferences: OWSPreferences
@@ -33,24 +34,33 @@ class AccountManager: NSObject {
     }
 
     func register(verificationCode: String) -> Promise<Void> {
-        let registrationPromise = firstly {
-            Promise { fulfill, reject in
-                if verificationCode.characters.count == 0 {
-                    let error = OWSErrorWithCodeDescription(.userError,
-                                                            NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
-                                                                              comment: "alert body during registration"))
-                    reject(error)
-                }
-                fulfill()
+        guard verificationCode.characters.count > 0 else {
+            let error = OWSErrorWithCodeDescription(.userError,
+                                                    NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
+                                                                      comment: "alert body during registration"))
+            return Promise(error: error)
+        }
+
+        Logger.debug("\(self.TAG) registering with signal server")
+        let registrationPromise: Promise<Void> = firstly {
+            self.registerForTextSecure(verificationCode: verificationCode)
+        }.then {
+            self.syncPushTokens()
+        }.recover { (error) -> Promise<Void> in
+            switch error {
+            case PushRegistrationError.pushNotSupported(let description):
+                // This can happen with:
+                // - simulators, none of which support receiving push notifications
+                // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
+                Logger.info("\(self.TAG) Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
+                return self.registerForManualMessageFetching()
+            default:
+                throw error
             }
         }.then {
-            Logger.debug("\(self.TAG) verification code looks well formed.")
-            return self.registerForTextSecure(verificationCode: verificationCode)
-        }.then {
-            return SyncPushTokensJob.run(pushManager: self.pushManager, accountManager: self, preferences: self.preferences)
-        }.then {
-            Logger.debug("\(self.TAG) successfully registered for TextSecure")
+            self.completeRegistration()
         }
+
         registrationPromise.retainUntilComplete()
 
         return registrationPromise
@@ -64,26 +74,30 @@ class AccountManager: NSObject {
         }
     }
 
-    // MARK: Push Tokens
-
-    func updatePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
-        return firstly {
-            return self.updateTextSecurePushTokens(pushToken: pushToken, voipToken: voipToken)
-        }.then {
-            Logger.info("\(self.TAG) Successfully updated text secure push tokens.")
-            // TODO code cleanup - convert to `return Promise(value: nil)` and test
-            return Promise { fulfill, _ in
-                fulfill()
-            }
-        }
+    private func syncPushTokens() -> Promise<Void> {
+        Logger.info("\(self.TAG) in \(#function)")
+        return SyncPushTokensJob.run(accountManager: self, preferences: self.preferences)
     }
 
-    private func updateTextSecurePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
+    private func completeRegistration() {
+        Logger.info("\(self.TAG) in \(#function)")
+        self.textSecureAccountManager.didRegister()
+    }
+
+    // MARK: Message Delivery
+
+    func updatePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
         return Promise { fulfill, reject in
             self.textSecureAccountManager.registerForPushNotifications(pushToken:pushToken,
                                                                        voipToken:voipToken,
                                                                        success:fulfill,
                                                                        failure:reject)
+        }
+    }
+
+    func registerForManualMessageFetching() -> Promise<Void> {
+        return Promise { fulfill, reject in
+            self.textSecureAccountManager.registerForManualMessageFetching(success:fulfill, failure:reject)
         }
     }
 

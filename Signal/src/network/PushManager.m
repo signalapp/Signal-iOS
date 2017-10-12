@@ -4,7 +4,6 @@
 
 #import "PushManager.h"
 #import "AppDelegate.h"
-#import "NSData+ows_StripToken.h"
 #import "OWSContactsManager.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
@@ -30,7 +29,6 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 @interface PushManager ()
 
-@property (nonatomic) TOCFutureSource *registerWithServerFutureSource;
 @property (nonatomic) NSMutableArray *currentNotifications;
 @property (nonatomic) UIBackgroundTaskIdentifier callBackgroundTask;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
@@ -72,6 +70,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     _messageSender = messageSender;
     _messageFetcherJob = messageFetcherJob;
     _callBackgroundTask = UIBackgroundTaskInvalid;
+    // TODO: consolidate notification tracking with NotificationsManager, which also maintains a list of notifications.
     _currentNotifications = [NSMutableArray array];
 
     OWSSingletonAssert();
@@ -98,8 +97,9 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 #pragma mark Manage Incoming Push
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    DDLogInfo(@"%@ received remote notification", self.tag);
 
     [self.messageFetcherJob runAsync];
 }
@@ -113,19 +113,23 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
  * "content-available:1" pushes if there is no "voip" token registered
  *
  */
-
 - (void)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo
-          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    DDLogInfo(@"%@ received content-available push", self.tag);
+
+    // If we want to re-introduce silent pushes we can remove this assert.
+    OWSFail(@"Unexpected content-available push.");
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
       completionHandler(UIBackgroundFetchResultNewData);
     });
 }
 
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    DDLogInfo(@"%@ launched from local notification", self.tag);
 
     NSString *_Nullable threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
 
@@ -139,8 +143,9 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 - (void)application:(UIApplication *)application
     handleActionWithIdentifier:(NSString *)identifier
           forLocalNotification:(UILocalNotification *)notification
-             completionHandler:(void (^)())completionHandler {
-    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
+             completionHandler:(void (^)())completionHandler
+{
+    DDLogInfo(@"%@ in %s", self.tag, __FUNCTION__);
 
     [self application:application
         handleActionWithIdentifier:identifier
@@ -262,82 +267,6 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
             completionHandler();
         }];
-}
-
-#pragma mark PushKit
-
-- (void)pushRegistry:(PKPushRegistry *)registry
-    didUpdatePushCredentials:(PKPushCredentials *)credentials
-                     forType:(NSString *)type {
-    [[PushManager sharedManager].pushKitNotificationFutureSource trySetResult:[credentials.token ows_tripToken]];
-}
-
-- (void)pushRegistry:(PKPushRegistry *)registry
-    didReceiveIncomingPushWithPayload:(PKPushPayload *)payload
-                              forType:(NSString *)type {
-
-    DDLogInfo(@"received: %s", __PRETTY_FUNCTION__);
-
-    [self application:[UIApplication sharedApplication] didReceiveRemoteNotification:payload.dictionaryPayload];
-}
-
-- (TOCFuture *)registerPushKitNotificationFuture {
-    if ([self supportsVOIPPush]) {
-        self.pushKitNotificationFutureSource = [TOCFutureSource new];
-        PKPushRegistry *voipRegistry         = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
-        voipRegistry.delegate                = self;
-        voipRegistry.desiredPushTypes        = [NSSet setWithObject:PKPushTypeVoIP];
-        return self.pushKitNotificationFutureSource.future;
-    } else {
-        TOCFutureSource *futureSource = [TOCFutureSource new];
-        [futureSource trySetResult:nil];
-        return futureSource.future;
-    }
-}
-
-- (BOOL)supportsVOIPPush {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(8, 2)) {
-        return YES;
-    } else {
-        return NO;
-    }
-}
-
-#pragma mark Register device for Push Notification locally
-
-- (TOCFuture *)registerPushNotificationFuture {
-    self.pushNotificationFutureSource = [TOCFutureSource new];
-    [UIApplication.sharedApplication registerForRemoteNotifications];
-    return self.pushNotificationFutureSource.future;
-}
-
-- (void)requestPushTokenWithSuccess:(pushTokensSuccessBlock)success failure:(failedPushRegistrationBlock)failure {
-    AssertIsOnMainThread();
-
-    if (!self.wantRemoteNotifications) {
-        DDLogWarn(@"%@ Using fake push tokens", self.tag);
-        success(@"fakePushToken", @"fakeVoipToken");
-        return;
-    }
-
-    TOCFuture *requestPushTokenFuture = [self registerPushNotificationFuture];
-
-    [requestPushTokenFuture thenDo:^(NSData *pushTokenData) {
-      NSString *pushToken = [pushTokenData ows_tripToken];
-      TOCFuture *pushKit  = [self registerPushKitNotificationFuture];
-
-      [pushKit thenDo:^(NSString *voipToken) {
-        success(pushToken, voipToken);
-      }];
-
-      [pushKit catchDo:^(NSError *error) {
-        failure(error);
-      }];
-    }];
-
-    [requestPushTokenFuture catchDo:^(NSError *error) {
-      failure(error);
-    }];
 }
 
 - (UIUserNotificationCategory *)fullNewMessageNotificationCategory {
@@ -464,20 +393,13 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
 
 #pragma mark Util
 
-- (BOOL)wantRemoteNotifications {
-#if TARGET_IPHONE_SIMULATOR
-    return NO;
-#else
-    return YES;
-#endif
-}
-
 - (int)allNotificationTypes {
     return UIUserNotificationTypeAlert | UIUserNotificationTypeSound | UIUserNotificationTypeBadge;
 }
 
-- (void)validateUserNotificationSettings
+- (UIUserNotificationSettings *)userNotificationSettings
 {
+    DDLogDebug(@"%@ registering user notification settings", self.tag);
     UIUserNotificationSettings *settings = [UIUserNotificationSettings
         settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
               categories:[NSSet setWithObjects:[self fullNewMessageNotificationCategory],
@@ -487,7 +409,7 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
                                 [self signalMissedCallWithNoLongerVerifiedIdentityChangeCategory],
                                 nil]];
 
-    [UIApplication.sharedApplication registerUserNotificationSettings:settings];
+    return settings;
 }
 
 - (BOOL)applicationIsActive {
@@ -500,6 +422,7 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
     return NO;
 }
 
+// TODO: consolidate notification tracking with NotificationsManager, which also maintains a list of notifications.
 - (void)presentNotification:(UILocalNotification *)notification checkForCancel:(BOOL)checkForCancel
 {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -517,6 +440,7 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
     });
 }
 
+// TODO: consolidate notification tracking with NotificationsManager, which also maintains a list of notifications.
 - (void)cancelNotificationsWithThreadId:(NSString *)threadId
 {
     dispatch_async(dispatch_get_main_queue(), ^{

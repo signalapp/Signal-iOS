@@ -27,8 +27,6 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
 
 @interface OWSContactsManager () <SystemContactsFetcherDelegate>
 
-@property (atomic) id addressBookReference;
-@property (atomic) TOCFuture *futureAddressBook;
 @property (nonatomic) BOOL isContactsUpdateInFlight;
 // This reflects the contents of the device phone book and includes
 // contacts that do not correspond to any signal account.

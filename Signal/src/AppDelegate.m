@@ -124,7 +124,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [self setupEnvironment];
 
     [UIUtil applySignalAppearence];
-    [[PushManager sharedManager] registerPushKitNotificationFuture];
 
     if (getenv("runningTests_dontStartApp")) {
         return YES;
@@ -272,7 +271,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     DDLogInfo(@"%@ registered vanilla push token: %@", self.tag, deviceToken);
-    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:deviceToken];
+    [PushRegistrationManager.sharedManager didReceiveVanillaPushToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
@@ -280,10 +279,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogError(@"%@ failed to register vanilla push token with error: %@", self.tag, error);
 #ifdef DEBUG
     DDLogWarn(@"%@ We're in debug mode. Faking success for remote registration with a fake push identifier", self.tag);
-    [PushManager.sharedManager.pushNotificationFutureSource trySetResult:[[NSMutableData dataWithLength:32] copy]];
+    [PushRegistrationManager.sharedManager didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
 #else
     OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
-    [PushManager.sharedManager.pushNotificationFutureSource trySetFailure:error];
+    [PushRegistrationManager.sharedManager didFailToReceiveVanillaPushTokenWithError:error];
 #endif
 }
 
@@ -291,7 +290,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
     DDLogInfo(@"%@ registered user notification settings", self.tag);
-    [PushManager.sharedManager.userNotificationFutureSource trySetResult:notificationSettings];
+    [PushRegistrationManager.sharedManager didRegisterUserNotificationSettings];
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -526,7 +525,20 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             [[Environment getCurrent].contactsManager fetchSystemContactsIfAlreadyAuthorized];
             // This will fetch new messages, if we're using domain fronting.
             [[PushManager sharedManager] applicationDidBecomeActive];
+
+            if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
+                DDLogInfo(
+                    @"%@ Retrying to register for remote notifications since user hasn't registered yet.", self.tag);
+                // Push tokens don't normally change while the app is launched, so checking once during launch is
+                // usually sufficient, but e.g. on iOS11, users who have disabled "Allow Notifications" and disabled
+                // "Background App Refresh" will not be able to obtain an APN token. Enabling those settings does not
+                // restart the app, so we check every activation for users who haven't yet registered.
+                __unused AnyPromise *promise =
+                    [OWSSyncPushTokensJob runWithAccountManager:[Environment getCurrent].accountManager
+                                                    preferences:[Environment preferences]];
+            }
         });
+        
     }
 
     DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.tag);
@@ -813,7 +825,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)databaseViewRegistrationComplete
 {
-    DDLogInfo(@"databaseViewRegistrationComplete");
+    DDLogInfo(@"%@ databaseViewRegistrationComplete", self.tag);
 
     if ([TSAccountManager isRegistered]) {
         DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
@@ -824,9 +836,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [[Environment getCurrent].messageFetcherJob runAsync];
 
         // This should happen at any launch, background or foreground.
-        __unused AnyPromise *promise = [OWSSyncPushTokensJob runWithPushManager:[PushManager sharedManager]
-                                                                 accountManager:[Environment getCurrent].accountManager
-                                                                    preferences:[Environment preferences]];
+        __unused AnyPromise *promise = [OWSSyncPushTokensJob runWithAccountManager:[Environment getCurrent].accountManager
+                                                                       preferences:[Environment preferences]];
     }
 
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
@@ -873,7 +884,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)ensureRootViewController
 {
-    DDLogInfo(@"ensureRootViewController");
+    DDLogInfo(@"%@ ensureRootViewController", self.tag);
 
     if ([TSDatabaseView hasPendingViewRegistrations] || self.hasInitialRootViewController) {
         return;
