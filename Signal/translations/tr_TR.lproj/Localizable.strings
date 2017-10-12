@@ -248,7 +248,7 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Hata";
 
 /* Title for the 'censorship circumvention country' view. */
-"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Ülkeyi Seçin";
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Ülke Seçin";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Panodaki ile karşılaştır.";
@@ -272,7 +272,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Yeni Cihaz Bağla";
 
 /* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@yeniden kurmuş veya cihaz değiştirmiş olabilir. Gizlilikten emin olmak için, onlarla güvenlik numaranızı doğrulayın.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@yeniden kurulum yapmış veya cihaz değiştirmiş olabilir. Gizlilikten emin olmak için, onlarla güvenlik numaranızı doğrulayın.";
 
 /* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "%@ile güvenlik numarası değişti";
@@ -341,7 +341,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Yeni kişi oluştur";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Bildirimler açık";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Bildirimleri aç";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Bu grup profilinizi görebilir";
@@ -389,7 +389,7 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Veritabanı güncelleniyor";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "En son görülme: %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Son görülme: %@";
 
 /* {{Short Date}} when device was linked. */
 "DEVICE_LINKED_AT_LABEL" = "Bağlantı: %@";
@@ -455,7 +455,7 @@
 "EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Bilgi";
 
 /* Short name for edit menu item to save contents of media message. */
-"EDIT_ITEM_SAVE_ACTION" = "Kayıt et";
+"EDIT_ITEM_SAVE_ACTION" = "Kaydet";
 
 /* Short name for edit menu item to share contents of media message. */
 "EDIT_ITEM_SHARE_ACTION" = "Paylaş";
@@ -635,7 +635,7 @@
 "GROUP_MEMBERS_CALL" = "Ara";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Tüm Doğrulama hatalarını temimizle";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Tüm Doğrulama hatalarını temizle";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Bu, son doğrulamadan bu yana güvenlik numaraları değişmiş olan tüm grup üyelerine ilişkin doğrulama uyarlarını temizler. ";
@@ -680,7 +680,7 @@
 "IN_CALL_SECURING" = "Cevaplandı. Güvenli hale getiriliyor...";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Arama bitti.";
+"IN_CALL_TERMINATED" = "Çağrı Sonlandı.";
 
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Arşivlenmiş mesajlarınızı görüntülüyorsunuz. Gelen kutusuna dönmek için dokunun.";
@@ -698,7 +698,7 @@
 "INCOMING_DECLINED_CALL" = "Bir aramayı reddettiniz";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "kişisinden tamamlanmamış gelen arama";
+"INCOMING_INCOMPLETE_CALL" = "Kişisinden tamamlanmamış gelen arama";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Güvenlik numaraları değiştiğinden çağrı karşılanmadı";
@@ -767,7 +767,7 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Grup Üyeleri";
 
 /* No comment provided by engineer. */
-"LOGGING_SECTION" = "Kayıt altına alma";
+"LOGGING_SECTION" = "Sistem kaydı";
 
 /* No comment provided by engineer. */
 "ME_STRING" = "Ben";
@@ -891,10 +891,10 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "Yukarıda okunmamış mesajlar var. Görmek için \"%@\" e dokunun. ";
 
 /* notification title */
-"MISSED_CALL" = "Cevapsız Çağrı.";
+"MISSED_CALL" = "Cevapsız çağrı";
 
 /* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "%@ in güvenlik numarası değiştiğinden çağrı karşılanmadı";
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "%@ kullanıcısının güvenlik numarası değiştiğinden çağrı karşılanmadı";
 
 /* notification title */
 "MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Arayanın güvenlik numarası değiştiğinden çağrı karşılanmadı";
@@ -941,7 +941,7 @@
 "NETWORK_ERROR_RECOVERY" = "Çevrimiçi olduğundan emin ol ve tekrar dene.";
 
 /* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Sansür Önlemi: Açık";
+"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Sansür Atlatma: Açık";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTED" = "Bağlandı";
@@ -1013,7 +1013,7 @@
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Gönderenin adı & iletisi";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Sadece isim";
+"NOTIFICATIONS_SENDER_ONLY" = "Sadece gönderici ismi";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Göster";
@@ -1038,7 +1038,7 @@
 "OUTGOING_CALL" = "Giden çağrı";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Cevapsız giden arama";
+"OUTGOING_INCOMPLETE_CALL" = "Cevapsız giden çağrı";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Daha Fazlası için Dokunun]";
@@ -1062,7 +1062,7 @@
 "PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
 
 /* Label for 'Main' phone numbers. */
-"PHONE_NUMBER_TYPE_MAIN" = "Ana Numara";
+"PHONE_NUMBER_TYPE_MAIN" = "Birincil";
 
 /* Label for 'Mobile' phone numbers. */
 "PHONE_NUMBER_TYPE_MOBILE" = "Cep";
@@ -1074,7 +1074,7 @@
 "PHONE_NUMBER_TYPE_OTHER_FAX" = "Diğer Faks";
 
 /* Label for 'Pager' phone numbers. */
-"PHONE_NUMBER_TYPE_PAGER" = "Pager";
+"PHONE_NUMBER_TYPE_PAGER" = "Çağrı cihazı";
 
 /* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
 "PHONE_NUMBER_TYPE_UNKNOWN" = "Bilinmeyen";
@@ -1086,7 +1086,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "İş faksı";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@i doğrulanmış olarak işaretlemediniz.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@kullanıcısını doğrulanmış olarak işaretlemediniz.";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Doğrulandı";
@@ -1119,7 +1119,7 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Eski bir Signal sürümünü çalıştırıyorsunuz. Doğrulamadan önce güncellemeniz gerekiyor.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Konuşdığınız kişi Signal'in eski bir sürümünü çalıştırıyor. Doğrulamadan önce güncellenmelidirler.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Karşıdaki kişi Signal'in eski bir sürümünü çalıştırıyor. Doğrulamadan önce güncelleme yapılmalıdır.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Taranan kod bir güvenlik numarası kodu gibi görünmüyor. İkiniz de Signal'in güncel bir sürümünü mü kullanıyorsunuz?";
@@ -1608,7 +1608,7 @@
 "UPGRADE_IOS_ALERT_TITLE" = "iOS u Güncelle";
 
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "Signal yükseltiliyor...";
+"Upgrading Signal ..." = "Signal'i yükseltme...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Geri";
