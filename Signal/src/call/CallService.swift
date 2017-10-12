@@ -79,7 +79,7 @@ enum CallError: Error {
 }
 
 // Should be roughly synced with Android client for consistency
-private let connectingTimeoutSeconds = 120
+private let connectingTimeoutSeconds: TimeInterval = 120
 
 // All Observer methods will be invoked from the main thread.
 protocol CallServiceObserver: class {
@@ -338,7 +338,7 @@ protocol CallServiceObserver: class {
             self.rejectCallConnectedPromise = reject
 
             // Don't let the outgoing call ring forever. We don't support inbound ringing forever anyway.
-            let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
+            let timeout: Promise<Void> = after(interval: connectingTimeoutSeconds).then { () -> Void in
                 // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
                 OWSProdInfo(OWSAnalyticsEvents.callServiceErrorTimeoutWhileConnectingOutgoing(), file:#file, function:#function, line:#line)
                 throw CallError.timeout(description: "timed out waiting to receive call answer")
@@ -441,7 +441,7 @@ protocol CallServiceObserver: class {
     /**
      * User didn't answer incoming call
      */
-    public func handleMissedCall(_ call: SignalCall, thread: TSContactThread) {
+    public func handleMissedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
         // Insert missed call record
@@ -451,9 +451,9 @@ protocol CallServiceObserver: class {
             }
         } else {
             call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                     withCallNumber: thread.contactIdentifier(),
+                                     withCallNumber: call.thread.contactIdentifier(),
                                      callType: RPRecentCallTypeMissed,
-                                     in: thread)
+                                     in: call.thread)
         }
 
         assert(call.callRecord != nil)
@@ -465,16 +465,16 @@ protocol CallServiceObserver: class {
     /**
      * Received a call while already in another call.
      */
-    private func handleLocalBusyCall(_ call: SignalCall, thread: TSContactThread) {
-        Logger.info("\(TAG) \(#function) for call: \(call.identifiersForLogs) thread: \(thread.contactIdentifier())")
+    private func handleLocalBusyCall(_ call: SignalCall) {
+        Logger.info("\(TAG) \(#function) for call: \(call.identifiersForLogs) thread: \(call.thread.contactIdentifier())")
         AssertIsOnMainThread()
 
         let busyMessage = OWSCallBusyMessage(callId: call.signalingId)
-        let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage)
+        let callMessage = OWSOutgoingCallMessage(thread: call.thread, busyMessage: busyMessage)
         let sendPromise = messageSender.sendPromise(message: callMessage)
         sendPromise.retainUntilComplete()
 
-        handleMissedCall(call, thread: thread)
+        handleMissedCall(call)
     }
 
     /**
@@ -551,7 +551,7 @@ protocol CallServiceObserver: class {
             // TODO on iOS10+ we can use CallKit to swap calls rather than just returning busy immediately.
             Logger.info("\(TAG) receivedCallOffer: \(newCall.identifiersForLogs) but we're already in call: \(existingCall.identifiersForLogs)")
 
-            handleLocalBusyCall(newCall, thread: thread)
+            handleLocalBusyCall(newCall)
 
             if existingCall.remotePhoneNumber == newCall.remotePhoneNumber {
                 Logger.info("\(TAG) handling call from current call user as remote busy.: \(newCall.identifiersForLogs) but we're already in call: \(existingCall.identifiersForLogs)")
@@ -642,7 +642,7 @@ protocol CallServiceObserver: class {
 
             let (promise, fulfill, reject) = Promise<Void>.pending()
 
-            let timeout: Promise<Void> = after(interval: TimeInterval(connectingTimeoutSeconds)).then { () -> Void in
+            let timeout: Promise<Void> = after(interval: connectingTimeoutSeconds).then { () -> Void in
                 // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
                 OWSProdInfo(OWSAnalyticsEvents.callServiceErrorTimeoutWhileConnectingIncoming(), file:#file, function:#function, line:#line)
                 throw CallError.timeout(description: "timed out waiting for call to connect")
@@ -824,7 +824,7 @@ protocol CallServiceObserver: class {
 
         switch call.state {
         case .idle, .dialing, .answering, .localRinging, .localFailure, .remoteBusy, .remoteRinging:
-            handleMissedCall(call, thread: thread)
+            handleMissedCall(call)
         case .connected, .localHangup, .remoteHangup:
             Logger.info("\(TAG) call is finished.")
         }
@@ -1403,6 +1403,14 @@ protocol CallServiceObserver: class {
         }
 
         if let failedCall = failedCall {
+
+            if failedCall.state == .answering {
+                assert(failedCall.callRecord == nil)
+                // call failed before any call record could be created, make one now.
+                handleMissedCall(failedCall)
+            }
+            assert(failedCall.callRecord != nil)
+
             // It's essential to set call.state before terminateCall, because terminateCall nils self.call
             failedCall.error = error
             failedCall.state = .localFailure
