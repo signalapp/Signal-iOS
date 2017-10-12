@@ -21,13 +21,13 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 @interface UIView (OWS)
 
 // Pins the width of this view to the width of its superview, with uniform margins.
-- (void)autoPinWidthToSuperviewWithMargin:(CGFloat)margin;
-- (void)autoPinWidthToSuperview;
+- (NSArray<NSLayoutConstraint *> *)autoPinWidthToSuperviewWithMargin:(CGFloat)margin;
+- (NSArray<NSLayoutConstraint *> *)autoPinWidthToSuperview;
 // Pins the height of this view to the height of its superview, with uniform margins.
-- (void)autoPinHeightToSuperviewWithMargin:(CGFloat)margin;
-- (void)autoPinHeightToSuperview;
+- (NSArray<NSLayoutConstraint *> *)autoPinHeightToSuperviewWithMargin:(CGFloat)margin;
+- (NSArray<NSLayoutConstraint *> *)autoPinHeightToSuperview;
 
-- (void)autoPinToSuperviewEdges;
+- (NSArray<NSLayoutConstraint *> *)autoPinToSuperviewEdges;
 
 - (void)autoHCenterInSuperview;
 - (void)autoVCenterInSuperview;

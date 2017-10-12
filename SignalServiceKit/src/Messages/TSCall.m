@@ -62,6 +62,11 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     return self;
 }
 
+- (OWSInteractionType)interactionType
+{
+    return OWSInteractionType_Call;
+}
+
 - (NSString *)description {
     switch (_callType) {
         case RPRecentCallTypeIncoming:

@@ -100,6 +100,12 @@ NS_ASSUME_NONNULL_BEGIN
         // upload begins.
         self.isUploaded = YES;
     }
+
+    if (attachmentSchemaVersion < 4) {
+        // Legacy image sizes don't correctly reflect image orientation.
+        self.cachedImageWidth = nil;
+        self.cachedImageHeight = nil;
+    }
 }
 
 - (void)ensureFilePath
@@ -345,10 +351,17 @@ NS_ASSUME_NONNULL_BEGIN
             = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(source, 0, (CFDictionaryRef)options);
         CGSize imageSize = CGSizeZero;
         if (properties) {
+            NSNumber *orientation = properties[(NSString *)kCGImagePropertyOrientation];
             NSNumber *width = properties[(NSString *)kCGImagePropertyPixelWidth];
             NSNumber *height = properties[(NSString *)kCGImagePropertyPixelHeight];
+
             if (width && height) {
                 imageSize = CGSizeMake(width.floatValue, height.floatValue);
+
+                if (orientation) {
+                    imageSize =
+                        [self applyImageOrientation:(UIImageOrientation)orientation.intValue toImageSize:imageSize];
+                }
             } else {
                 OWSFail(@"%@ Could not determine size of image: %@", self.tag, mediaUrl);
             }
@@ -357,6 +370,24 @@ NS_ASSUME_NONNULL_BEGIN
         return imageSize;
     } else {
         return CGSizeZero;
+    }
+}
+
+- (CGSize)applyImageOrientation:(UIImageOrientation)orientation toImageSize:(CGSize)imageSize
+{
+    switch (orientation) {
+        case UIImageOrientationUp: // EXIF = 1
+        case UIImageOrientationUpMirrored: // EXIF = 2
+        case UIImageOrientationDown: // EXIF = 3
+        case UIImageOrientationDownMirrored: // EXIF = 4
+            return imageSize;
+        case UIImageOrientationLeftMirrored: // EXIF = 5
+        case UIImageOrientationLeft: // EXIF = 6
+        case UIImageOrientationRightMirrored: // EXIF = 7
+        case UIImageOrientationRight: // EXIF = 8
+            return CGSizeMake(imageSize.height, imageSize.width);
+        default:
+            return imageSize;
     }
 }
 

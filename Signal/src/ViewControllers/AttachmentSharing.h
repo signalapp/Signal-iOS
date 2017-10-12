@@ -10,4 +10,6 @@
 
 + (void)showShareUIForURL:(NSURL *)url;
 
++ (void)showShareUIForText:(NSString *)text;
+
 @end

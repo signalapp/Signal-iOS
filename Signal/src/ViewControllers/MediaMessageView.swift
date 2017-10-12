@@ -18,8 +18,15 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     var audioPlayer: OWSAudioAttachmentPlayer?
     var audioStatusLabel: UILabel?
     var audioPlayButton: UIButton?
-    var isAudioPlayingFlag = false
-    var isAudioPaused = false
+    var playbackState = AudioPlaybackState.stopped {
+        didSet {
+            AssertIsOnMainThread()
+
+            updateAudioStatusLabel()
+            ensureButtonState()
+        }
+    }
+
     var audioProgressSeconds: CGFloat = 0
     var audioDurationSeconds: CGFloat = 0
 
@@ -308,22 +315,20 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     // MARK: - OWSAudioAttachmentPlayerDelegate
 
-    public func isAudioPlaying() -> Bool {
-        return isAudioPlayingFlag
+    public func audioPlaybackState() -> AudioPlaybackState {
+        return playbackState
     }
 
-    public func setIsAudioPlaying(_ isAudioPlaying: Bool) {
-        isAudioPlayingFlag = isAudioPlaying
-
-        updateAudioStatusLabel()
+    public func setAudioPlaybackState(_ value: AudioPlaybackState) {
+        playbackState = value
     }
 
-    public func isPaused() -> Bool {
-        return isAudioPaused
-    }
-
-    public func setIsPaused(_ isPaused: Bool) {
-        isAudioPaused = isPaused
+    private func ensureButtonState() {
+        if playbackState == .playing {
+            setAudioIconToPause()
+        } else {
+            setAudioIconToPlay()
+        }
     }
 
     public func setAudioProgress(_ progress: CGFloat, duration: CGFloat) {
@@ -339,7 +344,8 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             return
         }
 
-        if isAudioPlayingFlag && audioProgressSeconds > 0 && audioDurationSeconds > 0 {
+        let isAudioPlaying = playbackState == .playing
+        if isAudioPlaying && audioProgressSeconds > 0 && audioDurationSeconds > 0 {
             audioStatusLabel.text = String(format:"%@ / %@",
                 ViewControllerUtils.formatDurationSeconds(Int(round(self.audioProgressSeconds))),
                 ViewControllerUtils.formatDurationSeconds(Int(round(self.audioDurationSeconds))))
@@ -348,14 +354,14 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         }
     }
 
-    public func setAudioIconToPlay() {
+    private func setAudioIconToPlay() {
         let image = UIImage(named:"audio_play_black_large")?.withRenderingMode(.alwaysTemplate)
         assert(image != nil)
         audioPlayButton?.setImage(image, for:.normal)
         audioPlayButton?.imageView?.tintColor = UIColor.ows_materialBlue()
     }
 
-    public func setAudioIconToPause() {
+    private func setAudioIconToPause() {
         let image = UIImage(named:"audio_pause_black_large")?.withRenderingMode(.alwaysTemplate)
         assert(image != nil)
         audioPlayButton?.setImage(image, for:.normal)

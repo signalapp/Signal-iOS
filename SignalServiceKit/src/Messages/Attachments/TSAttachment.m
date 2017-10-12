@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSUInteger const TSAttachmentSchemaVersion = 3;
+NSUInteger const TSAttachmentSchemaVersion = 4;
 
 @interface TSAttachment ()
 

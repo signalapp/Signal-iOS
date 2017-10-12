@@ -4,9 +4,9 @@
 
 #import "FullImageViewController.h"
 #import "AttachmentSharing.h"
-#import "TSAnimatedAdapter.h"
-#import "TSMessageAdapter.h"
-#import "TSPhotoAdapter.h"
+#import "ConversationViewItem.h"
+#import "TSAttachmentStream.h"
+#import "TSInteraction.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
@@ -54,12 +54,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) CGRect originRect;
 @property (nonatomic) BOOL isPresenting;
-@property (nonatomic) BOOL isAnimated;
 @property (nonatomic) NSData *fileData;
 
-@property (nonatomic) TSAttachmentStream *attachment;
-@property (nonatomic) TSInteraction *interaction;
-@property (nonatomic) id<OWSMessageData> messageItem;
+@property (nonatomic) TSAttachmentStream *attachmentStream;
+@property (nonatomic) ConversationViewItem *viewItem;
 
 @property (nonatomic) UIToolbar *footerBar;
 @property (nonatomic) NSArray *oldMenuItems;
@@ -69,27 +67,25 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation FullImageViewController
 
 
-- (instancetype)initWithAttachment:(TSAttachmentStream *)attachment
+- (instancetype)initWithAttachment:(TSAttachmentStream *)attachmentStream
                           fromRect:(CGRect)rect
-                    forInteraction:(TSInteraction *)interaction
-                       messageItem:(id<OWSMessageData>)messageItem
-                        isAnimated:(BOOL)animated {
+                          viewItem:(ConversationViewItem *)viewItem
+{
+
     self = [super initWithNibName:nil bundle:nil];
 
     if (self) {
-        self.attachment  = attachment;
+        self.attachmentStream = attachmentStream;
         self.originRect  = rect;
-        self.interaction = interaction;
-        self.messageItem = messageItem;
-        self.isAnimated  = animated;
-        self.fileData    = [NSData dataWithContentsOfURL:[attachment mediaURL]];
+        self.viewItem = viewItem;
+        self.fileData = [NSData dataWithContentsOfURL:[attachmentStream mediaURL]];
     }
 
     return self;
 }
 
 - (UIImage *)image {
-    return self.attachment.image;
+    return self.attachmentStream.image;
 }
 
 - (void)loadView {
@@ -155,7 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)shareWasPressed:(id)sender {
     DDLogInfo(@"%@: sharing image.", self.tag);
 
-    [AttachmentSharing showShareUIForURL:[self.attachment mediaURL]];
+    [AttachmentSharing showShareUIForURL:[self.attachmentStream mediaURL]];
 }
 
 - (void)initializeScrollView {
@@ -165,6 +161,13 @@ NS_ASSUME_NONNULL_BEGIN
     self.scrollView.maximumZoomScale = kMaxZoomScale;
     self.scrollView.scrollEnabled    = NO;
     [self.contentView addSubview:self.scrollView];
+}
+
+- (BOOL)isAnimated
+{
+    OWSAssert(self.attachmentStream);
+
+    return self.attachmentStream.isAnimated;
 }
 
 - (void)initializeImageView {
@@ -255,14 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                            animated:NO];
         }
 
-        NSArray *menuItems = @[
-                               [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION", @"Short name for edit menu item to copy contents of media message.")
-                                                          action:@selector(copyAttachment:)],
-                               [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION", @"Short name for edit menu item to save contents of media message.")
-                                                          action:@selector(saveAttachment:)],
-                               [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SHARE_ACTION", @"Short name for edit menu item to share contents of media message.")
-                                                          action:@selector(shareAttachment:)],
-                               ];
+        NSArray *menuItems = self.viewItem.menuControllerItems;
         if (!self.oldMenuItems) {
             self.oldMenuItems = [UIMenuController sharedMenuController].menuItems;
         }
@@ -278,29 +274,39 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)performEditingActionWithSelector:(SEL)selector {
-    OWSAssert(self.messageItem.messageType == TSIncomingMessageAdapter ||
-              self.messageItem.messageType == TSOutgoingMessageAdapter);
-    OWSAssert([self.messageItem isMediaMessage]);
-    OWSAssert([self.messageItem isKindOfClass:[TSMessageAdapter class]]);
-    OWSAssert([self.messageItem conformsToProtocol:@protocol(OWSMessageEditing)]);
-    OWSAssert([[self.messageItem media] isKindOfClass:[TSPhotoAdapter class]] ||
-              [[self.messageItem media] isKindOfClass:[TSAnimatedAdapter class]]);
-    
-    OWSAssert([self.messageItem canPerformEditingAction:selector]);
-    [self.messageItem performEditingAction:selector];
+- (BOOL)canPerformAction:(SEL)action withSender:(nullable id)sender
+{
+    if (action == self.viewItem.metadataActionSelector) {
+        return NO;
+    }
+    return [self.viewItem canPerformAction:action];
 }
 
-- (void)copyAttachment:(id)sender {
-    [self performEditingActionWithSelector:NSSelectorFromString(@"copy:")];
+- (void)copyAction:(nullable id)sender
+{
+    [self.viewItem copyAction];
 }
 
-- (void)saveAttachment:(id)sender {
-    [self performEditingActionWithSelector:NSSelectorFromString(@"save:")];
+- (void)shareAction:(nullable id)sender
+{
+    [self.viewItem shareAction];
 }
 
-- (void)shareAttachment:(id)sender {
-    [self performEditingActionWithSelector:NSSelectorFromString(@"share:")];
+- (void)saveAction:(nullable id)sender
+{
+    [self.viewItem saveAction];
+}
+
+- (void)deleteAction:(nullable id)sender
+{
+    [self.viewItem deleteAction];
+
+    [self dismiss];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
 }
 
 #pragma mark - Presentation

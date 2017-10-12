@@ -2,8 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMath.h"
 #import "UIView+OWS.h"
+#import "OWSMath.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,16 +33,22 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 @implementation UIView (OWS)
 
-- (void)autoPinWidthToSuperviewWithMargin:(CGFloat)margin
+- (NSArray<NSLayoutConstraint *> *)autoPinWidthToSuperviewWithMargin:(CGFloat)margin
 {
-    [self autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.superview withOffset:+margin];
-    [self autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.superview withOffset:-margin];
+    NSArray<NSLayoutConstraint *> *result = @[
+                                              [self autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:margin],
+                                              [self autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:margin],
+    ];
+    return result;
 }
 
-- (void)autoPinWidthToSuperview
+- (NSArray<NSLayoutConstraint *> *)autoPinWidthToSuperview
 {
-    [self autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.superview];
-    [self autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.superview];
+    NSArray<NSLayoutConstraint *> *result = @[
+                                              [self autoPinEdgeToSuperviewEdge:ALEdgeLeft],
+                                              [self autoPinEdgeToSuperviewEdge:ALEdgeRight],
+    ];
+    return result;
 }
 
 - (NSArray<NSLayoutConstraint *> *)autoPinLeadingAndTrailingToSuperview
@@ -54,22 +60,33 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return result;
 }
 
-- (void)autoPinHeightToSuperviewWithMargin:(CGFloat)margin
+- (NSArray<NSLayoutConstraint *> *)autoPinHeightToSuperviewWithMargin:(CGFloat)margin
 {
-    [self autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.superview withOffset:+margin];
-    [self autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.superview withOffset:-margin];
+    NSArray<NSLayoutConstraint *> *result = @[
+                                              [self autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:margin],
+                                              [self autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:margin],
+    ];
+    return result;
 }
 
-- (void)autoPinHeightToSuperview
+- (NSArray<NSLayoutConstraint *> *)autoPinHeightToSuperview
 {
-    [self autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.superview];
-    [self autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.superview];
+    NSArray<NSLayoutConstraint *> *result = @[
+                                              [self autoPinEdgeToSuperviewEdge:ALEdgeTop],
+                                              [self autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+    ];
+    return result;
 }
 
-- (void)autoPinToSuperviewEdges
+- (NSArray<NSLayoutConstraint *> *)autoPinToSuperviewEdges
 {
-    [self autoPinWidthToSuperview];
-    [self autoPinHeightToSuperview];
+    NSArray<NSLayoutConstraint *> *result = @[
+                                              [self autoPinEdgeToSuperviewEdge:ALEdgeLeft ],
+                                              [self autoPinEdgeToSuperviewEdge:ALEdgeRight ],
+                                              [self autoPinEdgeToSuperviewEdge:ALEdgeTop ],
+                                              [self autoPinEdgeToSuperviewEdge:ALEdgeBottom ],
+    ];
+    return result;
 }
 
 - (void)autoHCenterInSuperview
@@ -277,7 +294,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
         constraint.active = YES;
         return constraint;
     } else {
-        CGFloat oldMargin = margin;
         margin += (self.isRTL ? self.superview.layoutMargins.left : self.superview.layoutMargins.right);
         return [self autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:margin];
     }
@@ -356,7 +372,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     UIView *view = [UIView new];
     // Leading and trailing anchors honor layout margins.
     // When using a UIView as a "div" to structure layout, we don't want it to have margins.
-    view.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0);
+    view.layoutMargins = UIEdgeInsetsZero;
     return view;
 }
 

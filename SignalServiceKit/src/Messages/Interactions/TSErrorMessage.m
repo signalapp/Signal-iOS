@@ -91,6 +91,11 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return [self initWithTimestamp:envelope.timestamp inThread:contactThread failedMessageType:errorMessageType];
 }
 
+- (OWSInteractionType)interactionType
+{
+    return OWSInteractionType_Error;
+}
+
 - (NSString *)description {
     switch (_errorType) {
         case TSErrorMessageNoSession:

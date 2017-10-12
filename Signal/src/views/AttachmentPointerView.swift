@@ -37,6 +37,36 @@ class AttachmentPointerView: UIView {
 
         createSubviews()
         updateViews()
+
+        if attachmentPointer.state == .downloading {
+            NotificationCenter.default.addObserver(self,
+                                                   selector:#selector(attachmentDownloadProgress(_:)),
+                                                   name:NSNotification.Name.attachmentDownloadProgress,
+                                                   object:nil)
+        }
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    internal func attachmentDownloadProgress(_ notification: Notification) {
+        guard let attachmentId = attachmentPointer.uniqueId else {
+            owsFail("Missing attachment id.")
+            return
+        }
+        guard let progress = (notification as NSNotification).userInfo?[kAttachmentDownloadProgressKey] as? NSNumber else {
+            owsFail("Attachment download notification missing progress.")
+            return
+        }
+        guard let notificationAttachmentId = (notification as NSNotification).userInfo?[kAttachmentDownloadAttachmentIDKey] as? String else {
+            owsFail("Attachment download notification missing attachment id.")
+            return
+        }
+        guard notificationAttachmentId == attachmentId else {
+            return
+        }
+        self.progress = CGFloat(progress.floatValue)
     }
 
     @available(*, unavailable)

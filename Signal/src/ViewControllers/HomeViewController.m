@@ -748,8 +748,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     // We do this synchronously if we're already on the main thread.
     DispatchMainThreadSafe(^{
-        ConversationViewController *mvc =
-            [[ConversationViewController alloc] initWithNibName:@"ConversationViewController" bundle:nil];
+        ConversationViewController *mvc = [ConversationViewController new];
         [mvc configureForThread:thread
             keyboardOnViewAppearing:keyboardOnViewAppearing
                 callOnViewAppearing:callOnViewAppearing];

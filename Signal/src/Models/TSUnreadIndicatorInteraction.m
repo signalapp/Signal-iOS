@@ -50,6 +50,11 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (OWSInteractionType)interactionType
+{
+    return OWSInteractionType_UnreadIndicator;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
