@@ -89,14 +89,14 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return result;
 }
 
-- (void)autoHCenterInSuperview
+- (NSLayoutConstraint *)autoHCenterInSuperview
 {
-    [self autoAlignAxis:ALAxisVertical toSameAxisOfView:self.superview];
+    return [self autoAlignAxis:ALAxisVertical toSameAxisOfView:self.superview];
 }
 
-- (void)autoVCenterInSuperview
+- (NSLayoutConstraint *)autoVCenterInSuperview
 {
-    [self autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.superview];
+    return [self autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.superview];
 }
 
 - (void)autoPinWidthToWidthOfView:(UIView *)view
@@ -302,21 +302,42 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view
 {
     OWSAssert(view);
-
+    
     return [self autoPinLeadingToTrailingOfView:view margin:0];
 }
 
 - (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin
 {
     OWSAssert(view);
-
+    
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
         NSLayoutConstraint *constraint =
-            [self.leadingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
+        [self.leadingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
         constraint.active = YES;
         return constraint;
     } else {
         return [self autoPinEdge:ALEdgeLeading toEdge:ALEdgeTrailing ofView:view withOffset:margin];
+    }
+}
+
+- (NSLayoutConstraint *)autoPinTrailingToLeadingOfView:(UIView *)view
+{
+    OWSAssert(view);
+    
+    return [self autoPinTrailingToLeadingOfView:view margin:0];
+}
+
+- (NSLayoutConstraint *)autoPinTrailingToLeadingOfView:(UIView *)view margin:(CGFloat)margin
+{
+    OWSAssert(view);
+    
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+        NSLayoutConstraint *constraint =
+        [self.trailingAnchor constraintEqualToAnchor:view.leadingAnchor constant:-margin];
+        constraint.active = YES;
+        return constraint;
+    } else {
+        return [self autoPinEdge:ALEdgeTrailing toEdge:ALEdgeLeading ofView:view withOffset:-margin];
     }
 }
 

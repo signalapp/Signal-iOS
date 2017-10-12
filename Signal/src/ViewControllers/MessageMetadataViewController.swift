@@ -9,15 +9,6 @@ class MessageMetadataViewController: OWSViewController {
     static let TAG = "[MessageMetadataViewController]"
     let TAG = "[MessageMetadataViewController]"
 
-    enum MessageRecipientState {
-        case uploading
-        case sending
-        case sent
-        case delivered
-        case read
-        case failed
-    }
-
     // MARK: Properties
 
     let contactsManager: OWSContactsManager
@@ -174,7 +165,7 @@ class MessageMetadataViewController: OWSViewController {
 
             let isGroupThread = message.thread.isGroupThread()
 
-            let recipientStatusGroups: [MessageRecipientState] = [
+            let recipientStatusGroups: [MessageRecipientStatus] = [
                 .read,
                 .uploading,
                 .delivered,
@@ -194,7 +185,7 @@ class MessageMetadataViewController: OWSViewController {
                 }
 
                 for recipientId in thread.recipientIdentifiers {
-                    let (recipientStatus, statusMessage) = self.recipientStatus(outgoingMessage: outgoingMessage, recipientId: recipientId)
+                    let (recipientStatus, statusMessage) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientId: recipientId, referenceView:self.view)
 
                     guard recipientStatus == recipientStatusGroup else {
                         continue
@@ -202,7 +193,7 @@ class MessageMetadataViewController: OWSViewController {
 
                     if groupRows.count < 1 {
                         if isGroupThread {
-                            groupRows.append(valueRow(name: MessageRecipientStateName(recipientStatusGroup),
+                            groupRows.append(valueRow(name: MessageRecipientStatusName(recipientStatusGroup),
                                                       value:""))
                         }
 
@@ -424,60 +415,6 @@ class MessageMetadataViewController: OWSViewController {
         return rows
     }
 
-    private func recipientStatus(outgoingMessage: TSOutgoingMessage, recipientId: String) -> (MessageRecipientState, String) {
-        // Legacy messages don't have "recipient read" state or "per-recipient delivery" state,
-        // so we fall back to `TSOutgoingMessageState` which is not per-recipient and therefore
-        // might be misleading.
-
-        let recipientReadMap = outgoingMessage.recipientReadMap
-        if let readTimestamp = recipientReadMap[recipientId] {
-            assert(outgoingMessage.messageState == .sentToService)
-            let statusMessage = NSLocalizedString("MESSAGE_STATUS_READ", comment:"message footer for read messages").rtlSafeAppend(" ", referenceView:self.view)
-                .rtlSafeAppend(
-                    DateUtil.formatPastTimestampRelativeToNow(readTimestamp.uint64Value), referenceView:self.view)
-            return (.read, statusMessage)
-        }
-
-        let recipientDeliveryMap = outgoingMessage.recipientDeliveryMap
-        if let deliveryTimestamp = recipientDeliveryMap[recipientId] {
-            assert(outgoingMessage.messageState == .sentToService)
-            let statusMessage = NSLocalizedString("MESSAGE_STATUS_DELIVERED",
-                                     comment:"message status for message delivered to their recipient.").rtlSafeAppend(" ", referenceView:self.view)
-                .rtlSafeAppend(
-                    DateUtil.formatPastTimestampRelativeToNow(deliveryTimestamp.uint64Value), referenceView:self.view)
-            return (.delivered, statusMessage)
-        }
-
-        if outgoingMessage.wasDelivered {
-            let statusMessage = NSLocalizedString("MESSAGE_STATUS_DELIVERED",
-                                     comment:"message status for message delivered to their recipient.")
-            return (.delivered, statusMessage)
-        }
-
-        if outgoingMessage.messageState == .unsent {
-            let statusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED", comment:"message footer for failed messages")
-            return (.failed, statusMessage)
-        } else if outgoingMessage.messageState == .sentToService ||
-            outgoingMessage.wasSent(toRecipient:recipientId) {
-            let statusMessage =
-                NSLocalizedString("MESSAGE_STATUS_SENT",
-                                  comment:"message footer for sent messages")
-            return (.sent, statusMessage)
-        } else if outgoingMessage.hasAttachments() {
-            assert(outgoingMessage.messageState == .attemptingOut)
-
-            let statusMessage = NSLocalizedString("MESSAGE_STATUS_UPLOADING",
-                                     comment:"message footer while attachment is uploading")
-            return (.uploading, statusMessage)
-        } else {
-            assert(outgoingMessage.messageState == .attemptingOut)
-
-            let statusMessage = NSLocalizedString("MESSAGE_STATUS_SENDING",
-                                     comment:"message status while message is sending.")
-            return (.sending, statusMessage)
-        }
-    }
-
     private func nameLabel(text: String) -> UILabel {
         let label = UILabel()
         label.textColor = UIColor.black
@@ -595,7 +532,7 @@ class MessageMetadataViewController: OWSViewController {
         updateContent()
     }
 
-    private func MessageRecipientStateName(_ value: MessageRecipientState) -> String {
+    private func MessageRecipientStatusName(_ value: MessageRecipientStatus) -> String {
         switch value {
         case .uploading:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING",

@@ -61,7 +61,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 @implementation ConversationViewItem
 
-- (instancetype)initWithTSInteraction:(TSInteraction *)interaction
+- (instancetype)initWithTSInteraction:(TSInteraction *)interaction isGroupThread:(BOOL)isGroupThread
 {
     self = [super init];
 
@@ -70,6 +70,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     _interaction = interaction;
+    _isGroupThread = isGroupThread;
     self.row = NSNotFound;
     self.lastRow = NSNotFound;
 

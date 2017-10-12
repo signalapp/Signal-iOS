@@ -6,9 +6,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern const CGFloat kExpirationTimerViewSize;
+
 @interface OWSExpirationTimerView : UIView
 
-- (void)startTimerWithExpiresAtSeconds:(double)expiresAtSeconds initialDurationSeconds:(uint32_t)initialDurationSeconds;
+- (void)startTimerWithExpiration:(uint64_t)expirationTimestamp initialDurationSeconds:(uint32_t)initialDurationSeconds;
 
 - (void)stopTimer;
 

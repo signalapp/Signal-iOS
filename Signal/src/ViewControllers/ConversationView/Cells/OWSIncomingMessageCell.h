@@ -4,8 +4,6 @@
 
 #import "OWSMessageCell.h"
 
-//#import "OWSExpirableMessageView.h"
-
 NS_ASSUME_NONNULL_BEGIN
 
 // TODO: Remove this class.

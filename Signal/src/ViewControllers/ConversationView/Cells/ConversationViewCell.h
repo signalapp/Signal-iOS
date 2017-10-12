@@ -39,6 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)tappedAddToContactsOfferMessage:(OWSContactOffersInteraction *)interaction;
 - (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction;
 
+#pragma mark - Formatting
+
+- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId;
+
 @end
 
 #pragma mark -
