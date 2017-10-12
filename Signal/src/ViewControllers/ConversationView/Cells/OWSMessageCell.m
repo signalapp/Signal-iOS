@@ -92,21 +92,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)textMessage
 {
+    // This should always be valid for the appropriate cell types.
+    OWSAssert(self.viewItem.textMessage);
+
     return self.viewItem.textMessage;
 }
 
 - (nullable TSAttachmentStream *)attachmentStream
 {
+    // This should always be valid for the appropriate cell types.
+    OWSAssert(self.viewItem.attachmentStream);
+
     return self.viewItem.attachmentStream;
 }
 
 - (nullable TSAttachmentPointer *)attachmentPointer
 {
+    // This should always be valid for the appropriate cell types.
+    OWSAssert(self.viewItem.attachmentPointer);
+
     return self.viewItem.attachmentPointer;
 }
 
 - (CGSize)contentSize
 {
+    // This should always be valid for the appropriate cell types.
+    OWSAssert(self.viewItem.contentSize.width > 0 && self.viewItem.contentSize.height > 0);
+
     return self.viewItem.contentSize;
 }
 
@@ -115,6 +127,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+
+    DDLogError(@"%p loadForDisplay: %@", self, NSStringForOWSMessageCellType(self.cellType));
 
     BOOL isIncoming = self.isIncoming;
     JSQMessagesBubbleImage *bubbleImageData
@@ -151,20 +165,6 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         }
     }
-
-    // If we have an outgoing attachment and we haven't created a
-    // AttachmentUploadView yet, do so now.
-    //
-    // For some attachment types, we may create this view earlier
-    // so that we can take advantage of its callback.
-    //    if (self.attachmentStream &&
-    //        !self.isIncoming &&
-    //        !self.attachmentUploadView) {
-    //        self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachmentStream
-    //                                                                           superview:imageView
-    //                                                             attachmentStateCallback:^(BOOL isAttachmentReady) {
-    //                                                             }];
-    //    }
 
     //    [self.textLabel addBorderWithColor:[UIColor blueColor]];
     //    [self.bubbleImageView addBorderWithColor:[UIColor greenColor]];

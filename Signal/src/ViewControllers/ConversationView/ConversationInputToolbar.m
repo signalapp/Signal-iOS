@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.attachmentButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
     [self addSubview:self.attachmentButton];
 
-    // TODO:
+    // TODO: Fix layout in this class.
     _sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.sendButton
         setTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"Label for the send button in the conversation view.")

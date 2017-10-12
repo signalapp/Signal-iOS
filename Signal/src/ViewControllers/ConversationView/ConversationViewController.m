@@ -192,7 +192,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
 @property (nonatomic) BOOL userHasScrolled;
-@property (nonatomic) NSDate *lastMessageSentDate;
+@property (nonatomic, nullable) NSDate *lastMessageSentDate;
 
 @property (nonatomic, nullable) ThreadDynamicInteractions *dynamicInteractions;
 @property (nonatomic) BOOL hasClearedUnreadMessagesIndicator;
@@ -869,7 +869,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 }
 
-- (void)showUnblockContactUI:(BlockActionCompletionBlock _Nullable)completionBlock
+- (void)showUnblockContactUI:(nullable BlockActionCompletionBlock)completionBlock
 {
     OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
 
@@ -2747,7 +2747,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.messageMappings updateWithTransaction:transaction];
         }];
-        [self reloadViewItems];
         return;
     }
 
@@ -2866,13 +2865,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (BOOL)isScrolledToBottom
 {
     CGFloat contentHeight = self.safeContentHeight;
-    if (contentHeight < 1) {
-        // If the collection view hasn't determined its content size yet,
-        // scroll state is not yet coherent. Therefore we can't (and don't
-        // need to) determine whether we're "scrolled to the bottom" until
-        // the collection view has determined its content size.
-        return NO;
-    }
 
     // This is a bit subtle.
     //
@@ -3069,7 +3061,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.voiceMessageUUID = nil;
 }
 
-- (void)setAudioRecorder:(AVAudioRecorder *_Nullable)audioRecorder
+- (void)setAudioRecorder:(nullable AVAudioRecorder *)audioRecorder
 {
     // Prevent device from sleeping while recording a voice message.
     if (audioRecorder) {
@@ -3294,15 +3286,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)loadDraftInCompose
 {
+    OWSAssert([NSThread isMainThread]);
+
     __block NSString *draft;
-    [self.editingDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         draft = [_thread currentDraftWithTransaction:transaction];
-    }
-        completionBlock:^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.inputToolbar setMessageText:draft];
-            });
-        }];
+    }];
+    [self.inputToolbar setMessageText:draft];
 }
 
 - (void)saveDraft
@@ -3468,15 +3458,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     BOOL wasAtBottom = [self isScrolledToBottom];
     if (wasAtBottom) {
         [self scrollToBottomImmediately];
-    } else if (self.safeContentHeight < 1) {
-        // If the collection view hasn't determined its content size yet,
-        // scroll state is not yet coherent. Therefore we can't (and don't
-        // need to) determine whether we're "scrolled to the bottom" until
-        // the collection view has determined its content size.
-        //
-        // In this case we should just ensure that scroll state is initialized
-        // properly.
-        [self scrollToDefaultPosition];
     }
 
     [self updateLastVisibleTimestamp];
@@ -3900,10 +3881,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    // TODO: Recycle view items where possible.
-    // TODO: Distinguish interaction types through some enum.
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        TSInteraction *_Nullable interaction = [TSInteraction fetchObjectWithUniqueID:viewItem.interaction.uniqueId];
+        TSInteraction *_Nullable interaction =
+            [TSInteraction fetchObjectWithUniqueID:viewItem.interaction.uniqueId transaction:transaction];
         if (!interaction) {
             OWSFail(@"%@ could not reload interaction", self.tag);
         } else {
@@ -3915,7 +3895,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (nullable ConversationViewItem *)viewItemForIndex:(NSUInteger)index
 {
     if (index >= self.viewItems.count) {
-        OWSFail(@"%@ Invalid view item index: %zd", self.tag, index) return nil;
+        OWSFail(@"%@ Invalid view item index: %zd", self.tag, index);
+        return nil;
     }
     return self.viewItems[index];
 }

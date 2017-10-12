@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ConversationViewLayout ()
 
 @property (nonatomic) CGSize contentSize;
+
 @property (nonatomic, readonly) NSMutableDictionary<NSNumber *, UICollectionViewLayoutAttributes *> *itemAttributesMap;
 
 // This dirty flag may be redundant with logic in UICollectionViewLayout,
