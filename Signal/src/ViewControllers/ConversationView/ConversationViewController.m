@@ -3885,67 +3885,42 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             }
             shouldShowDateOnNextViewItem = NO;
         }
-        if (viewItem.shouldShowDate != shouldShowDate) {
-            // If this is an existing view item and it has changed size,
-            // note that so that we can reload this cell while doing
-            // incremental updates.
-            if (viewItem.lastRow != NSNotFound) {
-                [rowsThatChangedSize addObject:@(viewItem.lastRow)];
-            }
+
+        // If this is an existing view item and it has changed size,
+        // note that so that we can reload this cell while doing
+        // incremental updates.
+        if (viewItem.shouldShowDate != shouldShowDate && viewItem.lastRow != NSNotFound) {
+            [rowsThatChangedSize addObject:@(viewItem.lastRow)];
         }
         viewItem.shouldShowDate = shouldShowDate;
+
         previousViewItemTimestamp = viewItem.interaction.timestampForSorting;
     }
 
     // Update the "shouldShowDate" property of the view items.
     OWSInteractionType lastInteractionType = OWSInteractionType_Unknown;
-    for (ConversationViewItem *viewItem in viewItems) {
+    MessageRecipientStatus lastRecipientStatus = MessageRecipientStatusUploading;
+    for (ConversationViewItem *viewItem in viewItems.reverseObjectEnumerator) {
+        BOOL shouldHideRecipientStatus = NO;
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
+
+        if (interactionType == OWSInteractionType_OutgoingMessage) {
+            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
+            MessageRecipientStatus recipientStatus =
+                [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
+            shouldHideRecipientStatus
+                = (interactionType == lastInteractionType && recipientStatus == lastRecipientStatus);
+            lastRecipientStatus = recipientStatus;
+        }
         lastInteractionType = interactionType;
-        //        BOOL canShowDate = NO;
-        //        switch (viewItem.interaction.interactionType) {
-        //            case OWSInteractionType_Unknown:
-        //            case OWSInteractionType_UnreadIndicator:
-        //            case OWSInteractionType_Offer:
-        //                canShowDate = NO;
-        //                break;
-        //            case OWSInteractionType_IncomingMessage:
-        //            case OWSInteractionType_OutgoingMessage:
-        //            case OWSInteractionType_Error:
-        //            case OWSInteractionType_Info:
-        //            case OWSInteractionType_Call:
-        //                canShowDate = YES;
-        //                break;
-        //        }
-        //
-        //        BOOL shouldShowDate = NO;
-        //        if (!canShowDate) {
-        //            shouldShowDate = NO;
-        //            shouldShowDateOnNextViewItem = YES;
-        //        } else if (shouldShowDateOnNextViewItem) {
-        //            shouldShowDate = YES;
-        //            shouldShowDateOnNextViewItem = NO;
-        //        } else {
-        //            uint64_t viewItemTimestamp = viewItem.interaction.timestampForSorting;
-        //            OWSAssert(viewItemTimestamp > 0);
-        //            OWSAssert(previousViewItemTimestamp > 0);
-        //            uint64_t timeDifferenceMs = viewItemTimestamp - previousViewItemTimestamp;
-        //            static const uint64_t kShowTimeIntervalMs = 5 * kMinuteInMs;
-        //            if (timeDifferenceMs > kShowTimeIntervalMs) {
-        //                shouldShowDate = YES;
-        //            }
-        //            shouldShowDateOnNextViewItem = NO;
-        //        }
-        //        if (viewItem.shouldShowDate != shouldShowDate) {
-        //            // If this is an existing view item and it has changed size,
-        //            // note that so that we can reload this cell while doing
-        //            // incremental updates.
-        //            if (viewItem.lastRow != NSNotFound) {
-        //                [rowsThatChangedSize addObject:@(viewItem.lastRow)];
-        //            }
-        //        }
-        //        viewItem.shouldShowDate = shouldShowDate;
-        //        previousViewItemTimestamp = viewItem.interaction.timestampForSorting;
+
+        // If this is an existing view item and it has changed size,
+        // note that so that we can reload this cell while doing
+        // incremental updates.
+        if (viewItem.shouldHideRecipientStatus != shouldHideRecipientStatus && viewItem.lastRow != NSNotFound) {
+            [rowsThatChangedSize addObject:@(viewItem.lastRow)];
+        }
+        viewItem.shouldHideRecipientStatus = shouldHideRecipientStatus;
     }
 
     self.viewItems = viewItems;

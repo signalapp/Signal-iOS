@@ -4,7 +4,7 @@
 
 import Foundation
 
-enum MessageRecipientStatus {
+@objc enum MessageRecipientStatus: Int {
     case uploading
     case sending
     case sent
@@ -130,6 +130,35 @@ class MessageRecipientStatusUtils: NSObject {
 
             return NSLocalizedString("MESSAGE_STATUS_SENDING",
                                                   comment:"message status while message is sending.")
+        }
+    }
+
+    public class func recipientStatus(outgoingMessage: TSOutgoingMessage) -> MessageRecipientStatus {
+        let recipientReadMap = outgoingMessage.recipientReadMap
+        if recipientReadMap.count > 0 {
+            assert(outgoingMessage.messageState == .sentToService)
+            return .read
+        }
+
+        let recipientDeliveryMap = outgoingMessage.recipientDeliveryMap
+        if recipientDeliveryMap.count > 0 {
+            return .delivered
+        }
+
+        if outgoingMessage.wasDelivered {
+            return .delivered
+        }
+
+        if outgoingMessage.messageState == .unsent {
+            return .failed
+        } else if outgoingMessage.messageState == .sentToService {
+            return .sent
+        } else if outgoingMessage.hasAttachments() {
+            assert(outgoingMessage.messageState == .attemptingOut)
+            return .uploading
+        } else {
+            assert(outgoingMessage.messageState == .attemptingOut)
+            return .sending
         }
     }
 }

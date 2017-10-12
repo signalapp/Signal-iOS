@@ -42,6 +42,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly) BOOL isGroupThread;
 
 @property (nonatomic) BOOL shouldShowDate;
+@property (nonatomic) BOOL shouldHideRecipientStatus;
 
 @property (nonatomic) NSInteger row;
 @property (nonatomic) NSInteger lastRow;

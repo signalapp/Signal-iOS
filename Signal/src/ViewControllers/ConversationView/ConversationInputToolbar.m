@@ -1138,6 +1138,18 @@ NS_ASSUME_NONNULL_BEGIN
     [textView resignFirstResponder];
 }
 
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+{
+    if (range.length > 0) {
+        return YES;
+    }
+    if ([text isEqualToString:@"\n"]) {
+        [self sendButtonPressed];
+        return NO;
+    }
+    return YES;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

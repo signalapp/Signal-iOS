@@ -276,7 +276,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (hasExpirationTimer) {
         showFooter = YES;
     } else if (!self.isIncoming) {
-        showFooter = YES;
+        showFooter = !self.viewItem.shouldHideRecipientStatus;
     } else if (self.viewItem.isGroupThread) {
         showFooter = YES;
     } else {
@@ -297,10 +297,12 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL hasExpirationTimer = message.shouldStartExpireTimer;
     NSAttributedString *attributedText = nil;
     if (!self.isIncoming) {
-        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
-        NSString *statusMessage =
-            [MessageRecipientStatusUtils statusMessageWithOutgoingMessage:outgoingMessage referenceView:self];
-        attributedText = [[NSAttributedString alloc] initWithString:statusMessage attributes:@{}];
+        if (!self.viewItem.shouldHideRecipientStatus || hasExpirationTimer) {
+            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
+            NSString *statusMessage =
+                [MessageRecipientStatusUtils statusMessageWithOutgoingMessage:outgoingMessage referenceView:self];
+            attributedText = [[NSAttributedString alloc] initWithString:statusMessage attributes:@{}];
+        }
     } else if (self.viewItem.isGroupThread) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
         attributedText = [self.delegate attributedContactOrProfileNameForPhoneIdentifier:incomingMessage.authorId];
@@ -632,6 +634,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     cellSize.height += self.dateHeaderHeight;
     cellSize.height += self.footerHeight;
+
+    cellSize.width = ceil(cellSize.width);
+    cellSize.height = ceil(cellSize.height);
 
     return cellSize;
 }
