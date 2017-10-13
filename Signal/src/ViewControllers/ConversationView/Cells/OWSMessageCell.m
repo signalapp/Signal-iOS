@@ -17,12 +17,57 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface BubbleMaskingView : UIView
+
+@property (nonatomic) BOOL isOutgoing;
+@property (nonatomic, nullable, weak) UIView *maskedSubview;
+
+@end
+
+@implementation BubbleMaskingView
+
+- (void)setFrame:(CGRect)frame
+{
+    BOOL didSizeChange = !CGSizeEqualToSize(self.frame.size, frame.size);
+
+    [super setFrame:frame];
+
+    if (didSizeChange) {
+        [self updateMask];
+    }
+}
+
+- (void)setBounds:(CGRect)bounds
+{
+    BOOL didSizeChange = !CGSizeEqualToSize(self.bounds.size, bounds.size);
+
+    [super setBounds:bounds];
+
+    if (didSizeChange) {
+        [self updateMask];
+    }
+}
+
+- (void)updateMask
+{
+    UIView *_Nullable maskedSubview = self.maskedSubview;
+    if (!maskedSubview) {
+        return;
+    }
+    maskedSubview.frame = self.bounds;
+    [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:maskedSubview isOutgoing:self.isOutgoing];
+}
+
+@end
+
+#pragma mark -
+
 @interface OWSMessageCell ()
 
 // The nullable properties are created as needed.
 // The non-nullable properties are so frequently used that it's easier
 // to always keep one around.
-@property (nonatomic) UIView *payloadView;
+@property (nonatomic) BubbleMaskingView *payloadView;
 @property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) UILabel *textLabel;
 @property (nonatomic, nullable) UIImageView *bubbleImageView;
@@ -60,7 +105,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.layoutMargins = UIEdgeInsetsZero;
 
-    self.payloadView = [UIView containerView];
+    self.payloadView = [BubbleMaskingView new];
+    self.payloadView.layoutMargins = UIEdgeInsetsZero;
     [self.contentView addSubview:self.payloadView];
 
     self.footerView = [UIView containerView];
@@ -550,9 +596,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)cropViewToBubbbleShape:(UIView *)view
 {
-    [self layoutIfNeeded];
-    view.frame = self.payloadView.bounds;
-    [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:view isOutgoing:!self.isIncoming];
+    OWSAssert(view);
+    OWSAssert(view.superview == self.payloadView);
+
+    self.payloadView.isOutgoing = !self.isIncoming;
+    self.payloadView.maskedSubview = view;
+    [self.payloadView updateMask];
 }
 
 //// TODO:
@@ -722,7 +771,6 @@ NS_ASSUME_NONNULL_BEGIN
     [NSLayoutConstraint deactivateConstraints:self.footerConstraints];
     self.footerConstraints = nil;
 
-    // The text label is used so frequently that we always keep one around.
     self.dateHeaderLabel.text = nil;
     self.dateHeaderLabel.hidden = YES;
     self.textLabel.text = nil;
@@ -731,6 +779,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.footerLabel.hidden = YES;
     self.bubbleImageView.image = nil;
     self.bubbleImageView.hidden = YES;
+    self.payloadView.maskedSubview = nil;
 
     [self.stillImageView removeFromSuperview];
     self.stillImageView = nil;
