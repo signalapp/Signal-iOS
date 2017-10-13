@@ -1111,27 +1111,29 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)createBackButton
 {
     UIBarButtonItem *backItem = [self createOWSBackButton];
-    // This method gets called multiple times, so it's important we re-layout the unread badge
-    // with respect to the new backItem.
-    [backItem.customView addSubview:_backButtonUnreadCountView];
-    // TODO: The back button assets are assymetrical.  There are strong reasons
-    // to use spacing in the assets to manipulate the size and positioning of
-    // bar button items, but it means we'll probably need separate RTL and LTR
-    // flavors of these assets.
-    [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-6];
-    [_backButtonUnreadCountView autoPinLeadingToSuperviewWithMargin:1];
-    [_backButtonUnreadCountView autoSetDimension:ALDimensionHeight toSize:self.unreadCountViewDiameter];
-    // We set a min width, but we will also pin to our subview label, so we can grow to accommodate multiple digits.
-    [_backButtonUnreadCountView autoSetDimension:ALDimensionWidth
-                                          toSize:self.unreadCountViewDiameter
-                                        relation:NSLayoutRelationGreaterThanOrEqual];
+    if (backItem.customView) {
+        // This method gets called multiple times, so it's important we re-layout the unread badge
+        // with respect to the new backItem.
+        [backItem.customView addSubview:_backButtonUnreadCountView];
+        // TODO: The back button assets are assymetrical.  There are strong reasons
+        // to use spacing in the assets to manipulate the size and positioning of
+        // bar button items, but it means we'll probably need separate RTL and LTR
+        // flavors of these assets.
+        [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-6];
+        [_backButtonUnreadCountView autoPinLeadingToSuperviewWithMargin:1];
+        [_backButtonUnreadCountView autoSetDimension:ALDimensionHeight toSize:self.unreadCountViewDiameter];
+        // We set a min width, but we will also pin to our subview label, so we can grow to accommodate multiple digits.
+        [_backButtonUnreadCountView autoSetDimension:ALDimensionWidth
+                                              toSize:self.unreadCountViewDiameter
+                                            relation:NSLayoutRelationGreaterThanOrEqual];
 
-    [_backButtonUnreadCountView addSubview:_backButtonUnreadCountLabel];
-    [_backButtonUnreadCountLabel autoPinWidthToSuperviewWithMargin:4];
-    [_backButtonUnreadCountLabel autoPinHeightToSuperview];
+        [_backButtonUnreadCountView addSubview:_backButtonUnreadCountLabel];
+        [_backButtonUnreadCountLabel autoPinWidthToSuperviewWithMargin:4];
+        [_backButtonUnreadCountLabel autoPinHeightToSuperview];
 
-    // Initialize newly created unread count badge to accurately reflect the current unread count.
-    [self updateBackButtonUnreadCount];
+        // Initialize newly created unread count badge to accurately reflect the current unread count.
+        [self updateBackButtonUnreadCount];
+    }
 
     self.navigationItem.leftBarButtonItem = backItem;
 }
