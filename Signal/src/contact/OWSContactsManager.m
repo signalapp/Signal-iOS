@@ -709,6 +709,24 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
     return image;
 }
 
+- (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
+{
+    NSString *_Nullable name;
+    if (signalAccount.contact) {
+        if (ABPersonGetSortOrdering() == kABPersonSortByFirstName) {
+            name = signalAccount.contact.comparableNameFirstLast;
+        } else {
+            name = signalAccount.contact.comparableNameLastFirst;
+        }
+    }
+    
+    if (name.length < 1) {
+        name = signalAccount.recipientId;
+    }
+    
+    return name;
+}
+
 #pragma mark - Logging
 
 + (NSString *)tag

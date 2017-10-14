@@ -67,5 +67,6 @@
 + (void)callRecipientId:(NSString *)recipientId;
 + (void)presentConversationForThreadId:(NSString *)threadId;
 + (void)presentConversationForThread:(TSThread *)thread;
++ (void)presentConversationForThread:(TSThread *)thread withCompose:(BOOL)compose;
 
 @end

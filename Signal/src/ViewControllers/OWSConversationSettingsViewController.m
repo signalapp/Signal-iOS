@@ -126,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
         threadName =
             [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:self.thread.contactIdentifier];
     } else if (threadName.length == 0 && [self isGroupThread]) {
-        threadName = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
+        threadName = [MessageStrings newGroupDefaultTitle];
     }
     return threadName;
 }

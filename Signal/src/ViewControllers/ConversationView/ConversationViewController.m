@@ -1251,7 +1251,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     NSAttributedString *name;
     if (self.thread.isGroupThread) {
         if (self.thread.name.length == 0) {
-            name = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"")];
+            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
         } else {
             name = [[NSAttributedString alloc] initWithString:self.thread.name];
         }

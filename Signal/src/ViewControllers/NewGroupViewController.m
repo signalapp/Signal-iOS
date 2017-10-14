@@ -98,7 +98,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 {
     [super loadView];
 
-    self.title = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"The navbar title for the 'new group' view.");
+    self.title = [MessageStrings newGroupDefaultTitle];
 
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
         initWithTitle:NSLocalizedString(@"NEW_GROUP_CREATE_BUTTON", @"The title for the 'create group' button.")
