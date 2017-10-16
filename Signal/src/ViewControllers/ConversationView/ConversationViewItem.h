@@ -86,6 +86,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (nullable TSAttachmentPointer *)attachmentPointer;
 - (CGSize)contentSize;
 
+// A generic property that cells can use to cache their loaded
+// media.  This cache is volatile and will get evacuated based
+// on scroll state, so that we only retain state for a sliding
+// window of cells that are almost on-screen.
+@property (nonatomic) id cachedCellMedia;
+@property (nonatomic) BOOL didCellMediaFailToLoad;
+
 // TODO:
 //// Cells will request that this adapter clear its cached media views,
 //// but the adapter should only honor requests from the last cell to

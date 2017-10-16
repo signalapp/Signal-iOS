@@ -98,32 +98,43 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.textColor blendWithColor:self.bubbleBackgroundColor alpha:alpha];
 }
 
-- (void)createContentsForSize:(CGSize)viewSize
+- (void)createContents
 {
     UIColor *textColor = (self.isIncoming ? [UIColor colorWithWhite:0.2 alpha:1.f] : [UIColor whiteColor]);
 
     self.backgroundColor = self.bubbleBackgroundColor;
+    self.layoutMargins = UIEdgeInsetsZero;
 
+    // TODO: Verify that this layout works in RTL.
     const CGFloat kBubbleTailWidth = 6.f;
-    CGRect contentFrame = CGRectMake(self.isIncoming ? kBubbleTailWidth : 0.f,
-        self.vMargin,
-        viewSize.width - kBubbleTailWidth - self.iconHMargin,
-        viewSize.height - self.vMargin * 2);
+
+    UIView *contentView = [UIView containerView];
+    [self addSubview:contentView];
+    [contentView autoPinLeadingToSuperviewWithMargin:self.isIncoming ? kBubbleTailWidth : 0.f];
+    [contentView autoPinTrailingToSuperviewWithMargin:self.isIncoming ? 0.f : kBubbleTailWidth];
+    [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.vMargin];
+    [contentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.vMargin];
 
     UIImage *image = [UIImage imageNamed:@"generic-attachment-small"];
     OWSAssert(image);
     UIImageView *imageView = [UIImageView new];
-    CGRect iconFrame = CGRectMake(round(contentFrame.origin.x + self.iconHMargin),
-        round(contentFrame.origin.y + (contentFrame.size.height - self.iconSize) * 0.5f),
-        self.iconSize,
-        self.iconSize);
-    imageView.frame = iconFrame;
     imageView.image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     imageView.tintColor = self.bubbleBackgroundColor;
     imageView.backgroundColor
         = (self.isIncoming ? [UIColor colorWithRGBHex:0x9e9e9e] : [self foregroundColorWithOpacity:0.15f]);
     imageView.layer.cornerRadius = MIN(imageView.bounds.size.width, imageView.bounds.size.height) * 0.5f;
-    [self addSubview:imageView];
+    [contentView addSubview:imageView];
+    [imageView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:self.iconHMargin];
+    [imageView autoVCenterInSuperview];
+    [imageView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
+    [imageView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
+
+    const CGFloat kLabelHSpacing = self.iconHSpacing;
+    UIView *labelsView = [UIView containerView];
+    [contentView addSubview:labelsView];
+    [labelsView autoPinLeadingToTrailingOfView:imageView margin:kLabelHSpacing];
+    [labelsView autoPinEdgeToSuperviewEdge:ALEdgeRight];
+    [labelsView autoVCenterInSuperview];
 
     NSString *filename = self.attachmentStream.sourceFilename;
     if (!filename) {
@@ -145,19 +156,11 @@ NS_ASSUME_NONNULL_BEGIN
     fileTypeLabel.font = [UIFont ows_mediumFontWithSize:20.f];
     fileTypeLabel.adjustsFontSizeToFitWidth = YES;
     fileTypeLabel.textAlignment = NSTextAlignmentCenter;
-    CGRect fileTypeLabelFrame = CGRectZero;
-    fileTypeLabelFrame.size = [fileTypeLabel sizeThatFits:CGSizeZero];
-    // This dimension depends on the space within the icon boundaries.
-    fileTypeLabelFrame.size.width = 15.f;
     // Center on icon.
-    fileTypeLabelFrame.origin.x
-        = round(iconFrame.origin.x + (iconFrame.size.width - fileTypeLabelFrame.size.width) * 0.5f);
-    fileTypeLabelFrame.origin.y
-        = round(iconFrame.origin.y + (iconFrame.size.height - fileTypeLabelFrame.size.height) * 0.5f);
-    fileTypeLabel.frame = fileTypeLabelFrame;
-    [self addSubview:fileTypeLabel];
+    [imageView addSubview:fileTypeLabel];
+    [imageView autoCenterInSuperview];
+    [imageView autoSetDimension:ALDimensionWidth toSize:15.f];
 
-    const CGFloat kLabelHSpacing = self.iconHSpacing;
     const CGFloat kLabelVSpacing = 2;
     NSString *topText =
         [self.attachmentStream.sourceFilename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -172,8 +175,10 @@ NS_ASSUME_NONNULL_BEGIN
     topLabel.textColor = textColor;
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     topLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 15.f)];
-    [topLabel sizeToFit];
-    [self addSubview:topLabel];
+    topLabel.textAlignment = NSTextAlignmentLeft;
+    [labelsView addSubview:topLabel];
+    [topLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [topLabel autoPinWidthToSuperview];
 
     NSError *error;
     unsigned long long fileSize =
@@ -185,21 +190,10 @@ NS_ASSUME_NONNULL_BEGIN
     bottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
     bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     bottomLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
-    [bottomLabel sizeToFit];
-    [self addSubview:bottomLabel];
-
-    CGRect topLabelFrame = CGRectZero;
-    topLabelFrame.size = topLabel.bounds.size;
-    topLabelFrame.origin.x = round(iconFrame.origin.x + iconFrame.size.width + kLabelHSpacing);
-    topLabelFrame.origin.y = round(contentFrame.origin.y
-        + (contentFrame.size.height - (topLabel.frame.size.height + bottomLabel.frame.size.height + kLabelVSpacing))
-            * 0.5f);
-    topLabelFrame.size.width = round((contentFrame.origin.x + contentFrame.size.width) - topLabelFrame.origin.x);
-    topLabel.frame = topLabelFrame;
-
-    CGRect bottomLabelFrame = topLabelFrame;
-    bottomLabelFrame.origin.y += topLabelFrame.size.height + kLabelVSpacing;
-    bottomLabel.frame = bottomLabelFrame;
+    [labelsView addSubview:bottomLabel];
+    [bottomLabel autoPinWidthToSuperview];
+    [bottomLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topLabel withOffset:kLabelVSpacing];
+    [bottomLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 }
 
 @end

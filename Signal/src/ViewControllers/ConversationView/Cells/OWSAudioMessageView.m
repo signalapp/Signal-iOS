@@ -193,34 +193,46 @@ NS_ASSUME_NONNULL_BEGIN
     return (self.attachmentStream.isVoiceMessage || self.attachmentStream.sourceFilename.length < 1);
 }
 
-- (void)createContentsForSize:(CGSize)viewSize
+- (void)createContents
 {
     UIColor *textColor = [self audioTextColor];
 
     self.backgroundColor = self.bubbleBackgroundColor;
+    self.layoutMargins = UIEdgeInsetsZero;
 
+    // TODO: Verify that this layout works in RTL.
     const CGFloat kBubbleTailWidth = 6.f;
-    CGRect contentFrame = CGRectMake(self.isIncoming ? kBubbleTailWidth : 0.f,
-        self.audioIconVMargin,
-        viewSize.width - kBubbleTailWidth - self.audioIconHMargin,
-        viewSize.height - self.audioIconVMargin * 2);
 
-    CGRect iconFrame = CGRectMake((CGFloat)round(contentFrame.origin.x + self.audioIconHMargin),
-        (CGFloat)round(contentFrame.origin.y + (contentFrame.size.height - self.iconSize) * 0.5f),
-        self.iconSize,
-        self.iconSize);
-    _audioPlayPauseButton = [[UIButton alloc] initWithFrame:iconFrame];
-    _audioPlayPauseButton.enabled = NO;
-    [self addSubview:_audioPlayPauseButton];
+    UIView *contentView = [UIView containerView];
+    [self addSubview:contentView];
+    [contentView autoPinLeadingToSuperviewWithMargin:self.isIncoming ? kBubbleTailWidth : 0.f];
+    [contentView autoPinTrailingToSuperviewWithMargin:self.isIncoming ? 0.f : kBubbleTailWidth];
+    [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.audioIconVMargin];
+    [contentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.audioIconVMargin];
+
+    _audioPlayPauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.audioPlayPauseButton.enabled = NO;
+    [contentView addSubview:self.audioPlayPauseButton];
+    [self.audioPlayPauseButton autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:self.audioIconHMargin];
+    [self.audioPlayPauseButton autoVCenterInSuperview];
+    [self.audioPlayPauseButton autoSetDimension:ALDimensionWidth toSize:self.iconSize];
+    [self.audioPlayPauseButton autoSetDimension:ALDimensionHeight toSize:self.iconSize];
 
     const CGFloat kLabelHSpacing = self.audioIconHSpacing;
+
+    UIView *labelsView = [UIView containerView];
+    [contentView addSubview:labelsView];
+    [labelsView autoPinLeadingToTrailingOfView:self.audioPlayPauseButton margin:kLabelHSpacing];
+    [labelsView autoPinEdgeToSuperviewEdge:ALEdgeRight];
+    [labelsView autoVCenterInSuperview];
+
     const CGFloat kLabelVSpacing = 2;
     NSString *filename = self.attachmentStream.sourceFilename;
     if (!filename) {
         filename = [[self.attachmentStream filePath] lastPathComponent];
     }
     NSString *topText = [[filename stringByDeletingPathExtension]
-        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if (topText.length < 1) {
         topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType].uppercaseString;
     }
@@ -235,13 +247,19 @@ NS_ASSUME_NONNULL_BEGIN
     topLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     topLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
-    [topLabel sizeToFit];
-    [self addSubview:topLabel];
+    topLabel.textAlignment = NSTextAlignmentLeft;
+    [labelsView addSubview:topLabel];
+    [topLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [topLabel autoPinWidthToSuperview];
 
+    const CGFloat kAudioProgressViewHeight = 12.f;
     AudioProgressView *audioProgressView = [AudioProgressView new];
     self.audioProgressView = audioProgressView;
     [self updateAudioProgressView];
-    [self addSubview:audioProgressView];
+    [labelsView addSubview:audioProgressView];
+    [audioProgressView autoPinWidthToSuperview];
+    [audioProgressView autoSetDimension:ALDimensionHeight toSize:kAudioProgressViewHeight];
+    [audioProgressView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topLabel withOffset:kLabelVSpacing];
 
     UILabel *bottomLabel = [UILabel new];
     self.audioBottomLabel = bottomLabel;
@@ -249,25 +267,11 @@ NS_ASSUME_NONNULL_BEGIN
     bottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
     bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     bottomLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
-    [bottomLabel sizeToFit];
-    [self addSubview:bottomLabel];
-
-    const CGFloat topLabelHeight = (CGFloat)ceil(topLabel.font.lineHeight);
-    const CGFloat kAudioProgressViewHeight = 12.f;
-    const CGFloat bottomLabelHeight = (CGFloat)ceil(bottomLabel.font.lineHeight);
-    CGRect labelsBounds = CGRectZero;
-    labelsBounds.origin.x = (CGFloat)round(iconFrame.origin.x + iconFrame.size.width + kLabelHSpacing);
-    labelsBounds.size.width = contentFrame.origin.x + contentFrame.size.width - labelsBounds.origin.x;
-    labelsBounds.size.height = topLabelHeight + kAudioProgressViewHeight + bottomLabelHeight + kLabelVSpacing * 2;
-    labelsBounds.origin.y
-        = (CGFloat)round(contentFrame.origin.y + (contentFrame.size.height - labelsBounds.size.height) * 0.5f);
-
-    CGFloat y = labelsBounds.origin.y;
-    topLabel.frame = CGRectMake(labelsBounds.origin.x, labelsBounds.origin.y, labelsBounds.size.width, topLabelHeight);
-    y += topLabelHeight + kLabelVSpacing;
-    audioProgressView.frame = CGRectMake(labelsBounds.origin.x, y, labelsBounds.size.width, kAudioProgressViewHeight);
-    y += kAudioProgressViewHeight + kLabelVSpacing;
-    bottomLabel.frame = CGRectMake(labelsBounds.origin.x, y, labelsBounds.size.width, bottomLabelHeight);
+    bottomLabel.textAlignment = NSTextAlignmentLeft;
+    [labelsView addSubview:bottomLabel];
+    [bottomLabel autoPinWidthToSuperview];
+    [bottomLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:audioProgressView withOffset:kLabelVSpacing];
+    [bottomLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     [self updateContents];
 }
