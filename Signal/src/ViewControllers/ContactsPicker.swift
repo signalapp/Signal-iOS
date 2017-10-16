@@ -289,6 +289,7 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
             return nil
         }
 
+        // Don't show empty sections
         if dataSource[section].count > 0 {
             guard section < collation.sectionTitles.count else {
                 return nil

@@ -22,6 +22,22 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface SignalAccount (Collation)
+
+- (NSString *)stringForCollation;
+
+@end
+
+@implementation SignalAccount (Collation)
+
+- (NSString *)stringForCollation
+{
+    OWSContactsManager *contactsManager = [Environment getCurrent].contactsManager;
+    return [contactsManager comparableNameForSignalAccount:self];
+}
+
+@end
+
 @interface NewContactThreadViewController () <UISearchBarDelegate,
     ContactsViewHelperDelegate,
     OWSTableViewControllerDelegate,
@@ -33,6 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UIView *noSignalContactsView;
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
+
+@property (nonatomic, readonly) UILocalizedIndexedCollation *collation;
 
 @property (nonatomic, readonly) UISearchBar *searchBar;
 @property (nonatomic, readonly) NSLayoutConstraint *hideContactsPermissionReminderViewConstraint;
@@ -59,6 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _nonContactAccountSet = [NSMutableSet set];
+    _collation = [UILocalizedIndexedCollation currentCollation];
 
     ReminderView *contactsPermissionReminderView = [[ReminderView alloc]
         initWithText:NSLocalizedString(@"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
@@ -285,6 +304,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Table Contents
 
+- (CGFloat)actionCellHeight
+{
+    return ScaleFromIPhone5To7Plus(round((kOWSTable_DefaultCellHeight + [ContactTableViewCell rowHeight]) * 0.5f),
+        [ContactTableViewCell rowHeight]);
+}
+
 - (void)updateTableContents
 {
     OWSTableContents *contents = [OWSTableContents new];
@@ -295,38 +320,157 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __weak NewContactThreadViewController *weakSelf = self;
-    ContactsViewHelper *helper = self.contactsViewHelper;
 
-    OWSTableSection *section = [OWSTableSection new];
-
-    const CGFloat kActionCellHeight
-        = ScaleFromIPhone5To7Plus(round((kOWSTable_DefaultCellHeight + [ContactTableViewCell rowHeight]) * 0.5f),
-            [ContactTableViewCell rowHeight]);
+    OWSTableSection *staticSection = [OWSTableSection new];
 
     // Find Non-Contacts by Phone Number
-    [section addItem:[OWSTableItem
-                         disclosureItemWithText:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
-                                                    @"A label the cell that lets you add a new member to a group.")
-                                customRowHeight:kActionCellHeight
-                                    actionBlock:^{
-                                        NewNonContactConversationViewController *viewController =
-                                            [NewNonContactConversationViewController new];
-                                        viewController.nonContactConversationDelegate = weakSelf;
-                                        [weakSelf.navigationController pushViewController:viewController animated:YES];
-                                    }]];
+    [staticSection
+        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
+                                                         @"A label the cell that lets you add a new member to a group.")
+                                     customRowHeight:self.actionCellHeight
+                                         actionBlock:^{
+                                             NewNonContactConversationViewController *viewController =
+                                                 [NewNonContactConversationViewController new];
+                                             viewController.nonContactConversationDelegate = weakSelf;
+                                             [weakSelf.navigationController pushViewController:viewController
+                                                                                      animated:YES];
+                                         }]];
 
     if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
         // Invite Contacts
-        [section
+        [staticSection
             addItem:[OWSTableItem
                         disclosureItemWithText:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
                                                    @"Label for the cell that presents the 'invite contacts' workflow.")
-                               customRowHeight:kActionCellHeight
+                               customRowHeight:self.actionCellHeight
                                    actionBlock:^{
                                        [weakSelf presentInviteFlow];
                                    }]];
     }
+    [contents addSection:staticSection];
 
+    BOOL hasSearchText = [self.searchBar text].length > 0;
+
+    if (hasSearchText) {
+        for (OWSTableSection *section in [self contactsSectionsForSearch]) {
+            [contents addSection:section];
+        }
+    } else {
+        // Count the none collated sections, before we add our collated sections.
+        // Later we'll need to offset which sections our collation indexes reference
+        // by this amount. e.g. otherwise the "B" index will reference names starting with "A"
+        // And the "A" index will reference the static non-collated section(s).
+        NSInteger noncollatedSections = (NSInteger)contents.sections.count;
+        for (OWSTableSection *section in [self collatedContactsSections]) {
+            [contents addSection:section];
+        }
+        contents.sectionForSectionIndexTitleBlock = ^NSInteger(NSString *_Nonnull title, NSInteger index) {
+            // Offset the collation section to account for the noncollated sections.
+            NSInteger sectionIndex = [self.collation sectionForSectionIndexTitleAtIndex:index] + noncollatedSections;
+            if (sectionIndex < 0) {
+                // Sentinal in case we change our section ordering in a surprising way.
+                OWSFail(@"Unexpected negative section index");
+                return 0;
+            }
+            if (sectionIndex >= (NSInteger)contents.sections.count) {
+                // Sentinal in case we change our section ordering in a surprising way.
+                OWSFail(@"Unexpectedly large index");
+                return 0;
+            }
+
+            return sectionIndex;
+        };
+        contents.sectionIndexTitlesForTableViewBlock = ^NSArray<NSString *> *_Nonnull
+        {
+            return self.collation.sectionTitles;
+        };
+    }
+
+    self.tableViewController.contents = contents;
+}
+
+- (NSArray<OWSTableSection *> *)collatedContactsSections
+{
+    if (self.contactsViewHelper.signalAccounts.count < 1) {
+        // No Contacts
+        OWSTableSection *contactsSection = [OWSTableSection new];
+
+        if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized
+            && self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
+            
+            [contactsSection
+             addItem:[OWSTableItem
+                      softCenterLabelItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
+                                                                    @"A label that indicates the user has no Signal contacts.")
+                      customRowHeight:self.actionCellHeight]];
+        }
+        
+        return @[ contactsSection ];
+    }
+    __weak NewContactThreadViewController *weakSelf = self;
+    
+    NSMutableArray<OWSTableSection *> *contactSections = [NSMutableArray new];
+    
+    NSMutableArray<NSMutableArray<SignalAccount *> *> *collatedSignalAccounts = [NSMutableArray new];
+    for (NSUInteger i = 0; i < self.collation.sectionTitles.count; i++) {
+        collatedSignalAccounts[i] = [NSMutableArray new];
+    }
+    for (SignalAccount *signalAccount in self.contactsViewHelper.signalAccounts) {
+        NSInteger section =
+            [self.collation sectionForObject:signalAccount collationStringSelector:@selector(stringForCollation)];
+
+        if (section < 0) {
+            OWSFail(@"Unexpected collation for name:%@", signalAccount.stringForCollation);
+            continue;
+        }
+        NSUInteger sectionIndex = (NSUInteger)section;
+
+        [collatedSignalAccounts[sectionIndex] addObject:signalAccount];
+    }
+    
+    for (NSUInteger i = 0; i < collatedSignalAccounts.count; i++) {
+        NSArray<SignalAccount *> *signalAccounts = collatedSignalAccounts[i];
+        NSMutableArray <OWSTableItem *> *contactItems = [NSMutableArray new];
+        for (SignalAccount *signalAccount in signalAccounts) {
+            [contactItems addObject:[OWSTableItem itemWithCustomCellBlock:^{
+                ContactTableViewCell *cell = [ContactTableViewCell new];
+                BOOL isBlocked = [self.contactsViewHelper isRecipientIdBlocked:signalAccount.recipientId];
+                if (isBlocked) {
+                    cell.accessoryMessage
+                    = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                }
+                
+                [cell configureWithSignalAccount:signalAccount contactsManager:self.contactsViewHelper.contactsManager];
+                
+                return cell;
+            }
+                                        customRowHeight:[ContactTableViewCell rowHeight]
+                                        actionBlock:^{
+                                            [weakSelf newConversationWithRecipientId:signalAccount.recipientId];
+                                        }]];
+        }
+
+        // Don't show empty sections.
+        // To accomplish this we add a section with a blank title rather than omitting the section altogether,
+        // in order for section indexes to match up correctly
+        NSString *sectionTitle = contactItems.count > 0 ? self.collation.sectionTitles[i] : nil;
+        [contactSections addObject:[OWSTableSection sectionWithTitle:sectionTitle items:contactItems]];
+    }
+    
+    return [contactSections copy];
+}
+
+- (NSArray<OWSTableSection *> *)contactsSectionsForSearch
+{
+    __weak NewContactThreadViewController *weakSelf = self;
+
+    NSMutableArray<OWSTableSection *> *sections = [NSMutableArray new];
+
+    ContactsViewHelper *helper = self.contactsViewHelper;
+
+    OWSTableSection *phoneNumbersSection = [OWSTableSection new];
+    // FIXME we should make sure "invite via SMS" cells appear *below* any matching signal-account cells.
+    //
     // If the search string looks like a phone number, show either "new conversation..." cells and/or
     // "invite via SMS..." cells.
     NSArray<NSString *> *searchPhoneNumbers = [self parsePossibleSearchPhoneNumbers];
@@ -334,7 +478,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(phoneNumber.length > 0);
 
         if ([self.nonContactAccountSet containsObject:phoneNumber]) {
-            [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            [phoneNumbersSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
                 ContactTableViewCell *cell = [ContactTableViewCell new];
                 BOOL isBlocked = [helper isRecipientIdBlocked:phoneNumber];
                 if (isBlocked) {
@@ -351,32 +495,42 @@ NS_ASSUME_NONNULL_BEGIN
 
                 return cell;
             }
-                                 customRowHeight:[ContactTableViewCell rowHeight]
-                                 actionBlock:^{
-                                     [weakSelf newConversationWith:phoneNumber];
-                                 }]];
+                                             customRowHeight:[ContactTableViewCell rowHeight]
+                                             actionBlock:^{
+                                                 [weakSelf newConversationWithRecipientId:phoneNumber];
+                                             }]];
         } else {
             NSString *text = [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
                                                             @"Text for button to send a Signal invite via SMS. %@ is "
                                                             @"placeholder for the receipient's phone number."),
                                        phoneNumber];
-            [section addItem:[OWSTableItem disclosureItemWithText:text
-                                                  customRowHeight:kActionCellHeight
-                                                      actionBlock:^{
-                                                          [weakSelf sendTextToPhoneNumber:phoneNumber];
-                                                      }]];
+            [phoneNumbersSection addItem:[OWSTableItem disclosureItemWithText:text
+                                                              customRowHeight:self.actionCellHeight
+                                                                  actionBlock:^{
+                                                                      [weakSelf sendTextToPhoneNumber:phoneNumber];
+                                                                  }]];
         }
     }
+    if (searchPhoneNumbers.count > 0) {
+        [sections addObject:phoneNumbersSection];
+    }
 
-    // Contacts, possibly filtered with the search text.
+    // Contacts, filtered with the search text.
     NSArray<SignalAccount *> *filteredSignalAccounts = [self filteredSignalAccounts];
+    BOOL hasSearchResults = NO;
+
+    OWSTableSection *contactsSection = [OWSTableSection new];
+    contactsSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
+        @"Table section header for contact listing when composing a new message");
     for (SignalAccount *signalAccount in filteredSignalAccounts) {
+        hasSearchResults = YES;
+
         if ([searchPhoneNumbers containsObject:signalAccount.recipientId]) {
             // Don't show a contact if they already appear in the "search phone numbers"
             // results.
             continue;
         }
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        [contactsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
             ContactTableViewCell *cell = [ContactTableViewCell new];
             BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
             if (isBlocked) {
@@ -388,74 +542,122 @@ NS_ASSUME_NONNULL_BEGIN
 
             return cell;
         }
-                             customRowHeight:[ContactTableViewCell rowHeight]
-                             actionBlock:^{
-                                 [weakSelf newConversationWith:signalAccount.recipientId];
-                             }]];
+                                     customRowHeight:[ContactTableViewCell rowHeight]
+                                     actionBlock:^{
+                                         [weakSelf newConversationWithRecipientId:signalAccount.recipientId];
+                                     }]];
+    }
+    if (filteredSignalAccounts.count > 0) {
+        [sections addObject:contactsSection];
     }
 
-    BOOL hasSearchText = [self.searchBar text].length > 0;
-    BOOL hasSearchResults = filteredSignalAccounts.count > 0;
+    // When searching, we include matching groups
+    OWSTableSection *groupSection = [OWSTableSection new];
+    groupSection.headerTitle = NSLocalizedString(
+        @"COMPOSE_MESSAGE_GROUP_SECTION_TITLE", @"Table section header for group listing when composing a new message");
+    NSArray<TSGroupThread *> *filteredGroupThreads = [self filteredGroupThreads];
+    for (TSGroupThread *thread in filteredGroupThreads) {
+        hasSearchResults = YES;
+
+        [groupSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            GroupTableViewCell *cell = [GroupTableViewCell new];
+            [cell configureWithThread:thread contactsManager:helper.contactsManager];
+            return cell;
+        }
+                                  customRowHeight:[ContactTableViewCell rowHeight]
+                                  actionBlock:^{
+                                      [weakSelf newConversationWithThread:thread];
+                                  }]];
+    }
+    if (filteredGroupThreads.count > 0) {
+        [sections addObject:groupSection];
+    }
 
     // Invitation offers for non-signal contacts
-    if (hasSearchText) {
-        for (Contact *contact in [helper nonSignalContactsMatchingSearchString:[self.searchBar text]]) {
-            hasSearchResults = YES;
+    OWSTableSection *inviteeSection = [OWSTableSection new];
+    inviteeSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_INVITE_SECTION_TITLE",
+        @"Table section header for invite listing when composing a new message");
+    NSArray<Contact *> *invitees = [helper nonSignalContactsMatchingSearchString:[self.searchBar text]];
+    for (Contact *contact in invitees) {
+        hasSearchResults = YES;
 
-            OWSAssert(contact.parsedPhoneNumbers.count > 0);
-            // TODO: Should we invite all of their phone numbers?
-            PhoneNumber *phoneNumber = contact.parsedPhoneNumbers[0];
-            NSString *displayName = contact.fullName;
-            if (displayName.length < 1) {
-                displayName = phoneNumber.toE164;
-            }
-
-            NSString *text = [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
-                                                            @"Text for button to send a Signal invite via SMS. %@ is "
-                                                            @"placeholder for the receipient's phone number."),
-                                       displayName];
-            [section addItem:[OWSTableItem disclosureItemWithText:text
-                                                  customRowHeight:kActionCellHeight
-                                                      actionBlock:^{
-                                                          [weakSelf sendTextToPhoneNumber:phoneNumber.toE164];
-                                                      }]];
+        OWSAssert(contact.parsedPhoneNumbers.count > 0);
+        // TODO: Should we invite all of their phone numbers?
+        PhoneNumber *phoneNumber = contact.parsedPhoneNumbers[0];
+        NSString *displayName = contact.fullName;
+        if (displayName.length < 1) {
+            displayName = phoneNumber.toE164;
         }
+
+        NSString *text = [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
+                                                        @"Text for button to send a Signal invite via SMS. %@ is "
+                                                        @"placeholder for the receipient's phone number."),
+                                   displayName];
+        [inviteeSection addItem:[OWSTableItem disclosureItemWithText:text
+                                                     customRowHeight:self.actionCellHeight
+                                                         actionBlock:^{
+                                                             [weakSelf sendTextToPhoneNumber:phoneNumber.toE164];
+                                                         }]];
+    }
+    if (invitees.count > 0) {
+        [sections addObject:inviteeSection];
     }
 
-    if (!hasSearchText && helper.signalAccounts.count < 1) {
-        // No Contacts
 
-        if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized
-            && self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
-
-            [section
-                addItem:[OWSTableItem
-                            softCenterLabelItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
-                                                            @"A label that indicates the user has no Signal contacts.")
-                                        customRowHeight:kActionCellHeight]];
-        }
-    }
-
-    if (hasSearchText && !hasSearchResults) {
+    if (!hasSearchResults) {
         // No Search Results
+        OWSTableSection *noResultsSection = [OWSTableSection new];
+        [noResultsSection
+            addItem:[OWSTableItem softCenterLabelItemWithText:
+                                      NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS",
+                                          @"A label that indicates the user's search has no matching results.")
+                                              customRowHeight:self.actionCellHeight]];
 
-        [section addItem:[OWSTableItem softCenterLabelItemWithText:
-                                           NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS",
-                                               @"A label that indicates the user's search has no matching results.")
-                                                   customRowHeight:kActionCellHeight]];
+        [sections addObject:noResultsSection];
     }
 
-    [contents addSection:section];
-
-    self.tableViewController.contents = contents;
+    return [sections copy];
 }
 
 - (NSArray<SignalAccount *> *)filteredSignalAccounts
 {
-    NSString *searchString = [self.searchBar text];
+    NSString *searchString = self.searchBar.text;
 
     ContactsViewHelper *helper = self.contactsViewHelper;
     return [helper signalAccountsMatchingSearchString:searchString];
+}
+
+- (NSArray<TSGroupThread *> *)filteredGroupThreads
+{
+    AnySearcher *searcher = [[AnySearcher alloc] initWithIndexer:^NSString * _Nonnull(id _Nonnull obj) {
+        if (![obj isKindOfClass:[TSGroupThread class]]) {
+            OWSFail(@"unexpected item in searcher");
+            return @"";
+        }
+        TSGroupThread *groupThread = (TSGroupThread *)obj;
+        NSString *groupName = groupThread.groupModel.groupName;
+        NSMutableString *groupMemberNames = [NSMutableString new];
+        for (NSString *recipientId in groupThread.groupModel.groupMemberIds) {
+            NSString *contactName = [self.contactsViewHelper.contactsManager displayNameForPhoneIdentifier:recipientId];
+            [groupMemberNames appendFormat:@" %@", contactName];
+        }
+        
+        return [NSString stringWithFormat:@"%@ %@", groupName, groupMemberNames];
+    }];
+    
+    NSMutableArray<TSGroupThread *> *matchingThreads = [NSMutableArray new];
+    [TSGroupThread enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
+        if (![obj isKindOfClass:[TSGroupThread class]]) {
+            // group and contact threads are in the same collection.
+            return;
+        }
+        TSGroupThread *groupThread = (TSGroupThread *)obj;
+        if ([searcher item:groupThread doesMatchQuery:self.searchBar.text]) {
+            [matchingThreads addObject:groupThread];
+        }
+    }];
+
+    return [matchingThreads copy];
 }
 
 #pragma mark - No Contacts Mode
@@ -619,13 +821,19 @@ NS_ASSUME_NONNULL_BEGIN
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)newConversationWith:(NSString *)recipientId
+- (void)newConversationWithRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+    [self newConversationWithThread:thread];
+}
 
+- (void)newConversationWithThread:(TSThread *)thread
+{
+    OWSAssert(thread != nil);
     [self dismissViewControllerAnimated:YES
                              completion:^() {
-                                 [Environment presentConversationForRecipientId:recipientId withCompose:YES];
+                                 [Environment presentConversationForThread:thread withCompose:YES];
                              }];
 }
 
@@ -662,7 +870,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(recipientId.length > 0);
 
-    [self newConversationWith:recipientId];
+    [self newConversationWithRecipientId:recipientId];
 }
 
 #pragma mark - UISearchBarDelegate

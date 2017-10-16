@@ -14,6 +14,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const kContactsTable_CellReuseIdentifier;
+extern const NSUInteger kContactTableViewCellAvatarSize;
+extern const CGFloat kContactTableViewCellAvatarTextMargin;
 
 @class OWSContactsManager;
 @class SignalAccount;

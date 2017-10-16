@@ -274,7 +274,7 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
         NSString *senderName = [contactsManager displayNameForPhoneIdentifier:message.authorId];
         NSString *groupName = [thread.name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         if (groupName.length < 1) {
-            groupName = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
+            groupName = [MessageStrings newGroupDefaultTitle];
         }
 
         if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {

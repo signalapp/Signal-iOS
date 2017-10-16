@@ -80,6 +80,11 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
 
+/**
+ * Used for sorting, respects system contacts name sort order preference.
+ */
+- (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount;
+
 // Generally we prefer the formattedProfileName over the raw profileName so as to
 // distinguish a profile name apart from a name pulled from the system's contacts.
 // This helps clarify when the remote person chooses a potentially confusing profile name.

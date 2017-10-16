@@ -509,19 +509,36 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)sectionIndex
 {
     OWSTableSection *section = [self sectionForIndex:sectionIndex];
-    if (section && section.customHeaderHeight) {
-        return [section.customHeaderHeight floatValue];
+
+    if (!section) {
+        OWSFail(@"Section index out of bounds.");
+        return 0;
     }
-    return UITableViewAutomaticDimension;
+
+    if (section.customHeaderHeight) {
+        return [section.customHeaderHeight floatValue];
+    } else if (section.headerTitle.length > 0) {
+        return UITableViewAutomaticDimension;
+    } else {
+        return 0;
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)sectionIndex
 {
     OWSTableSection *section = [self sectionForIndex:sectionIndex];
-    if (section && section.customFooterHeight) {
-        return [section.customFooterHeight floatValue];
+    if (!section) {
+        OWSFail(@"Section index out of bounds.");
+        return 0;
     }
-    return UITableViewAutomaticDimension;
+
+    if (section.customFooterHeight) {
+        return [section.customFooterHeight floatValue];
+    } else if (section.footerTitle.length > 0) {
+        return UITableViewAutomaticDimension;
+    } else {
+        return 0;
+    }
 }
 
 // Called before the user changes the selection. Return a new indexPath, or nil, to change the proposed selection.
@@ -542,6 +559,26 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     OWSTableItem *item = [self itemForIndexPath:indexPath];
     if (item.actionBlock) {
         item.actionBlock();
+    }
+}
+
+#pragma mark Index
+
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
+{
+    if (self.contents.sectionForSectionIndexTitleBlock) {
+        return self.contents.sectionForSectionIndexTitleBlock(title, index);
+    } else {
+        return 0;
+    }
+}
+
+- (nullable NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView
+{
+    if (self.contents.sectionIndexTitlesForTableViewBlock) {
+        return self.contents.sectionIndexTitlesForTableViewBlock();
+    } else {
+        return 0;
     }
 }
 

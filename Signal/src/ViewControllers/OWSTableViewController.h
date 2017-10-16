@@ -14,7 +14,10 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 @interface OWSTableContents : NSObject
 
 @property (nonatomic) NSString *title;
+@property (nonatomic, nullable) NSInteger (^sectionForSectionIndexTitleBlock)(NSString *title, NSInteger index);
+@property (nonatomic, nullable) NSArray<NSString *> * (^sectionIndexTitlesForTableViewBlock)(void);
 
+@property (nonatomic, readonly) NSArray<OWSTableSection *> *sections;
 - (void)addSection:(OWSTableSection *)section;
 
 @end
