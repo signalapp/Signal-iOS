@@ -4,6 +4,7 @@
 
 #import "ConversationInputToolbar.h"
 #import "ConversationInputTextView.h"
+#import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
@@ -16,6 +17,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 @interface ConversationInputToolbar () <UIGestureRecognizerDelegate, ConversationTextViewToolbarDelegate>
 
+@property (nonatomic, readonly) UIView *contentView;
 @property (nonatomic, readonly) ConversationInputTextView *inputTextView;
 @property (nonatomic, readonly) UIButton *attachmentButton;
 @property (nonatomic, readonly) UIButton *sendButton;
@@ -36,6 +38,12 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 @property (nonatomic, nullable) UILabel *recordingLabel;
 @property (nonatomic) BOOL isRecordingVoiceMemo;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
+
+#pragma mark - Attachment Approval
+
+@property (nonatomic) UIView *attachmentApprovalView;
+@property (nonatomic, nullable) MediaMessageView *attachmentView;
+@property (nonatomic, nullable) SignalAttachment *attachmentToApprove;
 
 @end
 
@@ -69,9 +77,13 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [self addSubview:backgroundView];
     [backgroundView autoPinEdgesToSuperviewEdges];
 
+    _contentView = [UIView containerView];
+    [self addSubview:self.contentView];
+    [self.contentView autoPinEdgesToSuperviewEdges];
+
     _inputTextView = [ConversationInputTextView new];
     self.inputTextView.textViewToolbarDelegate = self;
-    [self addSubview:self.inputTextView];
+    [self.contentView addSubview:self.inputTextView];
 
     // We want to be permissive about taps on the send and attachment buttons,
     // so we use wrapper views that capture nearby taps.  This is a lot easier
@@ -81,11 +93,11 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     _leftButtonWrapper = [UIView containerView];
     [self.leftButtonWrapper
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(leftButtonTapped:)]];
-    [self addSubview:self.leftButtonWrapper];
+    [self.contentView addSubview:self.leftButtonWrapper];
     _rightButtonWrapper = [UIView containerView];
     [self.rightButtonWrapper
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(rightButtonTapped:)]];
-    [self addSubview:self.rightButtonWrapper];
+    [self.contentView addSubview:self.rightButtonWrapper];
 
     _attachmentButton = [[UIButton alloc] init];
     self.attachmentButton.accessibilityLabel
@@ -117,6 +129,10 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
                           forState:UIControlStateNormal];
     self.voiceMemoButton.imageView.tintColor = [UIColor ows_materialBlueColor];
     [self.rightButtonWrapper addSubview:self.voiceMemoButton];
+
+    _attachmentApprovalView = [UIView containerView];
+    [self addSubview:self.attachmentApprovalView];
+    [self.attachmentApprovalView autoPinToSuperviewEdges];
 
     // We want to be permissive about the voice message gesture, so we hang
     // the long press GR on the button's wrapper, not the button itself.
@@ -191,6 +207,27 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 - (void)ensureContentConstraints
 {
     [NSLayoutConstraint deactivateConstraints:self.contentContraints];
+
+    if (self.attachmentToApprove) {
+        self.contentView.hidden = YES;
+        self.attachmentApprovalView.hidden = NO;
+        // Ensure the keyboard is dismissed.
+        [self.inputTextView resignFirstResponder];
+
+        self.contentContraints = @[
+            [self.attachmentApprovalView autoSetDimension:ALDimensionHeight toSize:300.f],
+        ];
+
+        [self layoutIfNeeded];
+        return;
+    }
+
+    self.contentView.hidden = NO;
+    self.attachmentApprovalView.hidden = YES;
+    self.attachmentView = nil;
+    for (UIView *subview in self.attachmentApprovalView.subviews) {
+        [subview removeFromSuperview];
+    }
 
     const int textViewVInset = 5;
     const int contentHInset = 6;
@@ -624,6 +661,99 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
             [self ensureContentConstraints];
         }
     }
+}
+
+#pragma mark - Attachment Approval
+
+- (void)showApprovalUIForAttachment:(SignalAttachment *)attachment
+{
+    OWSAssert(attachment);
+
+    self.attachmentToApprove = attachment;
+
+    MediaMessageView *attachmentView = [[MediaMessageView alloc] initWithAttachment:attachment];
+    self.attachmentView = attachmentView;
+    [self.attachmentApprovalView addSubview:attachmentView];
+    [attachmentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:10];
+    [attachmentView autoPinWidthToSuperviewWithMargin:20];
+
+    UIView *buttonRow = [UIView containerView];
+    [self.attachmentApprovalView addSubview:buttonRow];
+    [buttonRow autoPinWidthToSuperviewWithMargin:20];
+    [buttonRow autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:attachmentView withOffset:10];
+    [buttonRow autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10];
+
+    // We use this invisible subview to ensure that the buttons are centered
+    // horizontally.
+    UIView *buttonSpacer = [UIView new];
+    [buttonRow addSubview:buttonSpacer];
+    // Vertical positioning of this view doesn't matter.
+    [buttonSpacer autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [buttonSpacer autoSetDimension:ALDimensionWidth toSize:ScaleFromIPhone5To7Plus(20, 30)];
+    [buttonSpacer autoSetDimension:ALDimensionHeight toSize:0];
+    [buttonSpacer autoHCenterInSuperview];
+
+    UIView *cancelButton = [self createAttachmentApprovalButton:[CommonStrings cancelButton]
+                                                          color:[UIColor ows_destructiveRedColor]
+                                                       selector:@selector(attachmentApprovalCancelPressed)];
+    [buttonRow addSubview:cancelButton];
+    [cancelButton autoPinHeightToSuperview];
+    [cancelButton autoPinEdge:ALEdgeRight toEdge:ALEdgeLeft ofView:buttonSpacer];
+
+    UIView *sendButton =
+        [self createAttachmentApprovalButton:NSLocalizedString(
+                                                 @"ATTACHMENT_APPROVAL_SEND_BUTTON", comment
+                                                 : @"Label for 'send' button in the 'attachment approval' dialog.")
+                                       color:[UIColor colorWithRGBHex:0x2ecc71]
+                                    selector:@selector(attachmentApprovalSendPressed)];
+    [buttonRow addSubview:sendButton];
+    [sendButton autoPinHeightToSuperview];
+    [sendButton autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:buttonSpacer];
+
+    [self ensureContentConstraints];
+}
+
+- (UIView *)createAttachmentApprovalButton:(NSString *)title color:(UIColor *)color selector:(SEL)selector
+{
+    const CGFloat buttonWidth = ScaleFromIPhone5To7Plus(110, 140);
+    const CGFloat buttonHeight = ScaleFromIPhone5To7Plus(35, 45);
+
+    return [OWSFlatButton buttonWithTitle:title
+                               titleColor:[UIColor whiteColor]
+                          backgroundColor:color
+                                    width:buttonWidth
+                                   height:buttonHeight
+                                   target:self
+                                 selector:selector];
+}
+
+- (void)attachmentApprovalCancelPressed
+{
+    self.attachmentToApprove = nil;
+
+    [self ensureContentConstraints];
+}
+
+- (void)attachmentApprovalSendPressed
+{
+    SignalAttachment *attachment = self.attachmentToApprove;
+    self.attachmentToApprove = nil;
+
+    if (attachment) {
+        [self.inputToolbarDelegate didApproveAttachment:attachment];
+    }
+
+    [self ensureContentConstraints];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self.attachmentView viewWillAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [self.attachmentView viewWillDisappear:animated];
 }
 
 #pragma mark - Logging
