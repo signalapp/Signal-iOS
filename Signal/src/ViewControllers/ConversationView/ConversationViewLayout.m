@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<id<ConversationViewLayoutItem>> *layoutItems = self.delegate.layoutItems;
 
-    CGFloat y = vInset;
+    CGFloat y = vInset + self.delegate.layoutHeaderHeight;
     CGFloat contentBottom = y;
     BOOL isRTL = self.collectionView.isRTL;
 

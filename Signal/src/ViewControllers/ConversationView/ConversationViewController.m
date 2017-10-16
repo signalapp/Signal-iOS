@@ -100,6 +100,8 @@ static const int kConversationInitialMaxRangeSize = kYapDatabasePageSize * kYapD
 static const int kYapDatabaseRangeMaxLength = kYapDatabasePageSize * kYapDatabaseMaxPageCount;
 static const int kYapDatabaseRangeMinLength = 0;
 
+static const CGFloat kLoadMoreHeaderHeight = 60.f;
+
 typedef enum : NSUInteger {
     kMediaTypePicture,
     kMediaTypeVideo,
@@ -194,6 +196,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 @property (nonatomic, nullable) ThreadDynamicInteractions *dynamicInteractions;
 @property (nonatomic) BOOL hasClearedUnreadMessagesIndicator;
+@property (nonatomic) BOOL showLoadMoreHeader;
+@property (nonatomic) UIButton *loadMoreHeader;
 @property (nonatomic) uint64_t lastVisibleTimestamp;
 
 @property (nonatomic, readonly) BOOL isGroupConversation;
@@ -455,7 +459,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self createScrollButtons];
     [self createHeaderViews];
     [self addNotificationListeners];
-    // [self updateLoadEarlierVisible];
+    [self updateShowLoadMoreHeader];
 }
 
 - (void)createContents
@@ -483,6 +487,18 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.inputToolbar autoPinWidthToSuperview];
     [self.inputToolbar autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.collectionView];
     [self autoPinViewToBottomGuideOrKeyboard:self.inputToolbar];
+
+    self.loadMoreHeader = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.loadMoreHeader setTitle:NSLocalizedString(@"load_earlier_messages", @"") forState:UIControlStateNormal];
+    [self.loadMoreHeader setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
+    self.loadMoreHeader.titleLabel.font = [UIFont ows_mediumFontWithSize:20.f];
+    [self.loadMoreHeader addTarget:self
+                            action:@selector(loadMoreHeaderTapped:)
+                  forControlEvents:UIControlEventTouchUpInside];
+    [self.collectionView addSubview:self.loadMoreHeader];
+    [self.loadMoreHeader autoPinWidthToWidthOfView:self.view];
+    [self.loadMoreHeader autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.loadMoreHeader autoSetDimension:ALDimensionHeight toSize:kLoadMoreHeaderHeight];
 }
 
 - (void)registerCellClasses
@@ -1394,35 +1410,36 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self showConversationSettings];
 }
 
-//- (void)collectionView:(JSQMessagesCollectionView *)collectionView
-//                             header:(JSQMessagesLoadEarlierHeaderView *)headerView
-//    didTapLoadEarlierMessagesButton:(UIButton *)sender
-//{
-//    OWSAssert(!self.isUserScrolling);
-//
-//    BOOL hasEarlierUnseenMessages = self.dynamicInteractions.hasMoreUnseenMessages;
-//
-//    // We want to restore the current scroll state after we update the range, update
-//    // the dynamic interactions and re-layout.  Here we take a "before" snapshot.
-//    CGFloat scrollDistanceToBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
-//
-//    self.page = MIN(self.page + 1, (NSUInteger)kYapDatabaseMaxPageCount - 1);
-//
-//    [self resetMappings];
-//
-//    [self.collectionView layoutSubviews];
-//
-//    self.collectionView.contentOffset = CGPointMake(0, self.safeContentHeight - scrollDistanceToBottom);
-//
-//    // Don’t auto-scroll after “loading more messages” unless we have “more unseen messages”.
-//    //
-//    // Otherwise, tapping on "load more messages" autoscrolls you downward which is completely wrong.
-//    if (hasEarlierUnseenMessages) {
-//        [self scrollToUnreadIndicatorAnimated];
-//    }
-//
-//    [self updateLoadEarlierVisible];
-//}
+- (void)loadMoreHeaderTapped:(id)sender
+{
+    if (self.isUserScrolling) {
+        DDLogError(@"%@ Ignoring load more tap while user is scrolling.", self.tag);
+        return;
+    }
+
+    BOOL hasEarlierUnseenMessages = self.dynamicInteractions.hasMoreUnseenMessages;
+
+    // We want to restore the current scroll state after we update the range, update
+    // the dynamic interactions and re-layout.  Here we take a "before" snapshot.
+    CGFloat scrollDistanceToBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
+
+    self.page = MIN(self.page + 1, (NSUInteger)kYapDatabaseMaxPageCount - 1);
+
+    [self resetMappings];
+
+    [self.layout prepareLayout];
+
+    self.collectionView.contentOffset = CGPointMake(0, self.safeContentHeight - scrollDistanceToBottom);
+
+    // Don’t auto-scroll after “loading more messages” unless we have “more unseen messages”.
+    //
+    // Otherwise, tapping on "load more messages" autoscrolls you downward which is completely wrong.
+    if (hasEarlierUnseenMessages) {
+        [self scrollToUnreadIndicatorAnimated];
+    }
+
+    [self updateShowLoadMoreHeader];
+}
 
 - (BOOL)shouldShowLoadEarlierMessages
 {
@@ -1440,10 +1457,24 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     return show;
 }
 
-- (void)updateLoadEarlierVisible
+- (void)updateShowLoadMoreHeader
 {
-    // TODO:
-    //    [self setShowLoadEarlierMessagesHeader:[self shouldShowLoadEarlierMessages]];
+    [self setShowLoadMoreHeader:[self shouldShowLoadEarlierMessages]];
+}
+
+- (void)setShowLoadMoreHeader:(BOOL)showLoadMoreHeader
+{
+    BOOL valueChanged = _showLoadMoreHeader != showLoadMoreHeader;
+
+    _showLoadMoreHeader = showLoadMoreHeader;
+
+    self.loadMoreHeader.hidden = !showLoadMoreHeader;
+    self.loadMoreHeader.userInteractionEnabled = showLoadMoreHeader;
+
+    if (valueChanged) {
+        [self.collectionView.collectionViewLayout invalidateLayout];
+        [self.collectionView reloadData];
+    }
 }
 
 - (void)updateMessageMappingRangeOptions:(MessagesRangeSizeMode)mode
@@ -3471,7 +3502,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     //
     // We can safely call prepareLayout to ensure the layout state is up-to-date
     // since our layout uses a dirty flag internally to debounce redundant work.
-    [self.collectionView.collectionViewLayout prepareLayout];
+    [self.layout prepareLayout];
     return [self.collectionView.collectionViewLayout collectionViewContentSize].height;
 }
 
@@ -3561,6 +3592,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     return self.viewItems;
 }
+
+- (CGFloat)layoutHeaderHeight
+{
+    return (self.showLoadMoreHeader ? kLoadMoreHeaderHeight : 0.f);
+}
+
 
 #pragma mark - ConversationInputToolbarDelegate
 
@@ -3786,7 +3823,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self reloadViewItems];
 
     [self resetContentAndLayout];
-    [self updateLoadEarlierVisible];
+    [self updateShowLoadMoreHeader];
     [self ensureDynamicInteractions];
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
