@@ -49,6 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)textInputPrimaryLanguage;
 
+- (void)updateFontSizes;
+
 #pragma mark - Voice Memo
 
 - (void)showVoiceMemoUI;

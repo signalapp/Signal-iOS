@@ -125,6 +125,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.bubbleImageView autoPinToSuperviewEdges];
 
     self.textView = [UITextView new];
+    // Honor dynamic type in the message bodies.
+    self.textView.font = [self textMessageFont];
     self.textView.font = [UIFont ows_regularFontWithSize:16.f];
     self.textView.backgroundColor = [UIColor clearColor];
     self.textView.opaque = NO;
@@ -165,6 +167,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)cellReuseIdentifier
 {
     return NSStringFromClass([self class]);
+}
+
+- (UIFont *)textMessageFont
+{
+    return [UIFont ows_dynamicTypeBodyFont];
 }
 
 - (OWSMessageCellType)cellType
@@ -543,6 +550,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.textView.text = self.textMessage;
     UIColor *textColor = [self textColor];
     self.textView.textColor = textColor;
+    self.textView.font = [self textMessageFont];
 
     // Don't link outgoing messages that haven't been sent yet, as
     // this interferes with "tap to retry".
@@ -738,6 +746,7 @@ NS_ASSUME_NONNULL_BEGIN
             const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
 
             self.textView.text = self.textMessage;
+            self.textView.font = [self textMessageFont];
             CGSize textSize = [self.textView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
             cellSize = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
                 (CGFloat)ceil(textSize.height + textVMargin * 2));
