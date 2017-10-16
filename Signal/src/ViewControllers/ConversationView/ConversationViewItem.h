@@ -90,7 +90,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 // media.  This cache is volatile and will get evacuated based
 // on scroll state, so that we only retain state for a sliding
 // window of cells that are almost on-screen.
-@property (nonatomic) id cachedCellMedia;
+@property (nonatomic, nullable) id cachedCellMedia;
 @property (nonatomic) BOOL didCellMediaFailToLoad;
 
 // TODO:
