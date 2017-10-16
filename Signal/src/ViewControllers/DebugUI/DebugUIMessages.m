@@ -11,6 +11,7 @@
 #import <25519/Randomness.h>
 #import <AFNetworking/AFNetworking.h>
 #import <AxolotlKit/PreKeyBundle.h>
+#import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
@@ -234,6 +235,18 @@ NS_ASSUME_NONNULL_BEGIN
                           DDLogError(@"%@ Failed to send Request Group Info message with error: %@", self.tag, error);
                       }];
               }],
+        [OWSTableItem itemWithTitle:@"Inject 10 fake incoming messages"
+                        actionBlock:^{
+                            [DebugUIMessages injectFakeIncomingMessages:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Inject 100 fake incoming messages"
+                        actionBlock:^{
+                            [DebugUIMessages injectFakeIncomingMessages:100 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Inject 1,000 fake incoming messages"
+                        actionBlock:^{
+                            [DebugUIMessages injectFakeIncomingMessages:1000 thread:thread];
+                        }],
     ] mutableCopy];
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
@@ -1053,6 +1066,54 @@ NS_ASSUME_NONNULL_BEGIN
         });
     };
     [messageSender sendMessage:message success:completion failure:completion];
+}
+
++ (void)injectFakeIncomingMessages:(int)counter thread:(TSThread *)thread
+{
+    // Wait 5 seconds so debug user has time to navigate to another
+    // view before message processing occurs.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.f * NSEC_PER_SEC)),
+        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+        ^{
+            for (int i = 0; i < counter; i++) {
+                [self injectIncomingMessageInThread:thread counter:counter];
+            }
+        });
+}
+
++ (void)injectIncomingMessageInThread:(TSThread *)thread counter:(int)counter
+{
+    OWSAssert(thread);
+
+    NSString *randomText = [self randomText];
+    NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
+
+    OWSSignalServiceProtosDataMessageBuilder *dataMessageBuilder = [OWSSignalServiceProtosDataMessageBuilder new];
+    [dataMessageBuilder setBody:text];
+
+    if ([thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        OWSSignalServiceProtosGroupContextBuilder *groupBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
+        [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeDeliver];
+        [groupBuilder setId:groupThread.groupModel.groupId];
+        [dataMessageBuilder setGroup:groupBuilder.build];
+    }
+
+    OWSSignalServiceProtosContentBuilder *payloadBuilder = [OWSSignalServiceProtosContentBuilder new];
+    [payloadBuilder setDataMessage:dataMessageBuilder.build];
+    NSData *plaintextData = [payloadBuilder build].data;
+
+    OWSSignalServiceProtosEnvelopeBuilder *envelopeBuilder = [OWSSignalServiceProtosEnvelopeBuilder new];
+    [envelopeBuilder setType:OWSSignalServiceProtosEnvelopeTypeCiphertext];
+    [envelopeBuilder setSource:@"+12345678901"];
+    [envelopeBuilder setSourceDevice:1];
+    [envelopeBuilder setTimestamp:[NSDate ows_millisecondTimeStamp]];
+    [envelopeBuilder setContent:plaintextData];
+
+    NSData *envelopeData = [envelopeBuilder build].data;
+    OWSAssert(envelopeData);
+
+    [[OWSBatchMessageProcessor sharedInstance] enqueueEnvelopeData:envelopeData plaintextData:plaintextData];
 }
 
 @end
