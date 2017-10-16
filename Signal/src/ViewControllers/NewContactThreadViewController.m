@@ -722,6 +722,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)sendTextToPhoneNumber:(NSString *)phoneNumber
 {
+
+    OWSInviteFlow *inviteFlow =
+        [[OWSInviteFlow alloc] initWithPresentingViewController:self
+                                                contactsManager:self.contactsViewHelper.contactsManager];
+
     OWSAssert([phoneNumber length] > 0);
     NSString *confirmMessage = NSLocalizedString(@"SEND_SMS_CONFIRM_TITLE", @"");
     if ([phoneNumber length] > 0) {
@@ -739,18 +744,8 @@ NS_ASSUME_NONNULL_BEGIN
                   style:UIAlertActionStyleDefault
                 handler:^(UIAlertAction *action) {
                     [self.searchBar resignFirstResponder];
-
                     if ([MFMessageComposeViewController canSendText]) {
-                        MFMessageComposeViewController *picker = [[MFMessageComposeViewController alloc] init];
-                        picker.messageComposeDelegate = self;
-
-                        picker.recipients = @[
-                            phoneNumber,
-                        ];
-                        picker.body = [NSLocalizedString(@"SMS_INVITE_BODY", @"")
-                            stringByAppendingString:
-                                @" https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8"];
-                        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+                        [inviteFlow sendSMSToPhoneNumbers:@[ phoneNumber ]];
                     } else {
                         [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")
                                               message:NSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"")];
@@ -760,6 +755,7 @@ NS_ASSUME_NONNULL_BEGIN
     [alertController addAction:[OWSAlerts cancelAction]];
     [alertController addAction:okAction];
     self.searchBar.text = @"";
+    [self searchTextDidChange];
 
     // must dismiss search controller before presenting alert.
     if ([self presentedViewController]) {
