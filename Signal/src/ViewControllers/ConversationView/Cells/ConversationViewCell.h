@@ -54,9 +54,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) ConversationViewItem *viewItem;
 
+// Cells are prefetched but expensive cells (e.g. media) should only load
+// when visible and unload when no longer visible.  Non-visible cells can
+// cache their contents on their ConversationViewItem, but that cache may
+// be evacuated before the cell becomes visible again.
 @property (nonatomic) BOOL isCellVisible;
 
-- (void)loadForDisplay:(int)contentWidth;
+@property (nonatomic) int contentWidth;
+
+- (void)loadForDisplay;
 
 - (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth;
 

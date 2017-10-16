@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NSStringFromClass([self class]);
 }
 
-- (void)loadForDisplay:(int)contentWidth
+- (void)loadForDisplay
 {
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]);

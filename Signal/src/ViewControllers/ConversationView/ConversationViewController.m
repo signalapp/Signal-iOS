@@ -4025,8 +4025,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
     cell.viewItem = viewItem;
     cell.delegate = self;
+    cell.contentWidth = self.layout.contentWidth;
 
-    [cell loadForDisplay:self.layout.contentWidth];
+    [cell loadForDisplay];
 
     return cell;
 }

@@ -16,9 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.viewItem = nil;
     self.delegate = nil;
     self.isCellVisible = NO;
+    self.contentWidth = 0;
 }
 
-- (void)loadForDisplay:(int)contentWidth
+- (void)loadForDisplay
 {
     OWSFail(@"%@ This method should be overridden.", self.logTag);
 }
