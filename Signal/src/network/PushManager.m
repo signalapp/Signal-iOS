@@ -101,11 +101,11 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 {
     DDLogInfo(@"%@ received remote notification", self.tag);
 
-    [self.messageFetcherJob runAsync];
+    [self.messageFetcherJob run];
 }
 
 - (void)applicationDidBecomeActive {
-    [self.messageFetcherJob runAsync];
+    [self.messageFetcherJob run];
 }
 
 /**
