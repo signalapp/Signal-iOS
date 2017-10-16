@@ -508,7 +508,7 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)sectionIndex
 {
-    OWSTableSection *section = [self sectionForIndex:sectionIndex];
+    OWSTableSection *_Nullable section = [self sectionForIndex:sectionIndex];
 
     if (!section) {
         OWSFail(@"Section index out of bounds.");
@@ -516,6 +516,7 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     }
 
     if (section.customHeaderHeight) {
+        OWSAssert([section.customHeaderHeight floatValue] > 0);
         return [section.customHeaderHeight floatValue];
     } else if (section.headerTitle.length > 0) {
         return UITableViewAutomaticDimension;
@@ -526,13 +527,14 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)sectionIndex
 {
-    OWSTableSection *section = [self sectionForIndex:sectionIndex];
+    OWSTableSection *_Nullable section = [self sectionForIndex:sectionIndex];
     if (!section) {
         OWSFail(@"Section index out of bounds.");
         return 0;
     }
 
     if (section.customFooterHeight) {
+        OWSAssert([section.customFooterHeight floatValue] > 0);
         return [section.customFooterHeight floatValue];
     } else if (section.footerTitle.length > 0) {
         return UITableViewAutomaticDimension;
