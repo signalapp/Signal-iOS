@@ -833,11 +833,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
         // seconds before receiving an actionable push notification.
-        [[Environment getCurrent].messageFetcherJob runAsync];
+        __unused AnyPromise *messagePromise = [[Environment getCurrent].messageFetcherJob run];
 
         // This should happen at any launch, background or foreground.
-        __unused AnyPromise *promise = [OWSSyncPushTokensJob runWithAccountManager:[Environment getCurrent].accountManager
-                                                                       preferences:[Environment preferences]];
+        __unused AnyPromise *pushTokenpromise =
+            [OWSSyncPushTokensJob runWithAccountManager:[Environment getCurrent].accountManager
+                                            preferences:[Environment preferences]];
     }
 
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];

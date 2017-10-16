@@ -25,6 +25,7 @@ class MessageMetadataViewController: OWSViewController {
     let databaseConnection: YapDatabaseConnection
 
     let bubbleFactory = OWSMessagesBubbleImageFactory()
+    var bubbleView: UIView?
 
     var message: TSMessage
 
@@ -68,6 +69,15 @@ class MessageMetadataViewController: OWSViewController {
                                                       comment: "Title for the 'message metadata' view.")
 
         createViews()
+
+        self.view.layoutIfNeeded()
+        if let bubbleView = self.bubbleView {
+            let showAtLeast: CGFloat = 50
+            let middleCenter = CGPoint(x: bubbleView.frame.origin.x + bubbleView.frame.width / 2,
+                                       y: bubbleView.frame.origin.y + bubbleView.frame.height - showAtLeast)
+            let offset = bubbleView.superview!.convert(middleCenter, to: scrollView)
+            self.scrollView!.setContentOffset(offset, animated: false)
+        }
 
         NotificationCenter.default.addObserver(self,
             selector:#selector(yapDatabaseModified),
@@ -283,8 +293,7 @@ class MessageMetadataViewController: OWSViewController {
                 bodyLabel.textColor = isIncoming ? UIColor.black : UIColor.white
                 bodyLabel.font = UIFont.ows_regularFont(withSize:16)
                 bodyLabel.text = messageBody
-                // Only show the first N lines.
-                bodyLabel.numberOfLines = 10
+                bodyLabel.numberOfLines = 0
                 bodyLabel.lineBreakMode = .byWordWrapping
 
                 let bubbleImageData = isIncoming ? bubbleFactory.incoming : bubbleFactory.outgoing
@@ -293,6 +302,7 @@ class MessageMetadataViewController: OWSViewController {
                 let trailingMargin: CGFloat = isIncoming ? 10 : 15
 
                 let bubbleView = UIImageView(image: bubbleImageData.messageBubbleImage)
+                self.bubbleView = bubbleView
 
                 bubbleView.layer.cornerRadius = 10
                 bubbleView.addSubview(bodyLabel)
