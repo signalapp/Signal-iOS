@@ -42,7 +42,7 @@ import UIKit
         avatarView.autoPinToSquareAspectRatio()
 
         textContainer.autoPinEdge(.leading, to: .trailing, of: avatarView, withOffset: kContactTableViewCellAvatarTextMargin)
-        textContainer.autoPinEdge(toSuperviewEdge: .trailing)
+        textContainer.autoPinTrailingToSuperview()
         textContainer.autoVCenterInSuperview()
     }
 
