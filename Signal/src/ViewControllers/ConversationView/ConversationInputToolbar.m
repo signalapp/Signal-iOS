@@ -211,14 +211,20 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     if (self.attachmentToApprove) {
         self.contentView.hidden = YES;
         self.attachmentApprovalView.hidden = NO;
-        // Ensure the keyboard is dismissed.
-        [self.inputTextView resignFirstResponder];
 
         self.contentContraints = @[
             [self.attachmentApprovalView autoSetDimension:ALDimensionHeight toSize:300.f],
         ];
 
+        [self setNeedsLayout];
         [self layoutIfNeeded];
+
+        // Ensure the keyboard is dismissed.
+        //
+        // NOTE: We need to do this _last_ or the layout changes in the input toolbar
+        //       will be inadvertently animated.
+        [self.inputTextView resignFirstResponder];
+
         return;
     }
 
