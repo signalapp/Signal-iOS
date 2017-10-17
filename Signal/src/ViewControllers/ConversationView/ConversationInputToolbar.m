@@ -79,13 +79,11 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     // using iOS auto layout.
     _leftButtonWrapper = [UIView containerView];
     [self.leftButtonWrapper
-        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                     action:@selector(leadingButtonTapped:)]];
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(leftButtonTapped:)]];
     [self addSubview:self.leftButtonWrapper];
     _rightButtonWrapper = [UIView containerView];
     [self.rightButtonWrapper
-        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                     action:@selector(trailingButtonTapped:)]];
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(rightButtonTapped:)]];
     [self addSubview:self.rightButtonWrapper];
 
     _attachmentButton = [[UIButton alloc] init];
@@ -207,24 +205,24 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     const CGFloat textViewHeight = ceil(MAX(kMinTextViewHeight, MIN(kMaxTextViewHeight, textViewDesiredHeight)));
     const CGFloat kMinContentHeight = kMinTextViewHeight + textViewVInset * 2;
 
-    UIButton *leadingButton = self.attachmentButton;
-    UIButton *trailingButton = (self.shouldShowVoiceMemoButton ? self.voiceMemoButton : self.sendButton);
-    UIButton *inactiveTrailingButton = (self.shouldShowVoiceMemoButton ? self.sendButton : self.voiceMemoButton);
-    leadingButton.enabled = YES;
-    trailingButton.enabled = YES;
-    inactiveTrailingButton.enabled = NO;
-    leadingButton.hidden = NO;
-    trailingButton.hidden = NO;
-    inactiveTrailingButton.hidden = YES;
+    UIButton *leftButton = self.attachmentButton;
+    UIButton *rightButton = (self.shouldShowVoiceMemoButton ? self.voiceMemoButton : self.sendButton);
+    UIButton *inactiveRightButton = (self.shouldShowVoiceMemoButton ? self.sendButton : self.voiceMemoButton);
+    leftButton.enabled = YES;
+    rightButton.enabled = YES;
+    inactiveRightButton.enabled = NO;
+    leftButton.hidden = NO;
+    rightButton.hidden = NO;
+    inactiveRightButton.hidden = YES;
 
-    [leadingButton setContentHuggingHigh];
-    [trailingButton setContentHuggingHigh];
-    [leadingButton setCompressionResistanceHigh];
-    [trailingButton setCompressionResistanceHigh];
+    [leftButton setContentHuggingHigh];
+    [rightButton setContentHuggingHigh];
+    [leftButton setCompressionResistanceHigh];
+    [rightButton setCompressionResistanceHigh];
     [self.inputTextView setContentHuggingLow];
 
-    OWSAssert(leadingButton.superview == self.leftButtonWrapper);
-    OWSAssert(trailingButton.superview == self.rightButtonWrapper);
+    OWSAssert(leftButton.superview == self.leftButtonWrapper);
+    OWSAssert(rightButton.superview == self.rightButtonWrapper);
 
     // The leading and trailing buttons should be center-aligned with the
     // inputTextView when the inputTextView is at its minimum size.
@@ -242,10 +240,10 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
         [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
         [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
 
-        [leadingButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
-        [leadingButton autoPinLeadingToSuperviewWithMargin:contentHInset],
-        [leadingButton autoPinTrailingToSuperviewWithMargin:contentHSpacing],
-        [leadingButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+        [leftButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
+        [leftButton autoPinLeadingToSuperviewWithMargin:contentHInset],
+        [leftButton autoPinTrailingToSuperviewWithMargin:contentHSpacing],
+        [leftButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
 
         [self.inputTextView autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.leftButtonWrapper],
         [self.inputTextView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textViewVInset],
@@ -257,10 +255,10 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
         [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
         [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
 
-        [trailingButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
-        [trailingButton autoPinLeadingToSuperviewWithMargin:contentHSpacing],
-        [trailingButton autoPinTrailingToSuperviewWithMargin:contentHInset],
-        [trailingButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+        [rightButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
+        [rightButton autoPinLeadingToSuperviewWithMargin:contentHSpacing],
+        [rightButton autoPinTrailingToSuperviewWithMargin:contentHInset],
+        [rightButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
     ];
 
     [self layoutIfNeeded];
@@ -544,14 +542,14 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 #pragma mark - Event Handlers
 
-- (void)leadingButtonTapped:(UIGestureRecognizer *)sender
+- (void)leftButtonTapped:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
         [self attachmentButtonPressed];
     }
 }
 
-- (void)trailingButtonTapped:(UIGestureRecognizer *)sender
+- (void)rightButtonTapped:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
         if (!self.shouldShowVoiceMemoButton) {
