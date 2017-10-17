@@ -196,8 +196,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     UITextField *groupNameTextField = [UITextField new];
     _groupNameTextField = groupNameTextField;
-    self.groupNameTextField.text =
-        [self.thread.groupModel.groupName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    self.groupNameTextField.text = [self.thread.groupModel.groupName
+        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     groupNameTextField.textColor = [UIColor blackColor];
     groupNameTextField.font = [UIFont ows_dynamicTypeTitle2Font];
     groupNameTextField.placeholder
@@ -373,8 +373,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.conversationSettingsViewDelegate);
 
-    NSString *groupName =
-        [self.groupNameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSString *groupName = [self.groupNameTextField.text
+        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                          memberIds:[self.memberRecipientIds.allObjects mutableCopy]
                                                              image:self.groupAvatar

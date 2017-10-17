@@ -14,12 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
     [super prepareForReuse];
 
     self.viewItem = nil;
-    self.messageDateHeaderText = nil;
     self.delegate = nil;
     self.isCellVisible = NO;
 }
 
-- (void)loadForDisplay
+- (void)loadForDisplay:(int)contentWidth
 {
     OWSFail(@"%@ This method should be overridden.", self.logTag);
 }

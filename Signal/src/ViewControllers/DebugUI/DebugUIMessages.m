@@ -66,6 +66,14 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendTextMessages:3000 thread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"Send 10 tiny text messages (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendTinyTextMessages:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 100 tiny text messages (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendTinyTextMessages:100 thread:thread];
+                        }],
         [OWSTableItem itemWithTitle:@"Send 10 tiny attachments"
                         actionBlock:^{
                             [DebugUIMessages sendTinyAttachments:10 thread:thread];
@@ -262,6 +270,25 @@ NS_ASSUME_NONNULL_BEGIN
     [self sendTextMessageInThread:thread counter:counter];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self sendTextMessages:counter - 1 thread:thread];
+    });
+}
+
++ (void)sendTinyTextMessageInThread:(TSThread *)thread counter:(int)counter
+{
+    NSString *randomText = [[self randomText] substringToIndex:arc4random_uniform(4)];
+    NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
+    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+    [ThreadUtil sendMessageWithText:text inThread:thread messageSender:messageSender];
+}
+
++ (void)sendTinyTextMessages:(int)counter thread:(TSThread *)thread
+{
+    if (counter < 1) {
+        return;
+    }
+    [self sendTinyTextMessageInThread:thread counter:counter];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self sendTinyTextMessages:counter - 1 thread:thread];
     });
 }
 

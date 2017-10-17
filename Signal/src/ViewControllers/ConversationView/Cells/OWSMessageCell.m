@@ -6,21 +6,69 @@
 #import "AttachmentSharing.h"
 #import "AttachmentUploadView.h"
 #import "ConversationViewItem.h"
+#import "NSAttributedString+OWS.h"
 #import "OWSAudioMessageView.h"
+#import "OWSExpirationTimerView.h"
 #import "OWSGenericAttachmentView.h"
-#import "UIColor+OWS.h"
-
-//#import <AssetsLibrary/AssetsLibrary.h>
 #import "Signal-Swift.h"
+#import "UIColor+OWS.h"
+#import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
-
-//#import "OWSExpirationTimerView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface BubbleMaskingView : UIView
+
+@property (nonatomic) BOOL isOutgoing;
+@property (nonatomic, nullable, weak) UIView *maskedSubview;
+
+@end
+
+@implementation BubbleMaskingView
+
+- (void)setFrame:(CGRect)frame
+{
+    BOOL didSizeChange = !CGSizeEqualToSize(self.frame.size, frame.size);
+
+    [super setFrame:frame];
+
+    if (didSizeChange) {
+        [self updateMask];
+    }
+}
+
+- (void)setBounds:(CGRect)bounds
+{
+    BOOL didSizeChange = !CGSizeEqualToSize(self.bounds.size, bounds.size);
+
+    [super setBounds:bounds];
+
+    if (didSizeChange) {
+        [self updateMask];
+    }
+}
+
+- (void)updateMask
+{
+    UIView *_Nullable maskedSubview = self.maskedSubview;
+    if (!maskedSubview) {
+        return;
+    }
+    maskedSubview.frame = self.bounds;
+    [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:maskedSubview isOutgoing:self.isOutgoing];
+}
+
+@end
+
+#pragma mark -
+
 @interface OWSMessageCell ()
 
-// The text label is used so frequently that we always keep one around.
+// The nullable properties are created as needed.
+// The non-nullable properties are so frequently used that it's easier
+// to always keep one around.
+@property (nonatomic) BubbleMaskingView *payloadView;
+@property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) UILabel *textLabel;
 @property (nonatomic, nullable) UIImageView *bubbleImageView;
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
@@ -30,10 +78,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) AttachmentPointerView *attachmentPointerView;
 @property (nonatomic, nullable) OWSGenericAttachmentView *attachmentView;
 @property (nonatomic, nullable) OWSAudioMessageView *audioMessageView;
+@property (nonatomic) UIView *footerView;
+@property (nonatomic) UILabel *footerLabel;
+@property (nonatomic, nullable) OWSExpirationTimerView *expirationTimerView;
+@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *dateHeaderConstraints;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *contentConstraints;
-
-//@property (strong, nonatomic) OWSExpirationTimerView *expirationTimerView;
-//@property (strong, nonatomic) NSLayoutConstraint *expirationTimerViewWidthConstraint;
+@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *footerConstraints;
 
 @end
 
@@ -53,15 +103,25 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(!self.textLabel);
 
-    //    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.layoutMargins = UIEdgeInsetsZero;
 
-    self.contentView.backgroundColor = [UIColor whiteColor];
+    self.payloadView = [BubbleMaskingView new];
+    self.payloadView.layoutMargins = UIEdgeInsetsZero;
+    [self.contentView addSubview:self.payloadView];
+
+    self.footerView = [UIView containerView];
+    [self.contentView addSubview:self.footerView];
+
+    self.dateHeaderLabel = [UILabel new];
+    self.dateHeaderLabel.font = [UIFont ows_regularFontWithSize:12.f];
+    self.dateHeaderLabel.textAlignment = NSTextAlignmentCenter;
+    self.dateHeaderLabel.textColor = [UIColor lightGrayColor];
+    [self.contentView addSubview:self.dateHeaderLabel];
 
     self.bubbleImageView = [UIImageView new];
     self.bubbleImageView.layoutMargins = UIEdgeInsetsZero;
     self.bubbleImageView.userInteractionEnabled = NO;
-    [self.contentView addSubview:self.bubbleImageView];
+    [self.payloadView addSubview:self.bubbleImageView];
     [self.bubbleImageView autoPinToSuperviewEdges];
 
     self.textLabel = [UILabel new];
@@ -72,9 +132,22 @@ NS_ASSUME_NONNULL_BEGIN
     [self.bubbleImageView addSubview:self.textLabel];
     OWSAssert(self.textLabel.superview);
 
+    self.footerLabel = [UILabel new];
+    self.footerLabel.font = [UIFont ows_regularFontWithSize:12.f];
+    self.footerLabel.textColor = [UIColor lightGrayColor];
+    [self.footerView addSubview:self.footerLabel];
+
     // Hide these views by default.
     self.bubbleImageView.hidden = YES;
     self.textLabel.hidden = YES;
+    self.dateHeaderLabel.hidden = YES;
+    self.footerLabel.hidden = YES;
+
+    [self.payloadView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
+    [self.payloadView autoPinWidthToSuperview];
+    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.payloadView];
+    [self.footerView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self.footerView autoPinWidthToSuperview];
 
     UITapGestureRecognizer *tap =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
@@ -83,6 +156,11 @@ NS_ASSUME_NONNULL_BEGIN
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self addGestureRecognizer:longPress];
+}
+
++ (NSString *)cellReuseIdentifier
+{
+    return NSStringFromClass([self class]);
 }
 
 - (OWSMessageCellType)cellType
@@ -122,7 +200,14 @@ NS_ASSUME_NONNULL_BEGIN
     return self.viewItem.contentSize;
 }
 
-- (void)loadForDisplay
+- (TSMessage *)message
+{
+    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+
+    return (TSMessage *)self.viewItem.interaction;
+}
+
+- (void)loadForDisplay:(int)contentWidth
 {
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
@@ -134,6 +219,9 @@ NS_ASSUME_NONNULL_BEGIN
     JSQMessagesBubbleImage *bubbleImageData
         = isIncoming ? [self.bubbleFactory incoming] : [self.bubbleFactory outgoing];
     self.bubbleImageView.image = bubbleImageData.messageBubbleImage;
+
+    [self updateDateHeader:contentWidth];
+    [self updateFooter];
 
     switch (self.cellType) {
         case OWSMessageCellType_TextMessage:
@@ -166,9 +254,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    //    [self.textLabel addBorderWithColor:[UIColor blueColor]];
-    //    [self.bubbleImageView addBorderWithColor:[UIColor greenColor]];
-
     //    dispatch_async(dispatch_get_main_queue(), ^{
     //        NSLog(@"---- %@", self.viewItem.interaction.debugDescription);
     //        NSLog(@"cell: %@", NSStringFromCGRect(self.frame));
@@ -176,6 +261,175 @@ NS_ASSUME_NONNULL_BEGIN
     //        NSLog(@"textLabel: %@", NSStringFromCGRect(self.textLabel.frame));
     //        NSLog(@"bubbleImageView: %@", NSStringFromCGRect(self.bubbleImageView.frame));
     //    });
+}
+
+- (void)updateDateHeader:(int)contentWidth
+{
+    static NSDateFormatter *dateHeaderDateFormatter = nil;
+    static NSDateFormatter *dateHeaderTimeFormatter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dateHeaderDateFormatter = [NSDateFormatter new];
+        [dateHeaderDateFormatter setLocale:[NSLocale currentLocale]];
+        [dateHeaderDateFormatter setDoesRelativeDateFormatting:YES];
+        [dateHeaderDateFormatter setDateStyle:NSDateFormatterMediumStyle];
+        [dateHeaderDateFormatter setTimeStyle:NSDateFormatterNoStyle];
+        
+        dateHeaderTimeFormatter = [NSDateFormatter new];
+        [dateHeaderTimeFormatter setLocale:[NSLocale currentLocale]];
+        [dateHeaderTimeFormatter setDoesRelativeDateFormatting:YES];
+        [dateHeaderTimeFormatter setDateStyle:NSDateFormatterNoStyle];
+        [dateHeaderTimeFormatter setTimeStyle:NSDateFormatterShortStyle];
+    });
+
+    if (self.viewItem.shouldShowDate) {
+        NSDate *date = self.viewItem.interaction.dateForSorting;
+        NSString *dateString = [dateHeaderDateFormatter stringFromDate:date];
+        NSString *timeString = [dateHeaderTimeFormatter stringFromDate:date];
+
+        NSAttributedString *attributedText = [NSAttributedString new];
+        attributedText = [attributedText rtlSafeAppend:dateString
+                                            attributes:@{
+                                                NSFontAttributeName : self.dateHeaderDateFont,
+                                                NSForegroundColorAttributeName : [UIColor lightGrayColor],
+                                            }
+                                         referenceView:self];
+        attributedText = [attributedText rtlSafeAppend:@" "
+                                            attributes:@{
+                                                NSFontAttributeName : self.dateHeaderDateFont,
+                                            }
+                                         referenceView:self];
+        attributedText = [attributedText rtlSafeAppend:timeString
+                                            attributes:@{
+                                                NSFontAttributeName : self.dateHeaderTimeFont,
+                                                NSForegroundColorAttributeName : [UIColor lightGrayColor],
+                                            }
+                                         referenceView:self];
+
+        self.dateHeaderLabel.attributedText = attributedText;
+        self.dateHeaderLabel.hidden = NO;
+
+        self.dateHeaderConstraints = @[
+            // Date headers should be visually centered within the conversation view,
+            // so they need to extend outside the cell's boundaries.
+            [self.dateHeaderLabel autoSetDimension:ALDimensionWidth toSize:contentWidth],
+            (self.isIncoming ? [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading]
+                             : [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTrailing]),
+            [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTop],
+            [self.dateHeaderLabel autoSetDimension:ALDimensionHeight toSize:self.dateHeaderHeight],
+        ];
+    } else {
+        self.dateHeaderLabel.hidden = YES;
+        self.dateHeaderConstraints = @[
+            [self.dateHeaderLabel autoSetDimension:ALDimensionHeight toSize:0],
+        ];
+    }
+}
+
+- (CGFloat)footerHeight
+{
+    BOOL showFooter = NO;
+
+    BOOL hasExpirationTimer = self.message.shouldStartExpireTimer;
+
+    if (hasExpirationTimer) {
+        showFooter = YES;
+    } else if (self.isOutgoing) {
+        showFooter = !self.viewItem.shouldHideRecipientStatus;
+    } else if (self.viewItem.isGroupThread) {
+        showFooter = YES;
+    } else {
+        showFooter = NO;
+    }
+
+    return (showFooter ? MAX(kExpirationTimerViewSize,
+                             self.footerLabel.font.lineHeight)
+            : 0.f);
+}
+
+- (void)updateFooter
+{
+    OWSAssert(self.viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage
+        || self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage);
+
+    TSMessage *message = self.message;
+    BOOL hasExpirationTimer = message.shouldStartExpireTimer;
+    NSAttributedString *attributedText = nil;
+    if (self.isOutgoing) {
+        if (!self.viewItem.shouldHideRecipientStatus || hasExpirationTimer) {
+            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
+            NSString *statusMessage =
+                [MessageRecipientStatusUtils statusMessageWithOutgoingMessage:outgoingMessage referenceView:self];
+            attributedText = [[NSAttributedString alloc] initWithString:statusMessage attributes:@{}];
+        }
+    } else if (self.viewItem.isGroupThread) {
+        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
+        attributedText = [self.delegate attributedContactOrProfileNameForPhoneIdentifier:incomingMessage.authorId];
+    }
+    
+    if (!hasExpirationTimer &&
+        !attributedText) {
+        self.footerLabel.hidden = YES;
+        self.footerConstraints = @[
+                                   [self.footerView autoSetDimension:ALDimensionHeight toSize:0],
+                                   ];
+        return;
+    }
+
+    if (hasExpirationTimer) {
+        uint64_t expirationTimestamp = message.expiresAt;
+        uint32_t expiresInSeconds = message.expiresInSeconds;
+        self.expirationTimerView = [[OWSExpirationTimerView alloc] initWithExpiration:expirationTimestamp
+                                                               initialDurationSeconds:expiresInSeconds];
+        [self.footerView addSubview:self.expirationTimerView];
+    }
+    if (attributedText) {
+        self.footerLabel.attributedText = attributedText;
+        self.footerLabel.hidden = NO;
+    }
+
+    if (hasExpirationTimer &&
+        attributedText) {
+        self.footerConstraints = @[
+                                   [self.expirationTimerView autoVCenterInSuperview],
+                                   [self.footerLabel autoVCenterInSuperview],
+                                   (self.isIncoming
+                                    ? [self.expirationTimerView autoPinLeadingToSuperview]
+                                    : [self.expirationTimerView autoPinTrailingToSuperview]),
+                                   (self.isIncoming
+                                    ? [self.footerLabel autoPinLeadingToTrailingOfView:self.expirationTimerView margin:0.f]
+                                    : [self.footerLabel autoPinTrailingToLeadingOfView:self.expirationTimerView margin:0.f]),
+                                   [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
+                                   ];
+    } else if (hasExpirationTimer) {
+        self.footerConstraints = @[
+                                   [self.expirationTimerView autoVCenterInSuperview],
+                                   (self.isIncoming
+                                    ? [self.expirationTimerView autoPinLeadingToSuperview]
+                                    : [self.expirationTimerView autoPinTrailingToSuperview]),
+                                   [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
+                                   ];
+    } else if (attributedText) {
+        self.footerConstraints = @[
+                                   [self.footerLabel autoVCenterInSuperview],
+                                   (self.isIncoming
+                                    ? [self.footerLabel autoPinLeadingToSuperview]
+                                    : [self.footerLabel autoPinTrailingToSuperview]),
+                                   [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
+                                   ];
+    } else {
+        OWSFail(@"%@ Cell unexpectedly has neither expiration timer nor footer text.", self.logTag);
+    }
+}
+
+- (UIFont *)dateHeaderDateFont
+{
+    return [UIFont boldSystemFontOfSize:12.0f];
+}
+
+- (UIFont *)dateHeaderTimeFont
+{
+    return [UIFont systemFontOfSize:12.0f];
 }
 
 - (void)loadForTextDisplay
@@ -206,6 +460,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.stillImageView = [[UIImageView alloc] initWithImage:image];
+    // We need to specify a contentMode since the size of the image
+    // might not match the aspect ratio of the view.
+    self.stillImageView.contentMode = UIViewContentModeScaleAspectFill;
     // Use trilinear filters for better scaling quality at
     // some performance cost.
     self.stillImageView.layer.minificationFilter = kCAFilterTrilinear;
@@ -232,6 +489,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.animatedImageView = [[YYAnimatedImageView alloc] init];
     self.animatedImageView.image = animatedImage;
+    // We need to specify a contentMode since the size of the image
+    // might not match the aspect ratio of the view.
+    self.animatedImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self replaceBubbleWithView:self.animatedImageView];
     [self addAttachmentUploadViewIfNecessary:self.animatedImageView];
 }
@@ -265,6 +525,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.stillImageView = [[UIImageView alloc] initWithImage:image];
+    // We need to specify a contentMode since the size of the image
+    // might not match the aspect ratio of the view.
+    self.stillImageView.contentMode = UIViewContentModeScaleAspectFill;
     // Use trilinear filters for better scaling quality at
     // some performance cost.
     self.stillImageView.layer.minificationFilter = kCAFilterTrilinear;
@@ -313,7 +576,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(view);
 
     view.userInteractionEnabled = NO;
-    [self.contentView addSubview:view];
+    [self.payloadView addSubview:view];
     self.contentConstraints = [view autoPinToSuperviewEdges];
     [self cropViewToBubbbleShape:view];
     if (self.isMediaBeingSent) {
@@ -334,7 +597,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(attachmentView);
     OWSAssert(attachmentStateCallback);
 
-    if (!self.isIncoming) {
+    if (self.isOutgoing) {
         self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachmentStream
                                                                            superview:attachmentView
                                                              attachmentStateCallback:attachmentStateCallback];
@@ -343,17 +606,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)cropViewToBubbbleShape:(UIView *)view
 {
-    //    OWSAssert(CGRectEqualToRect(self.bounds, self.contentView.frame));
-    //    DDLogError(@"cropViewToBubbbleShape: %@ %@", self.viewItem.interaction.uniqueId,
-    //    self.viewItem.interaction.description); DDLogError(@"\t %@ %@ %@ %@",
-    //               NSStringFromCGRect(self.frame),
-    //               NSStringFromCGRect(self.contentView.frame),
-    //               NSStringFromCGRect(view.frame),
-    //               NSStringFromCGRect(view.superview.bounds));
+    OWSAssert(view);
+    OWSAssert(view.superview == self.payloadView);
 
-    //    view.frame = view.superview.bounds;
-    view.frame = self.bounds;
-    [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:view isOutgoing:!self.isIncoming];
+    self.payloadView.isOutgoing = self.isOutgoing;
+    self.payloadView.maskedSubview = view;
+    [self.payloadView updateMask];
 }
 
 //// TODO:
@@ -378,7 +636,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.customView = [UIView new];
     self.customView.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
     self.customView.userInteractionEnabled = NO;
-    [self.contentView addSubview:self.customView];
+    [self.payloadView addSubview:self.customView];
     self.contentConstraints = [self.customView autoPinToSuperviewEdges];
     [self cropViewToBubbbleShape:self.customView];
 }
@@ -390,6 +648,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     const int maxMessageWidth = (int)floor(contentWidth * 0.7f);
 
+    CGSize cellSize = CGSizeZero;
     switch (self.cellType) {
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage: {
@@ -401,9 +660,9 @@ NS_ASSUME_NONNULL_BEGIN
 
             self.textLabel.text = self.textMessage;
             CGSize textSize = [self.textLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
-            CGSize result = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
+            cellSize = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
                 (CGFloat)ceil(textSize.height + textVMargin * 2));
-            return result;
+            break;
         }
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
@@ -414,31 +673,64 @@ NS_ASSUME_NONNULL_BEGIN
             // TODO: Adjust this behavior.
             // TODO: This behavior is a bit different than the old behavior defined
             //       in JSQMediaItem+OWS.h.  Let's discuss.
+
+            CGFloat contentAspectRatio = self.contentSize.width / self.contentSize.height;
+            // Clamp the aspect ratio so that very thin/wide content is presented
+            // in a reasonable way.
+            const CGFloat minAspectRatio = 0.25f;
+            const CGFloat maxAspectRatio = 1 / minAspectRatio;
+            contentAspectRatio = MAX(minAspectRatio, MIN(maxAspectRatio, contentAspectRatio));
+
             const CGFloat maxMediaWidth = maxMessageWidth;
             const CGFloat maxMediaHeight = maxMessageWidth;
-            CGFloat mediaWidth = (CGFloat)round(maxMediaWidth);
-            CGFloat mediaHeight = (CGFloat)round(maxMediaWidth * self.contentSize.height / self.contentSize.width);
-            if (mediaHeight > maxMediaHeight) {
-                mediaWidth = (CGFloat)round(maxMediaHeight * self.contentSize.width / self.contentSize.height);
-                mediaHeight = (CGFloat)round(maxMediaHeight);
+            CGFloat mediaWidth = (CGFloat)round(maxMediaHeight * contentAspectRatio);
+            CGFloat mediaHeight = (CGFloat)round(maxMediaHeight);
+            if (mediaWidth > maxMediaWidth) {
+                mediaWidth = (CGFloat)round(maxMediaWidth);
+                mediaHeight = (CGFloat)round(maxMediaWidth / contentAspectRatio);
             }
-            CGSize result = CGSizeMake(mediaWidth, mediaHeight);
-            return result;
+            cellSize = CGSizeMake(mediaWidth, mediaHeight);
+            break;
         }
         case OWSMessageCellType_Audio:
-            return CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
+            cellSize = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
+            break;
         case OWSMessageCellType_GenericAttachment:
-            return CGSizeMake(maxMessageWidth, [OWSGenericAttachmentView bubbleHeight]);
+            cellSize = CGSizeMake(maxMessageWidth, [OWSGenericAttachmentView bubbleHeight]);
+            break;
         case OWSMessageCellType_DownloadingAttachment:
-            return CGSizeMake(200, 90);
+            cellSize = CGSizeMake(200, 90);
+            break;
     }
 
-    return CGSizeMake(maxMessageWidth, maxMessageWidth);
+    OWSAssert(cellSize.width > 0 && cellSize.height > 0);
+
+    cellSize.height += self.dateHeaderHeight;
+    cellSize.height += self.footerHeight;
+
+    cellSize.width = ceil(cellSize.width);
+    cellSize.height = ceil(cellSize.height);
+
+    return cellSize;
+}
+
+- (CGFloat)dateHeaderHeight
+{
+    if (self.viewItem.shouldShowDate) {
+        return MAX(self.dateHeaderDateFont.lineHeight, self.dateHeaderTimeFont.lineHeight);
+    } else {
+        return 0.f;
+    }
 }
 
 - (BOOL)isIncoming
 {
-    return YES;
+    return self.viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage;
+}
+
+- (BOOL)isOutgoing
+{
+    return self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage;
 }
 
 - (CGFloat)textLeadingMargin
@@ -489,12 +781,20 @@ NS_ASSUME_NONNULL_BEGIN
 
     [NSLayoutConstraint deactivateConstraints:self.contentConstraints];
     self.contentConstraints = nil;
+    [NSLayoutConstraint deactivateConstraints:self.dateHeaderConstraints];
+    self.dateHeaderConstraints = nil;
+    [NSLayoutConstraint deactivateConstraints:self.footerConstraints];
+    self.footerConstraints = nil;
 
-    // The text label is used so frequently that we always keep one around.
+    self.dateHeaderLabel.text = nil;
+    self.dateHeaderLabel.hidden = YES;
     self.textLabel.text = nil;
     self.textLabel.hidden = YES;
+    self.footerLabel.text = nil;
+    self.footerLabel.hidden = YES;
     self.bubbleImageView.image = nil;
     self.bubbleImageView.hidden = YES;
+    self.payloadView.maskedSubview = nil;
 
     [self.stillImageView removeFromSuperview];
     self.stillImageView = nil;
@@ -509,17 +809,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioMessageView removeFromSuperview];
     self.audioMessageView = nil;
     self.attachmentUploadView = nil;
+    [self.expirationTimerView clearAnimations];
+    [self.expirationTimerView removeFromSuperview];
+    self.expirationTimerView = nil;
 }
 
-//- (void)awakeFromNib
-//{
-//    [super awakeFromNib];
-//    self.expirationTimerViewWidthConstraint.constant = 0.0;
-//
-//    // Our text alignment needs to adapt to RTL.
-//    self.cellBottomLabel.textAlignment = [self.cellBottomLabel textAlignmentUnnatural];
-//}
-//
 //- (void)prepareForReuse
 //{
 //    [super prepareForReuse];
@@ -554,21 +848,41 @@ NS_ASSUME_NONNULL_BEGIN
 //{
 //    return [UIColor whiteColor];
 //}
+
+#pragma mark - Notifications
+
+- (void)setIsCellVisible:(BOOL)isCellVisible {
+    BOOL didChange = self.isCellVisible != isCellVisible;
+
+    [super setIsCellVisible:isCellVisible];
+
+    if (!didChange) {
+        return;
+    }
+
+    if (isCellVisible) {
+        if (self.message.shouldStartExpireTimer) {
+            [self.expirationTimerView ensureAnimations];
+        } else {
+            [self.expirationTimerView clearAnimations];
+        }
+    } else {
+        [self.expirationTimerView clearAnimations];
+    }
+}
+
+// case TSInfoMessageAdapter: {
+//    // HACK this will get called when we get a new info message, but there's gotta be a better spot for this.
+//    OWSDisappearingMessagesConfiguration *configuration =
+//    [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
+//    [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
 //
-//// pragma mark - OWSExpirableMessageView
+//    if (message.shouldStartExpireTimer && [cell conformsToProtocol:@protocol(OWSExpirableMessageView)]) {
+//        id<OWSExpirableMessageView> expirableView = (id<OWSExpirableMessageView>)cell;
+//        [expirableView startExpirationTimerWithExpiresAtSeconds:message.expiresAtSeconds
+//                                         initialDurationSeconds:message.expiresInSeconds];
+//    }
 //
-//- (void)startExpirationTimerWithExpiresAtSeconds:(double)expiresAtSeconds
-//                          initialDurationSeconds:(uint32_t)initialDurationSeconds
-//{
-//    self.expirationTimerViewWidthConstraint.constant = OWSExpirableMessageViewTimerWidth;
-//    [self.expirationTimerView startTimerWithExpiresAtSeconds:expiresAtSeconds
-//                                      initialDurationSeconds:initialDurationSeconds];
-//}
-//
-//- (void)stopExpirationTimer
-//{
-//    [self.expirationTimerView stopTimer];
-//}
 
 #pragma mark - Gesture recognizers
 
@@ -613,8 +927,6 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             case OWSMessageCellType_GenericAttachment:
                 [AttachmentSharing showShareUIForAttachment:self.attachmentStream];
-                //                [self.delegate didTapGenericAttachment:self.viewItem
-                //                attachmentStream:self.attachmentStream];
                 break;
             case OWSMessageCellType_DownloadingAttachment: {
                 OWSAssert(self.attachmentPointer);
@@ -689,7 +1001,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
-    [self.delegate showMetadataViewForMessage:(TSMessage *)self.viewItem.interaction];
+    [self.delegate showMetadataViewForMessage:self.message];
 }
 
 - (BOOL)canBecomeFirstResponder

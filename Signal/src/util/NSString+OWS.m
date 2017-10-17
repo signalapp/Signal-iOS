@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)ows_stripped
 {
-    return [self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return [self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 - (NSString *)rtlSafeAppend:(NSString *)string referenceView:(UIView *)referenceView

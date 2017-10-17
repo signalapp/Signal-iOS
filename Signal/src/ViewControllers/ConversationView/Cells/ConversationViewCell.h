@@ -39,10 +39,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)tappedAddToContactsOfferMessage:(OWSContactOffersInteraction *)interaction;
 - (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction;
 
+#pragma mark - Formatting
+
+- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId;
+
 @end
 
 #pragma mark -
 
+// TODO: Consider making this a protocol.
 @interface ConversationViewCell : UICollectionViewCell
 
 @property (nonatomic, nullable, weak) id<ConversationViewCellDelegate> delegate;
@@ -51,10 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL isCellVisible;
 
-// If this is non-null, we should show the message date header.
-@property (nonatomic, nullable) NSAttributedString *messageDateHeaderText;
-
-- (void)loadForDisplay;
+- (void)loadForDisplay:(int)contentWidth;
 
 - (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth;
 
