@@ -71,9 +71,9 @@ class MessageMetadataViewController: OWSViewController {
         }
 
         NotificationCenter.default.addObserver(self,
-            selector:#selector(yapDatabaseModified),
-            name:NSNotification.Name.YapDatabaseModified,
-            object:nil)
+            selector: #selector(yapDatabaseModified),
+            name: NSNotification.Name.YapDatabaseModified,
+            object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -96,8 +96,8 @@ class MessageMetadataViewController: OWSViewController {
         let scrollView = UIScrollView()
         self.scrollView = scrollView
         view.addSubview(scrollView)
-        scrollView.autoPinWidthToSuperview(withMargin:0)
-        scrollView.autoPin(toTopLayoutGuideOf: self, withInset:0)
+        scrollView.autoPinWidthToSuperview(withMargin: 0)
+        scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
 
         // See notes on how to use UIScrollView with iOS Auto Layout:
         //
@@ -107,8 +107,8 @@ class MessageMetadataViewController: OWSViewController {
         scrollView.addSubview(contentView)
         contentView.autoPinLeadingToSuperview()
         contentView.autoPinTrailingToSuperview()
-        contentView.autoPinEdge(toSuperviewEdge:.top)
-        contentView.autoPinEdge(toSuperviewEdge:.bottom)
+        contentView.autoPinEdge(toSuperviewEdge: .top)
+        contentView.autoPinEdge(toSuperviewEdge: .bottom)
         scrollView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
         let hasAttachment = message.attachmentIds.count > 0
@@ -117,9 +117,9 @@ class MessageMetadataViewController: OWSViewController {
             let footer = UIToolbar()
             footer.barTintColor = UIColor.ows_materialBlue()
             view.addSubview(footer)
-            footer.autoPinWidthToSuperview(withMargin:0)
-            footer.autoPinEdge(.top, to:.bottom, of:scrollView)
-            footer.autoPin(toBottomLayoutGuideOf: self, withInset:0)
+            footer.autoPinWidthToSuperview(withMargin: 0)
+            footer.autoPinEdge(.top, to: .bottom, of: scrollView)
+            footer.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
 
             footer.items = [
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
@@ -127,7 +127,7 @@ class MessageMetadataViewController: OWSViewController {
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
             ]
         } else {
-            scrollView.autoPin(toBottomLayoutGuideOf: self, withInset:0)
+            scrollView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
         }
 
         updateContent()
@@ -154,10 +154,10 @@ class MessageMetadataViewController: OWSViewController {
         // Sender?
         if let incomingMessage = message as? TSIncomingMessage {
             let senderId = incomingMessage.authorId
-            let senderName = contactsManager.contactOrProfileName(forPhoneIdentifier:senderId)
+            let senderName = contactsManager.contactOrProfileName(forPhoneIdentifier: senderId)
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENDER",
                                                          comment: "Label for the 'sender' field of the 'message metadata' view."),
-                                 value:senderName))
+                                 value: senderName))
         }
 
         // Recipient(s)
@@ -179,13 +179,13 @@ class MessageMetadataViewController: OWSViewController {
                 // TODO: It'd be nice to inset these dividers from the edge of the screen.
                 let addDivider = {
                     let divider = UIView()
-                    divider.backgroundColor = UIColor(white:0.9, alpha:1.0)
-                    divider.autoSetDimension(.height, toSize:0.5)
+                    divider.backgroundColor = UIColor(white: 0.9, alpha: 1.0)
+                    divider.autoSetDimension(.height, toSize: 0.5)
                     groupRows.append(divider)
                 }
 
                 for recipientId in thread.recipientIdentifiers {
-                    let (recipientStatus, statusMessage) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientId: recipientId, referenceView:self.view)
+                    let (recipientStatus, statusMessage) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientId: recipientId, referenceView: self.view)
 
                     guard recipientStatus == recipientStatusGroup else {
                         continue
@@ -193,8 +193,8 @@ class MessageMetadataViewController: OWSViewController {
 
                     if groupRows.count < 1 {
                         if isGroupThread {
-                            groupRows.append(valueRow(name: MessageRecipientStatusName(recipientStatusGroup),
-                                                      value:""))
+                            groupRows.append(valueRow(name: string(for: recipientStatusGroup),
+                                                      value: ""))
                         }
 
                         addDivider()
@@ -208,7 +208,7 @@ class MessageMetadataViewController: OWSViewController {
                     statusLabel.font = UIFont.ows_footnote()
                     statusLabel.sizeToFit()
                     cell.accessoryView = statusLabel
-                    cell.autoSetDimension(.height, toSize:ContactTableViewCell.rowHeight())
+                    cell.autoSetDimension(.height, toSize: ContactTableViewCell.rowHeight())
                     cell.setContentHuggingLow()
                     cell.isUserInteractionEnabled = false
                     groupRows.append(cell)
@@ -218,7 +218,7 @@ class MessageMetadataViewController: OWSViewController {
                     addDivider()
 
                     let spacer = UIView()
-                    spacer.autoSetDimension(.height, toSize:10)
+                    spacer.autoSetDimension(.height, toSize: 10)
                     groupRows.append(spacer)
                 }
 
@@ -232,12 +232,12 @@ class MessageMetadataViewController: OWSViewController {
 
         rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
                                                      comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
-                             value:DateUtil.formatPastTimestampRelativeToNow(message.timestamp)))
+                             value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp)))
 
         if message as? TSIncomingMessage != nil {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                                                          comment: "Label for the 'received date & time' field of the 'message metadata' view."),
-                                 value:DateUtil.formatPastTimestampRelativeToNow(message.timestampForSorting())))
+                                 value: DateUtil.formatPastTimestampRelativeToNow(message.timestampForSorting())))
         }
 
         rows += addAttachmentMetadataRows()
@@ -251,15 +251,15 @@ class MessageMetadataViewController: OWSViewController {
             row.autoPinTrailingToSuperview()
 
             if let lastRow = lastRow {
-                row.autoPinEdge(.top, to:.bottom, of:lastRow, withOffset:5)
+                row.autoPinEdge(.top, to: .bottom, of: lastRow, withOffset: 5)
             } else {
-                row.autoPinEdge(toSuperviewEdge:.top, withInset:20)
+                row.autoPinEdge(toSuperviewEdge: .top, withInset: 20)
             }
 
             lastRow = row
         }
         if let lastRow = lastRow {
-            lastRow.autoPinEdge(toSuperviewEdge:.bottom, withInset:20)
+            lastRow.autoPinEdge(toSuperviewEdge: .bottom, withInset: 20)
         }
 
         if let mediaMessageView = mediaMessageView {
@@ -282,7 +282,7 @@ class MessageMetadataViewController: OWSViewController {
 
                 let bodyLabel = UILabel()
                 bodyLabel.textColor = isIncoming ? UIColor.black : UIColor.white
-                bodyLabel.font = UIFont.ows_regularFont(withSize:16)
+                bodyLabel.font = UIFont.ows_regularFont(withSize: 16)
                 bodyLabel.text = messageBody
                 bodyLabel.numberOfLines = 0
                 bodyLabel.lineBreakMode = .byWordWrapping
@@ -307,7 +307,7 @@ class MessageMetadataViewController: OWSViewController {
                 bodyLabel.setContentHuggingPriority(UILayoutPriorityDefaultLow, for: .horizontal)
                 bodyLabel.setContentHuggingPriority(UILayoutPriorityDefaultHigh, for: .vertical)
                 bodyLabel.setContentCompressionResistancePriority(UILayoutPriorityRequired, for: .vertical)
-                bodyLabel.autoSetDimension(.width, toSize:ScaleFromIPhone5(210), relation:.lessThanOrEqual)
+                bodyLabel.autoSetDimension(.width, toSize: ScaleFromIPhone5(210), relation: .lessThanOrEqual)
 
                 let bubbleSpacer = UIView()
 
@@ -320,13 +320,13 @@ class MessageMetadataViewController: OWSViewController {
                 bubbleSpacer.setContentHuggingLow()
 
                 if isIncoming {
-                    bubbleView.autoPinLeadingToSuperview(withMargin:10)
-                    bubbleSpacer.autoPinLeading(toTrailingOf:bubbleView)
-                    bubbleSpacer.autoPinTrailingToSuperview(withMargin:10)
+                    bubbleView.autoPinLeadingToSuperview(withMargin: 10)
+                    bubbleSpacer.autoPinLeading(toTrailingOf: bubbleView)
+                    bubbleSpacer.autoPinTrailingToSuperview(withMargin: 10)
                 } else {
-                    bubbleSpacer.autoPinLeadingToSuperview(withMargin:10)
-                    bubbleView.autoPinLeading(toTrailingOf:bubbleSpacer)
-                    bubbleView.autoPinTrailingToSuperview(withMargin:10)
+                    bubbleSpacer.autoPinLeadingToSuperview(withMargin: 10)
+                    bubbleView.autoPinLeading(toTrailingOf: bubbleSpacer)
+                    bubbleView.autoPinTrailingToSuperview(withMargin: 10)
                 }
 
                 rows.append(row)
@@ -335,12 +335,12 @@ class MessageMetadataViewController: OWSViewController {
                 owsFail("\(self.TAG) Message has neither attachment nor body.")
                 rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY",
                                                              comment: "Label for messages without a body or attachment in the 'message metadata' view."),
-                                     value:""))
+                                     value: ""))
             }
         }
 
         let spacer = UIView()
-        spacer.autoSetDimension(.height, toSize:15)
+        spacer.autoSetDimension(.height, toSize: 15)
         rows.append(spacer)
 
         return rows
@@ -354,7 +354,7 @@ class MessageMetadataViewController: OWSViewController {
             return rows
         }
 
-        guard let attachment = TSAttachment.fetch(uniqueId:attachmentId) else {
+        guard let attachment = TSAttachment.fetch(uniqueId: attachmentId) else {
             owsFail("Missing attachment")
             return rows
         }
@@ -363,26 +363,26 @@ class MessageMetadataViewController: OWSViewController {
         guard let attachmentStream = attachment as? TSAttachmentStream else {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED",
                                                          comment: "Label for 'not yet downloaded' attachments in the 'message metadata' view."),
-                                 value:""))
+                                 value: ""))
             return rows
         }
         self.attachmentStream = attachmentStream
 
         if let filePath = attachmentStream.filePath() {
-            dataSource = DataSourcePath.dataSource(withFilePath:filePath)
+            dataSource = DataSourcePath.dataSource(withFilePath: filePath)
         }
 
         guard let dataSource = dataSource else {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE",
                                                          comment: "Label for 'missing' attachments in the 'message metadata' view."),
-                                 value:""))
+                                 value: ""))
             return rows
         }
 
         let contentType = attachment.contentType
-        if let dataUTI = MIMETypeUtil.utiType(forMIMEType:contentType) {
-            let attachment = SignalAttachment(dataSource : dataSource, dataUTI: dataUTI)
-            let mediaMessageView = MediaMessageView(attachment:attachment)
+        if let dataUTI = MIMETypeUtil.utiType(forMIMEType: contentType) {
+            let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
+            let mediaMessageView = MediaMessageView(attachment: attachment)
             self.mediaMessageView = mediaMessageView
             rows.append(mediaMessageView)
         }
@@ -396,12 +396,12 @@ class MessageMetadataViewController: OWSViewController {
             let contentType = attachment.contentType
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE",
                                                          comment: "Label for the MIME type of attachments in the 'message metadata' view."),
-                                 value:contentType))
+                                 value: contentType))
 
             if let sourceFilename = attachment.sourceFilename {
                 rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SOURCE_FILENAME",
                                                              comment: "Label for the original filename of any attachment in the 'message metadata' view."),
-                                     value:sourceFilename))
+                                     value: sourceFilename))
             }
         }
 
@@ -409,7 +409,7 @@ class MessageMetadataViewController: OWSViewController {
             let fileSize = dataSource.dataLength()
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
                                                          comment: "Label for file size of attachments in the 'message metadata' view."),
-                                 value:ViewControllerUtils.formatFileSize(UInt(fileSize))))
+                                 value: ViewControllerUtils.formatFileSize(UInt(fileSize))))
         }
 
         return rows
@@ -418,7 +418,7 @@ class MessageMetadataViewController: OWSViewController {
     private func nameLabel(text: String) -> UILabel {
         let label = UILabel()
         label.textColor = UIColor.black
-        label.font = UIFont.ows_mediumFont(withSize:14)
+        label.font = UIFont.ows_mediumFont(withSize: 14)
         label.text = text
         label.setContentHuggingHorizontalHigh()
         return label
@@ -427,7 +427,7 @@ class MessageMetadataViewController: OWSViewController {
     private func valueLabel(text: String) -> UILabel {
         let label = UILabel()
         label.textColor = UIColor.black
-        label.font = UIFont.ows_regularFont(withSize:14)
+        label.font = UIFont.ows_regularFont(withSize: 14)
         label.text = text
         label.setContentHuggingHorizontalLow()
         return label
@@ -435,28 +435,28 @@ class MessageMetadataViewController: OWSViewController {
 
     private func valueRow(name: String, value: String, subtitle: String = "") -> UIView {
         let row = UIView.container()
-        let nameLabel = self.nameLabel(text:name)
-        let valueLabel = self.valueLabel(text:value)
+        let nameLabel = self.nameLabel(text: name)
+        let valueLabel = self.valueLabel(text: value)
         row.addSubview(nameLabel)
         row.addSubview(valueLabel)
-        nameLabel.autoPinLeadingToSuperview(withMargin:20)
-        valueLabel.autoPinTrailingToSuperview(withMargin:20)
-        valueLabel.autoPinLeading(toTrailingOf:nameLabel, margin: 10)
-        nameLabel.autoPinEdge(toSuperviewEdge:.top)
-        valueLabel.autoPinEdge(toSuperviewEdge:.top)
+        nameLabel.autoPinLeadingToSuperview(withMargin: 20)
+        valueLabel.autoPinTrailingToSuperview(withMargin: 20)
+        valueLabel.autoPinLeading(toTrailingOf: nameLabel, margin: 10)
+        nameLabel.autoPinEdge(toSuperviewEdge: .top)
+        valueLabel.autoPinEdge(toSuperviewEdge: .top)
 
         if subtitle.characters.count > 0 {
-            let subtitleLabel = self.valueLabel(text:subtitle)
+            let subtitleLabel = self.valueLabel(text: subtitle)
             subtitleLabel.textColor = UIColor.ows_darkGray()
             row.addSubview(subtitleLabel)
             subtitleLabel.autoPinTrailingToSuperview()
-            subtitleLabel.autoPinLeading(toTrailingOf:nameLabel, margin: 10)
-            subtitleLabel.autoPinEdge(.top, to:.bottom, of:valueLabel, withOffset:1)
-            subtitleLabel.autoPinEdge(toSuperviewEdge:.bottom)
+            subtitleLabel.autoPinLeading(toTrailingOf: nameLabel, margin: 10)
+            subtitleLabel.autoPinEdge(.top, to: .bottom, of: valueLabel, withOffset: 1)
+            subtitleLabel.autoPinEdge(toSuperviewEdge: .bottom)
         } else if value.characters.count > 0 {
-            valueLabel.autoPinEdge(toSuperviewEdge:.bottom)
+            valueLabel.autoPinEdge(toSuperviewEdge: .bottom)
         } else {
-            nameLabel.autoPinEdge(toSuperviewEdge:.bottom)
+            nameLabel.autoPinEdge(toSuperviewEdge: .bottom)
         }
 
         return row
@@ -474,7 +474,7 @@ class MessageMetadataViewController: OWSViewController {
             Logger.error("\(TAG) Message has neither attachment nor message body.")
             return
         }
-        AttachmentSharing.showShareUI(forAttachment:attachmentStream)
+        AttachmentSharing.showShareUI(forAttachment: attachmentStream)
     }
 
     func copyToPasteboard() {
@@ -487,7 +487,7 @@ class MessageMetadataViewController: OWSViewController {
             Logger.error("\(TAG) Message has neither attachment nor message body.")
             return
         }
-        guard let utiType = MIMETypeUtil.utiType(forMIMEType:attachmentStream.contentType) else {
+        guard let utiType = MIMETypeUtil.utiType(forMIMEType: attachmentStream.contentType) else {
             Logger.error("\(TAG) Attachment has invalid MIME type: \(attachmentStream.contentType).")
             return
         }
@@ -496,7 +496,7 @@ class MessageMetadataViewController: OWSViewController {
             return
         }
         let data = dataSource.data()
-        UIPasteboard.general.setData(data, forPasteboardType:utiType)
+        UIPasteboard.general.setData(data, forPasteboardType: utiType)
     }
 
     // MARK: - Actions
@@ -507,7 +507,7 @@ class MessageMetadataViewController: OWSViewController {
         AssertIsOnMainThread()
 
         self.databaseConnection.read { transaction in
-            guard let newMessage = TSInteraction.fetch(uniqueId:self.message.uniqueId, transaction:transaction) as? TSMessage else {
+            guard let newMessage = TSInteraction.fetch(uniqueId: self.message.uniqueId, transaction: transaction) as? TSMessage else {
                 Logger.error("\(self.TAG) Couldn't reload message.")
                 return
             }
@@ -520,9 +520,9 @@ class MessageMetadataViewController: OWSViewController {
 
         let notifications = self.databaseConnection.beginLongLivedReadTransaction()
 
-        guard self.databaseConnection.hasChange(forKey:message.uniqueId,
-                                                 inCollection:TSInteraction.collection(),
-                                                 in:notifications) else {
+        guard self.databaseConnection.hasChange(forKey: message.uniqueId,
+                                                 inCollection: TSInteraction.collection(),
+                                                 in: notifications) else {
                                                     Logger.debug("\(TAG) No relevant changes.")
                                                     return
         }
@@ -532,8 +532,8 @@ class MessageMetadataViewController: OWSViewController {
         updateContent()
     }
 
-    private func MessageRecipientStatusName(_ value: MessageRecipientStatus) -> String {
-        switch value {
+    private func string(for messageRecipientStatus: MessageRecipientStatus) -> String {
+        switch messageRecipientStatus {
         case .uploading:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING",
                               comment: "Status label for messages which are uploading.")

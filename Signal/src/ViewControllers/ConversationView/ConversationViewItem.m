@@ -5,8 +5,7 @@
 #import "ConversationViewItem.h"
 #import "OWSAudioMessageView.h"
 #import "OWSContactOffersCell.h"
-#import "OWSIncomingMessageCell.h"
-#import "OWSOutgoingMessageCell.h"
+#import "OWSMessageCell.h"
 #import "OWSSystemMessageCell.h"
 #import "OWSUnreadIndicatorCell.h"
 #import "Signal-Swift.h"
@@ -72,7 +71,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     _interaction = interaction;
     _isGroupThread = isGroupThread;
     self.row = NSNotFound;
-    self.lastRow = NSNotFound;
+    self.previousRow = NSNotFound;
 
     return self;
 }
@@ -176,10 +175,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 OWSFail(@"%@ Unknown interaction type.", self.tag);
                 return nil;
             case OWSInteractionType_IncomingMessage:
-                measurementCell = [OWSIncomingMessageCell new];
-                break;
             case OWSInteractionType_OutgoingMessage:
-                measurementCell = [OWSOutgoingMessageCell new];
+                measurementCell = [OWSMessageCell new];
                 break;
             case OWSInteractionType_Error:
             case OWSInteractionType_Info:
@@ -214,10 +211,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSFail(@"%@ Unknown interaction type.", self.tag);
             return nil;
         case OWSInteractionType_IncomingMessage:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSIncomingMessageCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
         case OWSInteractionType_OutgoingMessage:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSOutgoingMessageCell cellReuseIdentifier]
+            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSMessageCell cellReuseIdentifier]
                                                              forIndexPath:indexPath];
         case OWSInteractionType_Error:
         case OWSInteractionType_Info:

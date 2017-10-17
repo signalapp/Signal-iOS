@@ -337,7 +337,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
         constraint.active = YES;
         return constraint;
     } else {
-        return [self autoPinEdge:ALEdgeTrailing toEdge:ALEdgeLeading ofView:view withOffset:-margin];
+        return [self autoPinEdge:ALEdgeTrailing toEdge:ALEdgeLeading ofView:view withOffset:margin];
     }
 }
 

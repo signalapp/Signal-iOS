@@ -45,7 +45,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic) BOOL shouldHideRecipientStatus;
 
 @property (nonatomic) NSInteger row;
-@property (nonatomic) NSInteger lastRow;
+// During updates, we sometimes need the previous row index
+// (before this update) of this item.
+@property (nonatomic) NSInteger previousRow;
 
 //@property (nonatomic, weak) ConversationViewCell *lastCell;
 

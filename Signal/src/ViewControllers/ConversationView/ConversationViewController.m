@@ -28,8 +28,7 @@
 #import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "OWSIncomingMessageCell.h"
-#import "OWSOutgoingMessageCell.h"
+#import "OWSMessageCell.h"
 #import "OWSSystemMessageCell.h"
 #import "OWSUnreadIndicatorCell.h"
 #import "Signal-Swift.h"
@@ -494,10 +493,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             forCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSContactOffersCell class]
             forCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]];
-    [self.collectionView registerClass:[OWSOutgoingMessageCell class]
-            forCellWithReuseIdentifier:[OWSOutgoingMessageCell cellReuseIdentifier]];
-    [self.collectionView registerClass:[OWSIncomingMessageCell class]
-            forCellWithReuseIdentifier:[OWSIncomingMessageCell cellReuseIdentifier]];
+    [self.collectionView registerClass:[OWSMessageCell class]
+            forCellWithReuseIdentifier:[OWSMessageCell cellReuseIdentifier]];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
@@ -3846,7 +3843,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
             ConversationViewItem *_Nullable viewItem = self.viewItemMap[interaction.uniqueId];
             if (viewItem) {
-                viewItem.lastRow = viewItem.row;
+                viewItem.previousRow = viewItem.row;
             } else {
                 viewItem = [[ConversationViewItem alloc] initWithTSInteraction:interaction isGroupThread:isGroupThread];
             }
@@ -3901,8 +3898,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         // If this is an existing view item and it has changed size,
         // note that so that we can reload this cell while doing
         // incremental updates.
-        if (viewItem.shouldShowDate != shouldShowDate && viewItem.lastRow != NSNotFound) {
-            [rowsThatChangedSize addObject:@(viewItem.lastRow)];
+        if (viewItem.shouldShowDate != shouldShowDate && viewItem.previousRow != NSNotFound) {
+            [rowsThatChangedSize addObject:@(viewItem.previousRow)];
         }
         viewItem.shouldShowDate = shouldShowDate;
 
@@ -3929,8 +3926,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         // If this is an existing view item and it has changed size,
         // note that so that we can reload this cell while doing
         // incremental updates.
-        if (viewItem.shouldHideRecipientStatus != shouldHideRecipientStatus && viewItem.lastRow != NSNotFound) {
-            [rowsThatChangedSize addObject:@(viewItem.lastRow)];
+        if (viewItem.shouldHideRecipientStatus != shouldHideRecipientStatus && viewItem.previousRow != NSNotFound) {
+            [rowsThatChangedSize addObject:@(viewItem.previousRow)];
         }
         viewItem.shouldHideRecipientStatus = shouldHideRecipientStatus;
     }

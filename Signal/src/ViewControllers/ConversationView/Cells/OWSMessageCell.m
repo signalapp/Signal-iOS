@@ -143,7 +143,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.dateHeaderLabel.hidden = YES;
     self.footerLabel.hidden = YES;
 
-    [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.payloadView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
     [self.payloadView autoPinWidthToSuperview];
     [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.payloadView];
@@ -157,6 +156,11 @@ NS_ASSUME_NONNULL_BEGIN
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self addGestureRecognizer:longPress];
+}
+
++ (NSString *)cellReuseIdentifier
+{
+    return NSStringFromClass([self class]);
 }
 
 - (OWSMessageCellType)cellType
@@ -194,6 +198,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem.contentSize.width > 0 && self.viewItem.contentSize.height > 0);
 
     return self.viewItem.contentSize;
+}
+
+- (TSMessage *)message
+{
+    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+
+    return (TSMessage *)self.viewItem.interaction;
 }
 
 - (void)loadForDisplay:(int)contentWidth
@@ -304,6 +315,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.dateHeaderLabel autoSetDimension:ALDimensionWidth toSize:contentWidth],
             (self.isIncoming ? [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading]
                              : [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTrailing]),
+            [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTop],
             [self.dateHeaderLabel autoSetDimension:ALDimensionHeight toSize:self.dateHeaderHeight],
         ];
     } else {
@@ -318,12 +330,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     BOOL showFooter = NO;
 
-    TSMessage *message = (TSMessage *)self.viewItem.interaction;
-    BOOL hasExpirationTimer = message.shouldStartExpireTimer;
+    BOOL hasExpirationTimer = self.message.shouldStartExpireTimer;
 
     if (hasExpirationTimer) {
         showFooter = YES;
-    } else if (!self.isIncoming) {
+    } else if (self.isOutgoing) {
         showFooter = !self.viewItem.shouldHideRecipientStatus;
     } else if (self.viewItem.isGroupThread) {
         showFooter = YES;
@@ -341,10 +352,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage
         || self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage);
 
-    TSMessage *message = (TSMessage *)self.viewItem.interaction;
+    TSMessage *message = self.message;
     BOOL hasExpirationTimer = message.shouldStartExpireTimer;
     NSAttributedString *attributedText = nil;
-    if (!self.isIncoming) {
+    if (self.isOutgoing) {
         if (!self.viewItem.shouldHideRecipientStatus || hasExpirationTimer) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
             NSString *statusMessage =
@@ -364,9 +375,8 @@ NS_ASSUME_NONNULL_BEGIN
                                    ];
         return;
     }
-    
-    if (hasExpirationTimer)
-    {
+
+    if (hasExpirationTimer) {
         uint64_t expirationTimestamp = message.expiresAt;
         uint32_t expiresInSeconds = message.expiresInSeconds;
         self.expirationTimerView = [[OWSExpirationTimerView alloc] initWithExpiration:expirationTimestamp
@@ -587,7 +597,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(attachmentView);
     OWSAssert(attachmentStateCallback);
 
-    if (!self.isIncoming) {
+    if (self.isOutgoing) {
         self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachmentStream
                                                                            superview:attachmentView
                                                              attachmentStateCallback:attachmentStateCallback];
@@ -599,7 +609,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(view);
     OWSAssert(view.superview == self.payloadView);
 
-    self.payloadView.isOutgoing = !self.isIncoming;
+    self.payloadView.isOutgoing = self.isOutgoing;
     self.payloadView.maskedSubview = view;
     [self.payloadView updateMask];
 }
@@ -715,7 +725,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isIncoming
 {
-    return YES;
+    return self.viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage;
+}
+
+- (BOOL)isOutgoing
+{
+    return self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage;
 }
 
 - (CGFloat)textLeadingMargin
@@ -837,15 +852,16 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Notifications
 
 - (void)setIsCellVisible:(BOOL)isCellVisible {
-    if (self.isCellVisible == isCellVisible) {
+    BOOL didChange = self.isCellVisible != isCellVisible;
+
+    [super setIsCellVisible:isCellVisible];
+
+    if (!didChange) {
         return;
     }
-    
-    [super setIsCellVisible:isCellVisible];
-    
+
     if (isCellVisible) {
-        TSMessage *message = (TSMessage *)self.viewItem.interaction;
-        if (message.shouldStartExpireTimer) {
+        if (self.message.shouldStartExpireTimer) {
             [self.expirationTimerView ensureAnimations];
         } else {
             [self.expirationTimerView clearAnimations];
@@ -985,7 +1001,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
-    [self.delegate showMetadataViewForMessage:(TSMessage *)self.viewItem.interaction];
+    [self.delegate showMetadataViewForMessage:self.message];
 }
 
 - (BOOL)canBecomeFirstResponder
