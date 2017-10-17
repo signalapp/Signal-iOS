@@ -3491,6 +3491,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                           message:errorMessage];
 }
 
+// TODO: Is this necessary? It seems redundant with observing changes to
+// the collection view's layout.
 - (void)textViewDidChangeLayout
 {
     OWSAssert([NSThread isMainThread]);
