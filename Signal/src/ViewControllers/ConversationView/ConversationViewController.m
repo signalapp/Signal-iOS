@@ -469,7 +469,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.collectionView.layoutDelegate = self;
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
-    self.collectionView.showsVerticalScrollIndicator = NO;
+    self.collectionView.showsVerticalScrollIndicator = YES;
     self.collectionView.showsHorizontalScrollIndicator = NO;
     self.collectionView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.collectionView];
