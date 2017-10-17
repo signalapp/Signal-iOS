@@ -31,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // TODO: We might want to decompose this method.
 - (void)didTapSystemMessageWithInteraction:(TSInteraction *)interaction;
-- (void)didLongPressSystemMessageCell:(ConversationViewCell *)systemMessageCell fromView:(UIView *)fromView;
 
 #pragma mark - Offers
 
