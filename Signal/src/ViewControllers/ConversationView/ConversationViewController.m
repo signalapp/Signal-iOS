@@ -3598,7 +3598,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     return (self.showLoadMoreHeader ? kLoadMoreHeaderHeight : 0.f);
 }
 
-
 #pragma mark - ConversationInputToolbarDelegate
 
 - (void)sendButtonPressed
