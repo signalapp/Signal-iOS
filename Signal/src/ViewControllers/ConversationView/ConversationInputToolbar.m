@@ -21,8 +21,8 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 @property (nonatomic) UIButton *sendButton;
 @property (nonatomic) BOOL shouldShowVoiceMemoButton;
 @property (nonatomic) UIButton *voiceMemoButton;
-@property (nonatomic) UIView *leadingButtonWrapper;
-@property (nonatomic) UIView *trailingButtonWrapper;
+@property (nonatomic) UIView *leftButtonWrapper;
+@property (nonatomic) UIView *rightButtonWrapper;
 
 @property (nonatomic) NSArray<NSLayoutConstraint *> *contentContraints;
 
@@ -77,16 +77,16 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     // than trying to manipulate the size of the buttons themselves, as you
     // can't coordinate the layout of the button content (e.g. image or text)
     // using iOS auto layout.
-    _leadingButtonWrapper = [UIView containerView];
-    [self.leadingButtonWrapper
+    _leftButtonWrapper = [UIView containerView];
+    [self.leftButtonWrapper
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                      action:@selector(leadingButtonTapped:)]];
-    [self addSubview:self.leadingButtonWrapper];
-    _trailingButtonWrapper = [UIView containerView];
-    [self.trailingButtonWrapper
+    [self addSubview:self.leftButtonWrapper];
+    _rightButtonWrapper = [UIView containerView];
+    [self.rightButtonWrapper
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                      action:@selector(trailingButtonTapped:)]];
-    [self addSubview:self.trailingButtonWrapper];
+    [self addSubview:self.rightButtonWrapper];
 
     _attachmentButton = [[UIButton alloc] init];
     self.attachmentButton.accessibilityLabel
@@ -97,7 +97,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
     [self.attachmentButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
-    [self.leadingButtonWrapper addSubview:self.attachmentButton];
+    [self.leftButtonWrapper addSubview:self.attachmentButton];
 
     // TODO: Fix layout in this class.
     _sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -109,7 +109,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:16.f];
     [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
-    [self.trailingButtonWrapper addSubview:self.sendButton];
+    [self.rightButtonWrapper addSubview:self.sendButton];
 
     UIImage *voiceMemoIcon = [UIImage imageNamed:@"voice-memo-button"];
     OWSAssert(voiceMemoIcon);
@@ -117,7 +117,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [self.voiceMemoButton setImage:[voiceMemoIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                           forState:UIControlStateNormal];
     self.voiceMemoButton.imageView.tintColor = [UIColor ows_materialBlueColor];
-    [self.trailingButtonWrapper addSubview:self.voiceMemoButton];
+    [self.rightButtonWrapper addSubview:self.voiceMemoButton];
 
     // We want to be permissive about the voice message gesture, so we hang
     // the long press GR on the button's wrapper, not the button itself.
@@ -125,7 +125,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPressGestureRecognizer.minimumPressDuration = 0;
     longPressGestureRecognizer.delegate = self;
-    [self.trailingButtonWrapper addGestureRecognizer:longPressGestureRecognizer];
+    [self.rightButtonWrapper addGestureRecognizer:longPressGestureRecognizer];
 
     self.userInteractionEnabled = YES;
 
@@ -223,8 +223,8 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [trailingButton setCompressionResistanceHigh];
     [self.inputTextView setContentHuggingLow];
 
-    OWSAssert(leadingButton.superview == self.leadingButtonWrapper);
-    OWSAssert(trailingButton.superview == self.trailingButtonWrapper);
+    OWSAssert(leadingButton.superview == self.leftButtonWrapper);
+    OWSAssert(trailingButton.superview == self.rightButtonWrapper);
 
     // The leading and trailing buttons should be center-aligned with the
     // inputTextView when the inputTextView is at its minimum size.
@@ -238,24 +238,24 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     // Additionally, we use "wrapper" views around the leading and trailing
     // buttons to expand their hot area.
     self.contentContraints = @[
-        [self.leadingButtonWrapper autoPinLeadingToSuperview],
-        [self.leadingButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.leadingButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+        [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeLeft],
+        [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
+        [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
 
         [leadingButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
         [leadingButton autoPinLeadingToSuperviewWithMargin:contentHInset],
         [leadingButton autoPinTrailingToSuperviewWithMargin:contentHSpacing],
         [leadingButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
 
-        [self.inputTextView autoPinLeadingToTrailingOfView:self.leadingButtonWrapper],
+        [self.inputTextView autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.leftButtonWrapper],
         [self.inputTextView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textViewVInset],
         [self.inputTextView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:textViewVInset],
         [self.inputTextView autoSetDimension:ALDimensionHeight toSize:textViewHeight],
 
-        [self.trailingButtonWrapper autoPinLeadingToTrailingOfView:self.inputTextView],
-        [self.trailingButtonWrapper autoPinTrailingToSuperview],
-        [self.trailingButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.trailingButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+        [self.rightButtonWrapper autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.inputTextView],
+        [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeRight],
+        [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
+        [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
 
         [trailingButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
         [trailingButton autoPinLeadingToSuperviewWithMargin:contentHSpacing],
