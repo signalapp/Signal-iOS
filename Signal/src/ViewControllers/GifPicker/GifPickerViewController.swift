@@ -367,15 +367,17 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                 return
             }
 
-            strongSelf.tryToSearch(dismissKeyboard: false)
+            strongSelf.tryToSearch()
         }
     }
 
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        self.searchBar.resignFirstResponder()
+
         tryToSearch()
     }
 
-    public func tryToSearch(dismissKeyboard: Bool = true) {
+    public func tryToSearch() {
         progressiveSearchTimer?.invalidate()
         progressiveSearchTimer = nil
 
@@ -391,23 +393,17 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         if (viewMode == .searching || viewMode == .results) && lastQuery == query {
             Logger.info("\(TAG) ignoring duplicate search: \(query)")
-            if dismissKeyboard {
-                self.searchBar.resignFirstResponder()
-            }
             return
         }
 
-        search(query: query, dismissKeyboard: dismissKeyboard)
+        search(query: query)
     }
 
-    private func search(query: String, dismissKeyboard: Bool = true) {
+    private func search(query: String) {
         Logger.info("\(TAG) searching: \(query)")
 
         progressiveSearchTimer?.invalidate()
         progressiveSearchTimer = nil
-        if dismissKeyboard {
-            self.searchBar.resignFirstResponder()
-        }
         imageInfos = []
         viewMode = .searching
         lastQuery = query
