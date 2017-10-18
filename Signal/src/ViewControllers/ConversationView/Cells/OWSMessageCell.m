@@ -269,15 +269,22 @@ NS_ASSUME_NONNULL_BEGIN
 // but lazy-load any expensive media (photo, gif, etc.) used in those views. Note that
 // this lazy-load can fail, in which case we modify the view hierarchy to use an "error"
 // state. The didCellMediaFailToLoad reflects media load fails.
-- (nullable id)tryToLoadCellMedia:(nullable id (^)())loadCellMediaBlock mediaView:(UIView *)mediaView
+- (nullable id)tryToLoadCellMedia:(nullable id (^)())loadCellMediaBlock
+                        mediaView:(UIView *)mediaView
+                         cacheKey:(NSString *)cacheKey
 {
     OWSAssert(self.attachmentStream);
     OWSAssert(mediaView);
+    OWSAssert(cacheKey);
 
     if (self.viewItem.didCellMediaFailToLoad) {
         return nil;
     }
-    id _Nullable cellMedia = self.viewItem.cachedCellMedia;
+
+    NSCache *cellMediaCache = self.delegate.cellMediaCache;
+    OWSAssert(cellMediaCache);
+
+    id _Nullable cellMedia = [cellMediaCache objectForKey:cacheKey];
     if (cellMedia) {
         DDLogVerbose(@"%@ cell media cache hit", self.logTag);
         return cellMedia;
@@ -285,7 +292,7 @@ NS_ASSUME_NONNULL_BEGIN
     cellMedia = loadCellMediaBlock();
     if (cellMedia) {
         DDLogVerbose(@"%@ cell media cache miss", self.logTag);
-        self.viewItem.cachedCellMedia = cellMedia;
+        [cellMediaCache setObject:cellMedia forKey:cacheKey];
     } else {
         DDLogError(@"%@ Failed to load cell media: %@", [self logTag], [self.attachmentStream mediaURL]);
         self.viewItem.didCellMediaFailToLoad = YES;
@@ -316,17 +323,14 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSAssert([self.attachmentStream isImage]);
                 return self.attachmentStream.image;
             }
-                                                       mediaView:self.stillImageView];
+                                                       mediaView:self.stillImageView
+                                                        cacheKey:self.attachmentStream.uniqueId];
             break;
         }
         case OWSMessageCellType_AnimatedImage: {
             if (self.animatedImageView.image) {
                 return;
             }
-            DDLogError(@"%@ ---- ensureViewMediaState loading[%zd]: %@",
-                self.logTag,
-                self.viewItem.row,
-                self.viewItem.interaction.description);
             self.animatedImageView.image = [self tryToLoadCellMedia:^{
                 OWSAssert([self.attachmentStream isAnimated]);
 
@@ -337,23 +341,21 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 return animatedImage;
             }
-                                                          mediaView:self.animatedImageView];
+                                                          mediaView:self.animatedImageView
+                                                           cacheKey:self.attachmentStream.uniqueId];
             break;
         }
         case OWSMessageCellType_Video: {
             if (self.stillImageView.image) {
                 return;
             }
-            DDLogError(@"%@ ---- ensureViewMediaState loading[%zd]: %@",
-                self.logTag,
-                self.viewItem.row,
-                self.viewItem.interaction.description);
             self.stillImageView.image = [self tryToLoadCellMedia:^{
                 OWSAssert([self.attachmentStream isVideo]);
 
                 return self.attachmentStream.image;
             }
-                                                       mediaView:self.stillImageView];
+                                                       mediaView:self.stillImageView
+                                                        cacheKey:self.attachmentStream.uniqueId];
             break;
         }
         case OWSMessageCellType_TextMessage:

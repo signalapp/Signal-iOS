@@ -167,7 +167,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic, nullable) NSUUID *voiceMessageUUID;
 
 @property (nonatomic, nullable) NSTimer *readTimer;
-@property (nonatomic, nullable) NSTimer *cellMediaCachesTimer;
+@property (nonatomic) NSCache *cellMediaCache;
 @property (nonatomic) ConversationHeaderView *navigationBarTitleView;
 @property (nonatomic) UILabel *navigationBarTitleLabel;
 @property (nonatomic) UILabel *navigationBarSubtitleLabel;
@@ -394,6 +394,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
     _composeOnOpen = keyboardOnViewAppearing;
     _callOnOpen = callOnViewAppearing;
+    _cellMediaCache = [NSCache new];
+    // Cache the cell media for ~24 cells.
+    self.cellMediaCache.countLimit = 24;
 
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
@@ -528,7 +531,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         self.hasClearedUnreadMessagesIndicator = NO;
         [self.dynamicInteractions clearUnreadIndicatorState];
     }
-    [self clearCellMediaCaches];
+    [self.cellMediaCache removeAllObjects];
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
@@ -949,68 +952,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.readTimer = nil;
 }
 
-- (void)startCellMediaCachesTimerIfNecessary
-{
-    if (self.cellMediaCachesTimer) {
-        return;
-    }
-    self.cellMediaCachesTimer = [NSTimer weakScheduledTimerWithTimeInterval:3.f
-                                                                     target:self
-                                                                   selector:@selector(auditCellMediaCaches)
-                                                                   userInfo:nil
-                                                                    repeats:NO];
-}
-
-- (void)auditCellMediaCaches
-{
-    [self.cellMediaCachesTimer invalidate];
-    self.cellMediaCachesTimer = nil;
-
-    NSIndexPath *_Nullable firstVisibleIndexPath = nil;
-    NSIndexPath *_Nullable lastVisibleIndexPath = nil;
-
-    for (NSIndexPath *indexPath in self.collectionView.indexPathsForVisibleItems) {
-        if (!firstVisibleIndexPath || firstVisibleIndexPath.row > indexPath.row) {
-            firstVisibleIndexPath = indexPath;
-        }
-        if (!lastVisibleIndexPath || lastVisibleIndexPath.row < indexPath.row) {
-            lastVisibleIndexPath = indexPath;
-        }
-    }
-
-    if (!firstVisibleIndexPath || !lastVisibleIndexPath) {
-        [self clearCellMediaCaches];
-        return;
-    }
-
-    // Only retain the cached cell media for N cells at a time.
-    const NSInteger kCellMediaCacheWindowSize = 24;
-    NSInteger centerRow = (firstVisibleIndexPath.row + lastVisibleIndexPath.row) / 2;
-    // Determine the first and last rows (inclusive) of the cached cell media load window.
-    // Note these row values may not correspond to actual rows in the collection view.
-    //
-    // Always retain the cached cell media for any visible cells.
-    NSInteger firstLoadWindowRow = MIN(firstVisibleIndexPath.row, centerRow - kCellMediaCacheWindowSize / 2);
-    NSInteger lastLoadWindowRow = MAX(lastVisibleIndexPath.row, centerRow + kCellMediaCacheWindowSize / 2);
-
-    // Cull cached cell media outside the load window.
-    for (ConversationViewItem *viewItem in self.viewItems) {
-        if (viewItem.row < firstLoadWindowRow || viewItem.row > lastLoadWindowRow) {
-            viewItem.cachedCellMedia = nil;
-        }
-    }
-}
-
-- (void)clearCellMediaCaches
-{
-    [self.cellMediaCachesTimer invalidate];
-    self.cellMediaCachesTimer = nil;
-
-    for (ConversationViewItem *viewItem in self.viewItems) {
-        viewItem.cachedCellMedia = nil;
-    }
-}
-
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
@@ -1052,7 +993,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self saveDraft];
     [self markVisibleMessagesAsRead];
     [self cancelVoiceMemo];
-    [self clearCellMediaCaches];
+    [self.cellMediaCache removeAllObjects];
 
     self.isUserScrolling = NO;
 }
@@ -3598,8 +3539,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     [self updateLastVisibleTimestamp];
-
-    [self startCellMediaCachesTimerIfNecessary];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView

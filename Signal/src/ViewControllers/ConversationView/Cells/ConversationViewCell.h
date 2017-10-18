@@ -43,6 +43,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId;
 
+#pragma mark - Caching
+
+- (NSCache *)cellMediaCache;
+
 @end
 
 #pragma mark -
