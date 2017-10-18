@@ -381,20 +381,25 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]) {
 
-        NSData *decryptedPayload =
-            [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:TSStorageManager.signalingKey];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
-        if (!decryptedPayload) {
-            DDLogWarn(@"%@ Failed to decrypt incoming payload or bad HMAC", self.tag);
-            [self sendWebSocketMessageAcknowledgement:message];
-            return;
-        }
+            NSData *decryptedPayload =
+                [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:TSStorageManager.signalingKey];
 
-        OWSSignalServiceProtosEnvelope *envelope = [OWSSignalServiceProtosEnvelope parseFromData:decryptedPayload];
+            if (!decryptedPayload) {
+                DDLogWarn(@"%@ Failed to decrypt incoming payload or bad HMAC", self.tag);
+                [self sendWebSocketMessageAcknowledgement:message];
+                return;
+            }
 
-        [self.messageReceiver handleReceivedEnvelope:envelope];
-        [self sendWebSocketMessageAcknowledgement:message];
+            OWSSignalServiceProtosEnvelope *envelope = [OWSSignalServiceProtosEnvelope parseFromData:decryptedPayload];
 
+            [self.messageReceiver handleReceivedEnvelope:envelope];
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self sendWebSocketMessageAcknowledgement:message];
+            });
+        });
     } else {
         DDLogWarn(@"%@ Unsupported WebSocket Request", self.tag);
 
