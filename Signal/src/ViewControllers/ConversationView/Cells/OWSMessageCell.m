@@ -265,6 +265,10 @@ NS_ASSUME_NONNULL_BEGIN
     //    });
 }
 
+// We now eagerly create out view hierarchy (to do this exactly once per cell usage)
+// but lazy-load any expensive media (photo, gif, etc.) used in those views. Note that
+// this lazy-load can fail, in which case we modify the view hierarchy to use an "error"
+// state. The didCellMediaFailToLoad reflects media load fails.
 - (nullable id)tryToLoadCellMedia:(nullable id (^)())loadCellMediaBlock mediaView:(UIView *)mediaView
 {
     OWSAssert(self.attachmentStream);
@@ -298,12 +302,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (!self.isCellVisible) {
         // Eagerly unload.
-        if (self.stillImageView.image || self.animatedImageView.image) {
-            DDLogError(@"%@ ---- ensureViewMediaState unloading[%zd]: %@",
-                self.logTag,
-                self.viewItem.row,
-                self.viewItem.interaction.description);
-        }
         self.stillImageView.image = nil;
         self.animatedImageView.image = nil;
         return;
@@ -314,10 +312,6 @@ NS_ASSUME_NONNULL_BEGIN
             if (self.stillImageView.image) {
                 return;
             }
-            DDLogError(@"%@ ---- ensureViewMediaState loading[%zd]: %@",
-                self.logTag,
-                self.viewItem.row,
-                self.viewItem.interaction.description);
             self.stillImageView.image = [self tryToLoadCellMedia:^{
                 OWSAssert([self.attachmentStream isImage]);
                 return self.attachmentStream.image;
@@ -346,10 +340,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                           mediaView:self.animatedImageView];
             break;
         }
-        case OWSMessageCellType_Audio:
-            // TODO: Lazy load audio length in audio cells.
-            //            [self loadForAudioDisplay];
-            break;
         case OWSMessageCellType_Video: {
             if (self.stillImageView.image) {
                 return;
@@ -370,6 +360,7 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_OversizeTextMessage:
         case OWSMessageCellType_GenericAttachment:
         case OWSMessageCellType_DownloadingAttachment:
+        case OWSMessageCellType_Audio:
             // Inexpensive cell types don't need to lazy-load or eagerly-unload.
             break;
     }

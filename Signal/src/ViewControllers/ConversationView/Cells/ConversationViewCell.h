@@ -60,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 // be evacuated before the cell becomes visible again.
 @property (nonatomic) BOOL isCellVisible;
 
+// The width of the collection view.
 @property (nonatomic) int contentWidth;
 
 - (void)loadForDisplay;
