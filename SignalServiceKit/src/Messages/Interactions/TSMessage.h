@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t expiresAt;
 @property (nonatomic, readonly) BOOL isExpiringMessage;
-@property (nonatomic, readonly) BOOL shouldStartExpireTimer;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp;
 
@@ -51,7 +50,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)hasAttachments;
+
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
+- (BOOL)shouldStartExpireTimer;
+- (BOOL)shouldStartExpireTimer:(YapDatabaseReadTransaction *)transaction;
 
 @end
 
