@@ -27,6 +27,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
     }
 
+    var lastQuery: String = ""
+
     public weak var delegate: GifPickerViewControllerDelegate?
 
     var thread: TSThread?
@@ -384,7 +386,18 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                                            comment: "Alert message shown when user tries to search for GIFs without entering any search terms."))
             return
         }
-        search(query: text, dismissKeyboard: dismissKeyboard)
+
+        let query = (text as String).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+
+        if (viewMode == .searching || viewMode == .results) && lastQuery == query {
+            Logger.info("\(TAG) ignoring duplicate search: \(query)")
+            if dismissKeyboard {
+                self.searchBar.resignFirstResponder()
+            }
+            return
+        }
+
+        search(query: query, dismissKeyboard: dismissKeyboard)
     }
 
     private func search(query: String, dismissKeyboard: Bool = true) {
@@ -397,6 +410,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
         imageInfos = []
         viewMode = .searching
+        lastQuery = query
         self.collectionView.contentOffset = CGPoint.zero
 
         GiphyAPI.sharedInstance.search(query: query, success: { [weak self] imageInfos in
