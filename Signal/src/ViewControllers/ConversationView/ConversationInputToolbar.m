@@ -626,6 +626,8 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
                                 forKeyPath:NSStringFromSelector(@selector(contentSize))
                                    context:kConversationInputTextViewObservingContext];
     } @catch (NSException *__unused exception) {
+        // TODO: This try/catch can probably be safely removed.
+        OWSFail(@"%@ removeKVOObservers failed.", self.logTag);
     }
 }
 
@@ -641,6 +643,18 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
             [self ensureContentConstraints];
         }
     }
+}
+
+#pragma mark - Logging
+
++ (NSString *)logTag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)logTag
+{
+    return self.class.logTag;
 }
 
 @end
