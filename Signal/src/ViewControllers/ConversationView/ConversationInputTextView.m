@@ -3,6 +3,7 @@
 //
 
 #import "ConversationInputTextView.h"
+#import "NSString+OWS.h"
 #import "Signal-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -121,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)trimmedText
 {
-    return [self.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    return [self.text ows_stripped];
 }
 
 // TODO:

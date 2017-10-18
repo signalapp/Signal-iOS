@@ -58,6 +58,12 @@ NS_ASSUME_NONNULL_BEGIN
 // when visible and unload when no longer visible.  Non-visible cells can
 // cache their contents on their ConversationViewItem, but that cache may
 // be evacuated before the cell becomes visible again.
+//
+// ConversationViewController also uses this property to evacuate the cell's
+// meda views when:
+//
+// * App enters background.
+// * Users enters another view (e.g. conversation settings view, call screen, etc.).
 @property (nonatomic) BOOL isCellVisible;
 
 // The width of the collection view.

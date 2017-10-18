@@ -6,6 +6,7 @@
 #import "CodeVerificationViewController.h"
 #import "CountryCodeViewController.h"
 #import "Environment.h"
+#import "NSString+OWS.h"
 #import "PhoneNumber.h"
 #import "PhoneNumberUtil.h"
 #import "Signal-Swift.h"
@@ -280,8 +281,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
 - (void)sendCodeAction
 {
-    NSString *phoneNumberText =
-        [_phoneNumberTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *phoneNumberText = [_phoneNumberTextField.text ows_stripped];
     if (phoneNumberText.length < 1) {
         [OWSAlerts
             showAlertWithTitle:NSLocalizedString(@"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE",

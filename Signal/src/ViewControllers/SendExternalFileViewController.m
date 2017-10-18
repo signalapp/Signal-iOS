@@ -4,6 +4,7 @@
 
 #import "SendExternalFileViewController.h"
 #import "Environment.h"
+#import "NSString+OWS.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import "UIColor+OWS.h"
@@ -141,8 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
     // TODO: If we reuse this VC, for example to offer a "forward attachment to other thread",
     //       feature, this assumption would no longer apply.
     OWSAssert(self.attachment);
-    NSString *filename =
-        [self.attachment.sourceFilename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSString *filename = [self.attachment.sourceFilename ows_stripped];
     OWSAssert(filename.length > 0);
     const NSUInteger kMaxFilenameLength = 20;
     if (filename.length > kMaxFilenameLength) {

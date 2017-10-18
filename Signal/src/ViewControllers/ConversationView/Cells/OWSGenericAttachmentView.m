@@ -3,6 +3,7 @@
 //
 
 #import "OWSGenericAttachmentView.h"
+#import "NSString+OWS.h"
 #import "UIColor+JSQMessages.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
@@ -162,8 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
     [imageView autoSetDimension:ALDimensionWidth toSize:15.f];
 
     const CGFloat kLabelVSpacing = 2;
-    NSString *topText =
-        [self.attachmentStream.sourceFilename stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSString *topText = [self.attachmentStream.sourceFilename ows_stripped];
     if (topText.length < 1) {
         topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType].uppercaseString;
     }
@@ -175,7 +175,6 @@ NS_ASSUME_NONNULL_BEGIN
     topLabel.textColor = textColor;
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     topLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 15.f)];
-    topLabel.textAlignment = NSTextAlignmentLeft;
     [labelsView addSubview:topLabel];
     [topLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [topLabel autoPinWidthToSuperview];

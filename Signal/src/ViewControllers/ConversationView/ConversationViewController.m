@@ -20,6 +20,7 @@
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
 #import "NSAttributedString+OWS.h"
+#import "NSString+OWS.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSContactOffersCell.h"
@@ -985,7 +986,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // Only retain the cached cell media for N cells at a time.
     const NSInteger kCellMediaCacheWindowSize = 24;
     NSInteger centerRow = (firstVisibleIndexPath.row + lastVisibleIndexPath.row) / 2;
-    // Determine the first and law rows (inclusive) of the cached cell media load window.
+    // Determine the first and last rows (inclusive) of the cached cell media load window.
     // Note these row values may not correspond to actual rows in the collection view.
     //
     // Always retain the cached cell media for any visible cells.
@@ -3698,7 +3699,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    text = [text ows_stripped];
 
     if (text.length < 1) {
         return;

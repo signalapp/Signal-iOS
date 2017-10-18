@@ -231,8 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!filename) {
         filename = [[self.attachmentStream filePath] lastPathComponent];
     }
-    NSString *topText = [[filename stringByDeletingPathExtension]
-        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSString *topText = [[filename stringByDeletingPathExtension] ows_stripped];
     if (topText.length < 1) {
         topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType].uppercaseString;
     }
@@ -247,7 +246,6 @@ NS_ASSUME_NONNULL_BEGIN
     topLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     topLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
-    topLabel.textAlignment = NSTextAlignmentLeft;
     [labelsView addSubview:topLabel];
     [topLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [topLabel autoPinWidthToSuperview];
@@ -267,7 +265,6 @@ NS_ASSUME_NONNULL_BEGIN
     bottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
     bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     bottomLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
-    bottomLabel.textAlignment = NSTextAlignmentLeft;
     [labelsView addSubview:bottomLabel];
     [bottomLabel autoPinWidthToSuperview];
     [bottomLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:audioProgressView withOffset:kLabelVSpacing];
