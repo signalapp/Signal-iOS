@@ -555,6 +555,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // or on another device.
     [self hideInputIfNeeded];
 
+    [self.inputToolbar viewWillAppear:animated];
+
     self.isViewVisible = YES;
 
     // We should have already requested contact access at this point, so this should be a no-op
@@ -985,6 +987,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [super viewWillDisappear:animated];
 
     self.isViewVisible = NO;
+
+    [self.inputToolbar viewWillDisappear:animated];
 
     [self.audioAttachmentPlayer stop];
     self.audioAttachmentPlayer = nil;
@@ -3448,16 +3452,16 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         } else if (skipApprovalDialog) {
             [self sendMessageAttachment:attachment];
         } else {
-            UIViewController *viewController =
-                [[AttachmentApprovalViewController alloc] initWithAttachment:attachment
-                                                           successCompletion:^{
-                                                               [weakSelf sendMessageAttachment:attachment];
-                                                           }];
-            UINavigationController *navigationController =
-                [[UINavigationController alloc] initWithRootViewController:viewController];
-            [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+            [self.inputToolbar showApprovalUIForAttachment:attachment];
         }
     });
+}
+
+- (void)didApproveAttachment:(SignalAttachment *)attachment
+{
+    OWSAssert(attachment);
+
+    [self sendMessageAttachment:attachment];
 }
 
 - (void)showErrorAlertForAttachment:(SignalAttachment *_Nullable)attachment
