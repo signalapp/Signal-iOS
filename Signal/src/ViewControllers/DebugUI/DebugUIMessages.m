@@ -1103,9 +1103,16 @@ NS_ASSUME_NONNULL_BEGIN
     [payloadBuilder setDataMessage:dataMessageBuilder.build];
     NSData *plaintextData = [payloadBuilder build].data;
 
+    // Try to use an arbitrary member of the current thread that isn't
+    // ourselves as the sender.
+    NSString *_Nullable recipientId = [[thread recipientIdentifiers] firstObject];
+    // This might be an "empty" group with no other members.  If so, use a fake
+    // sender id.
+    recipientId = @"+12345678901";
+
     OWSSignalServiceProtosEnvelopeBuilder *envelopeBuilder = [OWSSignalServiceProtosEnvelopeBuilder new];
     [envelopeBuilder setType:OWSSignalServiceProtosEnvelopeTypeCiphertext];
-    [envelopeBuilder setSource:@"+12345678901"];
+    [envelopeBuilder setSource:recipientId];
     [envelopeBuilder setSourceDevice:1];
     [envelopeBuilder setTimestamp:[NSDate ows_millisecondTimeStamp]];
     [envelopeBuilder setContent:plaintextData];
