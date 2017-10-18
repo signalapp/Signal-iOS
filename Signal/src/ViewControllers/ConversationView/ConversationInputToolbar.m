@@ -8,40 +8,33 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
-#import <JSQMessagesViewController/JSQMessagesToolbarButtonFactory.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
+
 @interface ConversationInputToolbar () <UIGestureRecognizerDelegate, UITextViewDelegate>
 
-@property (nonatomic, readonly) ConversationInputTextView *inputTextView;
-
-@property (nonatomic, readonly) UIButton *attachmentButton;
-
-@property (nonatomic, readonly) UIButton *sendButton;
-
+@property (nonatomic) ConversationInputTextView *inputTextView;
+@property (nonatomic) UIButton *attachmentButton;
+@property (nonatomic) UIButton *sendButton;
 @property (nonatomic) BOOL shouldShowVoiceMemoButton;
+@property (nonatomic) UIButton *voiceMemoButton;
+@property (nonatomic) UIView *leftButtonWrapper;
+@property (nonatomic) UIView *rightButtonWrapper;
 
-@property (nonatomic, nullable) UIButton *voiceMemoButton;
+@property (nonatomic) NSArray<NSLayoutConstraint *> *contentContraints;
 
 #pragma mark - Voice Memo Recording UI
 
 @property (nonatomic, nullable) UIView *voiceMemoUI;
-
 @property (nonatomic) UIView *voiceMemoContentView;
-
 @property (nonatomic) NSDate *voiceMemoStartTime;
-
 @property (nonatomic, nullable) NSTimer *voiceMemoUpdateTimer;
-
 @property (nonatomic) UILabel *recordingLabel;
-
 @property (nonatomic) BOOL isRecordingVoiceMemo;
-
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
-
-@property (nonatomic) NSArray<NSLayoutConstraint *> *contentContraints;
 
 @end
 
@@ -59,11 +52,39 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)dealloc
+{
+    [self removeKVOObservers];
+}
+
 - (void)createContents
 {
+    self.layoutMargins = UIEdgeInsetsZero;
+
+    // TODO: I think there's an easier to get the right appearance,
+    // but I can't figure it out.
+    UIView *backgroundView = [UIView new];
+    backgroundView.backgroundColor = [UIColor colorWithWhite:249 / 255.f alpha:1.f];
+    [self addSubview:backgroundView];
+    [backgroundView autoPinEdgesToSuperviewEdges];
+
     _inputTextView = [ConversationInputTextView new];
     self.inputTextView.delegate = self;
     [self addSubview:self.inputTextView];
+
+    // We want to be permissive about taps on the send and attachment buttons,
+    // so we use wrapper views that capture nearby taps.  This is a lot easier
+    // than trying to manipulate the size of the buttons themselves, as you
+    // can't coordinate the layout of the button content (e.g. image or text)
+    // using iOS auto layout.
+    _leftButtonWrapper = [UIView containerView];
+    [self.leftButtonWrapper
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(leftButtonTapped:)]];
+    [self addSubview:self.leftButtonWrapper];
+    _rightButtonWrapper = [UIView containerView];
+    [self.rightButtonWrapper
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(rightButtonTapped:)]];
+    [self addSubview:self.rightButtonWrapper];
 
     _attachmentButton = [[UIButton alloc] init];
     self.attachmentButton.accessibilityLabel
@@ -73,15 +94,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.attachmentButton addTarget:self
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
-
-    //    [_attachButton setFrame:CGRectMake(0,
-    //                                       0,
-    //                                       JSQ_TOOLBAR_ICON_WIDTH + JSQ_IMAGE_INSET * 2,
-    //                                       JSQ_TOOLBAR_ICON_HEIGHT + JSQ_IMAGE_INSET * 2)];
-    //    _attachButton.imageEdgeInsets
-    //    = UIEdgeInsetsMake(JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET, JSQ_IMAGE_INSET);
     [self.attachmentButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
-    [self addSubview:self.attachmentButton];
+    [self.leftButtonWrapper addSubview:self.attachmentButton];
 
     // TODO: Fix layout in this class.
     _sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -93,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:16.f];
     [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:self.sendButton];
+    [self.rightButtonWrapper addSubview:self.sendButton];
 
     UIImage *voiceMemoIcon = [UIImage imageNamed:@"voice-memo-button"];
     OWSAssert(voiceMemoIcon);
@@ -101,34 +115,21 @@ NS_ASSUME_NONNULL_BEGIN
     [self.voiceMemoButton setImage:[voiceMemoIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                           forState:UIControlStateNormal];
     self.voiceMemoButton.imageView.tintColor = [UIColor ows_materialBlueColor];
-    [self addSubview:self.voiceMemoButton];
+    [self.rightButtonWrapper addSubview:self.voiceMemoButton];
 
-    // We want to be permissive about the voice message gesture, so we:
-    //
-    // * Add the gesture recognizer to the button's superview instead of the button.
-    // * Filter the touches that the gesture recognizer receives by serving as its
-    //   delegate.
+    // We want to be permissive about the voice message gesture, so we hang
+    // the long press GR on the button's wrapper, not the button itself.
     UILongPressGestureRecognizer *longPressGestureRecognizer =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPressGestureRecognizer.minimumPressDuration = 0;
     longPressGestureRecognizer.delegate = self;
-    [self addGestureRecognizer:longPressGestureRecognizer];
-
-    //    // We want to be permissive about taps on the send button, so we:
-    //    //
-    //    // * Add the gesture recognizer to the button's superview instead of the button.
-    //    // * Filter the touches that the gesture recognizer receives by serving as its
-    //    //   delegate.
-    //    UITapGestureRecognizer *tapGestureRecognizer =
-    //    [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-    //    tapGestureRecognizer.delegate = self;
-    //    [self addGestureRecognizer:tapGestureRecognizer];
+    [self.rightButtonWrapper addGestureRecognizer:longPressGestureRecognizer];
 
     self.userInteractionEnabled = YES;
 
-    [self ensureShouldShowVoiceMemoButton];
+    [self addKVOObservers];
 
-    //    [self ensureVoiceMemoButton];
+    [self ensureShouldShowVoiceMemoButton];
 
     [self ensureContentConstraints];
 }
@@ -190,38 +191,77 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [NSLayoutConstraint deactivateConstraints:self.contentContraints];
 
-    //    NSMutableArray<NSLayoutConstraint *> *contentContraints = [NSMutableArray new];
-
-    // TODO: RTL, margin, spacing.
     const int textViewVInset = 5;
-    const int contentHInset = 5;
-    const int contentHSpacing = 5;
+    const int contentHInset = 6;
+    const int contentHSpacing = 6;
 
-    UIView *primaryButton = (self.shouldShowVoiceMemoButton ? self.voiceMemoButton : self.sendButton);
-    UIView *otherButton = (self.shouldShowVoiceMemoButton ? self.sendButton : self.voiceMemoButton);
-    primaryButton.hidden = NO;
-    otherButton.hidden = YES;
+    // We want to grow the text input area to fit its content within reason.
+    const CGFloat kMinTextViewHeight = ceil(self.inputTextView.font.lineHeight
+        + self.inputTextView.textContainerInset.top + self.inputTextView.textContainerInset.bottom
+        + self.inputTextView.contentInset.top + self.inputTextView.contentInset.bottom);
+    const CGFloat kMaxTextViewHeight = 100.f;
+    const CGFloat textViewDesiredHeight = (self.inputTextView.contentSize.height + self.inputTextView.contentInset.top
+        + self.inputTextView.contentInset.bottom);
+    const CGFloat textViewHeight = ceil(MAX(kMinTextViewHeight, MIN(kMaxTextViewHeight, textViewDesiredHeight)));
+    const CGFloat kMinContentHeight = kMinTextViewHeight + textViewVInset * 2;
 
-    [self.attachmentButton setContentHuggingHigh];
-    [primaryButton setContentHuggingHigh];
+    UIButton *leftButton = self.attachmentButton;
+    UIButton *rightButton = (self.shouldShowVoiceMemoButton ? self.voiceMemoButton : self.sendButton);
+    UIButton *inactiveRightButton = (self.shouldShowVoiceMemoButton ? self.sendButton : self.voiceMemoButton);
+    leftButton.enabled = YES;
+    rightButton.enabled = YES;
+    inactiveRightButton.enabled = NO;
+    leftButton.hidden = NO;
+    rightButton.hidden = NO;
+    inactiveRightButton.hidden = YES;
+
+    [leftButton setContentHuggingHigh];
+    [rightButton setContentHuggingHigh];
+    [leftButton setCompressionResistanceHigh];
+    [rightButton setCompressionResistanceHigh];
     [self.inputTextView setContentHuggingLow];
 
+    OWSAssert(leftButton.superview == self.leftButtonWrapper);
+    OWSAssert(rightButton.superview == self.rightButtonWrapper);
+
+    // The leading and trailing buttons should be center-aligned with the
+    // inputTextView when the inputTextView is at its minimum size.
+    //
+    // We want the leading and trailing buttons to hug the bottom of the input
+    // toolbar as the inputTextView expands.
+    //
+    // Therefore we fix the button heights to the size of the toolbar when
+    // inputTextView is at its minimum size.
+    //
+    // Additionally, we use "wrapper" views around the leading and trailing
+    // buttons to expand their hot area.
     self.contentContraints = @[
-        [self.attachmentButton autoPinLeadingToSuperview],
-        [self.attachmentButton autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.inputTextView autoPinLeadingToTrailingOfView:self.attachmentButton],
+        [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeLeft],
+        [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
+        [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+
+        [leftButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
+        [leftButton autoPinLeadingToSuperviewWithMargin:contentHInset],
+        [leftButton autoPinTrailingToSuperviewWithMargin:contentHSpacing],
+        [leftButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+
+        [self.inputTextView autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.leftButtonWrapper],
         [self.inputTextView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textViewVInset],
         [self.inputTextView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:textViewVInset],
-        [primaryButton autoPinLeadingToTrailingOfView:self.inputTextView],
-        [primaryButton autoPinTrailingToSuperview],
-        [primaryButton autoPinEdgeToSuperviewEdge:ALEdgeTop],
+        [self.inputTextView autoSetDimension:ALDimensionHeight toSize:textViewHeight],
+
+        [self.rightButtonWrapper autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.inputTextView],
+        [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeRight],
+        [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
+        [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+
+        [rightButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
+        [rightButton autoPinLeadingToSuperviewWithMargin:contentHSpacing],
+        [rightButton autoPinTrailingToSuperviewWithMargin:contentHInset],
+        [rightButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
     ];
 
-    //    dispatch_async(dispatch_get_main_queue(), ^{
-    //        // Wait up to N seconds for database view registrations to
-    //        // complete.
-    //        [self showImportUIForAttachment:attachment remainingRetries:5];
-    //    });
+    [self layoutIfNeeded];
 }
 
 - (void)ensureShouldShowVoiceMemoButton
@@ -229,36 +269,12 @@ NS_ASSUME_NONNULL_BEGIN
     self.shouldShowVoiceMemoButton = self.inputTextView.trimmedText.length < 1;
 }
 
-//@interface OWSMessagesToolbarContentView () <UIGestureRecognizerDelegate>
-//
-//@property (nonatomic) BOOL shouldShowVoiceMemoButton;
-//
-//@property (nonatomic, nullable) UIButton *voiceMemoButton;
-//
-//@property (nonatomic, nullable) UIButton *sendButton;
-//
-//@property (nonatomic) BOOL isRecordingVoiceMemo;
-//
-//@property (nonatomic) CGPoint voiceMemoGestureStartLocation;
-//
-//@end
-//
-//#pragma mark -
-//
-//@implementation OWSMessagesToolbarContentView
-//- (void)setShouldShowVoiceMemoButton:(BOOL)shouldShowVoiceMemoButton
-//{
-//    if (_shouldShowVoiceMemoButton == shouldShowVoiceMemoButton) {
-//        return;
-//    }
-//
-//    _shouldShowVoiceMemoButton = shouldShowVoiceMemoButton;
-//
-//    [self ensureVoiceMemoButton];
-//}+
-
 - (void)handleLongPress:(UIGestureRecognizer *)sender
 {
+    if (!self.shouldShowVoiceMemoButton) {
+        return;
+    }
+
     switch (sender.state) {
         case UIGestureRecognizerStatePossible:
         case UIGestureRecognizerStateCancelled:
@@ -311,73 +327,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-//- (void)handleTap:(UIGestureRecognizer *)sender
-//{
-//    switch (sender.state) {
-//        case UIGestureRecognizerStateRecognized:
-//            [self.sendMessageGestureDelegate sendMessageGestureRecognized];
-//            break;
-//        default:
-//            break;
-//    }
-//}
-
-//- (void)endEditing:(BOOL)force
-//{
-//    [self.inputTextView endEditing:force];
-//}
-
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
     if ([gestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
-        if (!self.shouldShowVoiceMemoButton) {
-            return NO;
-        }
-
-        // We want to be permissive about the voice message gesture, so we accept
-        // gesture that begin within N points of its bounds.
-        CGFloat kVoiceMemoGestureTolerancePoints = 10;
-        CGPoint location = [touch locationInView:self.voiceMemoButton];
-        CGRect hitTestRect = CGRectInset(
-            self.voiceMemoButton.bounds, -kVoiceMemoGestureTolerancePoints, -kVoiceMemoGestureTolerancePoints);
-        return CGRectContainsPoint(hitTestRect, location);
-        //    } else if ([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
-        //        if (self.shouldShowVoiceMemoButton) {
-        //            return NO;
-        //        }
-        //
-        //        UIView *sendButton = self.rightBarButtonItem;
-        //        // We want to be permissive about taps on the send button, so we accept
-        //        // gesture that begin within N points of its bounds.
-        //        CGFloat kSendButtonTolerancePoints = 10;
-        //        CGPoint location = [touch locationInView:sendButton];
-        //        CGRect hitTestRect = CGRectInset(sendButton.bounds, -kSendButtonTolerancePoints,
-        //        -kSendButtonTolerancePoints); return CGRectContainsPoint(hitTestRect, location);
+        return self.shouldShowVoiceMemoButton;
     } else {
         return YES;
     }
 }
-
-
-//- (void)toggleSendButtonEnabled
-//{
-//    // Do nothing; disables JSQ's control over send button enabling.
-//    // Overrides a method in JSQMessagesInputToolbar.
-//}
-//
-////- (JSQMessagesToolbarContentView *)loadToolbarContentView
-////{
-////    NSArray *views = [[OWSMessagesToolbarContentView nib] instantiateWithOwner:nil options:nil];
-////    OWSAssert(views.count == 1);
-////    OWSMessagesToolbarContentView *view = views[0];
-////    OWSAssert([view isKindOfClass:[OWSMessagesToolbarContentView class]]);
-////    view.sendMessageGestureDelegate = self;
-////    return view;
-////}
-//
-
 
 #pragma mark - Voice Memo
 
@@ -581,517 +540,23 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-//#pragma mark - OWSSendMessageGestureDelegate
-//
-//- (void)sendMessageGestureRecognized
-//{
-//    OWSAssert(self.sendButtonOnRight);
-//    [self.inputToolbarDelegate messagesInputToolbar:self didPressRightBarButton:self.contentView.rightBarButtonItem];
-//}
-//
-
-
-///**
-// *  The object that acts as the delegate of the toolbar.
-// */
-//@property (weak, nonatomic) id<JSQMessagesInputToolbarDelegate> delegate;
-//
-///**
-// *  Returns the content view of the toolbar. This view contains all subviews of the toolbar.
-// */
-//@property (weak, nonatomic, readonly) JSQMessagesToolbarContentView *contentView;
-//
-///**
-// *  A boolean value indicating whether the send button is on the right side of the toolbar or not.
-// *
-// *  @discussion The default value is `YES`, which indicates that the send button is the right-most subview of
-// *  the toolbar's `contentView`. Set to `NO` to specify that the send button is on the left. This
-// *  property is used to determine which touch events correspond to which actions.
-// *
-// *  @warning Note, this property *does not* change the positions of buttons in the toolbar's content view.
-// *  It only specifies whether the `rightBarButtonItem `or the `leftBarButtonItem` is the send button.
-// *  The other button then acts as the accessory button.
-// */
-//@property (assign, nonatomic) BOOL sendButtonOnRight;
-//
-///**
-// *  Specifies the default (minimum) height for the toolbar. The default value is `44.0f`. This value must be positive.
-// */
-//@property (assign, nonatomic) CGFloat preferredDefaultHeight;
-//
-///**
-// *  Specifies the maximum height for the toolbar. The default value is `NSNotFound`, which specifies no maximum
-// height.
-// */
-//@property (assign, nonatomic) NSUInteger maximumHeight;
-//
-///**
-// *  Enables or disables the send button based on whether or not its `textView` has text.
-// *  That is, the send button will be enabled if there is text in the `textView`, and disabled otherwise.
-// */
-//- (void)toggleSendButtonEnabled;
-//
-///**
-// *  Loads the content view for the toolbar.
-// *
-// *  @discussion Override this method to provide a custom content view for the toolbar.
-// *
-// *  @return An initialized `JSQMessagesToolbarContentView` if successful, otherwise `nil`.
-// */
-//- (JSQMessagesToolbarContentView *)loadToolbarContentView;
-
-
-//@interface JSQMessagesInputToolbar ()
-//
-//@property (assign, nonatomic) BOOL jsq_isObserving;
-//
-//@end
-//
-//
-//
-//@implementation JSQMessagesInputToolbar
-//
-//@dynamic delegate;
-//
-//#pragma mark - Initialization
-//
-//- (void)awakeFromNib
-//{
-//    [super awakeFromNib];
-//    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-//
-//    self.jsq_isObserving = NO;
-//    self.sendButtonOnRight = YES;
-//
-//    self.preferredDefaultHeight = 44.0f;
-//    self.maximumHeight = NSNotFound;
-//
-//    JSQMessagesToolbarContentView *toolbarContentView = [self loadToolbarContentView];
-//    toolbarContentView.frame = self.frame;
-//    [self addSubview:toolbarContentView];
-//    [self jsq_pinAllEdgesOfSubview:toolbarContentView];
-//    [self setNeedsUpdateConstraints];
-//    _contentView = toolbarContentView;
-//
-//    [self jsq_addObservers];
-//
-//    self.contentView.leftBarButtonItem = [JSQMessagesToolbarButtonFactory defaultAccessoryButtonItem];
-//    self.contentView.rightBarButtonItem = [JSQMessagesToolbarButtonFactory defaultSendButtonItem];
-//
-//    [self toggleSendButtonEnabled];
-//}
-//
-//- (JSQMessagesToolbarContentView *)loadToolbarContentView
-//{
-//    NSArray *nibViews = [[NSBundle bundleForClass:[JSQMessagesInputToolbar class]]
-//    loadNibNamed:NSStringFromClass([JSQMessagesToolbarContentView class])
-//                                                                                          owner:nil
-//                                                                                        options:nil];
-//    return nibViews.firstObject;
-//}
-//
-//- (void)dealloc
-//{
-//    [self jsq_removeObservers];
-//}
-//
-//#pragma mark - Setters
-//
-//- (void)setPreferredDefaultHeight:(CGFloat)preferredDefaultHeight
-//{
-//    NSParameterAssert(preferredDefaultHeight > 0.0f);
-//    _preferredDefaultHeight = preferredDefaultHeight;
-//}
-//
-//#pragma mark - Actions
-//
-//- (void)jsq_leftBarButtonPressed:(UIButton *)sender
-//{
-//    [self.delegate messagesInputToolbar:self didPressLeftBarButton:sender];
-//}
-//
-//- (void)jsq_rightBarButtonPressed:(UIButton *)sender
-//{
-//    [self.delegate messagesInputToolbar:self didPressRightBarButton:sender];
-//}
-//
-//#pragma mark - Input toolbar
-//
-//- (void)toggleSendButtonEnabled
-//{
-//    BOOL hasText = [self.contentView.textView hasText];
-//
-//    if (self.sendButtonOnRight) {
-//        self.contentView.rightBarButtonItem.enabled = hasText;
-//    }
-//    else {
-//        self.contentView.leftBarButtonItem.enabled = hasText;
-//    }
-//}
-//
-//#pragma mark - Key-value observing
-//
-//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void
-//*)context
-//{
-//    if (context == kJSQMessagesInputToolbarKeyValueObservingContext) {
-//        if (object == self.contentView) {
-//
-//            if ([keyPath isEqualToString:NSStringFromSelector(@selector(leftBarButtonItem))]) {
-//
-//                [self.contentView.leftBarButtonItem removeTarget:self
-//                                                          action:NULL
-//                                                forControlEvents:UIControlEventTouchUpInside];
-//
-//                [self.contentView.leftBarButtonItem addTarget:self
-//                                                       action:@selector(jsq_leftBarButtonPressed:)
-//                                             forControlEvents:UIControlEventTouchUpInside];
-//            }
-//            else if ([keyPath isEqualToString:NSStringFromSelector(@selector(rightBarButtonItem))]) {
-//
-//                [self.contentView.rightBarButtonItem removeTarget:self
-//                                                           action:NULL
-//                                                 forControlEvents:UIControlEventTouchUpInside];
-//
-//                [self.contentView.rightBarButtonItem addTarget:self
-//                                                        action:@selector(jsq_rightBarButtonPressed:)
-//                                              forControlEvents:UIControlEventTouchUpInside];
-//            }
-//
-//            [self toggleSendButtonEnabled];
-//        }
-//    }
-//}
-//
-//- (void)jsq_addObservers
-//{
-//    if (self.jsq_isObserving) {
-//        return;
-//    }
-//
-//    [self.contentView addObserver:self
-//                       forKeyPath:NSStringFromSelector(@selector(leftBarButtonItem))
-//                          options:0
-//                          context:kJSQMessagesInputToolbarKeyValueObservingContext];
-//
-//    [self.contentView addObserver:self
-//                       forKeyPath:NSStringFromSelector(@selector(rightBarButtonItem))
-//                          options:0
-//                          context:kJSQMessagesInputToolbarKeyValueObservingContext];
-//
-//    self.jsq_isObserving = YES;
-//}
-//
-//- (void)jsq_removeObservers
-//{
-//    if (!_jsq_isObserving) {
-//        return;
-//    }
-//
-//    @try {
-//        [_contentView removeObserver:self
-//                          forKeyPath:NSStringFromSelector(@selector(leftBarButtonItem))
-//                             context:kJSQMessagesInputToolbarKeyValueObservingContext];
-//
-//        [_contentView removeObserver:self
-//                          forKeyPath:NSStringFromSelector(@selector(rightBarButtonItem))
-//                             context:kJSQMessagesInputToolbarKeyValueObservingContext];
-//    }
-//    @catch (NSException *__unused exception) { }
-//
-//    _jsq_isObserving = NO;
-//}
-
-
-///**
-// *  A `JSQMessagesToolbarContentView` represents the content displayed in a `JSQMessagesInputToolbar`.
-// *  These subviews consist of a left button, a text view, and a right button. One button is used as
-// *  the send button, and the other as the accessory button. The text view is used for composing messages.
-// */
-//@interface JSQMessagesToolbarContentView : UIView
-//
-///**
-// *  Returns the text view in which the user composes a message.
-// */
-//@property (weak, nonatomic, readonly) JSQMessagesComposerTextView *textView;
-//
-///**
-// *  A custom button item displayed on the left of the toolbar content view.
-// *
-// *  @discussion The frame height of this button is ignored. When you set this property, the button
-// *  is fitted within a pre-defined default content view, the leftBarButtonContainerView,
-// *  whose height is determined by the height of the toolbar. However, the width of this button
-// *  will be preserved. You may specify a new width using `leftBarButtonItemWidth`.
-// *  If the frame of this button is equal to `CGRectZero` when set, then a default frame size will be used.
-// *  Set this value to `nil` to remove the button.
-// */
-//@property (weak, nonatomic) UIButton *leftBarButtonItem;
-//
-///**
-// *  Specifies the width of the leftBarButtonItem.
-// *
-// *  @discussion This property modifies the width of the leftBarButtonContainerView.
-// */
-//@property (assign, nonatomic) CGFloat leftBarButtonItemWidth;
-//
-///**
-// *  Specifies the amount of spacing between the content view and the leading edge of leftBarButtonItem.
-// *
-// *  @discussion The default value is `8.0f`.
-// */
-//@property (assign, nonatomic) CGFloat leftContentPadding;
-//
-///**
-// *  The container view for the leftBarButtonItem.
-// *
-// *  @discussion
-// *  You may use this property to add additional button items to the left side of the toolbar content view.
-// *  However, you will be completely responsible for responding to all touch events for these buttons
-// *  in your `JSQMessagesViewController` subclass.
-// */
-//@property (weak, nonatomic, readonly) UIView *leftBarButtonContainerView;
-//
-///**
-// *  A custom button item displayed on the right of the toolbar content view.
-// *
-// *  @discussion The frame height of this button is ignored. When you set this property, the button
-// *  is fitted within a pre-defined default content view, the rightBarButtonContainerView,
-// *  whose height is determined by the height of the toolbar. However, the width of this button
-// *  will be preserved. You may specify a new width using `rightBarButtonItemWidth`.
-// *  If the frame of this button is equal to `CGRectZero` when set, then a default frame size will be used.
-// *  Set this value to `nil` to remove the button.
-// */
-//@property (weak, nonatomic) UIButton *rightBarButtonItem;
-//
-///**
-// *  Specifies the width of the rightBarButtonItem.
-// *
-// *  @discussion This property modifies the width of the rightBarButtonContainerView.
-// */
-//@property (assign, nonatomic) CGFloat rightBarButtonItemWidth;
-//
-///**
-// *  Specifies the amount of spacing between the content view and the trailing edge of rightBarButtonItem.
-// *
-// *  @discussion The default value is `8.0f`.
-// */
-//@property (assign, nonatomic) CGFloat rightContentPadding;
-//
-///**
-// *  The container view for the rightBarButtonItem.
-// *
-// *  @discussion
-// *  You may use this property to add additional button items to the right side of the toolbar content view.
-// *  However, you will be completely responsible for responding to all touch events for these buttons
-// *  in your `JSQMessagesViewController` subclass.
-// */
-//@property (weak, nonatomic, readonly) UIView *rightBarButtonContainerView;
-//
-//#pragma mark - Class methods
-//
-///**
-// *  Returns the `UINib` object initialized for a `JSQMessagesToolbarContentView`.
-// *
-// *  @return The initialized `UINib` object or `nil` if there were errors during
-// *  initialization or the nib file could not be located.
-// */
-//+ (UINib *)nib;
-
-
-////
-////  Created by Jesse Squires
-////  http://www.jessesquires.com
-////
-////
-////  Documentation
-////  http://cocoadocs.org/docsets/JSQMessagesViewController
-////
-////
-////  GitHub
-////  https://github.com/jessesquires/JSQMessagesViewController
-////
-////
-////  License
-////  Copyright (c) 2014 Jesse Squires
-////  Released under an MIT license: http://opensource.org/licenses/MIT
-////
-//
-//#import "JSQMessagesToolbarContentView.h"
-//
-//#import "UIView+JSQMessages.h"
-//
-// const CGFloat kJSQMessagesToolbarContentViewHorizontalSpacingDefault = 8.0f;
-//
-//
-//@interface JSQMessagesToolbarContentView ()
-//
-//@property (weak, nonatomic) IBOutlet JSQMessagesComposerTextView *textView;
-//
-//@property (weak, nonatomic) IBOutlet UIView *leftBarButtonContainerView;
-//@property (weak, nonatomic) IBOutlet NSLayoutConstraint *leftBarButtonContainerViewWidthConstraint;
-//
-//@property (weak, nonatomic) IBOutlet UIView *rightBarButtonContainerView;
-//@property (weak, nonatomic) IBOutlet NSLayoutConstraint *rightBarButtonContainerViewWidthConstraint;
-//
-//@property (weak, nonatomic) IBOutlet NSLayoutConstraint *leftHorizontalSpacingConstraint;
-//@property (weak, nonatomic) IBOutlet NSLayoutConstraint *rightHorizontalSpacingConstraint;
-//
-//@end
-//
-//
-//
-//@implementation JSQMessagesToolbarContentView
-//
-//#pragma mark - Class methods
-//
-//+ (UINib *)nib
-//{
-//    return [UINib nibWithNibName:NSStringFromClass([JSQMessagesToolbarContentView class])
-//                          bundle:[NSBundle bundleForClass:[JSQMessagesToolbarContentView class]]];
-//}
-//
-//#pragma mark - Initialization
-//
-//- (void)awakeFromNib
-//{
-//    [super awakeFromNib];
-//
-//    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-//
-//    self.leftHorizontalSpacingConstraint.constant = kJSQMessagesToolbarContentViewHorizontalSpacingDefault;
-//    self.rightHorizontalSpacingConstraint.constant = kJSQMessagesToolbarContentViewHorizontalSpacingDefault;
-//
-//    self.backgroundColor = [UIColor clearColor];
-//}
-//
-//#pragma mark - Setters
-//
-//- (void)setBackgroundColor:(UIColor *)backgroundColor
-//{
-//    [super setBackgroundColor:backgroundColor];
-//    self.leftBarButtonContainerView.backgroundColor = backgroundColor;
-//    self.rightBarButtonContainerView.backgroundColor = backgroundColor;
-//}
-//
-//- (void)setLeftBarButtonItem:(UIButton *)leftBarButtonItem
-//{
-//    if (_leftBarButtonItem) {
-//        [_leftBarButtonItem removeFromSuperview];
-//    }
-//
-//    if (!leftBarButtonItem) {
-//        _leftBarButtonItem = nil;
-//        self.leftHorizontalSpacingConstraint.constant = 0.0f;
-//        self.leftBarButtonItemWidth = 0.0f;
-//        self.leftBarButtonContainerView.hidden = YES;
-//        return;
-//    }
-//
-//    if (CGRectEqualToRect(leftBarButtonItem.frame, CGRectZero)) {
-//        leftBarButtonItem.frame = self.leftBarButtonContainerView.bounds;
-//    }
-//
-//    self.leftBarButtonContainerView.hidden = NO;
-//    self.leftHorizontalSpacingConstraint.constant = kJSQMessagesToolbarContentViewHorizontalSpacingDefault;
-//    self.leftBarButtonItemWidth = CGRectGetWidth(leftBarButtonItem.frame);
-//
-//    [leftBarButtonItem setTranslatesAutoresizingMaskIntoConstraints:NO];
-//
-//    [self.leftBarButtonContainerView addSubview:leftBarButtonItem];
-//    [self.leftBarButtonContainerView jsq_pinAllEdgesOfSubview:leftBarButtonItem];
-//    [self setNeedsUpdateConstraints];
-//
-//    _leftBarButtonItem = leftBarButtonItem;
-//}
-//
-//- (void)setLeftBarButtonItemWidth:(CGFloat)leftBarButtonItemWidth
-//{
-//    self.leftBarButtonContainerViewWidthConstraint.constant = leftBarButtonItemWidth;
-//    [self setNeedsUpdateConstraints];
-//}
-//
-//- (void)setRightBarButtonItem:(UIButton *)rightBarButtonItem
-//{
-//    if (_rightBarButtonItem) {
-//        [_rightBarButtonItem removeFromSuperview];
-//    }
-//
-//    if (!rightBarButtonItem) {
-//        _rightBarButtonItem = nil;
-//        self.rightHorizontalSpacingConstraint.constant = 0.0f;
-//        self.rightBarButtonItemWidth = 0.0f;
-//        self.rightBarButtonContainerView.hidden = YES;
-//        return;
-//    }
-//
-//    if (CGRectEqualToRect(rightBarButtonItem.frame, CGRectZero)) {
-//        rightBarButtonItem.frame = self.rightBarButtonContainerView.bounds;
-//    }
-//
-//    self.rightBarButtonContainerView.hidden = NO;
-//    self.rightHorizontalSpacingConstraint.constant = kJSQMessagesToolbarContentViewHorizontalSpacingDefault;
-//    self.rightBarButtonItemWidth = CGRectGetWidth(rightBarButtonItem.frame);
-//
-//    [rightBarButtonItem setTranslatesAutoresizingMaskIntoConstraints:NO];
-//
-//    [self.rightBarButtonContainerView addSubview:rightBarButtonItem];
-//    [self.rightBarButtonContainerView jsq_pinAllEdgesOfSubview:rightBarButtonItem];
-//    [self setNeedsUpdateConstraints];
-//
-//    _rightBarButtonItem = rightBarButtonItem;
-//}
-//
-//- (void)setRightBarButtonItemWidth:(CGFloat)rightBarButtonItemWidth
-//{
-//    self.rightBarButtonContainerViewWidthConstraint.constant = rightBarButtonItemWidth;
-//    [self setNeedsUpdateConstraints];
-//}
-//
-//- (void)setRightContentPadding:(CGFloat)rightContentPadding
-//{
-//    self.rightHorizontalSpacingConstraint.constant = rightContentPadding;
-//    [self setNeedsUpdateConstraints];
-//}
-//
-//- (void)setLeftContentPadding:(CGFloat)leftContentPadding
-//{
-//    self.leftHorizontalSpacingConstraint.constant = leftContentPadding;
-//    [self setNeedsUpdateConstraints];
-//}
-//
-//#pragma mark - Getters
-//
-//- (CGFloat)leftBarButtonItemWidth
-//{
-//    return self.leftBarButtonContainerViewWidthConstraint.constant;
-//}
-//
-//- (CGFloat)rightBarButtonItemWidth
-//{
-//    return self.rightBarButtonContainerViewWidthConstraint.constant;
-//}
-//
-//- (CGFloat)rightContentPadding
-//{
-//    return self.rightHorizontalSpacingConstraint.constant;
-//}
-//
-//- (CGFloat)leftContentPadding
-//{
-//    return self.leftHorizontalSpacingConstraint.constant;
-//}
-//
-//#pragma mark - UIView overrides
-//
-//- (void)setNeedsDisplay
-//{
-//    [super setNeedsDisplay];
-//    [self.textView setNeedsDisplay];
-//}
-//
-//@end
-
 #pragma mark - Event Handlers
+
+- (void)leftButtonTapped:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self attachmentButtonPressed];
+    }
+}
+
+- (void)rightButtonTapped:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        if (!self.shouldShowVoiceMemoButton) {
+            [self sendButtonPressed];
+        }
+    }
+}
 
 - (void)sendButtonPressed
 {
@@ -1111,15 +576,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
-    //    OWSAssert(self.inputToolbarDelegate);
     OWSAssert(textView == self.inputTextView);
 
     [textView becomeFirstResponder];
-
-    //    if (self.automaticallyScrollsToMostRecentMessage) {
-    //        [self scrollToBottomAnimated:YES];
-    //    }
-    //    [self.inputToolbarDelegate textViewDidBeginEditing];
 }
 
 - (void)textViewDidChange:(UITextView *)textView
@@ -1148,6 +607,54 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     return YES;
+}
+
+#pragma mark - Text Input Sizing
+
+- (void)addKVOObservers
+{
+    [self.inputTextView addObserver:self
+                         forKeyPath:NSStringFromSelector(@selector(contentSize))
+                            options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
+                            context:kConversationInputTextViewObservingContext];
+}
+
+- (void)removeKVOObservers
+{
+    @try {
+        [self.inputTextView removeObserver:self
+                                forKeyPath:NSStringFromSelector(@selector(contentSize))
+                                   context:kConversationInputTextViewObservingContext];
+    } @catch (NSException *__unused exception) {
+        // TODO: This try/catch can probably be safely removed.
+        OWSFail(@"%@ removeKVOObservers failed.", self.logTag);
+    }
+}
+
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath
+                      ofObject:(nullable id)object
+                        change:(nullable NSDictionary<NSKeyValueChangeKey, id> *)change
+                       context:(nullable void *)context
+{
+    if (context == kConversationInputTextViewObservingContext) {
+
+        if (object == self.inputTextView && [keyPath isEqualToString:NSStringFromSelector(@selector(contentSize))]) {
+
+            [self ensureContentConstraints];
+        }
+    }
+}
+
+#pragma mark - Logging
+
++ (NSString *)logTag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)logTag
+{
+    return self.class.logTag;
 }
 
 @end
