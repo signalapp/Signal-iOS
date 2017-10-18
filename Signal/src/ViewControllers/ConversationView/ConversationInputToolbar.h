@@ -20,9 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)textViewDidChange;
 
-// TODO: Is this necessary.
-//- (void)textViewDidBeginEditing;
-
 @end
 
 #pragma mark -

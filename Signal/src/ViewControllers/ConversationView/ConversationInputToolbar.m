@@ -14,25 +14,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
 
-@interface ConversationInputToolbar () <UIGestureRecognizerDelegate, UITextViewDelegate>
+@interface ConversationInputToolbar () <UIGestureRecognizerDelegate, ConversationTextViewToolbarDelegate>
 
-@property (nonatomic) ConversationInputTextView *inputTextView;
-@property (nonatomic) UIButton *attachmentButton;
-@property (nonatomic) UIButton *sendButton;
+@property (nonatomic, readonly) ConversationInputTextView *inputTextView;
+@property (nonatomic, readonly) UIButton *attachmentButton;
+@property (nonatomic, readonly) UIButton *sendButton;
+@property (nonatomic, readonly) UIButton *voiceMemoButton;
+@property (nonatomic, readonly) UIView *leftButtonWrapper;
+@property (nonatomic, readonly) UIView *rightButtonWrapper;
+
 @property (nonatomic) BOOL shouldShowVoiceMemoButton;
-@property (nonatomic) UIButton *voiceMemoButton;
-@property (nonatomic) UIView *leftButtonWrapper;
-@property (nonatomic) UIView *rightButtonWrapper;
 
 @property (nonatomic) NSArray<NSLayoutConstraint *> *contentContraints;
 
 #pragma mark - Voice Memo Recording UI
 
 @property (nonatomic, nullable) UIView *voiceMemoUI;
-@property (nonatomic) UIView *voiceMemoContentView;
+@property (nonatomic, nullable) UIView *voiceMemoContentView;
 @property (nonatomic) NSDate *voiceMemoStartTime;
 @property (nonatomic, nullable) NSTimer *voiceMemoUpdateTimer;
-@property (nonatomic) UILabel *recordingLabel;
+@property (nonatomic, nullable) UILabel *recordingLabel;
 @property (nonatomic) BOOL isRecordingVoiceMemo;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
 
@@ -69,7 +70,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [backgroundView autoPinEdgesToSuperviewEdges];
 
     _inputTextView = [ConversationInputTextView new];
-    self.inputTextView.delegate = self;
+    self.inputTextView.textViewToolbarDelegate = self;
     [self addSubview:self.inputTextView];
 
     // We want to be permissive about taps on the send and attachment buttons,
@@ -111,7 +112,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
     UIImage *voiceMemoIcon = [UIImage imageNamed:@"voice-memo-button"];
     OWSAssert(voiceMemoIcon);
-    self.voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.voiceMemoButton setImage:[voiceMemoIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                           forState:UIControlStateNormal];
     self.voiceMemoButton.imageView.tintColor = [UIColor ows_materialBlueColor];
@@ -157,7 +158,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
     [self ensureShouldShowVoiceMemoButton];
     // TODO: Remove this when we remove the delegate method.
-    [self textViewDidChange:self.inputTextView];
+    [self textViewDidChange];
 }
 
 - (void)clearTextMessage
@@ -495,6 +496,8 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
     UIView *oldVoiceMemoUI = self.voiceMemoUI;
     self.voiceMemoUI = nil;
+    self.voiceMemoContentView = nil;
+    self.recordingLabel = nil;
     NSTimer *voiceMemoUpdateTimer = self.voiceMemoUpdateTimer;
     self.voiceMemoUpdateTimer = nil;
 
@@ -572,41 +575,19 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [self.inputToolbarDelegate attachmentButtonPressed];
 }
 
-#pragma mark - UITextViewDelegate
+#pragma mark - ConversationTextViewToolbarDelegate
 
-- (void)textViewDidBeginEditing:(UITextView *)textView
-{
-    OWSAssert(textView == self.inputTextView);
-
-    [textView becomeFirstResponder];
-}
-
-- (void)textViewDidChange:(UITextView *)textView
+- (void)textViewDidChange
 {
     OWSAssert(self.inputToolbarDelegate);
-    OWSAssert(textView == self.inputTextView);
 
     [self ensureShouldShowVoiceMemoButton];
     [self.inputToolbarDelegate textViewDidChange];
 }
 
-- (void)textViewDidEndEditing:(UITextView *)textView
+- (void)textViewReturnPressed
 {
-    OWSAssert(textView == self.inputTextView);
-
-    [textView resignFirstResponder];
-}
-
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
-{
-    if (range.length > 0) {
-        return YES;
-    }
-    if ([text isEqualToString:@"\n"]) {
-        [self sendButtonPressed];
-        return NO;
-    }
-    return YES;
+    [self sendButtonPressed];
 }
 
 #pragma mark - Text Input Sizing

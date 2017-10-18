@@ -18,9 +18,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@protocol ConversationTextViewToolbarDelegate <NSObject>
+
+- (void)textViewDidChange;
+
+- (void)textViewReturnPressed;
+
+@end
+
+#pragma mark -
+
 @interface ConversationInputTextView : UITextView
 
 @property (weak, nonatomic) id<ConversationInputTextViewDelegate> inputTextViewDelegate;
+
+@property (weak, nonatomic) id<ConversationTextViewToolbarDelegate> textViewToolbarDelegate;
 
 - (NSString *)trimmedText;
 
