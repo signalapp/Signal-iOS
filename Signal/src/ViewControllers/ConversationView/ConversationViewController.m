@@ -20,6 +20,7 @@
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
 #import "NSAttributedString+OWS.h"
+#import "NSString+OWS.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSContactOffersCell.h"
@@ -165,7 +166,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic, nullable) OWSAudioAttachmentPlayer *audioAttachmentPlayer;
 @property (nonatomic, nullable) NSUUID *voiceMessageUUID;
 
-@property (nonatomic) NSTimer *readTimer;
+@property (nonatomic, nullable) NSTimer *readTimer;
+@property (nonatomic) NSCache *cellMediaCache;
 @property (nonatomic) ConversationHeaderView *navigationBarTitleView;
 @property (nonatomic) UILabel *navigationBarTitleLabel;
 @property (nonatomic) UILabel *navigationBarSubtitleLabel;
@@ -392,6 +394,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
     _composeOnOpen = keyboardOnViewAppearing;
     _callOnOpen = callOnViewAppearing;
+    _cellMediaCache = [NSCache new];
+    // Cache the cell media for ~24 cells.
+    self.cellMediaCache.countLimit = 24;
 
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
@@ -526,6 +531,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         self.hasClearedUnreadMessagesIndicator = NO;
         [self.dynamicInteractions clearUnreadIndicatorState];
     }
+    [self.cellMediaCache removeAllObjects];
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
@@ -943,6 +949,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)cancelReadTimer
 {
     [self.readTimer invalidate];
+    self.readTimer = nil;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -986,6 +993,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self saveDraft];
     [self markVisibleMessagesAsRead];
     [self cancelVoiceMemo];
+    [self.cellMediaCache removeAllObjects];
 
     self.isUserScrolling = NO;
 }
@@ -3630,7 +3638,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    text = [text ows_stripped];
 
     if (text.length < 1) {
         return;
@@ -4025,8 +4033,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
     cell.viewItem = viewItem;
     cell.delegate = self;
+    cell.contentWidth = self.layout.contentWidth;
 
-    [cell loadForDisplay:self.layout.contentWidth];
+    [cell loadForDisplay];
 
     return cell;
 }

@@ -3,6 +3,7 @@
 //
 
 #import "ConversationViewItem.h"
+#import "NSString+OWS.h"
 #import "OWSAudioMessageView.h"
 #import "OWSContactOffersCell.h"
 #import "OWSMessageCell.h"
@@ -274,14 +275,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (!displayableText) {
         // Only show up to 2kb of text.
         const NSUInteger kMaxTextDisplayLength = 2 * 1024;
-        text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        text = [text ows_stripped];
         displayableText = [[DisplayableTextFilter new] displayableText:text];
         if (displayableText.length > kMaxTextDisplayLength) {
             // Trim whitespace before _AND_ after slicing the snipper from the string.
-            NSString *snippet =
-                [[[displayableText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
-                    substringWithRange:NSMakeRange(0, kMaxTextDisplayLength)]
-                    stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            NSString *snippet = [
+                [[displayableText ows_stripped] substringWithRange:NSMakeRange(0, kMaxTextDisplayLength)] ows_stripped];
             displayableText = [NSString stringWithFormat:NSLocalizedString(@"OVERSIZE_TEXT_DISPLAY_FORMAT",
                                                              @"A display format for oversize text messages."),
                                         snippet];

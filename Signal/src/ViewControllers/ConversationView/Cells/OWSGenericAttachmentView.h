@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachmentStream isIncoming:(BOOL)isIncoming;
 
-- (void)createContentsForSize:(CGSize)viewSize;
+- (void)createContents;
 
 + (CGFloat)bubbleHeight;
 

@@ -6,6 +6,7 @@
 #import "AppDelegate.h"
 #import "AvatarViewHelper.h"
 #import "HomeViewController.h"
+#import "NSString+OWS.h"
 #import "OWSNavigationController.h"
 #import "OWSProfileManager.h"
 #import "Signal-Swift.h"
@@ -410,7 +411,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (NSString *)normalizedProfileName
 {
-    return [self.nameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    return [self.nameTextField.text ows_stripped];
 }
 
 - (void)updateProfileCompleted

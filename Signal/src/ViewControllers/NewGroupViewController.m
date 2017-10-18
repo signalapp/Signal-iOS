@@ -9,6 +9,7 @@
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
+#import "NSString+OWS.h"
 #import "OWSContactsManager.h"
 #import "OWSNavigationController.h"
 #import "OWSTableViewController.h"
@@ -515,8 +516,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (TSGroupModel *)makeGroup
 {
-    NSString *groupName = [self.groupNameTextField.text
-        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *groupName = [self.groupNameTextField.text ows_stripped];
     NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
     [recipientIds addObject:[self.contactsViewHelper localNumber]];
     NSData *groupId = [SecurityUtils generateRandomBytes:16];

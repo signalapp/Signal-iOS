@@ -86,6 +86,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (nullable TSAttachmentPointer *)attachmentPointer;
 - (CGSize)contentSize;
 
+// We don't want to try to load the media for this item (if any)
+// if a load has previously failed.
+@property (nonatomic) BOOL didCellMediaFailToLoad;
+
 // TODO:
 //// Cells will request that this adapter clear its cached media views,
 //// but the adapter should only honor requests from the last cell to

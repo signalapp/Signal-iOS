@@ -7,6 +7,7 @@
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
+#import "NSString+OWS.h"
 #import "OWSContactsManager.h"
 #import "OWSContactsSearcher.h"
 #import "OWSTableViewController.h"
@@ -223,8 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSArray<TSThread *> *threads = self.threadViewHelper.threads;
 
-    NSString *searchTerm =
-        [[self.searchBar text] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *searchTerm = [[self.searchBar text] ows_stripped];
 
     if ([searchTerm isEqualToString:@""]) {
         return threads;

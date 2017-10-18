@@ -207,7 +207,7 @@ NS_ASSUME_NONNULL_BEGIN
     return (TSMessage *)self.viewItem.interaction;
 }
 
-- (void)loadForDisplay:(int)contentWidth
+- (void)loadForDisplay
 {
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
@@ -220,7 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
         = isIncoming ? [self.bubbleFactory incoming] : [self.bubbleFactory outgoing];
     self.bubbleImageView.image = bubbleImageData.messageBubbleImage;
 
-    [self updateDateHeader:contentWidth];
+    [self updateDateHeader];
     [self updateFooter];
 
     switch (self.cellType) {
@@ -243,7 +243,7 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_GenericAttachment: {
             self.attachmentView =
                 [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
-            [self.attachmentView createContentsForSize:self.bounds.size];
+            [self.attachmentView createContents];
             [self replaceBubbleWithView:self.attachmentView];
             [self addAttachmentUploadViewIfNecessary:self.attachmentView];
             break;
@@ -254,6 +254,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    [self ensureViewMediaState];
+
     //    dispatch_async(dispatch_get_main_queue(), ^{
     //        NSLog(@"---- %@", self.viewItem.interaction.debugDescription);
     //        NSLog(@"cell: %@", NSStringFromCGRect(self.frame));
@@ -263,8 +265,113 @@ NS_ASSUME_NONNULL_BEGIN
     //    });
 }
 
-- (void)updateDateHeader:(int)contentWidth
+// We now eagerly create out view hierarchy (to do this exactly once per cell usage)
+// but lazy-load any expensive media (photo, gif, etc.) used in those views. Note that
+// this lazy-load can fail, in which case we modify the view hierarchy to use an "error"
+// state. The didCellMediaFailToLoad reflects media load fails.
+- (nullable id)tryToLoadCellMedia:(nullable id (^)())loadCellMediaBlock
+                        mediaView:(UIView *)mediaView
+                         cacheKey:(NSString *)cacheKey
 {
+    OWSAssert(self.attachmentStream);
+    OWSAssert(mediaView);
+    OWSAssert(cacheKey);
+
+    if (self.viewItem.didCellMediaFailToLoad) {
+        return nil;
+    }
+
+    NSCache *cellMediaCache = self.delegate.cellMediaCache;
+    OWSAssert(cellMediaCache);
+
+    id _Nullable cellMedia = [cellMediaCache objectForKey:cacheKey];
+    if (cellMedia) {
+        DDLogVerbose(@"%@ cell media cache hit", self.logTag);
+        return cellMedia;
+    }
+    cellMedia = loadCellMediaBlock();
+    if (cellMedia) {
+        DDLogVerbose(@"%@ cell media cache miss", self.logTag);
+        [cellMediaCache setObject:cellMedia forKey:cacheKey];
+    } else {
+        DDLogError(@"%@ Failed to load cell media: %@", [self logTag], [self.attachmentStream mediaURL]);
+        self.viewItem.didCellMediaFailToLoad = YES;
+        [mediaView removeFromSuperview];
+        // TODO: We need to hide/remove the media view.
+        [self showAttachmentErrorView];
+    }
+    return cellMedia;
+}
+
+// We want to lazy-load expensive view contents and eagerly unload if the
+// cell is no longer visible.
+- (void)ensureViewMediaState
+{
+    if (!self.isCellVisible) {
+        // Eagerly unload.
+        self.stillImageView.image = nil;
+        self.animatedImageView.image = nil;
+        return;
+    }
+
+    switch (self.cellType) {
+        case OWSMessageCellType_StillImage: {
+            if (self.stillImageView.image) {
+                return;
+            }
+            self.stillImageView.image = [self tryToLoadCellMedia:^{
+                OWSAssert([self.attachmentStream isImage]);
+                return self.attachmentStream.image;
+            }
+                                                       mediaView:self.stillImageView
+                                                        cacheKey:self.attachmentStream.uniqueId];
+            break;
+        }
+        case OWSMessageCellType_AnimatedImage: {
+            if (self.animatedImageView.image) {
+                return;
+            }
+            self.animatedImageView.image = [self tryToLoadCellMedia:^{
+                OWSAssert([self.attachmentStream isAnimated]);
+
+                NSString *_Nullable filePath = [self.attachmentStream filePath];
+                YYImage *_Nullable animatedImage = nil;
+                if (filePath && [NSData ows_isValidImageAtPath:filePath]) {
+                    animatedImage = [YYImage imageWithContentsOfFile:filePath];
+                }
+                return animatedImage;
+            }
+                                                          mediaView:self.animatedImageView
+                                                           cacheKey:self.attachmentStream.uniqueId];
+            break;
+        }
+        case OWSMessageCellType_Video: {
+            if (self.stillImageView.image) {
+                return;
+            }
+            self.stillImageView.image = [self tryToLoadCellMedia:^{
+                OWSAssert([self.attachmentStream isVideo]);
+
+                return self.attachmentStream.image;
+            }
+                                                       mediaView:self.stillImageView
+                                                        cacheKey:self.attachmentStream.uniqueId];
+            break;
+        }
+        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_OversizeTextMessage:
+        case OWSMessageCellType_GenericAttachment:
+        case OWSMessageCellType_DownloadingAttachment:
+        case OWSMessageCellType_Audio:
+            // Inexpensive cell types don't need to lazy-load or eagerly-unload.
+            break;
+    }
+}
+
+- (void)updateDateHeader
+{
+    OWSAssert(self.contentWidth > 0);
+
     static NSDateFormatter *dateHeaderDateFormatter = nil;
     static NSDateFormatter *dateHeaderTimeFormatter = nil;
     static dispatch_once_t onceToken;
@@ -312,7 +419,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.dateHeaderConstraints = @[
             // Date headers should be visually centered within the conversation view,
             // so they need to extend outside the cell's boundaries.
-            [self.dateHeaderLabel autoSetDimension:ALDimensionWidth toSize:contentWidth],
+            [self.dateHeaderLabel autoSetDimension:ALDimensionWidth toSize:self.contentWidth],
             (self.isIncoming ? [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading]
                              : [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTrailing]),
             [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTop],
@@ -452,14 +559,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.attachmentStream);
     OWSAssert([self.attachmentStream isImage]);
 
-    UIImage *_Nullable image = self.attachmentStream.image;
-    if (!image) {
-        DDLogError(@"%@ Could not load image: %@", [self logTag], [self.attachmentStream mediaURL]);
-        [self showAttachmentErrorView];
-        return;
-    }
-
-    self.stillImageView = [[UIImageView alloc] initWithImage:image];
+    self.stillImageView = [UIImageView new];
     // We need to specify a contentMode since the size of the image
     // might not match the aspect ratio of the view.
     self.stillImageView.contentMode = UIViewContentModeScaleAspectFill;
@@ -476,19 +576,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.attachmentStream);
     OWSAssert([self.attachmentStream isAnimated]);
 
-    NSString *_Nullable filePath = [self.attachmentStream filePath];
-    YYImage *_Nullable animatedImage = nil;
-    if (filePath && [NSData ows_isValidImageAtPath:filePath]) {
-        animatedImage = [YYImage imageWithContentsOfFile:filePath];
-    }
-    if (!animatedImage) {
-        DDLogError(@"%@ Could not load animated image: %@", [self logTag], [self.attachmentStream mediaURL]);
-        [self showAttachmentErrorView];
-        return;
-    }
-
     self.animatedImageView = [[YYAnimatedImageView alloc] init];
-    self.animatedImageView.image = animatedImage;
     // We need to specify a contentMode since the size of the image
     // might not match the aspect ratio of the view.
     self.animatedImageView.contentMode = UIViewContentModeScaleAspectFill;
@@ -505,7 +593,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  isIncoming:self.isIncoming
                                                                    viewItem:self.viewItem];
     self.viewItem.lastAudioMessageView = self.audioMessageView;
-    [self.audioMessageView createContentsForSize:self.bounds.size];
+    [self.audioMessageView createContents];
     [self replaceBubbleWithView:self.audioMessageView];
     [self addAttachmentUploadViewIfNecessary:self.audioMessageView];
 }
@@ -515,16 +603,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.attachmentStream);
     OWSAssert([self.attachmentStream isVideo]);
 
-    //    CGSize size = [self mediaViewDisplaySize];
-
-    UIImage *_Nullable image = self.attachmentStream.image;
-    if (!image) {
-        DDLogError(@"%@ Could not load image: %@", [self logTag], [self.attachmentStream mediaURL]);
-        [self showAttachmentErrorView];
-        return;
-    }
-
-    self.stillImageView = [[UIImageView alloc] initWithImage:image];
+    self.stillImageView = [UIImageView new];
     // We need to specify a contentMode since the size of the image
     // might not match the aspect ratio of the view.
     self.stillImageView.contentMode = UIViewContentModeScaleAspectFill;
@@ -614,25 +693,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.payloadView updateMask];
 }
 
-//// TODO:
-//- (void)setFrame:(CGRect)frame {
-//    [super setFrame:frame];
-//
-//    DDLogError(@"setFrame: %@ %@ %@", self.viewItem.interaction.uniqueId, self.viewItem.interaction.description,
-//    NSStringFromCGRect(frame));
-//}
-//
-//// TODO:
-//- (void)setBounds:(CGRect)bounds {
-//    [super setBounds:bounds];
-//
-//    DDLogError(@"setBounds: %@ %@ %@", self.viewItem.interaction.uniqueId, self.viewItem.interaction.description,
-//    NSStringFromCGRect(bounds));
-//}
-
 - (void)showAttachmentErrorView
 {
-    // TODO: We could do a better job of indicating that the image could not be loaded.
+    OWSAssert(!self.customView);
+
+    // TODO: We could do a better job of indicating that the media could not be loaded.
     self.customView = [UIView new];
     self.customView.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
     self.customView.userInteractionEnabled = NO;
@@ -859,6 +924,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (!didChange) {
         return;
     }
+
+    [self ensureViewMediaState];
 
     if (isCellVisible) {
         if (self.message.shouldStartExpireTimer) {

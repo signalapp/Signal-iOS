@@ -9,6 +9,7 @@
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
+#import "NSString+OWS.h"
 #import "OWSContactsManager.h"
 #import "OWSNavigationController.h"
 #import "OWSTableViewController.h"
@@ -196,8 +197,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UITextField *groupNameTextField = [UITextField new];
     _groupNameTextField = groupNameTextField;
-    self.groupNameTextField.text = [self.thread.groupModel.groupName
-        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    self.groupNameTextField.text = [self.thread.groupModel.groupName ows_stripped];
     groupNameTextField.textColor = [UIColor blackColor];
     groupNameTextField.font = [UIFont ows_dynamicTypeTitle2Font];
     groupNameTextField.placeholder
@@ -373,8 +373,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.conversationSettingsViewDelegate);
 
-    NSString *groupName = [self.groupNameTextField.text
-        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *groupName = [self.groupNameTextField.text ows_stripped];
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                          memberIds:[self.memberRecipientIds.allObjects mutableCopy]
                                                              image:self.groupAvatar
