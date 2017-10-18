@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.placeholderView = [UILabel new];
         self.placeholderView.text = NSLocalizedString(@"new_message", @"");
         self.placeholderView.textColor = [UIColor lightGrayColor];
-        self.placeholderView.textAlignment = NSTextAlignmentLeft;
+        self.placeholderView.userInteractionEnabled = NO;
         [self addSubview:self.placeholderView];
 
         // We need to do these steps _after_ placeholderView is configured.
