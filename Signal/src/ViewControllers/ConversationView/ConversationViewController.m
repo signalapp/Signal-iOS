@@ -2087,23 +2087,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 }
 
-- (void)didLongPressSystemMessageCell:(ConversationViewCell *)systemMessageCell fromView:(UIView *)fromView
-{
-    OWSAssert([NSThread isMainThread]);
-    OWSAssert(systemMessageCell);
-    OWSAssert(fromView);
-
-    DDLogDebug(@"%@ long pressed system message cell: %@", self.tag, systemMessageCell);
-
-    [systemMessageCell becomeFirstResponder];
-
-    // TODO: Update menu controller actions.
-    UIMenuController *theMenu = [UIMenuController sharedMenuController];
-    CGRect targetRect = [fromView.superview convertRect:fromView.frame toView:systemMessageCell];
-    [theMenu setTargetRect:targetRect inView:systemMessageCell];
-    [theMenu setMenuVisible:YES animated:YES];
-}
-
 #pragma mark - ContactEditingDelegate
 
 - (void)didFinishEditingContact

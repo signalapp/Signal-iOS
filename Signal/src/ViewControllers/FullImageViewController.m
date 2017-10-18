@@ -60,7 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) ConversationViewItem *viewItem;
 
 @property (nonatomic) UIToolbar *footerBar;
-@property (nonatomic) NSArray *oldMenuItems;
 
 @end
 
@@ -259,9 +258,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         NSArray *menuItems = self.viewItem.menuControllerItems;
-        if (!self.oldMenuItems) {
-            self.oldMenuItems = [UIMenuController sharedMenuController].menuItems;
-        }
         [UIMenuController sharedMenuController].menuItems = menuItems;
         CGPoint location = [sender locationInView:self.view];
         CGRect targetRect = CGRectMake(location.x,
@@ -357,12 +353,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)dismiss {
-
-    // Restore the edit menu items if necessary.
-    if (self.oldMenuItems) {
-        [UIMenuController sharedMenuController].menuItems = self.oldMenuItems;
-    }
-
     self.view.userInteractionEnabled = NO;
     [UIView animateWithDuration:0.25f
         delay:0
