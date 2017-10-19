@@ -333,7 +333,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         self.collectionView.isUserInteractionEnabled = false
 
-        cell.fetchRenditionForSending().then { (asset: GiphyAsset) -> Void in
+        GiphyDownloader.sharedInstance.cancelAllRequests()
+        cell.requestRenditionForSending().then { (asset: GiphyAsset) -> Void in
             let filePath = asset.filePath
             guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath) else {
                 owsFail("\(self.TAG) couldn't load asset.")
