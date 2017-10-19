@@ -1,9 +1,6 @@
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Not Now";
 
-/* Accessibility label for accepting incoming calls */
-"ACCEPT_INCOMING_CALL_LABEL" = "Accept incoming call";
-
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Accept New Safety Number";
 
@@ -142,14 +139,8 @@
 /* Short text label for a voice message attachment, used for thread preview and on lockscreen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Voice Message";
 
-/* Accessibility label for muting the microphone during audio call */
-"AUDIO_MUTE_LABEL" = "Mute";
-
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
-
-/* Accessibility label for selection the audio source */
-"AUDIO_SOURCE_LABEL" = "Audio";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
@@ -235,6 +226,21 @@
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Call?";
 
+/* Accessibility label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Accept incoming call";
+
+/* Accessibility label for muting the microphone during audio call */
+"CALL_VIEW_AUDIO_MUTE_LABEL" = "Mute";
+
+/* Accessibility label for selection the audio source */
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Audio";
+
+/* Accessibility label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline incoming call";
+
+/* Accessibility label for hang up call */
+"CALL_VIEW_HANGUP_LABEL" = "End call";
+
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can answer calls directly from your lock screen and see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
 
@@ -246,6 +252,15 @@
 
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Show Privacy Settings";
+
+/* Accessibility label to switch to audio only */
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to audio call";
+
+/* Accessibility label to switch to video call */
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
+
+/* Accessibility label for muting the microphone during video call */
+"CALL_VIEW_VIDEO_MUTE_LABEL" = "Mute";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Call Back";
@@ -399,9 +414,6 @@
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Updating Database";
-
-/* Accessibility label for declining incoming calls */
-"DECLINE_INCOMING_CALL_LABEL" = "Decline incoming call";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active: %@";
@@ -693,9 +705,6 @@
 
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Blocked";
-
-/* Accessibility label for hang up call */
-"HANGUP_LABEL" = "End call";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Connecting…";
@@ -1520,12 +1529,6 @@
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
 
-/* Accessibility label to switch to video call */
-"SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
-
-/* Accessibility label to switch to audio only */
-"SWITCH_TO_AUDIO_LABEL" = "Switch to audio call";
-
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ days";
 
@@ -1681,9 +1684,6 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Review Safety Numbers";
-
-/* Accessibility label for muting the microphone during video call */
-"VIDEO_MUTE_LABEL" = "Mute";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to Cancel";
