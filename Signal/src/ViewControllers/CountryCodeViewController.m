@@ -3,6 +3,7 @@
 //
 
 #import "CountryCodeViewController.h"
+#import "NSString+OWS.h"
 #import "PhoneNumberUtil.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
@@ -142,8 +143,7 @@
 
 - (void)searchTextDidChange
 {
-    NSString *searchText =
-        [self.searchBar.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSString *searchText = [self.searchBar.text ows_stripped];
 
     self.countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:searchText];
 

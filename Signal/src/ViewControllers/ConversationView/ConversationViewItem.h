@@ -39,12 +39,20 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 @property (nonatomic, readonly) TSInteraction *interaction;
 
+@property (nonatomic, readonly) BOOL isGroupThread;
+
 @property (nonatomic) BOOL shouldShowDate;
+@property (nonatomic) BOOL shouldHideRecipientStatus;
+
+@property (nonatomic) NSInteger row;
+// During updates, we sometimes need the previous row index
+// (before this update) of this item.
+@property (nonatomic) NSInteger previousRow;
 
 //@property (nonatomic, weak) ConversationViewCell *lastCell;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithTSInteraction:(TSInteraction *)interaction;
+- (instancetype)initWithTSInteraction:(TSInteraction *)interaction isGroupThread:(BOOL)isGroupThread;
 
 - (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
                                              indexPath:(NSIndexPath *)indexPath;
@@ -77,6 +85,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (nullable TSAttachmentStream *)attachmentStream;
 - (nullable TSAttachmentPointer *)attachmentPointer;
 - (CGSize)contentSize;
+
+// We don't want to try to load the media for this item (if any)
+// if a load has previously failed.
+@property (nonatomic) BOOL didCellMediaFailToLoad;
 
 // TODO:
 //// Cells will request that this adapter clear its cached media views,

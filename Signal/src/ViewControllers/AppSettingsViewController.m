@@ -298,6 +298,7 @@
     [disclosureButton autoVCenterInSuperview];
     [disclosureButton autoPinTrailingToSuperview];
     [disclosureButton autoPinLeadingToTrailingOfView:nameView margin:16.f];
+    [disclosureButton setContentCompressionResistancePriority:(UILayoutPriorityDefaultHigh + 1) forAxis:UILayoutConstraintAxisHorizontal];
 
     return cell;
 }

@@ -177,7 +177,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
             }
             TSMessage *message = (TSMessage *)object;
 
-            if (!message.shouldStartExpireTimer) {
+            if (![message shouldStartExpireTimer:transaction]) {
                 return;
             }
 

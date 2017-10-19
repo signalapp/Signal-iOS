@@ -216,6 +216,13 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [emptyBoxLabel autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [emptyBoxLabel autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 
+    UIRefreshControl *pullToRefreshView = [UIRefreshControl new];
+    pullToRefreshView.tintColor = [UIColor grayColor];
+    [pullToRefreshView addTarget:self
+                          action:@selector(pullToRefreshPerformed:)
+                forControlEvents:UIControlEventValueChanged];
+    [self.tableView insertSubview:pullToRefreshView atIndex:0];
+
     [self updateReminderViews];
 }
 
@@ -596,6 +603,16 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     return InboxTableViewCell.rowHeight;
 }
 
+- (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
+{
+    OWSAssert([NSThread isMainThread]);
+    DDLogInfo(@"%@ beggining refreshing.", self.tag);
+    [[Environment getCurrent].messageFetcherJob run].always(^{
+        DDLogInfo(@"%@ ending refreshing.", self.tag);
+        [refreshControl endRefreshing];
+    });
+}
+
 #pragma mark Table Swipe to Delete
 
 - (void)tableView:(UITableView *)tableView
@@ -604,7 +621,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 {
     return;
 }
-
 
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
 {

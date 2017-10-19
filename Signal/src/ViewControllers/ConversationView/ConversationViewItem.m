@@ -3,10 +3,10 @@
 //
 
 #import "ConversationViewItem.h"
+#import "NSString+OWS.h"
 #import "OWSAudioMessageView.h"
 #import "OWSContactOffersCell.h"
-#import "OWSIncomingMessageCell.h"
-#import "OWSOutgoingMessageCell.h"
+#import "OWSMessageCell.h"
 #import "OWSSystemMessageCell.h"
 #import "OWSUnreadIndicatorCell.h"
 #import "Signal-Swift.h"
@@ -61,7 +61,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 @implementation ConversationViewItem
 
-- (instancetype)initWithTSInteraction:(TSInteraction *)interaction
+- (instancetype)initWithTSInteraction:(TSInteraction *)interaction isGroupThread:(BOOL)isGroupThread
 {
     self = [super init];
 
@@ -70,6 +70,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     _interaction = interaction;
+    _isGroupThread = isGroupThread;
+    self.row = NSNotFound;
+    self.previousRow = NSNotFound;
 
     return self;
 }
@@ -97,6 +100,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     _shouldShowDate = shouldShowDate;
+
+    [self clearCachedLayoutState];
+}
+
+- (void)setShouldHideRecipientStatus:(BOOL)shouldHideRecipientStatus
+{
+    if (_shouldHideRecipientStatus == shouldHideRecipientStatus) {
+        return;
+    }
+
+    _shouldHideRecipientStatus = shouldHideRecipientStatus;
 
     [self clearCachedLayoutState];
 }
@@ -162,10 +176,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 OWSFail(@"%@ Unknown interaction type.", self.tag);
                 return nil;
             case OWSInteractionType_IncomingMessage:
-                measurementCell = [OWSIncomingMessageCell new];
-                break;
             case OWSInteractionType_OutgoingMessage:
-                measurementCell = [OWSOutgoingMessageCell new];
+                measurementCell = [OWSMessageCell new];
                 break;
             case OWSInteractionType_Error:
             case OWSInteractionType_Info:
@@ -200,10 +212,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSFail(@"%@ Unknown interaction type.", self.tag);
             return nil;
         case OWSInteractionType_IncomingMessage:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSIncomingMessageCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
         case OWSInteractionType_OutgoingMessage:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSOutgoingMessageCell cellReuseIdentifier]
+            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSMessageCell cellReuseIdentifier]
                                                              forIndexPath:indexPath];
         case OWSInteractionType_Error:
         case OWSInteractionType_Info:
@@ -265,13 +275,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (!displayableText) {
         // Only show up to 2kb of text.
         const NSUInteger kMaxTextDisplayLength = 2 * 1024;
+        text = [text ows_stripped];
         displayableText = [[DisplayableTextFilter new] displayableText:text];
         if (displayableText.length > kMaxTextDisplayLength) {
             // Trim whitespace before _AND_ after slicing the snipper from the string.
-            NSString *snippet =
-                [[[displayableText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
-                    substringWithRange:NSMakeRange(0, kMaxTextDisplayLength)]
-                    stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+            NSString *snippet = [
+                [[displayableText ows_stripped] substringWithRange:NSMakeRange(0, kMaxTextDisplayLength)] ows_stripped];
             displayableText = [NSString stringWithFormat:NSLocalizedString(@"OVERSIZE_TEXT_DISPLAY_FORMAT",
                                                              @"A display format for oversize text messages."),
                                         snippet];

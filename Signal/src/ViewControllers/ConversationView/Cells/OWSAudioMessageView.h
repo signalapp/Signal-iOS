@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
                         isIncoming:(BOOL)isIncoming
                           viewItem:(ConversationViewItem *)viewItem;
 
-- (void)createContentsForSize:(CGSize)viewSize;
+- (void)createContents;
 
 + (CGFloat)bubbleHeight;
 

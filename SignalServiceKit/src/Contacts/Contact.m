@@ -136,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)trimName:(NSString *)name
 {
-    return [name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return [name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 + (NSString *)uniqueIdFromABRecordId:(ABRecordID)recordId

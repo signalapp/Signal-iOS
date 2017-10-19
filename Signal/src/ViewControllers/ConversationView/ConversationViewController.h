@@ -8,9 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSThread;
 
-// TODO: Audit this.
-extern NSString *const ConversationViewControllerDidAppearNotification;
-
 @interface ConversationViewController : OWSViewController
 
 @property (nonatomic, readonly) TSThread *thread;

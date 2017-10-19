@@ -247,7 +247,12 @@ static Environment *environment = nil;
 
 + (void)presentConversationForThread:(TSThread *)thread
 {
-    [self presentConversationForThread:thread keyboardOnViewAppearing:YES callOnViewAppearing:NO];
+    [self presentConversationForThread:thread withCompose:YES];
+}
+
++ (void)presentConversationForThread:(TSThread *)thread withCompose:(BOOL)compose
+{
+    [self presentConversationForThread:thread keyboardOnViewAppearing:compose callOnViewAppearing:NO];
 }
 
 + (void)presentConversationForThread:(TSThread *)thread

@@ -20,6 +20,7 @@
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
 #import "NSAttributedString+OWS.h"
+#import "NSString+OWS.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSContactOffersCell.h"
@@ -28,8 +29,7 @@
 #import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "OWSIncomingMessageCell.h"
-#import "OWSOutgoingMessageCell.h"
+#import "OWSMessageCell.h"
 #import "OWSSystemMessageCell.h"
 #import "OWSUnreadIndicatorCell.h"
 #import "Signal-Swift.h"
@@ -101,7 +101,7 @@ static const int kConversationInitialMaxRangeSize = kYapDatabasePageSize * kYapD
 static const int kYapDatabaseRangeMaxLength = kYapDatabasePageSize * kYapDatabaseMaxPageCount;
 static const int kYapDatabaseRangeMinLength = 0;
 
-NSString *const ConversationViewControllerDidAppearNotification = @"ConversationViewControllerDidAppear";
+static const CGFloat kLoadMoreHeaderHeight = 60.f;
 
 typedef enum : NSUInteger {
     kMediaTypePicture,
@@ -156,6 +156,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 @property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
+@property (nonatomic, readonly) ConversationViewLayout *layout;
 
 @property (nonatomic) NSArray<ConversationViewItem *> *viewItems;
 @property (nonatomic) NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemMap;
@@ -165,7 +166,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic, nullable) OWSAudioAttachmentPlayer *audioAttachmentPlayer;
 @property (nonatomic, nullable) NSUUID *voiceMessageUUID;
 
-@property (nonatomic) NSTimer *readTimer;
+@property (nonatomic, nullable) NSTimer *readTimer;
+@property (nonatomic) NSCache *cellMediaCache;
 @property (nonatomic) ConversationHeaderView *navigationBarTitleView;
 @property (nonatomic) UILabel *navigationBarTitleLabel;
 @property (nonatomic) UILabel *navigationBarSubtitleLabel;
@@ -196,6 +198,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 @property (nonatomic, nullable) ThreadDynamicInteractions *dynamicInteractions;
 @property (nonatomic) BOOL hasClearedUnreadMessagesIndicator;
+@property (nonatomic) BOOL showLoadMoreHeader;
+@property (nonatomic) UIButton *loadMoreHeader;
 @property (nonatomic) uint64_t lastVisibleTimestamp;
 
 @property (nonatomic, readonly) BOOL isGroupConversation;
@@ -390,6 +394,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
     _composeOnOpen = keyboardOnViewAppearing;
     _callOnOpen = callOnViewAppearing;
+    _cellMediaCache = [NSCache new];
+    // Cache the cell media for ~24 cells.
+    self.cellMediaCache.countLimit = 24;
 
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
@@ -457,20 +464,21 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self createScrollButtons];
     [self createHeaderViews];
     [self addNotificationListeners];
-    // [self updateLoadEarlierVisible];
+    [self updateShowLoadMoreHeader];
 }
 
 - (void)createContents
 {
-    ConversationViewLayout *layout = [ConversationViewLayout new];
-    layout.delegate = self;
+    _layout = [ConversationViewLayout new];
+    self.layout.delegate = self;
     // We use the root view bounds as the initial frame for the collection
     // view so that its contents can be laid out immediately.
-    _collectionView = [[ConversationCollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:layout];
+    _collectionView =
+        [[ConversationCollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:self.layout];
     self.collectionView.layoutDelegate = self;
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
-    self.collectionView.showsVerticalScrollIndicator = NO;
+    self.collectionView.showsVerticalScrollIndicator = YES;
     self.collectionView.showsHorizontalScrollIndicator = NO;
     self.collectionView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.collectionView];
@@ -484,6 +492,18 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.inputToolbar autoPinWidthToSuperview];
     [self.inputToolbar autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.collectionView];
     [self autoPinViewToBottomGuideOrKeyboard:self.inputToolbar];
+
+    self.loadMoreHeader = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.loadMoreHeader setTitle:NSLocalizedString(@"load_earlier_messages", @"") forState:UIControlStateNormal];
+    [self.loadMoreHeader setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
+    self.loadMoreHeader.titleLabel.font = [UIFont ows_mediumFontWithSize:20.f];
+    [self.loadMoreHeader addTarget:self
+                            action:@selector(loadMoreHeaderTapped:)
+                  forControlEvents:UIControlEventTouchUpInside];
+    [self.collectionView addSubview:self.loadMoreHeader];
+    [self.loadMoreHeader autoPinWidthToWidthOfView:self.view];
+    [self.loadMoreHeader autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.loadMoreHeader autoSetDimension:ALDimensionHeight toSize:kLoadMoreHeaderHeight];
 }
 
 - (void)registerCellClasses
@@ -494,16 +514,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             forCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSContactOffersCell class]
             forCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]];
-    [self.collectionView registerClass:[OWSOutgoingMessageCell class]
-            forCellWithReuseIdentifier:[OWSOutgoingMessageCell cellReuseIdentifier]];
-    [self.collectionView registerClass:[OWSIncomingMessageCell class]
-            forCellWithReuseIdentifier:[OWSIncomingMessageCell cellReuseIdentifier]];
+    [self.collectionView registerClass:[OWSMessageCell class]
+            forCellWithReuseIdentifier:[OWSMessageCell cellReuseIdentifier]];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
     [self startReadTimer];
-    [self startExpirationTimerAnimations];
     self.isAppInBackground = NO;
 }
 
@@ -514,6 +531,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         self.hasClearedUnreadMessagesIndicator = NO;
         [self.dynamicInteractions clearUnreadIndicatorState];
     }
+    [self.cellMediaCache removeAllObjects];
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
@@ -537,10 +555,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // or on another device.
     [self hideInputIfNeeded];
 
-    self.isViewVisible = YES;
+    [self.inputToolbar viewWillAppear:animated];
 
-    // restart any animations that were stopped e.g. while inspecting the contact info screens.
-    [self startExpirationTimerAnimations];
+    self.isViewVisible = YES;
 
     // We should have already requested contact access at this point, so this should be a no-op
     // unless it ever becomes possible to load this VC without going via the HomeViewController.
@@ -934,6 +951,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)cancelReadTimer
 {
     [self.readTimer invalidate];
+    self.readTimer = nil;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -970,6 +988,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     self.isViewVisible = NO;
 
+    [self.inputToolbar viewWillDisappear:animated];
+
     [self.audioAttachmentPlayer stop];
     self.audioAttachmentPlayer = nil;
 
@@ -977,17 +997,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self saveDraft];
     [self markVisibleMessagesAsRead];
     [self cancelVoiceMemo];
+    [self.cellMediaCache removeAllObjects];
 
     self.isUserScrolling = NO;
-}
-
-- (void)startExpirationTimerAnimations
-{
-    OWSAssert([NSThread isMainThread]);
-
-    // This notification should be posted synchronously.
-    [[NSNotificationCenter defaultCenter] postNotificationName:ConversationViewControllerDidAppearNotification
-                                                        object:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -1003,7 +1015,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     NSAttributedString *name;
     if (self.thread.isGroupThread) {
         if (self.thread.name.length == 0) {
-            name = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"")];
+            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
         } else {
             name = [[NSAttributedString alloc] initWithString:self.thread.name];
         }
@@ -1410,35 +1422,36 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self showConversationSettings];
 }
 
-//- (void)collectionView:(JSQMessagesCollectionView *)collectionView
-//                             header:(JSQMessagesLoadEarlierHeaderView *)headerView
-//    didTapLoadEarlierMessagesButton:(UIButton *)sender
-//{
-//    OWSAssert(!self.isUserScrolling);
-//
-//    BOOL hasEarlierUnseenMessages = self.dynamicInteractions.hasMoreUnseenMessages;
-//
-//    // We want to restore the current scroll state after we update the range, update
-//    // the dynamic interactions and re-layout.  Here we take a "before" snapshot.
-//    CGFloat scrollDistanceToBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
-//
-//    self.page = MIN(self.page + 1, (NSUInteger)kYapDatabaseMaxPageCount - 1);
-//
-//    [self resetMappings];
-//
-//    [self.collectionView layoutSubviews];
-//
-//    self.collectionView.contentOffset = CGPointMake(0, self.safeContentHeight - scrollDistanceToBottom);
-//
-//    // Don’t auto-scroll after “loading more messages” unless we have “more unseen messages”.
-//    //
-//    // Otherwise, tapping on "load more messages" autoscrolls you downward which is completely wrong.
-//    if (hasEarlierUnseenMessages) {
-//        [self scrollToUnreadIndicatorAnimated];
-//    }
-//
-//    [self updateLoadEarlierVisible];
-//}
+- (void)loadMoreHeaderTapped:(id)sender
+{
+    if (self.isUserScrolling) {
+        DDLogError(@"%@ Ignoring load more tap while user is scrolling.", self.tag);
+        return;
+    }
+
+    BOOL hasEarlierUnseenMessages = self.dynamicInteractions.hasMoreUnseenMessages;
+
+    // We want to restore the current scroll state after we update the range, update
+    // the dynamic interactions and re-layout.  Here we take a "before" snapshot.
+    CGFloat scrollDistanceToBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
+
+    self.page = MIN(self.page + 1, (NSUInteger)kYapDatabaseMaxPageCount - 1);
+
+    [self resetMappings];
+
+    [self.layout prepareLayout];
+
+    self.collectionView.contentOffset = CGPointMake(0, self.safeContentHeight - scrollDistanceToBottom);
+
+    // Don’t auto-scroll after “loading more messages” unless we have “more unseen messages”.
+    //
+    // Otherwise, tapping on "load more messages" autoscrolls you downward which is completely wrong.
+    if (hasEarlierUnseenMessages) {
+        [self scrollToUnreadIndicatorAnimated];
+    }
+
+    [self updateShowLoadMoreHeader];
+}
 
 - (BOOL)shouldShowLoadEarlierMessages
 {
@@ -1456,10 +1469,24 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     return show;
 }
 
-- (void)updateLoadEarlierVisible
+- (void)updateShowLoadMoreHeader
 {
-    // TODO:
-    //    [self setShowLoadEarlierMessagesHeader:[self shouldShowLoadEarlierMessages]];
+    [self setShowLoadMoreHeader:[self shouldShowLoadEarlierMessages]];
+}
+
+- (void)setShowLoadMoreHeader:(BOOL)showLoadMoreHeader
+{
+    BOOL valueChanged = _showLoadMoreHeader != showLoadMoreHeader;
+
+    _showLoadMoreHeader = showLoadMoreHeader;
+
+    self.loadMoreHeader.hidden = !showLoadMoreHeader;
+    self.loadMoreHeader.userInteractionEnabled = showLoadMoreHeader;
+
+    if (valueChanged) {
+        [self.collectionView.collectionViewLayout invalidateLayout];
+        [self.collectionView reloadData];
+    }
 }
 
 - (void)updateMessageMappingRangeOptions:(MessagesRangeSizeMode)mode
@@ -1789,6 +1816,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 #pragma mark - ConversationViewCellDelegate
 
+- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
+{
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(recipientId.length > 0);
+
+    return [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:recipientId];
+}
+
 - (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction
 {
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
@@ -2054,23 +2089,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     } else {
         OWSFail(@"Tap for system messages of unknown type: %@", [interaction class]);
     }
-}
-
-- (void)didLongPressSystemMessageCell:(ConversationViewCell *)systemMessageCell fromView:(UIView *)fromView
-{
-    OWSAssert([NSThread isMainThread]);
-    OWSAssert(systemMessageCell);
-    OWSAssert(fromView);
-
-    DDLogDebug(@"%@ long pressed system message cell: %@", self.tag, systemMessageCell);
-
-    [systemMessageCell becomeFirstResponder];
-
-    // TODO: Update menu controller actions.
-    UIMenuController *theMenu = [UIMenuController sharedMenuController];
-    CGRect targetRect = [fromView.superview convertRect:fromView.frame toView:systemMessageCell];
-    [theMenu setTargetRect:targetRect inView:systemMessageCell];
-    [theMenu setMenuVisible:YES animated:YES];
 }
 
 #pragma mark - ContactEditingDelegate
@@ -2767,7 +2785,25 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    [self reloadViewItems];
+    // We need to reload any modified interactions _before_ we call
+    // reloadViewItems.
+    for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
+        switch (rowChange.type) {
+            case YapDatabaseViewChangeUpdate: {
+                YapCollectionKey *collectionKey = rowChange.collectionKey;
+                OWSAssert(collectionKey.key.length > 0);
+                if (collectionKey.key) {
+                    ConversationViewItem *viewItem = self.viewItemMap[collectionKey.key];
+                    [self reloadInteractionForViewItem:viewItem];
+                }
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+    NSMutableSet<NSNumber *> *rowsThatChangedSize = [[self reloadViewItems] mutableCopy];
 
     BOOL wasAtBottom = [self isScrolledToBottom];
     // We want sending messages to feel snappy.  So, if the only
@@ -2781,35 +2817,23 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     __block BOOL scrollToBottom = wasAtBottom;
 
     [self.collectionView performBatchUpdates:^{
-        // TODO: We need to reload neighbords of changed cells.
-        void (^reloadNeighbors)(NSIndexPath *) = ^(NSIndexPath *indexPath) {
-            //            if (indexPath.row > 0) {
-            //                [self.collectionView reloadItemsAtIndexPaths:@[ [NSIndexPath indexPathForRow:indexPath.row
-            //                - 1
-            //                                                                                   inSection:0] ]];
-            //            }
-            //            if (indexPath.row + 1 < (NSInteger) self.viewItems.count) {
-            //                [self.collectionView reloadItemsAtIndexPaths:@[ [NSIndexPath indexPathForRow:indexPath.row
-            //                + 1
-            //                                                                                   inSection:0] ]];
-            //            }
-        };
-
         for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
-                    DDLogError(@".... YapDatabaseViewChangeDelete: %@", rowChange.collectionKey);
+                    DDLogError(
+                        @".... YapDatabaseViewChangeDelete: %@, %@", rowChange.collectionKey, rowChange.indexPath);
 
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
-
+                    [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
                     YapCollectionKey *collectionKey = rowChange.collectionKey;
                     OWSAssert(collectionKey.key.length > 0);
-                    reloadNeighbors(rowChange.indexPath);
                     break;
                 }
                 case YapDatabaseViewChangeInsert: {
-                    DDLogError(@".... YapDatabaseViewChangeInsert: %@", rowChange.collectionKey);
+                    DDLogError(
+                        @".... YapDatabaseViewChangeInsert: %@, %@", rowChange.collectionKey, rowChange.newIndexPath);
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
+                    [rowsThatChangedSize removeObject:@(rowChange.newIndexPath.row)];
 
                     TSInteraction *interaction = [self interactionAtIndexPath:rowChange.newIndexPath];
                     if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
@@ -2819,31 +2843,34 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                             shouldAnimateScrollToBottom = NO;
                         }
                     }
-                    reloadNeighbors(rowChange.newIndexPath);
                     break;
                 }
                 case YapDatabaseViewChangeMove: {
-                    DDLogError(@".... YapDatabaseViewChangeMove: %@", rowChange.collectionKey);
+                    DDLogError(@".... YapDatabaseViewChangeMove: %@, %@, %@",
+                        rowChange.collectionKey,
+                        rowChange.indexPath,
+                        rowChange.newIndexPath);
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
-                    reloadNeighbors(rowChange.indexPath);
-                    reloadNeighbors(rowChange.newIndexPath);
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
-                    DDLogError(@".... YapDatabaseViewChangeUpdate: %@", rowChange.collectionKey);
-                    YapCollectionKey *collectionKey = rowChange.collectionKey;
-                    OWSAssert(collectionKey.key.length > 0);
-                    if (collectionKey.key) {
-                        ConversationViewItem *viewItem = self.viewItemMap[collectionKey.key];
-                        [self reloadViewItem:viewItem];
-                    }
+                    DDLogError(
+                        @".... YapDatabaseViewChangeUpdate: %@, %@", rowChange.collectionKey, rowChange.indexPath);
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
-                    reloadNeighbors(rowChange.indexPath);
+                    [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
                     break;
                 }
             }
         }
+
+        // The changes performed above may affect the size of neighboring cells,
+        // as they may affect which cells show "date" headers or "status" footers.
+        NSMutableArray<NSIndexPath *> *rowsToReload = [NSMutableArray new];
+        for (NSNumber *row in rowsThatChangedSize) {
+            [rowsToReload addObject:[NSIndexPath indexPathForRow:row.integerValue inSection:0]];
+        }
+        [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
     }
         completion:^(BOOL success) {
             OWSAssert([NSThread isMainThread]);
@@ -3425,16 +3452,16 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         } else if (skipApprovalDialog) {
             [self sendMessageAttachment:attachment];
         } else {
-            UIViewController *viewController =
-                [[AttachmentApprovalViewController alloc] initWithAttachment:attachment
-                                                           successCompletion:^{
-                                                               [weakSelf sendMessageAttachment:attachment];
-                                                           }];
-            UINavigationController *navigationController =
-                [[UINavigationController alloc] initWithRootViewController:viewController];
-            [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+            [self.inputToolbar showApprovalUIForAttachment:attachment];
         }
     });
+}
+
+- (void)didApproveAttachment:(SignalAttachment *)attachment
+{
+    OWSAssert(attachment);
+
+    [self sendMessageAttachment:attachment];
 }
 
 - (void)showErrorAlertForAttachment:(SignalAttachment *_Nullable)attachment
@@ -3451,6 +3478,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                           message:errorMessage];
 }
 
+// TODO: Is this necessary? It seems redundant with observing changes to
+// the collection view's layout.
 - (void)textViewDidChangeLayout
 {
     OWSAssert([NSThread isMainThread]);
@@ -3470,7 +3499,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     //
     // We can safely call prepareLayout to ensure the layout state is up-to-date
     // since our layout uses a dirty flag internally to debounce redundant work.
-    [self.collectionView.collectionViewLayout prepareLayout];
+    [self.layout prepareLayout];
     return [self.collectionView.collectionViewLayout collectionViewContentSize].height;
 }
 
@@ -3561,6 +3590,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     return self.viewItems;
 }
 
+- (CGFloat)layoutHeaderHeight
+{
+    return (self.showLoadMoreHeader ? kLoadMoreHeaderHeight : 0.f);
+}
+
 #pragma mark - ConversationInputToolbarDelegate
 
 - (void)sendButtonPressed
@@ -3593,7 +3627,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    text = [text ows_stripped];
 
     if (text.length < 1) {
         return;
@@ -3709,6 +3743,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _isViewVisible = isViewVisible;
 
     [self updateShouldObserveDBModifications];
+    [self updateCellsVisible];
 }
 
 - (void)setIsAppInBackground:(BOOL)isAppInBackground
@@ -3716,6 +3751,15 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _isAppInBackground = isAppInBackground;
 
     [self updateShouldObserveDBModifications];
+    [self updateCellsVisible];
+}
+
+- (void)updateCellsVisible
+{
+    BOOL isCellVisible = self.isViewVisible && !self.isAppInBackground;
+    for (ConversationViewCell *cell in self.collectionView.visibleCells) {
+        cell.isCellVisible = isCellVisible;
+    }
 }
 
 - (void)updateShouldObserveDBModifications
@@ -3775,7 +3819,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self reloadViewItems];
 
     [self resetContentAndLayout];
-    [self updateLoadEarlierVisible];
+    [self updateShowLoadMoreHeader];
     [self ensureDynamicInteractions];
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
@@ -3808,12 +3852,17 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 // This is a key method.  It builds or rebuilds the list of
 // cell view models.
-- (void)reloadViewItems
+//
+// Returns a list of the rows which may have changed size and
+// need to be reloaded if we're doing an incremental update
+// of the view.
+- (NSSet<NSNumber *> *)reloadViewItems
 {
     NSMutableArray<ConversationViewItem *> *viewItems = [NSMutableArray new];
     NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemMap = [NSMutableDictionary new];
 
     NSUInteger count = [self.messageMappings numberOfItemsInSection:0];
+    BOOL isGroupThread = self.isGroupConversation;
 
     // TODO: Recycle view items where possible.
     // TODO: Distinguish interaction types through some enum.
@@ -3826,29 +3875,46 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             OWSAssert(interaction);
 
             ConversationViewItem *_Nullable viewItem = self.viewItemMap[interaction.uniqueId];
-            if (!viewItem) {
-                viewItem = [[ConversationViewItem alloc] initWithTSInteraction:interaction];
+            if (viewItem) {
+                viewItem.previousRow = viewItem.row;
+            } else {
+                viewItem = [[ConversationViewItem alloc] initWithTSInteraction:interaction isGroupThread:isGroupThread];
             }
+            viewItem.row = (NSInteger)row;
             [viewItems addObject:viewItem];
             OWSAssert(!viewItemMap[interaction.uniqueId]);
             viewItemMap[interaction.uniqueId] = viewItem;
         }
     }];
 
+    NSMutableSet<NSNumber *> *rowsThatChangedSize = [NSMutableSet new];
+
     // Update the "shouldShowDate" property of the view items.
-    int row = 0;
-    BOOL shouldShowDateOnNextViewItem = NO;
+    BOOL shouldShowDateOnNextViewItem = YES;
     uint64_t previousViewItemTimestamp = 0;
     for (ConversationViewItem *viewItem in viewItems) {
-        if (row == 0) {
-            viewItem.shouldShowDate = YES;
-            shouldShowDateOnNextViewItem = NO;
-        } else if (viewItem.interaction.interactionType == OWSInteractionType_UnreadIndicator
-            || viewItem.interaction.interactionType == OWSInteractionType_Offer) {
-            viewItem.shouldShowDate = NO;
+        BOOL canShowDate = NO;
+        switch (viewItem.interaction.interactionType) {
+            case OWSInteractionType_Unknown:
+            case OWSInteractionType_UnreadIndicator:
+            case OWSInteractionType_Offer:
+                canShowDate = NO;
+                break;
+            case OWSInteractionType_IncomingMessage:
+            case OWSInteractionType_OutgoingMessage:
+            case OWSInteractionType_Error:
+            case OWSInteractionType_Info:
+            case OWSInteractionType_Call:
+                canShowDate = YES;
+                break;
+        }
+
+        BOOL shouldShowDate = NO;
+        if (!canShowDate) {
+            shouldShowDate = NO;
             shouldShowDateOnNextViewItem = YES;
         } else if (shouldShowDateOnNextViewItem) {
-            viewItem.shouldShowDate = YES;
+            shouldShowDate = YES;
             shouldShowDateOnNextViewItem = NO;
         } else {
             uint64_t viewItemTimestamp = viewItem.interaction.timestampForSorting;
@@ -3857,21 +3923,57 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             uint64_t timeDifferenceMs = viewItemTimestamp - previousViewItemTimestamp;
             static const uint64_t kShowTimeIntervalMs = 5 * kMinuteInMs;
             if (timeDifferenceMs > kShowTimeIntervalMs) {
-                viewItem.shouldShowDate = YES;
+                shouldShowDate = YES;
             }
             shouldShowDateOnNextViewItem = NO;
         }
+
+        // If this is an existing view item and it has changed size,
+        // note that so that we can reload this cell while doing
+        // incremental updates.
+        if (viewItem.shouldShowDate != shouldShowDate && viewItem.previousRow != NSNotFound) {
+            [rowsThatChangedSize addObject:@(viewItem.previousRow)];
+        }
+        viewItem.shouldShowDate = shouldShowDate;
+
         previousViewItemTimestamp = viewItem.interaction.timestampForSorting;
-        row++;
+    }
+
+    // Update the "shouldShowDate" property of the view items.
+    OWSInteractionType lastInteractionType = OWSInteractionType_Unknown;
+    MessageRecipientStatus lastRecipientStatus = MessageRecipientStatusUploading;
+    for (ConversationViewItem *viewItem in viewItems.reverseObjectEnumerator) {
+        BOOL shouldHideRecipientStatus = NO;
+        OWSInteractionType interactionType = viewItem.interaction.interactionType;
+
+        if (interactionType == OWSInteractionType_OutgoingMessage) {
+            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
+            MessageRecipientStatus recipientStatus =
+                [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
+            shouldHideRecipientStatus
+                = (interactionType == lastInteractionType && recipientStatus == lastRecipientStatus);
+            lastRecipientStatus = recipientStatus;
+        }
+        lastInteractionType = interactionType;
+
+        // If this is an existing view item and it has changed size,
+        // note that so that we can reload this cell while doing
+        // incremental updates.
+        if (viewItem.shouldHideRecipientStatus != shouldHideRecipientStatus && viewItem.previousRow != NSNotFound) {
+            [rowsThatChangedSize addObject:@(viewItem.previousRow)];
+        }
+        viewItem.shouldHideRecipientStatus = shouldHideRecipientStatus;
     }
 
     self.viewItems = viewItems;
     self.viewItemMap = viewItemMap;
+
+    return [rowsThatChangedSize copy];
 }
 
 // Whenever an interaction is modified, we need to reload it from the DB
 // and update the corresponding view item.
-- (void)reloadViewItem:(ConversationViewItem *)viewItem
+- (void)reloadInteractionForViewItem:(ConversationViewItem *)viewItem
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(viewItem);
@@ -3920,30 +4022,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
     cell.viewItem = viewItem;
     cell.delegate = self;
-
-    // TODO: Could we move this inside the cell base class?
-    if (viewItem.shouldShowDate) {
-        cell.messageDateHeaderText = [[JSQMessagesTimestampFormatter sharedFormatter]
-            attributedTimestampForDate:viewItem.interaction.dateForSorting];
-    }
+    cell.contentWidth = self.layout.contentWidth;
 
     [cell loadForDisplay];
 
     return cell;
-
-    // case TSInfoMessageAdapter: {
-    //    // HACK this will get called when we get a new info message, but there's gotta be a better spot for this.
-    //    OWSDisappearingMessagesConfiguration *configuration =
-    //    [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-    //    [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
-    //
-    //    if (message.shouldStartExpireTimer && [cell conformsToProtocol:@protocol(OWSExpirableMessageView)]) {
-    //        id<OWSExpirableMessageView> expirableView = (id<OWSExpirableMessageView>)cell;
-    //        [expirableView startExpirationTimerWithExpiresAtSeconds:message.expiresAtSeconds
-    //                                         initialDurationSeconds:message.expiresInSeconds];
-    //    }
-    //
-    //    return cell;
 }
 
 #pragma mark - UICollectionViewDelegate
