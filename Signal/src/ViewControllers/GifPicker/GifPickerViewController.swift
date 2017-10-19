@@ -299,8 +299,40 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
         self.selectedCell = cell
 
-        // TODO disable collection view scroll/selection
-        // TODO show loading
+        // Fade out all cells except the selected one.
+        let maskingView = OWSBezierPathView()
+        self.view.addSubview(maskingView)
+
+        maskingView.configureShapeLayerBlock = { [weak self] layer, bounds in
+            guard let strongSelf = self else {
+                return
+            }
+            let path = UIBezierPath(rect: bounds)
+            let cellRect = strongSelf.collectionView.convert(cell.frame, to: strongSelf.view)
+            path.append(UIBezierPath(rect: cellRect))
+
+            layer.path = path.cgPath
+            layer.fillRule = kCAFillRuleEvenOdd
+            layer.fillColor = UIColor.black.cgColor
+            layer.opacity = 0.7
+        }
+        maskingView.autoPinEdgesToSuperviewEdges()
+
+        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        cell.contentView.addSubview(activityIndicator)
+        activityIndicator.autoCenterInSuperview()
+
+        activityIndicator.startAnimating()
+
+        // Render activityIndicator on a white tile to ensure it's visible on
+        // when overalayed on a variety of potential gifs.
+        activityIndicator.backgroundColor = UIColor.white.withAlphaComponent(0.3)
+        activityIndicator.autoSetDimension(.width, toSize: 30)
+        activityIndicator.autoSetDimension(.height, toSize: 30)
+        activityIndicator.layer.cornerRadius = 3
+
+        self.collectionView.isUserInteractionEnabled = false
+
         cell.fetchRenditionForSending().then { (asset: GiphyAsset) -> Void in
             let filePath = asset.filePath
             guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath) else {
