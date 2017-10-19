@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)attachmentButtonPressed;
 
+#pragma mark - Voice Memo
+
 - (void)voiceMemoGestureDidStart;
 
 - (void)voiceMemoGestureDidEnd;
@@ -19,8 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)voiceMemoGestureDidCancel;
 
 - (void)voiceMemoGestureDidChange:(CGFloat)cancelAlpha;
-
-- (void)textViewDidChange;
 
 #pragma mark - Attachment Approval
 

@@ -145,11 +145,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 // * The second (required) step is to update messageMappings.
 // * The third (optional) step is to update the messageMappings range using
 //   updateMessageMappingRangeOptions.
+// * The fourth (optional) step is to update the view items using reloadViewItems.
 // * The steps must be done in strict order.
 // * If we do any of the steps, we must do all of the required steps.
-// * We can't use messageMappings in between the first and second steps; e.g.
-//   we can't do any layout, since that uses numberOfItemsInSection: and
-//   interactionAtIndexPath: which use the messageMappings.
+// * We can't use messageMappings or viewItems after the first step until we've
+//   done the last step; i.e.. we can't do any layout, since that uses the view
+//   items which haven't been updated yet.
+// * If the first and/or second steps changes the set of messages
+//   their ordering and/or their state, we must do the third and fourth steps.
 // * If we do the third step, we must call resetContentAndLayout afterward.
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic) YapDatabaseViewMappings *messageMappings;
@@ -569,6 +572,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
     [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
     [self setNavigationTitle];
+    [self updateLastVisibleTimestamp];
 
     // We want to set the initial scroll state the first time we enter the view.
     if (!self.viewHasEverAppeared) {
@@ -608,8 +612,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     } else {
         [self scrollToBottomAnimated:NO];
     }
-
-    [self updateLastVisibleTimestamp];
 }
 
 - (void)scrollToUnreadIndicatorAnimated
@@ -628,17 +630,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                 animated:YES];
         }
     }
-
-    [self updateLastVisibleTimestamp];
 }
 
-// TODO: We need to audit every usage of this method.
 - (void)resetContentAndLayout
 {
     // Avoid layout corrupt issues and out-of-date message subtitles.
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
-    // TODO: Should we evacuate cached cell sizes here?
 }
 
 - (void)setUserHasScrolled:(BOOL)userHasScrolled
@@ -2160,8 +2158,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                            hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
                        firstUnseenInteractionTimestamp:self.dynamicInteractions.firstUnseenInteractionTimestamp
                                           maxRangeSize:maxRangeSize];
-
-    [self updateLastVisibleTimestamp];
 }
 
 - (void)clearUnreadMessagesIndicator
@@ -2185,21 +2181,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 }
 
-- (void)viewDidLayoutSubviews
-{
-    [super viewDidLayoutSubviews];
-
-    [self updateLastVisibleTimestamp];
-}
-
 - (void)createScrollButtons
 {
     self.scrollDownButton = [self createScrollButton:@"\uf103" selector:@selector(scrollDownButtonTapped)];
 #ifdef DEBUG
     self.scrollUpButton = [self createScrollButton:@"\uf102" selector:@selector(scrollUpButtonTapped)];
 #endif
-
-    [self updateLastVisibleTimestamp];
 }
 
 - (UIView *)createScrollButton:(NSString *)label selector:(SEL)selector
@@ -2258,7 +2245,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     OWSAssert([NSThread isMainThread]);
 
     BOOL shouldShowScrollDownButton = NO;
-    NSUInteger numberOfMessages = [self.messageMappings numberOfItemsInSection:0];
     CGFloat scrollSpaceToBottom = (self.safeContentHeight + self.collectionView.contentInset.bottom
         - (self.collectionView.contentOffset.y + self.collectionView.frame.size.height));
     CGFloat pageHeight = (self.collectionView.frame.size.height
@@ -2267,12 +2253,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // one page.
     BOOL isScrolledUp = scrollSpaceToBottom > pageHeight * 1.f;
 
-    if (numberOfMessages > 0) {
-        TSInteraction *lastInteraction =
-            [self interactionAtIndexPath:[NSIndexPath indexPathForRow:(NSInteger)numberOfMessages - 1 inSection:0]];
-        OWSAssert(lastInteraction);
+    if (self.viewItems.count > 0) {
+        ConversationViewItem *lastViewItem = [self.viewItems lastObject];
+        OWSAssert(lastViewItem);
 
-        if (lastInteraction.timestampForSorting > self.lastVisibleTimestamp) {
+        if (lastViewItem.interaction.timestampForSorting > self.lastVisibleTimestamp) {
             shouldShowScrollDownButton = YES;
         } else if (isScrolledUp) {
             shouldShowScrollDownButton = YES;
@@ -2746,9 +2731,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // This was our #2 crash, and much exacerbated by the refactoring somewhere between 2.6.2.0-2.6.3.8
     //
     // NOTE: It's critical we do this before beginLongLivedReadTransaction.
-    //       layoutIfNeeded triggers layout (obviously) which will update our cells using the current mappings
-    //       but loading cells using interactionAtIndexPath: and messageAtIndexPath:, which will return the
-    //       wrong results if the db connection has been updated but the mappings haven't.
+    //       We want to relayout our contents using the old message mappings and
+    //       view items before they are updated.
     [self.collectionView layoutIfNeeded];
     // ENDHACK to work around radar #28167779
 
@@ -2841,9 +2825,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
-                    DDLogError(
-                        @".... YapDatabaseViewChangeDelete: %@, %@", rowChange.collectionKey, rowChange.indexPath);
-
+                    DDLogVerbose(@"YapDatabaseViewChangeDelete: %@, %@", rowChange.collectionKey, rowChange.indexPath);
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
                     YapCollectionKey *collectionKey = rowChange.collectionKey;
@@ -2851,14 +2833,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     break;
                 }
                 case YapDatabaseViewChangeInsert: {
-                    DDLogError(
-                        @".... YapDatabaseViewChangeInsert: %@, %@", rowChange.collectionKey, rowChange.newIndexPath);
+                    DDLogVerbose(
+                        @"YapDatabaseViewChangeInsert: %@, %@", rowChange.collectionKey, rowChange.newIndexPath);
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                     [rowsThatChangedSize removeObject:@(rowChange.newIndexPath.row)];
 
-                    TSInteraction *interaction = [self interactionAtIndexPath:rowChange.newIndexPath];
-                    if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)interaction;
+                    ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:rowChange.newIndexPath.row];
+                    if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
                         if (!outgoingMessage.isFromLinkedDevice) {
                             scrollToBottom = YES;
                             shouldAnimateScrollToBottom = NO;
@@ -2867,7 +2849,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     break;
                 }
                 case YapDatabaseViewChangeMove: {
-                    DDLogError(@".... YapDatabaseViewChangeMove: %@, %@, %@",
+                    DDLogVerbose(@"YapDatabaseViewChangeMove: %@, %@, %@",
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         rowChange.newIndexPath);
@@ -2876,8 +2858,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
-                    DDLogError(
-                        @".... YapDatabaseViewChangeUpdate: %@, %@", rowChange.collectionKey, rowChange.indexPath);
+                    DDLogVerbose(@"YapDatabaseViewChangeUpdate: %@, %@", rowChange.collectionKey, rowChange.indexPath);
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
                     break;
@@ -3189,14 +3170,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [actionSheetController addAction:chooseDocumentAction];
 
     UIAlertAction *gifAction =
-        // TODO: What should the final copy be?
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SELECT_GIF_BUTTON",
                                            @"Label for 'select gif to attach' action sheet button")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *_Nonnull action) {
                                    [self showGifPicker];
                                }];
-    // TODO: What should the final icon be?
     UIImage *gifImage = [UIImage imageNamed:@"actionsheet_gif_black"];
     OWSAssert(gifImage);
     [gifAction setValue:gifImage forKey:@"image"];
@@ -3205,42 +3184,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self presentViewController:actionSheetController animated:true completion:nil];
 }
 
-- (NSIndexPath *)lastVisibleIndexPath
-{
-    NSIndexPath *lastVisibleIndexPath = nil;
-    for (NSIndexPath *indexPath in [self.collectionView indexPathsForVisibleItems]) {
-        if (!lastVisibleIndexPath || indexPath.row > lastVisibleIndexPath.row) {
-            lastVisibleIndexPath = indexPath;
-        }
-    }
-    return lastVisibleIndexPath;
-}
-
-- (nullable TSInteraction *)lastVisibleInteraction
-{
-    NSIndexPath *lastVisibleIndexPath = [self lastVisibleIndexPath];
-    if (!lastVisibleIndexPath) {
-        return nil;
-    }
-    return [self interactionAtIndexPath:lastVisibleIndexPath];
-}
-
-// TODO: Is this safe?
-// TODO: Remove most usages of this.
-- (TSInteraction *)interactionAtIndexPath:(NSIndexPath *)indexPath
-{
-    OWSAssert(indexPath);
-    OWSAssert(indexPath.section == 0);
-
-    ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSUInteger)indexPath.row];
-    return viewItem.interaction;
-}
-
 - (void)updateLastVisibleTimestamp
 {
-    TSInteraction *lastVisibleInteraction = [self lastVisibleInteraction];
-    if (lastVisibleInteraction) {
-        uint64_t lastVisibleTimestamp = lastVisibleInteraction.timestampForSorting;
+    ConversationViewItem *_Nullable lastViewItem = [self.viewItems lastObject];
+    if (lastViewItem) {
+        uint64_t lastVisibleTimestamp = lastViewItem.interaction.timestampForSorting;
         self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, lastVisibleTimestamp);
     }
 
@@ -3499,20 +3447,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                           message:errorMessage];
 }
 
-// TODO: Is this necessary? It seems redundant with observing changes to
-// the collection view's layout.
-- (void)textViewDidChangeLayout
-{
-    OWSAssert([NSThread isMainThread]);
-
-    BOOL wasAtBottom = [self isScrolledToBottom];
-    if (wasAtBottom) {
-        [self scrollToBottomImmediately];
-    }
-
-    [self updateLastVisibleTimestamp];
-}
-
 - (CGFloat)safeContentHeight
 {
     // Don't use self.collectionView.contentSize.height as the collection view's
@@ -3743,12 +3677,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self cancelRecordingVoiceMemo];
 }
 
-// TODO: We should use a different event: when the input toolbar changes size.
-- (void)textViewDidChange
-{
-    [self updateLastVisibleTimestamp];
-}
-
 #pragma mark - Database Observation
 
 - (void)setIsUserScrolling:(BOOL)isUserScrolling
@@ -3857,6 +3785,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     OWSAssert([NSThread isMainThread]);
 
+    [self updateLastVisibleTimestamp];
+
     // JSQMessageView has glitchy behavior. When presenting/dismissing view
     // controllers, the size of the input toolbar and/or collection view can
     // repeatedly change, leaving scroll state in an invalid state.  The
@@ -3883,8 +3813,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     NSUInteger count = [self.messageMappings numberOfItemsInSection:0];
     BOOL isGroupThread = self.isGroupConversation;
 
-    // TODO: Recycle view items where possible.
-    // TODO: Distinguish interaction types through some enum.
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
         OWSAssert(viewTransaction);
@@ -4013,13 +3941,15 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }];
 }
 
-- (nullable ConversationViewItem *)viewItemForIndex:(NSUInteger)index
+- (nullable ConversationViewItem *)viewItemForIndex:(NSInteger)index
 {
-    if (index >= self.viewItems.count) {
+    if (index < 0 || index >= (NSInteger)self.viewItems.count) {
         OWSFail(@"%@ Invalid view item index: %zd", self.tag, index);
         return nil;
     }
-    return self.viewItems[index];
+    ConversationViewItem *_Nullable viewItem = self.viewItems[(NSUInteger)index];
+    OWSAssert(viewItem);
+    return viewItem;
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -4032,8 +3962,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
                   cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSUInteger)indexPath.row];
-
+    ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:indexPath.row];
     ConversationViewCell *cell = [viewItem dequeueCellForCollectionView:self.collectionView indexPath:indexPath];
     if (!cell) {
         OWSFail(@"%@ Could not dequeue cell.", self.tag);
@@ -4068,12 +3997,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     ConversationViewCell *conversationViewCell = (ConversationViewCell *)cell;
     conversationViewCell.isCellVisible = NO;
-
-    // TODO:
-    //    if ([cell conformsToProtocol:@protocol(OWSExpirableMessageView)]) {
-    //        id<OWSExpirableMessageView> expirableView = (id<OWSExpirableMessageView>)cell;
-    //        [expirableView stopExpirationTimer];
-    //    }
 }
 
 #pragma mark - Logging

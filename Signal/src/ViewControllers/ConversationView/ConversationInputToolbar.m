@@ -181,8 +181,6 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     self.inputTextView.text = value;
 
     [self ensureShouldShowVoiceMemoButton];
-    // TODO: Remove this when we remove the delegate method.
-    [self textViewDidChange];
 }
 
 - (void)clearTextMessage
@@ -633,7 +631,6 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     OWSAssert(self.inputToolbarDelegate);
 
     [self ensureShouldShowVoiceMemoButton];
-    [self.inputToolbarDelegate textViewDidChange];
 }
 
 - (void)textViewReturnPressed
