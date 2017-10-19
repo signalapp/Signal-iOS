@@ -464,7 +464,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self createScrollButtons];
     [self createHeaderViews];
     [self addNotificationListeners];
-    [self updateShowLoadMoreHeader];
 }
 
 - (void)createContents
@@ -1421,6 +1420,22 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self showConversationSettings];
 }
 
+#pragma mark - Load More
+
+- (void)autoLoadMoreIfNecessary
+{
+    if (self.isUserScrolling || !self.isViewVisible || self.isAppInBackground) {
+        return;
+    }
+    if (!self.showLoadMoreHeader) {
+        return;
+    }
+    static const CGFloat kThreshold = 50.f;
+    if (self.collectionView.contentOffset.y < kThreshold) {
+        [self loadMoreMessages];
+    }
+}
+
 - (void)loadMoreHeaderTapped:(id)sender
 {
     if (self.isUserScrolling) {
@@ -1428,6 +1443,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
+    [self loadMoreMessages];
+}
+
+- (void)loadMoreMessages
+{
     BOOL hasEarlierUnseenMessages = self.dynamicInteractions.hasMoreUnseenMessages;
 
     // We want to restore the current scroll state after we update the range, update
@@ -1448,29 +1468,22 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (hasEarlierUnseenMessages) {
         [self scrollToUnreadIndicatorAnimated];
     }
-
-    [self updateShowLoadMoreHeader];
-}
-
-- (BOOL)shouldShowLoadEarlierMessages
-{
-    if (self.page == kYapDatabaseMaxPageCount - 1) {
-        return NO;
-    }
-
-    __block BOOL show = YES;
-
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        show = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId] <
-            [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
-    }];
-
-    return show;
 }
 
 - (void)updateShowLoadMoreHeader
 {
-    [self setShowLoadMoreHeader:[self shouldShowLoadEarlierMessages]];
+    if (self.page == kYapDatabaseMaxPageCount - 1) {
+        self.showLoadMoreHeader = NO;
+        return;
+    }
+
+    NSUInteger loadWindowSize = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
+    __block NSUInteger totalMessageCount;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        totalMessageCount =
+            [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
+    }];
+    self.showLoadMoreHeader = loadWindowSize < totalMessageCount;
 }
 
 - (void)setShowLoadMoreHeader:(BOOL)showLoadMoreHeader
@@ -1534,6 +1547,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     rangeOptions.minLength = kYapDatabaseRangeMinLength;
 
     [self.messageMappings setRangeOptions:rangeOptions forGroup:self.thread.uniqueId];
+    [self updateShowLoadMoreHeader];
     [self reloadViewItems];
 }
 
@@ -3524,6 +3538,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     [self updateLastVisibleTimestamp];
+    [self autoLoadMoreIfNecessary];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
@@ -3734,6 +3749,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 #pragma mark - Database Observation
 
+- (void)setIsUserScrolling:(BOOL)isUserScrolling
+{
+    _isUserScrolling = isUserScrolling;
+
+    [self autoLoadMoreIfNecessary];
+}
+
 - (void)setIsViewVisible:(BOOL)isViewVisible
 {
     _isViewVisible = isViewVisible;
@@ -3815,7 +3837,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self reloadViewItems];
 
     [self resetContentAndLayout];
-    [self updateShowLoadMoreHeader];
     [self ensureDynamicInteractions];
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
