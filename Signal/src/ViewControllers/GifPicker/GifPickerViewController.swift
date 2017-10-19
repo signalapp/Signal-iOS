@@ -31,8 +31,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     public weak var delegate: GifPickerViewControllerDelegate?
 
-    var thread: TSThread?
-    var messageSender: MessageSender?
+    let thread: TSThread
+    let messageSender: MessageSender
 
     let searchBar: UISearchBar
     let layout: GifPickerLayout
@@ -40,7 +40,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     var noResultsView: UILabel?
     var searchErrorView: UILabel?
     var activityIndicator: UIActivityIndicatorView?
-
+    var selectedCell: UICollectionViewCell?
     var imageInfos = [GiphyImageInfo]()
 
     var reachability: Reachability?
@@ -53,15 +53,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        self.thread = nil
-        self.messageSender = nil
-
-        self.searchBar = UISearchBar()
-        self.layout = GifPickerLayout()
-        self.collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: self.layout)
-
-        super.init(coder: aDecoder)
-        owsFail("\(self.TAG) invalid constructor")
+        fatalError("\(#function) is unimplemented.")
     }
 
     required init(thread: TSThread, messageSender: MessageSender) {
@@ -295,36 +287,36 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     // MARK: - UICollectionViewDelegate
 
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
         guard let cell = collectionView.cellForItem(at: indexPath) as? GifPickerCell else {
             owsFail("\(TAG) unexpected cell.")
             return
         }
-        guard let asset = cell.animatedAsset else {
-            Logger.info("\(TAG) unload cell selected.")
+
+        guard self.selectedCell == nil else {
+            owsFail("\(TAG) Already selected cell")
             return
         }
-        let filePath = asset.filePath
-        guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath) else {
-            owsFail("\(TAG) couldn't load asset.")
-            return
-        }
-        let attachment = SignalAttachment(dataSource: dataSource, dataUTI: asset.rendition.utiType)
-        guard let thread = thread else {
-            owsFail("\(TAG) Missing thread.")
-            return
-        }
-        guard let messageSender = messageSender else {
-            owsFail("\(TAG) Missing messageSender.")
-            return
-        }
+        self.selectedCell = cell
 
-        self.delegate?.gifPickerWillSend()
+        // TODO disable collection view scroll/selection
+        // TODO show loading
+        cell.fetchRenditionForSending().then { (asset: GiphyAsset) -> Void in
+            let filePath = asset.filePath
+            guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath) else {
+                owsFail("\(self.TAG) couldn't load asset.")
+                return
+            }
+            let attachment = SignalAttachment(dataSource: dataSource, dataUTI: asset.rendition.utiType)
 
-        let outgoingMessage = ThreadUtil.sendMessage(with: attachment, in: thread, messageSender: messageSender)
+            self.delegate?.gifPickerWillSend()
 
-        self.delegate?.gifPickerDidSend(outgoingMessage: outgoingMessage)
+            let outgoingMessage = ThreadUtil.sendMessage(with: attachment, in: self.thread, messageSender: self.messageSender)
 
-        dismiss(animated: true, completion: nil)
+            self.delegate?.gifPickerDidSend(outgoingMessage: outgoingMessage)
+
+            self.dismiss(animated: true, completion: nil)
+        }.retainUntilComplete()
     }
 
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
