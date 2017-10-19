@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) UIView *bottomLayoutView;
 @property (nonatomic) NSLayoutConstraint *bottomLayoutConstraint;
+@property (nonatomic) BOOL shouldIgnoreKeyboardChanges;
 
 @end
 
@@ -93,6 +94,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleKeyboardNotification:(NSNotification *)notification
 {
     OWSAssert([NSThread isMainThread]);
+
+    if (self.shouldIgnoreKeyboardChanges) {
+        return;
+    }
 
     NSDictionary *userInfo = [notification userInfo];
 

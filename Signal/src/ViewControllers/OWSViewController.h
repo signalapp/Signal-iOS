@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 // Use this method in lieu of autoPinToBottomLayoutGuideOfViewController:
 - (void)autoPinViewToBottomGuideOrKeyboard:(UIView *)view;
 
+- (void)setShouldIgnoreKeyboardChanges:(BOOL)value;
+
 @end
 
 NS_ASSUME_NONNULL_END
