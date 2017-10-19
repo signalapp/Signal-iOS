@@ -89,8 +89,9 @@ enum GiphyFormat {
 
     // TODO: We may need to tweak these constants.
     let kMaxDimension = UInt(618)
-    let kMinDimension = UInt(101)
-    let kMaxFileSize = UInt(3 * 1024 * 1024)
+    let kMinDimension = UInt(60)
+    let kPreferedPreviewFileSize = UInt(256 * 1024)
+    let kPreferedSendingFileSize = UInt(3 * 1024 * 1024)
 
     private enum PickingStrategy {
         case smallerIsBetter, largerIsBetter
@@ -105,20 +106,33 @@ enum GiphyFormat {
 
     public func pickStillRendition() -> GiphyRendition? {
         // Stills are just temporary placeholders, so use the smallest still possible.
-        return pickRendition(isStill:true, pickingStrategy:.smallerIsBetter, maxFileSize:kMaxFileSize)
+        return pickRendition(isStill:true, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedPreviewFileSize)
     }
 
     public func pickAnimatedRendition() -> GiphyRendition? {
         // Try to pick a small file...
-        if let rendition = pickRendition(isStill:false, pickingStrategy:.largerIsBetter, maxFileSize:kMaxFileSize) {
+        if let rendition = pickRendition(isStill:false, pickingStrategy:.largerIsBetter, maxFileSize:kPreferedPreviewFileSize) {
             return rendition
         }
         // ...but gradually relax the file restriction...
-        if let rendition = pickRendition(isStill:false, pickingStrategy:.smallerIsBetter, maxFileSize:kMaxFileSize * 2) {
+        if let rendition = pickRendition(isStill:false, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedPreviewFileSize * 2) {
             return rendition
         }
         // ...and relax even more until we find an animated rendition.
-        return pickRendition(isStill:false, pickingStrategy:.smallerIsBetter, maxFileSize:kMaxFileSize * 3)
+        return pickRendition(isStill:false, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedPreviewFileSize * 3)
+    }
+
+    public func pickHighQualityAnimatedRendition() -> GiphyRendition? {
+        // Try to pick a small file...
+        if let rendition = pickRendition(isStill:false, pickingStrategy:.largerIsBetter, maxFileSize:kPreferedSendingFileSize) {
+            return rendition
+        }
+        // ...but gradually relax the file restriction...
+        if let rendition = pickRendition(isStill:false, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedSendingFileSize * 2) {
+            return rendition
+        }
+        // ...and relax even more until we find an animated rendition.
+        return pickRendition(isStill:false, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedSendingFileSize * 3)
     }
 
     // Picking a rendition must be done very carefully.
