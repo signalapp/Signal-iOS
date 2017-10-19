@@ -333,6 +333,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         self.collectionView.isUserInteractionEnabled = false
 
+        getFileForCell(cell)
+    }
+
+    public func getFileForCell(_ cell: GifPickerCell) {
         GiphyDownloader.sharedInstance.cancelAllRequests()
         cell.requestRenditionForSending().then { (asset: GiphyAsset) -> Void in
             let filePath = asset.filePath
@@ -349,7 +353,20 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             self.delegate?.gifPickerDidSend(outgoingMessage: outgoingMessage)
 
             self.dismiss(animated: true, completion: nil)
+        }.catch { error in
+            let alert = UIAlertController(title: NSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected gif couldn't be fetched"),
+                                          message: error.localizedDescription,
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: CommonStrings.retryButton, style: .default) { _ in
+                    self.getFileForCell(cell)
+            })
+            alert.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
+                self.dismiss(animated: true, completion: nil)
+            })
+
+            UIApplication.shared.frontmostViewController?.present(alert, animated: true, completion: nil)
         }.retainUntilComplete()
+
     }
 
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

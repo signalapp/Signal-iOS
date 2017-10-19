@@ -239,14 +239,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       preferredStyle:UIAlertControllerStyleAlert];
 
     if (retryBlock) {
-        [alertController
-            addAction:[UIAlertAction
-                          actionWithTitle:NSLocalizedString(@"RETRY_BUTTON_TEXT",
-                                              @"Generic text for button that retries whatever the last action was.")
-                                    style:UIAlertActionStyleDefault
-                                  handler:^(UIAlertAction *action) {
-                                      retryBlock();
-                                  }]];
+        [alertController addAction:[UIAlertAction actionWithTitle:[CommonStrings retryButton]
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *action) {
+                                                              retryBlock();
+                                                          }]];
     }
 
     [alertController addAction:[OWSAlerts cancelAction]];
