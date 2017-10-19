@@ -35,6 +35,14 @@ class GifPickerCell: UICollectionViewCell {
     var animatedAssetRequest: GiphyAssetRequest?
     var animatedAsset: GiphyAsset?
     var imageView: YYAnimatedImageView?
+    var activityIndicator: UIActivityIndicatorView?
+
+    var isCellSelected: Bool = false {
+        didSet {
+            AssertIsOnMainThread()
+            ensureCellState()
+        }
+    }
 
     // As another bandwidth saving measure, we only fetch the full sized GIF when the user selects it.
     private var renditionForSending: GiphyRendition?
@@ -59,6 +67,8 @@ class GifPickerCell: UICollectionViewCell {
         animatedAssetRequest = nil
         imageView?.removeFromSuperview()
         imageView = nil
+        activityIndicator = nil
+        isCellSelected = false
     }
 
     private func clearStillAssetRequest() {
@@ -202,6 +212,24 @@ class GifPickerCell: UICollectionViewCell {
         }
         imageView.image = image
         self.backgroundColor = nil
+
+        if self.isCellSelected {
+            let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+            self.activityIndicator = activityIndicator
+            addSubview(activityIndicator)
+            activityIndicator.autoCenterInSuperview()
+            activityIndicator.startAnimating()
+
+            // Render activityIndicator on a white tile to ensure it's visible on
+            // when overalayed on a variety of potential gifs.
+            activityIndicator.backgroundColor = UIColor.white.withAlphaComponent(0.3)
+            activityIndicator.autoSetDimension(.width, toSize: 30)
+            activityIndicator.autoSetDimension(.height, toSize: 30)
+            activityIndicator.layer.cornerRadius = 3
+        } else {
+            self.activityIndicator?.stopAnimating()
+            self.activityIndicator = nil
+        }
     }
 
     public func requestRenditionForSending() -> Promise<GiphyAsset> {

@@ -293,6 +293,12 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             return
         }
 
+        guard cell.stillAsset != nil || cell.animatedAsset != nil else {
+            // we don't want to let the user blindly select a gray cell
+            Logger.debug("\(TAG) ignoring selection of cell with no preview")
+            return
+        }
+
         guard self.selectedCell == nil else {
             owsFail("\(TAG) Already selected cell")
             return
@@ -302,13 +308,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         // Fade out all cells except the selected one.
         let maskingView = OWSBezierPathView()
         self.view.addSubview(maskingView)
-
-        maskingView.configureShapeLayerBlock = { [weak self] layer, bounds in
-            guard let strongSelf = self else {
-                return
-            }
+        let cellRect = self.collectionView.convert(cell.frame, to: self.view)
+        maskingView.configureShapeLayerBlock = { layer, bounds in
             let path = UIBezierPath(rect: bounds)
-            let cellRect = strongSelf.collectionView.convert(cell.frame, to: strongSelf.view)
             path.append(UIBezierPath(rect: cellRect))
 
             layer.path = path.cgPath
@@ -318,19 +320,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
         maskingView.autoPinEdgesToSuperviewEdges()
 
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-        cell.contentView.addSubview(activityIndicator)
-        activityIndicator.autoCenterInSuperview()
-
-        activityIndicator.startAnimating()
-
-        // Render activityIndicator on a white tile to ensure it's visible on
-        // when overalayed on a variety of potential gifs.
-        activityIndicator.backgroundColor = UIColor.white.withAlphaComponent(0.3)
-        activityIndicator.autoSetDimension(.width, toSize: 30)
-        activityIndicator.autoSetDimension(.height, toSize: 30)
-        activityIndicator.layer.cornerRadius = 3
-
+        cell.isCellSelected = true
         self.collectionView.isUserInteractionEnabled = false
 
         getFileForCell(cell)
