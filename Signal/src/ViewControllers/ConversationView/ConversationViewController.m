@@ -2330,9 +2330,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(message);
 
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [message saveWithTransaction:transaction];
-    }];
     [self updateLastVisibleTimestamp:message.timestampForSorting];
     self.lastMessageSentDate = [NSDate new];
     [self clearUnreadMessagesIndicator];
