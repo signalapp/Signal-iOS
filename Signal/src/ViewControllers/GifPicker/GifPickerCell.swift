@@ -9,10 +9,6 @@ class GifPickerCell: UICollectionViewCell {
     let TAG = "[GifPickerCell]"
 
     // MARK: Properties
-    enum GifPickerCellError: Error {
-        case assertionError(description: String)
-        case fetchFailure
-    }
 
     var imageInfo: GiphyImageInfo? {
         didSet {
@@ -211,7 +207,7 @@ class GifPickerCell: UICollectionViewCell {
     public func requestRenditionForSending() -> Promise<GiphyAsset> {
         guard let renditionForSending = self.renditionForSending else {
             owsFail("\(TAG) renditionForSending was unexpectedly nil")
-            return Promise(error: GifPickerCellError.assertionError(description: "renditionForSending was unexpectedly nil"))
+            return Promise(error: GiphyError.assertionError(description: "renditionForSending was unexpectedly nil"))
         }
 
         let (promise, fulfill, reject) = Promise<GiphyAsset>.pending()
@@ -227,8 +223,8 @@ class GifPickerCell: UICollectionViewCell {
                                                         failure: { _ in
                                                             // TODO GiphyDownloader API shoudl pass through a useful failing error
                                                             // so we can pass it through here
-                                                            reject(GifPickerCellError.fetchFailure)
-
+                                                            Logger.error("\(self.TAG) request failed")
+                                                            reject(GiphyError.fetchFailure)
         })
 
         return promise

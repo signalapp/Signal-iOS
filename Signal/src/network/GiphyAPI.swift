@@ -9,6 +9,21 @@ enum GiphyFormat {
     case gif, mp4, jpg
 }
 
+enum GiphyError: Error {
+    case assertionError(description: String)
+    case fetchFailure
+}
+extension GiphyError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .assertionError:
+            return NSLocalizedString("GIF_PICKER_ERROR_GENERIC", comment: "Generic error displayed when picking a gif")
+        case .fetchFailure:
+            return NSLocalizedString("GIF_PICKER_ERROR_FETCH_FAILURE", comment: "Error displayed when there is a failure fetching gifs from the remote service.")
+        }
+    }
+}
+
 // Represents a "rendition" of a GIF.
 // Giphy offers a plethora of renditions for each image.
 // They vary in content size (i.e. width,  height), 
