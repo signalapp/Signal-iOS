@@ -164,7 +164,7 @@ extension URLSessionTask {
 
     // MARK: - Properties
 
-    static let TAG = "[GiphyDownloader]"
+    let TAG = "[GiphyDownloader]"
 
     static let sharedInstance = GiphyDownloader()
 
@@ -287,7 +287,7 @@ extension URLSessionTask {
             }
 
             guard let downloadSession = self.giphyDownloadSession() else {
-                owsFail("\(GiphyDownloader.TAG) Couldn't create session manager.")
+                owsFail("\(self.TAG) Couldn't create session manager.")
                 self.assetRequestDidFail(assetRequest:assetRequest)
                 return
             }
@@ -341,23 +341,23 @@ extension URLSessionTask {
             return
         }
         if let error = error {
-            Logger.error("\(GiphyDownloader.TAG) download failed with error: \(error)")
+            Logger.error("\(TAG) download failed with error: \(error)")
             assetRequestDidFail(assetRequest:assetRequest)
             return
         }
         guard let httpResponse = task.response as? HTTPURLResponse else {
-            Logger.error("\(GiphyDownloader.TAG) missing or unexpected response: \(task.response)")
+            Logger.error("\(TAG) missing or unexpected response: \(task.response)")
             assetRequestDidFail(assetRequest:assetRequest)
             return
         }
         let statusCode = httpResponse.statusCode
         guard statusCode >= 200 && statusCode < 400 else {
-            Logger.error("\(GiphyDownloader.TAG) response has invalid status code: \(statusCode)")
+            Logger.error("\(TAG) response has invalid status code: \(statusCode)")
             assetRequestDidFail(assetRequest:assetRequest)
             return
         }
         guard let assetFilePath = assetRequest.assetFilePath else {
-            Logger.error("\(GiphyDownloader.TAG) task is missing asset file")
+            Logger.error("\(TAG) task is missing asset file")
             assetRequestDidFail(assetRequest:assetRequest)
             return
         }
@@ -390,7 +390,32 @@ extension URLSessionTask {
         }
     }
 
+    var animatedDataCount = [URLSessionDownloadTask: Int64]()
+    var stillDataCount = [URLSessionDownloadTask: Int64]()
+    var totalDataCount = [URLSessionDownloadTask: Int64]()
     public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+
+        // Log accumulated data usage in debug
+        if _isDebugAssertConfiguration() {
+            let assetRequest = downloadTask.assetRequest
+
+            totalDataCount[downloadTask] = totalBytesWritten
+            if assetRequest.rendition.isStill {
+                stillDataCount[downloadTask] = totalBytesWritten
+            } else {
+                animatedDataCount[downloadTask] = totalBytesWritten
+            }
+
+            let megabyteCount = { (dataCountMap: [URLSessionDownloadTask: Int64]) -> String in
+                let sum = dataCountMap.values.reduce(0, +)
+                let megabyteCount = Float(sum) / 1000 / 1000
+                return String(format: "%06.2f MB", megabyteCount)
+            }
+            Logger.info("\(TAG) Still bytes written:    \(megabyteCount(stillDataCount))")
+            Logger.info("\(TAG) Animated bytes written: \(megabyteCount(animatedDataCount))")
+            Logger.info("\(TAG) Total bytes written:    \(megabyteCount(totalDataCount))")
+        }
+
         let assetRequest = downloadTask.assetRequest
         guard !assetRequest.wasCancelled else {
             downloadTask.cancel()
