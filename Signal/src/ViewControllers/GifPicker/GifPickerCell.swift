@@ -208,7 +208,7 @@ class GifPickerCell: UICollectionViewCell {
         self.backgroundColor = nil
     }
 
-    public func fetchRenditionForSending() -> Promise<GiphyAsset> {
+    public func requestRenditionForSending() -> Promise<GiphyAsset> {
         guard let renditionForSending = self.renditionForSending else {
             owsFail("\(TAG) renditionForSending was unexpectedly nil")
             return Promise(error: GifPickerCellError.assertionError(description: "renditionForSending was unexpectedly nil"))
@@ -218,15 +218,16 @@ class GifPickerCell: UICollectionViewCell {
 
         // We don't retain a handle on the asset request, since there will only ever
         // be one selected asset, and we never want to cancel it.
-        _ = GiphyDownloader.sharedInstance.requestAsset(rendition: renditionForSending,
-                                                    priority: .high,
-                                                    success: { _, asset in
-                                                        fulfill(asset)
+        _ = GiphyDownloader
+            .sharedInstance.requestAsset(rendition: renditionForSending,
+                                                        priority: .high,
+                                                        success: { _, asset in
+                                                            fulfill(asset)
         },
-                                                    failure: { _ in
-                                                        // TODO GiphyDownloader API shoudl pass through a useful failing error
-                                                        // so we can pass it through here
-                                                        reject(GifPickerCellError.fetchFailure)
+                                                        failure: { _ in
+                                                            // TODO GiphyDownloader API shoudl pass through a useful failing error
+                                                            // so we can pass it through here
+                                                            reject(GifPickerCellError.fetchFailure)
 
         })
 

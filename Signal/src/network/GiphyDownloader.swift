@@ -237,6 +237,10 @@ extension URLSessionTask {
         return assetRequest
     }
 
+    public func cancelAllRequests() {
+        self.assetRequestQueue.forEach { $0.cancel() }
+    }
+
     private func assetRequestDidSucceed(assetRequest: GiphyAssetRequest, asset: GiphyAsset) {
         DispatchQueue.main.async {
             self.assetMap.set(key:assetRequest.rendition.url, value:asset)
