@@ -53,22 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
         = CGRectMake(0, 0, backImage.size.width + kExtraRightPadding, backImage.size.height + kExtraHeightPadding);
     backButton.frame = buttonFrame;
 
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 1)) {
-        // In iOS 11.1 beta, the hot area of custom bar button items is _only_
-        // the bounds of the custom view, making them very hard to hit.
-        //
-        // TODO: Remove this hack if the bug is fixed in iOS 11.1 by the time
-        //       it goes to production (or in a later release),
-        //       since it has two negative side effects: 1) the layout of the
-        //       back button isn't consistent with the iOS default back buttons
-        //       2) we can't add the unread count badge to the back button
-        //       with this hack.
-        return [[UIBarButtonItem alloc] initWithImage:backImage
-                                                style:UIBarButtonItemStylePlain
-                                               target:target
-                                               action:selector];
-    }
-
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
     backItem.width = buttonFrame.size.width;
 
