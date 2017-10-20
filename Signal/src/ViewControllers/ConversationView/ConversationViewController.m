@@ -543,6 +543,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     [self cancelVoiceMemo];
     self.isUserScrolling = NO;
+    [self saveDraft];
+    [self markVisibleMessagesAsRead];
+    [self.cellMediaCache removeAllObjects];
+    [self cancelReadTimer];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -3517,6 +3521,22 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     [self updateLastVisibleTimestamp];
     [self autoLoadMoreIfNecessary];
+
+    if ([self isScrolledAwayFromBottom]) {
+        [self.inputToolbar endEditingTextMessage];
+    }
+}
+
+// See the comments on isScrolledToBottom.
+- (BOOL)isScrolledAwayFromBottom
+{
+    CGFloat contentHeight = self.safeContentHeight;
+    // Note the usage of MAX() to handle the case where there isn't enough
+    // content to fill the collection view at its current size.
+    CGFloat contentOffsetYBottom = MAX(0.f, contentHeight - self.collectionView.bounds.size.height);
+    const CGFloat kThreshold = 250;
+    BOOL isScrolledAwayFromBottom = (self.collectionView.contentOffset.y < contentOffsetYBottom - kThreshold);
+    return isScrolledAwayFromBottom;
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
