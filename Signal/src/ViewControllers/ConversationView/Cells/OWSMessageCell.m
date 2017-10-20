@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 // to always keep one around.
 @property (nonatomic) BubbleMaskingView *payloadView;
 @property (nonatomic) UILabel *dateHeaderLabel;
-@property (nonatomic) UILabel *textLabel;
+@property (nonatomic) UITextView *textView;
 @property (nonatomic, nullable) UIImageView *bubbleImageView;
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 @property (nonatomic, nullable) UIImageView *stillImageView;
@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commontInit
 {
-    OWSAssert(!self.textLabel);
+    OWSAssert(!self.textView);
 
     self.layoutMargins = UIEdgeInsetsZero;
 
@@ -124,13 +124,17 @@ NS_ASSUME_NONNULL_BEGIN
     [self.payloadView addSubview:self.bubbleImageView];
     [self.bubbleImageView autoPinToSuperviewEdges];
 
-    self.textLabel = [UILabel new];
-    self.textLabel.font = [UIFont ows_regularFontWithSize:16.f];
-    self.textLabel.numberOfLines = 0;
-    self.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    self.textLabel.textAlignment = NSTextAlignmentLeft;
-    [self.bubbleImageView addSubview:self.textLabel];
-    OWSAssert(self.textLabel.superview);
+    self.textView = [UITextView new];
+    self.textView.font = [UIFont ows_regularFontWithSize:16.f];
+    self.textView.backgroundColor = [UIColor clearColor];
+    self.textView.opaque = NO;
+    self.textView.editable = NO;
+    self.textView.selectable = YES;
+    self.textView.textContainerInset = UIEdgeInsetsZero;
+    self.textView.contentInset = UIEdgeInsetsZero;
+    self.textView.scrollEnabled = NO;
+    [self.bubbleImageView addSubview:self.textView];
+    OWSAssert(self.textView.superview);
 
     self.footerLabel = [UILabel new];
     self.footerLabel.font = [UIFont ows_regularFontWithSize:12.f];
@@ -139,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Hide these views by default.
     self.bubbleImageView.hidden = YES;
-    self.textLabel.hidden = YES;
+    self.textView.hidden = YES;
     self.dateHeaderLabel.hidden = YES;
     self.footerLabel.hidden = YES;
 
@@ -255,14 +259,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self ensureViewMediaState];
-
-    //    dispatch_async(dispatch_get_main_queue(), ^{
-    //        NSLog(@"---- %@", self.viewItem.interaction.debugDescription);
-    //        NSLog(@"cell: %@", NSStringFromCGRect(self.frame));
-    //        NSLog(@"contentView: %@", NSStringFromCGRect(self.contentView.frame));
-    //        NSLog(@"textLabel: %@", NSStringFromCGRect(self.textLabel.frame));
-    //        NSLog(@"bubbleImageView: %@", NSStringFromCGRect(self.bubbleImageView.frame));
-    //    });
 }
 
 // We now eagerly create out view hierarchy (to do this exactly once per cell usage)
@@ -543,15 +539,32 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadForTextDisplay
 {
     self.bubbleImageView.hidden = NO;
-    self.textLabel.hidden = NO;
-    self.textLabel.text = self.textMessage;
-    self.textLabel.textColor = [self textColor];
+    self.textView.hidden = NO;
+    self.textView.text = self.textMessage;
+    UIColor *textColor = [self textColor];
+    self.textView.textColor = textColor;
+
+    // Don't link outgoing messages that haven't been sent yet, as
+    // this interferes with "tap to retry".
+    BOOL canLinkify = YES;
+    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
+        canLinkify = outgoingMessage.messageState == TSOutgoingMessageStateSentToService;
+    }
+    if (canLinkify) {
+        self.textView.linkTextAttributes = @{
+            NSForegroundColorAttributeName : textColor,
+            NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
+        };
+        self.textView.dataDetectorTypes
+            = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
+    }
 
     self.contentConstraints = @[
-        [self.textLabel autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
-        [self.textLabel autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
-        [self.textLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
-        [self.textLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
+        [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
+        [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
+        [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
+        [self.textView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
     ];
 }
 
@@ -724,8 +737,8 @@ NS_ASSUME_NONNULL_BEGIN
             CGFloat textVMargin = self.textVMargin;
             const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
 
-            self.textLabel.text = self.textMessage;
-            CGSize textSize = [self.textLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
+            self.textView.text = self.textMessage;
+            CGSize textSize = [self.textView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
             cellSize = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
                 (CGFloat)ceil(textSize.height + textVMargin * 2));
             break;
@@ -854,8 +867,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.dateHeaderLabel.text = nil;
     self.dateHeaderLabel.hidden = YES;
-    self.textLabel.text = nil;
-    self.textLabel.hidden = YES;
+    self.textView.text = nil;
+    self.textView.hidden = YES;
+    self.textView.dataDetectorTypes = UIDataDetectorTypeNone;
     self.footerLabel.text = nil;
     self.footerLabel.hidden = YES;
     self.bubbleImageView.image = nil;
@@ -879,41 +893,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.expirationTimerView removeFromSuperview];
     self.expirationTimerView = nil;
 }
-
-//- (void)prepareForReuse
-//{
-//    [super prepareForReuse];
-//    self.mediaView.alpha = 1.0;
-//    self.expirationTimerViewWidthConstraint.constant = 0.0f;
-//
-//    [self.mediaAdapter setCellVisible:NO];
-//
-//    // Clear this adapter's views IFF this was the last cell to use this adapter.
-//    [self.mediaAdapter clearCachedMediaViewsIfLastPresentingCell:self];
-//    [_mediaAdapter setLastPresentingCell:nil];
-//
-//    self.mediaAdapter = nil;
-//}
-//
-//- (void)setMediaAdapter:(nullable id<OWSMessageMediaAdapter>)mediaAdapter
-//{
-//    _mediaAdapter = mediaAdapter;
-//
-//    // Mark this as the last cell to use this adapter.
-//    [_mediaAdapter setLastPresentingCell:self];
-//}
-//
-//// pragma mark - OWSMessageCollectionViewCell
-//
-//- (void)setCellVisible:(BOOL)isVisible
-//{
-//    [self.mediaAdapter setCellVisible:isVisible];
-//}
-//
-//- (UIColor *)ows_textColor
-//{
-//    return [UIColor whiteColor];
-//}
 
 #pragma mark - Notifications
 
