@@ -762,6 +762,11 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [self.attachmentView viewWillDisappear:animated];
 }
 
+- (nullable NSString *)textInputPrimaryLanguage
+{
+    return self.inputTextView.textInputMode.primaryLanguage;
+}
+
 #pragma mark - Logging
 
 + (NSString *)logTag

@@ -47,6 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setMessageText:(NSString *_Nullable)value;
 - (void)clearTextMessage;
 
+- (nullable NSString *)textInputPrimaryLanguage;
+
 #pragma mark - Voice Memo
 
 - (void)showVoiceMemoUI;

@@ -1353,19 +1353,18 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 #pragma mark - JSQMessagesViewController method overrides
 
-// TODO: We need to audit all usage of this method.
 - (void)toggleDefaultKeyboard
 {
-    //    // Primary language is nil for the emoji keyboard & we want to stay on it after sending
-    //    if (![self.inputToolbar.inputTextView.textInputMode primaryLanguage]) {
-    //        return;
-    //    }
-    //
-    //    // The JSQ event listeners cause a bounce animation, so we temporarily disable them.
-    //    [self.keyboardController endListeningForKeyboard];
-    //    [self dismissKeyBoard];
-    //    [self popKeyBoard];
-    //    [self.keyboardController beginListeningForKeyboard];
+    // Primary language is nil for the emoji keyboard & we want to stay on it after sending
+    if (!self.inputToolbar.textInputPrimaryLanguage) {
+        return;
+    }
+
+    // The JSQ event listeners cause a bounce animation, so we temporarily disable them.
+    [self setShouldIgnoreKeyboardChanges:YES];
+    [self dismissKeyBoard];
+    [self popKeyBoard];
+    [self setShouldIgnoreKeyboardChanges:NO];
 }
 
 #pragma mark - Dynamic Text

@@ -94,6 +94,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([NSThread isMainThread]);
 
+    if (self.shouldIgnoreKeyboardChanges) {
+        return;
+    }
+
     NSDictionary *userInfo = [notification userInfo];
 
     NSValue *_Nullable keyboardEndFrameValue = userInfo[UIKeyboardFrameEndUserInfoKey];
