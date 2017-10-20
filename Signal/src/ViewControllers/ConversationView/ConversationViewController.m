@@ -3278,6 +3278,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [UIUtil applySignalAppearence];
     }
 
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
+        // post iOS11, document picker has no blue header.
+        [UIUtil applySignalAppearence];
+    }
+
     NSString *type;
     NSError *typeError;
     [url getResourceValue:&type forKey:NSURLTypeIdentifierKey error:&typeError];
