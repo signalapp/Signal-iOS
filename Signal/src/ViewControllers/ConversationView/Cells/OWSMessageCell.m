@@ -429,6 +429,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.dateHeaderLabel.hidden = YES;
         self.dateHeaderConstraints = @[
             [self.dateHeaderLabel autoSetDimension:ALDimensionHeight toSize:0],
+            [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTop],
         ];
     }
 }
