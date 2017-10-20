@@ -161,7 +161,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.collectionView.dataSource = self
         self.collectionView.backgroundColor = UIColor.white
         self.collectionView.register(GifPickerCell.self, forCellWithReuseIdentifier: kCellReuseIdentifier)
-        // Inserted below searchbar becase we later occlude the collectionview
+        // Inserted below searchbar because we later occlude the collectionview
         // by inserting a masking layer between the search bar and collectionview
         self.view.insertSubview(self.collectionView, belowSubview: searchBar)
         self.collectionView.autoPinWidthToSuperview()

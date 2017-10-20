@@ -221,7 +221,7 @@ class GifPickerCell: UICollectionViewCell {
             activityIndicator.startAnimating()
 
             // Render activityIndicator on a white tile to ensure it's visible on
-            // when overalayed on a variety of potential gifs.
+            // when overlayed on a variety of potential gifs.
             activityIndicator.backgroundColor = UIColor.white.withAlphaComponent(0.3)
             activityIndicator.autoSetDimension(.width, toSize: 30)
             activityIndicator.autoSetDimension(.height, toSize: 30)
@@ -249,7 +249,7 @@ class GifPickerCell: UICollectionViewCell {
                                                             fulfill(asset)
         },
                                                         failure: { _ in
-                                                            // TODO GiphyDownloader API shoudl pass through a useful failing error
+                                                            // TODO GiphyDownloader API should pass through a useful failing error
                                                             // so we can pass it through here
                                                             Logger.error("\(self.TAG) request failed")
                                                             reject(GiphyError.fetchFailure)
