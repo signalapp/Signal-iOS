@@ -3184,11 +3184,31 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self presentViewController:actionSheetController animated:true completion:nil];
 }
 
+- (NSIndexPath *)lastVisibleIndexPath
+{
+    NSIndexPath *lastVisibleIndexPath = nil;
+    for (NSIndexPath *indexPath in [self.collectionView indexPathsForVisibleItems]) {
+        if (!lastVisibleIndexPath || indexPath.row > lastVisibleIndexPath.row) {
+            lastVisibleIndexPath = indexPath;
+        }
+    }
+    return lastVisibleIndexPath;
+}
+
+- (nullable ConversationViewItem *)lastVisibleViewItem
+{
+    NSIndexPath *lastVisibleIndexPath = [self lastVisibleIndexPath];
+    if (!lastVisibleIndexPath) {
+        return nil;
+    }
+    return [self viewItemForIndex:lastVisibleIndexPath.row];
+}
+
 - (void)updateLastVisibleTimestamp
 {
-    ConversationViewItem *_Nullable lastViewItem = [self.viewItems lastObject];
-    if (lastViewItem) {
-        uint64_t lastVisibleTimestamp = lastViewItem.interaction.timestampForSorting;
+    ConversationViewItem *_Nullable lastVisibleViewItem = [self lastVisibleViewItem];
+    if (lastVisibleViewItem) {
+        uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForSorting;
         self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, lastVisibleTimestamp);
     }
 
@@ -3947,9 +3967,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         OWSFail(@"%@ Invalid view item index: %zd", self.tag, index);
         return nil;
     }
-    ConversationViewItem *_Nullable viewItem = self.viewItems[(NSUInteger)index];
-    OWSAssert(viewItem);
-    return viewItem;
+    return self.viewItems[(NSUInteger)index];
 }
 
 #pragma mark - UICollectionViewDataSource
