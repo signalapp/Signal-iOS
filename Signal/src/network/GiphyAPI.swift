@@ -9,6 +9,21 @@ enum GiphyFormat {
     case gif, mp4, jpg
 }
 
+enum GiphyError: Error {
+    case assertionError(description: String)
+    case fetchFailure
+}
+extension GiphyError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .assertionError:
+            return NSLocalizedString("GIF_PICKER_ERROR_GENERIC", comment: "Generic error displayed when picking a gif")
+        case .fetchFailure:
+            return NSLocalizedString("GIF_PICKER_ERROR_FETCH_FAILURE", comment: "Error displayed when there is a failure fetching gifs from the remote service.")
+        }
+    }
+}
+
 // Represents a "rendition" of a GIF.
 // Giphy offers a plethora of renditions for each image.
 // They vary in content size (i.e. width,  height), 
@@ -89,8 +104,10 @@ enum GiphyFormat {
 
     // TODO: We may need to tweak these constants.
     let kMaxDimension = UInt(618)
-    let kMinDimension = UInt(101)
-    let kMaxFileSize = UInt(3 * 1024 * 1024)
+    let kMinPreviewDimension = UInt(60)
+    let kMinSendingDimension = UInt(101)
+    let kPreferedPreviewFileSize = UInt(256 * 1024)
+    let kPreferedSendingFileSize = UInt(3 * 1024 * 1024)
 
     private enum PickingStrategy {
         case smallerIsBetter, largerIsBetter
@@ -105,31 +122,49 @@ enum GiphyFormat {
 
     public func pickStillRendition() -> GiphyRendition? {
         // Stills are just temporary placeholders, so use the smallest still possible.
-        return pickRendition(isStill:true, pickingStrategy:.smallerIsBetter, maxFileSize:kMaxFileSize)
+        return pickRendition(renditionType: .stillPreview, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedPreviewFileSize)
     }
 
-    public func pickAnimatedRendition() -> GiphyRendition? {
+    public func pickPreviewRendition() -> GiphyRendition? {
         // Try to pick a small file...
-        if let rendition = pickRendition(isStill:false, pickingStrategy:.largerIsBetter, maxFileSize:kMaxFileSize) {
+        if let rendition = pickRendition(renditionType: .animatedLowQuality, pickingStrategy:.largerIsBetter, maxFileSize:kPreferedPreviewFileSize) {
             return rendition
         }
         // ...but gradually relax the file restriction...
-        if let rendition = pickRendition(isStill:false, pickingStrategy:.smallerIsBetter, maxFileSize:kMaxFileSize * 2) {
+        if let rendition = pickRendition(renditionType: .animatedLowQuality, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedPreviewFileSize * 2) {
             return rendition
         }
         // ...and relax even more until we find an animated rendition.
-        return pickRendition(isStill:false, pickingStrategy:.smallerIsBetter, maxFileSize:kMaxFileSize * 3)
+        return pickRendition(renditionType: .animatedLowQuality, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedPreviewFileSize * 3)
+    }
+
+    public func pickSendingRendition() -> GiphyRendition? {
+        // Try to pick a small file...
+        if let rendition = pickRendition(renditionType: .animatedHighQuality, pickingStrategy:.largerIsBetter, maxFileSize:kPreferedSendingFileSize) {
+            return rendition
+        }
+        // ...but gradually relax the file restriction...
+        if let rendition = pickRendition(renditionType: .animatedHighQuality, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedSendingFileSize * 2) {
+            return rendition
+        }
+        // ...and relax even more until we find an animated rendition.
+        return pickRendition(renditionType: .animatedHighQuality, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedSendingFileSize * 3)
+    }
+
+    enum RenditionType {
+        case stillPreview, animatedLowQuality, animatedHighQuality
     }
 
     // Picking a rendition must be done very carefully.
     //
     // * We want to avoid incomplete renditions.
     // * We want to pick a rendition of "just good enough" quality.
-    private func pickRendition(isStill: Bool, pickingStrategy: PickingStrategy, maxFileSize: UInt) -> GiphyRendition? {
+    private func pickRendition(renditionType: RenditionType, pickingStrategy: PickingStrategy, maxFileSize: UInt) -> GiphyRendition? {
         var bestRendition: GiphyRendition?
 
         for rendition in renditions {
-            if isStill {
+            switch renditionType {
+            case .stillPreview:
                 // Accept GIF or JPEG stills.  In practice we'll
                 // usually select a JPEG since they'll be smaller.
                 guard [.gif, .jpg].contains(rendition.format) else {
@@ -145,13 +180,13 @@ enum GiphyFormat {
                 //
                 // Don't worry about max content size; still images are tiny in comparison
                 // with animated renditions.
-                guard rendition.width >= kMinDimension &&
-                    rendition.height >= kMinDimension &&
+                guard rendition.width >= kMinPreviewDimension &&
+                    rendition.height >= kMinPreviewDimension &&
                     rendition.fileSize <= maxFileSize
                     else {
                         continue
                 }
-            } else {
+            case .animatedLowQuality:
                 // Only use GIFs for animated renditions.
                 guard rendition.format == .gif else {
                     continue
@@ -164,9 +199,31 @@ enum GiphyFormat {
                 guard !rendition.isDownsampled else {
                         continue
                 }
-                guard rendition.width >= kMinDimension &&
+                guard rendition.width >= kMinPreviewDimension &&
                     rendition.width <= kMaxDimension &&
-                    rendition.height >= kMinDimension &&
+                    rendition.height >= kMinPreviewDimension &&
+                    rendition.height <= kMaxDimension &&
+                    rendition.fileSize > 0 &&
+                    rendition.fileSize <= maxFileSize
+                    else {
+                        continue
+                }
+            case .animatedHighQuality:
+                // Only use GIFs for animated renditions.
+                guard rendition.format == .gif else {
+                    continue
+                }
+                // Ignore stills.
+                guard !rendition.isStill else {
+                    continue
+                }
+                // Ignore "downsampled" renditions which skip frames, etc.
+                guard !rendition.isDownsampled else {
+                    continue
+                }
+                guard rendition.width >= kMinSendingDimension &&
+                    rendition.width <= kMaxDimension &&
+                    rendition.height >= kMinSendingDimension &&
                     rendition.height <= kMaxDimension &&
                     rendition.fileSize > 0 &&
                     rendition.fileSize <= maxFileSize
@@ -222,22 +279,28 @@ enum GiphyFormat {
 
     private let kGiphyBaseURL = "https://api.giphy.com/"
 
+    public class func giphySessionConfiguration() -> URLSessionConfiguration {
+        let configuration = URLSessionConfiguration.ephemeral
+        let proxyHost = "giphy-proxy-production.whispersystems.org"
+        let proxyPort = 80
+        configuration.connectionProxyDictionary = [
+            "HTTPEnable": 1,
+            "HTTPProxy": proxyHost,
+            "HTTPPort": proxyPort,
+            "HTTPSEnable": 1,
+            "HTTPSProxy": proxyHost,
+            "HTTPSPort": proxyPort
+        ]
+        return configuration
+    }
+
     private func giphyAPISessionManager() -> AFHTTPSessionManager? {
         guard let baseUrl = NSURL(string:kGiphyBaseURL) else {
             Logger.error("\(TAG) Invalid base URL.")
             return nil
         }
-        // TODO: We need to verify that this session configuration properly
-        //       proxies all requests.
-        let sessionConf = URLSessionConfiguration.ephemeral
-        sessionConf.connectionProxyDictionary = [
-            kCFProxyHostNameKey as String: "giphy-proxy-production.whispersystems.org",
-            kCFProxyPortNumberKey as String: "80",
-            kCFProxyTypeKey as String: kCFProxyTypeHTTPS
-        ]
-
         let sessionManager = AFHTTPSessionManager(baseURL:baseUrl as URL,
-                                                  sessionConfiguration:sessionConf)
+                                                  sessionConfiguration:GiphyAPI.giphySessionConfiguration())
         sessionManager.requestSerializer = AFJSONRequestSerializer()
         sessionManager.responseSerializer = AFJSONResponseSerializer()
 

@@ -158,9 +158,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                                                         message:error.localizedDescription
                                                  preferredStyle:UIAlertControllerStyleAlert];
 
-                NSString *retryTitle = NSLocalizedString(
-                    @"RETRY_BUTTON_TEXT", @"Generic text for button that retries whatever the last action was.");
-                UIAlertAction *retryAction = [UIAlertAction actionWithTitle:retryTitle
+                UIAlertAction *retryAction = [UIAlertAction actionWithTitle:[CommonStrings retryButton]
                                                                       style:UIAlertActionStyleDefault
                                                                     handler:^(UIAlertAction *action) {
                                                                         [wself refreshDevices];
@@ -368,7 +366,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                                                                        preferredStyle:UIAlertControllerStyleAlert];
 
                                       UIAlertAction *retryAction =
-                                          [UIAlertAction actionWithTitle:NSLocalizedString(@"RETRY_BUTTON_TEXT", nil)
+                                          [UIAlertAction actionWithTitle:[CommonStrings retryButton]
                                                                    style:UIAlertActionStyleDefault
                                                                  handler:^(UIAlertAction *aaction) {
                                                                      [self unlinkDevice:device success:successCallback];

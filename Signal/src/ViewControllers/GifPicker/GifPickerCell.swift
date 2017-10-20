@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 class GifPickerCell: UICollectionViewCell {
     let TAG = "[GifPickerCell]"
@@ -34,6 +35,17 @@ class GifPickerCell: UICollectionViewCell {
     var animatedAssetRequest: GiphyAssetRequest?
     var animatedAsset: GiphyAsset?
     var imageView: YYAnimatedImageView?
+    var activityIndicator: UIActivityIndicatorView?
+
+    var isCellSelected: Bool = false {
+        didSet {
+            AssertIsOnMainThread()
+            ensureCellState()
+        }
+    }
+
+    // As another bandwidth saving measure, we only fetch the full sized GIF when the user selects it.
+    private var renditionForSending: GiphyRendition?
 
     // MARK: Initializers
 
@@ -55,6 +67,8 @@ class GifPickerCell: UICollectionViewCell {
         animatedAssetRequest = nil
         imageView?.removeFromSuperview()
         imageView = nil
+        activityIndicator = nil
+        isCellSelected = false
     }
 
     private func clearStillAssetRequest() {
@@ -93,9 +107,19 @@ class GifPickerCell: UICollectionViewCell {
             clearAssetRequests()
             return
         }
+
+        // Record high quality animated rendition, but to save bandwidth, don't start downloading
+        // until it's selected.
+        guard let highQualityAnimatedRendition = imageInfo.pickSendingRendition() else {
+            Logger.warn("\(TAG) could not pick gif rendition: \(imageInfo.giphyId)")
+            clearAssetRequests()
+            return
+        }
+        self.renditionForSending = highQualityAnimatedRendition
+
         // The Giphy API returns a slew of "renditions" for a given image. 
         // It's critical that we carefully "pick" the best rendition to use.
-        guard let animatedRendition = imageInfo.pickAnimatedRendition() else {
+        guard let animatedRendition = imageInfo.pickPreviewRendition() else {
             Logger.warn("\(TAG) could not pick gif rendition: \(imageInfo.giphyId)")
             clearAssetRequests()
             return
@@ -188,6 +212,54 @@ class GifPickerCell: UICollectionViewCell {
         }
         imageView.image = image
         self.backgroundColor = nil
+
+        if self.isCellSelected {
+            let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+            self.activityIndicator = activityIndicator
+            addSubview(activityIndicator)
+            activityIndicator.autoCenterInSuperview()
+            activityIndicator.startAnimating()
+
+            // Render activityIndicator on a white tile to ensure it's visible on
+            // when overlayed on a variety of potential gifs.
+            activityIndicator.backgroundColor = UIColor.white.withAlphaComponent(0.3)
+            activityIndicator.autoSetDimension(.width, toSize: 30)
+            activityIndicator.autoSetDimension(.height, toSize: 30)
+            activityIndicator.layer.cornerRadius = 3
+            activityIndicator.layer.shadowColor = UIColor.black.cgColor
+            activityIndicator.layer.shadowOffset = CGSize(width: 1, height: 1)
+            activityIndicator.layer.shadowOpacity = 0.7
+            activityIndicator.layer.shadowRadius = 1.0
+        } else {
+            self.activityIndicator?.stopAnimating()
+            self.activityIndicator = nil
+        }
+    }
+
+    public func requestRenditionForSending() -> Promise<GiphyAsset> {
+        guard let renditionForSending = self.renditionForSending else {
+            owsFail("\(TAG) renditionForSending was unexpectedly nil")
+            return Promise(error: GiphyError.assertionError(description: "renditionForSending was unexpectedly nil"))
+        }
+
+        let (promise, fulfill, reject) = Promise<GiphyAsset>.pending()
+
+        // We don't retain a handle on the asset request, since there will only ever
+        // be one selected asset, and we never want to cancel it.
+        _ = GiphyDownloader
+            .sharedInstance.requestAsset(rendition: renditionForSending,
+                                                        priority: .high,
+                                                        success: { _, asset in
+                                                            fulfill(asset)
+        },
+                                                        failure: { _ in
+                                                            // TODO GiphyDownloader API should pass through a useful failing error
+                                                            // so we can pass it through here
+                                                            Logger.error("\(self.TAG) request failed")
+                                                            reject(GiphyError.fetchFailure)
+        })
+
+        return promise
     }
 
     private func clearViewState() {
