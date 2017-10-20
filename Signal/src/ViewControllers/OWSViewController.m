@@ -11,7 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) UIView *bottomLayoutView;
 @property (nonatomic) NSLayoutConstraint *bottomLayoutConstraint;
-@property (nonatomic) BOOL shouldIgnoreKeyboardChanges;
 
 @end
 

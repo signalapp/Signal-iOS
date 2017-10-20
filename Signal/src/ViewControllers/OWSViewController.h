@@ -8,14 +8,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSViewController : UIViewController
 
+@property (nonatomic) BOOL shouldIgnoreKeyboardChanges;
+
 // We often want to pin one view to the bottom guide
 // of a view controller BUT adjust its location upward
 // if the keyboard appears.
 //
 // Use this method in lieu of autoPinToBottomLayoutGuideOfViewController:
 - (void)autoPinViewToBottomGuideOrKeyboard:(UIView *)view;
-
-- (void)setShouldIgnoreKeyboardChanges:(BOOL)value;
 
 @end
 
