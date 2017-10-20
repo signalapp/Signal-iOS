@@ -226,6 +226,10 @@ class GifPickerCell: UICollectionViewCell {
             activityIndicator.autoSetDimension(.width, toSize: 30)
             activityIndicator.autoSetDimension(.height, toSize: 30)
             activityIndicator.layer.cornerRadius = 3
+            activityIndicator.layer.shadowColor = UIColor.black.cgColor
+            activityIndicator.layer.shadowOffset = CGSize(width: 1, height: 1)
+            activityIndicator.layer.shadowOpacity = 0.7
+            activityIndicator.layer.shadowRadius = 1.0
         } else {
             self.activityIndicator?.stopAnimating()
             self.activityIndicator = nil
