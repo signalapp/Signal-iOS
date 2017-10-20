@@ -326,7 +326,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     } else {
         NSString *_Nullable attachmentId = interaction.attachmentIds.firstObject;
         if (attachmentId.length > 0) {
-            TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
+            TSAttachment *_Nullable attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
             if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                 self.attachmentStream = (TSAttachmentStream *)attachment;
 
@@ -364,10 +364,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 self.messageCellType = OWSMessageCellType_DownloadingAttachment;
                 self.attachmentPointer = (TSAttachmentPointer *)attachment;
                 return;
+            } else {
+                OWSFail(@"%@ Unknown attachment type", self.tag);
             }
+        } else {
+            OWSFail(@"%@ Message has neither attachment nor body", self.tag);
         }
     }
 
+    DDLogVerbose(@"%@ interaction: %@", self.tag, interaction.description);
     OWSFail(@"%@ Unknown cell type", self.tag);
 
     self.messageCellType = OWSMessageCellType_Unknown;

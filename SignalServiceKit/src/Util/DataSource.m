@@ -300,6 +300,20 @@ NS_ASSUME_NONNULL_BEGIN
     return instance;
 }
 
+- (void)setFilePath:(NSString *)filePath
+{
+    OWSAssert(filePath.length > 0);
+
+#ifdef DEBUG
+    BOOL isDirectory;
+    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDirectory];
+    OWSAssert(exists);
+    OWSAssert(!isDirectory);
+#endif
+
+    _filePath = filePath;
+}
+
 - (NSData *)data
 {
     OWSAssert(self.filePath);
