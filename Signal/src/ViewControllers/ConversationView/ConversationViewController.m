@@ -997,6 +997,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self markVisibleMessagesAsRead];
     [self cancelVoiceMemo];
     [self.cellMediaCache removeAllObjects];
+    [self.inputToolbar endEditingTextMessage];
 
     self.isUserScrolling = NO;
 }
