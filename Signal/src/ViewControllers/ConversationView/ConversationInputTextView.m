@@ -180,30 +180,6 @@ NS_ASSUME_NONNULL_BEGIN
     [super paste:sender];
 }
 
-- (void)setFrame:(CGRect)frame
-{
-    BOOL isNonEmpty = (self.width > 0.f && self.height > 0.f);
-    BOOL didChangeSize = !CGSizeEqualToSize(frame.size, self.frame.size);
-
-    [super setFrame:frame];
-
-    if (didChangeSize && isNonEmpty) {
-        [self.inputTextViewDelegate textViewDidChangeLayout];
-    }
-}
-
-- (void)setBounds:(CGRect)bounds
-{
-    BOOL isNonEmpty = (self.width > 0.f && self.height > 0.f);
-    BOOL didChangeSize = !CGSizeEqualToSize(bounds.size, self.bounds.size);
-
-    [super setBounds:bounds];
-
-    if (didChangeSize && isNonEmpty) {
-        [self.inputTextViewDelegate textViewDidChangeLayout];
-    }
-}
-
 - (NSString *)trimmedText
 {
     return [self.text ows_stripped];

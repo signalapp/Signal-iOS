@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didPasteAttachment:(SignalAttachment *_Nullable)attachment;
 
-- (void)textViewDidChangeLayout;
-
 - (void)inputTextViewDidBecomeFirstResponder;
 
 @end
