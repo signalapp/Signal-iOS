@@ -11,6 +11,8 @@ protocol GifPickerViewControllerDelegate: class {
 }
 
 class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate {
+
+    static let TAG = "[GifPickerViewController]"
     let TAG = "[GifPickerViewController]"
 
     // MARK: Properties
@@ -344,33 +346,43 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     public func getFileForCell(_ cell: GifPickerCell) {
         GiphyDownloader.sharedInstance.cancelAllRequests()
-        cell.requestRenditionForSending().then { (asset: GiphyAsset) -> Void in
+        cell.requestRenditionForSending().then { [weak self] (asset: GiphyAsset) -> Void in
+            guard let strongSelf = self else {
+                Logger.info("\(GifPickerViewController.TAG) ignoring send, since VC was dismissed before fetching finished.")
+                return
+            }
+
             let filePath = asset.filePath
             guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath) else {
-                owsFail("\(self.TAG) couldn't load asset.")
+                owsFail("\(strongSelf.TAG) couldn't load asset.")
                 return
             }
             let attachment = SignalAttachment(dataSource: dataSource, dataUTI: asset.rendition.utiType)
 
-            self.delegate?.gifPickerWillSend()
+            strongSelf.delegate?.gifPickerWillSend()
 
-            let outgoingMessage = ThreadUtil.sendMessage(with: attachment, in: self.thread, messageSender: self.messageSender)
+            let outgoingMessage = ThreadUtil.sendMessage(with: attachment, in: strongSelf.thread, messageSender: strongSelf.messageSender)
 
-            self.delegate?.gifPickerDidSend(outgoingMessage: outgoingMessage)
+            strongSelf.delegate?.gifPickerDidSend(outgoingMessage: outgoingMessage)
 
-            self.dismiss(animated: true, completion: nil)
-        }.catch { error in
+            strongSelf.dismiss(animated: true, completion: nil)
+        }.catch { [weak self] error in
+            guard let strongSelf = self else {
+                Logger.info("\(GifPickerViewController.TAG) ignoring failure, since VC was dismissed before fetching finished.")
+                return
+            }
+
             let alert = UIAlertController(title: NSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected gif couldn't be fetched"),
                                           message: error.localizedDescription,
                                           preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: CommonStrings.retryButton, style: .default) { _ in
-                    self.getFileForCell(cell)
+                    strongSelf.getFileForCell(cell)
             })
             alert.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
-                self.dismiss(animated: true, completion: nil)
+                strongSelf.dismiss(animated: true, completion: nil)
             })
 
-            UIApplication.shared.frontmostViewController?.present(alert, animated: true, completion: nil)
+            strongSelf.present(alert, animated: true, completion: nil)
         }.retainUntilComplete()
 
     }
