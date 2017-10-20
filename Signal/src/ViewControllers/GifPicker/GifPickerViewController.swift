@@ -11,6 +11,8 @@ protocol GifPickerViewControllerDelegate: class {
 }
 
 class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate {
+
+    static let TAG = "[GifPickerViewController]"
     let TAG = "[GifPickerViewController]"
 
     // MARK: Properties
@@ -31,8 +33,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     public weak var delegate: GifPickerViewControllerDelegate?
 
-    var thread: TSThread?
-    var messageSender: MessageSender?
+    let thread: TSThread
+    let messageSender: MessageSender
 
     let searchBar: UISearchBar
     let layout: GifPickerLayout
@@ -40,7 +42,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     var noResultsView: UILabel?
     var searchErrorView: UILabel?
     var activityIndicator: UIActivityIndicatorView?
-
+    var hasSelectedCell: Bool = false
     var imageInfos = [GiphyImageInfo]()
 
     var reachability: Reachability?
@@ -53,15 +55,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        self.thread = nil
-        self.messageSender = nil
-
-        self.searchBar = UISearchBar()
-        self.layout = GifPickerLayout()
-        self.collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: self.layout)
-
-        super.init(coder: aDecoder)
-        owsFail("\(self.TAG) invalid constructor")
+        fatalError("\(#function) is unimplemented.")
     }
 
     required init(thread: TSThread, messageSender: MessageSender) {
@@ -169,7 +163,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.collectionView.dataSource = self
         self.collectionView.backgroundColor = UIColor.white
         self.collectionView.register(GifPickerCell.self, forCellWithReuseIdentifier: kCellReuseIdentifier)
-        self.view.addSubview(self.collectionView)
+        // Inserted below searchbar because we later occlude the collectionview
+        // by inserting a masking layer between the search bar and collectionview
+        self.view.insertSubview(self.collectionView, belowSubview: searchBar)
         self.collectionView.autoPinWidthToSuperview()
         self.collectionView.autoPinEdge(.top, to: .bottom, of: searchBar)
 
@@ -274,6 +270,12 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
     }
 
+    // MARK: - UIScrollViewDelegate
+
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        self.searchBar.resignFirstResponder()
+    }
+
     // MARK: - UICollectionViewDataSource
 
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -281,9 +283,14 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     public  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: kCellReuseIdentifier, for: indexPath)
+
+        guard indexPath.row < imageInfos.count else {
+            Logger.warn("\(TAG) indexPath: \(indexPath.row) out of range for imageInfo count: \(imageInfos.count) ")
+            return cell
+        }
         let imageInfo = imageInfos[indexPath.row]
 
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: kCellReuseIdentifier, for: indexPath)
         guard let gifCell = cell as? GifPickerCell else {
             owsFail("\(TAG) Unexpected cell type.")
             return cell
@@ -295,36 +302,89 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     // MARK: - UICollectionViewDelegate
 
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
         guard let cell = collectionView.cellForItem(at: indexPath) as? GifPickerCell else {
             owsFail("\(TAG) unexpected cell.")
             return
         }
-        guard let asset = cell.animatedAsset else {
-            Logger.info("\(TAG) unload cell selected.")
-            return
-        }
-        let filePath = asset.filePath
-        guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath) else {
-            owsFail("\(TAG) couldn't load asset.")
-            return
-        }
-        let attachment = SignalAttachment(dataSource: dataSource, dataUTI: asset.rendition.utiType)
-        guard let thread = thread else {
-            owsFail("\(TAG) Missing thread.")
-            return
-        }
-        guard let messageSender = messageSender else {
-            owsFail("\(TAG) Missing messageSender.")
+
+        guard cell.stillAsset != nil || cell.animatedAsset != nil else {
+            // we don't want to let the user blindly select a gray cell
+            Logger.debug("\(TAG) ignoring selection of cell with no preview")
             return
         }
 
-        self.delegate?.gifPickerWillSend()
+        guard self.hasSelectedCell == false else {
+            owsFail("\(TAG) Already selected cell")
+            return
+        }
+        self.hasSelectedCell = true
 
-        let outgoingMessage = ThreadUtil.sendMessage(with: attachment, in: thread, messageSender: messageSender)
+        // Fade out all cells except the selected one.
+        let maskingView = OWSBezierPathView()
 
-        self.delegate?.gifPickerDidSend(outgoingMessage: outgoingMessage)
+        // Selecting cell behind searchbar masks part of search bar.
+        // So we insert mask *behind* the searchbar.
+        self.view.insertSubview(maskingView, belowSubview: searchBar)
+        let cellRect = self.collectionView.convert(cell.frame, to: self.view)
+        maskingView.configureShapeLayerBlock = { layer, bounds in
+            let path = UIBezierPath(rect: bounds)
+            path.append(UIBezierPath(rect: cellRect))
 
-        dismiss(animated: true, completion: nil)
+            layer.path = path.cgPath
+            layer.fillRule = kCAFillRuleEvenOdd
+            layer.fillColor = UIColor.black.cgColor
+            layer.opacity = 0.7
+        }
+        maskingView.autoPinEdgesToSuperviewEdges()
+
+        cell.isCellSelected = true
+        self.collectionView.isUserInteractionEnabled = false
+
+        getFileForCell(cell)
+    }
+
+    public func getFileForCell(_ cell: GifPickerCell) {
+        GiphyDownloader.sharedInstance.cancelAllRequests()
+        cell.requestRenditionForSending().then { [weak self] (asset: GiphyAsset) -> Void in
+            guard let strongSelf = self else {
+                Logger.info("\(GifPickerViewController.TAG) ignoring send, since VC was dismissed before fetching finished.")
+                return
+            }
+
+            let filePath = asset.filePath
+            guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath) else {
+                owsFail("\(strongSelf.TAG) couldn't load asset.")
+                return
+            }
+            let attachment = SignalAttachment(dataSource: dataSource, dataUTI: asset.rendition.utiType)
+
+            strongSelf.delegate?.gifPickerWillSend()
+
+            let outgoingMessage = ThreadUtil.sendMessage(with: attachment, in: strongSelf.thread, messageSender: strongSelf.messageSender)
+
+            strongSelf.delegate?.gifPickerDidSend(outgoingMessage: outgoingMessage)
+
+            strongSelf.dismiss(animated: true, completion: nil)
+        }.catch { [weak self] error in
+            guard let strongSelf = self else {
+                Logger.info("\(GifPickerViewController.TAG) ignoring failure, since VC was dismissed before fetching finished.")
+                return
+            }
+
+            let alert = UIAlertController(title: NSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected gif couldn't be fetched"),
+                                          message: error.localizedDescription,
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: CommonStrings.retryButton, style: .default) { _ in
+                    strongSelf.getFileForCell(cell)
+            })
+            alert.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
+                strongSelf.dismiss(animated: true, completion: nil)
+            })
+
+            strongSelf.present(alert, animated: true, completion: nil)
+        }.retainUntilComplete()
+
     }
 
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
