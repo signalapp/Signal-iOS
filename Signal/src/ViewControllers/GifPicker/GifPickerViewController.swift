@@ -40,7 +40,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     var noResultsView: UILabel?
     var searchErrorView: UILabel?
     var activityIndicator: UIActivityIndicatorView?
-    var selectedCell: UICollectionViewCell?
+    var hasSelectedCell: Bool = false
     var imageInfos = [GiphyImageInfo]()
 
     var reachability: Reachability?
@@ -312,11 +312,11 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             return
         }
 
-        guard self.selectedCell == nil else {
+        guard self.hasSelectedCell == false else {
             owsFail("\(TAG) Already selected cell")
             return
         }
-        self.selectedCell = cell
+        self.hasSelectedCell = true
 
         // Fade out all cells except the selected one.
         let maskingView = OWSBezierPathView()
