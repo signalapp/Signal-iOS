@@ -281,9 +281,14 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     public  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: kCellReuseIdentifier, for: indexPath)
+
+        guard indexPath.row < imageInfos.count else {
+            Logger.warn("\(TAG) indexPath: \(indexPath.row) out of range for imageInfo count: \(imageInfos.count) ")
+            return cell
+        }
         let imageInfo = imageInfos[indexPath.row]
 
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: kCellReuseIdentifier, for: indexPath)
         guard let gifCell = cell as? GifPickerCell else {
             owsFail("\(TAG) Unexpected cell type.")
             return cell
