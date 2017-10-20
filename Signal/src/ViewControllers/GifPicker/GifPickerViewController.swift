@@ -161,7 +161,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.collectionView.dataSource = self
         self.collectionView.backgroundColor = UIColor.white
         self.collectionView.register(GifPickerCell.self, forCellWithReuseIdentifier: kCellReuseIdentifier)
-        self.view.addSubview(self.collectionView)
+        // Inserted below searchbar becase we later occlude the collectionview
+        // by inserting a masking layer between the search bar and collectionview
+        self.view.insertSubview(self.collectionView, belowSubview: searchBar)
         self.collectionView.autoPinWidthToSuperview()
         self.collectionView.autoPinEdge(.top, to: .bottom, of: searchBar)
 
@@ -307,7 +309,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         // Fade out all cells except the selected one.
         let maskingView = OWSBezierPathView()
-        self.view.addSubview(maskingView)
+
+        // Selecting cell behind searchbar masks part of search bar.
+        // So we insert mask *behind* the searchbar.
+        self.view.insertSubview(maskingView, belowSubview: searchBar)
         let cellRect = self.collectionView.convert(cell.frame, to: self.view)
         maskingView.configureShapeLayerBlock = { layer, bounds in
             let path = UIBezierPath(rect: bounds)
