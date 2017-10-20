@@ -181,13 +181,16 @@ extension URLSessionTask {
     private let kGiphyBaseURL = "https://api.giphy.com/"
 
     private func giphyDownloadSession() -> URLSession? {
-        // TODO: We need to verify that this session configuration properly
-        //       proxies all requests.
         let configuration = URLSessionConfiguration.ephemeral
+        let proxyHost = "giphy-proxy-production.whispersystems.org"
+        let proxyPort = 80
         configuration.connectionProxyDictionary = [
-            kCFProxyHostNameKey as String: "giphy-proxy-production.whispersystems.org",
-            kCFProxyPortNumberKey as String: "80",
-            kCFProxyTypeKey as String: kCFProxyTypeHTTPS
+            "HTTPEnable": 1,
+            "HTTPProxy": proxyHost,
+            "HTTPPort": proxyPort,
+            "HTTPSEnable": 1,
+            "HTTPSProxy": proxyHost,
+            "HTTPSPort": proxyPort
         ]
         configuration.urlCache = nil
         configuration.requestCachePolicy = .reloadIgnoringCacheData

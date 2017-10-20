@@ -284,17 +284,20 @@ extension GiphyError: LocalizedError {
             Logger.error("\(TAG) Invalid base URL.")
             return nil
         }
-        // TODO: We need to verify that this session configuration properly
-        //       proxies all requests.
-        let sessionConf = URLSessionConfiguration.ephemeral
-        sessionConf.connectionProxyDictionary = [
-            kCFProxyHostNameKey as String: "giphy-proxy-production.whispersystems.org",
-            kCFProxyPortNumberKey as String: "80",
-            kCFProxyTypeKey as String: kCFProxyTypeHTTPS
+        let configuration = URLSessionConfiguration.ephemeral
+        let proxyHost = "giphy-proxy-production.whispersystems.org"
+        let proxyPort = 80
+        configuration.connectionProxyDictionary = [
+            "HTTPEnable": 1,
+            "HTTPProxy": proxyHost,
+            "HTTPPort": proxyPort,
+            "HTTPSEnable": 1,
+            "HTTPSProxy": proxyHost,
+            "HTTPSPort": proxyPort
         ]
 
         let sessionManager = AFHTTPSessionManager(baseURL:baseUrl as URL,
-                                                  sessionConfiguration:sessionConf)
+                                                  sessionConfiguration:configuration)
         sessionManager.requestSerializer = AFJSONRequestSerializer()
         sessionManager.responseSerializer = AFJSONResponseSerializer()
 
