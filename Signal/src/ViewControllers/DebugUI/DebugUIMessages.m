@@ -1076,7 +1076,7 @@ NS_ASSUME_NONNULL_BEGIN
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
         ^{
             for (int i = 0; i < counter; i++) {
-                [self injectIncomingMessageInThread:thread counter:counter];
+                [self injectIncomingMessageInThread:thread counter:counter - i];
             }
         });
 }
@@ -1108,7 +1108,9 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *_Nullable recipientId = [[thread recipientIdentifiers] firstObject];
     // This might be an "empty" group with no other members.  If so, use a fake
     // sender id.
-    recipientId = @"+12345678901";
+    if (!recipientId) {
+        recipientId = @"+12345678901";
+    }
 
     OWSSignalServiceProtosEnvelopeBuilder *envelopeBuilder = [OWSSignalServiceProtosEnvelopeBuilder new];
     [envelopeBuilder setType:OWSSignalServiceProtosEnvelopeTypeCiphertext];
