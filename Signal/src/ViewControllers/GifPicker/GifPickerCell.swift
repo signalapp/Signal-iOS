@@ -110,7 +110,7 @@ class GifPickerCell: UICollectionViewCell {
 
         // Record high quality animated rendition, but to save bandwidth, don't start downloading
         // until it's selected.
-        guard let highQualityAnimatedRendition = imageInfo.pickHighQualityAnimatedRendition() else {
+        guard let highQualityAnimatedRendition = imageInfo.pickSendingRendition() else {
             Logger.warn("\(TAG) could not pick gif rendition: \(imageInfo.giphyId)")
             clearAssetRequests()
             return
@@ -119,7 +119,7 @@ class GifPickerCell: UICollectionViewCell {
 
         // The Giphy API returns a slew of "renditions" for a given image. 
         // It's critical that we carefully "pick" the best rendition to use.
-        guard let animatedRendition = imageInfo.pickAnimatedRendition() else {
+        guard let animatedRendition = imageInfo.pickPreviewRendition() else {
             Logger.warn("\(TAG) could not pick gif rendition: \(imageInfo.giphyId)")
             clearAssetRequests()
             return

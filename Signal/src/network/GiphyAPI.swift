@@ -125,7 +125,7 @@ extension GiphyError: LocalizedError {
         return pickRendition(renditionType: .stillPreview, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedPreviewFileSize)
     }
 
-    public func pickAnimatedRendition() -> GiphyRendition? {
+    public func pickPreviewRendition() -> GiphyRendition? {
         // Try to pick a small file...
         if let rendition = pickRendition(renditionType: .animatedLowQuality, pickingStrategy:.largerIsBetter, maxFileSize:kPreferedPreviewFileSize) {
             return rendition
@@ -138,7 +138,7 @@ extension GiphyError: LocalizedError {
         return pickRendition(renditionType: .animatedLowQuality, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedPreviewFileSize * 3)
     }
 
-    public func pickHighQualityAnimatedRendition() -> GiphyRendition? {
+    public func pickSendingRendition() -> GiphyRendition? {
         // Try to pick a small file...
         if let rendition = pickRendition(renditionType: .animatedHighQuality, pickingStrategy:.largerIsBetter, maxFileSize:kPreferedSendingFileSize) {
             return rendition
