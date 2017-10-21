@@ -5,6 +5,7 @@
 #import "ContactsViewHelper.h"
 #import "ContactTableViewCell.h"
 #import "Environment.h"
+#import "NSString+OWS.h"
 #import "OWSProfileManager.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/Contact.h>
@@ -205,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<NSString *> *)searchTermsForSearchString:(NSString *)searchText
 {
-    return [[[searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
+    return [[[searchText ows_stripped]
         componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable searchTerm,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {

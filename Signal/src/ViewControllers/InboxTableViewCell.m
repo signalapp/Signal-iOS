@@ -327,7 +327,7 @@ const NSUInteger kAvatarViewDiameter = 52;
     NSAttributedString *name;
     if (thread.isGroupThread) {
         if (thread.name.length == 0) {
-            name = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"")];
+            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
         } else {
             name = [[NSAttributedString alloc] initWithString:thread.name];
         }

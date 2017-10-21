@@ -4,6 +4,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalAttachment;
+
 @protocol ConversationInputToolbarDelegate <NSObject>
 
 - (void)sendButtonPressed;
@@ -20,8 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)textViewDidChange;
 
-// TODO: Is this necessary.
-//- (void)textViewDidBeginEditing;
+#pragma mark - Attachment Approval
+
+- (void)didApproveAttachment:(SignalAttachment *)attachment;
 
 @end
 
@@ -53,6 +56,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setVoiceMemoUICancelAlpha:(CGFloat)cancelAlpha;
 
 - (void)cancelVoiceMemoIfNecessary;
+
+#pragma mark - Attachment Approval
+
+- (void)showApprovalUIForAttachment:(SignalAttachment *)attachment;
+- (void)viewWillAppear:(BOOL)animated;
+- (void)viewWillDisappear:(BOOL)animated;
 
 @end
 

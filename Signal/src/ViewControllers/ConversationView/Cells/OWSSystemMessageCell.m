@@ -305,11 +305,31 @@ NS_ASSUME_NONNULL_BEGIN
     [super prepareForReuse];
 }
 
-#pragma mark - editing
+#pragma mark - UIMenuController
 
-- (BOOL)canBecomeFirstResponder
+- (void)showMenuController
 {
-    return YES;
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogDebug(@"%@ long pressed system message cell: %@", self.logTag, self.viewItem.interaction.debugDescription);
+
+    [self becomeFirstResponder];
+
+    if ([UIMenuController sharedMenuController].isMenuVisible) {
+        [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
+    }
+
+    UIMenuController *menuController = [UIMenuController sharedMenuController];
+    menuController.menuItems = @[];
+    UIView *fromView = self.titleLabel;
+    CGRect targetRect = [fromView.superview convertRect:fromView.frame toView:self];
+    [menuController setTargetRect:targetRect inView:self];
+    [menuController setMenuVisible:YES animated:YES];
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(nullable id)sender
+{
+    return action == @selector(delete:);
 }
 
 - (void) delete:(nullable id)sender
@@ -320,6 +340,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(interaction);
 
     [interaction remove];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
 }
 
 #pragma mark - Gesture recognizers
@@ -343,7 +368,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(interaction);
 
     if (longPress.state == UIGestureRecognizerStateBegan) {
-        [self.delegate didLongPressSystemMessageCell:self fromView:self.titleLabel];
+        [self showMenuController];
     }
 }
 

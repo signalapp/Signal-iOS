@@ -11,6 +11,7 @@
 #import <25519/Randomness.h>
 #import <AFNetworking/AFNetworking.h>
 #import <AxolotlKit/PreKeyBundle.h>
+#import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
@@ -65,6 +66,14 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Send 3,000 messages (1/sec.)"
                         actionBlock:^{
                             [DebugUIMessages sendTextMessages:3000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 10 tiny text messages (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendTinyTextMessages:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send 100 tiny text messages (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendTinyTextMessages:100 thread:thread];
                         }],
         [OWSTableItem itemWithTitle:@"Send 10 tiny attachments"
                         actionBlock:^{
@@ -226,6 +235,18 @@ NS_ASSUME_NONNULL_BEGIN
                           DDLogError(@"%@ Failed to send Request Group Info message with error: %@", self.tag, error);
                       }];
               }],
+        [OWSTableItem itemWithTitle:@"Inject 10 fake incoming messages"
+                        actionBlock:^{
+                            [DebugUIMessages injectFakeIncomingMessages:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Inject 100 fake incoming messages"
+                        actionBlock:^{
+                            [DebugUIMessages injectFakeIncomingMessages:100 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Inject 1,000 fake incoming messages"
+                        actionBlock:^{
+                            [DebugUIMessages injectFakeIncomingMessages:1000 thread:thread];
+                        }],
     ] mutableCopy];
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
@@ -262,6 +283,25 @@ NS_ASSUME_NONNULL_BEGIN
     [self sendTextMessageInThread:thread counter:counter];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self sendTextMessages:counter - 1 thread:thread];
+    });
+}
+
++ (void)sendTinyTextMessageInThread:(TSThread *)thread counter:(int)counter
+{
+    NSString *randomText = [[self randomText] substringToIndex:arc4random_uniform(4)];
+    NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
+    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+    [ThreadUtil sendMessageWithText:text inThread:thread messageSender:messageSender];
+}
+
++ (void)sendTinyTextMessages:(int)counter thread:(TSThread *)thread
+{
+    if (counter < 1) {
+        return;
+    }
+    [self sendTinyTextMessageInThread:thread counter:counter];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self sendTinyTextMessages:counter - 1 thread:thread];
     });
 }
 
@@ -1026,6 +1066,61 @@ NS_ASSUME_NONNULL_BEGIN
         });
     };
     [messageSender sendMessage:message success:completion failure:completion];
+}
+
++ (void)injectFakeIncomingMessages:(int)counter thread:(TSThread *)thread
+{
+    // Wait 5 seconds so debug user has time to navigate to another
+    // view before message processing occurs.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.f * NSEC_PER_SEC)),
+        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+        ^{
+            for (int i = 0; i < counter; i++) {
+                [self injectIncomingMessageInThread:thread counter:counter];
+            }
+        });
+}
+
++ (void)injectIncomingMessageInThread:(TSThread *)thread counter:(int)counter
+{
+    OWSAssert(thread);
+
+    NSString *randomText = [self randomText];
+    NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
+
+    OWSSignalServiceProtosDataMessageBuilder *dataMessageBuilder = [OWSSignalServiceProtosDataMessageBuilder new];
+    [dataMessageBuilder setBody:text];
+
+    if ([thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        OWSSignalServiceProtosGroupContextBuilder *groupBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
+        [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeDeliver];
+        [groupBuilder setId:groupThread.groupModel.groupId];
+        [dataMessageBuilder setGroup:groupBuilder.build];
+    }
+
+    OWSSignalServiceProtosContentBuilder *payloadBuilder = [OWSSignalServiceProtosContentBuilder new];
+    [payloadBuilder setDataMessage:dataMessageBuilder.build];
+    NSData *plaintextData = [payloadBuilder build].data;
+
+    // Try to use an arbitrary member of the current thread that isn't
+    // ourselves as the sender.
+    NSString *_Nullable recipientId = [[thread recipientIdentifiers] firstObject];
+    // This might be an "empty" group with no other members.  If so, use a fake
+    // sender id.
+    recipientId = @"+12345678901";
+
+    OWSSignalServiceProtosEnvelopeBuilder *envelopeBuilder = [OWSSignalServiceProtosEnvelopeBuilder new];
+    [envelopeBuilder setType:OWSSignalServiceProtosEnvelopeTypeCiphertext];
+    [envelopeBuilder setSource:recipientId];
+    [envelopeBuilder setSourceDevice:1];
+    [envelopeBuilder setTimestamp:[NSDate ows_millisecondTimeStamp]];
+    [envelopeBuilder setContent:plaintextData];
+
+    NSData *envelopeData = [envelopeBuilder build].data;
+    OWSAssert(envelopeData);
+
+    [[OWSBatchMessageProcessor sharedInstance] enqueueEnvelopeData:envelopeData plaintextData:plaintextData];
 }
 
 @end

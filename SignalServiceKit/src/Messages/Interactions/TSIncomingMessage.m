@@ -7,6 +7,7 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSReadReceiptManager.h"
+#import "TSAttachmentPointer.h"
 #import "TSContactThread.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSGroupThread.h"
@@ -124,6 +125,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_IncomingMessage;
+}
+
+- (BOOL)shouldStartExpireTimer:(YapDatabaseReadTransaction *)transaction
+{
+    for (NSString *attachmentId in self.attachmentIds) {
+        TSAttachment *_Nullable attachment =
+            [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+        if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
+            return NO;
+        }
+    }
+    return self.isExpiringMessage;
 }
 
 #pragma mark - OWSReadTracking

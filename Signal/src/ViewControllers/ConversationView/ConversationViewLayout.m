@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 // unnecessary layout pass.
 @property (nonatomic) BOOL hasLayout;
 
+@property (nonatomic) int contentWidth;
+
 @end
 
 #pragma mark -
@@ -80,15 +82,16 @@ NS_ASSUME_NONNULL_BEGIN
     // TODO: Remove this log statement after we've reduced the invalidation churn.
     DDLogVerbose(@"%@ prepareLayout", self.tag);
 
-    const int vInset = 15;
+    const int vInset = 8;
     const int hInset = 10;
     const int vSpacing = 5;
     const int viewWidth = (int)floor(self.collectionView.bounds.size.width);
     const int contentWidth = (int)floor(viewWidth - 2 * hInset);
+    self.contentWidth = contentWidth;
 
     NSArray<id<ConversationViewLayoutItem>> *layoutItems = self.delegate.layoutItems;
 
-    CGFloat y = vInset;
+    CGFloat y = vInset + self.delegate.layoutHeaderHeight;
     CGFloat contentBottom = y;
     BOOL isRTL = self.collectionView.isRTL;
 

@@ -9,7 +9,7 @@
 
 #if TARGET_OS_IOS
 - (instancetype)initWithTitle:(NSString *)title
-                    memberIds:(NSMutableArray<NSString *> *)memberIds
+                    memberIds:(NSArray<NSString *> *)memberIds
                         image:(UIImage *)image
                       groupId:(NSData *)groupId
 {

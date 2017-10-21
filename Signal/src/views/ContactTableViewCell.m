@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kContactsTable_CellReuseIdentifier = @"kContactsTable_CellReuseIdentifier";
 const NSUInteger kContactTableViewCellAvatarSize = 40;
+const CGFloat kContactTableViewCellAvatarTextMargin = 12;
 
 @interface ContactTableViewCell ()
 
@@ -107,7 +108,7 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
     [_subtitle autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     [_nameContainerView autoVCenterInSuperview];
-    [_nameContainerView autoPinLeadingToTrailingOfView:_avatarView margin:12.f];
+    [_nameContainerView autoPinLeadingToTrailingOfView:_avatarView margin:kContactTableViewCellAvatarTextMargin];
     [_nameContainerView autoPinTrailingToSuperview];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
@@ -158,7 +159,7 @@ const NSUInteger kContactTableViewCellAvatarSize = 40;
 
     NSString *threadName = thread.name;
     if (threadName.length == 0 && [thread isKindOfClass:[TSGroupThread class]]) {
-        threadName = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
+        threadName = [MessageStrings newGroupDefaultTitle];
     }
 
     NSAttributedString *attributedText = [[NSAttributedString alloc]

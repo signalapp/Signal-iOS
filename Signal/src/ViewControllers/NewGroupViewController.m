@@ -9,6 +9,7 @@
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
+#import "NSString+OWS.h"
 #import "OWSContactsManager.h"
 #import "OWSNavigationController.h"
 #import "OWSTableViewController.h"
@@ -98,7 +99,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 {
     [super loadView];
 
-    self.title = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"The navbar title for the 'new group' view.");
+    self.title = [MessageStrings newGroupDefaultTitle];
 
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
         initWithTitle:NSLocalizedString(@"NEW_GROUP_CREATE_BUTTON", @"The title for the 'create group' button.")
@@ -515,8 +516,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (TSGroupModel *)makeGroup
 {
-    NSString *groupName =
-        [self.groupNameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSString *groupName = [self.groupNameTextField.text ows_stripped];
     NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
     [recipientIds addObject:[self.contactsViewHelper localNumber]];
     NSData *groupId = [SecurityUtils generateRandomBytes:16];

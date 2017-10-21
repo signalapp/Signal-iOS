@@ -14,9 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
     [super prepareForReuse];
 
     self.viewItem = nil;
-    self.messageDateHeaderText = nil;
     self.delegate = nil;
     self.isCellVisible = NO;
+    self.contentWidth = 0;
 }
 
 - (void)loadForDisplay

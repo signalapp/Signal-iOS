@@ -213,7 +213,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     return self.thread.contactIdentifier;
 }
 
-- (BOOL)shouldStartExpireTimer
+- (BOOL)shouldStartExpireTimer:(YapDatabaseReadTransaction *)transaction
 {
     switch (self.messageState) {
         case TSOutgoingMessageStateSentToService:

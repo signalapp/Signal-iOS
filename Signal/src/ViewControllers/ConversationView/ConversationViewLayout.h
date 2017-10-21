@@ -26,6 +26,8 @@ typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
 
 - (NSArray<id<ConversationViewLayoutItem>> *)layoutItems;
 
+- (CGFloat)layoutHeaderHeight;
+
 @end
 
 #pragma mark -
@@ -35,6 +37,8 @@ typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
 @interface ConversationViewLayout : UICollectionViewLayout
 
 @property (nonatomic, weak) id<ConversationViewLayoutDelegate> delegate;
+
+@property (nonatomic, readonly) int contentWidth;
 
 @end
 

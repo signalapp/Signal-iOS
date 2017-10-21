@@ -3,6 +3,7 @@
 //
 
 #import "OWSContactsSearcher.h"
+#import "NSString+OWS.h"
 #import <SignalServiceKit/PhoneNumber.h>
 
 @interface OWSContactsSearcher ()
@@ -22,7 +23,7 @@
 }
 
 - (NSArray<Contact *> *)filterWithString:(NSString *)string {
-    NSString *searchTerm = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *searchTerm = [string ows_stripped];
 
     if ([searchTerm isEqualToString:@""]) {
         return self.contacts;

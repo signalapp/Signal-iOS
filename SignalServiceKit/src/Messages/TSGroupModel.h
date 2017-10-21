@@ -7,7 +7,7 @@
 
 @interface TSGroupModel : TSYapDatabaseObject
 
-@property (nonatomic, strong) NSMutableArray<NSString *> *groupMemberIds;
+@property (nonatomic, strong) NSArray<NSString *> *groupMemberIds;
 @property (nonatomic, strong) NSString *groupName;
 @property (nonatomic, strong) NSData *groupId;
 

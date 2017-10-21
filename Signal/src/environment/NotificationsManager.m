@@ -4,6 +4,7 @@
 
 #import "NotificationsManager.h"
 #import "Environment.h"
+#import "NSString+OWS.h"
 #import "OWSContactsManager.h"
 #import "OWSPreferences.h"
 #import "PushManager.h"
@@ -272,9 +273,9 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
         BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
 
         NSString *senderName = [contactsManager displayNameForPhoneIdentifier:message.authorId];
-        NSString *groupName = [thread.name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *groupName = [thread.name ows_stripped];
         if (groupName.length < 1) {
-            groupName = NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
+            groupName = [MessageStrings newGroupDefaultTitle];
         }
 
         if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {
