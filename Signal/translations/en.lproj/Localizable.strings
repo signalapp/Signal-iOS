@@ -229,9 +229,6 @@
 /* Accessibility label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Accept incoming call";
 
-/* Accessibility label for muting the microphone during audio call */
-"CALL_VIEW_AUDIO_MUTE_LABEL" = "Mute";
-
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Audio";
 
@@ -259,8 +256,8 @@
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
 
-/* Accessibility label for muting the microphone during video call */
-"CALL_VIEW_VIDEO_MUTE_LABEL" = "Mute";
+/* Accessibility label for muting the microphone */
+"CALL_VIEW_MUTE_LABEL" = "Mute";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Call Back";

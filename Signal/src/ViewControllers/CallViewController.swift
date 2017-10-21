@@ -348,12 +348,12 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
         
         audioModeMuteButton = createButton(imageName:"audio-call-mute-inactive",
                                            action:#selector(didPressMute))
-        audioModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_AUDIO_MUTE_LABEL",
-                                                                   comment: "Accessibility label for muting the microphone during audio call")
+        audioModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL",
+                                                                   comment: "Accessibility label for muting the microphone")
         
         videoModeMuteButton = createButton(imageName:"video-mute-unselected",
                                            action:#selector(didPressMute))
-        videoModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_VIDEO_MUTE_LABEL", comment: "Accessibility label for muting the microphone during video call")
+        videoModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL", comment: "Accessibility label for muting the microphone")
         
         audioModeVideoButton = createButton(imageName:"audio-call-video-inactive",
                                             action:#selector(didPressVideo))
