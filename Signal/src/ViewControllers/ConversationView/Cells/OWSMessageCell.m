@@ -226,9 +226,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     DDLogError(@"%p loadForDisplay: %@", self, NSStringForOWSMessageCellType(self.cellType));
 
-    BOOL isIncoming = self.isIncoming;
-    JSQMessagesBubbleImage *bubbleImageData
-        = isIncoming ? [self.bubbleFactory incoming] : [self.bubbleFactory outgoing];
+    JSQMessagesBubbleImage *bubbleImageData;
+    if ([self.viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
+        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+            bubbleImageData = self.bubbleFactory.outgoingFailed;
+        } else {
+            bubbleImageData = self.bubbleFactory.outgoing;
+        }
+    } else {
+        bubbleImageData = self.bubbleFactory.incoming;
+    }
+
     self.bubbleImageView.image = bubbleImageData.messageBubbleImage;
 
     [self updateDateHeader];
