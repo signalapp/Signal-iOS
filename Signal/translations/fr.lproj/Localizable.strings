@@ -830,7 +830,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Echoué";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Lù";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Lu";
 
 /* Status label for messages which are sending. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Envoi...";
@@ -867,7 +867,7 @@
 "MESSAGE_STATUS_FAILED" = "Envoi échoué. Appuyez pour obtenir des informations.";
 
 /* message footer for read messages */
-"MESSAGE_STATUS_READ" = "Lù";
+"MESSAGE_STATUS_READ" = "Lu";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Envoi...";
