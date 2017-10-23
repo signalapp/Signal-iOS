@@ -209,7 +209,7 @@
 "CALL_LABEL" = "Skambinti";
 
 /* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Please upgrade to iOS 9 or newer to see remote video.";
+"CALL_REMOTE_VIDEO_DISABLED" = "Norėdami matyti nuotolinius vaizdo įrašus, atsinaujinkite į iOS 9 ar naujesnę versiją.";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Nėra atsakymo.";
@@ -257,13 +257,13 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Palyginti su iškarpine";
 
 /* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contacts";
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Kontaktai";
 
 /* Table section header for group listing when composing a new message */
-"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Groups";
+"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Grupės";
 
 /* Table section header for invite listing when composing a new message */
-"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Invite";
+"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Pakviesti";
 
 /* Multiline label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Norėdami matyti, kurie jūsų kontaktai yra Signal naudotojai, leiskite savo sistemos nustatymuose kontaktų prieigą.";
@@ -614,13 +614,13 @@
 "GENERIC_ATTACHMENT_LABEL" = "Priedas";
 
 /* Error displayed when there is a failure fetching gifs from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Nepavyko gauti užklausto GIF. Įsitikinkite, kad esate prisijungę prie interneto.";
 
 /* Generic error displayed when picking a gif */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occured.";
+"GIF_PICKER_ERROR_GENERIC" = "Įvyko nežinoma klaida.";
 
 /* Shown when selected gif couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "Unable to Choose GIF";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "Nepavyko pasirinkti GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "Įveskite savo paiešką.";
@@ -629,10 +629,10 @@
 "GIF_PICKER_VIEW_TITLE" = "GIF paieška";
 
 /* Indicates that an error occured while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Error. Tap to Retry.";
+"GIF_VIEW_SEARCH_ERROR" = "Klaida. Bakstelėkite, norėdami pakartoti.";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "No Results.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "Nėra rezultatų.";
 
 /* Placeholder text for the search field in gif view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Įveskite savo paiešką";

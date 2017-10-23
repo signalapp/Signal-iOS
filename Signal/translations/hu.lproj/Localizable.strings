@@ -1650,7 +1650,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Resend Code by SMS";
 
 /* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Igazolási kód benyújtása";
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Submit";
 
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Enter the verification code we sent to %@.";
