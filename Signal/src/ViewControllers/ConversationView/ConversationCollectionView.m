@@ -12,6 +12,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setFrame:(CGRect)frame
 {
+    if (frame.size.width == 0 || frame.size.height == 0) {
+        // Ignore iOS Auto Layout's tendency to temporarily zero out the
+        // frame of this view during the layout process.
+        //
+        // The conversation view has an invariant that the collection view
+        // should always have a "reasonable" (correct width, non-zero height)
+        // size.  This lets us manipulate scroll state at all times, especially
+        // before the view has been presented for the first time.  This
+        // invariant also saves us from needing all sorts of ugly and incomplete
+        // hacks in the conversation view's code.
+        return;
+    }
     BOOL isChanging = !CGSizeEqualToSize(frame.size, self.frame.size);
     if (isChanging) {
         [self.layoutDelegate collectionViewWillChangeLayout];
@@ -24,6 +36,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setBounds:(CGRect)bounds
 {
+    if (bounds.size.width == 0 || bounds.size.height == 0) {
+        // Ignore iOS Auto Layout's tendency to temporarily zero out the
+        // frame of this view during the layout process.
+        //
+        // The conversation view has an invariant that the collection view
+        // should always have a "reasonable" (correct width, non-zero height)
+        // size.  This lets us manipulate scroll state at all times, especially
+        // before the view has been presented for the first time.  This
+        // invariant also saves us from needing all sorts of ugly and incomplete
+        // hacks in the conversation view's code.
+        return;
+    }
     BOOL isChanging = !CGSizeEqualToSize(bounds.size, self.bounds.size);
     if (isChanging) {
         [self.layoutDelegate collectionViewWillChangeLayout];
