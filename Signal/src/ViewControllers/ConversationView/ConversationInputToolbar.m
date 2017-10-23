@@ -28,6 +28,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 @property (nonatomic) BOOL shouldShowVoiceMemoButton;
 
 @property (nonatomic) NSArray<NSLayoutConstraint *> *contentContraints;
+@property (nonatomic) NSValue *lastTextContentSize;
 
 #pragma mark - Voice Memo Recording UI
 
@@ -269,6 +270,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [rightButton setContentHuggingHigh];
     [leftButton setCompressionResistanceHigh];
     [rightButton setCompressionResistanceHigh];
+    [self.inputTextView setCompressionResistanceLow];
     [self.inputTextView setContentHuggingLow];
 
     OWSAssert(leftButton.superview == self.leftButtonWrapper);
@@ -311,7 +313,10 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
         [rightButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
     ];
 
-    [self layoutIfNeeded];
+    // Layout immediately, unless the input toolbar hasn't even been laid out yet.
+    if (self.bounds.size.width > 0 && self.bounds.size.height > 0) {
+        [self layoutIfNeeded];
+    }
 }
 
 - (void)ensureShouldShowVoiceMemoButton
@@ -668,8 +673,18 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     if (context == kConversationInputTextViewObservingContext) {
 
         if (object == self.inputTextView && [keyPath isEqualToString:NSStringFromSelector(@selector(contentSize))]) {
+            CGSize textContentSize = self.inputTextView.contentSize;
+            NSValue *_Nullable lastTextContentSize = self.lastTextContentSize;
+            self.lastTextContentSize = [NSValue valueWithCGSize:textContentSize];
 
-            [self ensureContentConstraints];
+            // Update view constraints, but only when text content size changes.
+            //
+            // NOTE: We use a "fuzzy equals" comparison to avoid infinite recursion,
+            //       since ensureContentConstraints can affect the text content size.
+            if (!lastTextContentSize || fabs(lastTextContentSize.CGSizeValue.width - textContentSize.width) > 0.1f
+                || fabs(lastTextContentSize.CGSizeValue.height - textContentSize.height) > 0.1f) {
+                [self ensureContentConstraints];
+            }
         }
     }
 }

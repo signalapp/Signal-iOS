@@ -12,6 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setFrame:(CGRect)frame
 {
+    if (frame.size.width == 0 || frame.size.height == 0) {
+        // Ignore iOS Auto Layout's tendency to temporarily zero out the
+        // frame of this view during the layout process.
+        return;
+    }
     BOOL isChanging = !CGSizeEqualToSize(frame.size, self.frame.size);
     if (isChanging) {
         [self.layoutDelegate collectionViewWillChangeLayout];
@@ -24,6 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setBounds:(CGRect)bounds
 {
+    if (bounds.size.width == 0 || bounds.size.height == 0) {
+        // Ignore iOS Auto Layout's tendency to temporarily zero out the
+        // frame of this view during the layout process.
+        return;
+    }
     BOOL isChanging = !CGSizeEqualToSize(bounds.size, self.bounds.size);
     if (isChanging) {
         [self.layoutDelegate collectionViewWillChangeLayout];
