@@ -209,7 +209,7 @@
 "CALL_LABEL" = "打电话";
 
 /* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Please upgrade to iOS 9 or newer to see remote video.";
+"CALL_REMOTE_VIDEO_DISABLED" = "请升级到 iOS 9 或更新的系统来查看远程视频。";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "没有应答。";
@@ -257,13 +257,13 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "和剪切版相比较";
 
 /* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contacts";
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "联系人";
 
 /* Table section header for group listing when composing a new message */
-"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Groups";
+"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "群组";
 
 /* Table section header for invite listing when composing a new message */
-"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Invite";
+"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "邀请";
 
 /* Multiline label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "如果想查看您的哪些联系人是 Signal 用户，请在系统设置中允许 Signal 访问联系人。";
@@ -614,28 +614,28 @@
 "GENERIC_ATTACHMENT_LABEL" = "附件";
 
 /* Error displayed when there is a failure fetching gifs from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "无法读取所请求的 GIF。请确认您是否处于在线状态。";
 
 /* Generic error displayed when picking a gif */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occured.";
+"GIF_PICKER_ERROR_GENERIC" = "发生了一个未知的错误。";
 
 /* Shown when selected gif couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "Unable to Choose GIF";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "无法选择 GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Please enter your search.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "请输入您的搜索词。";
 
 /* Title for the 'gif picker' dialog. */
-"GIF_PICKER_VIEW_TITLE" = "GIF Search";
+"GIF_PICKER_VIEW_TITLE" = "GIF 查找";
 
 /* Indicates that an error occured while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Error. Tap to Retry.";
+"GIF_VIEW_SEARCH_ERROR" = "错误。点击重试。";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "No Results.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "无结果。";
 
 /* Placeholder text for the search field in gif view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Enter your search";
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "输入您的搜索词";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "头像更变成功。";
@@ -791,7 +791,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "绑定设备失败";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
+"LIST_GROUP_MEMBERS_ACTION" = "成员列表";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "信息记录日志";
@@ -1614,13 +1614,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "准备好来张特写了吗？";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "You now have the option of seeing and sharing when messages have been read.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "您现在可以选择查看和分享消息的已读状态。";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Enable read receipts in your privacy settings.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "在隐私设置中启用已读回执。";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Introducing Read Receipts";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "加入已读回执功能";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal 已开始支持安全的视频通话。正常的开始Signal通话，点击相机按钮，对方即可看到您。";
@@ -1650,7 +1650,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "重新通过SMS短信发送验证码";
 
 /* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "提交验证码";
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "提交";
 
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "输入我们发送到 %@ 的验证码";
