@@ -3927,8 +3927,15 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
             MessageRecipientStatus recipientStatus =
                 [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
-            shouldHideRecipientStatus
-                = (interactionType == lastInteractionType && recipientStatus == lastRecipientStatus);
+
+            if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+                // always sow "failed to send" status
+                shouldHideRecipientStatus = NO;
+            } else {
+                shouldHideRecipientStatus
+                    = (interactionType == lastInteractionType && recipientStatus == lastRecipientStatus);
+            }
+
             lastRecipientStatus = recipientStatus;
         }
         lastInteractionType = interactionType;
