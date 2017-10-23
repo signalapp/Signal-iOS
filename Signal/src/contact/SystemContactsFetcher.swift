@@ -344,6 +344,8 @@ class SystemContactsFetcher: NSObject {
 
     private var systemContactsHaveBeenRequestedAtLeastOnce = false
     private var hasSetupObservation = false
+    private var isFetchingContacts = false
+    private static let serialQueue = DispatchQueue(label: "org.whispersystems.system.contacts")
 
     override init() {
         self.contactStoreAdapter = ContactStoreAdapter()
@@ -432,20 +434,32 @@ class SystemContactsFetcher: NSObject {
         systemContactsHaveBeenRequestedAtLeastOnce = true
         setupObservationIfNecessary()
 
-        DispatchQueue.global().async {
+        SystemContactsFetcher.serialQueue.async { [weak self] _ in
+            guard let strongSelf = self else {
+                return
+            }
 
             var fetchedContacts: [Contact]?
 
-            switch self.contactStoreAdapter.fetchContacts() {
+            guard !strongSelf.isFetchingContacts else {
+                Logger.info("\(strongSelf.TAG) ignoring redundant system contacts fetch.")
+                return
+            }
+            strongSelf.isFetchingContacts = true
+
+            switch strongSelf.contactStoreAdapter.fetchContacts() {
             case .success(let result):
                 fetchedContacts = result
             case .error(let error):
                 completion?(error)
+                strongSelf.isFetchingContacts = false
                 return
             }
 
+            strongSelf.isFetchingContacts = false
+
             guard let contacts = fetchedContacts else {
-                owsFail("\(self.TAG) contacts was unexpectedly not set.")
+                owsFail("\(strongSelf.TAG) contacts was unexpectedly not set.")
                 completion?(nil)
             }
 
@@ -454,43 +468,43 @@ class SystemContactsFetcher: NSObject {
             DispatchQueue.main.async {
                 var shouldNotifyDelegate = false
 
-                if self.lastContactUpdateHash != contactsHash {
-                    Logger.info("\(self.TAG) contact hash changed. new contactsHash: \(contactsHash)")
+                if strongSelf.lastContactUpdateHash != contactsHash {
+                    Logger.info("\(strongSelf.TAG) contact hash changed. new contactsHash: \(contactsHash)")
                     shouldNotifyDelegate = true
                 } else if ignoreDebounce {
-                    Logger.info("\(self.TAG) ignoring debounce.")
+                    Logger.info("\(strongSelf.TAG) ignoring debounce.")
                     shouldNotifyDelegate = true
                 } else {
 
                     // If nothing has changed, only notify delegate (to perform contact intersection) every N hours
-                    if let lastDelegateNotificationDate = self.lastDelegateNotificationDate {
+                    if let lastDelegateNotificationDate = strongSelf.lastDelegateNotificationDate {
                         let kDebounceInterval = TimeInterval(12 * 60 * 60)
 
                         let expiresAtDate = Date(timeInterval: kDebounceInterval, since:lastDelegateNotificationDate)
                         if  Date() > expiresAtDate {
-                            Logger.info("\(self.TAG) debounce interval expired at: \(expiresAtDate)")
+                            Logger.info("\(strongSelf.TAG) debounce interval expired at: \(expiresAtDate)")
                             shouldNotifyDelegate = true
                         } else {
-                            Logger.info("\(self.TAG) ignoring since debounce interval hasn't expired")
+                            Logger.info("\(strongSelf.TAG) ignoring since debounce interval hasn't expired")
                         }
                     } else {
-                        Logger.info("\(self.TAG) first contact fetch. contactsHash: \(contactsHash)")
+                        Logger.info("\(strongSelf.TAG) first contact fetch. contactsHash: \(contactsHash)")
                         shouldNotifyDelegate = true
                     }
                 }
 
                 guard shouldNotifyDelegate else {
-                    Logger.info("\(self.TAG) no reason to notify delegate.")
+                    Logger.info("\(strongSelf.TAG) no reason to notify delegate.")
 
                     completion?(nil)
 
                     return
                 }
 
-                self.lastDelegateNotificationDate = Date()
-                self.lastContactUpdateHash = contactsHash
+                strongSelf.lastDelegateNotificationDate = Date()
+                strongSelf.lastContactUpdateHash = contactsHash
 
-                self.delegate?.systemContactsFetcher(self, updatedContacts: contacts)
+                strongSelf.delegate?.systemContactsFetcher(strongSelf, updatedContacts: contacts)
                 completion?(nil)
             }
         }
