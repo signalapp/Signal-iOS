@@ -345,7 +345,6 @@ class SystemContactsFetcher: NSObject {
     private var systemContactsHaveBeenRequestedAtLeastOnce = false
     private var hasSetupObservation = false
     private var isFetchingContacts = false
-    private static let serialQueue = DispatchQueue(label: "org.whispersystems.system.contacts")
 
     override init() {
         self.contactStoreAdapter = ContactStoreAdapter()
@@ -430,20 +429,19 @@ class SystemContactsFetcher: NSObject {
 
     private func tryToAcquireContactFetchLock() -> Bool {
         var didAcquireLock = false
-        SystemContactsFetcher.serialQueue.sync {
-            guard !self.isFetchingContacts else {
-                return
-            }
+        objc_sync_enter(self)
+        if !self.isFetchingContacts {
             self.isFetchingContacts = true
             didAcquireLock = true
         }
+        objc_sync_exit(self)
         return didAcquireLock
     }
 
     private func releaseContactFetchLock() {
-        SystemContactsFetcher.serialQueue.sync {
-            self.isFetchingContacts = false
-        }
+        objc_sync_enter(self)
+        self.isFetchingContacts = false
+        objc_sync_exit(self)
     }
 
     private func updateContacts(completion: ((Error?) -> Void)?, ignoreDebounce: Bool = false) {
@@ -454,13 +452,12 @@ class SystemContactsFetcher: NSObject {
 
         DispatchQueue.global().async {
 
-            var fetchedContacts: [Contact]?
-
             guard self.tryToAcquireContactFetchLock() else {
                 Logger.info("\(self.TAG) ignoring redundant system contacts fetch.")
                 return
             }
 
+            var fetchedContacts: [Contact]?
             switch self.contactStoreAdapter.fetchContacts() {
             case .success(let result):
                 fetchedContacts = result
