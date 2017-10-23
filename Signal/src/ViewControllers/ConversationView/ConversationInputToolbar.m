@@ -730,18 +730,21 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [cancelButtonWrapper
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                      action:@selector(cancelButtonWrapperTapped:)]];
-    UIView *_Nullable cancelButtonSuperview = [self.attachmentView contentView];
-    if (cancelButtonSuperview) {
-        cancelButtonSuperview.layer.borderColor = self.inputTextView.layer.borderColor;
-        cancelButtonSuperview.layer.borderWidth = self.inputTextView.layer.borderWidth;
-        cancelButtonSuperview.layer.cornerRadius = self.inputTextView.layer.cornerRadius;
-        cancelButtonSuperview.clipsToBounds = YES;
+    UIView *_Nullable attachmentContentView = [self.attachmentView contentView];
+    // Place the cancel button inside the attachment view's content area,
+    // if possible.  If not, just place it inside the attachment view.
+    UIView *cancelButtonReferenceView = attachmentContentView;
+    if (attachmentContentView) {
+        attachmentContentView.layer.borderColor = self.inputTextView.layer.borderColor;
+        attachmentContentView.layer.borderWidth = self.inputTextView.layer.borderWidth;
+        attachmentContentView.layer.cornerRadius = self.inputTextView.layer.cornerRadius;
+        attachmentContentView.clipsToBounds = YES;
     } else {
-        cancelButtonSuperview = self.attachmentView;
+        cancelButtonReferenceView = self.attachmentView;
     }
-    [cancelButtonSuperview addSubview:cancelButtonWrapper];
-    [cancelButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [cancelButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeRight];
+    [self.contentView addSubview:cancelButtonWrapper];
+    [cancelButtonWrapper autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:cancelButtonReferenceView];
+    [cancelButtonWrapper autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:cancelButtonReferenceView];
 
     UIImage *cancelIcon = [UIImage imageNamed:@"cancel-cross-white"];
     OWSAssert(cancelIcon);
