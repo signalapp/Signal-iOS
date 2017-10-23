@@ -3,9 +3,11 @@
 //
 
 #import "AttachmentUploadView.h"
+#import "OWSBezierPathView.h"
 #import "OWSProgressView.h"
 #import "OWSUploadingService.h"
 #import "TSAttachmentStream.h"
+#import "UIView+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,9 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) TSAttachmentStream *attachment;
 
-@property (nonatomic) OWSProgressView *progressView;
+@property (nonatomic) OWSBezierPathView *bezierPathView;
 
-@property (nonatomic) CALayer *maskLayer;
+@property (nonatomic) OWSProgressView *progressView;
 
 @property (nonatomic) AttachmentStateBlock _Nullable attachmentStateCallback;
 
@@ -42,25 +44,23 @@ NS_ASSUME_NONNULL_BEGIN
         self.attachment = attachment;
         self.attachmentStateCallback = attachmentStateCallback;
 
-        _maskLayer = [CALayer layer];
-        [_maskLayer setBackgroundColor:[UIColor blackColor].CGColor];
-        [_maskLayer setOpacity:0.4f];
-        [_maskLayer setFrame:superview.frame];
-        [superview.layer addSublayer:_maskLayer];
+        [superview addSubview:self];
+        [self autoPinToSuperviewEdges];
 
-        const CGFloat progressWidth = round(superview.frame.size.width * 0.45f);
-        const CGFloat progressHeight = round(MIN(superview.frame.size.height * 0.5f, progressWidth * 0.09f));
-        CGRect progressFrame = CGRectMake(round((superview.frame.size.width - progressWidth) * 0.5f),
-            round((superview.frame.size.height - progressHeight) * 0.5f),
-            progressWidth,
-            progressHeight);
+        _bezierPathView = [OWSBezierPathView new];
+        self.bezierPathView.configureShapeLayerBlock = ^(CAShapeLayer *layer, CGRect bounds) {
+            layer.path = [UIBezierPath bezierPathWithRect:bounds].CGPath;
+            layer.fillColor = [UIColor colorWithWhite:0.f alpha:0.4f].CGColor;
+        };
+        [self addSubview:self.bezierPathView];
+        [self.bezierPathView autoPinToSuperviewEdges];
+
         // The progress view is white.  It will only be shown
         // while the mask layer is visible, so it will show up
         // even against all-white attachments.
         _progressView = [OWSProgressView new];
-        _progressView.color = [UIColor whiteColor];
-        _progressView.frame = progressFrame;
-        [superview addSubview:_progressView];
+        self.progressView.color = [UIColor whiteColor];
+        [self addSubview:self.progressView];
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(attachmentUploadProgress:)
@@ -80,9 +80,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dealloc
 {
-    [_maskLayer removeFromSuperlayer];
-    [_progressView removeFromSuperview];
-
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -110,8 +107,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ensureViewState
 {
-    _maskLayer.hidden = self.isAttachmentReady || self.lastProgress == 0;
-    _progressView.hidden = self.isAttachmentReady || self.lastProgress == 0;
+    self.bezierPathView.hidden = self.isAttachmentReady || self.lastProgress == 0;
+    self.progressView.hidden = self.isAttachmentReady || self.lastProgress == 0;
 }
 
 - (void)attachmentUploadProgress:(NSNotification *)notification
@@ -121,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *attachmentID = [userinfo objectForKey:kAttachmentUploadAttachmentIDKey];
     if ([self.attachment.uniqueId isEqual:attachmentID]) {
         if (!isnan(progress)) {
-            [_progressView setProgress:progress];
+            [self.progressView setProgress:progress];
             self.lastProgress = progress;
             self.isAttachmentReady = self.attachment.isUploaded;
         } else {
@@ -129,6 +126,35 @@ NS_ASSUME_NONNULL_BEGIN
             self.isAttachmentReady = YES;
         }
     }
+}
+
+- (void)setBounds:(CGRect)bounds
+{
+    BOOL sizeDidChange = !CGSizeEqualToSize(bounds.size, self.bounds.size);
+    [super setBounds:bounds];
+    if (sizeDidChange) {
+        [self updateLayout];
+    }
+}
+
+- (void)setFrame:(CGRect)frame
+{
+    BOOL sizeDidChange = !CGSizeEqualToSize(frame.size, self.frame.size);
+    [super setFrame:frame];
+    if (sizeDidChange) {
+        [self updateLayout];
+    }
+}
+
+- (void)updateLayout
+{
+    const CGFloat progressWidth = round(self.bounds.size.width * 0.45f);
+    const CGFloat progressHeight = round(MIN(self.bounds.size.height * 0.5f, progressWidth * 0.09f));
+    CGRect progressFrame = CGRectMake(round((self.bounds.size.width - progressWidth) * 0.5f),
+        round((self.bounds.size.height - progressHeight) * 0.5f),
+        progressWidth,
+        progressHeight);
+    self.progressView.frame = progressFrame;
 }
 
 #pragma mark - Logging

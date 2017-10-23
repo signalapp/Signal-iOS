@@ -224,8 +224,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem.interaction);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
-    DDLogError(@"%p loadForDisplay: %@", self, NSStringForOWSMessageCellType(self.cellType));
-
     JSQMessagesBubbleImage *bubbleImageData;
     if ([self.viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
@@ -245,22 +243,30 @@ NS_ASSUME_NONNULL_BEGIN
 
     switch (self.cellType) {
         case OWSMessageCellType_TextMessage:
+            [self loadForTextDisplay];
+            break;
         case OWSMessageCellType_OversizeTextMessage:
+            OWSAssert(self.viewItem.attachmentStream);
             [self loadForTextDisplay];
             break;
         case OWSMessageCellType_StillImage:
+            OWSAssert(self.viewItem.attachmentStream);
             [self loadForStillImageDisplay];
             break;
         case OWSMessageCellType_AnimatedImage:
+            OWSAssert(self.viewItem.attachmentStream);
             [self loadForAnimatedImageDisplay];
             break;
         case OWSMessageCellType_Audio:
+            OWSAssert(self.viewItem.attachmentStream);
             [self loadForAudioDisplay];
             break;
         case OWSMessageCellType_Video:
+            OWSAssert(self.viewItem.attachmentStream);
             [self loadForVideoDisplay];
             break;
         case OWSMessageCellType_GenericAttachment: {
+            OWSAssert(self.viewItem.attachmentStream);
             self.attachmentView =
                 [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
             [self.attachmentView createContents];
@@ -906,6 +912,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.attachmentView = nil;
     [self.audioMessageView removeFromSuperview];
     self.audioMessageView = nil;
+    [self.attachmentUploadView removeFromSuperview];
     self.attachmentUploadView = nil;
     [self.expirationTimerView clearAnimations];
     [self.expirationTimerView removeFromSuperview];
