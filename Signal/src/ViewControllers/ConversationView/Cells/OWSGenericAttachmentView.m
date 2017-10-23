@@ -4,6 +4,7 @@
 
 #import "OWSGenericAttachmentView.h"
 #import "NSString+OWS.h"
+#import "OWSBezierPathView.h"
 #import "UIColor+JSQMessages.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
@@ -116,25 +117,37 @@ NS_ASSUME_NONNULL_BEGIN
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.vMargin];
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.vMargin];
 
+    OWSBezierPathView *iconCircleView = [OWSBezierPathView new];
+    UIColor *iconColor
+        = (self.isIncoming ? [UIColor colorWithRGBHex:0x9e9e9e] : [self foregroundColorWithOpacity:0.15f]);
+    iconCircleView.configureShapeLayerBlock = ^(CAShapeLayer *_Nonnull layer, CGRect bounds) {
+        CGFloat radius = MIN(bounds.size.width, bounds.size.height) * 0.5f;
+        layer.path = [UIBezierPath bezierPathWithRoundedRect:bounds cornerRadius:radius].CGPath;
+        layer.fillColor = iconColor.CGColor;
+    };
+    [contentView addSubview:iconCircleView];
+    [iconCircleView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:self.iconHMargin];
+    [iconCircleView autoVCenterInSuperview];
+    [iconCircleView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
+    [iconCircleView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
+    [iconCircleView setContentHuggingHigh];
+
     UIImage *image = [UIImage imageNamed:@"generic-attachment-small"];
     OWSAssert(image);
     UIImageView *imageView = [UIImageView new];
     imageView.image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     imageView.tintColor = self.bubbleBackgroundColor;
-    imageView.backgroundColor
-        = (self.isIncoming ? [UIColor colorWithRGBHex:0x9e9e9e] : [self foregroundColorWithOpacity:0.15f]);
-    imageView.layer.cornerRadius = MIN(imageView.bounds.size.width, imageView.bounds.size.height) * 0.5f;
     [contentView addSubview:imageView];
-    [imageView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:self.iconHMargin];
-    [imageView autoVCenterInSuperview];
-    [imageView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
-    [imageView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
+    [imageView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:iconCircleView];
+    [imageView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:iconCircleView];
+    [imageView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:iconCircleView];
+    [imageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:iconCircleView];
 
     const CGFloat kLabelHSpacing = self.iconHSpacing;
     UIView *labelsView = [UIView containerView];
     [contentView addSubview:labelsView];
     [labelsView autoPinLeadingToTrailingOfView:imageView margin:kLabelHSpacing];
-    [labelsView autoPinEdgeToSuperviewEdge:ALEdgeRight];
+    [labelsView autoPinTrailingToSuperviewWithMargin:self.iconHMargin];
     [labelsView autoVCenterInSuperview];
 
     NSString *filename = self.attachmentStream.sourceFilename;
@@ -152,15 +165,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     UILabel *fileTypeLabel = [UILabel new];
     fileTypeLabel.text = fileExtension.uppercaseString;
-    fileTypeLabel.textColor = imageView.backgroundColor;
+    fileTypeLabel.textColor = iconColor;
     fileTypeLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     fileTypeLabel.font = [UIFont ows_mediumFontWithSize:20.f];
     fileTypeLabel.adjustsFontSizeToFitWidth = YES;
     fileTypeLabel.textAlignment = NSTextAlignmentCenter;
     // Center on icon.
     [imageView addSubview:fileTypeLabel];
-    [imageView autoCenterInSuperview];
-    [imageView autoSetDimension:ALDimensionWidth toSize:15.f];
+    [fileTypeLabel autoCenterInSuperview];
+    [fileTypeLabel autoSetDimension:ALDimensionWidth toSize:15.f];
 
     const CGFloat kLabelVSpacing = 2;
     NSString *topText = [self.attachmentStream.sourceFilename ows_stripped];
