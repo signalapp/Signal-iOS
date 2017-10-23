@@ -200,9 +200,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    DDLogError(@"%@ %zd %@", self.tag, self.attachmentIds.count, self.attachmentIds.firstObject);
-    [DDLog flushLog];
-
     if (!(self.groupMetaMessage == TSGroupMessageDeliver || self.groupMetaMessage == TSGroupMessageNone)) {
         DDLogDebug(@"%@ Skipping save for group meta message.", self.tag);
         return;
