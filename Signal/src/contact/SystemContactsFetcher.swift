@@ -428,38 +428,51 @@ class SystemContactsFetcher: NSObject {
         updateContacts(completion: nil, ignoreDebounce:ignoreDebounce)
     }
 
+    private func tryToAcquireContactFetchLock() -> Bool {
+        var didAcquireLock = false
+        SystemContactsFetcher.serialQueue.sync {
+            guard !self.isFetchingContacts else {
+                return
+            }
+            self.isFetchingContacts = true
+            didAcquireLock = true
+        }
+        return didAcquireLock
+    }
+
+    private func releaseContactFetchLock() {
+        SystemContactsFetcher.serialQueue.sync {
+            self.isFetchingContacts = false
+        }
+    }
+
     private func updateContacts(completion: ((Error?) -> Void)?, ignoreDebounce: Bool = false) {
         AssertIsOnMainThread()
 
         systemContactsHaveBeenRequestedAtLeastOnce = true
         setupObservationIfNecessary()
 
-        SystemContactsFetcher.serialQueue.async { [weak self] _ in
-            guard let strongSelf = self else {
-                return
-            }
+        DispatchQueue.global().async {
 
             var fetchedContacts: [Contact]?
 
-            guard !strongSelf.isFetchingContacts else {
-                Logger.info("\(strongSelf.TAG) ignoring redundant system contacts fetch.")
+            guard self.tryToAcquireContactFetchLock() else {
+                Logger.info("\(self.TAG) ignoring redundant system contacts fetch.")
                 return
             }
-            strongSelf.isFetchingContacts = true
 
-            switch strongSelf.contactStoreAdapter.fetchContacts() {
+            switch self.contactStoreAdapter.fetchContacts() {
             case .success(let result):
                 fetchedContacts = result
             case .error(let error):
                 completion?(error)
-                strongSelf.isFetchingContacts = false
+                self.releaseContactFetchLock()
                 return
             }
-
-            strongSelf.isFetchingContacts = false
+            self.releaseContactFetchLock()
 
             guard let contacts = fetchedContacts else {
-                owsFail("\(strongSelf.TAG) contacts was unexpectedly not set.")
+                owsFail("\(self.TAG) contacts was unexpectedly not set.")
                 completion?(nil)
             }
 
@@ -468,43 +481,43 @@ class SystemContactsFetcher: NSObject {
             DispatchQueue.main.async {
                 var shouldNotifyDelegate = false
 
-                if strongSelf.lastContactUpdateHash != contactsHash {
-                    Logger.info("\(strongSelf.TAG) contact hash changed. new contactsHash: \(contactsHash)")
+                if self.lastContactUpdateHash != contactsHash {
+                    Logger.info("\(self.TAG) contact hash changed. new contactsHash: \(contactsHash)")
                     shouldNotifyDelegate = true
                 } else if ignoreDebounce {
-                    Logger.info("\(strongSelf.TAG) ignoring debounce.")
+                    Logger.info("\(self.TAG) ignoring debounce.")
                     shouldNotifyDelegate = true
                 } else {
 
                     // If nothing has changed, only notify delegate (to perform contact intersection) every N hours
-                    if let lastDelegateNotificationDate = strongSelf.lastDelegateNotificationDate {
+                    if let lastDelegateNotificationDate = self.lastDelegateNotificationDate {
                         let kDebounceInterval = TimeInterval(12 * 60 * 60)
 
                         let expiresAtDate = Date(timeInterval: kDebounceInterval, since:lastDelegateNotificationDate)
                         if  Date() > expiresAtDate {
-                            Logger.info("\(strongSelf.TAG) debounce interval expired at: \(expiresAtDate)")
+                            Logger.info("\(self.TAG) debounce interval expired at: \(expiresAtDate)")
                             shouldNotifyDelegate = true
                         } else {
-                            Logger.info("\(strongSelf.TAG) ignoring since debounce interval hasn't expired")
+                            Logger.info("\(self.TAG) ignoring since debounce interval hasn't expired")
                         }
                     } else {
-                        Logger.info("\(strongSelf.TAG) first contact fetch. contactsHash: \(contactsHash)")
+                        Logger.info("\(self.TAG) first contact fetch. contactsHash: \(contactsHash)")
                         shouldNotifyDelegate = true
                     }
                 }
 
                 guard shouldNotifyDelegate else {
-                    Logger.info("\(strongSelf.TAG) no reason to notify delegate.")
+                    Logger.info("\(self.TAG) no reason to notify delegate.")
 
                     completion?(nil)
 
                     return
                 }
 
-                strongSelf.lastDelegateNotificationDate = Date()
-                strongSelf.lastContactUpdateHash = contactsHash
+                self.lastDelegateNotificationDate = Date()
+                self.lastContactUpdateHash = contactsHash
 
-                strongSelf.delegate?.systemContactsFetcher(strongSelf, updatedContacts: contacts)
+                self.delegate?.systemContactsFetcher(self, updatedContacts: contacts)
                 completion?(nil)
             }
         }
