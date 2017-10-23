@@ -223,7 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIView *labelsView = [UIView containerView];
     [contentView addSubview:labelsView];
     [labelsView autoPinLeadingToTrailingOfView:self.audioPlayPauseButton margin:kLabelHSpacing];
-    [labelsView autoPinEdgeToSuperviewEdge:ALEdgeRight];
+    [labelsView autoPinTrailingToSuperviewWithMargin:self.audioIconHMargin];
     [labelsView autoVCenterInSuperview];
 
     const CGFloat kLabelVSpacing = 2;
