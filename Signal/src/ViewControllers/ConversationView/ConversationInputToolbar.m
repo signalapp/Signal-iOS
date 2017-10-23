@@ -43,8 +43,8 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 #pragma mark - Attachment Approval
 
 @property (nonatomic, nullable) MediaMessageView *attachmentView;
+@property (nonatomic, nullable) UIView *cancelAttachmentWrapper;
 @property (nonatomic, nullable) SignalAttachment *attachmentToApprove;
-@property (nonatomic) BOOL isLargeAttachment;
 
 @end
 
@@ -228,8 +228,8 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     if (self.attachmentToApprove) {
         OWSAssert(self.attachmentView);
 
+        self.leftButtonWrapper.hidden = YES;
         self.inputTextView.hidden = YES;
-        self.attachmentButton.hidden = YES;
         self.voiceMemoButton.hidden = YES;
         UIButton *rightButton = self.sendButton;
         rightButton.enabled = YES;
@@ -245,7 +245,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
             [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textViewVInset],
             [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:textViewVInset],
             [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:contentHInset],
-            [self.attachmentView autoSetDimension:ALDimensionHeight toSize:(self.isLargeAttachment ? 300.f : 150.f)],
+            [self.attachmentView autoSetDimension:ALDimensionHeight toSize:300.f],
 
             [self.rightButtonWrapper autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.attachmentView],
             [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeRight],
@@ -270,11 +270,13 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
         return;
     }
 
+    self.leftButtonWrapper.hidden = NO;
     self.inputTextView.hidden = NO;
-    self.attachmentButton.hidden = NO;
     self.voiceMemoButton.hidden = NO;
     [self.attachmentView removeFromSuperview];
     self.attachmentView = nil;
+    [self.cancelAttachmentWrapper removeFromSuperview];
+    self.cancelAttachmentWrapper = nil;
 
     UIButton *leftButton = self.attachmentButton;
     UIButton *rightButton = (self.shouldShowVoiceMemoButton ? self.voiceMemoButton : self.sendButton);
@@ -720,16 +722,16 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     OWSAssert(attachment);
 
     self.attachmentToApprove = attachment;
-    self.isLargeAttachment = (attachment.isImage || attachment.isAnimatedImage);
 
     MediaMessageView *attachmentView = [[MediaMessageView alloc] initWithAttachment:attachment];
     self.attachmentView = attachmentView;
     [self.contentView addSubview:attachmentView];
 
-    UIView *cancelButtonWrapper = [UIView containerView];
-    [cancelButtonWrapper
+    UIView *cancelAttachmentWrapper = [UIView containerView];
+    self.cancelAttachmentWrapper = cancelAttachmentWrapper;
+    [cancelAttachmentWrapper
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                     action:@selector(cancelButtonWrapperTapped:)]];
+                                                                     action:@selector(cancelAttachmentWrapperTapped:)]];
     UIView *_Nullable attachmentContentView = [self.attachmentView contentView];
     // Place the cancel button inside the attachment view's content area,
     // if possible.  If not, just place it inside the attachment view.
@@ -742,9 +744,9 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     } else {
         cancelButtonReferenceView = self.attachmentView;
     }
-    [self.contentView addSubview:cancelButtonWrapper];
-    [cancelButtonWrapper autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:cancelButtonReferenceView];
-    [cancelButtonWrapper autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:cancelButtonReferenceView];
+    [self.contentView addSubview:cancelAttachmentWrapper];
+    [cancelAttachmentWrapper autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:cancelButtonReferenceView];
+    [cancelAttachmentWrapper autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:cancelButtonReferenceView];
 
     UIImage *cancelIcon = [UIImage imageNamed:@"cancel-cross-white"];
     OWSAssert(cancelIcon);
@@ -762,7 +764,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [cancelButton addTarget:self
                      action:@selector(attachmentApprovalCancelPressed)
            forControlEvents:UIControlEventTouchUpInside];
-    [cancelButtonWrapper addSubview:cancelButton];
+    [cancelAttachmentWrapper addSubview:cancelButton];
     [cancelButton autoPinWidthToSuperviewWithMargin:cancelButtonInset];
     [cancelButton autoPinHeightToSuperviewWithMargin:cancelButtonInset];
     CGFloat cancelButtonSize = cancelIconSize + 2 * cancelIconInset;
@@ -772,7 +774,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [self ensureContentConstraints];
 }
 
-- (void)cancelButtonWrapperTapped:(UIGestureRecognizer *)sender
+- (void)cancelAttachmentWrapperTapped:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
         [self attachmentApprovalCancelPressed];

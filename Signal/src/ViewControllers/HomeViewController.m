@@ -256,7 +256,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     // after mappings have been set up in `showInboxGrouping`
     [self tableViewSetUp];
 
-
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[
         NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil),
         NSLocalizedString(@"ARCHIVE_NAV_BAR_TITLE", nil)
@@ -277,11 +276,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }
 
     [self updateBarButtonItems];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        TSThread *thread = [self threadForIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-        [self presentThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
-    });
 }
 
 - (void)updateBarButtonItems
