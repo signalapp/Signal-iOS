@@ -217,7 +217,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioPlayPauseButton autoVCenterInSuperview];
     [self.audioPlayPauseButton autoSetDimension:ALDimensionWidth toSize:self.iconSize];
     [self.audioPlayPauseButton autoSetDimension:ALDimensionHeight toSize:self.iconSize];
-    [self.audioPlayPauseButton setContentHuggingHigh];
 
     const CGFloat kLabelHSpacing = self.audioIconHSpacing;
 

@@ -121,8 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIColor *iconColor
         = (self.isIncoming ? [UIColor colorWithRGBHex:0x9e9e9e] : [self foregroundColorWithOpacity:0.15f]);
     iconCircleView.configureShapeLayerBlock = ^(CAShapeLayer *_Nonnull layer, CGRect bounds) {
-        CGFloat radius = MIN(bounds.size.width, bounds.size.height) * 0.5f;
-        layer.path = [UIBezierPath bezierPathWithRoundedRect:bounds cornerRadius:radius].CGPath;
+        layer.path = [UIBezierPath bezierPathWithOvalInRect:bounds].CGPath;
         layer.fillColor = iconColor.CGColor;
     };
     [contentView addSubview:iconCircleView];
@@ -130,7 +129,6 @@ NS_ASSUME_NONNULL_BEGIN
     [iconCircleView autoVCenterInSuperview];
     [iconCircleView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
     [iconCircleView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
-    [iconCircleView setContentHuggingHigh];
 
     UIImage *image = [UIImage imageNamed:@"generic-attachment-small"];
     OWSAssert(image);
