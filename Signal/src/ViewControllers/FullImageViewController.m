@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSData *)fileData
 {
-    if (_fileData) {
+    if (!_fileData) {
         NSURL *_Nullable url = self.attachmentUrl;
         if (url) {
             _fileData = [NSData dataWithContentsOfURL:url];

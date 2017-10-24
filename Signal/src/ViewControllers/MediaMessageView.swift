@@ -40,14 +40,9 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use attachment: constructor instead.")
+    @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        self.mode = .large
-        self.attachment = SignalAttachment.empty()
-        super.init(coder: aDecoder)
-        owsFail("\(self.TAG) invalid constructor")
-
-        createViews()
+        fatalError("\(#function) is unimplemented.")
     }
 
     required init(attachment: SignalAttachment, mode: MediaMessageViewMode) {
@@ -218,7 +213,7 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
         imageView.isUserInteractionEnabled = true
         imageView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(imageTapped)))
-}
+    }
 
     private func createVideoPreview() {
         guard let image = attachment.videoPreview() else {
