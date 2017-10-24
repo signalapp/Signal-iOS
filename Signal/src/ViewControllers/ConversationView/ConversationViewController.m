@@ -29,6 +29,7 @@
 #import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
 #import "OWSDisappearingMessagesJob.h"
+#import "OWSMath.h"
 #import "OWSMessageCell.h"
 #import "OWSSystemMessageCell.h"
 #import "OWSUnreadIndicatorCell.h"
@@ -4051,7 +4052,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.currentShowMessageDetailsPanGesture = gestureRecognizer;
 
     const CGFloat leftTranslation = -1 * [gestureRecognizer translationInView:self.view].x;
-    const CGFloat percent = MAX(leftTranslation, 0) / self.view.frame.size.width;
+    const CGFloat ratioComplete = Clamp(leftTranslation / self.view.frame.size.width, 0, 1);
 
     switch (gestureRecognizer.state) {
         case UIGestureRecognizerStateBegan: {
@@ -4076,7 +4077,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 DDLogVerbose(@"%@ transition not set up yet", self.tag);
                 return;
             }
-            [transition updateInteractiveTransition:percent];
+            [transition updateInteractiveTransition:ratioComplete];
             break;
         }
         case UIGestureRecognizerStateEnded: {
@@ -4090,7 +4091,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
             // Complete the transition if moved sufficiently far or fast
             // Note this is trickier for incoming, since you are already on the left, and have less space.
-            if (percent > 0.3 || velocity < -800) {
+            if (ratioComplete > 0.3 || velocity < -800) {
                 [transition finishInteractiveTransition];
             } else {
                 [transition cancelInteractiveTransition];
@@ -4130,7 +4131,6 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
     // animation But we may not want to be the navigation controller delegate permanently.
     self.navigationController.delegate = nil;
 
-    DDLogInfo(@"%@ >>>> in %s", self.tag, __PRETTY_FUNCTION__);
     UIPanGestureRecognizer *recognizer = self.currentShowMessageDetailsPanGesture;
     if (recognizer == nil) {
         OWSFail(@"currentShowMessageDetailsPanGesture was unexpectedly nil");
