@@ -148,10 +148,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateLayout
 {
-    const CGFloat progressWidth = round(self.bounds.size.width * 0.45f);
-    const CGFloat progressHeight = round(MIN(self.bounds.size.height * 0.5f, progressWidth * 0.09f));
-    CGRect progressFrame = CGRectMake(round((self.bounds.size.width - progressWidth) * 0.5f),
-        round((self.bounds.size.height - progressHeight) * 0.5f),
+    // Center the progress bar within the bubble mask.
+    //
+    // TODO: Verify that this layout works in RTL.
+    const CGFloat kBubbleTailWidth = 6.f;
+    CGRect bounds = self.bounds;
+    bounds.size.width -= kBubbleTailWidth;
+    if (self.isRTL) {
+        bounds.origin.x += kBubbleTailWidth;
+    }
+
+    const CGFloat progressWidth = round(bounds.size.width * 0.45f);
+    const CGFloat progressHeight = round(MIN(bounds.size.height * 0.5f, progressWidth * 0.09f));
+    CGRect progressFrame = CGRectMake(round(bounds.origin.x + (bounds.size.width - progressWidth) * 0.5f),
+        round(bounds.origin.y + (bounds.size.height - progressHeight) * 0.5f),
         progressWidth,
         progressHeight);
     self.progressView.frame = progressFrame;
