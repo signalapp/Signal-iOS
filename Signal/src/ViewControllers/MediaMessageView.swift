@@ -30,6 +30,8 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     var audioProgressSeconds: CGFloat = 0
     var audioDurationSeconds: CGFloat = 0
 
+    var contentView: UIView?
+
     // MARK: Initializers
 
     @available(*, unavailable, message:"use attachment: constructor instead.")
@@ -47,6 +49,10 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         super.init(frame: CGRect.zero)
 
         createViews()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     // MARK: View Lifecycle
@@ -154,19 +160,36 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             createGenericPreview()
             return
         }
+        guard image.size.width > 0 && image.size.height > 0 else {
+            createGenericPreview()
+            return
+        }
         let animatedImageView = YYAnimatedImageView()
         animatedImageView.image = image
-        animatedImageView.contentMode = .scaleAspectFit
-        self.addSubview(animatedImageView)
-        animatedImageView.autoPinToSuperviewEdges()
+        let aspectRatio = image.size.width / image.size.height
+        addSubviewWithScaleAspectFitLayout(view:animatedImageView, aspectRatio:aspectRatio)
+        contentView = animatedImageView
+    }
+
+    private func addSubviewWithScaleAspectFitLayout(view: UIView, aspectRatio: CGFloat) {
+        self.addSubview(view)
+        // This emulates the behavior of contentMode = .scaleAspectFit using
+        // iOS auto layout constraints.  
+        //
+        // This allows ConversationInputToolbar to place the "cancel" button
+        // in the upper-right hand corner of the preview content.
+        view.autoCenterInSuperview()
+        view.autoPin(toAspectRatio:aspectRatio)
+        view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)
+        view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)
     }
 
     private func createImagePreview() {
-        var image = attachment.image
-        if image == nil {
-            image = UIImage(data: attachment.data)
+        guard let image = attachment.image() else {
+            createGenericPreview()
+            return
         }
-        guard image != nil else {
+        guard image.size.width > 0 && image.size.height > 0 else {
             createGenericPreview()
             return
         }
@@ -174,28 +197,35 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         let imageView = UIImageView(image: image)
         imageView.layer.minificationFilter = kCAFilterTrilinear
         imageView.layer.magnificationFilter = kCAFilterTrilinear
-        imageView.contentMode = .scaleAspectFit
-        self.addSubview(imageView)
-        imageView.autoPinToSuperviewEdges()
+        let aspectRatio = image.size.width / image.size.height
+        addSubviewWithScaleAspectFitLayout(view:imageView, aspectRatio:aspectRatio)
+        contentView = imageView
     }
 
     private func createVideoPreview() {
-        guard let dataUrl = attachment.dataUrl else {
+        guard let image = attachment.videoPreview() else {
             createGenericPreview()
             return
         }
-        guard let videoPlayer = MPMoviePlayerController(contentURL: dataUrl) else {
+        guard image.size.width > 0 && image.size.height > 0 else {
             createGenericPreview()
             return
         }
-        videoPlayer.prepareToPlay()
 
-        videoPlayer.controlStyle = .default
-        videoPlayer.shouldAutoplay = false
+        let imageView = UIImageView(image: image)
+        imageView.layer.minificationFilter = kCAFilterTrilinear
+        imageView.layer.magnificationFilter = kCAFilterTrilinear
+        let aspectRatio = image.size.width / image.size.height
+        addSubviewWithScaleAspectFitLayout(view:imageView, aspectRatio:aspectRatio)
+        contentView = imageView
 
-        self.addSubview(videoPlayer.view)
-        self.videoPlayer = videoPlayer
-        videoPlayer.view.autoPinToSuperviewEdges()
+        let videoPlayIcon = UIImage(named:"play_button")
+        let videoPlayButton = UIImageView(image:videoPlayIcon)
+        imageView.addSubview(videoPlayButton)
+        videoPlayButton.autoCenterInSuperview()
+
+        imageView.isUserInteractionEnabled = true
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(videoTapped)))
     }
 
     private func createGenericPreview() {
@@ -364,5 +394,52 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         assert(image != nil)
         audioPlayButton?.setImage(image, for: .normal)
         audioPlayButton?.imageView?.tintColor = UIColor.ows_materialBlue()
+    }
+
+    // MARK: - Video Playback
+
+    func videoTapped(sender: UIGestureRecognizer) {
+        guard let dataUrl = attachment.dataUrl else {
+            return
+        }
+        guard sender.state == .recognized else {
+            return
+        }
+        guard let videoPlayer = MPMoviePlayerController(contentURL: dataUrl) else {
+            return
+        }
+        videoPlayer.prepareToPlay()
+
+        NotificationCenter.default.addObserver(forName: .MPMoviePlayerWillExitFullscreen, object: nil, queue: nil) { [weak self] _ in
+            self?.moviePlayerWillExitFullscreen()
+        }
+        NotificationCenter.default.addObserver(forName: .MPMoviePlayerDidExitFullscreen, object: nil, queue: nil) { [weak self] _ in
+            self?.moviePlayerDidExitFullscreen()
+        }
+
+        videoPlayer.controlStyle = .default
+        videoPlayer.shouldAutoplay = true
+
+        self.addSubview(videoPlayer.view)
+        videoPlayer.view.frame = self.bounds
+        self.videoPlayer = videoPlayer
+        videoPlayer.view.autoPinToSuperviewEdges()
+        ViewControllerUtils.setAudioIgnoresHardwareMuteSwitch(true)
+        videoPlayer.setFullscreen(true, animated:false)
+    }
+
+    private func moviePlayerWillExitFullscreen() {
+        clearVideoPlayer()
+    }
+
+    private func moviePlayerDidExitFullscreen() {
+        clearVideoPlayer()
+    }
+
+    private func clearVideoPlayer() {
+        videoPlayer?.stop()
+        videoPlayer?.view.removeFromSuperview()
+        videoPlayer = nil
+        ViewControllerUtils.setAudioIgnoresHardwareMuteSwitch(false)
     }
 }

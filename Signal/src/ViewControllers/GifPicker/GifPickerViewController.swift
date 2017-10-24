@@ -6,8 +6,7 @@ import Foundation
 
 @objc
 protocol GifPickerViewControllerDelegate: class {
-    func gifPickerWillSend()
-    func gifPickerDidSend(outgoingMessage: TSOutgoingMessage)
+    func gifPickerDidSelect(attachment: SignalAttachment)
 }
 
 class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate {
@@ -359,11 +358,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             }
             let attachment = SignalAttachment(dataSource: dataSource, dataUTI: asset.rendition.utiType)
 
-            strongSelf.delegate?.gifPickerWillSend()
-
-            let outgoingMessage = ThreadUtil.sendMessage(with: attachment, in: strongSelf.thread, messageSender: strongSelf.messageSender)
-
-            strongSelf.delegate?.gifPickerDidSend(outgoingMessage: outgoingMessage)
+            strongSelf.delegate?.gifPickerDidSelect(attachment: attachment)
 
             strongSelf.dismiss(animated: true, completion: nil)
         }.catch { [weak self] error in

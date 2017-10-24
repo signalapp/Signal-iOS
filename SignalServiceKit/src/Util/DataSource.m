@@ -297,6 +297,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     DataSourcePath *instance = [DataSourcePath new];
     instance.filePath = filePath;
+    OWSAssert(!instance.shouldDeleteOnDeallocation);
     return instance;
 }
 

@@ -4,6 +4,7 @@
 
 #import "ConversationInputToolbar.h"
 #import "ConversationInputTextView.h"
+#import "OWSMath.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
@@ -42,8 +43,8 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 #pragma mark - Attachment Approval
 
-@property (nonatomic) UIView *attachmentApprovalView;
 @property (nonatomic, nullable) MediaMessageView *attachmentView;
+@property (nonatomic, nullable) UIView *cancelAttachmentWrapper;
 @property (nonatomic, nullable) SignalAttachment *attachmentToApprove;
 
 @end
@@ -132,10 +133,6 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     self.voiceMemoButton.imageView.tintColor = [UIColor ows_materialBlueColor];
     [self.rightButtonWrapper addSubview:self.voiceMemoButton];
 
-    _attachmentApprovalView = [UIView containerView];
-    [self addSubview:self.attachmentApprovalView];
-    [self.attachmentApprovalView autoPinToSuperviewEdges];
-
     // We want to be permissive about the voice message gesture, so we hang
     // the long press GR on the button's wrapper, not the button itself.
     UILongPressGestureRecognizer *longPressGestureRecognizer =
@@ -215,12 +212,51 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 {
     [NSLayoutConstraint deactivateConstraints:self.contentContraints];
 
+    const int textViewVInset = 5;
+    const int contentHInset = 6;
+    const int contentHSpacing = 6;
+
+    // We want to grow the text input area to fit its content within reason.
+    const CGFloat kMinTextViewHeight = ceil(self.inputTextView.font.lineHeight
+        + self.inputTextView.textContainerInset.top + self.inputTextView.textContainerInset.bottom
+        + self.inputTextView.contentInset.top + self.inputTextView.contentInset.bottom);
+    const CGFloat kMaxTextViewHeight = 100.f;
+    const CGFloat textViewDesiredHeight = (self.inputTextView.contentSize.height + self.inputTextView.contentInset.top
+        + self.inputTextView.contentInset.bottom);
+    const CGFloat textViewHeight = ceil(Clamp(textViewDesiredHeight, kMinTextViewHeight, kMaxTextViewHeight));
+    const CGFloat kMinContentHeight = kMinTextViewHeight + textViewVInset * 2;
+
     if (self.attachmentToApprove) {
-        self.contentView.hidden = YES;
-        self.attachmentApprovalView.hidden = NO;
+        OWSAssert(self.attachmentView);
+
+        self.leftButtonWrapper.hidden = YES;
+        self.inputTextView.hidden = YES;
+        self.voiceMemoButton.hidden = YES;
+        UIButton *rightButton = self.sendButton;
+        rightButton.enabled = YES;
+        rightButton.hidden = NO;
+
+        [rightButton setContentHuggingHigh];
+        [rightButton setCompressionResistanceHigh];
+        [self.attachmentView setContentHuggingLow];
+
+        OWSAssert(rightButton.superview == self.rightButtonWrapper);
 
         self.contentContraints = @[
-            [self.attachmentApprovalView autoSetDimension:ALDimensionHeight toSize:300.f],
+            [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textViewVInset],
+            [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:textViewVInset],
+            [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:contentHInset],
+            [self.attachmentView autoSetDimension:ALDimensionHeight toSize:300.f],
+
+            [self.rightButtonWrapper autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.attachmentView],
+            [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeRight],
+            [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
+            [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+
+            [rightButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
+            [rightButton autoPinLeadingToSuperviewWithMargin:contentHSpacing],
+            [rightButton autoPinTrailingToSuperviewWithMargin:contentHInset],
+            [rightButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
         ];
 
         [self setNeedsLayout];
@@ -235,26 +271,13 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
         return;
     }
 
-    self.contentView.hidden = NO;
-    self.attachmentApprovalView.hidden = YES;
+    self.leftButtonWrapper.hidden = NO;
+    self.inputTextView.hidden = NO;
+    self.voiceMemoButton.hidden = NO;
+    [self.attachmentView removeFromSuperview];
     self.attachmentView = nil;
-    for (UIView *subview in self.attachmentApprovalView.subviews) {
-        [subview removeFromSuperview];
-    }
-
-    const int textViewVInset = 5;
-    const int contentHInset = 6;
-    const int contentHSpacing = 6;
-
-    // We want to grow the text input area to fit its content within reason.
-    const CGFloat kMinTextViewHeight = ceil(self.inputTextView.font.lineHeight
-        + self.inputTextView.textContainerInset.top + self.inputTextView.textContainerInset.bottom
-        + self.inputTextView.contentInset.top + self.inputTextView.contentInset.bottom);
-    const CGFloat kMaxTextViewHeight = 100.f;
-    const CGFloat textViewDesiredHeight = (self.inputTextView.contentSize.height + self.inputTextView.contentInset.top
-        + self.inputTextView.contentInset.bottom);
-    const CGFloat textViewHeight = ceil(MAX(kMinTextViewHeight, MIN(kMaxTextViewHeight, textViewDesiredHeight)));
-    const CGFloat kMinContentHeight = kMinTextViewHeight + textViewVInset * 2;
+    [self.cancelAttachmentWrapper removeFromSuperview];
+    self.cancelAttachmentWrapper = nil;
 
     UIButton *leftButton = self.attachmentButton;
     UIButton *rightButton = (self.shouldShowVoiceMemoButton ? self.voiceMemoButton : self.sendButton);
@@ -321,7 +344,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 - (void)ensureShouldShowVoiceMemoButton
 {
-    self.shouldShowVoiceMemoButton = self.inputTextView.trimmedText.length < 1;
+    self.shouldShowVoiceMemoButton = (self.attachmentToApprove != nil && self.inputTextView.trimmedText.length < 1);
 }
 
 - (void)handleLongPress:(UIGestureRecognizer *)sender
@@ -619,7 +642,11 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 {
     OWSAssert(self.inputToolbarDelegate);
 
-    [self.inputToolbarDelegate sendButtonPressed];
+    if (self.attachmentToApprove) {
+        [self attachmentApprovalSendPressed];
+    } else {
+        [self.inputToolbarDelegate sendButtonPressed];
+    }
 }
 
 - (void)attachmentButtonPressed
@@ -699,58 +726,60 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
     MediaMessageView *attachmentView = [[MediaMessageView alloc] initWithAttachment:attachment];
     self.attachmentView = attachmentView;
-    [self.attachmentApprovalView addSubview:attachmentView];
-    [attachmentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:10];
-    [attachmentView autoPinWidthToSuperviewWithMargin:20];
+    [self.contentView addSubview:attachmentView];
 
-    UIView *buttonRow = [UIView containerView];
-    [self.attachmentApprovalView addSubview:buttonRow];
-    [buttonRow autoPinWidthToSuperviewWithMargin:20];
-    [buttonRow autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:attachmentView withOffset:10];
-    [buttonRow autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10];
+    UIView *cancelAttachmentWrapper = [UIView containerView];
+    self.cancelAttachmentWrapper = cancelAttachmentWrapper;
+    [cancelAttachmentWrapper
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                     action:@selector(cancelAttachmentWrapperTapped:)]];
+    UIView *_Nullable attachmentContentView = [self.attachmentView contentView];
+    // Place the cancel button inside the attachment view's content area,
+    // if possible.  If not, just place it inside the attachment view.
+    UIView *cancelButtonReferenceView = attachmentContentView;
+    if (attachmentContentView) {
+        attachmentContentView.layer.borderColor = self.inputTextView.layer.borderColor;
+        attachmentContentView.layer.borderWidth = self.inputTextView.layer.borderWidth;
+        attachmentContentView.layer.cornerRadius = self.inputTextView.layer.cornerRadius;
+        attachmentContentView.clipsToBounds = YES;
+    } else {
+        cancelButtonReferenceView = self.attachmentView;
+    }
+    [self.contentView addSubview:cancelAttachmentWrapper];
+    [cancelAttachmentWrapper autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:cancelButtonReferenceView];
+    [cancelAttachmentWrapper autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:cancelButtonReferenceView];
 
-    // We use this invisible subview to ensure that the buttons are centered
-    // horizontally.
-    UIView *buttonSpacer = [UIView new];
-    [buttonRow addSubview:buttonSpacer];
-    // Vertical positioning of this view doesn't matter.
-    [buttonSpacer autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [buttonSpacer autoSetDimension:ALDimensionWidth toSize:ScaleFromIPhone5To7Plus(20, 30)];
-    [buttonSpacer autoSetDimension:ALDimensionHeight toSize:0];
-    [buttonSpacer autoHCenterInSuperview];
-
-    UIView *cancelButton = [self createAttachmentApprovalButton:[CommonStrings cancelButton]
-                                                          color:[UIColor ows_destructiveRedColor]
-                                                       selector:@selector(attachmentApprovalCancelPressed)];
-    [buttonRow addSubview:cancelButton];
-    [cancelButton autoPinHeightToSuperview];
-    [cancelButton autoPinEdge:ALEdgeRight toEdge:ALEdgeLeft ofView:buttonSpacer];
-
-    UIView *sendButton =
-        [self createAttachmentApprovalButton:NSLocalizedString(
-                                                 @"ATTACHMENT_APPROVAL_SEND_BUTTON", comment
-                                                 : @"Label for 'send' button in the 'attachment approval' dialog.")
-                                       color:[UIColor colorWithRGBHex:0x2ecc71]
-                                    selector:@selector(attachmentApprovalSendPressed)];
-    [buttonRow addSubview:sendButton];
-    [sendButton autoPinHeightToSuperview];
-    [sendButton autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:buttonSpacer];
+    UIImage *cancelIcon = [UIImage imageNamed:@"cancel-cross-white"];
+    OWSAssert(cancelIcon);
+    UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [cancelButton setImage:cancelIcon forState:UIControlStateNormal];
+    [cancelButton setBackgroundColor:[UIColor ows_materialBlueColor]];
+    OWSAssert(cancelIcon.size.width == cancelIcon.size.height);
+    CGFloat cancelIconSize = MIN(cancelIcon.size.width, cancelIcon.size.height);
+    CGFloat cancelIconInset = round(cancelIconSize * 0.35f);
+    [cancelButton
+        setContentEdgeInsets:UIEdgeInsetsMake(cancelIconInset, cancelIconInset, cancelIconInset, cancelIconInset)];
+    CGFloat cancelButtonRadius = cancelIconInset + cancelIconSize * 0.5f;
+    cancelButton.layer.cornerRadius = cancelButtonRadius;
+    CGFloat cancelButtonInset = 10.f;
+    [cancelButton addTarget:self
+                     action:@selector(attachmentApprovalCancelPressed)
+           forControlEvents:UIControlEventTouchUpInside];
+    [cancelAttachmentWrapper addSubview:cancelButton];
+    [cancelButton autoPinWidthToSuperviewWithMargin:cancelButtonInset];
+    [cancelButton autoPinHeightToSuperviewWithMargin:cancelButtonInset];
+    CGFloat cancelButtonSize = cancelIconSize + 2 * cancelIconInset;
+    [cancelButton autoSetDimension:ALDimensionWidth toSize:cancelButtonSize];
+    [cancelButton autoSetDimension:ALDimensionHeight toSize:cancelButtonSize];
 
     [self ensureContentConstraints];
 }
 
-- (UIView *)createAttachmentApprovalButton:(NSString *)title color:(UIColor *)color selector:(SEL)selector
+- (void)cancelAttachmentWrapperTapped:(UIGestureRecognizer *)sender
 {
-    const CGFloat buttonWidth = ScaleFromIPhone5To7Plus(110, 140);
-    const CGFloat buttonHeight = ScaleFromIPhone5To7Plus(35, 45);
-
-    return [OWSFlatButton buttonWithTitle:title
-                               titleColor:[UIColor whiteColor]
-                          backgroundColor:color
-                                    width:buttonWidth
-                                   height:buttonHeight
-                                   target:self
-                                 selector:selector];
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self attachmentApprovalCancelPressed];
+    }
 }
 
 - (void)attachmentApprovalCancelPressed

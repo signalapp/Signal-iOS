@@ -57,6 +57,7 @@ enum TSImageQuality {
 class SignalAttachment: NSObject {
 
     static let TAG = "[SignalAttachment]"
+    let TAG = "[SignalAttachment]"
 
     // MARK: Properties
 
@@ -95,7 +96,8 @@ class SignalAttachment: NSObject {
     // To avoid redundant work of repeatedly compressing/uncompressing
     // images, we cache the UIImage associated with this attachment if
     // possible.
-    public var image: UIImage?
+    private var cachedImage: UIImage?
+    private var cachedVideoPreview: UIImage?
 
     private(set) public var isVoiceMessage = false
 
@@ -150,6 +152,42 @@ class SignalAttachment: NSObject {
 
     class var missingDataErrorMessage: String {
         return SignalAttachmentError.missingData.errorDescription
+    }
+
+    public func image() -> UIImage? {
+        if let cachedImage = cachedImage {
+            return cachedImage
+        }
+        guard let image = UIImage(data:dataSource.data()) else {
+            return nil
+        }
+        cachedImage = image
+        return image
+    }
+
+    public func videoPreview() -> UIImage? {
+        if let cachedVideoPreview = cachedVideoPreview {
+            return cachedVideoPreview
+        }
+
+        guard let mediaUrl = dataUrl else {
+            return nil
+        }
+
+        do {
+            let asset = AVURLAsset(url:mediaUrl)
+            let generator = AVAssetImageGenerator(asset: asset)
+            generator.appliesPreferredTrackTransform = true
+            let cgImage = try generator.copyCGImage(at: CMTimeMake(0, 1), actualTime: nil)
+            let image = UIImage(cgImage: cgImage)
+
+            cachedVideoPreview = image
+            return image
+
+        } catch let error {
+            Logger.verbose("\(TAG) Could not generate video thumbnail: \(error.localizedDescription)")
+            return nil
+        }
     }
 
     // Returns the MIME type for this attachment or nil if no MIME type
@@ -454,7 +492,7 @@ class SignalAttachment: NSObject {
                 attachment.error = .couldNotParseImage
                 return attachment
             }
-            attachment.image = image
+            attachment.cachedImage = image
 
             if isInputImageValidOutputImage(image: image, dataSource: dataSource, dataUTI: dataUTI) {
                 Logger.verbose("\(TAG) Sending raw \(attachment.mimeType)")
@@ -513,7 +551,7 @@ class SignalAttachment: NSObject {
         let dataSource = DataSourceValue.emptyDataSource()
         dataSource.sourceFilename = filename
         let attachment = SignalAttachment(dataSource : dataSource, dataUTI: dataUTI)
-        attachment.image = image
+        attachment.cachedImage = image
 
         Logger.verbose("\(TAG) Writing \(attachment.mimeType) as image/jpeg")
         return compressImageAsJPEG(image : image, attachment : attachment, filename:filename)
@@ -545,7 +583,7 @@ class SignalAttachment: NSObject {
 
             if UInt(jpgImageData.count) <= kMaxFileSizeImage {
                 let recompressedAttachment = SignalAttachment(dataSource : dataSource, dataUTI: kUTTypeJPEG as String)
-                recompressedAttachment.image = dstImage
+                recompressedAttachment.cachedImage = dstImage
                 return recompressedAttachment
             }
 

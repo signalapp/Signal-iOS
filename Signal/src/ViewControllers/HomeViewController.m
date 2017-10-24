@@ -256,7 +256,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     // after mappings have been set up in `showInboxGrouping`
     [self tableViewSetUp];
 
-
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[
         NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil),
         NSLocalizedString(@"ARCHIVE_NAV_BAR_TITLE", nil)
