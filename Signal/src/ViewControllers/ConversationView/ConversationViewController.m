@@ -474,6 +474,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [self createScrollButtons];
     [self createHeaderViews];
+    [self createBackButton];
     [self addNotificationListeners];
 }
 
@@ -964,26 +965,25 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [self dismissKeyBoard];
-    [self startReadTimer];
 
+    [ProfileFetcherJob runWithThread:self.thread networkManager:self.networkManager];
+    [self markVisibleMessagesAsRead];
+    [self startReadTimer];
+    [self updateNavigationBarSubtitleLabel];
     [self updateBackButtonUnreadCount];
 
-    [self.inputToolbar endEditing:YES];
+    if (!self.viewHasEverAppeared) {
+        [self.inputToolbar endEditing:YES];
 
-    if (_composeOnOpen && !self.inputToolbar.hidden) {
-        [self popKeyBoard];
-        _composeOnOpen = NO;
+        if (_composeOnOpen && !self.inputToolbar.hidden) {
+            [self popKeyBoard];
+            _composeOnOpen = NO;
+        }
+        if (_callOnOpen) {
+            [self callAction];
+            _callOnOpen = NO;
+        }
     }
-    if (_callOnOpen) {
-        [self callAction];
-        _callOnOpen = NO;
-    }
-    [self updateNavigationBarSubtitleLabel];
-    [ProfileFetcherJob runWithThread:self.thread networkManager:self.networkManager];
-
-    [self markVisibleMessagesAsRead];
-
     self.viewHasEverAppeared = YES;
 }
 
@@ -1099,8 +1099,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     return 16;
 }
 
-- (void)setBarButtonItemsForDisappearingMessagesConfiguration:
-    (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
+- (void)createBackButton
 {
     UIBarButtonItem *backItem = [self createOWSBackButton];
     // This method gets called multiple times, so it's important we re-layout the unread badge
@@ -1126,7 +1125,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self updateBackButtonUnreadCount];
 
     self.navigationItem.leftBarButtonItem = backItem;
+}
 
+- (void)setBarButtonItemsForDisappearingMessagesConfiguration:
+    (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
+{
     // We want to leave space for the "back" button, the "timer" button, and the "call"
     // button, and all of the whitespace around these views.  There
     // isn't a convenient way to calculate these in a navigation bar, so we just leave
