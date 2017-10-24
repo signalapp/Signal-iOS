@@ -173,6 +173,11 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     private func addSubviewWithScaleAspectFitLayout(view: UIView, aspectRatio: CGFloat) {
         self.addSubview(view)
+        // This emulates the behavior of contentMode = .scaleAspectFit using
+        // iOS auto layout constraints.  
+        //
+        // This allows ConversationInputToolbar to place the "cancel" button
+        // in the upper-right hand corner of the preview content.
         view.autoCenterInSuperview()
         view.autoPin(toAspectRatio:aspectRatio)
         view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)

@@ -4,6 +4,7 @@
 
 #import "ConversationInputToolbar.h"
 #import "ConversationInputTextView.h"
+#import "OWSMath.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
@@ -222,7 +223,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     const CGFloat kMaxTextViewHeight = 100.f;
     const CGFloat textViewDesiredHeight = (self.inputTextView.contentSize.height + self.inputTextView.contentInset.top
         + self.inputTextView.contentInset.bottom);
-    const CGFloat textViewHeight = ceil(MAX(kMinTextViewHeight, MIN(kMaxTextViewHeight, textViewDesiredHeight)));
+    const CGFloat textViewHeight = ceil(Clamp(textViewDesiredHeight, kMinTextViewHeight, kMaxTextViewHeight));
     const CGFloat kMinContentHeight = kMinTextViewHeight + textViewVInset * 2;
 
     if (self.attachmentToApprove) {
