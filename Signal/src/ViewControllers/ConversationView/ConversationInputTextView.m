@@ -46,9 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         self.contentMode = UIViewContentModeRedraw;
         self.dataDetectorTypes = UIDataDetectorTypeNone;
-        self.keyboardAppearance = UIKeyboardAppearanceDefault;
-        self.keyboardType = UIKeyboardTypeDefault;
-        self.returnKeyType = UIReturnKeyDefault;
 
         self.text = nil;
 
