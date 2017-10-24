@@ -986,6 +986,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.viewHasEverAppeared = YES;
 }
 
+// `viewWillDisappear` is called whenever the view *starts* to disappear,
+// but, as is the case with the "pan left for message details view" gesture,
+// this can be canceled. As such, we shouldn't tear down anything expensive
+// until `viewDidDisappear`.
 - (void)viewWillDisappear:(BOOL)animated
 {
     DDLogDebug(@"%@ viewWillDisappear", self.tag);
