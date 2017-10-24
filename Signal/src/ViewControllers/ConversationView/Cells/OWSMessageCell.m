@@ -712,11 +712,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(attachmentView);
     OWSAssert(attachmentStateCallback);
+    OWSAssert(self.attachmentStream);
 
     if (self.isOutgoing) {
-        self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachmentStream
-                                                                           superview:attachmentView
-                                                             attachmentStateCallback:attachmentStateCallback];
+        if (!self.attachmentStream.isUploaded) {
+            self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachmentStream
+                                                                               superview:attachmentView
+                                                                 attachmentStateCallback:attachmentStateCallback];
+        }
     }
 }
 
