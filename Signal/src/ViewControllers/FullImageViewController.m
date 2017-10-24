@@ -5,6 +5,7 @@
 #import "FullImageViewController.h"
 #import "AttachmentSharing.h"
 #import "ConversationViewItem.h"
+#import "Signal-Swift.h"
 #import "TSAttachmentStream.h"
 #import "TSInteraction.h"
 #import "UIColor+OWS.h"
@@ -56,8 +57,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL isPresenting;
 @property (nonatomic) NSData *fileData;
 
-@property (nonatomic) TSAttachmentStream *attachmentStream;
-@property (nonatomic) ConversationViewItem *viewItem;
+@property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
+@property (nonatomic, nullable) SignalAttachment *attachment;
+@property (nonatomic, nullable) ConversationViewItem *viewItem;
 
 @property (nonatomic) UIToolbar *footerBar;
 
@@ -65,10 +67,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation FullImageViewController
 
-
-- (instancetype)initWithAttachment:(TSAttachmentStream *)attachmentStream
-                          fromRect:(CGRect)rect
-                          viewItem:(ConversationViewItem *)viewItem
+- (instancetype)initWithAttachmentStream:(TSAttachmentStream *)attachmentStream
+                                fromRect:(CGRect)rect
+                                viewItem:(ConversationViewItem *_Nullable)viewItem
 {
 
     self = [super initWithNibName:nil bundle:nil];
@@ -77,14 +78,65 @@ NS_ASSUME_NONNULL_BEGIN
         self.attachmentStream = attachmentStream;
         self.originRect  = rect;
         self.viewItem = viewItem;
-        self.fileData = [NSData dataWithContentsOfURL:[attachmentStream mediaURL]];
     }
 
     return self;
 }
 
+- (instancetype)initWithAttachment:(SignalAttachment *)attachment fromRect:(CGRect)rect
+{
+
+    self = [super initWithNibName:nil bundle:nil];
+
+    if (self) {
+        self.attachment = attachment;
+        self.originRect = rect;
+    }
+
+    return self;
+}
+
+- (NSURL *_Nullable)attachmentUrl
+{
+    if (self.attachmentStream) {
+        return self.attachmentStream.mediaURL;
+    } else if (self.attachment) {
+        return self.attachment.dataUrl;
+    } else {
+        return nil;
+    }
+}
+
+- (NSData *)fileData
+{
+    if (!_fileData) {
+        NSURL *_Nullable url = self.attachmentUrl;
+        if (url) {
+            _fileData = [NSData dataWithContentsOfURL:url];
+        }
+    }
+    return _fileData;
+}
+
 - (UIImage *)image {
-    return self.attachmentStream.image;
+    if (self.attachmentStream) {
+        return self.attachmentStream.image;
+    } else if (self.attachment) {
+        return self.attachment.image;
+    } else {
+        return nil;
+    }
+}
+
+- (BOOL)isAnimated
+{
+    if (self.attachmentStream) {
+        return self.attachmentStream.isAnimated;
+    } else if (self.attachment) {
+        return self.attachment.isAnimatedImage;
+    } else {
+        return NO;
+    }
 }
 
 - (void)loadView {
@@ -150,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)shareWasPressed:(id)sender {
     DDLogInfo(@"%@: sharing image.", self.tag);
 
-    [AttachmentSharing showShareUIForURL:[self.attachmentStream mediaURL]];
+    [AttachmentSharing showShareUIForURL:self.attachmentUrl];
 }
 
 - (void)initializeScrollView {
@@ -160,13 +212,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.scrollView.maximumZoomScale = kMaxZoomScale;
     self.scrollView.scrollEnabled    = NO;
     [self.contentView addSubview:self.scrollView];
-}
-
-- (BOOL)isAnimated
-{
-    OWSAssert(self.attachmentStream);
-
-    return self.attachmentStream.isAnimated;
 }
 
 - (void)initializeImageView {
@@ -249,6 +294,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)longPressGesture:(UIGestureRecognizer *)sender {
     // We "eagerly" respond when the long press begins, not when it ends.
     if (sender.state == UIGestureRecognizerStateBegan) {
+        if (!self.viewItem) {
+            return;
+        }
 
         [self.view becomeFirstResponder];
         
