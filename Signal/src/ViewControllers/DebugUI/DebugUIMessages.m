@@ -203,6 +203,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendMediaAttachments:100 thread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"Send 1,000 media (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendMediaAttachments:1000 thread:thread];
+                        }],
         [OWSTableItem itemWithTitle:@"Create all system messages"
                         actionBlock:^{
                             [DebugUIMessages createSystemMessagesInThread:thread];

@@ -344,7 +344,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 - (void)ensureShouldShowVoiceMemoButton
 {
-    self.shouldShowVoiceMemoButton = (self.attachmentToApprove != nil && self.inputTextView.trimmedText.length < 1);
+    self.shouldShowVoiceMemoButton = (self.attachmentToApprove == nil && self.inputTextView.trimmedText.length < 1);
 }
 
 - (void)handleLongPress:(UIGestureRecognizer *)sender
@@ -773,6 +773,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [cancelButton autoSetDimension:ALDimensionHeight toSize:cancelButtonSize];
 
     [self ensureContentConstraints];
+    [self ensureShouldShowVoiceMemoButton];
 }
 
 - (void)cancelAttachmentWrapperTapped:(UIGestureRecognizer *)sender
@@ -787,6 +788,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     self.attachmentToApprove = nil;
 
     [self ensureContentConstraints];
+    [self ensureShouldShowVoiceMemoButton];
 }
 
 - (void)attachmentApprovalSendPressed
@@ -799,6 +801,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     }
 
     [self ensureContentConstraints];
+    [self ensureShouldShowVoiceMemoButton];
 }
 
 - (void)viewWillAppear:(BOOL)animated

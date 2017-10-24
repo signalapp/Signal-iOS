@@ -16,7 +16,7 @@ typedef void (^AttachmentStateBlock)(BOOL isAttachmentReady);
 // * Dim the media view using a mask layer.
 // * Show and update a progress bar.
 // * Disable any media view controls using a callback.
-@interface AttachmentUploadView : NSObject
+@interface AttachmentUploadView : UIView
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment
                          superview:(UIView *)superview
