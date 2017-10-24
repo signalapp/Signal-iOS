@@ -173,7 +173,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.view.addSubview(bottomBanner)
         bottomBanner.autoPinWidthToSuperview()
         bottomBanner.autoPinEdge(.top, to: .bottom, of: self.collectionView)
-        bottomBanner.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        self.autoPinView(toBottomGuideOrKeyboard:bottomBanner)
 
         // The Giphy API requires us to "show their trademark prominently" in our GIF experience.
         let logoImage = UIImage(named: "giphy_logo")
@@ -187,14 +187,14 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.noResultsView = noResultsView
         self.view.addSubview(noResultsView)
         noResultsView.autoPinWidthToSuperview(withMargin: 20)
-        noResultsView.autoVCenterInSuperview()
+        noResultsView.autoAlignAxis(.horizontal, toSameAxisOf: self.collectionView)
 
         let searchErrorView = createErrorLabel(text: NSLocalizedString("GIF_VIEW_SEARCH_ERROR",
                                                                       comment: "Indicates that an error occured while searching."))
         self.searchErrorView = searchErrorView
         self.view.addSubview(searchErrorView)
         searchErrorView.autoPinWidthToSuperview(withMargin: 20)
-        searchErrorView.autoVCenterInSuperview()
+        searchErrorView.autoAlignAxis(.horizontal, toSameAxisOf: self.collectionView)
 
         searchErrorView.isUserInteractionEnabled = true
         searchErrorView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(retryTapped)))
@@ -202,7 +202,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
         self.activityIndicator = activityIndicator
         self.view.addSubview(activityIndicator)
-        activityIndicator.autoCenterInSuperview()
+        activityIndicator.autoHCenterInSuperview()
+        activityIndicator.autoAlignAxis(.horizontal, toSameAxisOf: self.collectionView)
 
         self.updateContents()
     }

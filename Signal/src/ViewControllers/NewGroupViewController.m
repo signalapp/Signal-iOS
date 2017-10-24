@@ -123,7 +123,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     [self.view addSubview:self.tableViewController.view];
     [_tableViewController.view autoPinWidthToSuperview];
     [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:firstSection];
-    [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self autoPinViewToBottomGuideOrKeyboard:self.tableViewController.view];
 
     [self updateTableContents];
 }

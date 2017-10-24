@@ -94,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         _tableViewController.tableView.tableHeaderView = searchBar;
     }
-    [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self autoPinViewToBottomGuideOrKeyboard:self.tableViewController.view];
 }
 
 #pragma mark - UISearchBarDelegate
