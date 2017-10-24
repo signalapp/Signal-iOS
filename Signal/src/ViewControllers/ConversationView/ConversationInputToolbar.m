@@ -72,12 +72,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 {
     self.layoutMargins = UIEdgeInsetsZero;
 
-    // TODO: I think there's an easier to get the right appearance,
-    // but I can't figure it out.
-    UIView *backgroundView = [UIView new];
-    backgroundView.backgroundColor = [UIColor colorWithWhite:249 / 255.f alpha:1.f];
-    [self addSubview:backgroundView];
-    [backgroundView autoPinEdgesToSuperviewEdges];
+    self.backgroundColor = [UIColor colorWithWhite:249 / 255.f alpha:1.f];
 
     _contentView = [UIView containerView];
     [self addSubview:self.contentView];

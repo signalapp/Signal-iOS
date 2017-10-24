@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ConversationInputTextViewDelegate;
 
-@interface ConversationInputToolbar : UIToolbar
+@interface ConversationInputToolbar : UIView
 
 @property (nonatomic, weak) id<ConversationInputToolbarDelegate> inputToolbarDelegate;
 
