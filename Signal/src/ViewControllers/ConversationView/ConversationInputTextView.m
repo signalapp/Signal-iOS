@@ -46,9 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         self.contentMode = UIViewContentModeRedraw;
         self.dataDetectorTypes = UIDataDetectorTypeNone;
-        self.keyboardAppearance = UIKeyboardAppearanceDefault;
-        self.keyboardType = UIKeyboardTypeDefault;
-        self.returnKeyType = UIReturnKeySend;
 
         self.text = nil;
 
@@ -199,20 +196,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)textViewDidEndEditing:(UITextView *)textView
 {
     [textView resignFirstResponder];
-}
-
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
-{
-    OWSAssert(self.textViewToolbarDelegate);
-
-    if (range.length > 0) {
-        return YES;
-    }
-    if ([text isEqualToString:@"\n"]) {
-        [self.textViewToolbarDelegate textViewReturnPressed];
-        return NO;
-    }
-    return YES;
 }
 
 @end
