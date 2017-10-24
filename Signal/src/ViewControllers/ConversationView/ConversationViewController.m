@@ -1946,8 +1946,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     CGRect convertedRect = [imageView convertRect:imageView.bounds toView:window];
-    FullImageViewController *vc =
-        [[FullImageViewController alloc] initWithAttachment:attachmentStream fromRect:convertedRect viewItem:viewItem];
+    FullImageViewController *vc = [[FullImageViewController alloc] initWithAttachmentStream:attachmentStream
+                                                                                   fromRect:convertedRect
+                                                                                   viewItem:viewItem];
     [vc presentFromViewController:self];
 }
 

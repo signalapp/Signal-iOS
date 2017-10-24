@@ -181,6 +181,9 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         let aspectRatio = image.size.width / image.size.height
         addSubviewWithScaleAspectFitLayout(view:animatedImageView, aspectRatio:aspectRatio)
         contentView = animatedImageView
+
+        animatedImageView.isUserInteractionEnabled = true
+        animatedImageView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(imageTapped)))
     }
 
     private func addSubviewWithScaleAspectFitLayout(view: UIView, aspectRatio: CGFloat) {
@@ -212,7 +215,10 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         let aspectRatio = image.size.width / image.size.height
         addSubviewWithScaleAspectFitLayout(view:imageView, aspectRatio:aspectRatio)
         contentView = imageView
-    }
+
+        imageView.isUserInteractionEnabled = true
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(imageTapped)))
+}
 
     private func createVideoPreview() {
         guard let image = attachment.videoPreview() else {
@@ -391,13 +397,44 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         audioPlayButton?.imageView?.tintColor = UIColor.ows_materialBlue()
     }
 
+    // MARK: - Full Screen Image
+
+    func imageTapped(sender: UIGestureRecognizer) {
+        guard sender.state == .recognized else {
+            return
+        }
+        guard let fromView = sender.view else {
+            return
+        }
+        guard let fromViewController = fromViewController() else {
+            return
+        }
+        let window = UIApplication.shared.keyWindow
+        let convertedRect = fromView.convert(fromView.bounds, to:window)
+        let viewController = FullImageViewController(attachment:attachment, from:convertedRect)
+        viewController.present(from:fromViewController)
+    }
+
+    private func fromViewController() -> UIViewController? {
+        var responder: UIResponder? = self
+        while true {
+            if responder == nil {
+                return nil
+            }
+            if let viewController = responder as? UIViewController {
+                return viewController
+            }
+            responder = responder?.next
+        }
+    }
+
     // MARK: - Video Playback
 
     func videoTapped(sender: UIGestureRecognizer) {
-        guard let dataUrl = attachment.dataUrl else {
+        guard sender.state == .recognized else {
             return
         }
-        guard sender.state == .recognized else {
+        guard let dataUrl = attachment.dataUrl else {
             return
         }
         guard let videoPlayer = MPMoviePlayerController(contentURL: dataUrl) else {
