@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem
                      attachmentPointer:(TSAttachmentPointer *)attachmentPointer;
 - (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message;
+- (void)didPanWithGestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
+                           viewItem:(ConversationViewItem *)conversationItem;
 
 - (void)showMetadataViewForMessage:(TSMessage *)message;
 

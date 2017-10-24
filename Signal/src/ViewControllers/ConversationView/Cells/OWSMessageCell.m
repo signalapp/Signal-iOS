@@ -162,6 +162,12 @@ NS_ASSUME_NONNULL_BEGIN
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self addGestureRecognizer:longPress];
+
+    PanDirectionGestureRecognizer *panGesture =
+        [[PanDirectionGestureRecognizer alloc] initWithDirection:PanDirectionHorizontal
+                                                          target:self
+                                                          action:@selector(handlePanGesture:)];
+    [self addGestureRecognizer:panGesture];
 }
 
 + (NSString *)cellReuseIdentifier
@@ -1027,6 +1033,13 @@ NS_ASSUME_NONNULL_BEGIN
         CGPoint location = [sender locationInView:self];
         [self showMenuController:location];
     }
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)panRecognizer
+{
+    OWSAssert(self.delegate);
+
+    [self.delegate didPanWithGestureRecognizer:panRecognizer viewItem:self.viewItem];
 }
 
 #pragma mark - UIMenuController

@@ -29,6 +29,7 @@
 #import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
 #import "OWSDisappearingMessagesJob.h"
+#import "OWSMath.h"
 #import "OWSMessageCell.h"
 #import "OWSSystemMessageCell.h"
 #import "OWSUnreadIndicatorCell.h"
@@ -135,6 +136,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     ConversationCollectionViewDelegate,
     ConversationInputToolbarDelegate,
     GifPickerViewControllerDelegate>
+
+// Show message info animation
+@property (nullable, nonatomic) UIPercentDrivenInteractiveTransition *showMessageDetailsTransition;
+@property (nullable, nonatomic) UIPanGestureRecognizer *currentShowMessageDetailsPanGesture;
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) YapDatabaseConnection *editingDatabaseConnection;
@@ -982,15 +987,24 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.viewHasEverAppeared = YES;
 }
 
+// `viewWillDisappear` is called whenever the view *starts* to disappear,
+// but, as is the case with the "pan left for message details view" gesture,
+// this can be canceled. As such, we shouldn't tear down anything expensive
+// until `viewDidDisappear`.
 - (void)viewWillDisappear:(BOOL)animated
 {
     DDLogDebug(@"%@ viewWillDisappear", self.tag);
 
     [super viewWillDisappear:animated];
 
-    self.isViewVisible = NO;
-
     [self.inputToolbar viewWillDisappear:animated];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    self.userHasScrolled = NO;
+    self.isViewVisible = NO;
 
     [self.audioAttachmentPlayer stop];
     self.audioAttachmentPlayer = nil;
@@ -1003,12 +1017,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.inputToolbar endEditingTextMessage];
 
     self.isUserScrolling = NO;
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-    self.userHasScrolled = NO;
 }
 
 #pragma mark - Initiliazers
@@ -4034,6 +4042,109 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [cell loadForDisplay];
 
     return cell;
+}
+
+#pragma mark - swipe to show message details
+
+- (void)didPanWithGestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
+                           viewItem:(ConversationViewItem *)conversationItem
+{
+    self.currentShowMessageDetailsPanGesture = gestureRecognizer;
+
+    const CGFloat leftTranslation = -1 * [gestureRecognizer translationInView:self.view].x;
+    const CGFloat ratioComplete = Clamp(leftTranslation / self.view.frame.size.width, 0, 1);
+
+    switch (gestureRecognizer.state) {
+        case UIGestureRecognizerStateBegan: {
+            TSInteraction *interaction = conversationItem.interaction;
+            if ([interaction isKindOfClass:[TSIncomingMessage class]] ||
+                [interaction isKindOfClass:[TSOutgoingMessage class]]) {
+
+                // Canary check in case we later have another reason to set navigationController.delegate - we don't
+                // want to inadvertently clobber it here.
+                OWSAssert(self.navigationController.delegate == nil) self.navigationController.delegate = self;
+                TSMessage *message = (TSMessage *)interaction;
+                MessageMetadataViewController *view = [[MessageMetadataViewController alloc] initWithMessage:message];
+                [self.navigationController pushViewController:view animated:YES];
+            } else {
+                OWSFail(@"%@ Can't show message metadata for message of type: %@", self.tag, [interaction class]);
+            }
+            break;
+        }
+        case UIGestureRecognizerStateChanged: {
+            UIPercentDrivenInteractiveTransition *transition = self.showMessageDetailsTransition;
+            if (!transition) {
+                DDLogVerbose(@"%@ transition not set up yet", self.tag);
+                return;
+            }
+            [transition updateInteractiveTransition:ratioComplete];
+            break;
+        }
+        case UIGestureRecognizerStateEnded: {
+            const CGFloat velocity = [gestureRecognizer velocityInView:self.view].x;
+
+            UIPercentDrivenInteractiveTransition *transition = self.showMessageDetailsTransition;
+            if (!transition) {
+                DDLogVerbose(@"%@ transition not set up yet", self.tag);
+                return;
+            }
+
+            // Complete the transition if moved sufficiently far or fast
+            // Note this is trickier for incoming, since you are already on the left, and have less space.
+            if (ratioComplete > 0.3 || velocity < -800) {
+                [transition finishInteractiveTransition];
+            } else {
+                [transition cancelInteractiveTransition];
+            }
+            break;
+        }
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed: {
+            UIPercentDrivenInteractiveTransition *transition = self.showMessageDetailsTransition;
+            if (!transition) {
+                DDLogVerbose(@"%@ transition not set up yet", self.tag);
+                return;
+            }
+
+            [transition cancelInteractiveTransition];
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+- (nullable id<UIViewControllerAnimatedTransitioning>)navigationController:
+                                                          (UINavigationController *)navigationController
+                                           animationControllerForOperation:(UINavigationControllerOperation)operation
+                                                        fromViewController:(UIViewController *)fromVC
+                                                          toViewController:(UIViewController *)toVC
+{
+    return [SlideOffAnimatedTransition new];
+}
+
+- (nullable id<UIViewControllerInteractiveTransitioning>)
+                       navigationController:(UINavigationController *)navigationController
+interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController
+{
+    // We needed to be the navigation controller delegate to specify the interactive "slide left for message details"
+    // animation But we may not want to be the navigation controller delegate permanently.
+    self.navigationController.delegate = nil;
+
+    UIPanGestureRecognizer *recognizer = self.currentShowMessageDetailsPanGesture;
+    if (recognizer == nil) {
+        OWSFail(@"currentShowMessageDetailsPanGesture was unexpectedly nil");
+        return nil;
+    }
+
+    if (recognizer.state == UIGestureRecognizerStateBegan) {
+        self.showMessageDetailsTransition = [UIPercentDrivenInteractiveTransition new];
+        self.showMessageDetailsTransition.completionCurve = UIViewAnimationCurveEaseOut;
+    } else {
+        self.showMessageDetailsTransition = nil;
+    }
+
+    return self.showMessageDetailsTransition;
 }
 
 #pragma mark - UICollectionViewDelegate
