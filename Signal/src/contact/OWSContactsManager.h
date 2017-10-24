@@ -72,7 +72,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 // Ensure's the app has the latest contacts, but won't prompt the user for contact
 // access if they haven't granted it.
 - (void)fetchSystemContactsIfAlreadyAuthorized;
-- (void)fetchSystemContactsIfAlreadyAuthorizedAndIgnoreDebounce;
+- (void)fetchSystemContactsIfAlreadyAuthorizedAndAlwaysNotify;
 
 #pragma mark - Util
 

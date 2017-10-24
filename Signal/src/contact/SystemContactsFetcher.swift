@@ -362,7 +362,8 @@ class SystemContactsFetcher: NSObject {
         hasSetupObservation = true
         self.contactStoreAdapter.startObservingChanges { [weak self] in
             DispatchQueue.main.async {
-                self?.updateContacts(completion: nil)
+                // If contacts have changed, don't de-bounce.
+                self?.updateContacts(completion: nil, alwaysNotify: false, shouldDebounce: false)
             }
         }
     }
@@ -418,13 +419,13 @@ class SystemContactsFetcher: NSObject {
         }
     }
 
-    public func fetchIfAlreadyAuthorized(ignoreDebounce: Bool = false) {
+    public func fetchIfAlreadyAuthorized(alwaysNotify: Bool = false) {
         AssertIsOnMainThread()
         guard authorizationStatus == .authorized else {
             return
         }
 
-        updateContacts(completion: nil, ignoreDebounce:ignoreDebounce)
+        updateContacts(completion: nil, alwaysNotify:alwaysNotify)
     }
 
     private func tryToAcquireContactFetchLock() -> Bool {
@@ -444,7 +445,7 @@ class SystemContactsFetcher: NSObject {
         objc_sync_exit(self)
     }
 
-    private func updateContacts(completion: ((Error?) -> Void)?, ignoreDebounce: Bool = false) {
+    private func updateContacts(completion: ((Error?) -> Void)?, alwaysNotify: Bool = false, shouldDebounce: Bool = true) {
         AssertIsOnMainThread()
 
         systemContactsHaveBeenRequestedAtLeastOnce = true
@@ -452,10 +453,19 @@ class SystemContactsFetcher: NSObject {
 
         DispatchQueue.global().async {
 
-            guard self.tryToAcquireContactFetchLock() else {
-                Logger.info("\(self.TAG) ignoring redundant system contacts fetch.")
-                return
+            if shouldDebounce {
+                guard self.tryToAcquireContactFetchLock() else {
+                    Logger.info("\(self.TAG) ignoring redundant system contacts fetch.")
+                    return
+                }
             }
+            defer {
+                if shouldDebounce {
+                    self.releaseContactFetchLock()
+                }
+            }
+
+            Logger.info("\(self.TAG) fetching contacts")
 
             var fetchedContacts: [Contact]?
             switch self.contactStoreAdapter.fetchContacts() {
@@ -463,10 +473,8 @@ class SystemContactsFetcher: NSObject {
                 fetchedContacts = result
             case .error(let error):
                 completion?(error)
-                self.releaseContactFetchLock()
                 return
             }
-            self.releaseContactFetchLock()
 
             guard let contacts = fetchedContacts else {
                 owsFail("\(self.TAG) contacts was unexpectedly not set.")
@@ -481,7 +489,7 @@ class SystemContactsFetcher: NSObject {
                 if self.lastContactUpdateHash != contactsHash {
                     Logger.info("\(self.TAG) contact hash changed. new contactsHash: \(contactsHash)")
                     shouldNotifyDelegate = true
-                } else if ignoreDebounce {
+                } else if alwaysNotify {
                     Logger.info("\(self.TAG) ignoring debounce.")
                     shouldNotifyDelegate = true
                 } else {

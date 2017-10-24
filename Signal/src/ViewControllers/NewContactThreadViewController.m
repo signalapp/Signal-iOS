@@ -146,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([NSThread isMainThread]);
 
-    [self.contactsViewHelper.contactsManager fetchSystemContactsIfAlreadyAuthorizedAndIgnoreDebounce];
+    [self.contactsViewHelper.contactsManager fetchSystemContactsIfAlreadyAuthorizedAndAlwaysNotify];
 
     [refreshControl endRefreshing];
 }

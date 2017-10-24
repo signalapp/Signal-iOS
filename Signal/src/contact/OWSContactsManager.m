@@ -93,15 +93,14 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
     [self.systemContactsFetcher requestOnceWithCompletion:completion];
 }
 
-
 - (void)fetchSystemContactsIfAlreadyAuthorized
 {
-    [self.systemContactsFetcher fetchIfAlreadyAuthorizedWithIgnoreDebounce:NO];
+    [self.systemContactsFetcher fetchIfAlreadyAuthorizedWithAlwaysNotify:NO];
 }
 
-- (void)fetchSystemContactsIfAlreadyAuthorizedAndIgnoreDebounce
+- (void)fetchSystemContactsIfAlreadyAuthorizedAndAlwaysNotify
 {
-    [self.systemContactsFetcher fetchIfAlreadyAuthorizedWithIgnoreDebounce:YES];
+    [self.systemContactsFetcher fetchIfAlreadyAuthorizedWithAlwaysNotify:YES];
 }
 
 - (BOOL)isSystemContactsAuthorized
