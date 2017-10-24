@@ -55,7 +55,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     maskedSubview.frame = self.bounds;
-    [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:maskedSubview isOutgoing:self.isOutgoing];
+    // The JSQ masks are RTL-safe, so we need to invert the
+    // mask orientation manually.
+    BOOL hasOutgoingMask = self.isOutgoing ^ self.isRTL;
+    [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:maskedSubview isOutgoing:hasOutgoingMask];
 }
 
 @end

@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
             self.lastProgress = progress;
             self.isAttachmentReady = self.attachment.isUploaded;
         } else {
-            OWSFail(@"%@ Invalid attachment progress.", self.tag);
+            OWSFail(@"%@ Invalid attachment progress.", self.logTag);
             self.isAttachmentReady = YES;
         }
     }
@@ -169,14 +169,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Logging
 
-+ (NSString *)tag
++ (NSString *)logTag
 {
     return [NSString stringWithFormat:@"[%@]", self.class];
 }
 
-- (NSString *)tag
+- (NSString *)logTag
 {
-    return self.class.tag;
+    return self.class.logTag;
 }
 
 @end

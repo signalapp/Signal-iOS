@@ -53,6 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.placeholderView.text = NSLocalizedString(@"new_message", @"");
         self.placeholderView.textColor = [UIColor lightGrayColor];
         self.placeholderView.userInteractionEnabled = NO;
+        self.placeholderView.textAlignment = NSTextAlignmentNatural;
         [self addSubview:self.placeholderView];
 
         // We need to do these steps _after_ placeholderView is configured.
@@ -103,12 +104,11 @@ NS_ASSUME_NONNULL_BEGIN
         [self textRangeFromPosition:self.beginningOfDocument toPosition:self.beginningOfDocument];
     CGRect beginningTextRect = [self firstRectForRange:beginningTextRange];
 
-    CGFloat hInset = beginningTextRect.origin.x;
     CGFloat topInset = beginningTextRect.origin.y;
 
     self.placeholderConstraints = @[
-        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:hInset],
-        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:hInset],
+        [self.placeholderView autoPinLeadingToSuperview],
+        [self.placeholderView autoPinTrailingToSuperview],
         [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:topInset],
     ];
 }

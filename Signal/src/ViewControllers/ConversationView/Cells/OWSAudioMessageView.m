@@ -213,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
     _audioPlayPauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.audioPlayPauseButton.enabled = NO;
     [contentView addSubview:self.audioPlayPauseButton];
-    [self.audioPlayPauseButton autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:self.audioIconHMargin];
+    [self.audioPlayPauseButton autoPinLeadingToSuperviewWithMargin:self.audioIconHMargin];
     [self.audioPlayPauseButton autoVCenterInSuperview];
     [self.audioPlayPauseButton autoSetDimension:ALDimensionWidth toSize:self.iconSize];
     [self.audioPlayPauseButton autoSetDimension:ALDimensionHeight toSize:self.iconSize];

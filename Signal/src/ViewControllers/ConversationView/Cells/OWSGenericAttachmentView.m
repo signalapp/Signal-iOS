@@ -125,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
         layer.fillColor = iconColor.CGColor;
     };
     [contentView addSubview:iconCircleView];
-    [iconCircleView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:self.iconHMargin];
+    [iconCircleView autoPinLeadingToSuperviewWithMargin:self.iconHMargin];
     [iconCircleView autoVCenterInSuperview];
     [iconCircleView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
     [iconCircleView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
