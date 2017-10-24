@@ -823,7 +823,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)dateHeaderHeight
 {
     if (self.viewItem.shouldShowDate) {
-        return MAX(self.dateHeaderDateFont.lineHeight, self.dateHeaderTimeFont.lineHeight);
+        // Add 5pt spacing above and below the date header.
+        return MAX(self.dateHeaderDateFont.lineHeight, self.dateHeaderTimeFont.lineHeight) + 10.f;
     } else {
         return 0.f;
     }
