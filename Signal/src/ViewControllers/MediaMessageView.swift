@@ -5,24 +5,30 @@
 import Foundation
 import MediaPlayer
 
+@objc
+enum MediaMessageViewMode: UInt {
+    case large
+    case small
+}
+
 class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     let TAG = "[MediaMessageView]"
 
     // MARK: Properties
 
+    let mode: MediaMessageViewMode
+
     let attachment: SignalAttachment
 
     var videoPlayer: MPMoviePlayerController?
 
     var audioPlayer: OWSAudioAttachmentPlayer?
-    var audioStatusLabel: UILabel?
     var audioPlayButton: UIButton?
     var playbackState = AudioPlaybackState.stopped {
         didSet {
             AssertIsOnMainThread()
 
-            updateAudioStatusLabel()
             ensureButtonState()
         }
     }
@@ -36,6 +42,7 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     @available(*, unavailable, message:"use attachment: constructor instead.")
     required init?(coder aDecoder: NSCoder) {
+        self.mode = .large
         self.attachment = SignalAttachment.empty()
         super.init(coder: aDecoder)
         owsFail("\(self.TAG) invalid constructor")
@@ -43,8 +50,9 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         createViews()
     }
 
-    required init(attachment: SignalAttachment) {
+    required init(attachment: SignalAttachment, mode: MediaMessageViewMode) {
         assert(!attachment.hasError)
+        self.mode = mode
         self.attachment = attachment
         super.init(frame: CGRect.zero)
 
@@ -95,7 +103,7 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             if lastView == nil {
                 subview.autoPinEdge(toSuperviewEdge: .top)
             } else {
-                subview.autoPinEdge(.top, to: .bottom, of: lastView!, withOffset: 10)
+                subview.autoPinEdge(.top, to: .bottom, of: lastView!, withOffset: stackSpacing())
             }
 
             lastView = subview
@@ -104,6 +112,15 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         lastView?.autoPinEdge(toSuperviewEdge: .bottom)
 
         return stackView
+    }
+
+    private func stackSpacing() -> CGFloat {
+        switch mode {
+        case .large:
+            return CGFloat(10)
+        case .small:
+            return CGFloat(5)
+        }
     }
 
     private func createAudioPreview() {
@@ -134,11 +151,6 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
         let fileSizeLabel = createFileSizeLabel()
         subviews.append(fileSizeLabel)
-
-        let audioStatusLabel = createAudioStatusLabel()
-        self.audioStatusLabel = audioStatusLabel
-        updateAudioStatusLabel()
-        subviews.append(audioStatusLabel)
 
         let stackView = wrapViewsInVerticalStack(subviews: subviews)
         self.addSubview(stackView)
@@ -250,7 +262,12 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     }
 
     private func createHeroViewSize() -> CGFloat {
-        return ScaleFromIPhone5To7Plus(175, 225)
+        switch mode {
+        case .large:
+            return ScaleFromIPhone5To7Plus(175, 225)
+        case .small:
+            return ScaleFromIPhone5To7Plus(80, 80)
+        }
     }
 
     private func createHeroImageView(imageName: String) -> UIView {
@@ -272,7 +289,12 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     }
 
     private func labelFont() -> UIFont {
-        return UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(18, 24))
+        switch mode {
+        case .large:
+            return UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(18, 24))
+        case .small:
+            return UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(14, 14))
+        }
     }
 
     private func formattedFileExtension() -> String? {
@@ -326,15 +348,6 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         return label
     }
 
-    private func createAudioStatusLabel() -> UILabel {
-        let label = UILabel()
-        label.textColor = UIColor.ows_materialBlue()
-        label.font = labelFont()
-        label.textAlignment = .center
-
-        return label
-    }
-
     // MARK: - Event Handlers
 
     func audioPlayButtonPressed(sender: UIButton) {
@@ -362,24 +375,6 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     public func setAudioProgress(_ progress: CGFloat, duration: CGFloat) {
         audioProgressSeconds = progress
         audioDurationSeconds = duration
-
-        updateAudioStatusLabel()
-    }
-
-    private func updateAudioStatusLabel() {
-        guard let audioStatusLabel = self.audioStatusLabel else {
-            owsFail("Missing audio status label")
-            return
-        }
-
-        let isAudioPlaying = playbackState == .playing
-        if isAudioPlaying && audioProgressSeconds > 0 && audioDurationSeconds > 0 {
-            audioStatusLabel.text = String(format: "%@ / %@",
-                ViewControllerUtils.formatDurationSeconds(Int(round(self.audioProgressSeconds))),
-                ViewControllerUtils.formatDurationSeconds(Int(round(self.audioDurationSeconds))))
-        } else {
-            audioStatusLabel.text = " "
-        }
     }
 
     private func setAudioIconToPlay() {

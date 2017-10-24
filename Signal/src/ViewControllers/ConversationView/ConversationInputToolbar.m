@@ -241,7 +241,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
             [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textViewVInset],
             [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:textViewVInset],
             [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:contentHInset],
-            [self.attachmentView autoSetDimension:ALDimensionHeight toSize:300.f],
+            [self.attachmentView autoSetDimension:ALDimensionHeight toSize:150.f],
 
             [self.rightButtonWrapper autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.attachmentView],
             [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeRight],
@@ -714,7 +714,8 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
     self.attachmentToApprove = attachment;
 
-    MediaMessageView *attachmentView = [[MediaMessageView alloc] initWithAttachment:attachment];
+    MediaMessageView *attachmentView =
+        [[MediaMessageView alloc] initWithAttachment:attachment mode:MediaMessageViewModeSmall];
     self.attachmentView = attachmentView;
     [self.contentView addSubview:attachmentView];
 

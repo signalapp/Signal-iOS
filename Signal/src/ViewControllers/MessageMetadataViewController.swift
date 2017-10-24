@@ -382,7 +382,7 @@ class MessageMetadataViewController: OWSViewController {
         let contentType = attachment.contentType
         if let dataUTI = MIMETypeUtil.utiType(forMIMEType: contentType) {
             let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
-            let mediaMessageView = MediaMessageView(attachment: attachment)
+            let mediaMessageView = MediaMessageView(attachment: attachment, mode: .small)
             mediaMessageView.backgroundColor = UIColor.white
             self.mediaMessageView = mediaMessageView
             rows.append(mediaMessageView)
