@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UILabel *placeholderView;
 @property (nonatomic) NSArray<NSLayoutConstraint *> *placeholderConstraints;
-@property (nonatomic) BOOL isEditing;
 
 @end
 
@@ -119,19 +118,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updatePlaceholderVisibility
 {
-    self.placeholderView.hidden = self.text.length > 0 || self.isEditing;
+    self.placeholderView.hidden = self.text.length > 0;
 }
 
 - (void)setText:(NSString *_Nullable)text
 {
     [super setText:text];
-
-    [self updatePlaceholderVisibility];
-}
-
-- (void)setIsEditing:(BOOL)isEditing
-{
-    _isEditing = isEditing;
 
     [self updatePlaceholderVisibility];
 }
@@ -193,8 +185,6 @@ NS_ASSUME_NONNULL_BEGIN
     // TODO: Is this necessary?
 
     [textView becomeFirstResponder];
-
-    self.isEditing = YES;
 }
 
 - (void)textViewDidChange:(UITextView *)textView
@@ -209,8 +199,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)textViewDidEndEditing:(UITextView *)textView
 {
     [textView resignFirstResponder];
-
-    self.isEditing = NO;
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
