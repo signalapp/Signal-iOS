@@ -344,7 +344,6 @@ class SystemContactsFetcher: NSObject {
 
     private var systemContactsHaveBeenRequestedAtLeastOnce = false
     private var hasSetupObservation = false
-    private var isFetchingContacts = false
 
     override init() {
         self.contactStoreAdapter = ContactStoreAdapter()
@@ -362,8 +361,7 @@ class SystemContactsFetcher: NSObject {
         hasSetupObservation = true
         self.contactStoreAdapter.startObservingChanges { [weak self] in
             DispatchQueue.main.async {
-                // If contacts have changed, don't de-bounce.
-                self?.updateContacts(completion: nil, alwaysNotify: false, shouldDebounce: false)
+                self?.updateContacts(completion: nil, alwaysNotify: false)
             }
         }
     }
@@ -382,7 +380,6 @@ class SystemContactsFetcher: NSObject {
             completion?(nil)
             return
         }
-        systemContactsHaveBeenRequestedAtLeastOnce = true
         setupObservationIfNecessary()
 
         switch authorizationStatus {
@@ -419,51 +416,34 @@ class SystemContactsFetcher: NSObject {
         }
     }
 
-    public func fetchIfAlreadyAuthorized(alwaysNotify: Bool = false) {
+    public func fetchOnceIfAlreadyAuthorized() {
+        AssertIsOnMainThread()
+        guard authorizationStatus == .authorized else {
+            return
+        }
+        guard !systemContactsHaveBeenRequestedAtLeastOnce else {
+            return
+        }
+
+        updateContacts(completion: nil, alwaysNotify:false)
+    }
+
+    public func fetchIfAlreadyAuthorizedAndAlwaysNotify() {
         AssertIsOnMainThread()
         guard authorizationStatus == .authorized else {
             return
         }
 
-        updateContacts(completion: nil, alwaysNotify:alwaysNotify)
+        updateContacts(completion: nil, alwaysNotify:true)
     }
 
-    private func tryToAcquireContactFetchLock() -> Bool {
-        var didAcquireLock = false
-        objc_sync_enter(self)
-        if !self.isFetchingContacts {
-            self.isFetchingContacts = true
-            didAcquireLock = true
-        }
-        objc_sync_exit(self)
-        return didAcquireLock
-    }
-
-    private func releaseContactFetchLock() {
-        objc_sync_enter(self)
-        self.isFetchingContacts = false
-        objc_sync_exit(self)
-    }
-
-    private func updateContacts(completion: ((Error?) -> Void)?, alwaysNotify: Bool = false, shouldDebounce: Bool = true) {
+    private func updateContacts(completion: ((Error?) -> Void)?, alwaysNotify: Bool = false) {
         AssertIsOnMainThread()
 
         systemContactsHaveBeenRequestedAtLeastOnce = true
         setupObservationIfNecessary()
 
         DispatchQueue.global().async {
-
-            if shouldDebounce {
-                guard self.tryToAcquireContactFetchLock() else {
-                    Logger.info("\(self.TAG) ignoring redundant system contacts fetch.")
-                    return
-                }
-            }
-            defer {
-                if shouldDebounce {
-                    self.releaseContactFetchLock()
-                }
-            }
 
             Logger.info("\(self.TAG) fetching contacts")
 
