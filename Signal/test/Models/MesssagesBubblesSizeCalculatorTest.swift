@@ -76,7 +76,7 @@ class MesssagesBubblesSizeCalculatorTest: XCTestCase {
         let viewItem = self.viewItemForText("Wunderschönen Guten Morgaaaahhhn 😝 - hast du gut geschlafen ☺️😘")
         let actual = messageBubbleSize(for: viewItem)
 
-        XCTAssertEqual(108, actual.height)
+        XCTAssertEqual(86, actual.height)
     }
 
     func testHeightForiOS10EmojiBug2() {

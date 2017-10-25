@@ -21,30 +21,9 @@
 
 @interface ConversationViewItemTest : XCTestCase
 
-@property (nonatomic, readonly) NSData *fakeAudioData;
-@property (nonatomic, readonly) NSData *fakeImageData;
-
 @end
 
 @implementation ConversationViewItemTest
-
-- (NSData *)fakeAudioData
-{
-    NSString *fakeAudioString = @"QmxhY2tiaXJkIFJhdW0gRG90IE1QMw==";
-    return [[NSData alloc] initWithBase64EncodedString:fakeAudioString options:0];
-}
-
-- (NSData *)fakeVideoData
-{
-    NSString *fakeVideoString = @"RmFrZSBWaWRlbyBEYXRh";
-    return [[NSData alloc] initWithBase64EncodedString:fakeVideoString options:0];
-}
-
-- (NSData *)fakeImageData
-{
-    NSString *fakeString = @"RmFrZUltYWdlRGF0YQ==";
-    return [[NSData alloc] initWithBase64EncodedString:fakeString options:0];
-}
 
 - (void)setUp
 {
