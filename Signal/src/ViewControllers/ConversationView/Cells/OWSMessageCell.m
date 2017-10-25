@@ -760,7 +760,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
-    const int maxMessageWidth = (int)floor(contentWidth * 0.7f);
+    const int maxMessageWidth = (int)floor(contentWidth * 0.8f);
 
     CGSize cellSize = CGSizeZero;
     switch (self.cellType) {
