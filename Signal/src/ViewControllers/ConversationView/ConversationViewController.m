@@ -972,17 +972,17 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self updateNavigationBarSubtitleLabel];
     [self updateBackButtonUnreadCount];
 
+    if (_composeOnOpen && !self.inputToolbar.hidden) {
+        [self popKeyBoard];
+        _composeOnOpen = NO;
+    }
+    if (_callOnOpen) {
+        [self callAction];
+        _callOnOpen = NO;
+    }
+
     if (!self.viewHasEverAppeared) {
         [self.inputToolbar endEditing:YES];
-
-        if (_composeOnOpen && !self.inputToolbar.hidden) {
-            [self popKeyBoard];
-            _composeOnOpen = NO;
-        }
-        if (_callOnOpen) {
-            [self callAction];
-            _callOnOpen = NO;
-        }
     }
     self.viewHasEverAppeared = YES;
 }
