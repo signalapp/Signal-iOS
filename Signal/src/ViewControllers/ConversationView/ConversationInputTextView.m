@@ -103,12 +103,11 @@ NS_ASSUME_NONNULL_BEGIN
         [self textRangeFromPosition:self.beginningOfDocument toPosition:self.beginningOfDocument];
     CGRect beginningTextRect = [self firstRectForRange:beginningTextRange];
 
-    CGFloat hInset = beginningTextRect.origin.x;
     CGFloat topInset = beginningTextRect.origin.y;
 
     self.placeholderConstraints = @[
-        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:hInset],
-        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:hInset],
+        [self.placeholderView autoPinLeadingToSuperview],
+        [self.placeholderView autoPinTrailingToSuperview],
         [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:topInset],
     ];
 }
