@@ -4136,7 +4136,7 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 
     UIPanGestureRecognizer *recognizer = self.currentShowMessageDetailsPanGesture;
     if (recognizer == nil) {
-        OWSFail(@"currentShowMessageDetailsPanGesture was unexpectedly nil");
+        // Not in the middle of the `currentShowMessageDetailsPanGesture`, abort.
         return nil;
     }
 
