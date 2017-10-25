@@ -319,7 +319,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.hasViewState = YES;
 
     TSMessage *interaction = (TSMessage *)self.interaction;
-    if (interaction.body.length > 0) {
+    if (interaction.body != nil) {
         self.messageCellType = OWSMessageCellType_TextMessage;
         self.textMessage = [self displayableTextForText:interaction.body interactionId:interaction.uniqueId];
         return;
