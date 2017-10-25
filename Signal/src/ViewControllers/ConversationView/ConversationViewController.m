@@ -180,6 +180,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic) UILabel *navigationBarTitleLabel;
 @property (nonatomic) UILabel *navigationBarSubtitleLabel;
 @property (nonatomic, nullable) UIView *bannerView;
+@property (nonatomic, nullable) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
 // Back Button Unread Count
 @property (nonatomic, readonly) UIView *backButtonUnreadCountView;
@@ -578,9 +579,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // unless it ever becomes possible to load this VC without going via the HomeViewController.
     [self.contactsManager requestSystemContactsOnce];
 
-    OWSDisappearingMessagesConfiguration *configuration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-    [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        self.disappearingMessagesConfiguration =
+            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId transaction:transaction];
+    }];
+
+    [self updateBarButtonItems];
     [self setNavigationTitle];
     [self updateLastVisibleTimestamp];
 
@@ -1046,9 +1050,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.navigationBarTitleLabel.attributedText = name;
 
     // Changing the title requires relayout of the nav bar contents.
-    OWSDisappearingMessagesConfiguration *configuration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-    [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
+    [self updateBarButtonItems];
 }
 
 - (void)createHeaderViews
@@ -1127,8 +1129,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.navigationItem.leftBarButtonItem = backItem;
 }
 
-- (void)setBarButtonItemsForDisappearingMessagesConfiguration:
-    (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
+- (void)updateBarButtonItems
 {
     // We want to leave space for the "back" button, the "timer" button, and the "call"
     // button, and all of the whitespace around these views.  There
@@ -1139,7 +1140,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if ([self canCall]) {
         rightBarButtonItemCount++;
     }
-    if (disappearingMessagesConfiguration.isEnabled) {
+    if (self.disappearingMessagesConfiguration.isEnabled) {
         rightBarButtonItemCount++;
     }
     CGFloat barButtonSize = 0;
@@ -1205,7 +1206,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:callButton]];
     }
 
-    if (disappearingMessagesConfiguration.isEnabled) {
+    if (self.disappearingMessagesConfiguration.isEnabled) {
         UIButton *timerButton = [UIButton buttonWithType:UIButtonTypeCustom];
         UIImage *image = [UIImage imageNamed:@"button_timer_white"];
         [timerButton setImage:image forState:UIControlStateNormal];
@@ -1225,7 +1226,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         NSString *formatString = NSLocalizedString(
             @"DISAPPEARING_MESSAGES_HINT", @"Accessibility hint that contains current timeout information");
         timerButton.accessibilityHint =
-            [NSString stringWithFormat:formatString, [disappearingMessagesConfiguration durationString]];
+            [NSString stringWithFormat:formatString, self.disappearingMessagesConfiguration.durationString];
         [timerButton addTarget:self
                         action:@selector(didTapTimerInNavbar:)
               forControlEvents:UIControlEventTouchUpInside];
@@ -1518,6 +1519,18 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [self.collectionView.collectionViewLayout invalidateLayout];
         [self.collectionView reloadData];
     }
+}
+
+- (void)setDisappearingMessagesConfiguration:
+    (nullable OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
+{
+    if (_disappearingMessagesConfiguration.isEnabled == disappearingMessagesConfiguration.isEnabled
+        && _disappearingMessagesConfiguration.durationSeconds == disappearingMessagesConfiguration.durationSeconds) {
+        return;
+    }
+
+    _disappearingMessagesConfiguration = disappearingMessagesConfiguration;
+    [self updateBarButtonItems];
 }
 
 - (void)updateMessageMappingRangeOptions:(MessagesRangeSizeMode)mode
@@ -2788,6 +2801,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         }];
         [self setNavigationTitle];
     }
+
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        self.disappearingMessagesConfiguration =
+            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId transaction:transaction];
+    }];
 
     if (![[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] hasChangesForGroup:self.thread.uniqueId
                                                                                 inNotifications:notifications]) {
