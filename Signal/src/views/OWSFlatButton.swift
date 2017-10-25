@@ -30,13 +30,9 @@ import Foundation
         createContent()
     }
 
-    @available(*, unavailable, message:"use default constructor instead.")
+    @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        button = UIButton(type:.custom)
-
-        super.init(coder: aDecoder)
-
-        owsFail("\(self.TAG) invalid constructor")
+        fatalError("\(#function) is unimplemented.")
     }
 
     private func createContent() {

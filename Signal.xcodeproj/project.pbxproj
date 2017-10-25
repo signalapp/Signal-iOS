@@ -50,7 +50,6 @@
 		34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */; };
 		34B3F8861E8DF1700035BE1A /* NotificationSettingsOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8571E8DF1700035BE1A /* NotificationSettingsOptionsViewController.m */; };
 		34B3F8871E8DF1700035BE1A /* NotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8591E8DF1700035BE1A /* NotificationSettingsViewController.m */; };
-		34B3F8881E8DF1700035BE1A /* OversizeTextMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F85A1E8DF1700035BE1A /* OversizeTextMessageViewController.swift */; };
 		34B3F8891E8DF1700035BE1A /* OWSConversationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F85C1E8DF1700035BE1A /* OWSConversationSettingsViewController.m */; };
 		34B3F88A1E8DF1700035BE1A /* OWSLinkDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F85E1E8DF1700035BE1A /* OWSLinkDeviceViewController.m */; };
 		34B3F88B1E8DF1700035BE1A /* OWSLinkedDevicesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8601E8DF1700035BE1A /* OWSLinkedDevicesTableViewController.m */; };
@@ -477,7 +476,6 @@
 		34B3F8571E8DF1700035BE1A /* NotificationSettingsOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSettingsOptionsViewController.m; sourceTree = "<group>"; };
 		34B3F8581E8DF1700035BE1A /* NotificationSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSettingsViewController.h; sourceTree = "<group>"; };
 		34B3F8591E8DF1700035BE1A /* NotificationSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSettingsViewController.m; sourceTree = "<group>"; };
-		34B3F85A1E8DF1700035BE1A /* OversizeTextMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OversizeTextMessageViewController.swift; sourceTree = "<group>"; };
 		34B3F85B1E8DF1700035BE1A /* OWSConversationSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSConversationSettingsViewController.h; sourceTree = "<group>"; };
 		34B3F85C1E8DF1700035BE1A /* OWSConversationSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSConversationSettingsViewController.m; sourceTree = "<group>"; };
 		34B3F85D1E8DF1700035BE1A /* OWSLinkDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkDeviceViewController.h; sourceTree = "<group>"; };
@@ -1048,7 +1046,6 @@
 				34B3F8571E8DF1700035BE1A /* NotificationSettingsOptionsViewController.m */,
 				34B3F8581E8DF1700035BE1A /* NotificationSettingsViewController.h */,
 				34B3F8591E8DF1700035BE1A /* NotificationSettingsViewController.m */,
-				34B3F85A1E8DF1700035BE1A /* OversizeTextMessageViewController.swift */,
 				34CCAF391F0C2748004084F4 /* OWSAddToContactViewController.h */,
 				34CCAF3A1F0C2748004084F4 /* OWSAddToContactViewController.m */,
 				34533F161EA8D2070006114F /* OWSAudioAttachmentPlayer.h */,
@@ -2291,7 +2288,6 @@
 				34D1F0881F8678AA0066283D /* ConversationViewLayout.m in Sources */,
 				76EB068618170B34006006FC /* ContactTableViewCell.m in Sources */,
 				3497DBEF1ECE2E4700DB2605 /* DomainFrontingCountryViewController.m in Sources */,
-				34B3F8881E8DF1700035BE1A /* OversizeTextMessageViewController.swift in Sources */,
 				452314A01F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift in Sources */,
 				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
 				34B3F8A21E8EA6040035BE1A /* ViewControllerUtils.m in Sources */,

@@ -73,6 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BubbleMaskingView *payloadView;
 @property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) UITextView *textView;
+@property (nonatomic, nullable) UILabel *tapForMoreLabel;
 @property (nonatomic, nullable) UIImageView *bubbleImageView;
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 @property (nonatomic, nullable) UIImageView *stillImageView;
@@ -130,7 +131,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.textView = [UITextView new];
     // Honor dynamic type in the message bodies.
     self.textView.font = [self textMessageFont];
-    self.textView.font = [UIFont ows_regularFontWithSize:16.f];
     self.textView.backgroundColor = [UIColor clearColor];
     self.textView.opaque = NO;
     self.textView.editable = NO;
@@ -183,17 +183,27 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont ows_dynamicTypeBodyFont];
 }
 
+- (UIFont *)tapForMoreFont
+{
+    return [UIFont ows_regularFontWithSize:12.f];
+}
+
+- (CGFloat)tapForMoreHeight
+{
+    return (CGFloat)ceil([self tapForMoreFont].lineHeight * 1.25);
+}
+
 - (OWSMessageCellType)cellType
 {
     return self.viewItem.messageCellType;
 }
 
-- (nullable NSString *)textMessage
+- (nullable DisplayableText *)displayableText
 {
     // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem.textMessage);
+    OWSAssert(self.viewItem.displayableText);
 
-    return self.viewItem.textMessage;
+    return self.viewItem.displayableText;
 }
 
 - (nullable TSAttachmentStream *)attachmentStream
@@ -571,7 +581,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.bubbleImageView.hidden = NO;
     self.textView.hidden = NO;
-    self.textView.text = self.textMessage;
+    self.textView.text = self.displayableText.displayText;
     UIColor *textColor = [self textColor];
     self.textView.textColor = textColor;
     self.textView.font = [self textMessageFont];
@@ -592,12 +602,34 @@ NS_ASSUME_NONNULL_BEGIN
             = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
     }
 
-    self.contentConstraints = @[
-        [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
-        [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
-        [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
-        [self.textView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
-    ];
+    if (self.displayableText.isTextTruncated) {
+        self.tapForMoreLabel = [UILabel new];
+        self.tapForMoreLabel.text = NSLocalizedString(@"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
+            @"Indicator on truncated text messages that they can be tapped to see the entire text message.");
+        self.tapForMoreLabel.font = [self tapForMoreFont];
+        self.tapForMoreLabel.textColor = [textColor colorWithAlphaComponent:0.85];
+        self.tapForMoreLabel.textAlignment = [self.tapForMoreLabel textAlignmentUnnatural];
+        [self.bubbleImageView addSubview:self.tapForMoreLabel];
+
+        self.contentConstraints = @[
+            [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
+            [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
+            [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
+
+            [self.tapForMoreLabel autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
+            [self.tapForMoreLabel autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
+            [self.tapForMoreLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.textView],
+            [self.tapForMoreLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
+            [self.tapForMoreLabel autoSetDimension:ALDimensionHeight toSize:self.tapForMoreHeight],
+        ];
+    } else {
+        self.contentConstraints = @[
+            [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
+            [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
+            [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
+            [self.textView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
+        ];
+    }
 }
 
 - (void)loadForStillImageDisplay
@@ -772,11 +804,12 @@ NS_ASSUME_NONNULL_BEGIN
             CGFloat textVMargin = self.textVMargin;
             const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
 
-            self.textView.text = self.textMessage;
+            self.textView.text = self.displayableText.displayText;
             self.textView.font = [self textMessageFont];
             CGSize textSize = [self.textView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
+            CGFloat tapForMoreHeight = (self.displayableText.isTextTruncated ? [self tapForMoreHeight] : 0.f);
             cellSize = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
-                (CGFloat)ceil(textSize.height + textVMargin * 2));
+                (CGFloat)ceil(textSize.height + textVMargin * 2 + tapForMoreHeight));
             break;
         }
         case OWSMessageCellType_StillImage:
@@ -907,6 +940,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.textView.text = nil;
     self.textView.hidden = YES;
     self.textView.dataDetectorTypes = UIDataDetectorTypeNone;
+    [self.tapForMoreLabel removeFromSuperview];
+    self.tapForMoreLabel = nil;
     self.footerLabel.text = nil;
     self.footerLabel.hidden = YES;
     self.bubbleImageView.image = nil;
@@ -990,9 +1025,11 @@ NS_ASSUME_NONNULL_BEGIN
 
         switch (self.cellType) {
             case OWSMessageCellType_TextMessage:
-                break;
             case OWSMessageCellType_OversizeTextMessage:
-                [self.delegate didTapOversizeTextMessage:self.textMessage attachmentStream:self.attachmentStream];
+                if (self.displayableText.isTextTruncated) {
+                    [self.delegate didTapTruncatedTextMessage:self.viewItem];
+                    return;
+                }
                 break;
             case OWSMessageCellType_StillImage:
                 [self.delegate didTapImageViewItem:self.viewItem
@@ -1093,7 +1130,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
-    [self.delegate showMetadataViewForMessage:self.message];
+    [self.delegate showMetadataViewForViewItem:self.viewItem];
 }
 
 - (BOOL)canBecomeFirstResponder

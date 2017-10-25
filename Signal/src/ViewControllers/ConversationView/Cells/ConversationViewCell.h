@@ -20,14 +20,14 @@ NS_ASSUME_NONNULL_BEGIN
                   imageView:(UIView *)imageView;
 - (void)didTapVideoViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream;
 - (void)didTapAudioViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream;
-- (void)didTapOversizeTextMessage:(NSString *)displayableText attachmentStream:(TSAttachmentStream *)attachmentStream;
+- (void)didTapTruncatedTextMessage:(ConversationViewItem *)conversationItem;
 - (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem
                      attachmentPointer:(TSAttachmentPointer *)attachmentPointer;
 - (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message;
 - (void)didPanWithGestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
                            viewItem:(ConversationViewItem *)conversationItem;
 
-- (void)showMetadataViewForMessage:(TSMessage *)message;
+- (void)showMetadataViewForViewItem:(ConversationViewItem *)conversationItem;
 
 #pragma mark - System Cell
 

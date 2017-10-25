@@ -37,6 +37,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
+#pragma mark -
+
+@implementation DisplayableText
+
+@end
+
+#pragma mark -
+
 @interface ConversationViewItem ()
 
 @property (nonatomic, nullable) NSValue *cachedCellSize;
@@ -50,7 +58,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 @property (nonatomic) BOOL hasViewState;
 @property (nonatomic) OWSMessageCellType messageCellType;
-@property (nonatomic, nullable) NSString *textMessage;
+@property (nonatomic, nullable) DisplayableText *displayableText;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic) CGSize contentSize;
@@ -85,7 +93,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     self.hasViewState = NO;
     self.messageCellType = OWSMessageCellType_Unknown;
-    self.textMessage = nil;
+    self.displayableText = nil;
     self.attachmentStream = nil;
     self.attachmentPointer = nil;
     self.contentSize = CGSizeZero;
@@ -266,47 +274,69 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return cache;
 }
 
-- (NSString *)displayableTextForText:(NSString *)text interactionId:(NSString *)interactionId
+- (DisplayableText *)displayableTextForText:(NSString *)text interactionId:(NSString *)interactionId
 {
     OWSAssert(text);
     OWSAssert(interactionId.length > 0);
 
-    NSString *_Nullable displayableText = [[self displayableTextCache] objectForKey:interactionId];
-    if (!displayableText) {
-        // Only show up to 2kb of text.
-        const NSUInteger kMaxTextDisplayLength = 2 * 1024;
-        text = [text ows_stripped];
-        displayableText = [[DisplayableTextFilter new] displayableText:text];
-        if (displayableText.length > kMaxTextDisplayLength) {
-            // Trim whitespace before _AND_ after slicing the snipper from the string.
-            NSString *snippet = [
-                [[displayableText ows_stripped] substringWithRange:NSMakeRange(0, kMaxTextDisplayLength)] ows_stripped];
-            displayableText = [NSString stringWithFormat:NSLocalizedString(@"OVERSIZE_TEXT_DISPLAY_FORMAT",
-                                                             @"A display format for oversize text messages."),
-                                        snippet];
-        }
-        if (!displayableText) {
-            displayableText = @"";
-        }
-        [[self displayableTextCache] setObject:displayableText forKey:interactionId];
-    }
-    return displayableText;
+    return [self displayableTextForInteractionId:interactionId
+                                       textBlock:^{
+                                           return text;
+                                       }];
 }
 
-- (NSString *)displayableTextForAttachmentStream:(TSAttachmentStream *)attachmentStream
-                                   interactionId:(NSString *)interactionId
+- (DisplayableText *)displayableTextForAttachmentStream:(TSAttachmentStream *)attachmentStream
+                                          interactionId:(NSString *)interactionId
 {
     OWSAssert(attachmentStream);
     OWSAssert(interactionId.length > 0);
 
-    NSString *_Nullable displayableText = [[self displayableTextCache] objectForKey:interactionId];
-    if (displayableText) {
-        return displayableText;
-    }
+    return [self displayableTextForInteractionId:interactionId
+                                       textBlock:^{
+                                           NSData *textData = [NSData dataWithContentsOfURL:attachmentStream.mediaURL];
+                                           NSString *text =
+                                               [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
+                                           return text;
+                                       }];
+}
 
-    NSData *textData = [NSData dataWithContentsOfURL:attachmentStream.mediaURL];
-    NSString *text = [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
-    return [self displayableTextForText:text interactionId:interactionId];
+- (DisplayableText *)displayableTextForInteractionId:(NSString *)interactionId
+                                           textBlock:(NSString * (^_Nonnull)())textBlock
+{
+    OWSAssert(interactionId.length > 0);
+
+    DisplayableText *_Nullable displayableText = [[self displayableTextCache] objectForKey:interactionId];
+    if (!displayableText) {
+        NSString *text = textBlock();
+
+        // Only show up to 2kb of text.
+        const NSUInteger kMaxTextDisplayLength = 2 * 1024;
+        text = [text ows_stripped];
+        NSString *fullText = [[[DisplayableTextFilter new] displayableText:text] ows_stripped];
+        displayableText = [DisplayableText new];
+        if (!fullText) {
+            displayableText.fullText = @"";
+        } else {
+            displayableText.fullText = fullText;
+        }
+        NSString *displayText = fullText;
+        if (displayText.length > kMaxTextDisplayLength) {
+            // Trim whitespace before _AND_ after slicing the snipper from the string.
+            NSString *snippet = [[displayText substringWithRange:NSMakeRange(0, kMaxTextDisplayLength)] ows_stripped];
+            displayText = [NSString stringWithFormat:NSLocalizedString(@"OVERSIZE_TEXT_DISPLAY_FORMAT",
+                                                         @"A display format for oversize text messages."),
+                                    snippet];
+            displayableText.isTextTruncated = YES;
+        }
+        if (!displayText) {
+            displayableText.displayText = @"";
+        } else {
+            displayableText.displayText = displayText;
+        }
+
+        [[self displayableTextCache] setObject:displayableText forKey:interactionId];
+    }
+    return displayableText;
 }
 
 - (void)ensureViewState
@@ -321,7 +351,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     TSMessage *interaction = (TSMessage *)self.interaction;
     if (interaction.body != nil) {
         self.messageCellType = OWSMessageCellType_TextMessage;
-        self.textMessage = [self displayableTextForText:interaction.body interactionId:interaction.uniqueId];
+        self.displayableText = [self displayableTextForText:interaction.body interactionId:interaction.uniqueId];
         return;
     } else {
         NSString *_Nullable attachmentId = interaction.attachmentIds.firstObject;
@@ -332,8 +362,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
                 if ([attachment.contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
                     self.messageCellType = OWSMessageCellType_OversizeTextMessage;
-                    self.textMessage = [self displayableTextForAttachmentStream:self.attachmentStream
-                                                                  interactionId:interaction.uniqueId];
+                    self.displayableText = [self displayableTextForAttachmentStream:self.attachmentStream
+                                                                      interactionId:interaction.uniqueId];
                     return;
                 } else if ([self.attachmentStream isAnimated] || [self.attachmentStream isImage] ||
                     [self.attachmentStream isVideo]) {
@@ -387,13 +417,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return _messageCellType;
 }
 
-- (nullable NSString *)textMessage
+- (nullable DisplayableText *)displayableText
 {
     OWSAssert([NSThread isMainThread]);
 
     [self ensureViewState];
 
-    return _textMessage;
+    OWSAssert(_displayableText);
+    OWSAssert(_displayableText.displayText);
+    OWSAssert(_displayableText.fullText);
+
+    return _displayableText;
 }
 
 - (nullable TSAttachmentStream *)attachmentStream
@@ -495,7 +529,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     switch (self.messageCellType) {
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
-            [UIPasteboard.generalPasteboard setString:self.textMessage];
+            OWSAssert(self.displayableText);
+            [UIPasteboard.generalPasteboard setString:self.displayableText.fullText];
             break;
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
@@ -527,7 +562,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     switch (self.messageCellType) {
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
-            [AttachmentSharing showShareUIForText:self.textMessage];
+            OWSAssert(self.displayableText);
+            [AttachmentSharing showShareUIForText:self.displayableText.fullText];
             break;
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
@@ -618,7 +654,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     switch (self.messageCellType) {
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
-            return self.textMessage.length > 0;
+            OWSAssert(self.displayableText);
+            return self.displayableText.fullText.length > 0;
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
         case OWSMessageCellType_Audio:

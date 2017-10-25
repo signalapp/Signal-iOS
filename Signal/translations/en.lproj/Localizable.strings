@@ -76,17 +76,11 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Attachment";
 
-/* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
-
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Size: %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Attachment";
@@ -238,6 +232,9 @@
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "End call";
 
+/* Accessibility label for muting the microphone */
+"CALL_VIEW_MUTE_LABEL" = "Mute";
+
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can answer calls directly from your lock screen and see the name and phone number for incoming calls if you change your settings.\n\nSee the privacy settings for details.";
 
@@ -255,9 +252,6 @@
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
-
-/* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Mute";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Call Back";
@@ -399,6 +393,9 @@
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "This user is not in your contacts.";
+
+/* Indicator on truncated text messages that they can be tapped to see the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap For More";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Block This User";
@@ -818,10 +815,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Group Members";
 
 /* No comment provided by engineer. */
-"LOGGING_SECTION" = "Logging";
+"load_earlier_messages" = "Load Earlier Messages";
 
 /* No comment provided by engineer. */
-"ME_STRING" = "Me";
+"LOGGING_SECTION" = "Logging";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Camera";
@@ -883,8 +880,7 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Message";
 
-/* message footer for delivered messages
-   message status for message delivered to their recipient. */
+/* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Delivered";
 
 /* message footer for failed messages */
@@ -958,23 +954,8 @@
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
 
-/* No comment provided by engineer. */
-"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY" = "Missed call because their safety number has changed.";
-
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_RECEIVED_CALL" = "You received a call from %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ tried to call you.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_YOU_CALLED" = "You called %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "You tried to call %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "You can not pair any more devices.";
@@ -1036,6 +1017,9 @@
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Unsaved Changes";
 
+/* No comment provided by engineer. */
+"new_message" = "New Message";
+
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Search";
 
@@ -1092,7 +1076,7 @@
 "OUTGOING_INCOMPLETE_CALL" = "Unanswered outgoing call";
 
 /* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
 
 /* The title of the 'oversize text message' view. */
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Message";
