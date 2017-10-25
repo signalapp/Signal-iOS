@@ -10,6 +10,7 @@
 		3400C7931EAF89CD008A8584 /* SendExternalFileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3400C7911EAF89CD008A8584 /* SendExternalFileViewController.m */; };
 		3400C7961EAF99F4008A8584 /* SelectThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3400C7951EAF99F4008A8584 /* SelectThreadViewController.m */; };
 		3400C7991EAFB772008A8584 /* ThreadViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3400C7981EAFB772008A8584 /* ThreadViewHelper.m */; };
+		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
 		340CB2241EAC155C0001CAA1 /* ContactsViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CB2231EAC155C0001CAA1 /* ContactsViewHelper.m */; };
 		340CB2271EAC25820001CAA1 /* UpdateGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CB2261EAC25820001CAA1 /* UpdateGroupViewController.m */; };
 		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
@@ -60,7 +61,6 @@
 		34B3F8911E8DF1710035BE1A /* ShowGroupMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F86B1E8DF1700035BE1A /* ShowGroupMembersViewController.m */; };
 		34B3F8931E8DF1710035BE1A /* SignalsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */; };
 		34B3F8941E8DF1710035BE1A /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8701E8DF1700035BE1A /* HomeViewController.m */; };
-		34B3F8991E8DF1B90035BE1A /* TSMessageAdapterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8981E8DF1B90035BE1A /* TSMessageAdapterTest.m */; };
 		34B3F89C1E8DF3270035BE1A /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F89B1E8DF3270035BE1A /* BlockListViewController.m */; };
 		34B3F89F1E8DF5490035BE1A /* OWSTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F89E1E8DF5490035BE1A /* OWSTableViewController.m */; };
 		34B3F8A21E8EA6040035BE1A /* ViewControllerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8A11E8EA6040035BE1A /* ViewControllerUtils.m */; };
@@ -71,6 +71,10 @@
 		34C42D5B1F45F7A80072EC04 /* OWSNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D5A1F45F7A80072EC04 /* OWSNavigationController.m */; };
 		34C42D661F4734ED0072EC04 /* OWSContactOffersInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D631F4734ED0072EC04 /* OWSContactOffersInteraction.m */; };
 		34C42D671F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D651F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m */; };
+		34C6B0A91FA0E46F00D35993 /* test-gif.gif in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A51FA0E46F00D35993 /* test-gif.gif */; };
+		34C6B0AB1FA0E46F00D35993 /* test-mp3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */; };
+		34C6B0AC1FA0E46F00D35993 /* test-mp4.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */; };
+		34C6B0AE1FA0E4AA00D35993 /* test-jpg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */; };
 		34CA1C251F706B5400E51C51 /* NSAttributedString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA1C241F706B5400E51C51 /* NSAttributedString+OWS.m */; };
 		34CA1C271F7156F300E51C51 /* MessageMetadataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CA1C261F7156F300E51C51 /* MessageMetadataViewController.swift */; };
 		34CA1C291F7164F700E51C51 /* MediaMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CA1C281F7164F700E51C51 /* MediaMessageView.swift */; };
@@ -315,7 +319,6 @@
 		B660F6D81C29868000687D6E /* CryptoToolsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6A71C29868000687D6E /* CryptoToolsTest.m */; };
 		B660F6DA1C29868000687D6E /* ExceptionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6AB1C29868000687D6E /* ExceptionsTest.m */; };
 		B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */; };
-		B660F6DF1C29868000687D6E /* QueueTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6B21C29868000687D6E /* QueueTest.m */; };
 		B660F6E01C29868000687D6E /* UtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6B41C29868000687D6E /* UtilTest.m */; };
 		B660F7171C29988E00687D6E /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040918170B33006006FC /* OWSContactsManager.m */; };
 		B660F7181C29988E00687D6E /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
@@ -406,6 +409,7 @@
 		3400C7971EAFB772008A8584 /* ThreadViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadViewHelper.h; sourceTree = "<group>"; };
 		3400C7981EAFB772008A8584 /* ThreadViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadViewHelper.m; sourceTree = "<group>"; };
 		340B02B61F9FD31800F9CFEC /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = translations/he.lproj/Localizable.strings; sourceTree = "<group>"; };
+		340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewItemTest.m; sourceTree = "<group>"; };
 		340CB2221EAC155C0001CAA1 /* ContactsViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsViewHelper.h; sourceTree = "<group>"; };
 		340CB2231EAC155C0001CAA1 /* ContactsViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsViewHelper.m; sourceTree = "<group>"; };
 		340CB2251EAC25820001CAA1 /* UpdateGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdateGroupViewController.h; sourceTree = "<group>"; };
@@ -494,7 +498,6 @@
 		34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalsNavigationController.m; sourceTree = "<group>"; };
 		34B3F86F1E8DF1700035BE1A /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewController.h; sourceTree = "<group>"; };
 		34B3F8701E8DF1700035BE1A /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
-		34B3F8981E8DF1B90035BE1A /* TSMessageAdapterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMessageAdapterTest.m; sourceTree = "<group>"; };
 		34B3F89A1E8DF3270035BE1A /* BlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListViewController.h; sourceTree = "<group>"; };
 		34B3F89B1E8DF3270035BE1A /* BlockListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListViewController.m; sourceTree = "<group>"; };
 		34B3F89D1E8DF5490035BE1A /* OWSTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSTableViewController.h; sourceTree = "<group>"; };
@@ -512,6 +515,10 @@
 		34C42D631F4734ED0072EC04 /* OWSContactOffersInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactOffersInteraction.m; sourceTree = "<group>"; };
 		34C42D641F4734ED0072EC04 /* TSUnreadIndicatorInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSUnreadIndicatorInteraction.h; sourceTree = "<group>"; };
 		34C42D651F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSUnreadIndicatorInteraction.m; sourceTree = "<group>"; };
+		34C6B0A51FA0E46F00D35993 /* test-gif.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "test-gif.gif"; sourceTree = "<group>"; };
+		34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "test-mp3.mp3"; sourceTree = "<group>"; };
+		34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "test-mp4.mp4"; sourceTree = "<group>"; };
+		34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "test-jpg.jpg"; sourceTree = "<group>"; };
 		34CA1C231F706B5400E51C51 /* NSAttributedString+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+OWS.h"; sourceTree = "<group>"; };
 		34CA1C241F706B5400E51C51 /* NSAttributedString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+OWS.m"; sourceTree = "<group>"; };
 		34CA1C261F7156F300E51C51 /* MessageMetadataViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageMetadataViewController.swift; sourceTree = "<group>"; };
@@ -800,8 +807,6 @@
 		B660F6AB1C29868000687D6E /* ExceptionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExceptionsTest.m; sourceTree = "<group>"; };
 		B660F6AC1C29868000687D6E /* FunctionalUtilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionalUtilTest.h; sourceTree = "<group>"; };
 		B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtilTest.m; sourceTree = "<group>"; };
-		B660F6B11C29868000687D6E /* QueueTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QueueTest.h; sourceTree = "<group>"; };
-		B660F6B21C29868000687D6E /* QueueTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QueueTest.m; sourceTree = "<group>"; };
 		B660F6B31C29868000687D6E /* UtilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UtilTest.h; sourceTree = "<group>"; };
 		B660F6B41C29868000687D6E /* UtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UtilTest.m; sourceTree = "<group>"; };
 		B661C211198EE2EA00548CA1 /* iOSVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iOSVersions.h; path = src/environment/iOSVersions.h; sourceTree = "<group>"; };
@@ -1096,25 +1101,9 @@
 		34B3F8951E8DF1B90035BE1A /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				34B3F8961E8DF1B90035BE1A /* Signals */,
+				340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */,
 			);
 			path = ViewControllers;
-			sourceTree = "<group>";
-		};
-		34B3F8961E8DF1B90035BE1A /* Signals */ = {
-			isa = PBXGroup;
-			children = (
-				34B3F8971E8DF1B90035BE1A /* TSMessageAdapters */,
-			);
-			path = Signals;
-			sourceTree = "<group>";
-		};
-		34B3F8971E8DF1B90035BE1A /* TSMessageAdapters */ = {
-			isa = PBXGroup;
-			children = (
-				34B3F8981E8DF1B90035BE1A /* TSMessageAdapterTest.m */,
-			);
-			path = TSMessageAdapters;
 			sourceTree = "<group>";
 		};
 		34BECE2C1F7ABCE000D7438D /* GifPicker */ = {
@@ -1125,6 +1114,17 @@
 				34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */,
 			);
 			path = GifPicker;
+			sourceTree = "<group>";
+		};
+		34C6B0A41FA0E46F00D35993 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				34C6B0A51FA0E46F00D35993 /* test-gif.gif */,
+				34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */,
+				34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */,
+				34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 		34CE88E81F3237260098030F /* Profiles */ = {
@@ -1586,6 +1586,7 @@
 		B660F66C1C29867F00687D6E /* test */ = {
 			isa = PBXGroup;
 			children = (
+				34C6B0A41FA0E46F00D35993 /* Assets */,
 				B660F6731C29867F00687D6E /* call */,
 				B660F6751C29867F00687D6E /* contact */,
 				458E38381D6699110094BD24 /* Models */,
@@ -1643,8 +1644,6 @@
 				B660F6AB1C29868000687D6E /* ExceptionsTest.m */,
 				B660F6AC1C29868000687D6E /* FunctionalUtilTest.h */,
 				B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */,
-				B660F6B11C29868000687D6E /* QueueTest.h */,
-				B660F6B21C29868000687D6E /* QueueTest.m */,
 				B660F6B31C29868000687D6E /* UtilTest.h */,
 				B660F6B41C29868000687D6E /* UtilTest.m */,
 				45666F571D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m */,
@@ -2010,7 +2009,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34C6B0AE1FA0E4AA00D35993 /* test-jpg.jpg in Resources */,
 				B660F6D41C29868000687D6E /* whisperFake.cer in Resources */,
+				34C6B0A91FA0E46F00D35993 /* test-gif.gif in Resources */,
+				34C6B0AC1FA0E46F00D35993 /* test-mp4.mp4 in Resources */,
+				34C6B0AB1FA0E46F00D35993 /* test-mp3.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2415,11 +2418,11 @@
 				458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */,
 				45F659831E1BE77000444429 /* NonCallKitCallUIAdaptee.swift in Sources */,
 				456AC8351E3A776300A3C7FC /* WeakTimer.swift in Sources */,
+				340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */,
 				458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */,
 				452D1EE81DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift in Sources */,
 				451DE9FE1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */,
 				45F170AF1E2F0393003FC1F2 /* CallAudioSessionTest.swift in Sources */,
-				34B3F8991E8DF1B90035BE1A /* TSMessageAdapterTest.m in Sources */,
 				456F6E231E24133500FD2210 /* Platform.swift in Sources */,
 				4539B5871F79348F007141FF /* PushRegistrationManager.swift in Sources */,
 				4504493A1F45EE7D002D1ADA /* NSString+OWS.m in Sources */,
@@ -2468,7 +2471,6 @@
 				456F6E201E2411A000FD2210 /* CallService.swift in Sources */,
 				45A663C61F92EC760027B59E /* GroupTableViewCell.swift in Sources */,
 				45E615171E8C59100018AD52 /* DisplayableTextFilter.swift in Sources */,
-				B660F6DF1C29868000687D6E /* QueueTest.m in Sources */,
 				B660F6BB1C29868000687D6E /* OWSContactsManagerTest.m in Sources */,
 				45A6DAD71EBBF85500893231 /* ReminderView.swift in Sources */,
 				B660F6D21C29868000687D6E /* PushManagerTest.m in Sources */,

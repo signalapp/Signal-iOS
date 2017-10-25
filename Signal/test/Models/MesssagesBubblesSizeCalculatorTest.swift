@@ -4,16 +4,11 @@
 
 import XCTest
 
-class FakeiPhone6JSQMessagesCollectionViewFlowLayout: JSQMessagesCollectionViewFlowLayout {
-    // This value was nabbed by inspecting the super class layout.itemSize while debugging the `messageBubbleSizeForMessageData`. 
-    // It requires the view to actually be rendered to get a proper size, so we're baking it in here.
-    // This will break if we change the layout.
-    override var itemWidth: CGFloat { return 367 }
-}
-
 /**
- * This is a brittle test, which will break if our layout changes. It serves mostly as documentation for cases to 
- * consider when changing the bubble size calculator. Primarly these test cases came out of a bug introduced in iOS10,
+ * This is a brittle test, which will break if our layout changes.
+ *
+ * It serves mostly as documentation for cases to consider when changing the cell measurement logic. 
+ * Primarly these test cases came out of a bug introduced in iOS10,
  * which prevents us from computing proper bounding box for text that uses the UIEmoji font.
  *
  * If one of these tests breaks, it should be OK to update the expected value so long as you've tested the result renders
@@ -22,86 +17,94 @@ class FakeiPhone6JSQMessagesCollectionViewFlowLayout: JSQMessagesCollectionViewF
  */
 class MesssagesBubblesSizeCalculatorTest: XCTestCase {
 
-    let indexPath = IndexPath()
-    let layout =  FakeiPhone6JSQMessagesCollectionViewFlowLayout()
-    let calculator = MessagesBubblesSizeCalculator()
     let thread = TSContactThread()!
     let contactsManager = OWSContactsManager()
 
-    func messageDataForForText(_ text: String?) -> JSQMessageData {
+    func viewItemForText(_ text: String?) -> ConversationViewItem {
         let interaction = TSOutgoingMessage(timestamp: 0, in: thread, messageBody: text)
         interaction.save()
-        return TSMessageAdapter.messageViewData(with: interaction, in: thread, contactsManager: self.contactsManager)
+        let viewItem = ConversationViewItem(tsInteraction:interaction, isGroupThread:false)
+        viewItem.shouldShowDate = false
+        viewItem.shouldHideRecipientStatus = true
+        return viewItem
     }
 
-    func testHeightForNilMessage() {
-        let text: String? = nil
-        let messageData = self.messageDataForForText(text)
-        let actual = calculator.messageBubbleSize(for: messageData, at: indexPath, with: layout)
-        XCTAssertEqual(37, actual.height)
+    func messageBubbleSize(for viewItem: ConversationViewItem) -> CGSize {
+        viewItem.clearCachedLayoutState()
+        // These are the expected values on iPhone SE.
+        let viewWidth = 320
+        let contentWidth = 300
+        return viewItem.cellSize(forViewWidth: Int32(viewWidth), contentWidth:Int32(contentWidth))
+    }
+
+    func testHeightForEmptyMessage() {
+        let text: String? = ""
+        let viewItem = self.viewItemForText(text)
+        let actual = messageBubbleSize(for: viewItem)
+        XCTAssertEqual(42, actual.height)
     }
 
     func testHeightForShort1LineMessage() {
         let text = "foo"
-        let messageData = self.messageDataForForText(text)
-        let actual = calculator.messageBubbleSize(for: messageData, at: indexPath, with: layout)
-        XCTAssertEqual(38, actual.height)
+        let viewItem = self.viewItemForText(text)
+        let actual = messageBubbleSize(for: viewItem)
+        XCTAssertEqual(42, actual.height)
     }
 
     func testHeightForLong1LineMessage() {
         let text = "1 2 3 4 5 6 7 8 9 10 11 12 13 14 x"
-        let messageData = self.messageDataForForText(text)
-        let actual = calculator.messageBubbleSize(for: messageData, at: indexPath, with: layout)
-        XCTAssertEqual(38, actual.height)
+        let viewItem = self.viewItemForText(text)
+        let actual = messageBubbleSize(for: viewItem)
+        XCTAssertEqual(64, actual.height)
     }
 
     func testHeightForShort2LineMessage() {
         let text = "1 2 3 4 5 6 7 8 9 10 11 12 13 14 x 1"
-        let messageData = self.messageDataForForText(text)
-        let actual = calculator.messageBubbleSize(for: messageData, at: indexPath, with: layout)
-        XCTAssertEqual(59, actual.height)
+        let viewItem = self.viewItemForText(text)
+        let actual = messageBubbleSize(for: viewItem)
+        XCTAssertEqual(64, actual.height)
     }
 
     func testHeightForLong2LineMessage() {
         let text = "1 2 3 4 5 6 7 8 9 10 11 12 13 14 x 1 2 3 4 5 6 7 8 9 10 11 12 13 14 x"
-        let messageData = self.messageDataForForText(text)
-        let actual = calculator.messageBubbleSize(for: messageData, at: indexPath, with: layout)
-        XCTAssertEqual(59, actual.height)
+        let viewItem = self.viewItemForText(text)
+        let actual = messageBubbleSize(for: viewItem)
+        XCTAssertEqual(86, actual.height)
     }
 
     func testHeightForiOS10EmojiBug() {
-        let messageData = self.messageDataForForText("Wunderschönen Guten Morgaaaahhhn 😝 - hast du gut geschlafen ☺️😘")
-        let actual = calculator.messageBubbleSize(for: messageData, at: indexPath, with: layout)
+        let viewItem = self.viewItemForText("Wunderschönen Guten Morgaaaahhhn 😝 - hast du gut geschlafen ☺️😘")
+        let actual = messageBubbleSize(for: viewItem)
 
-        XCTAssertEqual(85.5, actual.height)
+        XCTAssertEqual(86, actual.height)
     }
 
     func testHeightForiOS10EmojiBug2() {
-        let messageData = self.messageDataForForText("Test test test test test test test test test test test test 😊❤️❤️")
-        let actual = calculator.messageBubbleSize(for: messageData, at: indexPath, with: layout)
+        let viewItem = self.viewItemForText("Test test test test test test test test test test test test 😊❤️❤️")
+        let actual = messageBubbleSize(for: viewItem)
 
-        XCTAssertEqual(62, actual.height)
+        XCTAssertEqual(86, actual.height)
     }
 
     func testHeightForChineseWithEmojiBug() {
-        let messageData = self.messageDataForForText("一二三四五六七八九十甲乙丙😝戊己庚辛壬圭咖啡牛奶餅乾水果蛋糕")
-        let actual = calculator.messageBubbleSize(for: messageData, at: indexPath, with: layout)
+        let viewItem = self.viewItemForText("一二三四五六七八九十甲乙丙😝戊己庚辛壬圭咖啡牛奶餅乾水果蛋糕")
+        let actual = messageBubbleSize(for: viewItem)
         // erroneously seeing 69 with the emoji fix in place.
-        XCTAssertEqual(85.5, actual.height)
+        XCTAssertEqual(86, actual.height)
     }
 
     func testHeightForChineseWithoutEmojiBug() {
-        let messageData = self.messageDataForForText("一二三四五六七八九十甲乙丙丁戊己庚辛壬圭咖啡牛奶餅乾水果蛋糕")
-        let actual = calculator.messageBubbleSize(for: messageData, at: indexPath, with: layout)
+        let viewItem = self.viewItemForText("一二三四五六七八九十甲乙丙丁戊己庚辛壬圭咖啡牛奶餅乾水果蛋糕")
+        let actual = messageBubbleSize(for: viewItem)
         // erroneously seeing 69 with the emoji fix in place.
-        XCTAssertEqual(81, actual.height)
+        XCTAssertEqual(86, actual.height)
     }
 
     func testHeightForiOS10DoubleSpaceNumbersBug() {
-        let messageData = self.messageDataForForText("１２３４５６７８９０１２３４５６７８９０")
-        let actual = calculator.messageBubbleSize(for: messageData, at: indexPath, with: layout)
+        let viewItem = self.viewItemForText("１２３４５６７８９０１２３４５６７８９０")
+        let actual = messageBubbleSize(for: viewItem)
         // erroneously seeing 51 with emoji fix in place. It's the call to "fix string"
-        XCTAssertEqual(59, actual.height)
+        XCTAssertEqual(64, actual.height)
     }
 
 }
