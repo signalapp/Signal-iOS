@@ -53,7 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
         self.placeholderView.text = NSLocalizedString(@"new_message", @"");
         self.placeholderView.textColor = [UIColor lightGrayColor];
         self.placeholderView.userInteractionEnabled = NO;
-        self.placeholderView.textAlignment = NSTextAlignmentNatural;
         [self addSubview:self.placeholderView];
 
         // We need to do these steps _after_ placeholderView is configured.
