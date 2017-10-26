@@ -361,7 +361,7 @@ class SystemContactsFetcher: NSObject {
         hasSetupObservation = true
         self.contactStoreAdapter.startObservingChanges { [weak self] in
             DispatchQueue.main.async {
-                self?.updateContacts(completion: nil)
+                self?.updateContacts(completion: nil, alwaysNotify: false)
             }
         }
     }
@@ -380,7 +380,6 @@ class SystemContactsFetcher: NSObject {
             completion?(nil)
             return
         }
-        systemContactsHaveBeenRequestedAtLeastOnce = true
         setupObservationIfNecessary()
 
         switch authorizationStatus {
@@ -417,16 +416,28 @@ class SystemContactsFetcher: NSObject {
         }
     }
 
-    public func fetchIfAlreadyAuthorized(ignoreDebounce: Bool = false) {
+    public func fetchOnceIfAlreadyAuthorized() {
+        AssertIsOnMainThread()
+        guard authorizationStatus == .authorized else {
+            return
+        }
+        guard !systemContactsHaveBeenRequestedAtLeastOnce else {
+            return
+        }
+
+        updateContacts(completion: nil, alwaysNotify:false)
+    }
+
+    public func fetchIfAlreadyAuthorizedAndAlwaysNotify() {
         AssertIsOnMainThread()
         guard authorizationStatus == .authorized else {
             return
         }
 
-        updateContacts(completion: nil, ignoreDebounce:ignoreDebounce)
+        updateContacts(completion: nil, alwaysNotify:true)
     }
 
-    private func updateContacts(completion: ((Error?) -> Void)?, ignoreDebounce: Bool = false) {
+    private func updateContacts(completion: ((Error?) -> Void)?, alwaysNotify: Bool = false) {
         AssertIsOnMainThread()
 
         systemContactsHaveBeenRequestedAtLeastOnce = true
@@ -434,8 +445,9 @@ class SystemContactsFetcher: NSObject {
 
         DispatchQueue.global().async {
 
-            var fetchedContacts: [Contact]?
+            Logger.info("\(self.TAG) fetching contacts")
 
+            var fetchedContacts: [Contact]?
             switch self.contactStoreAdapter.fetchContacts() {
             case .success(let result):
                 fetchedContacts = result
@@ -457,7 +469,7 @@ class SystemContactsFetcher: NSObject {
                 if self.lastContactUpdateHash != contactsHash {
                     Logger.info("\(self.TAG) contact hash changed. new contactsHash: \(contactsHash)")
                     shouldNotifyDelegate = true
-                } else if ignoreDebounce {
+                } else if alwaysNotify {
                     Logger.info("\(self.TAG) ignoring debounce.")
                     shouldNotifyDelegate = true
                 } else {
