@@ -24,19 +24,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 #pragma mark -
 
-@interface DisplayableText : NSObject
-
-@property (nonatomic) NSString *fullText;
-
-@property (nonatomic) NSString *displayText;
-
-@property (nonatomic) BOOL isTextTruncated;
-
-@end
-
-#pragma mark -
-
 @class ConversationViewCell;
+@class DisplayableText;
 @class OWSAudioMessageView;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;

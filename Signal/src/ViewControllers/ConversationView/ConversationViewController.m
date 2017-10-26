@@ -2044,12 +2044,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(conversationItem);
+    OWSAssert([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
     TSMessage *message = (TSMessage *)conversationItem.interaction;
-    MessageMetadataViewController *view =
-        [[MessageMetadataViewController alloc] initWithViewItem:conversationItem
-                                                        message:message
-                                                           mode:MessageMetadataViewModeFocusOnMessage];
+    MessageDetailViewController *view =
+        [[MessageDetailViewController alloc] initWithViewItem:conversationItem
+                                                      message:message
+                                                         mode:MessageMetadataViewModeFocusOnMessage];
     [self.navigationController pushViewController:view animated:YES];
 }
 
@@ -2077,12 +2078,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(conversationItem);
+    OWSAssert([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
     TSMessage *message = (TSMessage *)conversationItem.interaction;
-    MessageMetadataViewController *view =
-        [[MessageMetadataViewController alloc] initWithViewItem:conversationItem
-                                                        message:message
-                                                           mode:MessageMetadataViewModeFocusOnMetadata];
+    MessageDetailViewController *view =
+        [[MessageDetailViewController alloc] initWithViewItem:conversationItem
+                                                      message:message
+                                                         mode:MessageMetadataViewModeFocusOnMetadata];
     [self.navigationController pushViewController:view animated:YES];
 }
 
@@ -4088,10 +4090,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 // want to inadvertently clobber it here.
                 OWSAssert(self.navigationController.delegate == nil) self.navigationController.delegate = self;
                 TSMessage *message = (TSMessage *)interaction;
-                MessageMetadataViewController *view =
-                    [[MessageMetadataViewController alloc] initWithViewItem:conversationItem
-                                                                    message:message
-                                                                       mode:MessageMetadataViewModeFocusOnMetadata];
+                MessageDetailViewController *view =
+                    [[MessageDetailViewController alloc] initWithViewItem:conversationItem
+                                                                  message:message
+                                                                     mode:MessageMetadataViewModeFocusOnMetadata];
                 [self.navigationController pushViewController:view animated:YES];
             } else {
                 OWSFail(@"%@ Can't show message metadata for message of type: %@", self.tag, [interaction class]);

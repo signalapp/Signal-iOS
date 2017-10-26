@@ -39,12 +39,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 #pragma mark -
 
-@implementation DisplayableText
-
-@end
-
-#pragma mark -
-
 @interface ConversationViewItem ()
 
 @property (nonatomic, nullable) NSValue *cachedCellSize;
@@ -312,27 +306,30 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         // Only show up to 2kb of text.
         const NSUInteger kMaxTextDisplayLength = 2 * 1024;
         text = [text ows_stripped];
-        NSString *fullText = [[[DisplayableTextFilter new] displayableText:text] ows_stripped];
-        displayableText = [DisplayableText new];
+        NSString *_Nullable fullText = [DisplayableText displayableText:text];
+        BOOL isTextTruncated = NO;
         if (!fullText) {
-            displayableText.fullText = @"";
+            fullText = @"";
         } else {
-            displayableText.fullText = fullText;
+            fullText = fullText;
         }
-        NSString *displayText = fullText;
+        NSString *_Nullable displayText = fullText;
         if (displayText.length > kMaxTextDisplayLength) {
             // Trim whitespace before _AND_ after slicing the snipper from the string.
             NSString *snippet = [[displayText substringWithRange:NSMakeRange(0, kMaxTextDisplayLength)] ows_stripped];
             displayText = [NSString stringWithFormat:NSLocalizedString(@"OVERSIZE_TEXT_DISPLAY_FORMAT",
                                                          @"A display format for oversize text messages."),
                                     snippet];
-            displayableText.isTextTruncated = YES;
+            isTextTruncated = YES;
         }
         if (!displayText) {
-            displayableText.displayText = @"";
+            displayText = @"";
         } else {
-            displayableText.displayText = displayText;
+            displayText = displayText;
         }
+
+        displayableText =
+            [[DisplayableText alloc] initWithFullText:fullText displayText:displayText isTextTruncated:isTextTruncated];
 
         [[self displayableTextCache] setObject:displayableText forKey:interactionId];
     }

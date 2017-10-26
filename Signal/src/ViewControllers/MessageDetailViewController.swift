@@ -10,10 +10,10 @@ enum MessageMetadataViewMode: UInt {
     case focusOnMetadata
 }
 
-class MessageMetadataViewController: OWSViewController {
+class MessageDetailViewController: OWSViewController {
 
-    static let TAG = "[MessageMetadataViewController]"
-    let TAG = "[MessageMetadataViewController]"
+    static let TAG = "[MessageDetailViewController]"
+    let TAG = "[MessageDetailViewController]"
 
     // MARK: Properties
 
