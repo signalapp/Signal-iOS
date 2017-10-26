@@ -428,10 +428,13 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         var rows = [UIView]()
 
         if let attachment = self.attachment {
-            let contentType = attachment.contentType
-            rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE",
-                                                         comment: "Label for the MIME type of attachments in the 'message metadata' view."),
-                                 value: contentType))
+            // Only show MIME types in DEBUG builds.
+            if _isDebugAssertConfiguration() {
+                let contentType = attachment.contentType
+                rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE",
+                                                             comment: "Label for the MIME type of attachments in the 'message metadata' view."),
+                                     value: contentType))
+            }
 
             if let sourceFilename = attachment.sourceFilename {
                 rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SOURCE_FILENAME",
