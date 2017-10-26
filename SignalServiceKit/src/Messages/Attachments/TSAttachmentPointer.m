@@ -28,12 +28,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithServerId:(UInt64)serverId
                              key:(NSData *)key
                           digest:(nullable NSData *)digest
+                       byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
                            relay:(NSString *)relay
                   sourceFilename:(nullable NSString *)sourceFilename
                   attachmentType:(TSAttachmentType)attachmentType
 {
-    self = [super initWithServerId:serverId encryptionKey:key contentType:contentType sourceFilename:sourceFilename];
+    self = [super initWithServerId:serverId
+                     encryptionKey:key
+                         byteCount:byteCount
+                       contentType:contentType
+                    sourceFilename:sourceFilename];
     if (!self) {
         return self;
     }

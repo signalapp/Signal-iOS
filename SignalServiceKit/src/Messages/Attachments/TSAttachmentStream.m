@@ -30,9 +30,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSAttachmentStream
 
-- (instancetype)initWithContentType:(NSString *)contentType sourceFilename:(nullable NSString *)sourceFilename
+- (instancetype)initWithContentType:(NSString *)contentType
+                          byteCount:(UInt32)byteCount
+                     sourceFilename:(nullable NSString *)sourceFilename
 {
-    self = [super initWithContentType:contentType sourceFilename:sourceFilename];
+    self = [super initWithContentType:contentType byteCount:byteCount sourceFilename:sourceFilename];
     if (!self) {
         return self;
     }

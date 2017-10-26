@@ -917,10 +917,12 @@ NS_ASSUME_NONNULL_BEGIN
                     break;
                 }
                 case 2: {
+                    UInt32 filesize = 64;
                     TSAttachmentPointer *pointer =
                         [[TSAttachmentPointer alloc] initWithServerId:237391539706350548
-                                                                  key:[self createRandomNSDataOfSize:64]
+                                                                  key:[self createRandomNSDataOfSize:filesize]
                                                                digest:nil
+                                                            byteCount:filesize
                                                           contentType:@"audio/mp3"
                                                                 relay:@""
                                                        sourceFilename:@"test.mp3"
@@ -947,11 +949,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                     expiresInSeconds:0];
 
                     NSString *filename = @"test.mp3";
-                    TSAttachmentStream *attachmentStream =
-                        [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3" sourceFilename:filename];
+                    UInt32 filesize = 16;
+
+                    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3"
+                                                                                                 byteCount:filesize
+                                                                                            sourceFilename:filename];
 
                     NSError *error;
-                    BOOL success = [attachmentStream writeData:[self createRandomNSDataOfSize:16] error:&error];
+                    BOOL success = [attachmentStream writeData:[self createRandomNSDataOfSize:filesize] error:&error];
                     OWSAssert(success && !error);
 
                     [attachmentStream saveWithTransaction:transaction];
