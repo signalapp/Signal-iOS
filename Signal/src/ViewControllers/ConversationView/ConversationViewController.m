@@ -2930,9 +2930,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             OWSAssert([NSThread isMainThread]);
 
             if (!success) {
-                [self resetContentAndLayout];
-            } else {
-                [self.collectionView.collectionViewLayout invalidateLayout];
+                DDLogInfo(@"%@ performBatchUpdates did not finish", self.tag);
             }
 
             [self updateLastVisibleTimestamp];
