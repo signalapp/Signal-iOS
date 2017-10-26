@@ -73,6 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BubbleMaskingView *payloadView;
 @property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) UITextView *textView;
+@property (nonatomic, nullable) UIImageView *failedSendBadgeView;
 @property (nonatomic, nullable) UILabel *tapForMoreLabel;
 @property (nonatomic, nullable) UIImageView *bubbleImageView;
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
@@ -85,6 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIView *footerView;
 @property (nonatomic) UILabel *footerLabel;
 @property (nonatomic, nullable) OWSExpirationTimerView *expirationTimerView;
+@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *payloadConstraints;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *dateHeaderConstraints;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *contentConstraints;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *footerConstraints;
@@ -108,6 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(!self.textView);
 
     self.layoutMargins = UIEdgeInsetsZero;
+    self.contentView.layoutMargins = UIEdgeInsetsZero;
 
     self.payloadView = [BubbleMaskingView new];
     self.payloadView.layoutMargins = UIEdgeInsetsZero;
@@ -153,7 +156,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.footerLabel.hidden = YES;
 
     [self.payloadView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
-    [self.payloadView autoPinWidthToSuperview];
     [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.payloadView];
     [self.footerView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.footerView autoPinWidthToSuperview];
@@ -191,6 +193,28 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)tapForMoreHeight
 {
     return (CGFloat)ceil([self tapForMoreFont].lineHeight * 1.25);
+}
+
+- (BOOL)hasFailedSendBadge
+{
+    if (![self.viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
+        return NO;
+    }
+    TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
+    return outgoingMessage.messageState == TSOutgoingMessageStateUnsent;
+}
+
+- (UIImage *)failedSendBadge
+{
+    UIImage *image = [UIImage imageNamed:@"message_send_failure"];
+    OWSAssert(image);
+    OWSAssert(image.size.width == self.failedSendBadgeSize && image.size.height == self.failedSendBadgeSize);
+    return image;
+}
+
+- (CGFloat)failedSendBadgeSize
+{
+    return 20.f;
 }
 
 - (OWSMessageCellType)cellType
@@ -242,6 +266,25 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+
+    if (self.hasFailedSendBadge) {
+        self.failedSendBadgeView = [UIImageView new];
+        self.failedSendBadgeView.image =
+            [self.failedSendBadge imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        self.failedSendBadgeView.tintColor = [UIColor ows_destructiveRedColor];
+        [self.contentView addSubview:self.failedSendBadgeView];
+
+        self.payloadConstraints = @[
+            [self.payloadView autoPinLeadingToSuperview],
+            [self.failedSendBadgeView autoPinLeadingToTrailingOfView:self.payloadView],
+            [self.failedSendBadgeView autoPinTrailingToSuperview],
+            [self.failedSendBadgeView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.payloadView],
+            [self.failedSendBadgeView autoSetDimension:ALDimensionWidth toSize:self.failedSendBadgeSize],
+            [self.failedSendBadgeView autoSetDimension:ALDimensionHeight toSize:self.failedSendBadgeSize],
+        ];
+    } else {
+        self.payloadConstraints = [self.payloadView autoPinWidthToSuperview];
+    }
 
     JSQMessagesBubbleImage *bubbleImageData;
     if ([self.viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
@@ -856,6 +899,10 @@ NS_ASSUME_NONNULL_BEGIN
     cellSize.height += self.dateHeaderHeight;
     cellSize.height += self.footerHeight;
 
+    if (self.hasFailedSendBadge) {
+        cellSize.width += self.failedSendBadgeSize;
+    }
+
     cellSize.width = ceil(cellSize.width);
     cellSize.height = ceil(cellSize.height);
 
@@ -928,6 +975,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super prepareForReuse];
 
+    [NSLayoutConstraint deactivateConstraints:self.payloadConstraints];
+    self.payloadConstraints = nil;
     [NSLayoutConstraint deactivateConstraints:self.contentConstraints];
     self.contentConstraints = nil;
     [NSLayoutConstraint deactivateConstraints:self.dateHeaderConstraints];
@@ -940,6 +989,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.textView.text = nil;
     self.textView.hidden = YES;
     self.textView.dataDetectorTypes = UIDataDetectorTypeNone;
+    [self.failedSendBadgeView removeFromSuperview];
+    self.failedSendBadgeView = nil;
     [self.tapForMoreLabel removeFromSuperview];
     self.tapForMoreLabel = nil;
     self.footerLabel.text = nil;
