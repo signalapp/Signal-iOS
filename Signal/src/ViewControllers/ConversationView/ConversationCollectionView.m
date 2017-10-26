@@ -81,24 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
     [super setContentOffset:contentOffset];
 }
 
-- (void)reloadData
-{
-    DDLogVerbose(@"%@ reloadData", self.logTag);
-    [super reloadData];
-}
-
-- (void)reloadSections:(NSIndexSet *)sections
-{
-    DDLogVerbose(@"%@ reloadSections", self.logTag);
-    [super reloadSections:sections];
-}
-
-- (void)reloadItemsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths
-{
-    DDLogVerbose(@"%@ reloadItemsAtIndexPaths", self.logTag);
-    [super reloadItemsAtIndexPaths:indexPaths];
-}
-
 #pragma mark - Logging
 
 + (NSString *)logTag
