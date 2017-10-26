@@ -188,7 +188,7 @@ const NSUInteger kAvatarViewDiameter = 52;
                                                                                                 : [UIColor lightGrayColor]),
                                                               }]];
         }
-        NSString *displayableText = [[DisplayableTextFilter new] displayableText:thread.lastMessageLabel];
+        NSString *displayableText = [DisplayableText displayableText:thread.lastMessageLabel];
         if (displayableText) {
             [snippetText appendAttributedString:[[NSAttributedString alloc]
                                                     initWithString:displayableText

@@ -4,13 +4,13 @@
 
 import XCTest
 
-class DisplayableTextFilterTest: XCTestCase {
-    
+class DisplayableTextTest: XCTestCase {
+
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
-    
+
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
@@ -18,7 +18,7 @@ class DisplayableTextFilterTest: XCTestCase {
 
     func testDisplayableText() {
         // Ignore default byte size limitations to test other filtering behaviors
-        let filter = DisplayableTextFilter()
+        let filter = DisplayableText()
 
         // show plain text
         let boringText = "boring text"

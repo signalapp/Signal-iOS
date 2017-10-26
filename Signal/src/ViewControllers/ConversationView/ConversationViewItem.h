@@ -22,7 +22,10 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
+#pragma mark -
+
 @class ConversationViewCell;
+@class DisplayableText;
 @class OWSAudioMessageView;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
@@ -72,19 +75,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 - (CGFloat)audioProgressSeconds;
 
-#pragma mark - Expiration
-
-// TODO:
-//@property (nonatomic, readonly) BOOL isExpiringMessage;
-//@property (nonatomic, readonly) BOOL shouldStartExpireTimer;
-//@property (nonatomic, readonly) double expiresAtSeconds;
-//@property (nonatomic, readonly) uint32_t expiresInSeconds;
-
 #pragma mark - View State Caching
 
 // These methods only apply to text & attachment messages.
 - (OWSMessageCellType)messageCellType;
-- (nullable NSString *)textMessage;
+- (nullable DisplayableText *)displayableText;
 - (nullable TSAttachmentStream *)attachmentStream;
 - (nullable TSAttachmentPointer *)attachmentPointer;
 - (CGSize)contentSize;
@@ -92,13 +87,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 // We don't want to try to load the media for this item (if any)
 // if a load has previously failed.
 @property (nonatomic) BOOL didCellMediaFailToLoad;
-
-// TODO:
-//// Cells will request that this adapter clear its cached media views,
-//// but the adapter should only honor requests from the last cell to
-//// use its views.
-//- (void)setLastPresentingCell:(nullable id)cell;
-//- (void)clearCachedMediaViewsIfLastPresentingCell:(id)cell;
 
 #pragma mark - UIMenuController
 

@@ -627,7 +627,7 @@ NS_ASSUME_NONNULL_BEGIN
                               @"pulvinar a, rhoncus vitae nisl. Sed mi nunc, tempus at varius in, malesuada vitae "
                               @"dui. Vivamus efficitur pulvinar erat vitae congue. Proin vehicula turpis non felis "
                               @"congue facilisis. Nullam aliquet dapibus ligula ac mollis. Etiam sit amet posuere "
-                              @"lorem, in rhoncus nisi."];
+                              @"lorem, in rhoncus nisi.\n\n"];
     }
 
     DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];

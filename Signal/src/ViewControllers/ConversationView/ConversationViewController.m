@@ -2040,18 +2040,18 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.audioAttachmentPlayer play];
 }
 
-- (void)didTapOversizeTextMessage:(NSString *)displayableText attachmentStream:(TSAttachmentStream *)attachmentStream
+- (void)didTapTruncatedTextMessage:(ConversationViewItem *)conversationItem
 {
     OWSAssert([NSThread isMainThread]);
-    OWSAssert(displayableText);
-    OWSAssert(attachmentStream);
+    OWSAssert(conversationItem);
+    OWSAssert([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
-    // Tapping on incoming and outgoing "oversize text messages" should show the
-    // "oversize text message" view.
-    OversizeTextMessageViewController *messageVC =
-        [[OversizeTextMessageViewController alloc] initWithDisplayableText:displayableText
-                                                          attachmentStream:attachmentStream];
-    [self.navigationController pushViewController:messageVC animated:YES];
+    TSMessage *message = (TSMessage *)conversationItem.interaction;
+    MessageDetailViewController *view =
+        [[MessageDetailViewController alloc] initWithViewItem:conversationItem
+                                                      message:message
+                                                         mode:MessageMetadataViewModeFocusOnMessage];
+    [self.navigationController pushViewController:view animated:YES];
 }
 
 - (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem
@@ -2074,12 +2074,17 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self handleUnsentMessageTap:message];
 }
 
-- (void)showMetadataViewForMessage:(TSMessage *)message
+- (void)showMetadataViewForViewItem:(ConversationViewItem *)conversationItem
 {
     OWSAssert([NSThread isMainThread]);
-    OWSAssert(message);
+    OWSAssert(conversationItem);
+    OWSAssert([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
-    MessageMetadataViewController *view = [[MessageMetadataViewController alloc] initWithMessage:message];
+    TSMessage *message = (TSMessage *)conversationItem.interaction;
+    MessageDetailViewController *view =
+        [[MessageDetailViewController alloc] initWithViewItem:conversationItem
+                                                      message:message
+                                                         mode:MessageMetadataViewModeFocusOnMetadata];
     [self.navigationController pushViewController:view animated:YES];
 }
 
@@ -4085,7 +4090,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 // want to inadvertently clobber it here.
                 OWSAssert(self.navigationController.delegate == nil) self.navigationController.delegate = self;
                 TSMessage *message = (TSMessage *)interaction;
-                MessageMetadataViewController *view = [[MessageMetadataViewController alloc] initWithMessage:message];
+                MessageDetailViewController *view =
+                    [[MessageDetailViewController alloc] initWithViewItem:conversationItem
+                                                                  message:message
+                                                                     mode:MessageMetadataViewModeFocusOnMetadata];
                 [self.navigationController pushViewController:view animated:YES];
             } else {
                 OWSFail(@"%@ Can't show message metadata for message of type: %@", self.tag, [interaction class]);

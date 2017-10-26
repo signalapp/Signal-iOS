@@ -4,10 +4,16 @@
 
 import Foundation
 
-class MessageMetadataViewController: OWSViewController {
+@objc
+enum MessageMetadataViewMode: UInt {
+    case focusOnMessage
+    case focusOnMetadata
+}
 
-    static let TAG = "[MessageMetadataViewController]"
-    let TAG = "[MessageMetadataViewController]"
+class MessageDetailViewController: OWSViewController {
+
+    static let TAG = "[MessageDetailViewController]"
+    let TAG = "[MessageDetailViewController]"
 
     // MARK: Properties
 
@@ -18,6 +24,8 @@ class MessageMetadataViewController: OWSViewController {
     let bubbleFactory = OWSMessagesBubbleImageFactory()
     var bubbleView: UIView?
 
+    let mode: MessageMetadataViewMode
+    let viewItem: ConversationViewItem
     var message: TSMessage
 
     var mediaMessageView: MediaMessageView?
@@ -32,18 +40,16 @@ class MessageMetadataViewController: OWSViewController {
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use message: constructor instead.")
+    @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        self.contactsManager = Environment.getCurrent().contactsManager
-        self.message = TSMessage()
-        self.databaseConnection = TSStorageManager.shared().newDatabaseConnection()!
-        super.init(coder: aDecoder)
-        owsFail("\(self.TAG) invalid constructor")
+        fatalError("\(#function) is unimplemented.")
     }
 
-    required init(message: TSMessage) {
+    required init(viewItem: ConversationViewItem, message: TSMessage, mode: MessageMetadataViewMode) {
         self.contactsManager = Environment.getCurrent().contactsManager
+        self.viewItem = viewItem
         self.message = message
+        self.mode = mode
         self.databaseConnection = TSStorageManager.shared().newDatabaseConnection()!
         super.init(nibName: nil, bundle: nil)
     }
@@ -62,12 +68,15 @@ class MessageMetadataViewController: OWSViewController {
         createViews()
 
         self.view.layoutIfNeeded()
-        if let bubbleView = self.bubbleView {
-            let showAtLeast: CGFloat = 50
-            let middleCenter = CGPoint(x: bubbleView.frame.origin.x + bubbleView.frame.width / 2,
-                                       y: bubbleView.frame.origin.y + bubbleView.frame.height - showAtLeast)
-            let offset = bubbleView.superview!.convert(middleCenter, to: scrollView)
-            self.scrollView!.setContentOffset(offset, animated: false)
+
+        if mode == .focusOnMetadata {
+            if let bubbleView = self.bubbleView {
+                let showAtLeast: CGFloat = 50
+                let middleCenter = CGPoint(x: bubbleView.frame.origin.x + bubbleView.frame.width / 2,
+                                           y: bubbleView.frame.origin.y + bubbleView.frame.height - showAtLeast)
+                let offset = bubbleView.superview!.convert(middleCenter, to: scrollView)
+                self.scrollView!.setContentOffset(offset, animated: false)
+            }
         }
 
         NotificationCenter.default.addObserver(self,
@@ -267,76 +276,79 @@ class MessageMetadataViewController: OWSViewController {
         }
     }
 
+    private func displayableTextIfText() -> String? {
+        let messageCellType = viewItem.messageCellType()
+        guard messageCellType == .textMessage ||
+            messageCellType == .oversizeTextMessage else {
+                return nil
+        }
+        guard let displayableText = viewItem.displayableText() else {
+                return nil
+        }
+        let messageBody = displayableText.fullText
+        guard messageBody.characters.count > 0  else {
+            return nil
+        }
+        return messageBody
+    }
+
     private func contentRows() -> [UIView] {
         var rows = [UIView]()
 
-        if message.attachmentIds.count > 0 {
+        if let messageBody = displayableTextIfText() {
+
+            self.messageBody = messageBody
+
+            let isIncoming = self.message as? TSIncomingMessage != nil
+
+            // UITextView can't render extremely long text due to constraints
+            // on the size of its backing buffer, especially when we're 
+            // embedding it "full-size' within a UIScrollView as we do in this view.
+            //
+            // TODO: We could use CoreText instead, or we could dynamically
+            //       manipulate the size/position of our UITextView to
+            //       reflect scroll state.
+            let bodyLabel = UITextView()
+            bodyLabel.font = UIFont.ows_dynamicTypeBody()
+            bodyLabel.backgroundColor = UIColor.clear
+            bodyLabel.isOpaque = false
+            bodyLabel.isEditable = false
+            bodyLabel.isSelectable = true
+            bodyLabel.textContainerInset = UIEdgeInsets.zero
+            bodyLabel.contentInset = UIEdgeInsets.zero
+            bodyLabel.isScrollEnabled = false
+            bodyLabel.textColor = isIncoming ? UIColor.black : UIColor.white
+            bodyLabel.text = messageBody
+
+            let bubbleImageData = isIncoming ? bubbleFactory.incoming : bubbleFactory.outgoing
+
+            let leadingMargin: CGFloat = isIncoming ? 15 : 10
+            let trailingMargin: CGFloat = isIncoming ? 10 : 15
+
+            let bubbleView = UIImageView(image: bubbleImageData.messageBubbleImage)
+            self.bubbleView = bubbleView
+
+            bubbleView.layer.cornerRadius = 10
+            bubbleView.addSubview(bodyLabel)
+
+            bodyLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: leadingMargin)
+            bodyLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: trailingMargin)
+            bodyLabel.autoPinHeightToSuperview(withMargin: 10)
+
+            let row = UIView()
+            row.addSubview(bubbleView)
+            bubbleView.autoPinHeightToSuperview()
+            bubbleView.autoPinLeadingToSuperview(withMargin: 10)
+            bubbleView.autoPinTrailingToSuperview(withMargin: 10)
+            rows.append(row)
+        } else if message.attachmentIds.count > 0 {
             rows += addAttachmentRows()
-        } else if let messageBody = message.body {
-            // TODO: We should also display "oversize text messages" in a
-            //       similar way.
-            if messageBody.characters.count > 0 {
-                self.messageBody = messageBody
-
-                let isIncoming = self.message as? TSIncomingMessage != nil
-
-                let bodyLabel = UILabel()
-                bodyLabel.textColor = isIncoming ? UIColor.black : UIColor.white
-                bodyLabel.font = UIFont.ows_regularFont(withSize: 16)
-                bodyLabel.text = messageBody
-                bodyLabel.numberOfLines = 0
-                bodyLabel.lineBreakMode = .byWordWrapping
-
-                let bubbleImageData = isIncoming ? bubbleFactory.incoming : bubbleFactory.outgoing
-
-                let leadingMargin: CGFloat = isIncoming ? 15 : 10
-                let trailingMargin: CGFloat = isIncoming ? 10 : 15
-
-                let bubbleView = UIImageView(image: bubbleImageData.messageBubbleImage)
-                self.bubbleView = bubbleView
-
-                bubbleView.layer.cornerRadius = 10
-                bubbleView.addSubview(bodyLabel)
-
-                bodyLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: leadingMargin)
-                bodyLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: trailingMargin)
-                bodyLabel.autoPinHeightToSuperview(withMargin: 10)
-
-                // Try to hug content both horizontally and vertically, but *prefer* wide and short, to narrow and tall.
-                // While never exceeding max width, and never cropping content.
-                bodyLabel.setContentHuggingPriority(UILayoutPriorityDefaultLow, for: .horizontal)
-                bodyLabel.setContentHuggingPriority(UILayoutPriorityDefaultHigh, for: .vertical)
-                bodyLabel.setContentCompressionResistancePriority(UILayoutPriorityRequired, for: .vertical)
-                bodyLabel.autoSetDimension(.width, toSize: ScaleFromIPhone5(210), relation: .lessThanOrEqual)
-
-                let bubbleSpacer = UIView()
-
-                let row = UIView()
-                row.addSubview(bubbleView)
-                row.addSubview(bubbleSpacer)
-
-                bubbleView.autoPinHeightToSuperview()
-                bubbleSpacer.autoPinHeightToSuperview()
-                bubbleSpacer.setContentHuggingLow()
-
-                if isIncoming {
-                    bubbleView.autoPinLeadingToSuperview(withMargin: 10)
-                    bubbleSpacer.autoPinLeading(toTrailingOf: bubbleView)
-                    bubbleSpacer.autoPinTrailingToSuperview(withMargin: 10)
-                } else {
-                    bubbleSpacer.autoPinLeadingToSuperview(withMargin: 10)
-                    bubbleView.autoPinLeading(toTrailingOf: bubbleSpacer)
-                    bubbleView.autoPinTrailingToSuperview(withMargin: 10)
-                }
-
-                rows.append(row)
-            } else {
-                // Neither attachment nor body.
-                owsFail("\(self.TAG) Message has neither attachment nor body.")
-                rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY",
-                                                             comment: "Label for messages without a body or attachment in the 'message metadata' view."),
-                                     value: ""))
-            }
+        } else {
+            // Neither attachment nor body.
+            owsFail("\(self.TAG) Message has neither attachment nor body.")
+            rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY",
+                                                         comment: "Label for messages without a body or attachment in the 'message metadata' view."),
+                                 value: ""))
         }
 
         let spacer = UIView()

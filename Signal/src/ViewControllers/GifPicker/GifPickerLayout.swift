@@ -22,8 +22,7 @@ class GifPickerLayout: UICollectionViewLayout {
 
     @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        owsFail("\(self.TAG) invalid constructor")
+        fatalError("\(#function) is unimplemented.")
     }
 
     override init() {

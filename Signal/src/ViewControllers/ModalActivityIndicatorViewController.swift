@@ -23,11 +23,9 @@ class ModalActivityIndicatorViewController: OWSViewController {
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use canCancel:completion: constructor instead.")
+    @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        self.canCancel = false
-        super.init(coder: aDecoder)
-        owsFail("\(self.TAG) invalid constructor")
+        fatalError("\(#function) is unimplemented.")
     }
 
     required init(canCancel: Bool) {

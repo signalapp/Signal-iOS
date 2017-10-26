@@ -4,12 +4,26 @@
 
 import Foundation
 
-@objc class DisplayableTextFilter: NSObject {
+@objc class DisplayableText: NSObject {
 
-    let TAG = "[DisplayableTextFilter]"
+    static let TAG = "[DisplayableText]"
+
+    let fullText: String
+    let displayText: String
+    let isTextTruncated: Bool
+
+    // MARK: Initializers
+
+    init(fullText: String, displayText: String, isTextTruncated: Bool) {
+        self.fullText = fullText
+        self.displayText = displayText
+        self.isTextTruncated = isTextTruncated
+    }
+
+    // MARK: Filter Methods
 
     @objc
-    func displayableText(_ text: String?) -> String? {
+    class func displayableText(_ text: String?) -> String? {
         guard let text = text else {
             return nil
         }
@@ -17,13 +31,13 @@ import Foundation
         if (self.hasExcessiveDiacriticals(text: text)) {
             Logger.warn("\(TAG) filtering text for excessive diacriticals.")
             let filteredText = text.folding(options: .diacriticInsensitive, locale: .current)
-            return filteredText
+            return filteredText.ows_stripped()
         }
 
-        return text
+        return text.ows_stripped()
     }
 
-    private func hasExcessiveDiacriticals(text: String) -> Bool {
+    private class func hasExcessiveDiacriticals(text: String) -> Bool {
         // discard any zalgo style text, by detecting maximum number of glyphs per character
         for char in text.characters.enumerated() {
             let scalarCount = String(char.element).unicodeScalars.count
