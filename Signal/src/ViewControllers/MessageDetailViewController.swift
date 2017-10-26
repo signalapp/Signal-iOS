@@ -10,7 +10,7 @@ enum MessageMetadataViewMode: UInt {
     case focusOnMetadata
 }
 
-class MessageDetailViewController: OWSViewController {
+class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
 
     static let TAG = "[MessageDetailViewController]"
     let TAG = "[MessageDetailViewController]"
@@ -29,6 +29,13 @@ class MessageDetailViewController: OWSViewController {
     var message: TSMessage
 
     var mediaMessageView: MediaMessageView?
+
+    // See comments on updateTextLayout.
+    var messageTextView: UITextView?
+    var messageTextProxyView: UIView?
+    var messageTextTopConstraint: NSLayoutConstraint?
+    var messageTextHeightLayoutConstraint: NSLayoutConstraint?
+    var messageTextProxyViewHeightConstraint: NSLayoutConstraint?
 
     var scrollView: UIScrollView?
     var contentView: UIView?
@@ -89,6 +96,8 @@ class MessageDetailViewController: OWSViewController {
         super.viewWillAppear(animated)
 
         mediaMessageView?.viewWillAppear(animated)
+
+        updateTextLayout()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -103,6 +112,7 @@ class MessageDetailViewController: OWSViewController {
         view.backgroundColor = UIColor.white
 
         let scrollView = UIScrollView()
+        scrollView.delegate = self
         self.scrollView = scrollView
         view.addSubview(scrollView)
         scrollView.autoPinWidthToSuperview(withMargin: 0)
@@ -305,22 +315,33 @@ class MessageDetailViewController: OWSViewController {
             // on the size of its backing buffer, especially when we're 
             // embedding it "full-size' within a UIScrollView as we do in this view.
             //
-            // TODO: We could use CoreText instead, or we could dynamically
-            //       manipulate the size/position of our UITextView to
-            //       reflect scroll state.
-            let bodyLabel = UITextView()
-            bodyLabel.font = UIFont.ows_dynamicTypeBody()
-            bodyLabel.backgroundColor = UIColor.clear
-            bodyLabel.isOpaque = false
-            bodyLabel.isEditable = false
-            bodyLabel.isSelectable = true
-            bodyLabel.textContainerInset = UIEdgeInsets.zero
-            bodyLabel.contentInset = UIEdgeInsets.zero
-            bodyLabel.isScrollEnabled = false
-            bodyLabel.textColor = isIncoming ? UIColor.black : UIColor.white
-            bodyLabel.text = messageBody
+            // Therefore we're doing something unusual here.  
+            // See comments on updateTextLayout.
+            let messageTextView = UITextView()
+            self.messageTextView = messageTextView
+            messageTextView.font = UIFont.ows_dynamicTypeBody()
+            messageTextView.backgroundColor = UIColor.clear
+            messageTextView.isOpaque = false
+            messageTextView.isEditable = false
+            messageTextView.isSelectable = true
+            messageTextView.textContainerInset = UIEdgeInsets.zero
+            messageTextView.contentInset = UIEdgeInsets.zero
+            messageTextView.isScrollEnabled = true
+            messageTextView.showsHorizontalScrollIndicator = false
+            messageTextView.showsVerticalScrollIndicator = false
+            messageTextView.isUserInteractionEnabled = false
+            messageTextView.textColor = isIncoming ? UIColor.black : UIColor.white
+            messageTextView.text = messageBody
 
             let bubbleImageData = isIncoming ? bubbleFactory.incoming : bubbleFactory.outgoing
+
+            let messageTextProxyView = UIView()
+            messageTextProxyView.layoutMargins = UIEdgeInsets.zero
+            self.messageTextProxyView = messageTextProxyView
+            messageTextProxyView.addSubview(messageTextView)
+            messageTextView.autoPinWidthToSuperview()
+            self.messageTextTopConstraint = messageTextView.autoPinEdge(toSuperviewEdge: .top, withInset: 0)
+            self.messageTextHeightLayoutConstraint = messageTextView.autoSetDimension(.height, toSize:0)
 
             let leadingMargin: CGFloat = isIncoming ? 15 : 10
             let trailingMargin: CGFloat = isIncoming ? 10 : 15
@@ -329,11 +350,12 @@ class MessageDetailViewController: OWSViewController {
             self.bubbleView = bubbleView
 
             bubbleView.layer.cornerRadius = 10
-            bubbleView.addSubview(bodyLabel)
+            bubbleView.addSubview(messageTextProxyView)
 
-            bodyLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: leadingMargin)
-            bodyLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: trailingMargin)
-            bodyLabel.autoPinHeightToSuperview(withMargin: 10)
+            messageTextProxyView.autoPinEdge(toSuperviewEdge: .leading, withInset: leadingMargin)
+            messageTextProxyView.autoPinEdge(toSuperviewEdge: .trailing, withInset: trailingMargin)
+            messageTextProxyView.autoPinHeightToSuperview(withMargin: 10)
+            self.messageTextProxyViewHeightConstraint = messageTextProxyView.autoSetDimension(.height, toSize:0)
 
             let row = UIView()
             row.addSubview(bubbleView)
@@ -566,5 +588,94 @@ class MessageDetailViewController: OWSViewController {
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED",
                               comment: "Status label for messages which are failed.")
         }
+    }
+
+    // MARK: - Text Layout
+
+    // UITextView can't render extremely long text due to constraints on the size
+    // of its backing buffer, especially when we're embedding it "full-size' 
+    // within a UIScrollView as we do in this view.  Therefore if we do the naive
+    // thing and embed a full-size UITextView inside our UIScrollView, it will 
+    // fail to render any text if the text message is sufficiently long.
+    //
+    // Therefore we're doing something unusual.  
+    //
+    // * We use an empty UIView "messageTextProxyView" as a placeholder for the
+    //   the UITextView.  It has the size and position of where the UITextView
+    //   would be normally.
+    // * We use a UITextView inside that proxy that is just large enough to
+    //   render the content onscreen. We then move it around within the proxy
+    //   bounds to render the parts of the proxy which are onscreen.
+    private func updateTextLayout() {
+        guard let messageTextView = messageTextView else {
+            return
+        }
+        guard let messageTextProxyView = messageTextProxyView else {
+            owsFail("\(TAG) Missing messageTextProxyView")
+            return
+        }
+        guard let messageTextTopConstraint = messageTextTopConstraint else {
+            owsFail("\(TAG) Missing messageTextProxyView")
+            return
+        }
+        guard let messageTextHeightLayoutConstraint = messageTextHeightLayoutConstraint else {
+            owsFail("\(TAG) Missing messageTextProxyView")
+            return
+        }
+        guard let messageTextProxyViewHeightConstraint = messageTextProxyViewHeightConstraint else {
+            owsFail("\(TAG) Missing messageTextProxyView")
+            return
+        }
+        guard let scrollView = scrollView else {
+            owsFail("\(TAG) Missing scrollView")
+            return
+        }
+        guard let contentView = contentView else {
+            owsFail("\(TAG) Missing contentView")
+            return
+        }
+
+        if messageTextView.width() != messageTextProxyView.width() {
+            owsFail("\(TAG) messageTextView.width \(messageTextView.width) != messageTextProxyView.width \(messageTextProxyView.width)")
+        }
+
+        // Measure the total text size.
+        let textSize = messageTextView.sizeThatFits(CGSize(width:messageTextView.width(), height:CGFloat.greatestFiniteMagnitude))
+        // Measure the size of the scroll view viewport.
+        let scrollViewSize = scrollView.frame.size
+        // Obtain the current scroll view content offset (scroll state).
+        let scrollViewContentOffset = scrollView.contentOffset
+        // Obtain the location of the text view proxy relative to the content view.
+        let textProxyOffset = contentView.convert(CGPoint.zero, from:messageTextProxyView)
+
+        // 1. The text proxy should always be sized large enough to hold the
+        //    entire text content.
+        let messageTextProxyViewHeight = textSize.height
+        messageTextProxyViewHeightConstraint.constant = messageTextProxyViewHeight
+
+        // 2. We only want to render a single screenful of text content at a time.
+        //    The height of the text view should reflect the height of the scrollview's
+        //    viewport.
+        let messageTextViewHeight = min(textSize.height, scrollViewSize.height)
+        messageTextHeightLayoutConstraint.constant = messageTextViewHeight
+
+        // 3. We want to move the text view around within the proxy in response to 
+        //    scroll state changes so that it can render the part of the proxy which
+        //    is on screen.
+        let minMessageTextViewY = CGFloat(0)
+        let maxMessageTextViewY = messageTextProxyViewHeight - messageTextViewHeight
+        let rawMessageTextViewY = -textProxyOffset.y + scrollViewContentOffset.y
+        let messageTextViewY = max(minMessageTextViewY, min(maxMessageTextViewY, rawMessageTextViewY))
+        messageTextTopConstraint.constant = messageTextViewY
+
+        // 4. We want to scroll the text view's content so that the text view
+        //    renders the appropriate content for the scrollview's scroll state.
+        messageTextView.contentOffset = CGPoint(x:0, y:messageTextViewY)
+    }
+
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        Logger.verbose("\(TAG) scrollViewDidScroll")
+
+        updateTextLayout()
     }
 }
