@@ -173,7 +173,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.text ows_stripped];
 }
 
-
 #pragma mark - UITextViewDelegate
 
 - (void)textViewDidBeginEditing:(UITextView *)textView
