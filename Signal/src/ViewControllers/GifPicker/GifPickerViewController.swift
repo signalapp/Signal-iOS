@@ -127,6 +127,11 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                                selector: #selector(didBecomeActive),
                                                name: NSNotification.Name.UIApplicationDidBecomeActive,
                                                object: nil)
+
+        DispatchQueue.main.async {
+            self.searchBar.text = "hi"
+            self.searchBar(self.searchBar, textDidChange: self.searchBar.text!)
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {

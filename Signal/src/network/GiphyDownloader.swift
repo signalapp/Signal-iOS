@@ -18,22 +18,23 @@ enum GiphyAssetSegmentState: UInt {
 }
 
 class GiphyAssetSegment {
+    let TAG = "[GiphyAssetSegment]"
+
     public let index: UInt
     public let segmentStart: UInt
     public let segmentLength: UInt
+    public let redundantLength: UInt
     public var state: GiphyAssetSegmentState = .waiting
     private var datas = [Data]()
 
     init(index: UInt,
          segmentStart: UInt,
-         segmentLength: UInt) {
+         segmentLength: UInt,
+         redundantLength: UInt) {
         self.index = index
         self.segmentStart = segmentStart
         self.segmentLength = segmentLength
-    }
-
-    public func append(data: Data) {
-        datas.append(data)
+        self.redundantLength = redundantLength
     }
 
     public func totalDataSize() -> UInt {
@@ -44,10 +45,28 @@ class GiphyAssetSegment {
         return result
     }
 
+    public func append(data: Data) {
+        datas.append(data)
+    }
+
     public func mergeData(assetData: NSMutableData) {
+        // In some cases the last two segments will overlap.
+        // In that case, we only want to append the non-overlapping
+        // tail of the last segment.
+        var bytesToIgnore = Int(redundantLength)
         for data in datas {
-            // TODO: In some cases we want to only append a subset.
-            assetData.append(data)
+            if data.count <= bytesToIgnore {
+                bytesToIgnore -= data.count
+            } else if bytesToIgnore > 0 {
+                let range = NSMakeRange(bytesToIgnore, data.count - bytesToIgnore)
+                Logger.verbose("\(TAG) bytesToIgnore: \(bytesToIgnore), data.count: \(data.count), range: \(range.location), \(range.length).")
+                let subdata = (data as NSData).subdata(with: range)
+                Logger.verbose("\(TAG) subdata: \(subdata.count).")
+                assetData.append(subdata)
+                bytesToIgnore = 0
+            } else {
+                assetData.append(data)
+            }
         }
     }
 }
@@ -129,14 +148,17 @@ enum GiphyAssetRequestState: UInt {
         var index: UInt = 0
         while nextSegmentStart < fileSize {
             var segmentStart: UInt = nextSegmentStart
+            var redundantLength: UInt = 0
             // The last segment may overlap the penultimate segment
             // in order to keep the segment sizes uniform.
             if segmentStart + segmentLength > fileSize {
+                redundantLength = segmentStart + segmentLength - fileSize
                 segmentStart = fileSize - segmentLength
             }
             segments.append(GiphyAssetSegment(index:index,
                                               segmentStart:segmentStart,
-                                              segmentLength:segmentLength))
+                                              segmentLength:segmentLength,
+                                              redundantLength:redundantLength))
             nextSegmentStart = segmentStart + segmentLength
             index += 1
         }
@@ -163,15 +185,30 @@ enum GiphyAssetRequestState: UInt {
         return firstSegmentWithState(state:.active)
     }
 
-    public func mergeCompleteSegment(segment: GiphyAssetSegment) {
+    public func mergeSegmentData(segment: GiphyAssetSegment) {
         guard segment.totalDataSize() > 0 else {
             owsFail("\(TAG) could not merge empty segment.")
             return
         }
-        segment.mergeData(assetData:assetData)
+        guard segment.state == .complete else {
+            owsFail("\(TAG) could not merge incomplete segment.")
+            return
+        }
+        Logger.verbose("\(TAG) merging segment: \(segment.index) \(segment.segmentStart) \(segment.segmentLength) \(segment.redundantLength) \(rendition.url).")
+        Logger.verbose("\(TAG) before merge: \(assetData.length) \(rendition.url).")
+        segment.mergeData(assetData: assetData)
+        Logger.verbose("\(TAG) after merge: \(assetData.length) \(rendition.url).")
     }
 
     public func writeAssetToFile() -> GiphyAsset? {
+        guard assetData.length == Int(rendition.fileSize) else {
+            Logger.verbose("\(TAG) expected length: \(rendition.fileSize).")
+            Logger.verbose("\(TAG) actual length: \(assetData.length).")
+            Logger.flush()
+            owsFail("\(TAG) asset data has unexpected length.")
+            return nil
+        }
+
         guard assetData.length > 0 else {
             owsFail("\(TAG) could not write empty asset to disk.")
             return nil
@@ -407,7 +444,7 @@ extension URLSessionTask {
         DispatchQueue.main.async {
             assetSegment.state = .complete
             // TODO: Should we move this merge off main thread?
-            assetRequest.mergeCompleteSegment(segment : assetSegment)
+            assetRequest.mergeSegmentData(segment : assetSegment)
 
             // If the asset request has completed all of its segments,
             // try to write the asset to file.

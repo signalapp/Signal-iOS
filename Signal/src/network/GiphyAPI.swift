@@ -431,6 +431,8 @@ extension GiphyError: LocalizedError {
         guard let fileSize = parsePositiveUInt(dict:renditionDict, key:"size", typeName:"rendition") else {
             return nil
         }
+//        // Be lenient when parsing file sizes - we don't require them for stills.
+//        let fileSize = parseLenientUInt(dict:renditionDict, key:"size")
         guard let urlString = renditionDict["url"] as? String else {
             return nil
         }
