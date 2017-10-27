@@ -79,11 +79,11 @@ class AttachmentPointerView: UIView {
         self.addSubview(progressView)
         progressView.autoPinWidthToSuperview()
         progressView.autoPinEdge(.top, to: .bottom, of: nameLabel, withOffset: 6)
-        progressView.autoSetDimension(.height, toSize: 8)
 
         self.addSubview(statusLabel)
         statusLabel.textAlignment = .center
         statusLabel.adjustsFontSizeToFitWidth = true
+        statusLabel.numberOfLines = 2
 
         statusLabel.textColor = self.textColor
         statusLabel.font = UIFont.ows_footnote()
@@ -119,14 +119,16 @@ class AttachmentPointerView: UIView {
             case .downloading:
                 return NSLocalizedString("ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS", comment: "Status label when an attachment is currently downloading")
             case .failed:
-                return NSLocalizedString("ATTACHMENT_DOWNLOADING_STATUS_FAILED", comment: "Status label when an attachment download has failed.")
+                return self.attachmentPointer.mostRecentFailureLocalizedText ?? NSLocalizedString("ATTACHMENT_DOWNLOADING_STATUS_FAILED", comment: "Status label when an attachment download has failed.")
             }
         }()
 
         if attachmentPointer.state == .downloading {
             progressView.isHidden = false
+            progressView.autoSetDimension(.height, toSize: 8)
         } else {
             progressView.isHidden = true
+            progressView.autoSetDimension(.height, toSize: 0)
         }
     }
 
