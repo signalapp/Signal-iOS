@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
     return (CGFloat)ceil([self tapForMoreFont].lineHeight * 1.25);
 }
 
-- (BOOL)hasFailedSendBadge
+- (BOOL)shouldHaveFailedSendBadge
 {
     if (![self.viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
         return NO;
@@ -267,7 +267,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem.interaction);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
-    if (self.hasFailedSendBadge) {
+    if (self.shouldHaveFailedSendBadge) {
         self.failedSendBadgeView = [UIImageView new];
         self.failedSendBadgeView.image =
             [self.failedSendBadge imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -899,7 +899,7 @@ NS_ASSUME_NONNULL_BEGIN
     cellSize.height += self.dateHeaderHeight;
     cellSize.height += self.footerHeight;
 
-    if (self.hasFailedSendBadge) {
+    if (self.shouldHaveFailedSendBadge) {
         cellSize.width += self.failedSendBadgeSize;
     }
 
