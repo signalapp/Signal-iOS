@@ -363,6 +363,19 @@ const NSUInteger kAES256_KeyByteLength = 32;
     }
 }
 
++ (unsigned long)paddedSize:(unsigned long)unpaddedSize
+{
+    // Don't enable this until clients are sufficiently rolled out.
+    BOOL shouldPad = NO;
+    if (shouldPad) {
+        // Note: This just rounds up to the nearsest power of two,
+        // but the actual padding scheme is TBD
+        return pow(2, ceil( log2( unpaddedSize )));
+    } else {
+        return unpaddedSize;
+    }
+}
+
 + (NSData *)encryptAttachmentData:(NSData *)attachmentData
                            outKey:(NSData *_Nonnull *_Nullable)outKey
                         outDigest:(NSData *_Nonnull *_Nullable)outDigest
@@ -377,8 +390,13 @@ const NSUInteger kAES256_KeyByteLength = 32;
     [attachmentKey appendData:hmacKey];
     *outKey = [attachmentKey copy];
 
+    // Apply any padding
+    unsigned long desiredSize = [self paddedSize:attachmentData.length];
+    NSMutableData *paddedAttachmentData = [attachmentData mutableCopy];
+    paddedAttachmentData.length = desiredSize;
+
     // Encrypt
-    size_t bufferSize = [attachmentData length] + kCCBlockSizeAES128;
+    size_t bufferSize = [paddedAttachmentData length] + kCCBlockSizeAES128;
     void *buffer = malloc(bufferSize);
 
     if (buffer == NULL) {
@@ -393,8 +411,8 @@ const NSUInteger kAES256_KeyByteLength = 32;
                                           [encryptionKey bytes],
                                           [encryptionKey length],
                                           [iv bytes],
-                                          [attachmentData bytes],
-                                          [attachmentData length],
+                                          [paddedAttachmentData bytes],
+                                          [paddedAttachmentData length],
                                           buffer,
                                           bufferSize,
                                           &bytesEncrypted);
@@ -407,22 +425,22 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
     NSData *cipherText = [NSData dataWithBytesNoCopy:buffer length:bytesEncrypted freeWhenDone:YES];
 
-    NSMutableData *encryptedAttachmentData = [NSMutableData data];
-    [encryptedAttachmentData appendData:iv];
-    [encryptedAttachmentData appendData:cipherText];
+    NSMutableData *encryptedPaddedData = [NSMutableData data];
+    [encryptedPaddedData appendData:iv];
+    [encryptedPaddedData appendData:cipherText];
 
     // compute hmac of: iv || encrypted data
     NSData *hmac =
-        [Cryptography truncatedSHA256HMAC:encryptedAttachmentData withHMACKey:hmacKey truncation:HMAC256_OUTPUT_LENGTH];
+        [Cryptography truncatedSHA256HMAC:encryptedPaddedData withHMACKey:hmacKey truncation:HMAC256_OUTPUT_LENGTH];
     DDLogVerbose(@"%@ computed hmac: %@", self.tag, hmac);
 
-    [encryptedAttachmentData appendData:hmac];
+    [encryptedPaddedData appendData:hmac];
 
     // compute digest of: iv || encrypted data || hmac
-    *outDigest = [self computeSHA256Digest:encryptedAttachmentData];
+    *outDigest = [self computeSHA256Digest:encryptedPaddedData];
     DDLogVerbose(@"%@ computed digest: %@", self.tag, *outDigest);
 
-    return [encryptedAttachmentData copy];
+    return [encryptedPaddedData copy];
 }
 
 + (nullable NSData *)encryptAESGCMWithData:(NSData *)plaintext key:(OWSAES256Key *)key
