@@ -323,8 +323,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             displayText = @"";
         }
 
-        displayableText =
-            [[DisplayableText alloc] initWithFullText:fullText displayText:displayText isTextTruncated:isTextTruncated];
+        NSNumber *_Nullable jumbomojiCount = [DisplayableText jumbomojiCountTo:fullText];
+
+        displayableText = [[DisplayableText alloc] initWithFullText:fullText
+                                                        displayText:displayText
+                                                    isTextTruncated:isTextTruncated
+                                                     jumbomojiCount:jumbomojiCount];
 
         [[self displayableTextCache] setObject:displayableText forKey:interactionId];
     }
