@@ -297,6 +297,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
 + (NSData *)decryptAttachment:(NSData *)dataToDecrypt
                       withKey:(NSData *)key
                        digest:(nullable NSData *)digest
+                 unpaddedSize:(UInt32)unpaddedSize
                         error:(NSError **)error;
 {
     if (digest.length <= 0) {
@@ -328,14 +329,38 @@ const NSUInteger kAES256_KeyByteLength = 32;
     NSData *hmac = [dataToDecrypt
         subdataWithRange:NSMakeRange([dataToDecrypt length] - HMAC256_OUTPUT_LENGTH, HMAC256_OUTPUT_LENGTH)];
 
-    return [Cryptography decryptCBCMode:encryptedAttachment
-                                    key:encryptionKey
-                                     IV:iv
-                                version:nil
-                                HMACKey:hmacKey
-                               HMACType:TSHMACSHA256AttachementType
-                           matchingHMAC:hmac
-                                 digest:digest];
+    NSData *paddedPlainText = [Cryptography decryptCBCMode:encryptedAttachment
+                                                       key:encryptionKey
+                                                        IV:iv
+                                                   version:nil
+                                                   HMACKey:hmacKey
+                                                  HMACType:TSHMACSHA256AttachementType
+                                              matchingHMAC:hmac
+                                                    digest:digest];
+    if (unpaddedSize == 0) {
+        // Work around for legacy iOS client's which weren't setting padding size.
+        // Since we know those clients pre-date attachment padding we return the entire data.
+        DDLogWarn(@"%@ Decrypted attachment with unspecified size.", self.tag);
+        return paddedPlainText;
+    } else {
+        if (unpaddedSize > paddedPlainText.length) {
+            *error = OWSErrorWithCodeDescription(
+                OWSErrorCodeFailedToDecryptMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
+            return nil;
+        }
+
+        if (unpaddedSize == paddedPlainText.length) {
+            DDLogInfo(@"%@ decrypted unpadded attachment.", self.tag);
+        } else {
+            unsigned long paddingSize = paddedPlainText.length - unpaddedSize;
+            DDLogInfo(@"%@ decrypted padded attachment with unpaddedSize: %u, paddingSize: %lu",
+                self.tag,
+                unpaddedSize,
+                paddingSize);
+        }
+
+        return [paddedPlainText subdataWithRange:NSMakeRange(0, unpaddedSize)];
+    }
 }
 
 + (NSData *)encryptAttachmentData:(NSData *)attachmentData
