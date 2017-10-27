@@ -5,6 +5,7 @@
 #import "Cryptography.h"
 #import "NSData+Base64.h"
 #import "NSData+OWSConstantTimeCompare.h"
+#import "OWSError.h"
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonHMAC.h>
 #import <openssl/evp.h>
@@ -293,11 +294,25 @@ const NSUInteger kAES256_KeyByteLength = 32;
                               digest:nil];
 }
 
-+ (NSData *)decryptAttachment:(NSData *)dataToDecrypt withKey:(NSData *)key digest:(nullable NSData *)digest
++ (NSData *)decryptAttachment:(NSData *)dataToDecrypt
+                      withKey:(NSData *)key
+                       digest:(nullable NSData *)digest
+                        error:(NSError **)error;
 {
+    if (digest.length <= 0) {
+        // This *could* happen with sufficiently outdated clients.
+        DDLogError(@"%@ Refusing to decrypt attachment without a digest.", self.tag);
+        *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage,
+            NSLocalizedString(@"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT",
+                @"Error message when unable to receive an attachment because the sending client is too old."));
+        return nil;
+    }
+
     if (([dataToDecrypt length] < AES_CBC_IV_LENGTH + HMAC256_OUTPUT_LENGTH) ||
         ([key length] < AES_KEY_SIZE + HMAC256_KEY_LENGTH)) {
         DDLogError(@"%@ Message shorter than crypto overhead!", self.tag);
+        *error = OWSErrorWithCodeDescription(
+            OWSErrorCodeFailedToDecryptMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
         return nil;
     }
 

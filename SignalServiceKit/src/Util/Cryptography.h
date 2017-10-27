@@ -54,7 +54,12 @@ typedef NS_ENUM(NSInteger, TSMACType) {
 + (NSData *)decryptAppleMessagePayload:(NSData *)payload withSignalingKey:(NSString *)signalingKeyString;
 
 #pragma mark encrypt and decrypt attachment data
-+ (NSData *)decryptAttachment:(NSData *)dataToDecrypt withKey:(NSData *)key digest:(nullable NSData *)digest;
+
+// Though digest can and will be nil for legacy clients, we now reject attachments lacking a digest.
++ (NSData *)decryptAttachment:(NSData *)dataToDecrypt
+                      withKey:(NSData *)key
+                       digest:(nullable NSData *)digest
+                        error:(NSError **)error;
 
 + (NSData *)encryptAttachmentData:(NSData *)attachmentData
                            outKey:(NSData *_Nonnull *_Nullable)outKey
