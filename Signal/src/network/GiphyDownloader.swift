@@ -59,9 +59,7 @@ class GiphyAssetSegment {
                 bytesToIgnore -= data.count
             } else if bytesToIgnore > 0 {
                 let range = NSMakeRange(bytesToIgnore, data.count - bytesToIgnore)
-                Logger.verbose("\(TAG) bytesToIgnore: \(bytesToIgnore), data.count: \(data.count), range: \(range.location), \(range.length).")
                 let subdata = (data as NSData).subdata(with: range)
-                Logger.verbose("\(TAG) subdata: \(subdata.count).")
                 assetData.append(subdata)
                 bytesToIgnore = 0
             } else {
@@ -202,10 +200,7 @@ enum GiphyAssetRequestState: UInt {
             owsFail("\(TAG) could not merge incomplete segment.")
             return
         }
-        Logger.verbose("\(TAG) merging segment: \(segment.index) \(segment.segmentStart) \(segment.segmentLength) \(segment.redundantLength) \(rendition.url).")
-        Logger.verbose("\(TAG) before merge: \(assetData.length) \(rendition.url).")
         segment.mergeData(assetData: assetData)
-        Logger.verbose("\(TAG) after merge: \(assetData.length) \(rendition.url).")
     }
 
     public func writeAssetToFile(gifFolderPath: String) -> GiphyAsset? {
@@ -451,7 +446,6 @@ extension URLSessionTask {
     }
 
     private func segmentRequestDidSucceed(assetRequest: GiphyAssetRequest, assetSegment: GiphyAssetSegment) {
-        Logger.verbose("\(self.TAG) segment request succeeded \(assetRequest.rendition.url), \(assetSegment.index), \(assetSegment.segmentStart), \(assetSegment.segmentLength)")
 
         DispatchQueue.main.async {
             assetSegment.state = .complete
@@ -478,7 +472,6 @@ extension URLSessionTask {
     }
 
     private func assetRequestDidSucceed(assetRequest: GiphyAssetRequest, asset: GiphyAsset) {
-        Logger.verbose("\(self.TAG) asset request succeeded \(assetRequest.rendition.url)")
 
         DispatchQueue.main.async {
             self.assetMap.set(key:assetRequest.rendition.url, value:asset)
@@ -491,7 +484,6 @@ extension URLSessionTask {
     // TODO: If we wanted to implement segment retry, we'll need to add
     //       a segmentRequestDidFail() method.
     private func segmentRequestDidFail(assetRequest: GiphyAssetRequest, assetSegment: GiphyAssetSegment) {
-        Logger.verbose("\(self.TAG) segment request failed \(assetRequest.rendition.url), \(assetSegment.index), \(assetSegment.segmentStart), \(assetSegment.segmentLength)")
 
         DispatchQueue.main.async {
             assetSegment.state = .failed
@@ -501,7 +493,6 @@ extension URLSessionTask {
     }
 
     private func assetRequestDidFail(assetRequest: GiphyAssetRequest) {
-        Logger.verbose("\(self.TAG) asset request failed \(assetRequest.rendition.url)")
 
         DispatchQueue.main.async {
             self.removeAssetRequestFromQueue(assetRequest:assetRequest)
@@ -583,11 +574,8 @@ extension URLSessionTask {
             assetSegment.state = .active
             assetRequest.state = .active
 
-            Logger.verbose("\(self.TAG) new segment request \(assetRequest.rendition.url), \(assetSegment.index), \(assetSegment.segmentStart), \(assetSegment.segmentLength)")
-
             var request = URLRequest(url: assetRequest.rendition.url as URL)
             let rangeHeaderValue = "bytes=\(assetSegment.segmentStart)-\(assetSegment.segmentStart + assetSegment.segmentLength - 1)"
-            Logger.verbose("\(self.TAG) rangeHeaderValue: \(rangeHeaderValue)")
             request.addValue(rangeHeaderValue, forHTTPHeaderField: "Range")
             let task = downloadSession.dataTask(with:request)
             task.assetRequest = assetRequest
@@ -678,7 +666,6 @@ extension URLSessionTask {
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         let assetRequest = dataTask.assetRequest
         let assetSegment = dataTask.assetSegment
-        Logger.verbose("\(TAG) session dataTask didReceive: \(data.count) \(assetRequest.rendition.url)")
         guard !assetRequest.wasCancelled else {
             dataTask.cancel()
             segmentRequestDidFail(assetRequest:assetRequest, assetSegment:assetSegment)
@@ -694,8 +681,6 @@ extension URLSessionTask {
     // MARK: URLSessionTaskDelegate
 
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-//        owsFail("\(TAG) session task didCompleteWithError \(error)")
-        Logger.verbose("\(TAG) session task didCompleteWithError \(error)")
 
         let assetRequest = task.assetRequest
         let assetSegment = task.assetSegment
