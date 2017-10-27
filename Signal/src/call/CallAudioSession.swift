@@ -11,8 +11,7 @@ import WebRTC
  * permission requested (and recording banner) before they even know they have an incoming call.
  *
  * By using the `useManualAudio` and `isAudioEnabled` attributes of the RTCAudioSession we can delay recording until
- * it makes sense. However, the headers for RTCAudioSession are not exported by default, so we've vendored the header
- * into our project. See "Libraries/WebRTC"
+ * it makes sense.
  */
 class CallAudioSession {
 
