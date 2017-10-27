@@ -47,7 +47,7 @@
 "APN_MESSAGE_FROM" = "Pesan Dari";
 
 /* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP" = "Pesan di grup";
+"APN_MESSAGE_IN_GROUP" = "Pesan dalam grup";
 
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ di dalam grup %@: %@";
@@ -68,7 +68,7 @@
 "APPLICATION_NAME" = "Signal";
 
 /* Pressing this button moves a thread from the inbox to the archive */
-"ARCHIVE_ACTION" = "Archive";
+"ARCHIVE_ACTION" = "Arsip";
 
 /* No comment provided by engineer. */
 "ARCHIVE_NAV_BAR_TITLE" = "Arsip";
@@ -269,7 +269,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "To see which of your contacts are Signal users, allow contacts access in your system settings.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ini akan mengulang kembali aplikasi dengan menghapus pesan anda dan menghapus anda dari server. Aplikasi akan menutup setelah menghapus semua data.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Tindakan ini akan mengatur kembali aplikasi dengan menghapus pesan anda dan menghapus anda dari server. Aplikasi akan menutup setelah menghapus semua data.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Apakah kamu yakin ingin menghapus akun anda?";
@@ -407,7 +407,7 @@
 "DEVICE_LINKED_AT_LABEL" = "Linked: %@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Gagal memperbarui pesawat";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Gagal memperbarui daftar alat";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Disappearing Messages";
@@ -546,6 +546,9 @@
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+
+/* Error message when unable to receive an attachment because the sending client is too old. */
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Failure: Ask sender to update Signal and resend.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Menerima pesan ganda";
