@@ -73,6 +73,7 @@ class GiphyAssetSegment {
 
 enum GiphyAssetRequestState: UInt {
     case waiting
+    case requestingSize
     case active
     case complete
     case failed
@@ -100,6 +101,15 @@ enum GiphyAssetRequestState: UInt {
     private var segments = [GiphyAssetSegment]()
     private var assetData = NSMutableData()
     public var state: GiphyAssetRequestState = .waiting
+    public var contentLength: Int = 0 {
+        didSet {
+            AssertIsOnMainThread()
+            assert(oldValue == 0)
+            assert(contentLength > 0)
+
+            createSegments()
+        }
+    }
 
     init(rendition: GiphyRendition,
          priority: GiphyRequestPriority,
@@ -111,12 +121,10 @@ enum GiphyAssetRequestState: UInt {
         self.failure = failure
 
         super.init()
-
-        createSegments()
     }
 
     private func segmentSize() -> UInt {
-        let fileSize = rendition.fileSize
+        let fileSize = UInt(contentLength)
         guard fileSize > 0 else {
             owsFail("\(TAG) rendition missing filesize")
             requestDidFail()
@@ -142,7 +150,7 @@ enum GiphyAssetRequestState: UInt {
         guard segmentLength > 0 else {
             return
         }
-        let fileSize = rendition.fileSize
+        let fileSize = UInt(contentLength)
 
         var nextSegmentStart: UInt = 0
         var index: UInt = 0
@@ -201,10 +209,11 @@ enum GiphyAssetRequestState: UInt {
     }
 
     public func writeAssetToFile() -> GiphyAsset? {
-        guard assetData.length == Int(rendition.fileSize) else {
-            Logger.verbose("\(TAG) expected length: \(rendition.fileSize).")
-            Logger.verbose("\(TAG) actual length: \(assetData.length).")
-            Logger.flush()
+        Logger.verbose("\(TAG) writeAssetToFile: \(rendition.url).")
+        Logger.verbose("\(TAG) expected length: \(rendition.fileSize) \(contentLength).")
+        Logger.verbose("\(TAG) actual length: \(assetData.length).")
+        Logger.flush()
+        guard assetData.length == contentLength else {
             owsFail("\(TAG) asset data has unexpected length.")
             return nil
         }
@@ -220,6 +229,8 @@ enum GiphyAssetRequestState: UInt {
         let fileExtension = rendition.fileExtension
         let fileName = (NSUUID().uuidString as NSString).appendingPathExtension(fileExtension)!
         let filePath = (dirPath as NSString).appendingPathComponent(fileName)
+
+        Logger.verbose("\(TAG) filePath: \(filePath).")
 
         let success = assetData.write(toFile: filePath, atomically: true)
         guard success else {
@@ -546,6 +557,26 @@ extension URLSessionTask {
                 return
             }
 
+            if assetRequest.state == .waiting {
+                // If asset request hasn't yet determined the resource size,
+                // try to do so now.
+                assetRequest.state = .requestingSize
+
+                var request = URLRequest(url: assetRequest.rendition.url as URL)
+//                var request = NSMutableURLRequest(URL: NSURL(string: urlString)!)
+                request.httpMethod = "HEAD"
+//                var session = NSURLSession.sharedSession()
+
+//                var error: NSError?
+
+                var task = downloadSession.dataTask(with:request, completionHandler: { [weak self] _, response, error -> Void in
+                    self?.handleAssetSizeResponse(assetRequest:assetRequest, response:response, error:error)
+                })
+
+                task.resume()
+                return
+            }
+
             // Start a download task.
 
             guard let assetSegment = assetRequest.firstWaitingSegment() else {
@@ -568,6 +599,39 @@ extension URLSessionTask {
         }
     }
 
+    private func handleAssetSizeResponse(assetRequest: GiphyAssetRequest, response: URLResponse?, error: Error?) {
+        guard let httpResponse = response as? HTTPURLResponse else {
+            owsFail("\(self.TAG) Asset size response is invalid.")
+            assetRequest.state = .failed
+            self.assetRequestDidFail(assetRequest:assetRequest)
+            return
+        }
+        guard let contentLengthString = httpResponse.allHeaderFields["Content-Length"] as? String else {
+            owsFail("\(self.TAG) Asset size response is missing content length.")
+            assetRequest.state = .failed
+            self.assetRequestDidFail(assetRequest:assetRequest)
+            return
+        }
+        guard let contentLength = Int(contentLengthString) else {
+            owsFail("\(self.TAG) Asset size response has unparsable content length.")
+            assetRequest.state = .failed
+            self.assetRequestDidFail(assetRequest:assetRequest)
+            return
+        }
+        guard contentLength > 0 else {
+            owsFail("\(self.TAG) Asset size response has invalid content length.")
+            assetRequest.state = .failed
+            self.assetRequestDidFail(assetRequest:assetRequest)
+            return
+        }
+
+        DispatchQueue.main.async {
+            assetRequest.contentLength = contentLength
+            assetRequest.state = .active
+            self.processRequestQueue()
+        }
+    }
+
     private func popNextAssetRequest() -> GiphyAssetRequest? {
         AssertIsOnMainThread()
 
@@ -576,7 +640,17 @@ extension URLSessionTask {
         var activeAssetRequestsCount = 0
         for priority in [GiphyRequestPriority.high, GiphyRequestPriority.low] {
             for assetRequest in assetRequestQueue where assetRequest.priority == priority {
-                guard assetRequest.state == .waiting || assetRequest.state ==  .active else {
+                switch assetRequest.state {
+                case .waiting:
+                    break
+                case .requestingSize:
+                    activeAssetRequestsCount += 1
+                    continue
+                case .active:
+                    break
+                case .complete:
+                    continue
+                case .failed:
                     continue
                 }
 
