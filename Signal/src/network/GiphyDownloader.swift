@@ -208,10 +208,6 @@ enum GiphyAssetRequestState: UInt {
         Logger.verbose("\(TAG) after merge: \(assetData.length) \(rendition.url).")
     }
 
-        Logger.verbose("\(TAG) writeAssetToFile: \(rendition.url).")
-        Logger.verbose("\(TAG) expected length: \(rendition.fileSize) \(contentLength).")
-        Logger.verbose("\(TAG) actual length: \(assetData.length).")
-        Logger.flush()
     public func writeAssetToFile(gifFolderPath: String) -> GiphyAsset? {
         guard assetData.length == contentLength else {
             owsFail("\(TAG) asset data has unexpected length.")
@@ -225,9 +221,9 @@ enum GiphyAssetRequestState: UInt {
 
         let fileExtension = rendition.fileExtension
         let fileName = (NSUUID().uuidString as NSString).appendingPathExtension(fileExtension)!
+        let filePath = (gifFolderPath as NSString).appendingPathComponent(fileName)
 
         Logger.verbose("\(TAG) filePath: \(filePath).")
-        let filePath = (gifFolderPath as NSString).appendingPathComponent(fileName)
 
         let success = assetData.write(toFile: filePath, atomically: true)
         guard success else {
