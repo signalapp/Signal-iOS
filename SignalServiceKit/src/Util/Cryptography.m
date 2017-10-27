@@ -351,15 +351,15 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
         if (unpaddedSize == paddedPlainText.length) {
             DDLogInfo(@"%@ decrypted unpadded attachment.", self.tag);
+            return [paddedPlainText copy];
         } else {
             unsigned long paddingSize = paddedPlainText.length - unpaddedSize;
             DDLogInfo(@"%@ decrypted padded attachment with unpaddedSize: %u, paddingSize: %lu",
                 self.tag,
                 unpaddedSize,
                 paddingSize);
+            return [paddedPlainText subdataWithRange:NSMakeRange(0, unpaddedSize)];
         }
-
-        return [paddedPlainText subdataWithRange:NSMakeRange(0, unpaddedSize)];
     }
 }
 
