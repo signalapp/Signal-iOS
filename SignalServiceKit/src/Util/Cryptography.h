@@ -59,6 +59,7 @@ typedef NS_ENUM(NSInteger, TSMACType) {
 + (NSData *)decryptAttachment:(NSData *)dataToDecrypt
                       withKey:(NSData *)key
                        digest:(nullable NSData *)digest
+                 unpaddedSize:(UInt32)unpaddedSize
                         error:(NSError **)error;
 
 + (NSData *)encryptAttachmentData:(NSData *)attachmentData

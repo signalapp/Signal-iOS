@@ -250,6 +250,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     NSData *plaintext = [Cryptography decryptAttachment:cipherText
                                                 withKey:attachment.encryptionKey
                                                  digest:attachment.digest
+                                           unpaddedSize:attachment.byteCount
                                                   error:&decryptError];
 
     if (decryptError) {
