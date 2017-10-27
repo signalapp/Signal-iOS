@@ -98,6 +98,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
         TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
                                                                                  key:attachmentProto.key
                                                                               digest:digest
+                                                                           byteCount:attachmentProto.size
                                                                          contentType:attachmentProto.contentType
                                                                                relay:relay
                                                                       sourceFilename:attachmentProto.fileName

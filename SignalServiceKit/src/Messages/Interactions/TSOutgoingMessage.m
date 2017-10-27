@@ -538,6 +538,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     [builder setId:attachmentStream.serverId];
     [builder setContentType:attachmentStream.contentType];
     [builder setFileName:filename];
+    [builder setSize:attachmentStream.byteCount];
     [builder setKey:attachmentStream.encryptionKey];
     [builder setDigest:attachmentStream.digest];
     [builder setFlags:(self.isVoiceMessage ? OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage : 0)];

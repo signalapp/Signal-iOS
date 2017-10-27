@@ -17,7 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithContentType:(NSString *)contentType
+                          byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

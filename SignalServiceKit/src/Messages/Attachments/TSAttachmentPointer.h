@@ -22,6 +22,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
 - (instancetype)initWithServerId:(UInt64)serverId
                              key:(NSData *)key
                           digest:(nullable NSData *)digest
+                       byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
                            relay:(NSString *)relay
                   sourceFilename:(nullable NSString *)sourceFilename
