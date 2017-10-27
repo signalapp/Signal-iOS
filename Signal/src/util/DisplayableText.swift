@@ -24,7 +24,7 @@ import Foundation
 
     @objc
     class func displayableText(_ text: String?) -> String? {
-        guard let text = text else {
+        guard let text = text?.ows_stripped() else {
             return nil
         }
 

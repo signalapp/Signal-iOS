@@ -303,15 +303,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (!displayableText) {
         NSString *text = textBlock();
 
-        // Only show up to 2kb of text.
-        const NSUInteger kMaxTextDisplayLength = 2 * 1024;
-        text = [text ows_stripped];
+        // Only show up to N characters of text.
+        const NSUInteger kMaxTextDisplayLength = 1024;
         NSString *_Nullable fullText = [DisplayableText displayableText:text];
         BOOL isTextTruncated = NO;
         if (!fullText) {
             fullText = @"";
-        } else {
-            fullText = fullText;
         }
         NSString *_Nullable displayText = fullText;
         if (displayText.length > kMaxTextDisplayLength) {
@@ -324,8 +321,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
         if (!displayText) {
             displayText = @"";
-        } else {
-            displayText = displayText;
         }
 
         displayableText =
@@ -336,70 +331,81 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return displayableText;
 }
 
+- (nullable TSAttachment *)firstAttachmentIfAnyOfMessage:(TSMessage *)message
+{
+    if (message.attachmentIds.count == 0) {
+        return nil;
+    }
+    NSString *_Nullable attachmentId = message.attachmentIds.firstObject;
+    if (attachmentId.length == 0) {
+        return nil;
+    }
+    return [TSAttachment fetchObjectWithUniqueID:attachmentId];
+}
+
 - (void)ensureViewState
 {
-    OWSAssert([self.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssert([self.interaction isKindOfClass:[TSOutgoingMessage class]] ||
+        [self.interaction isKindOfClass:[TSIncomingMessage class]]);
 
     if (self.hasViewState) {
         return;
     }
     self.hasViewState = YES;
 
-    TSMessage *interaction = (TSMessage *)self.interaction;
-    if (interaction.body != nil) {
-        self.messageCellType = OWSMessageCellType_TextMessage;
-        self.displayableText = [self displayableTextForText:interaction.body interactionId:interaction.uniqueId];
-        return;
-    } else {
-        NSString *_Nullable attachmentId = interaction.attachmentIds.firstObject;
-        if (attachmentId.length > 0) {
-            TSAttachment *_Nullable attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
-            if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-                self.attachmentStream = (TSAttachmentStream *)attachment;
+    TSMessage *message = (TSMessage *)self.interaction;
+    TSAttachment *_Nullable attachment = [self firstAttachmentIfAnyOfMessage:message];
+    if (attachment) {
+        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+            self.attachmentStream = (TSAttachmentStream *)attachment;
 
-                if ([attachment.contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
-                    self.messageCellType = OWSMessageCellType_OversizeTextMessage;
-                    self.displayableText = [self displayableTextForAttachmentStream:self.attachmentStream
-                                                                      interactionId:interaction.uniqueId];
-                    return;
-                } else if ([self.attachmentStream isAnimated] || [self.attachmentStream isImage] ||
-                    [self.attachmentStream isVideo]) {
-                    if ([self.attachmentStream isAnimated]) {
-                        self.messageCellType = OWSMessageCellType_AnimatedImage;
-                    } else if ([self.attachmentStream isImage]) {
-                        self.messageCellType = OWSMessageCellType_StillImage;
-                    } else if ([self.attachmentStream isVideo]) {
-                        self.messageCellType = OWSMessageCellType_Video;
-                    } else {
-                        OWSFail(@"%@ unexpected attachment type.", self.tag);
-                        self.messageCellType = OWSMessageCellType_GenericAttachment;
-                        return;
-                    }
-                    self.contentSize = [self.attachmentStream imageSizeWithoutTransaction];
-                    if (self.contentSize.width <= 0 || self.contentSize.height <= 0) {
-                        self.messageCellType = OWSMessageCellType_GenericAttachment;
-                    }
-                    return;
-                } else if ([self.attachmentStream isAudio]) {
-                    self.messageCellType = OWSMessageCellType_Audio;
-                    return;
+            if ([attachment.contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
+                self.messageCellType = OWSMessageCellType_OversizeTextMessage;
+                self.displayableText =
+                    [self displayableTextForAttachmentStream:self.attachmentStream interactionId:message.uniqueId];
+                return;
+            } else if ([self.attachmentStream isAnimated] || [self.attachmentStream isImage] ||
+                [self.attachmentStream isVideo]) {
+                if ([self.attachmentStream isAnimated]) {
+                    self.messageCellType = OWSMessageCellType_AnimatedImage;
+                } else if ([self.attachmentStream isImage]) {
+                    self.messageCellType = OWSMessageCellType_StillImage;
+                } else if ([self.attachmentStream isVideo]) {
+                    self.messageCellType = OWSMessageCellType_Video;
                 } else {
+                    OWSFail(@"%@ unexpected attachment type.", self.tag);
                     self.messageCellType = OWSMessageCellType_GenericAttachment;
                     return;
                 }
-            } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
-                self.messageCellType = OWSMessageCellType_DownloadingAttachment;
-                self.attachmentPointer = (TSAttachmentPointer *)attachment;
+                self.contentSize = [self.attachmentStream imageSizeWithoutTransaction];
+                if (self.contentSize.width <= 0 || self.contentSize.height <= 0) {
+                    self.messageCellType = OWSMessageCellType_GenericAttachment;
+                }
+                return;
+            } else if ([self.attachmentStream isAudio]) {
+                self.messageCellType = OWSMessageCellType_Audio;
                 return;
             } else {
-                OWSFail(@"%@ Unknown attachment type", self.tag);
+                self.messageCellType = OWSMessageCellType_GenericAttachment;
+                return;
             }
+        } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
+            self.messageCellType = OWSMessageCellType_DownloadingAttachment;
+            self.attachmentPointer = (TSAttachmentPointer *)attachment;
+            return;
         } else {
-            OWSFail(@"%@ Message has neither attachment nor body", self.tag);
+            OWSFail(@"%@ Unknown attachment type", self.tag);
         }
+    } else if (message.body != nil) {
+        self.messageCellType = OWSMessageCellType_TextMessage;
+        self.displayableText = [self displayableTextForText:message.body interactionId:message.uniqueId];
+            OWSAssert(self.displayableText);
+        return;
+    } else {
+        OWSFail(@"%@ Message has neither attachment nor body", self.tag);
     }
 
-    DDLogVerbose(@"%@ interaction: %@", self.tag, interaction.description);
+    DDLogVerbose(@"%@ message: %@", self.tag, message.description);
     OWSFail(@"%@ Unknown cell type", self.tag);
 
     self.messageCellType = OWSMessageCellType_Unknown;
