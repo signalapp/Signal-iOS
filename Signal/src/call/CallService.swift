@@ -1002,12 +1002,6 @@ protocol CallServiceObserver: class {
             return
         }
 
-        guard let peerConnectionClient = self.peerConnectionClient else {
-            OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionMissing(), file:#file, function:#function, line:#line)
-            handleFailedCall(failedCall: call, error: CallError.assertionError(description:"\(TAG) missing peerconnection client in \(#function)"))
-            return
-        }
-
         Logger.info("\(TAG) in \(#function): \(call.identifiersForLogs).")
 
         call.state = .localHangup
@@ -1016,9 +1010,13 @@ protocol CallServiceObserver: class {
         //        this.accountManager.cancelInFlightRequests();
         //        this.messageSender.cancelInFlightRequests();
 
-        // If the call is connected, we can send the hangup via the data channel.
-        let message = DataChannelMessage.forHangup(callId: call.signalingId)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"hangup", isCritical:true)
+        if let peerConnectionClient = self.peerConnectionClient {
+            // If the call is connected, we can send the hangup via the data channel for faster hangup.
+            let message = DataChannelMessage.forHangup(callId: call.signalingId)
+            peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"hangup", isCritical:true)
+        } else {
+            Logger.info("\(TAG) ending call before peer connection created. Device offline or quick hangup.")
+        }
 
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
