@@ -208,11 +208,11 @@ enum GiphyAssetRequestState: UInt {
         Logger.verbose("\(TAG) after merge: \(assetData.length) \(rendition.url).")
     }
 
-    public func writeAssetToFile() -> GiphyAsset? {
         Logger.verbose("\(TAG) writeAssetToFile: \(rendition.url).")
         Logger.verbose("\(TAG) expected length: \(rendition.fileSize) \(contentLength).")
         Logger.verbose("\(TAG) actual length: \(assetData.length).")
         Logger.flush()
+    public func writeAssetToFile(gifFolderPath: String) -> GiphyAsset? {
         guard assetData.length == contentLength else {
             owsFail("\(TAG) asset data has unexpected length.")
             return nil
@@ -223,14 +223,11 @@ enum GiphyAssetRequestState: UInt {
             return nil
         }
 
-        // We write assets to the temporary directory so that iOS can clean them up.
-        // We try to eagerly clean up these assets when they are no longer in use.
-        let dirPath = NSTemporaryDirectory()
         let fileExtension = rendition.fileExtension
         let fileName = (NSUUID().uuidString as NSString).appendingPathExtension(fileExtension)!
-        let filePath = (dirPath as NSString).appendingPathComponent(fileName)
 
         Logger.verbose("\(TAG) filePath: \(filePath).")
+        let filePath = (gifFolderPath as NSString).appendingPathComponent(fileName)
 
         let success = assetData.write(toFile: filePath, atomically: true)
         guard success else {
@@ -382,8 +379,16 @@ extension URLSessionTask {
     // A private queue used for download task callbacks.
     private let operationQueue = OperationQueue()
 
+    var gifFolderPath = ""
+
     // Force usage as a singleton
-    override private init() {}
+    override private init() {
+        AssertIsOnMainThread()
+
+        super.init()
+
+        ensureGifFolder()
+    }
 
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -464,7 +469,7 @@ extension URLSessionTask {
 
                 // Move write off main thread.
                 DispatchQueue.global().async {
-                    guard let asset = assetRequest.writeAssetToFile() else {
+                    guard let asset = assetRequest.writeAssetToFile(gifFolderPath:self.gifFolderPath) else {
                         self.segmentRequestDidFail(assetRequest:assetRequest, assetSegment:assetSegment)
                         return
                     }
@@ -563,13 +568,9 @@ extension URLSessionTask {
                 assetRequest.state = .requestingSize
 
                 var request = URLRequest(url: assetRequest.rendition.url as URL)
-//                var request = NSMutableURLRequest(URL: NSURL(string: urlString)!)
                 request.httpMethod = "HEAD"
-//                var session = NSURLSession.sharedSession()
 
-//                var error: NSError?
-
-                var task = downloadSession.dataTask(with:request, completionHandler: { [weak self] _, response, error -> Void in
+                let task = downloadSession.dataTask(with:request, completionHandler: { [weak self] _, response, error -> Void in
                     self?.handleAssetSizeResponse(assetRequest:assetRequest, response:response, error:error)
                 })
 
@@ -732,41 +733,32 @@ extension URLSessionTask {
         segmentRequestDidSucceed(assetRequest : assetRequest, assetSegment: assetSegment)
     }
 
-    // MARK: URLSessionDownloadDelegate
+    // MARK: Temp Directory
 
-//    var animatedDataCount = [URLSessionDownloadTask: Int64]()
-//    var stillDataCount = [URLSessionDownloadTask: Int64]()
-//    var totalDataCount = [URLSessionDownloadTask: Int64]()
-//    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-//
-//        owsFail("\(TAG) session downloadTask didWriteData")
-//
-////        // Log accumulated data usage in debug
-////        if _isDebugAssertConfiguration() {
-////            let assetRequest = downloadTask.assetRequest
-////
-////            totalDataCount[downloadTask] = totalBytesWritten
-////            if assetRequest.rendition.isStill {
-////                stillDataCount[downloadTask] = totalBytesWritten
-////            } else {
-////                animatedDataCount[downloadTask] = totalBytesWritten
-////            }
-////
-////            let megabyteCount = { (dataCountMap: [URLSessionDownloadTask: Int64]) -> String in
-////                let sum = dataCountMap.values.reduce(0, +)
-////                let megabyteCount = Float(sum) / 1000 / 1000
-////                return String(format: "%06.2f MB", megabyteCount)
-////            }
-////            Logger.info("\(TAG) Still bytes written:    \(megabyteCount(stillDataCount))")
-////            Logger.info("\(TAG) Animated bytes written: \(megabyteCount(animatedDataCount))")
-////            Logger.info("\(TAG) Total bytes written:    \(megabyteCount(totalDataCount))")
-////        }
-////
-////        let assetRequest = downloadTask.assetRequest
-////        guard !assetRequest.wasCancelled else {
-////            downloadTask.cancel()
-////            assetRequestDidFail(assetRequest:assetRequest)
-////            return
-////        }
-//    }
+    public func ensureGifFolder() {
+        // We write assets to the temporary directory so that iOS can clean them up.
+        // We try to eagerly clean up these assets when they are no longer in use.
+
+        let tempDirPath = NSTemporaryDirectory()
+        let dirPath = (tempDirPath as NSString).appendingPathComponent("GIFs")
+        do {
+            let fileManager = FileManager.default
+
+            // Try to delete existing folder if necessary.
+            if fileManager.fileExists(atPath:dirPath) {
+                try fileManager.removeItem(atPath:dirPath)
+                gifFolderPath = dirPath
+            }
+            // Try to create folder if necessary.
+            if !fileManager.fileExists(atPath:dirPath) {
+                try fileManager.createDirectory(atPath:dirPath,
+                                                withIntermediateDirectories:true,
+                                                attributes:nil)
+                gifFolderPath = dirPath
+            }
+        } catch let error as NSError {
+            owsFail("\(GiphyAsset.TAG) ensureTempFolder failed: \(dirPath), \(error)")
+            gifFolderPath = tempDirPath
+        }
+    }
 }

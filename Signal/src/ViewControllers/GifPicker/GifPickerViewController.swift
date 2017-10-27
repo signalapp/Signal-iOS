@@ -152,6 +152,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     private func createViews() {
 
         view.backgroundColor = UIColor.white
+        self.automaticallyAdjustsScrollViewInsets = false
 
         // Search
         searchBar.searchBarStyle = .minimal
