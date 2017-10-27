@@ -105,8 +105,8 @@ NS_ASSUME_NONNULL_BEGIN
         switch (layoutItem.layoutAlignment) {
             case ConversationViewLayoutAlignment_Incoming:
             case ConversationViewLayoutAlignment_Outgoing: {
-                BOOL isLeft = ((layoutItem.layoutAlignment == ConversationViewLayoutAlignment_Incoming && !isRTL)
-                    || (layoutItem.layoutAlignment == ConversationViewLayoutAlignment_Outgoing && isRTL));
+                BOOL isIncoming = layoutItem.layoutAlignment == ConversationViewLayoutAlignment_Incoming;
+                BOOL isLeft = isIncoming ^ isRTL;
                 if (isLeft) {
                     itemFrame = CGRectMake(hInset, y, layoutSize.width, layoutSize.height);
                 } else {
