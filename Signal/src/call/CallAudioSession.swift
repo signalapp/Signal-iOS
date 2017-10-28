@@ -1,4 +1,5 @@
-//  Copyright © 2017 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -21,7 +22,6 @@ class CallAudioSession {
      */
     private let rtcAudioSession = RTCAudioSession.sharedInstance()
 
-
     /**
     * This must be called before any audio tracks are added to the peerConnection, else we'll start recording before all
     * our signaling is set up.
@@ -32,19 +32,15 @@ class CallAudioSession {
     }
 
     /**
-     * Because we useManualAudio with our RTCAudioSession, we have to start the recording audio session ourselves.
-     */
-    func start() {
-        Logger.info("\(TAG) in \(#function)")
-        rtcAudioSession.isAudioEnabled = true
-    }
-
-    /**
-     * Because we useManualAudio with our RTCAudioSession, we have to stop the recording audio session ourselves.
+     * Because we useManualAudio with our RTCAudioSession, we have to start/stop the recording audio session ourselves.
      * Else, we start recording before the next call is ringing.
      */
-    func stop() {
-        Logger.info("\(TAG) in \(#function)")
-        rtcAudioSession.isAudioEnabled = false
+    var isRTCAudioEnabled: Bool {
+        get {
+            return rtcAudioSession.isAudioEnabled
+        }
+        set {
+            rtcAudioSession.isAudioEnabled = newValue
+        }
     }
 }
