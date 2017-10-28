@@ -137,10 +137,20 @@ struct AudioSource: Hashable {
     // `pulseDuration` is the small pause between the two vibrations in the pair.
     private let pulseDuration = 0.2
 
+    static private let sharedAudioSession = CallAudioSession()
+    var audioSession: CallAudioSession {
+        return type(of: self).sharedAudioSession
+    }
+
     // MARK: - Initializers
 
     init(handleRinging: Bool) {
         self.handleRinging = handleRinging
+
+        super.init()
+
+        // Configure audio session so we don't prompt user with Record permission until call is connected.
+        audioSession.configure()
     }
 
     // MARK: - CallObserver
@@ -152,7 +162,14 @@ struct AudioSource: Hashable {
 
     internal func muteDidChange(call: SignalCall, isMuted: Bool) {
         AssertIsOnMainThread()
-        Logger.verbose("\(TAG) in \(#function) is no-op")
+
+        ensureProperAudioSession(call: call)
+    }
+
+    internal func holdDidChange(call: SignalCall, isOnHold: Bool) {
+        AssertIsOnMainThread()
+
+        ensureProperAudioSession(call: call)
     }
 
     internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
@@ -219,7 +236,7 @@ struct AudioSource: Hashable {
                 try session.setPreferredInput(call.audioSource?.portDescription)
             }
 
-            if call.isSpeakerphoneEnabled || (call.hasLocalVideo && call.state != .connected)  {
+            if call.isSpeakerphoneEnabled || (call.hasLocalVideo && call.state != .connected) {
                 // We want consistent ringer-volume between speaker-phone and video chat.
                 // But because using VideoChat mode has noticeably higher output gain, we treat
                 // video chat like speakerphone mode until the call is connected.
@@ -231,6 +248,12 @@ struct AudioSource: Hashable {
             }
         } catch {
             owsFail("\(TAG) failed setting audio source with error: \(error) isSpeakerPhoneEnabled: \(call.isSpeakerphoneEnabled)")
+        }
+
+        if call.state == .connected, !call.isOnHold {
+            audioSession.isRTCAudioEnabled = true
+        } else {
+            audioSession.isRTCAudioEnabled = false
         }
     }
 
@@ -290,7 +313,6 @@ struct AudioSource: Hashable {
         Logger.debug("\(TAG) \(#function)")
         AssertIsOnMainThread()
 
-        // FIXME if you toggled speakerphone before this point, the outgoing ring does not play through speaker. Why?
         self.play(sound: Sound.outgoingRing)
     }
 

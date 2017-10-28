@@ -1441,7 +1441,6 @@ protocol CallServiceObserver: class {
         self.remoteVideoTrack = nil
         self.isRemoteVideoEnabled = false
 
-        PeerConnectionClient.stopAudioSession()
         self.peerConnectionClient?.terminate()
         Logger.debug("\(TAG) setting peerConnectionClient in \(#function)")
         self.peerConnectionClient = nil
@@ -1491,6 +1490,11 @@ protocol CallServiceObserver: class {
     }
 
     internal func muteDidChange(call: SignalCall, isMuted: Bool) {
+        AssertIsOnMainThread()
+        // Do nothing
+    }
+
+    internal func holdDidChange(call: SignalCall, isOnHold: Bool) {
         AssertIsOnMainThread()
         // Do nothing
     }

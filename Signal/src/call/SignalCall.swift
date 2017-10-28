@@ -26,6 +26,7 @@ protocol CallObserver: class {
     func stateDidChange(call: SignalCall, state: CallState)
     func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool)
     func muteDidChange(call: SignalCall, isMuted: Bool)
+    func holdDidChange(call: SignalCall, isOnHold: Bool)
     func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?)
 }
 
@@ -123,7 +124,16 @@ protocol CallObserver: class {
         return audioSource.isBuiltInSpeaker
     }
 
-    var isOnHold = false
+    var isOnHold = false {
+        didSet {
+            AssertIsOnMainThread()
+            Logger.debug("\(TAG) isOnHold changed: \(oldValue) -> \(self.isOnHold)")
+
+            for observer in observers {
+                observer.value?.holdDidChange(call: self, isOnHold: isOnHold)
+            }
+        }
+    }
 
     var connectedDate: NSDate?
 
