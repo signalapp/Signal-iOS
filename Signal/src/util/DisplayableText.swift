@@ -5,6 +5,168 @@
 import Foundation
 
 extension UnicodeScalar {
+    class EmojiRange {
+        // rangeStart and rangeEnd are inclusive.
+        let rangeStart: UInt32
+        let rangeEnd: UInt32
+
+        // MARK: Initializers
+
+        init(rangeStart: UInt32, rangeEnd: UInt32) {
+            self.rangeStart = rangeStart
+            self.rangeEnd = rangeEnd
+        }
+    }
+
+    static let kEmojiRanges = [
+    EmojiRange(rangeStart:0x23, rangeEnd:0x23),
+    EmojiRange(rangeStart:0x2A, rangeEnd:0x2A),
+    EmojiRange(rangeStart:0x30, rangeEnd:0x39),
+    EmojiRange(rangeStart:0xA9, rangeEnd:0xA9),
+    EmojiRange(rangeStart:0xAE, rangeEnd:0xAE),
+    EmojiRange(rangeStart:0x200D, rangeEnd:0x200D),
+    EmojiRange(rangeStart:0x203C, rangeEnd:0x203C),
+    EmojiRange(rangeStart:0x2049, rangeEnd:0x2049),
+    EmojiRange(rangeStart:0x20D0, rangeEnd:0x20E3),
+    EmojiRange(rangeStart:0x2122, rangeEnd:0x2122),
+    EmojiRange(rangeStart:0x2139, rangeEnd:0x2139),
+    EmojiRange(rangeStart:0x2194, rangeEnd:0x2199),
+    EmojiRange(rangeStart:0x21A9, rangeEnd:0x21AA),
+    EmojiRange(rangeStart:0x231A, rangeEnd:0x231B),
+    EmojiRange(rangeStart:0x2328, rangeEnd:0x2328),
+    EmojiRange(rangeStart:0x2388, rangeEnd:0x2388),
+    EmojiRange(rangeStart:0x23CF, rangeEnd:0x23CF),
+    EmojiRange(rangeStart:0x23E9, rangeEnd:0x23F0),
+    EmojiRange(rangeStart:0x23F3, rangeEnd:0x23F3),
+    EmojiRange(rangeStart:0x23F8, rangeEnd:0x23FA),
+    EmojiRange(rangeStart:0x24C2, rangeEnd:0x24C2),
+    EmojiRange(rangeStart:0x25AA, rangeEnd:0x25AB),
+    EmojiRange(rangeStart:0x25B6, rangeEnd:0x25B6),
+    EmojiRange(rangeStart:0x25C0, rangeEnd:0x25C0),
+    EmojiRange(rangeStart:0x25FB, rangeEnd:0x25FE),
+    EmojiRange(rangeStart:0x2600, rangeEnd:0x260E),
+    EmojiRange(rangeStart:0x2611, rangeEnd:0x2611),
+    EmojiRange(rangeStart:0x2614, rangeEnd:0x261D),
+    EmojiRange(rangeStart:0x2620, rangeEnd:0x2620),
+    EmojiRange(rangeStart:0x2622, rangeEnd:0x2623),
+    EmojiRange(rangeStart:0x2626, rangeEnd:0x2626),
+    EmojiRange(rangeStart:0x262A, rangeEnd:0x262A),
+    EmojiRange(rangeStart:0x262E, rangeEnd:0x262F),
+    EmojiRange(rangeStart:0x2638, rangeEnd:0x263A),
+    EmojiRange(rangeStart:0x2640, rangeEnd:0x2640),
+    EmojiRange(rangeStart:0x2642, rangeEnd:0x2642),
+    EmojiRange(rangeStart:0x2648, rangeEnd:0x2653),
+    EmojiRange(rangeStart:0x2660, rangeEnd:0x2660),
+    EmojiRange(rangeStart:0x2663, rangeEnd:0x2663),
+    EmojiRange(rangeStart:0x2665, rangeEnd:0x2666),
+    EmojiRange(rangeStart:0x2668, rangeEnd:0x2668),
+    EmojiRange(rangeStart:0x2670, rangeEnd:0x267B),
+    EmojiRange(rangeStart:0x267E, rangeEnd:0x2693),
+    EmojiRange(rangeStart:0x2699, rangeEnd:0x2699),
+    EmojiRange(rangeStart:0x269B, rangeEnd:0x26AB),
+    EmojiRange(rangeStart:0x26B0, rangeEnd:0x26C8),
+    EmojiRange(rangeStart:0x26CE, rangeEnd:0x26D1),
+    EmojiRange(rangeStart:0x26D3, rangeEnd:0x26D4),
+    EmojiRange(rangeStart:0x26E2, rangeEnd:0x26EA),
+    EmojiRange(rangeStart:0x26F0, rangeEnd:0x26F3),
+    EmojiRange(rangeStart:0x26F5, rangeEnd:0x26F5),
+    EmojiRange(rangeStart:0x26F7, rangeEnd:0x26FA),
+    EmojiRange(rangeStart:0x26FD, rangeEnd:0x26FD),
+    EmojiRange(rangeStart:0x2700, rangeEnd:0x2702),
+    EmojiRange(rangeStart:0x2705, rangeEnd:0x2705),
+    EmojiRange(rangeStart:0x2708, rangeEnd:0x270F),
+    EmojiRange(rangeStart:0x2712, rangeEnd:0x2712),
+    EmojiRange(rangeStart:0x2714, rangeEnd:0x2714),
+    EmojiRange(rangeStart:0x2716, rangeEnd:0x2716),
+    EmojiRange(rangeStart:0x271D, rangeEnd:0x271D),
+    EmojiRange(rangeStart:0x2721, rangeEnd:0x2721),
+    EmojiRange(rangeStart:0x2728, rangeEnd:0x2728),
+    EmojiRange(rangeStart:0x2733, rangeEnd:0x2734),
+    EmojiRange(rangeStart:0x2744, rangeEnd:0x2744),
+    EmojiRange(rangeStart:0x2747, rangeEnd:0x2747),
+    EmojiRange(rangeStart:0x274C, rangeEnd:0x274C),
+    EmojiRange(rangeStart:0x274E, rangeEnd:0x274E),
+    EmojiRange(rangeStart:0x2753, rangeEnd:0x2755),
+    EmojiRange(rangeStart:0x2757, rangeEnd:0x2757),
+    EmojiRange(rangeStart:0x2763, rangeEnd:0x2767),
+    EmojiRange(rangeStart:0x2795, rangeEnd:0x2797),
+    EmojiRange(rangeStart:0x27A1, rangeEnd:0x27A1),
+    EmojiRange(rangeStart:0x27B0, rangeEnd:0x27B0),
+    EmojiRange(rangeStart:0x27BF, rangeEnd:0x27BF),
+    EmojiRange(rangeStart:0x2934, rangeEnd:0x2935),
+    EmojiRange(rangeStart:0x2B05, rangeEnd:0x2B07),
+    EmojiRange(rangeStart:0x2B1B, rangeEnd:0x2B1C),
+    EmojiRange(rangeStart:0x2B50, rangeEnd:0x2B50),
+    EmojiRange(rangeStart:0x2B55, rangeEnd:0x2B55),
+    EmojiRange(rangeStart:0x3030, rangeEnd:0x3030),
+    EmojiRange(rangeStart:0x303D, rangeEnd:0x303D),
+    EmojiRange(rangeStart:0x3297, rangeEnd:0x3297),
+    EmojiRange(rangeStart:0x3299, rangeEnd:0x3299),
+    EmojiRange(rangeStart:0xFE00, rangeEnd:0xFE0F),
+    EmojiRange(rangeStart:0x1F000, rangeEnd:0x1F004),
+    EmojiRange(rangeStart:0x1F02C, rangeEnd:0x1F0FF),
+    EmojiRange(rangeStart:0x1F10D, rangeEnd:0x1F10F),
+    EmojiRange(rangeStart:0x1F12F, rangeEnd:0x1F12F),
+    EmojiRange(rangeStart:0x1F16C, rangeEnd:0x1F171),
+    EmojiRange(rangeStart:0x1F17E, rangeEnd:0x1F17F),
+    EmojiRange(rangeStart:0x1F18E, rangeEnd:0x1F18E),
+    EmojiRange(rangeStart:0x1F191, rangeEnd:0x1F19A),
+    EmojiRange(rangeStart:0x1F1AD, rangeEnd:0x1F1FF),
+    EmojiRange(rangeStart:0x1F201, rangeEnd:0x1F20F),
+    EmojiRange(rangeStart:0x1F21A, rangeEnd:0x1F21A),
+    EmojiRange(rangeStart:0x1F22F, rangeEnd:0x1F22F),
+    EmojiRange(rangeStart:0x1F232, rangeEnd:0x1F23A),
+    EmojiRange(rangeStart:0x1F23C, rangeEnd:0x1F23F),
+    EmojiRange(rangeStart:0x1F249, rangeEnd:0x1F385),
+    EmojiRange(rangeStart:0x1F394, rangeEnd:0x1F397),
+    EmojiRange(rangeStart:0x1F399, rangeEnd:0x1F39B),
+    EmojiRange(rangeStart:0x1F39E, rangeEnd:0x1F3C7),
+    EmojiRange(rangeStart:0x1F3CA, rangeEnd:0x1F3F4),
+    EmojiRange(rangeStart:0x1F3F7, rangeEnd:0x1F450),
+    EmojiRange(rangeStart:0x1F466, rangeEnd:0x1F469),
+    EmojiRange(rangeStart:0x1F46E, rangeEnd:0x1F46E),
+    EmojiRange(rangeStart:0x1F470, rangeEnd:0x1F478),
+    EmojiRange(rangeStart:0x1F47C, rangeEnd:0x1F47C),
+    EmojiRange(rangeStart:0x1F481, rangeEnd:0x1F483),
+    EmojiRange(rangeStart:0x1F485, rangeEnd:0x1F487),
+    EmojiRange(rangeStart:0x1F4AA, rangeEnd:0x1F4AA),
+    EmojiRange(rangeStart:0x1F4F8, rangeEnd:0x1F570),
+    EmojiRange(rangeStart:0x1F573, rangeEnd:0x1F575),
+    EmojiRange(rangeStart:0x1F57A, rangeEnd:0x1F587),
+    EmojiRange(rangeStart:0x1F58A, rangeEnd:0x1F58D),
+    EmojiRange(rangeStart:0x1F590, rangeEnd:0x1F590),
+    EmojiRange(rangeStart:0x1F595, rangeEnd:0x1F596),
+    EmojiRange(rangeStart:0x1F5A4, rangeEnd:0x1F5A8),
+    EmojiRange(rangeStart:0x1F5B1, rangeEnd:0x1F5B2),
+    EmojiRange(rangeStart:0x1F5BC, rangeEnd:0x1F5BC),
+    EmojiRange(rangeStart:0x1F5C2, rangeEnd:0x1F5C4),
+    EmojiRange(rangeStart:0x1F5D1, rangeEnd:0x1F5D3),
+    EmojiRange(rangeStart:0x1F5DC, rangeEnd:0x1F5DE),
+    EmojiRange(rangeStart:0x1F5E1, rangeEnd:0x1F5E1),
+    EmojiRange(rangeStart:0x1F5E3, rangeEnd:0x1F5E3),
+    EmojiRange(rangeStart:0x1F5E8, rangeEnd:0x1F5E8),
+    EmojiRange(rangeStart:0x1F5EF, rangeEnd:0x1F5EF),
+    EmojiRange(rangeStart:0x1F5F3, rangeEnd:0x1F5F3),
+    EmojiRange(rangeStart:0x1F5FA, rangeEnd:0x1F64F),
+    EmojiRange(rangeStart:0x1F680, rangeEnd:0x1F6A3),
+    EmojiRange(rangeStart:0x1F6B4, rangeEnd:0x1F6B6),
+    EmojiRange(rangeStart:0x1F6C0, rangeEnd:0x1F6C0),
+    EmojiRange(rangeStart:0x1F6C6, rangeEnd:0x1F6CC),
+    EmojiRange(rangeStart:0x1F6D0, rangeEnd:0x1F6E9),
+    EmojiRange(rangeStart:0x1F6EB, rangeEnd:0x1F6FF),
+    EmojiRange(rangeStart:0x1F774, rangeEnd:0x1F77F),
+    EmojiRange(rangeStart:0x1F7D5, rangeEnd:0x1F7FF),
+    EmojiRange(rangeStart:0x1F80C, rangeEnd:0x1F80F),
+    EmojiRange(rangeStart:0x1F848, rangeEnd:0x1F84F),
+    EmojiRange(rangeStart:0x1F85A, rangeEnd:0x1F85F),
+    EmojiRange(rangeStart:0x1F888, rangeEnd:0x1F88F),
+    EmojiRange(rangeStart:0x1F8AE, rangeEnd:0x1F926),
+    EmojiRange(rangeStart:0x1F928, rangeEnd:0x1F93A),
+    EmojiRange(rangeStart:0x1F93C, rangeEnd:0x1F945),
+    EmojiRange(rangeStart:0x1F947, rangeEnd:0x1F9DD),
+    EmojiRange(rangeStart:0x1F9E7, rangeEnd:0x1FFFD),
+    EmojiRange(rangeStart:0xE0020, rangeEnd:0xE007F)
+    ]
 
     // From:
     // https://www.unicode.org/Public/emoji/
@@ -12,158 +174,25 @@ extension UnicodeScalar {
     // https://www.unicode.org/Public/emoji/6.0/emoji-data.txt
     var isEmoji: Bool {
 
-        switch value {
-        case
-        0x23...0x23, // 1 Emotions
-        0x2A...0x2A, // 1 Emotions
-        0x30...0x39, // 10 Emotions
-        0xA9...0xA9, // 1 Emotions
-        0xAE...0xAE, // 1 Emotions
-        0x200D...0x200D, // 1 Emotions
-        0x203C...0x203C, // 1 Emotions
-        0x2049...0x2049, // 1 Emotions
-        0x20D0...0x20E3, // 20 Emotions
-        0x2122...0x2122, // 1 Emotions
-        0x2139...0x2139, // 1 Emotions
-        0x2194...0x2199, // 6 Emotions
-        0x21A9...0x21AA, // 2 Emotions
-        0x231A...0x231B, // 2 Emotions
-        0x2328...0x2328, // 1 Emotions
-        0x2388...0x2388, // 1 Emotions
-        0x23CF...0x23CF, // 1 Emotions
-        0x23E9...0x23F0, // 8 Emotions
-        0x23F3...0x23F3, // 1 Emotions
-        0x23F8...0x23FA, // 3 Emotions
-        0x24C2...0x24C2, // 1 Emotions
-        0x25AA...0x25AB, // 2 Emotions
-        0x25B6...0x25B6, // 1 Emotions
-        0x25C0...0x25C0, // 1 Emotions
-        0x25FB...0x25FE, // 4 Emotions
-        0x2600...0x260E, // 15 Emotions
-        0x2611...0x2611, // 1 Emotions
-        0x2614...0x261D, // 10 Emotions
-        0x2620...0x2620, // 1 Emotions
-        0x2622...0x2623, // 2 Emotions
-        0x2626...0x2626, // 1 Emotions
-        0x262A...0x262A, // 1 Emotions
-        0x262E...0x262F, // 2 Emotions
-        0x2638...0x263A, // 3 Emotions
-        0x2640...0x2640, // 1 Emotions
-        0x2642...0x2642, // 1 Emotions
-        0x2648...0x2653, // 12 Emotions
-        0x2660...0x2660, // 1 Emotions
-        0x2663...0x2663, // 1 Emotions
-        0x2665...0x2666, // 2 Emotions
-        0x2668...0x2668, // 1 Emotions
-        0x2670...0x267B, // 12 Emotions
-        0x267E...0x2693, // 22 Emotions
-        0x2699...0x2699, // 1 Emotions
-        0x269B...0x26AB, // 17 Emotions
-        0x26B0...0x26C8, // 25 Emotions
-        0x26CE...0x26D1, // 4 Emotions
-        0x26D3...0x26D4, // 2 Emotions
-        0x26E2...0x26EA, // 9 Emotions
-        0x26F0...0x26F3, // 4 Emotions
-        0x26F5...0x26F5, // 1 Emotions
-        0x26F7...0x26FA, // 4 Emotions
-        0x26FD...0x26FD, // 1 Emotions
-        0x2700...0x2702, // 3 Emotions
-        0x2705...0x2705, // 1 Emotions
-        0x2708...0x270F, // 8 Emotions
-        0x2712...0x2712, // 1 Emotions
-        0x2714...0x2714, // 1 Emotions
-        0x2716...0x2716, // 1 Emotions
-        0x271D...0x271D, // 1 Emotions
-        0x2721...0x2721, // 1 Emotions
-        0x2728...0x2728, // 1 Emotions
-        0x2733...0x2734, // 2 Emotions
-        0x2744...0x2744, // 1 Emotions
-        0x2747...0x2747, // 1 Emotions
-        0x274C...0x274C, // 1 Emotions
-        0x274E...0x274E, // 1 Emotions
-        0x2753...0x2755, // 3 Emotions
-        0x2757...0x2757, // 1 Emotions
-        0x2763...0x2767, // 5 Emotions
-        0x2795...0x2797, // 3 Emotions
-        0x27A1...0x27A1, // 1 Emotions
-        0x27B0...0x27B0, // 1 Emotions
-        0x27BF...0x27BF, // 1 Emotions
-        0x2934...0x2935, // 2 Emotions
-        0x2B05...0x2B07, // 3 Emotions
-        0x2B1B...0x2B1C, // 2 Emotions
-        0x2B50...0x2B50, // 1 Emotions
-        0x2B55...0x2B55, // 1 Emotions
-        0x3030...0x3030, // 1 Emotions
-        0x303D...0x303D, // 1 Emotions
-        0x3297...0x3297, // 1 Emotions
-        0x3299...0x3299, // 1 Emotions
-        0xFE00...0xFE0F, // 16 Emotions
-        0x1F000...0x1F004, // 5 Emotions
-        0x1F02C...0x1F0FF, // 212 Emotions
-        0x1F10D...0x1F10F, // 3 Emotions
-        0x1F12F...0x1F12F, // 1 Emotions
-        0x1F16C...0x1F171, // 6 Emotions
-        0x1F17E...0x1F17F, // 2 Emotions
-        0x1F18E...0x1F18E, // 1 Emotions
-        0x1F191...0x1F19A, // 10 Emotions
-        0x1F1AD...0x1F1FF, // 83 Emotions
-        0x1F201...0x1F20F, // 15 Emotions
-        0x1F21A...0x1F21A, // 1 Emotions
-        0x1F22F...0x1F22F, // 1 Emotions
-        0x1F232...0x1F23A, // 9 Emotions
-        0x1F23C...0x1F23F, // 4 Emotions
-        0x1F249...0x1F385, // 317 Emotions
-        0x1F394...0x1F397, // 4 Emotions
-        0x1F399...0x1F39B, // 3 Emotions
-        0x1F39E...0x1F3C7, // 42 Emotions
-        0x1F3CA...0x1F3F4, // 43 Emotions
-        0x1F3F7...0x1F450, // 90 Emotions
-        0x1F466...0x1F469, // 4 Emotions
-        0x1F46E...0x1F46E, // 1 Emotions
-        0x1F470...0x1F478, // 9 Emotions
-        0x1F47C...0x1F47C, // 1 Emotions
-        0x1F481...0x1F483, // 3 Emotions
-        0x1F485...0x1F487, // 3 Emotions
-        0x1F4AA...0x1F4AA, // 1 Emotions
-        0x1F4F8...0x1F570, // 121 Emotions
-        0x1F573...0x1F575, // 3 Emotions
-        0x1F57A...0x1F587, // 14 Emotions
-        0x1F58A...0x1F58D, // 4 Emotions
-        0x1F590...0x1F590, // 1 Emotions
-        0x1F595...0x1F596, // 2 Emotions
-        0x1F5A4...0x1F5A8, // 5 Emotions
-        0x1F5B1...0x1F5B2, // 2 Emotions
-        0x1F5BC...0x1F5BC, // 1 Emotions
-        0x1F5C2...0x1F5C4, // 3 Emotions
-        0x1F5D1...0x1F5D3, // 3 Emotions
-        0x1F5DC...0x1F5DE, // 3 Emotions
-        0x1F5E1...0x1F5E1, // 1 Emotions
-        0x1F5E3...0x1F5E3, // 1 Emotions
-        0x1F5E8...0x1F5E8, // 1 Emotions
-        0x1F5EF...0x1F5EF, // 1 Emotions
-        0x1F5F3...0x1F5F3, // 1 Emotions
-        0x1F5FA...0x1F64F, // 86 Emotions
-        0x1F680...0x1F6A3, // 36 Emotions
-        0x1F6B4...0x1F6B6, // 3 Emotions
-        0x1F6C0...0x1F6C0, // 1 Emotions
-        0x1F6C6...0x1F6CC, // 7 Emotions
-        0x1F6D0...0x1F6E9, // 26 Emotions
-        0x1F6EB...0x1F6FF, // 21 Emotions
-        0x1F774...0x1F77F, // 12 Emotions
-        0x1F7D5...0x1F7FF, // 43 Emotions
-        0x1F80C...0x1F80F, // 4 Emotions
-        0x1F848...0x1F84F, // 8 Emotions
-        0x1F85A...0x1F85F, // 6 Emotions
-        0x1F888...0x1F88F, // 8 Emotions
-        0x1F8AE...0x1F926, // 121 Emotions
-        0x1F928...0x1F93A, // 19 Emotions
-        0x1F93C...0x1F945, // 10 Emotions
-        0x1F947...0x1F9DD, // 151 Emotions
-        0x1F9E7...0x1FFFD, // 1559 Emotions
-        0xE0020...0xE007F: // 96 Emotions
-            return true
-
-        default: return false
+        // Binary search.
+        var left: Int = 0
+        var right = Int(UnicodeScalar.kEmojiRanges.count - 1)
+        while true {
+            let mid = (left + right) / 2
+            let midRange = UnicodeScalar.kEmojiRanges[mid]
+            if value < midRange.rangeStart {
+                if mid == left {
+                    return false
+                }
+                right = mid - 1
+            } else if value > midRange.rangeEnd {
+                if mid == right {
+                    return false
+                }
+                left = mid + 1
+            } else {
+                return true
+            }
         }
     }
 

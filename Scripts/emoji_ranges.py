@@ -77,7 +77,8 @@ if __name__ == '__main__':
     
     print
     for range_start, range_end in new_ranges:
-        print '0x%X...0x%X, // %d Emotions' % (range_start, range_end, (1 + range_end - range_start), )
+        # print '0x%X...0x%X, // %d Emotions' % (range_start, range_end, (1 + range_end - range_start), )
+        print 'EmojiRange(rangeStart:0x%X, rangeEnd:0x%X),' % (range_start, range_end, )
     print 'new_ranges:', len(new_ranges)
         
         
