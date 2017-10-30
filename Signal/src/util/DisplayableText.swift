@@ -18,6 +18,10 @@ extension UnicodeScalar {
         }
     }
 
+    // From:
+    // https://www.unicode.org/Public/emoji/
+    // Current Version:
+    // https://www.unicode.org/Public/emoji/6.0/emoji-data.txt
     static let kEmojiRanges = [
     EmojiRange(rangeStart:0x23, rangeEnd:0x23),
     EmojiRange(rangeStart:0x2A, rangeEnd:0x2A),
@@ -168,10 +172,6 @@ extension UnicodeScalar {
     EmojiRange(rangeStart:0xE0020, rangeEnd:0xE007F)
     ]
 
-    // From:
-    // https://www.unicode.org/Public/emoji/
-    // Current Version:
-    // https://www.unicode.org/Public/emoji/6.0/emoji-data.txt
     var isEmoji: Bool {
 
         // Binary search.
