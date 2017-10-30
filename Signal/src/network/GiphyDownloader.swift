@@ -585,7 +585,7 @@ extension URLSessionTask {
             }
             guard !assetRequest.wasCancelled else {
                 // Discard the cancelled asset request and try again.
-                self.processRequestQueue()
+                self.removeAssetRequestFromQueue(assetRequest: assetRequest)
                 return
             }
             guard UIApplication.shared.applicationState == .active else {
@@ -620,7 +620,12 @@ extension URLSessionTask {
                 var request = URLRequest(url: assetRequest.rendition.url as URL)
                 request.httpMethod = "HEAD"
 
-                let task = downloadSession.dataTask(with:request, completionHandler: { [weak self] _, response, error -> Void in
+                let task = downloadSession.dataTask(with:request, completionHandler: { [weak self] data, response, error -> Void in
+                    if let data = data {
+                        if data.count > 0 {
+                            owsFail("\(self?.TAG) HEAD request has unexpected body: \(data.count).")
+                        }
+                    }
                     self?.handleAssetSizeResponse(assetRequest:assetRequest, response:response, error:error)
                 })
 
@@ -694,8 +699,8 @@ extension URLSessionTask {
     private func popNextAssetRequest() -> GiphyAssetRequest? {
         AssertIsOnMainThread()
 
-        let kMaxAssetRequestCount: UInt = 9
-        let kMaxAssetRequestsPerAssetCount: UInt = 3
+        let kMaxAssetRequestCount: UInt = 6
+        let kMaxAssetRequestsPerAssetCount: UInt = 2
 
         // Prefer the first "high" priority request;
         // fall back to the first "low" priority request.
