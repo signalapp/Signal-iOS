@@ -70,7 +70,7 @@ if __name__ == '__main__':
             # if last_range_end + 1 == range_start:
                 new_ranges = new_ranges[:-1]
                 print 'merging', last_range_start, last_range_end, 'and', range_start, range_end
-                new_ranges.append((last_range_start, range_end,))
+                new_ranges.append((last_range_start, max(range_end, last_range_end),))
                 continue
 
         new_ranges.append((range_start, range_end,))
