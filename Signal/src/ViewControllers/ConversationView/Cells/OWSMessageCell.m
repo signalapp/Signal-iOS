@@ -182,19 +182,20 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(DisplayableText.kMaxJumbomojiCount == 5);
 
-    if (self.displayableText.jumbomojiCount) {
-        switch (self.displayableText.jumbomojiCount.integerValue) {
-            case 1:
-                return [UIFont ows_regularFontWithSize:35.f];
-            case 2:
-                return [UIFont ows_regularFontWithSize:30.f];
-            case 3:
-            case 4:
-            case 5:
-                return [UIFont ows_regularFontWithSize:25.f];
-            default:
-                break;
-        }
+    switch (self.displayableText.jumbomojiCount) {
+        case 0:
+            break;
+        case 1:
+            return [UIFont ows_regularFontWithSize:35.f];
+        case 2:
+            return [UIFont ows_regularFontWithSize:30.f];
+        case 3:
+        case 4:
+        case 5:
+            return [UIFont ows_regularFontWithSize:25.f];
+        default:
+            OWSFail(@"%@ Unexpected jumbomoji count: %zd", self.logTag, self.displayableText.jumbomojiCount);
+            break;
     }
 
     return [UIFont ows_dynamicTypeBodyFont];
