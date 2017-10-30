@@ -12,7 +12,7 @@ enum GiphyRequestPriority {
 
 enum GiphyAssetSegmentState: UInt {
     case waiting
-    case active
+    case downloading
     case complete
     case failed
 }
@@ -24,7 +24,12 @@ class GiphyAssetSegment {
     public let segmentStart: UInt
     public let segmentLength: UInt
     public let redundantLength: UInt
-    public var state: GiphyAssetSegmentState = .waiting
+
+    public var state: GiphyAssetSegmentState = .waiting {
+        didSet {
+            AssertIsOnMainThread()
+        }
+    }
     private var datas = [Data]()
 
     init(index: UInt,
@@ -46,15 +51,27 @@ class GiphyAssetSegment {
     }
 
     public func append(data: Data) {
+        guard state == .downloading else {
+            owsFail("\(TAG) appending data in invalid state: \(state)")
+            return
+        }
+
         datas.append(data)
     }
 
     public func mergeData(assetData: NSMutableData) {
+        guard state == .complete else {
+            owsFail("\(TAG) merging data in invalid state: \(state)")
+            return
+        }
+
         // In some cases the last two segments will overlap.
         // In that case, we only want to append the non-overlapping
         // tail of the last segment.
         var bytesToIgnore = Int(redundantLength)
+        var totalDataBytes: UInt = 0
         for data in datas {
+            totalDataBytes += UInt(data.count)
             if data.count <= bytesToIgnore {
                 bytesToIgnore -= data.count
             } else if bytesToIgnore > 0 {
@@ -66,14 +83,23 @@ class GiphyAssetSegment {
                 assetData.append(data)
             }
         }
+        guard totalDataBytes == segmentLength else {
+            owsFail("\(TAG) segment data length: \(totalDataBytes) doesn't match expected length: \(segmentLength)")
+            return
+        }
     }
 }
 
 enum GiphyAssetRequestState: UInt {
+    // Does not yet have content length.
     case waiting
+    // Getting content length.
     case requestingSize
+    // Has content length, ready for downloads or downloads in flight.
     case active
+    // Success
     case complete
+    // Failure
     case failed
 }
 
@@ -97,7 +123,6 @@ enum GiphyAssetRequestState: UInt {
     var assetFilePath: String?
 
     private var segments = [GiphyAssetSegment]()
-    private var assetData = NSMutableData()
     public var state: GiphyAssetRequestState = .waiting
     public var contentLength: Int = 0 {
         didSet {
@@ -122,9 +147,11 @@ enum GiphyAssetRequestState: UInt {
     }
 
     private func segmentSize() -> UInt {
-        let fileSize = UInt(contentLength)
-        guard fileSize > 0 else {
-            owsFail("\(TAG) rendition missing filesize")
+        AssertIsOnMainThread()
+
+        let contentLength = UInt(self.contentLength)
+        guard contentLength > 0 else {
+            owsFail("\(TAG) rendition missing contentLength")
             requestDidFail()
             return 0
         }
@@ -136,41 +163,46 @@ enum GiphyAssetRequestState: UInt {
         let k10KB: UInt = 10 * 1024
         let k1KB: UInt = 1 * 1024
         for segmentSize in [k1MB, k500KB, k100KB, k50KB, k10KB, k1KB ] {
-            if fileSize >= segmentSize {
+            if contentLength >= segmentSize {
                 return segmentSize
             }
         }
-        return fileSize
+        return contentLength
     }
 
     private func createSegments() {
+        AssertIsOnMainThread()
+
         let segmentLength = segmentSize()
         guard segmentLength > 0 else {
             return
         }
-        let fileSize = UInt(contentLength)
+        let contentLength = UInt(self.contentLength)
 
         var nextSegmentStart: UInt = 0
         var index: UInt = 0
-        while nextSegmentStart < fileSize {
+        while nextSegmentStart < contentLength {
             var segmentStart: UInt = nextSegmentStart
             var redundantLength: UInt = 0
             // The last segment may overlap the penultimate segment
             // in order to keep the segment sizes uniform.
-            if segmentStart + segmentLength > fileSize {
-                redundantLength = segmentStart + segmentLength - fileSize
-                segmentStart = fileSize - segmentLength
+            if segmentStart + segmentLength > contentLength {
+                redundantLength = segmentStart + segmentLength - contentLength
+                segmentStart = contentLength - segmentLength
             }
-            segments.append(GiphyAssetSegment(index:index,
-                                              segmentStart:segmentStart,
-                                              segmentLength:segmentLength,
-                                              redundantLength:redundantLength))
+            let assetSegment = GiphyAssetSegment(index:index,
+                                                 segmentStart:segmentStart,
+                                                 segmentLength:segmentLength,
+                                                 redundantLength:redundantLength)
+            segments.append(assetSegment)
             nextSegmentStart = segmentStart + segmentLength
             index += 1
         }
     }
 
     private func firstSegmentWithState(state: GiphyAssetSegmentState) -> GiphyAssetSegment? {
+        AssertIsOnMainThread()
+
         for segment in segments {
             guard segment.state != .failed else {
                 owsFail("\(TAG) unexpected failed segment.")
@@ -184,26 +216,53 @@ enum GiphyAssetRequestState: UInt {
     }
 
     public func firstWaitingSegment() -> GiphyAssetSegment? {
+        AssertIsOnMainThread()
+
         return firstSegmentWithState(state:.waiting)
     }
 
-    public func firstActiveSegment() -> GiphyAssetSegment? {
-        return firstSegmentWithState(state:.active)
+    public func downloadingSegmentsCount() -> UInt {
+        AssertIsOnMainThread()
+
+        var result: UInt = 0
+        for segment in segments {
+            guard segment.state != .failed else {
+                owsFail("\(TAG) unexpected failed segment.")
+                continue
+            }
+            if segment.state == .downloading {
+                result += 1
+            }
+        }
+        return result
     }
 
-    public func mergeSegmentData(segment: GiphyAssetSegment) {
-        guard segment.totalDataSize() > 0 else {
-            owsFail("\(TAG) could not merge empty segment.")
-            return
+    public func areAllSegmentsComplete() -> Bool {
+        AssertIsOnMainThread()
+
+        for segment in segments {
+            guard segment.state == .complete else {
+                return false
+            }
         }
-        guard segment.state == .complete else {
-            owsFail("\(TAG) could not merge incomplete segment.")
-            return
-        }
-        segment.mergeData(assetData: assetData)
+        return true
     }
 
     public func writeAssetToFile(gifFolderPath: String) -> GiphyAsset? {
+
+        let assetData = NSMutableData()
+        for segment in segments {
+            guard segment.state == .complete else {
+                owsFail("\(TAG) unexpected incomplete segment.")
+                return nil
+            }
+            guard segment.totalDataSize() > 0 else {
+                owsFail("\(TAG) could not merge empty segment.")
+                return nil
+            }
+            segment.mergeData(assetData: assetData)
+        }
+
         guard assetData.length == contentLength else {
             owsFail("\(TAG) asset data has unexpected length.")
             return nil
@@ -368,6 +427,8 @@ extension URLSessionTask {
     static let sharedInstance = GiphyDownloader()
 
     // A private queue used for download task callbacks.
+    // 
+    // TODO:
     private let operationQueue = OperationQueue()
 
     var gifFolderPath = ""
@@ -392,7 +453,8 @@ extension URLSessionTask {
         configuration.urlCache = nil
         configuration.requestCachePolicy = .reloadIgnoringCacheData
         let session = URLSession(configuration:configuration,
-                                 delegate:self, delegateQueue:operationQueue)
+                                 delegate:self,
+                                 delegateQueue:operationQueue)
         return session
     }
 
@@ -407,8 +469,6 @@ extension URLSessionTask {
     // TODO: We could use a proper queue, e.g. implemented with a linked
     // list.
     private var assetRequestQueue = [GiphyAssetRequest]()
-    private let kMaxAssetRequestCount = 3
-//    private var activeAssetRequests = Set<GiphyAssetRequest>()
 
     // The success and failure callbacks are always called on main queue.
     //
@@ -422,6 +482,7 @@ extension URLSessionTask {
 
         if let asset = assetMap.get(key:rendition.url) {
             // Synchronous cache hit.
+            Logger.verbose("\(self.TAG) asset cache hit: \(rendition.url)")
             success(nil, asset)
             return nil
         }
@@ -429,6 +490,7 @@ extension URLSessionTask {
         // Cache miss.
         //
         // Asset requests are done queued and performed asynchronously.
+        Logger.verbose("\(self.TAG) asset cache miss: \(rendition.url)")
         let assetRequest = GiphyAssetRequest(rendition:rendition,
                                              priority:priority,
                                              success:success,
@@ -441,6 +503,8 @@ extension URLSessionTask {
     public func cancelAllRequests() {
         AssertIsOnMainThread()
 
+        Logger.verbose("\(self.TAG) cancelAllRequests")
+
         self.assetRequestQueue.forEach { $0.cancel() }
         self.assetRequestQueue = []
     }
@@ -449,12 +513,10 @@ extension URLSessionTask {
 
         DispatchQueue.main.async {
             assetSegment.state = .complete
-            // TODO: Should we move this merge off main thread?
-            assetRequest.mergeSegmentData(segment : assetSegment)
 
-            // If the asset request has completed all of its segments,
-            // try to write the asset to file.
-            if assetRequest.firstWaitingSegment() == nil {
+            if assetRequest.areAllSegmentsComplete() {
+                // If the asset request has completed all of its segments,
+                // try to write the asset to file.
                 assetRequest.state = .complete
 
                 // Move write off main thread.
@@ -510,6 +572,7 @@ extension URLSessionTask {
         }
 
         assetRequestQueue = assetRequestQueue.filter { $0 != assetRequest }
+        processRequestQueue()
     }
 
     // Start a request if necessary, complete asset requests if possible.
@@ -562,29 +625,36 @@ extension URLSessionTask {
                 })
 
                 task.resume()
-                return
+            } else {
+                // Start a download task.
+
+                guard let assetSegment = assetRequest.firstWaitingSegment() else {
+                    owsFail("\(self.TAG) queued asset request does not have a waiting segment.")
+                    return
+                }
+                assetSegment.state = .downloading
+
+
+                var request = URLRequest(url: assetRequest.rendition.url as URL)
+                let rangeHeaderValue = "bytes=\(assetSegment.segmentStart)-\(assetSegment.segmentStart + assetSegment.segmentLength - 1)"
+                request.addValue(rangeHeaderValue, forHTTPHeaderField: "Range")
+                let task = downloadSession.dataTask(with:request)
+                task.assetRequest = assetRequest
+                task.assetSegment = assetSegment
+                task.resume()
             }
 
-            // Start a download task.
-
-            guard let assetSegment = assetRequest.firstWaitingSegment() else {
-                owsFail("\(self.TAG) queued asset request does not have a waiting segment.")
-                return
-            }
-            assetSegment.state = .active
-            assetRequest.state = .active
-
-            var request = URLRequest(url: assetRequest.rendition.url as URL)
-            let rangeHeaderValue = "bytes=\(assetSegment.segmentStart)-\(assetSegment.segmentStart + assetSegment.segmentLength - 1)"
-            request.addValue(rangeHeaderValue, forHTTPHeaderField: "Range")
-            let task = downloadSession.dataTask(with:request)
-            task.assetRequest = assetRequest
-            task.assetSegment = assetSegment
-            task.resume()
+            // Recurse; we may be able to start multiple downloads.
+            self.processRequestQueue()
         }
     }
 
     private func handleAssetSizeResponse(assetRequest: GiphyAssetRequest, response: URLResponse?, error: Error?) {
+        guard error == nil else {
+            assetRequest.state = .failed
+            self.assetRequestDidFail(assetRequest:assetRequest)
+            return
+        }
         guard let httpResponse = response as? HTTPURLResponse else {
             owsFail("\(self.TAG) Asset size response is invalid.")
             assetRequest.state = .failed
@@ -617,19 +687,31 @@ extension URLSessionTask {
         }
     }
 
+    // Return the first asset request for which we either:
+    //
+    // * Need to download the content length.
+    // * Need to download at least one of its segments.
     private func popNextAssetRequest() -> GiphyAssetRequest? {
         AssertIsOnMainThread()
 
+        let kMaxAssetRequestCount: UInt = 9
+        let kMaxAssetRequestsPerAssetCount: UInt = 3
+
         // Prefer the first "high" priority request;
         // fall back to the first "low" priority request.
-        var activeAssetRequestsCount = 0
+        var activeAssetRequestsCount: UInt = 0
         for priority in [GiphyRequestPriority.high, GiphyRequestPriority.low] {
             for assetRequest in assetRequestQueue where assetRequest.priority == priority {
                 switch assetRequest.state {
                 case .waiting:
-                    break
+                    // This asset request needs its content length.
+                    return assetRequest
                 case .requestingSize:
                     activeAssetRequestsCount += 1
+                    // Ensure that only N requests are active at a time.
+                    guard activeAssetRequestsCount < kMaxAssetRequestCount else {
+                        return nil
+                    }
                     continue
                 case .active:
                     break
@@ -639,13 +721,18 @@ extension URLSessionTask {
                     continue
                 }
 
-                guard assetRequest.firstActiveSegment() == nil else {
-                    activeAssetRequestsCount += 1
-                    // Ensure that only N requests are active at a time.
-                    guard activeAssetRequestsCount < self.kMaxAssetRequestCount else {
-                        return nil
-                    }
-
+                let downloadingSegmentsCount = assetRequest.downloadingSegmentsCount()
+                activeAssetRequestsCount += downloadingSegmentsCount
+                // Ensure that only N segment requests are active per asset at a time.
+                guard downloadingSegmentsCount < kMaxAssetRequestsPerAssetCount else {
+                    continue
+                }
+                // Ensure that only N requests are active at a time.
+                guard activeAssetRequestsCount < kMaxAssetRequestCount else {
+                    return nil
+                }
+                guard assetRequest.firstWaitingSegment() != nil else {
+                    /// Asset request does not have a waiting segment.
                     continue
                 }
                 return assetRequest
