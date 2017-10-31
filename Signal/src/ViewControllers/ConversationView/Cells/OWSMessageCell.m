@@ -132,8 +132,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.bubbleImageView autoPinToSuperviewEdges];
 
     self.textView = [UITextView new];
-    // Honor dynamic type in the message bodies.
-    self.textView.font = [self textMessageFont];
     self.textView.backgroundColor = [UIColor clearColor];
     self.textView.opaque = NO;
     self.textView.editable = NO;
@@ -182,6 +180,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)textMessageFont
 {
+    OWSAssert(DisplayableText.kMaxJumbomojiCount == 5);
+
+    switch (self.displayableText.jumbomojiCount) {
+        case 0:
+            break;
+        case 1:
+            return [UIFont ows_regularFontWithSize:35.f];
+        case 2:
+            return [UIFont ows_regularFontWithSize:30.f];
+        case 3:
+        case 4:
+        case 5:
+            return [UIFont ows_regularFontWithSize:25.f];
+        default:
+            OWSFail(@"%@ Unexpected jumbomoji count: %zd", self.logTag, self.displayableText.jumbomojiCount);
+            break;
+    }
+
     return [UIFont ows_dynamicTypeBodyFont];
 }
 
@@ -627,6 +643,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.textView.text = self.displayableText.displayText;
     UIColor *textColor = [self textColor];
     self.textView.textColor = textColor;
+    // Honor dynamic type in the message bodies.
     self.textView.font = [self textMessageFont];
 
     // Don't link outgoing messages that haven't been sent yet, as
@@ -848,6 +865,7 @@ NS_ASSUME_NONNULL_BEGIN
             const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
 
             self.textView.text = self.displayableText.displayText;
+            // Honor dynamic type in the message bodies.
             self.textView.font = [self textMessageFont];
             CGSize textSize = [self.textView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
             CGFloat tapForMoreHeight = (self.displayableText.isTextTruncated ? [self tapForMoreHeight] : 0.f);
