@@ -2,8 +2,8 @@ platform :ios, '8.0'
 source 'https://github.com/CocoaPods/Specs.git'
 
 target 'Signal' do
-    pod 'Mantle', :inhibit_warnings => true	
-	pod 'YapDatabase/SQLCipher', '~> 2.9.3', :inhibit_warnings => true	
+    pod 'Mantle', :inhibit_warnings => true    
+    pod 'YapDatabase/SQLCipher', '~> 2.9.3', :inhibit_warnings => true    
     pod 'ATAppUpdater', :inhibit_warnings => true
     pod 'AxolotlKit',                 git: 'https://github.com/WhisperSystems/SignalProtocolKit.git'
     #pod 'AxolotlKit',                 path: '../SignalProtocolKit'
