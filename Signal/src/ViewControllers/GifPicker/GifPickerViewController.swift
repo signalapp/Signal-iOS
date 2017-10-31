@@ -148,6 +148,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         view.backgroundColor = UIColor.white
 
+        // Block UIKit from adjust insets of collection view which screws up
+        // min/max scroll positions.
+        self.automaticallyAdjustsScrollViewInsets = false
+
         // Search
         searchBar.searchBarStyle = .minimal
         searchBar.delegate = self
