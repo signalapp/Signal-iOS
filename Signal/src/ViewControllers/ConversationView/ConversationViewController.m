@@ -2926,13 +2926,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         }
         [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
     }
-        completion:^(BOOL success) {
+        completion:^(BOOL finished) {
             OWSAssert([NSThread isMainThread]);
 
-            if (!success) {
-                [self resetContentAndLayout];
-            } else {
-                [self.collectionView.collectionViewLayout invalidateLayout];
+            if (!finished) {
+                DDLogInfo(@"%@ performBatchUpdates did not finish", self.tag);
             }
 
             [self updateLastVisibleTimestamp];
