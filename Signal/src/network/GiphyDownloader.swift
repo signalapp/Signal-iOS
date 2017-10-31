@@ -33,11 +33,15 @@ class GiphyAssetSegment {
             AssertIsOnMainThread()
         }
     }
+
     // This state is accessed off the main thread.
     //
     // * During downloads it will be accessed on the task delegate queue.
     // * After downloads it will be accessed on a worker queue. 
     private var segmentData = Data()
+
+    // This state should only be accessed on the main thread.
+    public weak var task: URLSessionDataTask?
 
     init(index: UInt,
          segmentStart: UInt,
@@ -131,6 +135,7 @@ enum GiphyAssetRequestState: UInt {
             createSegments()
         }
     }
+    public weak var contentLengthTask: URLSessionDataTask?
 
     init(rendition: GiphyRendition,
          priority: GiphyRequestPriority,
@@ -294,6 +299,12 @@ enum GiphyAssetRequestState: UInt {
         AssertIsOnMainThread()
 
         wasCancelled = true
+        contentLengthTask?.cancel()
+        contentLengthTask = nil
+        for segment in segments {
+            segment.task?.cancel()
+            segment.task = nil
+        }
 
         // Don't call the callbacks if the request is cancelled.
         clearCallbacks()
