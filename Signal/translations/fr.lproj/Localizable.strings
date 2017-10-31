@@ -284,10 +284,10 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Connecter un nouvel appareil";
 
 /* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@peut avoir réinstallé ou modifié des périphériques. Vérifiez votre numéro de sécurité avec eux pour assurer la confidentialité.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ peut avoir réinstallé ou modifié des périphériques. Vérifiez votre numéro de sécurité avec eux pour assurer la confidentialité.";
 
 /* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Le numéro de sécurité avec%@a changé";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Le numéro de sécurité avec %@ a changé";
 
 /* Generic button text to proceed with an action */
 "CONFIRMATION_TITLE" = "Confirmer";
@@ -548,7 +548,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Le contact n'est pas un utilisateur Signal.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Failure: Ask sender to update Signal and resend.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Échec: Demander à l'expéditeur de mettre à jour le signal et de le renvoyer.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Réception d'un message en double.";
@@ -569,7 +569,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Numéro de sécurité modifié.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Votre numéro de sécurité avec%@ a changé.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Votre numéro de sécurité avec %@ a changé.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Une erreur inconnue est survenue.";
@@ -701,7 +701,7 @@
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Bloqué";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Connexion en cours";
+"IN_CALL_CONNECTING" = "Connexion en cours...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Sonnerie…";
@@ -882,13 +882,13 @@
 "MESSAGE_STATUS_UPLOADING" = "En cours de chargement...";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@n'est plus marqué comme vérifié. Appuyez dessus pour les options.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ n'est plus marqué comme vérifié. Appuyez dessus pour les options.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "Vous avez bloqué cet utilisateur";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@n'est plus marqué comme vérifié. Appuyez dessus pour les options.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ n'est plus marqué comme vérifié. Appuyez dessus pour les options.";
 
 /* Action sheet title after tapping on failed download. */
 "MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Téléchargement Echoué.";
@@ -1080,7 +1080,7 @@
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Exemple %@";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@%@";
+"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
 
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "Maison";
@@ -1116,13 +1116,13 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Fax Travail";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Vous n'avez pas marqué %@comme vérifié.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Vous n'avez pas marqué %@ comme vérifié.";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Vérifié";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@est vérifié.";
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ est vérifié.";
 
 /* Label for a link to more information about safety numbers and verification. */
 "PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Apprendre encore plus";
@@ -1353,7 +1353,7 @@
 "SEND_INVITE_FAILURE" = "Échec de l'envoi de l'invitation. Veuillez réessayer plus tard. ";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Vous avez invité vos amis à utiliser Signal!";
+"SEND_INVITE_SUCCESS" = "Vous avez invité vos amis à utiliser Signal !";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Inviter par SMS %@";
@@ -1452,7 +1452,7 @@
 "SETTINGS_INFORMATION_HEADER" = "Information";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Invitez Vos Amis";
+"SETTINGS_INVITE_TITLE" = "Invitez vos amis";
 
 /* content of tweet when inviting via twitter */
 "SETTINGS_INVITE_TWITTER_TEXT" = "Vous pouvez me joindre en utilisant Signal par @WhisperSystems, obtenez-le maintenant.";
@@ -1665,7 +1665,7 @@
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Vous avez marqué %@ comme non vérifié sur un autre appareil";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Vous avez marqué %@comme vérifié.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Vous avez marqué %@ comme vérifié.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Vous avez marqué %@ comme vérifié sur un autre périphérique.";
