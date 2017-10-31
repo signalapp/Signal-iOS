@@ -10,6 +10,9 @@ def fail(message):
     print message
     sys.exit(1)
 
+# For simplicity and compactness, we pre-define the 
+# emoji code planes to ensure that all of the currently-used
+# emoji ranges within them are combined.
 big_ranges = [
         (0x1F600,0x1F64F, ),
         (0x1F300,0x1F5FF, ),
@@ -21,8 +24,6 @@ big_ranges = [
         (65024,65039,), 
         (8400, 8447,)
         ]
-
-# def is_in_big_range(range_start, range_end)
 
 if __name__ == '__main__':
     src_filename = "emoji-data.txt"
@@ -80,5 +81,8 @@ if __name__ == '__main__':
         # print '0x%X...0x%X, // %d Emotions' % (range_start, range_end, (1 + range_end - range_start), )
         print 'EmojiRange(rangeStart:0x%X, rangeEnd:0x%X),' % (range_start, range_end, )
     print 'new_ranges:', len(new_ranges)
+    print
+    print 'Copy and paste the code above into DisplayableText.swift'
+    print 
         
         

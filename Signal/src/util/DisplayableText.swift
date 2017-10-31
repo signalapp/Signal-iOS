@@ -22,6 +22,11 @@ extension UnicodeScalar {
     // https://www.unicode.org/Public/emoji/
     // Current Version:
     // https://www.unicode.org/Public/emoji/6.0/emoji-data.txt
+    //
+    // These ranges can be code-generated using:
+    //
+    // * Scripts/emoji-data.txt 
+    // * Scripts/emoji_ranges.py
     static let kEmojiRanges = [
         EmojiRange(rangeStart:0x23, rangeEnd:0x23),
         EmojiRange(rangeStart:0x2A, rangeEnd:0x2A),
