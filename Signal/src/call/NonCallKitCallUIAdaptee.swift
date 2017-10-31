@@ -155,7 +155,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
             return
         }
 
-        self.callService.setIsMuted(isMuted: isMuted)
+        self.callService.setIsMuted(call: call, isMuted: isMuted)
     }
 
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {

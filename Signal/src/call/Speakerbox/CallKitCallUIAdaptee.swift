@@ -297,7 +297,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
 
         // Update the SignalCall's underlying hold state.
-        call.isOnHold = action.isOnHold
+        self.callService.setIsOnHold(call: call, isOnHold: action.isOnHold)
 
         // Signal to the system that the action has been successfully performed.
         action.fulfill()
@@ -307,13 +307,13 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
 
         Logger.info("\(TAG) Received \(#function) CXSetMutedCallAction")
-        guard callManager.callWithLocalId(action.callUUID) != nil else {
+        guard let call = callManager.callWithLocalId(action.callUUID) else {
             Logger.error("\(TAG) Failing CXSetMutedCallAction for unknown call: \(action.callUUID)")
             action.fail()
             return
         }
 
-        self.callService.setIsMuted(isMuted: action.isMuted)
+        self.callService.setIsMuted(call: call, isMuted: action.isMuted)
         action.fulfill()
     }
 
