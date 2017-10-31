@@ -439,11 +439,6 @@ extension URLSessionTask {
 
     static let sharedInstance = GiphyDownloader()
 
-    // A private queue used for download task callbacks.
-    // 
-    // TODO:
-    private let operationQueue = OperationQueue()
-
     var gifFolderPath = ""
 
     // Force usage as a singleton
@@ -461,15 +456,18 @@ extension URLSessionTask {
 
     private let kGiphyBaseURL = "https://api.giphy.com/"
 
-    private func giphyDownloadSession() -> URLSession? {
+    private lazy var giphyDownloadSession: URLSession = {
+        AssertIsOnMainThread()
+
         let configuration = GiphyAPI.giphySessionConfiguration()
         configuration.urlCache = nil
         configuration.requestCachePolicy = .reloadIgnoringCacheData
+        configuration.httpMaximumConnectionsPerHost = 10
         let session = URLSession(configuration:configuration,
                                  delegate:self,
-                                 delegateQueue:operationQueue)
+                                 delegateQueue:nil)
         return session
-    }
+    }()
 
     // 100 entries of which at least half will probably be stills.
     // Actual animated GIFs will usually be less than 3 MB so the
@@ -623,13 +621,6 @@ extension URLSessionTask {
             return
         }
 
-        guard let downloadSession = giphyDownloadSession() else {
-            owsFail("\(TAG) Couldn't create session manager.")
-            assetRequest.state = .failed
-            assetRequestDidFail(assetRequest:assetRequest)
-            return
-        }
-
         if assetRequest.state == .waiting {
             // If asset request hasn't yet determined the resource size,
             // try to do so now.
@@ -637,8 +628,9 @@ extension URLSessionTask {
 
             var request = URLRequest(url: assetRequest.rendition.url as URL)
             request.httpMethod = "HEAD"
+            request.httpShouldUsePipelining = true
 
-            let task = downloadSession.dataTask(with:request, completionHandler: { [weak self] data, response, error -> Void in
+            let task = giphyDownloadSession.dataTask(with:request, completionHandler: { [weak self] data, response, error -> Void in
                 if let data = data, data.count > 0 {
                     owsFail("\(self?.TAG) HEAD request has unexpected body: \(data.count).")
                 }
@@ -656,9 +648,10 @@ extension URLSessionTask {
             assetSegment.state = .downloading
 
             var request = URLRequest(url: assetRequest.rendition.url as URL)
+            request.httpShouldUsePipelining = true
             let rangeHeaderValue = "bytes=\(assetSegment.segmentStart)-\(assetSegment.segmentStart + assetSegment.segmentLength - 1)"
             request.addValue(rangeHeaderValue, forHTTPHeaderField: "Range")
-            let task = downloadSession.dataTask(with:request)
+            let task = giphyDownloadSession.dataTask(with:request)
             task.assetRequest = assetRequest
             task.assetSegment = assetSegment
             assetSegment.task = task
@@ -714,8 +707,8 @@ extension URLSessionTask {
     private func popNextAssetRequest() -> GiphyAssetRequest? {
         AssertIsOnMainThread()
 
-        let kMaxAssetRequestCount: UInt = 6
-        let kMaxAssetRequestsPerAssetCount: UInt = 2
+        let kMaxAssetRequestCount: UInt = 5
+        let kMaxAssetRequestsPerAssetCount: UInt = 5
 
         // Prefer the first "high" priority request;
         // fall back to the first "low" priority request.
