@@ -926,7 +926,7 @@ protocol CallServiceObserver: class {
         call.state = .connected
 
         // We don't risk transmitting any media until the remote client has admitted to being connected.
-        peerConnectionClient.setAudioEnabled(enabled: !call.isMuted)
+        ensureAudioState(call: call, peerConnectinClient: peerConnectionClient)
         peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
     }
 
@@ -1037,10 +1037,10 @@ protocol CallServiceObserver: class {
      *
      * Can be used for Incoming and Outgoing calls.
      */
-    func setIsMuted(isMuted: Bool) {
+    func setIsMuted(call: SignalCall, isMuted: Bool) {
         AssertIsOnMainThread()
 
-        guard let call = self.call else {
+        guard call == self.call else {
             // This can happen after a call has ended. Reproducible on iOS11, when the other party ends the call.
             Logger.info("\(TAG) ignoring mute request for obsolete call")
             return
@@ -1053,9 +1053,46 @@ protocol CallServiceObserver: class {
             return
         }
 
-        if call.state == .connected {
-            peerConnectionClient.setAudioEnabled(enabled: !isMuted)
+        ensureAudioState(call: call, peerConnectionClient: peerConnectionClient)
+    }
+
+    /**
+     * Local user toggled to hold call. Currently only possible via CallKit screen,
+     * e.g. when another Call comes in.
+     */
+    func setIsOnHold(call: SignalCall, isOnHold: Bool) {
+        AssertIsOnMainThread()
+
+        guard call == self.call else {
+            Logger.info("\(TAG) ignoring held request for obsolete call")
+            return
         }
+
+        call.isOnHold = isOnHold
+
+        guard let peerConnectionClient = self.peerConnectionClient else {
+            // The peer connection might not be created yet.
+            return
+        }
+
+        ensureAudioState(call: call, peerConnectionClient: peerConnectionClient)
+    }
+
+    func ensureAudioState(call: SignalCall, peerConnectionClient: PeerConnectionClient) {
+        guard call.state == .connected else {
+            peerConnectionClient.setAudioEnabled(enabled: false)
+            return
+        }
+        guard !call.isMuted else {
+            peerConnectionClient.setAudioEnabled(enabled: false)
+            return
+        }
+        guard !call.isOnHold else {
+            peerConnectionClient.setAudioEnabled(enabled: false)
+            return
+        }
+
+        peerConnectionClient.setAudioEnabled(enabled: true)
     }
 
     /**
