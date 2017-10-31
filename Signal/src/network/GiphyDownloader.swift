@@ -644,7 +644,7 @@ extension URLSessionTask {
                 }
                 self?.handleAssetSizeResponse(assetRequest:assetRequest, response:response, error:error)
             })
-
+            assetRequest.contentLengthTask = task
             task.resume()
         } else {
             // Start a download task.
@@ -661,6 +661,7 @@ extension URLSessionTask {
             let task = downloadSession.dataTask(with:request)
             task.assetRequest = assetRequest
             task.assetSegment = assetSegment
+            assetSegment.task = task
             task.resume()
         }
 
