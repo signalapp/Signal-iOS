@@ -707,8 +707,8 @@ extension URLSessionTask {
     private func popNextAssetRequest() -> GiphyAssetRequest? {
         AssertIsOnMainThread()
 
-        let kMaxAssetRequestCount: UInt = 5
-        let kMaxAssetRequestsPerAssetCount: UInt = 5
+        let kMaxAssetRequestCount: UInt = 3
+        let kMaxAssetRequestsPerAssetCount: UInt = kMaxAssetRequestCount - 1
 
         // Prefer the first "high" priority request;
         // fall back to the first "low" priority request.
