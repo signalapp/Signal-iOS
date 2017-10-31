@@ -147,6 +147,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     private func createViews() {
 
         view.backgroundColor = UIColor.white
+
+        // Block UIKit from adjust insets of collection view which screws up
+        // min/max scroll positions.
         self.automaticallyAdjustsScrollViewInsets = false
 
         // Search
