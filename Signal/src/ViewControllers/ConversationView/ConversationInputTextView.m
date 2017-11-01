@@ -201,13 +201,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSArray<UIKeyCommand *> *)keyCommands
 {
     // We're permissive about what modifier key we accept for the "send message" hotkey.
-    // We accept command-return, option-return and shift-return.  We don't support
-    // control-return because it doesn't work.
+    // We accept command-return, option-return.
+    //
+    // We don't support control-return because it doesn't work.
+    //
+    // We don't support shift-return because it is often used for "newline" in other
+    // messaging apps.
     return @[
-        [UIKeyCommand keyCommandWithInput:@"\r"
-                            modifierFlags:UIKeyModifierShift
-                                   action:@selector(modifiedReturnPressed:)
-                     discoverabilityTitle:@"Send Message"],
         [UIKeyCommand keyCommandWithInput:@"\r"
                             modifierFlags:UIKeyModifierCommand
                                    action:@selector(modifiedReturnPressed:)
