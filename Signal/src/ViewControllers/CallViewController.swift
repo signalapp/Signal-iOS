@@ -918,6 +918,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
         self.updateCallUI(callState: call.state)
     }
 
+    func holdDidChange(call: SignalCall, isOnHold: Bool) {
+        AssertIsOnMainThread()
+        self.updateCallUI(callState: call.state)
+    }
+
     internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
         AssertIsOnMainThread()
         self.updateCallUI(callState: call.state)

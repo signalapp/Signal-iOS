@@ -926,7 +926,7 @@ protocol CallServiceObserver: class {
         call.state = .connected
 
         // We don't risk transmitting any media until the remote client has admitted to being connected.
-        peerConnectionClient.setAudioEnabled(enabled: !call.isMuted)
+        ensureAudioState(call: call, peerConnectinClient: peerConnectionClient)
         peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
     }
 
@@ -1002,12 +1002,6 @@ protocol CallServiceObserver: class {
             return
         }
 
-        guard let peerConnectionClient = self.peerConnectionClient else {
-            OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionMissing(), file:#file, function:#function, line:#line)
-            handleFailedCall(failedCall: call, error: CallError.assertionError(description:"\(TAG) missing peerconnection client in \(#function)"))
-            return
-        }
-
         Logger.info("\(TAG) in \(#function): \(call.identifiersForLogs).")
 
         call.state = .localHangup
@@ -1016,9 +1010,13 @@ protocol CallServiceObserver: class {
         //        this.accountManager.cancelInFlightRequests();
         //        this.messageSender.cancelInFlightRequests();
 
-        // If the call is connected, we can send the hangup via the data channel.
-        let message = DataChannelMessage.forHangup(callId: call.signalingId)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"hangup", isCritical:true)
+        if let peerConnectionClient = self.peerConnectionClient {
+            // If the call is connected, we can send the hangup via the data channel for faster hangup.
+            let message = DataChannelMessage.forHangup(callId: call.signalingId)
+            peerConnectionClient.sendDataChannelMessage(data: message.asData(), description:"hangup", isCritical:true)
+        } else {
+            Logger.info("\(TAG) ending call before peer connection created. Device offline or quick hangup.")
+        }
 
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
@@ -1039,10 +1037,10 @@ protocol CallServiceObserver: class {
      *
      * Can be used for Incoming and Outgoing calls.
      */
-    func setIsMuted(isMuted: Bool) {
+    func setIsMuted(call: SignalCall, isMuted: Bool) {
         AssertIsOnMainThread()
 
-        guard let call = self.call else {
+        guard call == self.call else {
             // This can happen after a call has ended. Reproducible on iOS11, when the other party ends the call.
             Logger.info("\(TAG) ignoring mute request for obsolete call")
             return
@@ -1055,9 +1053,46 @@ protocol CallServiceObserver: class {
             return
         }
 
-        if call.state == .connected {
-            peerConnectionClient.setAudioEnabled(enabled: !isMuted)
+        ensureAudioState(call: call, peerConnectionClient: peerConnectionClient)
+    }
+
+    /**
+     * Local user toggled to hold call. Currently only possible via CallKit screen,
+     * e.g. when another Call comes in.
+     */
+    func setIsOnHold(call: SignalCall, isOnHold: Bool) {
+        AssertIsOnMainThread()
+
+        guard call == self.call else {
+            Logger.info("\(TAG) ignoring held request for obsolete call")
+            return
         }
+
+        call.isOnHold = isOnHold
+
+        guard let peerConnectionClient = self.peerConnectionClient else {
+            // The peer connection might not be created yet.
+            return
+        }
+
+        ensureAudioState(call: call, peerConnectionClient: peerConnectionClient)
+    }
+
+    func ensureAudioState(call: SignalCall, peerConnectionClient: PeerConnectionClient) {
+        guard call.state == .connected else {
+            peerConnectionClient.setAudioEnabled(enabled: false)
+            return
+        }
+        guard !call.isMuted else {
+            peerConnectionClient.setAudioEnabled(enabled: false)
+            return
+        }
+        guard !call.isOnHold else {
+            peerConnectionClient.setAudioEnabled(enabled: false)
+            return
+        }
+
+        peerConnectionClient.setAudioEnabled(enabled: true)
     }
 
     /**
@@ -1443,7 +1478,6 @@ protocol CallServiceObserver: class {
         self.remoteVideoTrack = nil
         self.isRemoteVideoEnabled = false
 
-        PeerConnectionClient.stopAudioSession()
         self.peerConnectionClient?.terminate()
         Logger.debug("\(TAG) setting peerConnectionClient in \(#function)")
         self.peerConnectionClient = nil
@@ -1493,6 +1527,11 @@ protocol CallServiceObserver: class {
     }
 
     internal func muteDidChange(call: SignalCall, isMuted: Bool) {
+        AssertIsOnMainThread()
+        // Do nothing
+    }
+
+    internal func holdDidChange(call: SignalCall, isOnHold: Bool) {
         AssertIsOnMainThread()
         // Do nothing
     }
