@@ -524,7 +524,6 @@ extension URLSessionTask {
     }
 
     private func segmentRequestDidSucceed(assetRequest: GiphyAssetRequest, assetSegment: GiphyAssetSegment) {
-
         DispatchQueue.main.async {
             assetSegment.state = .complete
 
