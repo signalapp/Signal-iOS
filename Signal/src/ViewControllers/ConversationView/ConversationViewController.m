@@ -459,7 +459,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [self.inputToolbar endEditing:TRUE];
     } else {
         self.inputToolbar.hidden = NO;
-        [self loadDraftInCompose];
     }
 }
 
@@ -477,6 +476,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self createHeaderViews];
     [self createBackButton];
     [self addNotificationListeners];
+    [self loadDraftInCompose];
 }
 
 - (void)createContents
