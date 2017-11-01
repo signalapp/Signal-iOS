@@ -2860,6 +2860,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         }
     }
 
+    NSUInteger oldViewItemCount = self.viewItems.count;
     NSMutableSet<NSNumber *> *rowsThatChangedSize = [[self reloadViewItems] mutableCopy];
 
     BOOL wasAtBottom = [self isScrolledToBottom];
@@ -2873,7 +2874,30 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // b) is inserting new interactions.
     __block BOOL scrollToBottom = wasAtBottom;
 
-    [self.collectionView performBatchUpdates:^{
+    // If user sends a new outgoing message, don't animate the change.
+    BOOL areAllUpdatesNewOutgoingMessages = YES;
+    for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
+        if (!areAllUpdatesNewOutgoingMessages) {
+            break;
+        }
+        switch (rowChange.type) {
+            case YapDatabaseViewChangeInsert: {
+                ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:rowChange.newIndexPath.row];
+                if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]
+                    && rowChange.newIndexPath.row >= (NSInteger)oldViewItemCount) {
+                    continue;
+                }
+            }
+            case YapDatabaseViewChangeDelete:
+            case YapDatabaseViewChangeMove:
+            case YapDatabaseViewChangeUpdate:
+                areAllUpdatesNewOutgoingMessages = NO;
+                break;
+        }
+    }
+    BOOL shouldAnimateUpdates = !areAllUpdatesNewOutgoingMessages;
+
+    void (^batchUpdates)() = ^{
         for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
@@ -2925,20 +2949,27 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             [rowsToReload addObject:[NSIndexPath indexPathForRow:row.integerValue inSection:0]];
         }
         [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
+    };
+    void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
+        OWSAssert([NSThread isMainThread]);
+
+        if (!finished) {
+            DDLogInfo(@"%@ performBatchUpdates did not finish", self.tag);
+        }
+
+        [self updateLastVisibleTimestamp];
+
+        if (scrollToBottom) {
+            [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
+        }
+    };
+
+    if (shouldAnimateUpdates) {
+        [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
+    } else {
+        batchUpdates();
+        batchUpdatesCompletion(YES);
     }
-        completion:^(BOOL finished) {
-            OWSAssert([NSThread isMainThread]);
-
-            if (!finished) {
-                DDLogInfo(@"%@ performBatchUpdates did not finish", self.tag);
-            }
-
-            [self updateLastVisibleTimestamp];
-
-            if (scrollToBottom) {
-                [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
-            }
-        }];
 }
 
 - (BOOL)isScrolledToBottom
