@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)inputTextViewDidBecomeFirstResponder;
 
+- (void)inputTextViewSendMessagePressed;
+
 @end
 
 #pragma mark -

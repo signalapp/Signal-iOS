@@ -3443,6 +3443,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self scrollToBottomAnimated:YES];
 }
 
+- (void)inputTextViewSendMessagePressed
+{
+    [self sendButtonPressed];
+}
+
 - (void)didPasteAttachment:(SignalAttachment *_Nullable)attachment
 {
     DDLogError(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
