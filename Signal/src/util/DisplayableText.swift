@@ -30,7 +30,8 @@ extension UnicodeScalar {
     static let kEmojiRanges = [
         EmojiRange(rangeStart:0x23, rangeEnd:0x23),
         EmojiRange(rangeStart:0x2A, rangeEnd:0x2A),
-        EmojiRange(rangeStart:0x30, rangeEnd:0x39),
+        // NOTE: Don't treat Digits 0..9 as Jumbomoji.
+//        EmojiRange(rangeStart:0x30, rangeEnd:0x39),
         EmojiRange(rangeStart:0xA9, rangeEnd:0xA9),
         EmojiRange(rangeStart:0xAE, rangeEnd:0xAE),
         EmojiRange(rangeStart:0x200D, rangeEnd:0x200D),
