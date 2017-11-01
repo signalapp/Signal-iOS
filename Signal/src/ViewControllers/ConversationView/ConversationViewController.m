@@ -3074,12 +3074,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    NSTimeInterval currentTime = self.audioRecorder.currentTime;
+    NSTimeInterval durationSeconds = self.audioRecorder.currentTime;
 
     [self.audioRecorder stop];
 
     const NSTimeInterval kMinimumRecordingTimeSeconds = 1.f;
-    if (currentTime < kMinimumRecordingTimeSeconds) {
+    if (durationSeconds < kMinimumRecordingTimeSeconds) {
         DDLogInfo(@"Discarding voice message; too short.");
         self.audioRecorder = nil;
 
@@ -3111,6 +3111,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [dataSource setShouldDeleteOnDeallocation];
     SignalAttachment *attachment =
         [SignalAttachment voiceMessageAttachmentWithDataSource:dataSource dataUTI:(NSString *)kUTTypeMPEG4Audio];
+    DDLogVerbose(@"%@ voice memo duration: %f, file size: %zd", self.tag, durationSeconds, [dataSource dataLength]);
     if (!attachment || [attachment hasError]) {
         DDLogWarn(@"%@ %s Invalid attachment: %@.",
             self.tag,
