@@ -547,6 +547,9 @@
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontaktas nėra Signal naudotojas.";
 
+/* Error message when unable to receive an attachment because the sending client is too old. */
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Nesėkmė: Paprašykite, kad siuntėjas atsinaujintų Signal ir siųstų iš naujo.";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Gauta dviguba žinutė.";
 

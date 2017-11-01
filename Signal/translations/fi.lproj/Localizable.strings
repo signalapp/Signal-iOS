@@ -209,7 +209,7 @@
 "CALL_LABEL" = "Soita";
 
 /* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Päivitä versioon iOS 9 tai uudempaan nähdäksesi etävideo.";
+"CALL_REMOTE_VIDEO_DISABLED" = "Päivitä versioon iOS 9 tai uudempaan nähdäksesi videokuvan.";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Ei vastausta.";
@@ -546,6 +546,9 @@
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Yhteystieto ei käytä Signalia.";
+
+/* Error message when unable to receive an attachment because the sending client is too old. */
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Virhe: Pyydä lähettäjää päivittämään Signal ja lähettämään viesti uudelleen";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Vastaanotettiin viestin kaksoiskappale.";

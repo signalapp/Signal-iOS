@@ -209,7 +209,7 @@
 "CALL_LABEL" = "Poziv";
 
 /* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Please upgrade to iOS 9 or newer to see remote video.";
+"CALL_REMOTE_VIDEO_DISABLED" = "Nadogradite na iOS 9 ili noviji da biste vidjeli udaljeni videozapis.";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Nema odgovora.";
@@ -547,6 +547,9 @@
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt ne koristi Signal.";
 
+/* Error message when unable to receive an attachment because the sending client is too old. */
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Nije uspjelo: Zamolite pošiljatelja da ažurira Signal i pošalje ponovo.";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Primljena dupla poruka.";
 
@@ -614,13 +617,13 @@
 "GENERIC_ATTACHMENT_LABEL" = "Privitak";
 
 /* Error displayed when there is a failure fetching gifs from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Dohvaćanje traženog GIF-a nije uspjelo. Provjerite jeste li na mreži.";
 
 /* Generic error displayed when picking a gif */
 "GIF_PICKER_ERROR_GENERIC" = "Došlo je do nepoznate greške.";
 
 /* Shown when selected gif couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "Unable to Choose GIF";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "Nije moguće izabrati GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "Molimo unesite pretragu.";
@@ -1677,7 +1680,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Pregledajte sigurnosne brojeve";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Povucite za otkazivanje.";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Povuci za otkazivanje";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Glasovna poruka";

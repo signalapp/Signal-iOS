@@ -293,7 +293,7 @@
 "CONFIRMATION_TITLE" = "确认";
 
 /* An indicator that a contact has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "黑名单";
+"CONTACT_CELL_IS_BLOCKED" = "已加入黑名单";
 
 /* An indicator that a contact is no longer verified. */
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "未验证";
@@ -547,6 +547,9 @@
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "联系人不是Signal用户。";
 
+/* Error message when unable to receive an attachment because the sending client is too old. */
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Failure: Ask sender to update Signal and resend.";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "收到了一个重复的消息。";
 
@@ -695,7 +698,7 @@
 "GROUP_YOU_LEFT" = "您退出了这个群。";
 
 /* A label for conversations with blocked users. */
-"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "已经入黑名单";
+"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "已加入黑名单";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "链接中...";
@@ -1413,7 +1416,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "无搜索结果";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "黑名单";
+"SETTINGS_BLOCK_LIST_TITLE" = "已加入黑名单";
 
 /* Accessibility hint for the settings button */
 "SETTINGS_BUTTON_ACCESSIBILITY" = "设置";

@@ -98,6 +98,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
         TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
                                                                                  key:attachmentProto.key
                                                                               digest:digest
+                                                                           byteCount:attachmentProto.size
                                                                          contentType:attachmentProto.contentType
                                                                                relay:relay
                                                                       sourceFilename:attachmentProto.fileName
@@ -159,7 +160,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     void (^markAndHandleFailure)(NSError *) = ^(NSError *error) {
         // Ensure enclosing transaction is complete.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self setAttachment:attachment didFailInMessage:message];
+            [self setAttachment:attachment didFailInMessage:message error:error];
             failureHandler(error);
         });
     };
@@ -245,21 +246,33 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                       success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
                       failure:(void (^)(NSError *error))failureHandler
 {
-    NSData *plaintext =
-        [Cryptography decryptAttachment:cipherText withKey:attachment.encryptionKey digest:attachment.digest];
+    NSError *decryptError;
+    NSData *plaintext = [Cryptography decryptAttachment:cipherText
+                                                withKey:attachment.encryptionKey
+                                                 digest:attachment.digest
+                                           unpaddedSize:attachment.byteCount
+                                                  error:&decryptError];
+
+    if (decryptError) {
+        DDLogError(@"%@ failed to decrypt with error: %@", self.tag, decryptError);
+        failureHandler(decryptError);
+        return;
+    }
 
     if (!plaintext) {
         NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
-        return failureHandler(error);
+        failureHandler(error);
+        return;
     }
 
     TSAttachmentStream *stream = [[TSAttachmentStream alloc] initWithPointer:attachment];
 
-    NSError *error;
-    [stream writeData:plaintext error:&error];
-    if (error) {
-        DDLogError(@"%@ Failed writing attachment stream with error: %@", self.tag, error);
-        return failureHandler(error);
+    NSError *writeError;
+    [stream writeData:plaintext error:&writeError];
+    if (writeError) {
+        DDLogError(@"%@ Failed writing attachment stream with error: %@", self.tag, writeError);
+        failureHandler(writeError);
+        return;
     }
 
     [stream save];
@@ -404,8 +417,11 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     }
 }
 
-- (void)setAttachment:(TSAttachmentPointer *)pointer didFailInMessage:(nullable TSMessage *)message
+- (void)setAttachment:(TSAttachmentPointer *)pointer
+     didFailInMessage:(nullable TSMessage *)message
+                error:(NSError *)error
 {
+    pointer.mostRecentFailureLocalizedText = error.localizedDescription;
     pointer.state = TSAttachmentPointerStateFailed;
     [pointer save];
     if (message) {
