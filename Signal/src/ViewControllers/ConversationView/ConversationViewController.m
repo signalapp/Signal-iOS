@@ -2967,8 +2967,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (shouldAnimateUpdates) {
         [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
     } else {
-        batchUpdates();
-        batchUpdatesCompletion(YES);
+        [UIView performWithoutAnimation:^{
+            [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
+        }];
     }
 }
 
