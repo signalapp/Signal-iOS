@@ -2820,14 +2820,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    NSArray *messageRowChanges = nil;
-    NSArray *sectionChanges = nil;
+    NSArray<YapDatabaseViewSectionChange *> *sectionChanges = nil;
+    NSArray<YapDatabaseViewRowChange *> *rowChanges = nil;
     [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] getSectionChanges:&sectionChanges
-                                                                               rowChanges:&messageRowChanges
+                                                                               rowChanges:&rowChanges
                                                                          forNotifications:notifications
                                                                              withMappings:self.messageMappings];
 
-    if ([sectionChanges count] == 0 && [messageRowChanges count] == 0) {
+    if ([sectionChanges count] == 0 && [rowChanges count] == 0) {
         // YapDatabase will ignore insertions within the message mapping's
         // range that are not within the current mapping's contents.  We
         // may need to extend the mapping's contents to reflect the current
@@ -2844,7 +2844,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     // We need to reload any modified interactions _before_ we call
     // reloadViewItems.
-    for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
+    for (YapDatabaseViewRowChange *rowChange in rowChanges) {
         switch (rowChange.type) {
             case YapDatabaseViewChangeUpdate: {
                 YapCollectionKey *collectionKey = rowChange.collectionKey;
@@ -2874,31 +2874,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // b) is inserting new interactions.
     __block BOOL scrollToBottom = wasAtBottom;
 
-    // If user sends a new outgoing message, don't animate the change.
-    BOOL areAllUpdatesNewOutgoingMessages = YES;
-    for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
-        if (!areAllUpdatesNewOutgoingMessages) {
-            break;
-        }
-        switch (rowChange.type) {
-            case YapDatabaseViewChangeInsert: {
-                ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:rowChange.newIndexPath.row];
-                if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]
-                    && rowChange.newIndexPath.row >= (NSInteger)oldViewItemCount) {
-                    continue;
-                }
-            }
-            case YapDatabaseViewChangeDelete:
-            case YapDatabaseViewChangeMove:
-            case YapDatabaseViewChangeUpdate:
-                areAllUpdatesNewOutgoingMessages = NO;
-                break;
-        }
-    }
-    BOOL shouldAnimateUpdates = !areAllUpdatesNewOutgoingMessages;
+    BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
 
     void (^batchUpdates)() = ^{
-        for (YapDatabaseViewRowChange *rowChange in messageRowChanges) {
+        for (YapDatabaseViewRowChange *rowChange in rowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
                     DDLogVerbose(@"YapDatabaseViewChangeDelete: %@, %@", rowChange.collectionKey, rowChange.indexPath);
@@ -2971,6 +2950,64 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
         }];
     }
+}
+
+- (BOOL)shouldAnimateRowUpdates:(NSArray<YapDatabaseViewRowChange *> *)rowChanges
+               oldViewItemCount:(NSUInteger)oldViewItemCount
+{
+    OWSAssert(rowChanges);
+
+    // If user sends a new outgoing message, don't animate the change.
+    BOOL isOnlyInsertingNewOutgoingMessages = YES;
+    BOOL isOnlyUpdatingLastOutgoingMessage = YES;
+    NSNumber *_Nullable lastUpdateRow = nil;
+    NSNumber *_Nullable lastNonUpdateRow = nil;
+    for (YapDatabaseViewRowChange *rowChange in rowChanges) {
+        switch (rowChange.type) {
+            case YapDatabaseViewChangeDelete:
+                isOnlyInsertingNewOutgoingMessages = NO;
+                isOnlyUpdatingLastOutgoingMessage = NO;
+                if (!lastNonUpdateRow || lastNonUpdateRow.integerValue < rowChange.indexPath.row) {
+                    lastNonUpdateRow = @(rowChange.indexPath.row);
+                }
+                break;
+            case YapDatabaseViewChangeInsert: {
+                isOnlyUpdatingLastOutgoingMessage = NO;
+                ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:rowChange.newIndexPath.row];
+                if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]
+                    && rowChange.newIndexPath.row >= (NSInteger)oldViewItemCount) {
+                    continue;
+                }
+                if (!lastNonUpdateRow || lastNonUpdateRow.integerValue < rowChange.newIndexPath.row) {
+                    lastNonUpdateRow = @(rowChange.newIndexPath.row);
+                }
+            }
+            case YapDatabaseViewChangeMove:
+                isOnlyInsertingNewOutgoingMessages = NO;
+                isOnlyUpdatingLastOutgoingMessage = NO;
+                if (!lastNonUpdateRow || lastNonUpdateRow.integerValue < rowChange.indexPath.row) {
+                    lastNonUpdateRow = @(rowChange.indexPath.row);
+                }
+                if (!lastNonUpdateRow || lastNonUpdateRow.integerValue < rowChange.newIndexPath.row) {
+                    lastNonUpdateRow = @(rowChange.newIndexPath.row);
+                }
+                break;
+            case YapDatabaseViewChangeUpdate: {
+                isOnlyInsertingNewOutgoingMessages = NO;
+                ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:rowChange.indexPath.row];
+                if (![viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]
+                    || rowChange.indexPath.row != (NSInteger)(oldViewItemCount - 1)) {
+                    isOnlyUpdatingLastOutgoingMessage = NO;
+                }
+                if (!lastUpdateRow || lastUpdateRow.integerValue < rowChange.indexPath.row) {
+                    lastUpdateRow = @(rowChange.indexPath.row);
+                }
+                break;
+            }
+        }
+    }
+    BOOL shouldAnimateRowUpdates = !(isOnlyInsertingNewOutgoingMessages || isOnlyUpdatingLastOutgoingMessage);
+    return shouldAnimateRowUpdates;
 }
 
 - (BOOL)isScrolledToBottom
