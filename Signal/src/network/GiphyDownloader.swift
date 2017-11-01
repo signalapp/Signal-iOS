@@ -81,8 +81,7 @@ class GiphyAssetSegment {
         // tail of the segment data.
         let bytesToIgnore = Int(redundantLength)
         if bytesToIgnore > 0 {
-            let range = NSMakeRange(bytesToIgnore, segmentData.count - bytesToIgnore)
-            let subdata = segmentData.subdata(in: range.location..<range.location + range.length)
+            let subdata = segmentData.subdata(in: bytesToIgnore..<Int(segmentLength))
             assetData.append(subdata)
         } else {
             assetData.append(segmentData)
