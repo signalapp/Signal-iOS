@@ -81,8 +81,7 @@ class GiphyAssetSegment {
         // tail of the segment data.
         let bytesToIgnore = Int(redundantLength)
         if bytesToIgnore > 0 {
-            let range = NSMakeRange(bytesToIgnore, segmentData.count - bytesToIgnore)
-            let subdata = segmentData.subdata(in: range.location..<range.location + range.length)
+            let subdata = segmentData.subdata(in: bytesToIgnore..<Int(segmentLength))
             assetData.append(subdata)
         } else {
             assetData.append(segmentData)
@@ -509,11 +508,9 @@ extension URLSessionTask {
         assetRequestQueue.append(assetRequest)
         // Process the queue (which may start this request)
         // asynchronously so that the caller has time to store
-        // a reference to the asset request returned by this 
+        // a reference to the asset request returned by this
         // method before its success/failure handler is called.
-        DispatchQueue.main.async {
-            self.processRequestQueue()
-        }
+        processRequestQueueAsync()
         return assetRequest
     }
 
@@ -527,7 +524,6 @@ extension URLSessionTask {
     }
 
     private func segmentRequestDidSucceed(assetRequest: GiphyAssetRequest, assetSegment: GiphyAssetSegment) {
-
         DispatchQueue.main.async {
             assetSegment.state = .complete
 
@@ -545,7 +541,7 @@ extension URLSessionTask {
                     self.assetRequestDidSucceed(assetRequest: assetRequest, asset: asset)
                 }
             } else {
-                self.processRequestQueue()
+                self.processRequestQueueSync()
             }
         }
     }
@@ -562,7 +558,6 @@ extension URLSessionTask {
     // TODO: If we wanted to implement segment retry, we'll need to add
     //       a segmentRequestDidFail() method.
     private func segmentRequestDidFail(assetRequest: GiphyAssetRequest, assetSegment: GiphyAssetSegment) {
-
         DispatchQueue.main.async {
             assetSegment.state = .failed
             assetRequest.state = .failed
@@ -587,13 +582,21 @@ extension URLSessionTask {
         }
 
         assetRequestQueue = assetRequestQueue.filter { $0 != assetRequest }
-        processRequestQueue()
+        // Process the queue async to ensure that state in the downloader
+        // classes is consistent before we try to start a new request.
+        processRequestQueueAsync()
+    }
+
+    private func processRequestQueueAsync() {
+        DispatchQueue.main.async {
+            self.processRequestQueueSync()
+        }
     }
 
     // * Start a segment request or content length request if possible.
     // * Complete/cancel asset requests if possible.
     //
-    private func processRequestQueue() {
+    private func processRequestQueueSync() {
         AssertIsOnMainThread()
 
         guard let assetRequest = popNextAssetRequest() else {
@@ -608,7 +611,7 @@ extension URLSessionTask {
             // If app is not active, fail the asset request.
             assetRequest.state = .failed
             assetRequestDidFail(assetRequest:assetRequest)
-            processRequestQueue()
+            processRequestQueueSync()
             return
         }
 
@@ -630,11 +633,11 @@ extension URLSessionTask {
             request.httpMethod = "HEAD"
             request.httpShouldUsePipelining = true
 
-            let task = giphyDownloadSession.dataTask(with:request, completionHandler: { [weak self] data, response, error -> Void in
+            let task = giphyDownloadSession.dataTask(with:request, completionHandler: { data, response, error -> Void in
                 if let data = data, data.count > 0 {
-                    owsFail("\(self?.TAG) HEAD request has unexpected body: \(data.count).")
+                    owsFail("\(self.TAG) HEAD request has unexpected body: \(data.count).")
                 }
-                self?.handleAssetSizeResponse(assetRequest:assetRequest, response:response, error:error)
+                self.handleAssetSizeResponse(assetRequest:assetRequest, response:response, error:error)
             })
             assetRequest.contentLengthTask = task
             task.resume()
@@ -659,7 +662,7 @@ extension URLSessionTask {
         }
 
         // Recurse; we may be able to start multiple downloads.
-        processRequestQueue()
+        processRequestQueueSync()
     }
 
     private func handleAssetSizeResponse(assetRequest: GiphyAssetRequest, response: URLResponse?, error: Error?) {
@@ -696,7 +699,7 @@ extension URLSessionTask {
         DispatchQueue.main.async {
             assetRequest.contentLength = contentLength
             assetRequest.state = .active
-            self.processRequestQueue()
+            self.processRequestQueueSync()
         }
     }
 
