@@ -209,7 +209,7 @@
 "CALL_LABEL" = "Ring";
 
 /* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Oppgrader til iOS 9 eller nyere for å se videostrømmen";
+"CALL_REMOTE_VIDEO_DISABLED" = "Oppgrader til iOS 9 eller nyere for å se videostrømmen.";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Ikke noe svar.";
@@ -845,7 +845,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Laster opp";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Meldingen har ikke noe innhold.";
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Meldingen har ikke noe innhold eller vedlegg.";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Mottatt";
@@ -1653,7 +1653,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Send koden på nytt på SMS";
 
 /* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Sende inn";
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Send inn";
 
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Bruk verifiseringskoden som ble sendt til %@.";

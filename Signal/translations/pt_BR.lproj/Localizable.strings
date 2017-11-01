@@ -209,7 +209,7 @@
 "CALL_LABEL" = "Chamar";
 
 /* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Please upgrade to iOS 9 or newer to see remote video.";
+"CALL_REMOTE_VIDEO_DISABLED" = "Por favor, atualize para iOS 9 ou superior para ver o vídeo remoto.";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Não atendida.";
@@ -257,13 +257,13 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Comparar com Área de Transferência";
 
 /* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contacts";
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contatos";
 
 /* Table section header for group listing when composing a new message */
-"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Groups";
+"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Grupos";
 
 /* Table section header for invite listing when composing a new message */
-"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Invite";
+"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Convide";
 
 /* Multiline label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Para verificar quais dos seus contatos são usuários do Signal,  permita acesso aos contatos nas Configurações de Sistema.";
@@ -548,7 +548,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "O contato não é usuário do Signal.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Failure: Ask sender to update Signal and resend.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Falha: Peça ao remetente para atualizar o Signal e reenviar.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Recebi uma mensagem duplicada.";
@@ -617,22 +617,22 @@
 "GENERIC_ATTACHMENT_LABEL" = "Anexo";
 
 /* Error displayed when there is a failure fetching gifs from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Falha ao baixar o GIF requisitado. Por favor, verifique se você está online.";
 
 /* Generic error displayed when picking a gif */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occured.";
+"GIF_PICKER_ERROR_GENERIC" = "Erro desconhecido.";
 
 /* Shown when selected gif couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Unable to Choose GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Please enter your search.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Por favor, insira a sua busca.";
 
 /* Title for the 'gif picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "GIF Search";
 
 /* Indicates that an error occured while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Error. Tap to Retry.";
+"GIF_VIEW_SEARCH_ERROR" = "Falha. Toque para tentar novamente.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "No Results.";
@@ -794,7 +794,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Conexão do Dispositivo Falhou";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
+"LIST_GROUP_MEMBERS_ACTION" = "Listar Membros do Grupo";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Registros";
@@ -827,22 +827,22 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "Not yet downloaded";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Recebida";
 
 /* Status label for messages which are failed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Failed";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Read";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Lida";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Enviando";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Enviado";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Uploading";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Enviando";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Mensagem não possui conteúdo ou anexo.";
@@ -870,7 +870,7 @@
 "MESSAGE_STATUS_FAILED" = "Falha no envio. Toque para mais informações .";
 
 /* message footer for read messages */
-"MESSAGE_STATUS_READ" = "Read";
+"MESSAGE_STATUS_READ" = "Lida";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Enviando...";

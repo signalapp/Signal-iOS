@@ -17,7 +17,7 @@
 "ADD_GROUP_MEMBER_VIEW_TITLE" = "Ajouter un membre";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Voulez-vous partager votre profil avec ce groupe?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Voulez-vous partager votre profil avec ce groupe ?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "Voulez-vous ajouter cet utilisateur à vos contacts ?";
@@ -56,7 +56,7 @@
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Entrez votre nom";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La Version %@ est maintenant disponible dans l'App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La version %@ est maintenant disponible dans l'App Store.";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "Une nouvelle version de Signal est disponible";
@@ -95,7 +95,7 @@
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Téléchargement échoué. Touchez pour réessayer.";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Téléchargement.…";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Téléchargement…";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "En attente";
@@ -116,13 +116,13 @@
 "ATTACHMENT_ERROR_INVALID_DATA" = "La pièce jointe contient des contenus non valides.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "La pièce jointe n'a pas de format de fichier invalide.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "La pièce jointe présente un format de fichier invalide.";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "La pièce jointe est vide.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choisissez ou prenez une photo puis envoyez-la";
+"ATTACHMENT_HINT" = "Choisissez ou prenez une photo puis envoyez-la.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Pièce jointe";
@@ -137,10 +137,10 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fichier non supporté";
 
 /* Short text label for a voice message attachment, used for thread preview and on lockscreen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Message Vocal";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Message vocal";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Haut-Parleurs";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Haut-parleurs";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Les utilisateurs bloqués ne pourront pas vous appeler ou vous envoyer des messages.";
@@ -170,7 +170,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ a été bloqué";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Utilisateur Bloqué";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Utilisateur bloqué";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Vous ne pouvez pas vous bloquer.";
@@ -188,7 +188,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ a été débloqué.";
 
 /* The title of the 'user unblocked' alert. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Utilisateur Débloqué";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Utilisateur débloqué";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Bloquer";
@@ -200,7 +200,7 @@
 "BUTTON_DONE" = "Terminé";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Le signal nécessite l'accès à votre microphone pour effectuer des appels et enregistrer des messages vocaux. Vous pouvez accorder cette autorisation dans l'application Paramètres.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal a besoin d'accéder à votre microphone pour effectuer des appels et enregistrer des messages vocaux. Vous pouvez accorder cette autorisation dans l'application Réglages.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Accès au microphone requis";
@@ -209,7 +209,7 @@
 "CALL_LABEL" = "Appel";
 
 /* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Veuillez passer à iOS 9 ou mieux pour voir la vidéo distante.";
+"CALL_REMOTE_VIDEO_DISABLED" = "Veuillez mettre à jour vers iOS 9 ou ultérieur pour visionner la vidéo distante.";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Pas de réponse.";
@@ -245,7 +245,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Utilisateur de Signal";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Cet utilisateur ne peut être vérifié qu'après avoir échangé des messages avec eux.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Cet utilisateur ne peut être vérifié qu'après avoir échangé des messages avec lui.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Erreur";
@@ -266,7 +266,7 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Inviter";
 
 /* Multiline label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Pour voir lesquels de vos contacts sont les utilisateurs du Signal, autorisez l'accès des contacts dans les paramètres de votre système.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Pour voir quels sont vos contacts qui utilisent Signal, autorisez l'accès aux contacts dans vos réglages du système.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ceci va remettre à zéro l'application en effaçant vos messages et en vous désinscrivant du serveur. L'application se fermera après l'effacement des données.";
@@ -302,10 +302,10 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Numéro non enregistré";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Email pas disponible.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Aucune adresse e-mail disponible.";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Numéro pas disponible.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Aucun numéro de téléphone disponible.";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Paramètres de cette conversation";
@@ -401,19 +401,19 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Mise à jour de la base de données";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Dernière activité: %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Dernière activité : %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Connecté: %@";
+"DEVICE_LINKED_AT_LABEL" = "Connecté : %@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Signal ne pourrait pas actualiser la liste de vos appareils électroniques.";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "La liste de vos appareils électroniques n'a pas pu être actualisée.";
 
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "Messages disparaissant ";
+"DISAPPEARING_MESSAGES" = "Messages éphémères ";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Les messages envoyés et reçus de cette conversation disparaîtront après avoir été lu. ";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Une fois activé, les messages envoyés et reçus dans cette conversation disparaîtront après avoir été lus.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Actuellement, les messages disparaissent après %@";
@@ -428,10 +428,10 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Mise en place du contournement de la censure";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Vous pouvez donner accès à l'application Paramètres.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Vous pouvez donner l'accès dans l'application Réglages.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal a besoin d'accéder au contact pour éditer le contact";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal a besoin d'accéder aux contacts pour éditer les informations de contact";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Modifier le groupe";
@@ -455,13 +455,13 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Mise à jour";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vous avez changé ce groupe. Voulez-vous enregistrer ces modifications?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vous avez modifié ce groupe. Voulez-vous enregistrer ces modifications ?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Changements non enregistrés";
 
 /* Short name for edit menu item to copy contents of media message. */
-"EDIT_ITEM_COPY_ACTION" = "Copy";
+"EDIT_ITEM_COPY_ACTION" = "Copier";
 
 /* Short name for edit menu item to show message metadata. */
 "EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Info";
@@ -476,7 +476,7 @@
 "EDIT_TXT" = "Editer";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Hey\n\nDernièrement, j'ai utilisé Signal pour garder les conversations sur mon iPhone privé. J'aimerais que vous l'installiez aussi, afin que nous puissions être sûrs que seul vous et moi pouvons lire nos messages ou entendre nos appels.\n\nSignal est disponible pour iPhones et Android. Téléchargez ici: %@\n\nSignal fonctionne comme votre application de messagerie existante. Nous pouvons envoyer des photos et des vidéos, faire des appels et commencer des discussions de groupe. La meilleure partie est, personne d'autre ne peut voir tout cela, pas même les gens qui font Signal!\n\nVous pouvez en savoir plus sur Open Whisper Systems, les personnes qui font Signal, ici: %@ ";
+"EMAIL_INVITE_BODY" = "Hey,\n\nDernièrement, j'ai utilisé Signal pour garder privées les conversations sur mon iPhone. J'aimerais que vous l'installiez aussi, afin que nous puissions être sûrs que seuls vous et moi pouvons lire nos messages ou écouter nos appels.\n\nSignal est disponible pour iPhone et Android. À télécharger ici : %@\n\nSignal fonctionne comme votre application de messagerie existante. Nous pouvons envoyer des photos et des vidéos, passer des appels et commencer des discussions de groupe. Le mieux est que personne d'autre ne peut voir tout cela, pas même les gens qui font Signal !\n\nVous pouvez en savoir plus sur Open Whisper Systems, les personnes qui font Signal, ici : %@ ";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Passons à Signal";
@@ -485,7 +485,7 @@
 "EMPTY_ARCHIVE_FIRST_TEXT" = "Appuyez sur le bouton composer.";
 
 /* No comment provided by engineer. */
-"EMPTY_ARCHIVE_FIRST_TITLE" = "Démarrez votre première conversation avec Signal !";
+"EMPTY_ARCHIVE_FIRST_TITLE" = "Démarrez votre première conversation Signal !";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TEXT" = "Vous pouvez archiver vos conversations inactives pour pouvoir les lire plus tard depuis votre boîte de réception.";
@@ -500,7 +500,7 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Pourquoi ne pas inviter quelqu'un ?";
 
 /* No comment provided by engineer. */
-"EMPTY_INBOX_FIRST_TEXT" = "Astuce: ajouter une conversation en tant que rappel!";
+"EMPTY_INBOX_FIRST_TEXT" = "Astuce : ajouter une conversation en tant que rappel !";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TITLE" = "Fait, fait et fait.";
@@ -515,7 +515,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Occupé.";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Appel echoué";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Appel échoué.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Échec de l'envoi du message.";
@@ -524,13 +524,13 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Impossible d'envoyer en raison de données de confidentialité vaines.";
 
 /* Error mesage indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Echec du message, parce que vous avez bloqué cet utilisateur.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Échec de l'envoi du message car vous avez bloqué cet utilisateur.";
 
 /* Error mesage indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Échec en raison de l'écriture échouée de la pièce jointe.";
 
 /* Generic error used whenver Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal n'a pas pu se connecter à Internet. Essayez un autre réseau WiFi ou utilisez des données mobiles.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal n'a pas pu se connecter à Internet. Essayez un autre réseau Wi-Fi ou utilisez des données mobiles.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "L'envoi de message a échoué en raison d'un manque de destinataires valides.";
@@ -548,7 +548,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Le contact n'est pas un utilisateur Signal.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Échec: Demander à l'expéditeur de mettre à jour le signal et de le renvoyer.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Échec : Demander à l'expéditeur de mettre à jour Signal et de le renvoyer.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Réception d'un message en double.";
@@ -596,7 +596,7 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Trop de défaillances avec ce contact. Veuillez réessayer prochainement.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Votre numéro de sécurité avec %@ a récemment changé. Vous pouvez vérifier avant de vous reporter.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Votre numéro de sécurité avec %@ a récemment changé. Vous pouvez le vérifier avant de renvoyer.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Impossible de vérifier le numéro de sécurité !";
@@ -737,13 +737,13 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Fichier audio invalide.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Pour inviter vos contacts, vous devez autoriser l'accès de Signal à vos contacts dans les paramètres de l'application.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Pour inviter vos contacts, vous devez autoriser Signal à accéder à vos contacts dans l'application Réglages.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Autoriser l'accès au contact";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Inviter des Amis à Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Inviter des amis sur Signal";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Chercher";
@@ -931,7 +931,7 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal doit avoir accès à votre caméra pour les appels vidéo. Vous pouvez accorder cette autorisation dans l'application Paramètres >> Confidentialité >> Appareil photo >> Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal doit avoir accès à votre caméra pour les appels vidéo. Vous pouvez accorder cette autorisation dans l'application Réglages >> Confidentialité >> Appareil photo >> Signal";
 
 /* Alert title
    Alert title when camera is not authorized */
@@ -1140,16 +1140,16 @@
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Le numéro dans votre presse-papiers ne ressemble pas au numéro de sécurité correct pour cette conversation.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Le signal n'a pas pu trouver de numéro de sécurité dans votre presse-papiers. Avez-vous copié correctement?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal n'a pas pu trouver de numéro de sécurité dans votre presse-papier. L'avez-vous copié correctement ?";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Chaque paire d'utilisateurs de Signal partage un numéro de sécurité distinct. Vérifiez que %@ affiche * votre * numéro de sécurité distinct.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Vous utilisez une vielle version de Signal. Vous devez la mettre à jour avant de vérifier vos clés. ";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Vous utilisez une ancienne version de Signal. Vous devez la mettre à jour avant de pouvoir vérifier vos clés. ";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Votre contact utilise une vieille version de Signal. Ils doivent la mettre à jour avant de verifier vos clés.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Votre contact utilise une ancienne version de Signal. Il doit la mettre à jour avant de pouvoir vérifier vos clés.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Le code scanné ne semble pas être une clé de sécurité. Assurez vous d'avoir une version à jour de Signal.";
@@ -1317,7 +1317,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Envoyer de toute façon";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Notre numéro de sécurité Signal:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Notre numéro de sécurité Signal :\n%@";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Votre numéro de sécurité avec %@ a changé. Vous pouvez le vérifier.";
@@ -1353,7 +1353,7 @@
 "SEND_INVITE_FAILURE" = "Échec de l'envoi de l'invitation. Veuillez réessayer plus tard. ";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Vous avez invité vos amis à utiliser Signal !";
+"SEND_INVITE_SUCCESS" = "Vous avez invité votre ami à utiliser Signal !";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Inviter par SMS %@";
@@ -1362,7 +1362,7 @@
 "SEND_SMS_CONFIRM_TITLE" = "Inviter un ami via un SMS non sécurisé ?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "Aimeriez-vous inviter sur Signal le numéro suivant :";
+"SEND_SMS_INVITE_TITLE" = "Souhaitez-vous inviter sur Signal le numéro suivant :";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "À propos de";
@@ -1425,7 +1425,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Toujours relayer des appels";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relayer tous les appels via le serveur de signal pour éviter de révéler votre adresse IP à votre contact. L'activation réduit la qualité de l'appel";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relayer tous les appels via le serveur de Signal pour éviter de révéler votre adresse IP à votre contact. L'activation réduit la qualité de l'appel.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Effacer les logs de l'historique";
@@ -1482,7 +1482,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Activer l'écran de sécurité";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Empêcher les prévisualisations de signaux d'apparaître dans le commutateur d'applications.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Empêcher les prévisualisations de Signal d'apparaître dans le commutateur d'applications.";
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "IOS Call Integration affiche les appels de Signal sur votre écran de verrouillage et dans l'historique des appels du système. Vous pouvez éventuellement indiquer le nom et le numéro de votre contact. Si iCloud est activé, cet historique d'appels sera partagé avec Apple.";
@@ -1626,13 +1626,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Envoyer les accusés de lecture";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal prend désormais en charge les appels vidéo sécurisés. Il suffit de commencer un appel normal, appuyez sur le bouton de l'appareil photo, et dites vous bonjour.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal prend désormais en charge les appels vidéo sécurisés. Il suffit de commencer un appel normal, appuyez sur le bouton de l'appareil photo, et dites-vous bonjour.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Bonjour Appels vidéo sécurisés!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Le signal nécessitera bientôt iOS 9 ou mieux. Mettre à niveau dans l'application Paramètres >> Général >> Mise à jour du logiciel.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal nécessitera bientôt iOS 9 ou ultérieur. Mettre à niveau dans l'application Réglages >> Général >> Mise à jour logicielle.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Mise à niveau de iOS";
