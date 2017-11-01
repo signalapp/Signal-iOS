@@ -225,7 +225,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic) BOOL wasScrolledToBottomBeforeKeyboardShow;
 @property (nonatomic) BOOL wasScrolledToBottomBeforeLayoutChange;
-@property (nonatomic) BOOL hasLoadedDraft;
 
 @end
 
@@ -460,11 +459,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [self.inputToolbar endEditing:TRUE];
     } else {
         self.inputToolbar.hidden = NO;
-
-        if (!self.hasLoadedDraft) {
-            self.hasLoadedDraft = YES;
-            [self loadDraftInCompose];
-        }
     }
 }
 
@@ -482,6 +476,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self createHeaderViews];
     [self createBackButton];
     [self addNotificationListeners];
+    [self loadDraftInCompose];
 }
 
 - (void)createContents
