@@ -196,6 +196,48 @@ NS_ASSUME_NONNULL_BEGIN
     [textView resignFirstResponder];
 }
 
+#pragma mark - Key Commands
+
+- (nullable NSArray<UIKeyCommand *> *)keyCommands
+{
+    // We're permissive about what modifier key we accept for the "send message" hotkey.
+    // We accept command-return, option-return.
+    //
+    // We don't support control-return because it doesn't work.
+    //
+    // We don't support shift-return because it is often used for "newline" in other
+    // messaging apps.
+    return @[
+        [UIKeyCommand keyCommandWithInput:@"\r"
+                            modifierFlags:UIKeyModifierCommand
+                                   action:@selector(modifiedReturnPressed:)
+                     discoverabilityTitle:@"Send Message"],
+        // "Alternate" is option.
+        [UIKeyCommand keyCommandWithInput:@"\r"
+                            modifierFlags:UIKeyModifierAlternate
+                                   action:@selector(modifiedReturnPressed:)
+                     discoverabilityTitle:@"Send Message"],
+    ];
+}
+
+- (void)modifiedReturnPressed:(UIKeyCommand *)sender
+{
+    DDLogInfo(@"%@ modifiedReturnPressed: %@", self.logTag, sender.input);
+    [self.inputTextViewDelegate inputTextViewSendMessagePressed];
+}
+
+#pragma mark - Logging
+
++ (NSString *)logTag
+{
+    return [NSString stringWithFormat:@"[%@]", self.class];
+}
+
+- (NSString *)logTag
+{
+    return self.class.logTag;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
