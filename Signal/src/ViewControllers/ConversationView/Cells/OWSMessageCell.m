@@ -127,7 +127,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.bubbleImageView = [UIImageView new];
     self.bubbleImageView.layoutMargins = UIEdgeInsetsZero;
-    self.bubbleImageView.userInteractionEnabled = NO;
+    // Enable userInteractionEnabled so that links in textView work.
+    self.bubbleImageView.userInteractionEnabled = YES;
     [self.payloadView addSubview:self.bubbleImageView];
     [self.bubbleImageView autoPinToSuperviewEdges];
 
