@@ -12,7 +12,8 @@
 #import "TSNetworkManager.h"
 #import "TSPreKeyManager.h"
 #import "TSSocketManager.h"
-#import "TSStorageManager+keyingMaterial.h"
+#import "TSStorageManager+SessionStore.h"
+#import "YapDatabaseConnection+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,6 +24,10 @@ NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName
 
 NSString *const TSAccountManager_RegisteredNumberKey = @"TSStorageRegisteredNumberKey";
 NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegistrationId";
+
+NSString *const TSAccountManager_UserAccountCollection = @"TSStorageUserAccountCollection";
+NSString *const TSAccountManager_ServerAuthToken = @"TSStorageServerAuthToken";
+NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignalingKey";
 
 @interface TSAccountManager ()
 
@@ -74,6 +79,20 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalNumberDidChange
                                                              object:nil
                                                            userInfo:nil];
+}
+
+- (void)resetForRegistration
+{
+    @synchronized(self)
+    {
+        _isRegistered = NO;
+        _cachedLocalNumber = nil;
+        _phoneNumberAwaitingVerification = nil;
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [transaction removeAllObjectsInCollection:TSAccountManager_UserAccountCollection];
+        }];
+    }
+    [[TSStorageManager sharedManager] resetSessionStore];
 }
 
 + (BOOL)isRegistered
@@ -141,7 +160,7 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
 {
     @synchronized (self) {
         return [self.dbConnection stringForKey:TSAccountManager_RegisteredNumberKey
-                                  inCollection:TSStorageUserAccountCollection];
+                                  inCollection:TSAccountManager_UserAccountCollection];
     }
 }
 
@@ -150,7 +169,7 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
     @synchronized (self) {
         [self.dbConnection setObject:localNumber
                               forKey:TSAccountManager_RegisteredNumberKey
-                        inCollection:TSStorageUserAccountCollection];
+                        inCollection:TSAccountManager_UserAccountCollection];
     }
 }
 
@@ -161,19 +180,22 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
 
 - (uint32_t)getOrGenerateRegistrationId
 {
-    uint32_t registrationID = [[self.dbConnection objectForKey:TSAccountManager_LocalRegistrationIdKey
-                                                  inCollection:TSStorageUserAccountCollection] unsignedIntValue];
+    @synchronized(self)
+    {
+        uint32_t registrationID =
+            [[self.dbConnection objectForKey:TSAccountManager_LocalRegistrationIdKey
+                                inCollection:TSAccountManager_UserAccountCollection] unsignedIntValue];
 
-    if (registrationID == 0) {
-        registrationID = (uint32_t)arc4random_uniform(16380) + 1;
-        DDLogWarn(@"%@ Generated a new registrationID: %u", self.tag, registrationID);
+        if (registrationID == 0) {
+            registrationID = (uint32_t)arc4random_uniform(16380) + 1;
+            DDLogWarn(@"%@ Generated a new registrationID: %u", self.tag, registrationID);
 
-        [self.dbConnection setObject:[NSNumber numberWithUnsignedInteger:registrationID]
-                              forKey:TSAccountManager_LocalRegistrationIdKey
-                        inCollection:TSStorageUserAccountCollection];
+            [self.dbConnection setObject:[NSNumber numberWithUnsignedInteger:registrationID]
+                                  forKey:TSAccountManager_LocalRegistrationIdKey
+                            inCollection:TSAccountManager_UserAccountCollection];
+        }
+        return registrationID;
     }
-
-    return registrationID;
 }
 
 - (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
@@ -314,7 +336,7 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
                 case 200:
                 case 204: {
                     DDLogInfo(@"%@ Verification code accepted.", self.tag);
-                    [TSStorageManager storeServerToken:authToken signalingKey:signalingKey];
+                    [self storeServerAuthToken:authToken signalingKey:signalingKey];
                     [TSPreKeyManager registerPreKeysWithMode:RefreshPreKeysMode_SignedAndOneTime
                                                      success:successBlock
                                                      failure:failureBlock];
@@ -365,6 +387,41 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
     NSData *signalingKeyToken        = [SecurityUtils generateRandomBytes:52];
     NSString *signalingKeyTokenPrint = [[NSData dataWithData:signalingKeyToken] base64EncodedString];
     return signalingKeyTokenPrint;
+}
+
++ (nullable NSString *)signalingKey
+{
+    return [[self sharedInstance] signalingKey];
+}
+
+- (nullable NSString *)signalingKey
+{
+    return [self.dbConnection stringForKey:TSAccountManager_ServerSignalingKey
+                              inCollection:TSAccountManager_UserAccountCollection];
+}
+
++ (nullable NSString *)serverAuthToken
+{
+    return [[self sharedInstance] serverAuthToken];
+}
+
+- (nullable NSString *)serverAuthToken
+{
+    return [self.dbConnection stringForKey:TSAccountManager_ServerAuthToken
+                              inCollection:TSAccountManager_UserAccountCollection];
+}
+
+- (void)storeServerAuthToken:(NSString *)authToken signalingKey:(NSString *)signalingKey
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction setObject:authToken
+                        forKey:TSAccountManager_ServerAuthToken
+                  inCollection:TSAccountManager_UserAccountCollection];
+        [transaction setObject:signalingKey
+                        forKey:TSAccountManager_ServerSignalingKey
+                  inCollection:TSAccountManager_UserAccountCollection];
+
+    }];
 }
 
 + (void)unregisterTextSecureWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failureBlock

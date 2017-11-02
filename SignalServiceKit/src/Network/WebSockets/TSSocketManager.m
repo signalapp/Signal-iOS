@@ -14,7 +14,6 @@
 #import "SubProtocol.pb.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
-#import "TSStorageManager+keyingMaterial.h"
 #import "Threading.h"
 
 static const CGFloat kSocketHeartbeatPeriodSeconds = 30.f;
@@ -384,7 +383,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
             NSData *decryptedPayload =
-                [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:TSStorageManager.signalingKey];
+                [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:TSAccountManager.signalingKey];
 
             if (!decryptedPayload) {
                 DDLogWarn(@"%@ Failed to decrypt incoming payload or bad HMAC", self.tag);
@@ -485,7 +484,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 - (NSString *)webSocketAuthenticationString {
     return [NSString stringWithFormat:@"?login=%@&password=%@",
                      [[TSAccountManager localNumber] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
-                     [TSStorageManager serverAuthToken]];
+                     [TSAccountManager serverAuthToken]];
 }
 
 #pragma mark - Socket LifeCycle

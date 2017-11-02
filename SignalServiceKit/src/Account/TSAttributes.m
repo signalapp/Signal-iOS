@@ -4,7 +4,6 @@
 
 #import "TSAttributes.h"
 #import "TSAccountManager.h"
-#import "TSStorageManager+keyingMaterial.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -12,8 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSDictionary *)attributesFromStorageWithManualMessageFetching:(BOOL)isEnabled
 {
-    return [self attributesWithSignalingKey:[TSStorageManager signalingKey]
-                            serverAuthToken:[TSStorageManager serverAuthToken]
+    return [self attributesWithSignalingKey:TSAccountManager.signalingKey
+                            serverAuthToken:TSAccountManager.serverAuthToken
                       manualMessageFetching:isEnabled];
 }
 

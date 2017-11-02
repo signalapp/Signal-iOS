@@ -189,6 +189,14 @@ void AssertIsOnSessionStoreQueue()
 
 #pragma mark - debug
 
+- (void)resetSessionStore
+{
+    DDLogWarn(@"%@ resetting session store", self.tag);
+    [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [transaction removeAllObjectsInCollection:TSStorageManagerSessionStoreCollection];
+    }];
+}
+
 - (void)printAllSessions
 {
     AssertIsOnSessionStoreQueue();
