@@ -36,6 +36,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
     var messageTextTopConstraint: NSLayoutConstraint?
     var messageTextHeightLayoutConstraint: NSLayoutConstraint?
     var messageTextProxyViewHeightConstraint: NSLayoutConstraint?
+    var bubbleViewWidthConstraint: NSLayoutConstraint?
 
     var scrollView: UIScrollView?
     var contentView: UIView?
@@ -76,16 +77,6 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
 
         self.view.layoutIfNeeded()
 
-        if mode == .focusOnMetadata {
-            if let bubbleView = self.bubbleView {
-                let showAtLeast: CGFloat = 50
-                let middleCenter = CGPoint(x: bubbleView.frame.origin.x + bubbleView.frame.width / 2,
-                                           y: bubbleView.frame.origin.y + bubbleView.frame.height - showAtLeast)
-                let offset = bubbleView.superview!.convert(middleCenter, to: scrollView)
-                self.scrollView!.setContentOffset(offset, animated: false)
-            }
-        }
-
         NotificationCenter.default.addObserver(self,
             selector: #selector(yapDatabaseModified),
             name: NSNotification.Name.YapDatabaseModified,
@@ -98,6 +89,20 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         mediaMessageView?.viewWillAppear(animated)
 
         updateTextLayout()
+
+        if mode == .focusOnMetadata {
+            if let bubbleView = self.bubbleView {
+                // Force layout.
+                view.setNeedsLayout()
+                view.layoutIfNeeded()
+
+                let showAtLeast: CGFloat = 50
+                let middleCenter = CGPoint(x: bubbleView.frame.origin.x + bubbleView.frame.width / 2,
+                                           y: bubbleView.frame.origin.y + bubbleView.frame.height - showAtLeast)
+                let offset = bubbleView.superview!.convert(middleCenter, to: scrollView)
+                self.scrollView!.setContentOffset(offset, animated: false)
+            }
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -302,6 +307,10 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         return messageBody
     }
 
+    let bubbleViewHMargin: CGFloat = 10
+    let messageTailEdgeMargin: CGFloat = 15
+    let messageNoTailEdgeMargin: CGFloat = 10
+
     private func contentRows() -> [UIView] {
         var rows = [UIView]()
 
@@ -343,25 +352,22 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
             self.messageTextTopConstraint = messageTextView.autoPinEdge(toSuperviewEdge: .top, withInset: 0)
             self.messageTextHeightLayoutConstraint = messageTextView.autoSetDimension(.height, toSize:0)
 
-            let leadingMargin: CGFloat = isIncoming ? 15 : 10
-            let trailingMargin: CGFloat = isIncoming ? 10 : 15
-
             let bubbleView = UIImageView(image: bubbleImageData.messageBubbleImage)
             self.bubbleView = bubbleView
 
             bubbleView.layer.cornerRadius = 10
             bubbleView.addSubview(messageTextProxyView)
 
-            messageTextProxyView.autoPinEdge(toSuperviewEdge: .leading, withInset: leadingMargin)
-            messageTextProxyView.autoPinEdge(toSuperviewEdge: .trailing, withInset: trailingMargin)
+            messageTextProxyView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing, withInset: messageTailEdgeMargin)
+            messageTextProxyView.autoPinEdge(toSuperviewEdge: isIncoming ? .trailing : .leading, withInset: messageNoTailEdgeMargin)
             messageTextProxyView.autoPinHeightToSuperview(withMargin: 10)
             self.messageTextProxyViewHeightConstraint = messageTextProxyView.autoSetDimension(.height, toSize:0)
 
             let row = UIView()
             row.addSubview(bubbleView)
             bubbleView.autoPinHeightToSuperview()
-            bubbleView.autoPinLeadingToSuperview(withMargin: 10)
-            bubbleView.autoPinTrailingToSuperview(withMargin: 10)
+            bubbleView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing, withInset: bubbleViewHMargin)
+            self.bubbleViewWidthConstraint = bubbleView.autoSetDimension(.width, toSize:0)
             rows.append(row)
         } else if message.attachmentIds.count > 0 {
             rows += addAttachmentRows()
@@ -617,18 +623,6 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
             owsFail("\(TAG) Missing messageTextProxyView")
             return
         }
-        guard let messageTextTopConstraint = messageTextTopConstraint else {
-            owsFail("\(TAG) Missing messageTextProxyView")
-            return
-        }
-        guard let messageTextHeightLayoutConstraint = messageTextHeightLayoutConstraint else {
-            owsFail("\(TAG) Missing messageTextProxyView")
-            return
-        }
-        guard let messageTextProxyViewHeightConstraint = messageTextProxyViewHeightConstraint else {
-            owsFail("\(TAG) Missing messageTextProxyView")
-            return
-        }
         guard let scrollView = scrollView else {
             owsFail("\(TAG) Missing scrollView")
             return
@@ -637,13 +631,42 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
             owsFail("\(TAG) Missing contentView")
             return
         }
+        guard let bubbleView = bubbleView else {
+            owsFail("\(TAG) Missing bubbleView")
+            return
+        }
+        guard let bubbleSuperview = bubbleView.superview else {
+            owsFail("\(TAG) Missing bubbleSuperview")
+            return
+        }
+        guard let messageTextTopConstraint = messageTextTopConstraint else {
+            owsFail("\(TAG) Missing messageTextTopConstraint")
+            return
+        }
+        guard let messageTextHeightLayoutConstraint = messageTextHeightLayoutConstraint else {
+            owsFail("\(TAG) Missing messageTextHeightLayoutConstraint")
+            return
+        }
+        guard let messageTextProxyViewHeightConstraint = messageTextProxyViewHeightConstraint else {
+            owsFail("\(TAG) Missing messageTextProxyViewHeightConstraint")
+            return
+        }
+        guard let bubbleViewWidthConstraint = bubbleViewWidthConstraint else {
+            owsFail("\(TAG) Missing bubbleViewWidthConstraint")
+            return
+        }
 
         if messageTextView.width() != messageTextProxyView.width() {
             owsFail("\(TAG) messageTextView.width \(messageTextView.width) != messageTextProxyView.width \(messageTextProxyView.width)")
         }
 
+        let bubbleViewHMargin: CGFloat = 10
+        let messageTailEdgeMargin: CGFloat = 15
+        let messageNoTailEdgeMargin: CGFloat = 10
+        let maxBubbleWidth = bubbleSuperview.width() - (bubbleViewHMargin * 2)
+        let maxTextWidth = maxBubbleWidth - (messageTailEdgeMargin + messageNoTailEdgeMargin)
         // Measure the total text size.
-        let textSize = messageTextView.sizeThatFits(CGSize(width:messageTextView.width(), height:CGFloat.greatestFiniteMagnitude))
+        let textSize = messageTextView.sizeThatFits(CGSize(width:maxTextWidth, height:CGFloat.greatestFiniteMagnitude))
         // Measure the size of the scroll view viewport.
         let scrollViewSize = scrollView.frame.size
         // Obtain the current scroll view content offset (scroll state).
@@ -651,18 +674,21 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         // Obtain the location of the text view proxy relative to the content view.
         let textProxyOffset = contentView.convert(CGPoint.zero, from:messageTextProxyView)
 
-        // 1. The text proxy should always be sized large enough to hold the
-        //    entire text content.
-        let messageTextProxyViewHeight = textSize.height
+        // 1. The bubble view's width should fit the text content.
+        let bubbleViewWidth = ceil(textSize.width + messageTailEdgeMargin + messageNoTailEdgeMargin)
+        bubbleViewWidthConstraint.constant = bubbleViewWidth
+
+        // 2. The text proxy's height should reflect the entire text content.
+        let messageTextProxyViewHeight = ceil(textSize.height)
         messageTextProxyViewHeightConstraint.constant = messageTextProxyViewHeight
 
-        // 2. We only want to render a single screenful of text content at a time.
+        // 3. We only want to render a single screenful of text content at a time.
         //    The height of the text view should reflect the height of the scrollview's
         //    viewport.
-        let messageTextViewHeight = min(textSize.height, scrollViewSize.height)
+        let messageTextViewHeight = ceil(min(textSize.height, scrollViewSize.height))
         messageTextHeightLayoutConstraint.constant = messageTextViewHeight
 
-        // 3. We want to move the text view around within the proxy in response to 
+        // 4. We want to move the text view around within the proxy in response to
         //    scroll state changes so that it can render the part of the proxy which
         //    is on screen.
         let minMessageTextViewY = CGFloat(0)
@@ -671,7 +697,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         let messageTextViewY = max(minMessageTextViewY, min(maxMessageTextViewY, rawMessageTextViewY))
         messageTextTopConstraint.constant = messageTextViewY
 
-        // 4. We want to scroll the text view's content so that the text view
+        // 5. We want to scroll the text view's content so that the text view
         //    renders the appropriate content for the scrollview's scroll state.
         messageTextView.contentOffset = CGPoint(x:0, y:messageTextViewY)
     }
