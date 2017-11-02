@@ -848,6 +848,17 @@ NS_ASSUME_NONNULL_BEGIN
     [self cropViewToBubbbleShape:self.customView];
 }
 
+- (CGFloat)maxCellHeight
+{
+    static CGFloat value = 0.f;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        CGSize screenSize = [UIScreen mainScreen].bounds.size;
+        value = MAX(screenSize.width, screenSize.height);
+    });
+    return value;
+}
+
 - (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
 {
     OWSAssert(self.viewItem);
@@ -869,6 +880,8 @@ NS_ASSUME_NONNULL_BEGIN
             // Honor dynamic type in the message bodies.
             self.textView.font = [self textMessageFont];
             CGSize textSize = [self.textView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
+            // Constrain the max text cell height to the height of the screen.
+            textSize.height = MIN(textSize.height, self.maxCellHeight);
             CGFloat tapForMoreHeight = (self.displayableText.isTextTruncated ? [self tapForMoreHeight] : 0.f);
             cellSize = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
                 (CGFloat)ceil(textSize.height + textVMargin * 2 + tapForMoreHeight));
