@@ -421,7 +421,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         // Do progressive search after a delay.
         progressiveSearchTimer?.invalidate()
         progressiveSearchTimer = nil
-        let kProgressiveSearchDelaySeconds = 2.0
+        let kProgressiveSearchDelaySeconds = 1.0
         progressiveSearchTimer = WeakTimer.scheduledTimer(timeInterval: kProgressiveSearchDelaySeconds, target: self, userInfo: nil, repeats: true) { [weak self] _ in
             guard let strongSelf = self else {
                 return
