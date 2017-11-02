@@ -660,9 +660,6 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
             owsFail("\(TAG) messageTextView.width \(messageTextView.width) != messageTextProxyView.width \(messageTextProxyView.width)")
         }
 
-        let bubbleViewHMargin: CGFloat = 10
-        let messageTailEdgeMargin: CGFloat = 15
-        let messageNoTailEdgeMargin: CGFloat = 10
         let maxBubbleWidth = bubbleSuperview.width() - (bubbleViewHMargin * 2)
         let maxTextWidth = maxBubbleWidth - (messageTailEdgeMargin + messageNoTailEdgeMargin)
         // Measure the total text size.
