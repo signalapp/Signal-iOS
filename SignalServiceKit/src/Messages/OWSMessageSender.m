@@ -962,6 +962,40 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
+    NSString *localNumber = [TSAccountManager localNumber];
+    if ([localNumber isEqualToString:recipient.uniqueId]) {
+        __block BOOL hasSecondaryDevices;
+        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            hasSecondaryDevices = [OWSDevice hasSecondaryDevicesWithTransaction:transaction];
+        }];
+
+        BOOL hasDeviceMessages = deviceMessages.count > 0;
+
+        if (!hasSecondaryDevices && !hasDeviceMessages) {
+            DDLogInfo(@"%@ Ignoring sync message without secondary devices: %@", self.tag, [message class]);
+            OWSAssert([message isKindOfClass:[OWSOutgoingSyncMessage class]]);
+
+            dispatch_async([OWSDispatch sendingQueue], ^{
+                // This emulates the completion logic of an actual successful save (see below).
+                [recipient save];
+                successHandler();
+            });
+
+            return;
+        } else if (hasSecondaryDevices) {
+            // We may have just linked a new secondary device which is not yet reflected in
+            // the SignalRecipient that corresponds to ourself.  Proceed.  Client should learn
+            // of new secondary devices when this message send fails.
+            DDLogWarn(@"%@ sync message has no device messages but account has secondary devices.", self.tag);
+        } else if (hasDeviceMessages) {
+            OWSFail(@"%@ sync message has device messages for unknown secondary devices.", self.tag);
+        } else {
+            // Account has secondary devices; proceed as usual.
+        }
+    } else {
+        OWSAssert(deviceMessages.count > 0);
+    }
+
     TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId
                                                                                messages:deviceMessages
                                                                                   relay:recipient.relay
