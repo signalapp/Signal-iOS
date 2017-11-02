@@ -81,7 +81,6 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
             return
         }
 
-        PeerConnectionClient.startAudioSession()
         self.callService.handleAnswerCall(call)
     }
 
@@ -114,8 +113,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
 
     func recipientAcceptedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
-
-        PeerConnectionClient.startAudioSession()
+        // no-op
     }
 
     func localHangupCall(_ call: SignalCall) {
@@ -157,7 +155,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
             return
         }
 
-        self.callService.setIsMuted(isMuted: isMuted)
+        self.callService.setIsMuted(call: call, isMuted: isMuted)
     }
 
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {

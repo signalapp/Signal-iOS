@@ -104,7 +104,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private var audioSender: RTCRtpSender?
     private var audioTrack: RTCAudioTrack?
     private var audioConstraints: RTCMediaConstraints
-    static private let sharedAudioSession = CallAudioSession()
 
     // Video
 
@@ -146,8 +145,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         super.init()
 
-        // Configure audio session so we don't prompt user with Record permission until call is connected.
-        type(of: self).configureAudioSession()
         peerConnection = factory.peerConnection(with: configuration,
                                                 constraints: connectionConstraints,
                                                 delegate: self)
@@ -701,20 +698,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             self.dataChannel = dataChannel
             dataChannel.delegate = self
         }
-    }
-
-    // Mark: Audio Session
-
-    class func configureAudioSession() {
-        sharedAudioSession.configure()
-    }
-
-    class func startAudioSession() {
-        sharedAudioSession.start()
-    }
-
-    class func stopAudioSession() {
-        sharedAudioSession.stop()
     }
 
     // MARK: Helpers

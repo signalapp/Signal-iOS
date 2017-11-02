@@ -261,7 +261,6 @@
 		56EAA22E1901718F78C6DBB4 /* libPods-SignalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B5E7D6C9007F5E5761D79DD /* libPods-SignalTests.a */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		7038632718F70C0700D4A43F /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
-		70B8FEE21909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav in Resources */ = {isa = PBXBuildFile; fileRef = 70B8FEE11909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
@@ -369,9 +368,7 @@
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E1370BE018A0686600826894 /* busy.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40718A05754001A532A /* busy.mp3 */; };
-		E1370BE118A0686C00826894 /* completed.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40818A05754001A532A /* completed.mp3 */; };
 		E1370BE218A0686C00826894 /* failure.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40918A05754001A532A /* failure.mp3 */; };
-		E1370BE318A0686C00826894 /* handshake.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40A18A05754001A532A /* handshake.mp3 */; };
 		E1370BE418A0686C00826894 /* outring.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40B18A05754001A532A /* outring.mp3 */; };
 		E1370BE518A0686C00826894 /* r.caf in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40C18A05754001A532A /* r.caf */; };
 		E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40D18A05754001A532A /* sonarping.mp3 */; };
@@ -723,7 +720,6 @@
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		7038632318F70C0700D4A43F /* CryptoTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoTools.h; sourceTree = "<group>"; };
 		7038632418F70C0700D4A43F /* CryptoTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptoTools.m; sourceTree = "<group>"; };
-		70B8FEE11909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "171756__nenadsimic__picked-coin-echo-2.wav"; sourceTree = "<group>"; };
 		768A1A2A17FC9CD300E00ED8 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -867,9 +863,7 @@
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
 		DF728B4B438716EAF95CEC18 /* Pods-Signal.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.app store release.xcconfig"; sourceTree = "<group>"; };
 		E18AB40718A05754001A532A /* busy.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = busy.mp3; sourceTree = "<group>"; };
-		E18AB40818A05754001A532A /* completed.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = completed.mp3; sourceTree = "<group>"; };
 		E18AB40918A05754001A532A /* failure.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = failure.mp3; sourceTree = "<group>"; };
-		E18AB40A18A05754001A532A /* handshake.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = handshake.mp3; sourceTree = "<group>"; };
 		E18AB40B18A05754001A532A /* outring.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = outring.mp3; sourceTree = "<group>"; };
 		E18AB40C18A05754001A532A /* r.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = r.caf; sourceTree = "<group>"; };
 		E18AB40D18A05754001A532A /* sonarping.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = sonarping.mp3; sourceTree = "<group>"; };
@@ -1758,12 +1752,9 @@
 		E18AB40618A05754001A532A /* AudioFiles */ = {
 			isa = PBXGroup;
 			children = (
-				70B8FEE11909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav */,
 				B625CD551ABB589C00E8B23C /* NewMessage.aifc */,
 				E18AB40718A05754001A532A /* busy.mp3 */,
-				E18AB40818A05754001A532A /* completed.mp3 */,
 				E18AB40918A05754001A532A /* failure.mp3 */,
-				E18AB40A18A05754001A532A /* handshake.mp3 */,
 				E18AB40B18A05754001A532A /* outring.mp3 */,
 				E18AB40C18A05754001A532A /* r.caf */,
 				E18AB40D18A05754001A532A /* sonarping.mp3 */,
@@ -1972,7 +1963,6 @@
 				B10C9B611A7049EC00ECA2BF /* play_icon.png in Resources */,
 				AD83FF401A73426500B5C81A /* audio_pause_button_blue@2x.png in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
-				70B8FEE21909FE360042E3F0 /* 171756__nenadsimic__picked-coin-echo-2.wav in Resources */,
 				4517642A1DE939FD00EDB8B9 /* ContactCell.xib in Resources */,
 				AD83FF431A73426500B5C81A /* audio_play_button@2x.png in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
@@ -1981,9 +1971,7 @@
 				AD83FF411A73426500B5C81A /* audio_play_button_blue@2x.png in Resources */,
 				FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */,
 				E1370BE018A0686600826894 /* busy.mp3 in Resources */,
-				E1370BE118A0686C00826894 /* completed.mp3 in Resources */,
 				E1370BE218A0686C00826894 /* failure.mp3 in Resources */,
-				E1370BE318A0686C00826894 /* handshake.mp3 in Resources */,
 				B625CD561ABB589C00E8B23C /* NewMessage.aifc in Resources */,
 				B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */,
 				B10C9B621A7049EC00ECA2BF /* play_icon@2x.png in Resources */,
