@@ -336,7 +336,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
                 case 200:
                 case 204: {
                     DDLogInfo(@"%@ Verification code accepted.", self.tag);
-                    [self storeServerToken:authToken signalingKey:signalingKey];
+                    [self storeServerAuthToken:authToken signalingKey:signalingKey];
                     [TSPreKeyManager registerPreKeysWithMode:RefreshPreKeysMode_SignedAndOneTime
                                                      success:successBlock
                                                      failure:failureBlock];
@@ -411,7 +411,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
                               inCollection:TSAccountManager_UserAccountCollection];
 }
 
-- (void)storeServerToken:(NSString *)authToken signalingKey:(NSString *)signalingKey
+- (void)storeServerAuthToken:(NSString *)authToken signalingKey:(NSString *)signalingKey
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:authToken

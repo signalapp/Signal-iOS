@@ -80,30 +80,24 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   @"deactivated until you complete re-registration."
                                                      proceedTitle:@"Proceed"
                                                     proceedAction:^(UIAlertAction *_Nonnull action) {
-                                                        DDLogError(@"Re-registering.");
-
-                                                        [[TSAccountManager sharedInstance] resetForRegistration];
-                                                        OWSSyncPushTokensJob *syncPushTokensJob = [
-                                                            [OWSSyncPushTokensJob alloc]
-                                                            initWithPushManager:[PushManager sharedManager]
-                                                                 accountManager:[Environment getCurrent].accountManager
-                                                                    preferences:[Environment getCurrent].preferences];
-                                                        syncPushTokensJob.uploadOnlyIfStale = NO;
-                                                        __unused id promise = [syncPushTokensJob run];
-
-                                                        RegistrationViewController *viewController =
-                                                            [RegistrationViewController new];
-                                                        OWSNavigationController *navigationController =
-                                                            [[OWSNavigationController alloc]
-                                                                initWithRootViewController:viewController];
-                                                        navigationController.navigationBarHidden = YES;
-                                                        [UIApplication sharedApplication]
-                                                            .delegate.window.rootViewController
-                                                            = navigationController;
+                                                        [self reregister];
                                                     }];
                            }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
+}
+
+- (void)reregister
+{
+    DDLogInfo(@"%@ re-registering.", self.tag);
+    [[TSAccountManager sharedInstance] resetForRegistration];
+
+    RegistrationViewController *viewController = [RegistrationViewController new];
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:viewController];
+    navigationController.navigationBarHidden = YES;
+
+    [UIApplication sharedApplication].delegate.window.rootViewController = navigationController;
 }
 
 + (void)setManualCensorshipCircumventionEnabled:(BOOL)isEnabled

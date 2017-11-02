@@ -379,7 +379,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     [self requestSocketAliveForAtLeastSeconds:kBackgroundKeepSocketAliveDurationSeconds];
 
     if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]) {
+
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
             NSData *decryptedPayload =
                 [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:TSAccountManager.signalingKey];
 

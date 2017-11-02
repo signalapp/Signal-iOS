@@ -11,8 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSDictionary *)attributesFromStorageWithManualMessageFetching:(BOOL)isEnabled
 {
-    return [self attributesWithSignalingKey:[TSStorageManager signalingKey]
-                            serverAuthToken:[TSStorageManager serverAuthToken]
+    return [self attributesWithSignalingKey:TSAccountManager.signalingKey
+                            serverAuthToken:TSAccountManager.serverAuthToken
                       manualMessageFetching:isEnabled];
 }
 
