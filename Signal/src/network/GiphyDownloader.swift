@@ -842,6 +842,12 @@ extension URLSessionTask {
                                                 attributes:nil)
                 gifFolderPath = dirPath
             }
+
+            // Don't back up Giphy downloads.
+            var dirURL = NSURL.fileURL(withPath:dirPath)
+            var resourceValues = URLResourceValues()
+            resourceValues.isExcludedFromBackup = true
+            try dirURL.setResourceValues(resourceValues)
         } catch let error as NSError {
             owsFail("\(GiphyAsset.TAG) ensureTempFolder failed: \(dirPath), \(error)")
             gifFolderPath = tempDirPath

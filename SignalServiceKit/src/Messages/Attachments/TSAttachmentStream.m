@@ -204,6 +204,16 @@ NS_ASSUME_NONNULL_BEGIN
                 DDLogError(@"Failed to create attachments directory: %@", error);
             }
         }
+
+        NSURL *dirURL = [NSURL fileURLWithPath:attachmentsFolder];
+        NSError *error = nil;
+        [dirURL setResourceValues:@{
+            NSURLIsExcludedFromBackupKey : @(YES),
+        }
+                            error:&error];
+        if (error) {
+            OWSFail(@"Failed to exclude attachments directory from backup: %@", error);
+        }
     });
     return attachmentsFolder;
 }

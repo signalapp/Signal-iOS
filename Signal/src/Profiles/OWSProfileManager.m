@@ -1408,6 +1408,16 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 DDLogError(@"Failed to create profile avatars directory: %@", error);
             }
         }
+
+        NSURL *dirURL = [NSURL fileURLWithPath:profileAvatarsDirPath];
+        NSError *error = nil;
+        [dirURL setResourceValues:@{
+            NSURLIsExcludedFromBackupKey : @(YES),
+        }
+                            error:&error];
+        if (error) {
+            OWSFail(@"Failed to exclude profile avatars directory from backup: %@", error);
+        }
     });
     return profileAvatarsDirPath;
 }
