@@ -541,7 +541,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
     OWSSignalServiceProtosAttachmentPointerBuilder *builder = [OWSSignalServiceProtosAttachmentPointerBuilder new];
     [builder setId:attachmentStream.serverId];
-    NSString *contentType = attachmentStream.contentType;
     OWSAssert(attachmentStream.contentType.length > 0);
     [builder setContentType:attachmentStream.contentType];
     [builder setFileName:filename];

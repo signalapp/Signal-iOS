@@ -34,7 +34,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     if (contentType.length < 1) {
         DDLogWarn(@"%@ incoming attachment has invalid content type", self.tag);
 
-        contentType = @"application/octet-stream";
+        contentType = OWSMimeTypeApplicationOctetStream;
     }
     OWSAssert(contentType.length > 0);
 
@@ -63,7 +63,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     if (contentType.length < 1) {
         DDLogWarn(@"%@ outgoing attachment has invalid content type", self.tag);
 
-        contentType = @"application/octet-stream";
+        contentType = OWSMimeTypeApplicationOctetStream;
     }
     OWSAssert(contentType.length > 0);
     OWSAssert(byteCount > 0);
@@ -108,7 +108,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     if (contentType.length < 1) {
         DDLogWarn(@"%@ incoming attachment has invalid content type", self.tag);
 
-        contentType = @"application/octet-stream";
+        contentType = OWSMimeTypeApplicationOctetStream;
     }
     _contentType = contentType;
 
@@ -138,7 +138,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     if (_contentType.length < 1) {
         DDLogWarn(@"%@ legacy attachment has invalid content type", self.tag);
 
-        _contentType = @"application/octet-stream";
+        _contentType = OWSMimeTypeApplicationOctetStream;
     }
 
     return self;
