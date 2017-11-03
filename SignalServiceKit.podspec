@@ -28,7 +28,8 @@ An Objective-C library for communicating with the Signal messaging service.
   s.source_files = 'SignalServiceKit/src/**/*.{h,m,mm}'
 
   s.resources = ['SignalServiceKit/src/Security/PinningCertificate/textsecure.cer',
-                 'SignalServiceKit/src/Security/PinningCertificate/GIAG2.crt']
+                 'SignalServiceKit/src/Security/PinningCertificate/GIAG2.crt',
+                 'SignalServiceKit/src/Security/PinningCertificate/GTSGIAG3.crt']
   s.prefix_header_file = 'SignalServiceKit/src/TSPrefix.h'
   s.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
 

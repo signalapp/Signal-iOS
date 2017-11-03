@@ -2090,6 +2090,7 @@
 				"${PODS_ROOT}/SAMKeychain/Support/SAMKeychain.bundle",
 				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/textsecure.cer",
 				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GIAG2.crt",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GTSGIAG3.crt",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
