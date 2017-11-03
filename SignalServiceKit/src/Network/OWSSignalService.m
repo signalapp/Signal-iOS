@@ -187,13 +187,18 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
     // Target fronting domain
     OWSAssert(self.isCensorshipCircumventionActive);
-    NSString *frontingHost = [self.censorshipConfiguration frontingHost:localNumber];
-    if (self.isCensorshipCircumventionManuallyActivated && self.manualCensorshipCircumventionDomain.length > 0) {
-        frontingHost = self.manualCensorshipCircumventionDomain;
-    };
-    NSURL *baseURL = [[NSURL alloc] initWithString:[self.censorshipConfiguration frontingHost:localNumber]];
-    OWSAssert(baseURL);
     
+    NSURL *baseURL;
+
+    if (self.isCensorshipCircumventionManuallyActivated && self.manualCensorshipCircumventionDomain.length > 0) {
+        baseURL = [[NSURL alloc] initWithString:[NSString stringWithFormat:@"https://%@", self.manualCensorshipCircumventionDomain]];
+    }
+    
+    if (baseURL == nil) {
+        baseURL = [[NSURL alloc] initWithString:[self.censorshipConfiguration frontingHost:localNumber]];
+    }
+    
+    OWSAssert(baseURL);
     return baseURL;
 }
 
