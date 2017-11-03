@@ -305,23 +305,31 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     static AFSecurityPolicy *securityPolicy = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSError *error;
-        NSData *GIAG2CertData = [self certificateDataWithName:@"GIAG2" error:&error];
-        if (error) {
-            DDLogError(@"%@ Failed to get GIAG2 certificate data with error: %@", self.tag, error);
-            @throw [NSException exceptionWithName:@"OWSSignalService_UnableToReadCertificate"
-                                           reason:error.description
-                                         userInfo:nil];
-        }
-        NSData *GTSGIAG3CertData = [self certificateDataWithName:@"GTSGIAG3" error:&error];
-        if (error) {
-            DDLogError(@"%@ Failed to get GIAG3 certificate data with error: %@", self.tag, error);
-            @throw [NSException exceptionWithName:@"OWSSignalService_UnableToReadCertificate"
-                                           reason:error.description
-                                         userInfo:nil];
+
+        NSMutableSet<NSData *> *certificates = [NSMutableSet new];
+
+        // GIAG2 cert plus root certs from pki.goog
+        NSArray<NSString *> *certNames = @[ @"GIAG2", @"GSR2", @"GSR4", @"GTSR1", @"GTSR2", @"GTSR3", @"GTSR4" ];
+
+        for (NSString *certName in certNames) {
+            NSError *error;
+            NSData *certData = [self certificateDataWithName:certName error:&error];
+            if (error) {
+                DDLogError(@"%@ Failed to get %@ certificate data with error: %@", self.tag, certName, error);
+                @throw [NSException exceptionWithName:@"OWSSignalService_UnableToReadCertificate"
+                                               reason:error.description
+                                             userInfo:nil];
+            }
+
+            if (!certData) {
+                DDLogError(@"%@ No data for certificate: %@", self.tag, certName);
+                @throw [NSException exceptionWithName:@"OWSSignalService_UnableToReadCertificate"
+                                               reason:error.description
+                                             userInfo:nil];
+            }
+            [certificates addObject:certData];
         }
 
-        NSSet<NSData *> *certificates = [NSSet setWithArray:@[ GIAG2CertData, GTSGIAG3CertData ]];
         securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate withPinnedCertificates:certificates];
     });
     return securityPolicy;
