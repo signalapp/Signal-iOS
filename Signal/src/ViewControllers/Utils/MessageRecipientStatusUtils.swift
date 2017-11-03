@@ -28,6 +28,20 @@ import Foundation
 // When showing the per-message status, we want to show the message
 // as "failed" if delivery failed to any recipient, even if another 
 // receipient has read the message.
+// 
+// Note also that for legacy reasons we have redundant and possibly
+// conflicting state.  Examples:
+//
+// * We could have an entry in the recipientReadMap for a message
+//   that has no entries in its recipientDeliveryMap.
+// * We could have an entry in the recipientReadMap or recipientDeliveryMap
+//   for a message whose status is "attempting out" or "unsent".
+// * We could have a message whose wasDelivered property is false but
+//   which has entries in its recipientDeliveryMap or recipientReadMap.
+// * Etc.
+//
+// To resolve this ambiguity, we apply a "bias" towards success or
+// failure.
 class MessageRecipientStatusUtils: NSObject {
     // MARK: Initializers
 
@@ -120,9 +134,10 @@ class MessageRecipientStatusUtils: NSObject {
     public class func statusMessage(outgoingMessage: TSOutgoingMessage,
                                     referenceView: UIView) -> String {
 
-        if outgoingMessage.messageState == .unsent {
+        switch outgoingMessage.messageState {
+        case .unsent:
             return NSLocalizedString("MESSAGE_STATUS_FAILED", comment:"message footer for failed messages")
-        } else if outgoingMessage.messageState == .attemptingOut {
+        case .attemptingOut:
             if outgoingMessage.hasAttachments() {
                 return NSLocalizedString("MESSAGE_STATUS_UPLOADING",
                                          comment:"message footer while attachment is uploading")
@@ -130,59 +145,64 @@ class MessageRecipientStatusUtils: NSObject {
                 return NSLocalizedString("MESSAGE_STATUS_SENDING",
                                          comment:"message status while message is sending.")
             }
+        case .sentToService:
+            let recipientReadMap = outgoingMessage.recipientReadMap
+            if recipientReadMap.count > 0 {
+                return NSLocalizedString("MESSAGE_STATUS_READ", comment:"message footer for read messages")
+            }
+
+            let recipientDeliveryMap = outgoingMessage.recipientDeliveryMap
+            if recipientDeliveryMap.count > 0 {
+                return NSLocalizedString("MESSAGE_STATUS_DELIVERED",
+                                         comment:"message status for message delivered to their recipient.")
+            }
+
+            if outgoingMessage.wasDelivered {
+                return NSLocalizedString("MESSAGE_STATUS_DELIVERED",
+                                         comment:"message status for message delivered to their recipient.")
+            }
+
+            return NSLocalizedString("MESSAGE_STATUS_SENT",
+                                     comment:"message footer for sent messages")
+        default:
+            owsFail("Message has unexpected status: \(outgoingMessage.messageState).")
+            return NSLocalizedString("MESSAGE_STATUS_SENT",
+                                     comment:"message footer for sent messages")
         }
-
-        assert(outgoingMessage.messageState == .sentToService)
-
-        let recipientReadMap = outgoingMessage.recipientReadMap
-        if recipientReadMap.count > 0 {
-            return NSLocalizedString("MESSAGE_STATUS_READ", comment:"message footer for read messages")
-        }
-
-        let recipientDeliveryMap = outgoingMessage.recipientDeliveryMap
-        if recipientDeliveryMap.count > 0 {
-            return NSLocalizedString("MESSAGE_STATUS_DELIVERED",
-                                                  comment:"message status for message delivered to their recipient.")
-        }
-
-        if outgoingMessage.wasDelivered {
-            return NSLocalizedString("MESSAGE_STATUS_DELIVERED",
-                                                  comment:"message status for message delivered to their recipient.")
-        }
-
-        return NSLocalizedString("MESSAGE_STATUS_SENT",
-                                 comment:"message footer for sent messages")
     }
 
     // This method is per-message and "biased towards failure".
     // See comments above.
     public class func recipientStatus(outgoingMessage: TSOutgoingMessage) -> MessageRecipientStatus {
-        if outgoingMessage.messageState == .unsent {
+        switch outgoingMessage.messageState {
+        case .unsent:
             return .failed
-        } else if outgoingMessage.messageState == .attemptingOut {
+        case .attemptingOut:
             if outgoingMessage.hasAttachments() {
                 return .uploading
             } else {
                 return .sending
             }
+        case .sentToService:
+            let recipientReadMap = outgoingMessage.recipientReadMap
+            if recipientReadMap.count > 0 {
+                return .read
+            }
+
+            let recipientDeliveryMap = outgoingMessage.recipientDeliveryMap
+            if recipientDeliveryMap.count > 0 {
+                return .delivered
+            }
+
+            if outgoingMessage.wasDelivered {
+                return .delivered
+            }
+
+            return .sent
+        default:
+            owsFail("Message has unexpected status: \(outgoingMessage.messageState).")
+
+            return .sent
         }
-
-        assert(outgoingMessage.messageState == .sentToService)
-
-        let recipientReadMap = outgoingMessage.recipientReadMap
-        if recipientReadMap.count > 0 {
-            return .read
-        }
-
-        let recipientDeliveryMap = outgoingMessage.recipientDeliveryMap
-        if recipientDeliveryMap.count > 0 {
-            return .delivered
-        }
-
-        if outgoingMessage.wasDelivered {
-            return .delivered
-        }
-
-        return .sent
     }
 }
