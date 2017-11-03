@@ -766,12 +766,20 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
     if (!self.isEnvironmentSetup) {
-        OWSFail(@"%@ ignoring %s because environment is not yet set up.", self.tag, __PRETTY_FUNCTION__);
+        OWSFail(
+            @"%@ ignoring %s because environment is not yet set up: %@.", self.tag, __PRETTY_FUNCTION__, notification);
         return;
     }
+    if (application.applicationState != UIApplicationStateActive) {
+        OWSFail(@"%@ ignoring %s because app is not yet active: %@.", self.tag, __PRETTY_FUNCTION__, notification);
+        return;
+    }
+    DDLogInfo(@"%@ %s %@", self.tag, __PRETTY_FUNCTION__, notification);
 
     [AppStoreRating preventPromptAtNextTest];
     [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
+    // We only want to receive a single local notification per launch.
+    [application cancelAllLocalNotifications];
 }
 
 - (void)application:(UIApplication *)application
