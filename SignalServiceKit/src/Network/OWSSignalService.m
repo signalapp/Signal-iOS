@@ -5,6 +5,7 @@
 #import "OWSSignalService.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSCensorshipConfiguration.h"
+#import "OWSError.h"
 #import "OWSHTTPSecurityPolicy.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
@@ -157,7 +158,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)signalServiceSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
-        DDLogInfo(@"%@ using reflector HTTPSessionManager", self.tag);
+        DDLogInfo(@"%@ using reflector HTTPSessionManager via: %@", self.tag, self.domainFrontingBaseURL);
         return self.reflectorSignalServiceSessionManager;
     } else {
         return self.defaultSignalServiceSessionManager;
@@ -186,13 +187,18 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
     // Target fronting domain
     OWSAssert(self.isCensorshipCircumventionActive);
-    NSString *frontingHost = [self.censorshipConfiguration frontingHost:localNumber];
-    if (self.isCensorshipCircumventionManuallyActivated && self.manualCensorshipCircumventionDomain.length > 0) {
-        frontingHost = self.manualCensorshipCircumventionDomain;
-    };
-    NSURL *baseURL = [[NSURL alloc] initWithString:[self.censorshipConfiguration frontingHost:localNumber]];
-    OWSAssert(baseURL);
     
+    NSURL *baseURL;
+
+    if (self.isCensorshipCircumventionManuallyActivated && self.manualCensorshipCircumventionDomain.length > 0) {
+        baseURL = [[NSURL alloc] initWithString:[NSString stringWithFormat:@"https://%@", self.manualCensorshipCircumventionDomain]];
+    }
+    
+    if (baseURL == nil) {
+        baseURL = [[NSURL alloc] initWithString:[self.censorshipConfiguration frontingHost:localNumber]];
+    }
+    
+    OWSAssert(baseURL);
     return baseURL;
 }
 
@@ -217,7 +223,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)CDNSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
-        DDLogInfo(@"%@ using reflector CDNSessionManager", self.tag);
+        DDLogInfo(@"%@ using reflector CDNSessionManager via: %@", self.tag, self.domainFrontingBaseURL);
         return self.reflectorCDNSessionManager;
     } else {
         return self.defaultCDNSessionManager;
@@ -259,35 +265,71 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 #pragma mark - Google Pinning Policy
 
++ (nullable NSData *)certificateDataWithName:(NSString *)name error:(NSError **)error
+{
+    if (!name.length) {
+        OWSFail(@"%@ expected name with length > 0", self.tag);
+        *error = OWSErrorMakeAssertionError();
+        return nil;
+    }
+
+    NSString *path = [NSBundle.mainBundle pathForResource:name ofType:@"crt"];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        OWSFail(@"%@ Missing certificate for name: %@", self.tag, name);
+        *error = OWSErrorMakeAssertionError();
+        return nil;
+    }
+
+    NSData *_Nullable certData = [NSData dataWithContentsOfFile:path options:0 error:error];
+
+    if (*error != nil) {
+        OWSFail(@"%@ Failed to read cert file with path: %@", self.tag, path);
+        return nil;
+    }
+
+    if (certData.length == 0) {
+        OWSFail(@"%@ empty certData for name: %@", self.tag, name);
+        return nil;
+    }
+
+    DDLogVerbose(@"%@ read cert data with name: %@ length: %lu", self.tag, name, (unsigned long)certData.length);
+    return certData;
+}
+
 /**
  * We use the Google Pinning Policy when connecting to our censorship circumventing reflector,
  * which is hosted on Google.
  */
-+ (AFSecurityPolicy *)googlePinningPolicy {
++ (AFSecurityPolicy *)googlePinningPolicy
+{
     static AFSecurityPolicy *securityPolicy = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSError *error;
-        NSString *path = [NSBundle.mainBundle pathForResource:@"GIAG2" ofType:@"crt"];
 
-        if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-            @throw [NSException
-                    exceptionWithName:@"Missing server certificate"
-                    reason:[NSString stringWithFormat:@"Missing signing certificate for service googlePinningPolicy"]
-                    userInfo:nil];
-        }
-        
-        NSData *googleCertData = [NSData dataWithContentsOfFile:path options:0 error:&error];
-        if (!googleCertData) {
+        NSMutableSet<NSData *> *certificates = [NSMutableSet new];
+
+        // GIAG2 cert plus root certs from pki.goog
+        NSArray<NSString *> *certNames = @[ @"GIAG2", @"GSR2", @"GSR4", @"GTSR1", @"GTSR2", @"GTSR3", @"GTSR4" ];
+
+        for (NSString *certName in certNames) {
+            NSError *error;
+            NSData *certData = [self certificateDataWithName:certName error:&error];
             if (error) {
-                @throw [NSException exceptionWithName:@"OWSSignalServiceHTTPSecurityPolicy" reason:@"Couln't read google pinning cert" userInfo:nil];
-            } else {
-                NSString *reason = [NSString stringWithFormat:@"Reading google pinning cert faile with error: %@", error];
-                @throw [NSException exceptionWithName:@"OWSSignalServiceHTTPSecurityPolicy" reason:reason userInfo:nil];
+                DDLogError(@"%@ Failed to get %@ certificate data with error: %@", self.tag, certName, error);
+                @throw [NSException exceptionWithName:@"OWSSignalService_UnableToReadCertificate"
+                                               reason:error.description
+                                             userInfo:nil];
             }
+
+            if (!certData) {
+                DDLogError(@"%@ No data for certificate: %@", self.tag, certName);
+                @throw [NSException exceptionWithName:@"OWSSignalService_UnableToReadCertificate"
+                                               reason:error.description
+                                             userInfo:nil];
+            }
+            [certificates addObject:certData];
         }
-        
-        NSSet<NSData *> *certificates = [NSSet setWithObject:googleCertData];
+
         securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate withPinnedCertificates:certificates];
     });
     return securityPolicy;

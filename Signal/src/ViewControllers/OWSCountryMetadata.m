@@ -779,8 +779,8 @@ NS_ASSUME_NONNULL_BEGIN
                                            googleDomain:@"google.co.ug"
                                             countryCode:@"UG"],
             [OWSCountryMetadata countryMetadataWithName:@"United States"
-                                                    tld:@".us"
-                                           googleDomain:@"google.us"
+                                                    tld:@".com"
+                                           googleDomain:@"google.com"
                                             countryCode:@"US"],
             [OWSCountryMetadata countryMetadataWithName:@"Uruguay"
                                                     tld:@".uy"
