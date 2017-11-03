@@ -124,27 +124,23 @@ class MessageRecipientStatusUtils: NSObject {
             return NSLocalizedString("MESSAGE_STATUS_FAILED", comment:"message footer for failed messages")
         } else if outgoingMessage.messageState == .attemptingOut {
             if outgoingMessage.hasAttachments() {
-                assert(outgoingMessage.messageState == .attemptingOut)
-
                 return NSLocalizedString("MESSAGE_STATUS_UPLOADING",
                                          comment:"message footer while attachment is uploading")
             } else {
-                assert(outgoingMessage.messageState == .attemptingOut)
-
                 return NSLocalizedString("MESSAGE_STATUS_SENDING",
                                          comment:"message status while message is sending.")
             }
         }
 
+        assert(outgoingMessage.messageState == .sentToService)
+
         let recipientReadMap = outgoingMessage.recipientReadMap
         if recipientReadMap.count > 0 {
-            assert(outgoingMessage.messageState == .sentToService)
             return NSLocalizedString("MESSAGE_STATUS_READ", comment:"message footer for read messages")
         }
 
         let recipientDeliveryMap = outgoingMessage.recipientDeliveryMap
         if recipientDeliveryMap.count > 0 {
-            assert(outgoingMessage.messageState == .sentToService)
             return NSLocalizedString("MESSAGE_STATUS_DELIVERED",
                                                   comment:"message status for message delivered to their recipient.")
         }
@@ -165,10 +161,8 @@ class MessageRecipientStatusUtils: NSObject {
             return .failed
         } else if outgoingMessage.messageState == .attemptingOut {
             if outgoingMessage.hasAttachments() {
-                assert(outgoingMessage.messageState == .attemptingOut)
                 return .uploading
             } else {
-                assert(outgoingMessage.messageState == .attemptingOut)
                 return .sending
             }
         }
