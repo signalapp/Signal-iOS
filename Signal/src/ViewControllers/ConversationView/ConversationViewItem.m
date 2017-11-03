@@ -304,7 +304,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         NSString *text = textBlock();
 
         // Only show up to N characters of text.
-        const NSUInteger kMaxTextDisplayLength = 1024;
+        const NSUInteger kMaxTextDisplayLength = 512;
         NSString *_Nullable fullText = [DisplayableText displayableText:text];
         BOOL isTextTruncated = NO;
         if (!fullText) {
