@@ -158,7 +158,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)signalServiceSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
-        DDLogInfo(@"%@ using reflector HTTPSessionManager", self.tag);
+        DDLogInfo(@"%@ using reflector HTTPSessionManager via: %@", self.tag, self.domainFrontingBaseURL);
         return self.reflectorSignalServiceSessionManager;
     } else {
         return self.defaultSignalServiceSessionManager;
@@ -218,7 +218,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)CDNSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
-        DDLogInfo(@"%@ using reflector CDNSessionManager", self.tag);
+        DDLogInfo(@"%@ using reflector CDNSessionManager via: %@", self.tag, self.domainFrontingBaseURL);
         return self.reflectorCDNSessionManager;
     } else {
         return self.defaultCDNSessionManager;
