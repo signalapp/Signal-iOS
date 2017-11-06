@@ -37,6 +37,14 @@
     }];
 }
 
+- (void)saveAsyncWithCompletionBlock:(void (^_Nullable)(void))completionBlock
+{
+    [[self dbReadWriteConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self saveWithTransaction:transaction];
+    }
+                                          completionBlock:completionBlock];
+}
+
 - (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [transaction touchObjectForKey:self.uniqueId inCollection:[self.class collection]];
