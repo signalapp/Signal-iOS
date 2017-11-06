@@ -765,10 +765,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+    OWSAssert([NSThread isMainThread]);
+
     if (!self.isEnvironmentSetup) {
-        OWSFail(@"%@ ignoring %s because environment is not yet set up.", self.tag, __PRETTY_FUNCTION__);
+        OWSFail(
+            @"%@ ignoring %s because environment is not yet set up: %@.", self.tag, __PRETTY_FUNCTION__, notification);
         return;
     }
+    DDLogInfo(@"%@ %s %@", self.tag, __PRETTY_FUNCTION__, notification);
 
     [AppStoreRating preventPromptAtNextTest];
     [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
