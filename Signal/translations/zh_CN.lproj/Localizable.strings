@@ -76,17 +76,11 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "附件";
 
-/* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "附件";
-
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "文件类型: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "大小: %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "发送";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "附件";
@@ -226,6 +220,21 @@
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "打电话？";
 
+/* Accessibility label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "接听来电";
+
+/* Accessibility label for selection the audio source */
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "音频";
+
+/* Accessibility label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "拒接来电";
+
+/* Accessibility label for hang up call */
+"CALL_VIEW_HANGUP_LABEL" = "结束通话";
+
+/* Accessibility label for muting the microphone */
+"CALL_VIEW_MUTE_LABEL" = "静音";
+
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "如果您改变设置，您将可以直接在锁屏界面上看到来电人的名称与号码并且应答来电。\n\n更多信息请见隐私设置。";
 
@@ -237,6 +246,12 @@
 
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "显示隐私设置";
+
+/* Accessibility label to switch to audio only */
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "转为音频通话";
+
+/* Accessibility label to switch to video call */
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "转为视频通话";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "回电话";
@@ -379,6 +394,9 @@
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "该用户不在您的联系人列表中。";
 
+/* Indicator on truncated text messages that they can be tapped to see the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "点击查看详情";
+
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "屏蔽该用户";
 
@@ -462,6 +480,9 @@
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "复制";
+
+/* Short name for edit menu item to delete contents of media message. */
+"EDIT_ITEM_DELETE_ACTION" = "删除";
 
 /* Short name for edit menu item to show message metadata. */
 "EDIT_ITEM_MESSAGE_METADATA_ACTION" = "信息";
@@ -548,7 +569,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "联系人不是Signal用户。";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Failure: Ask sender to update Signal and resend.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "失败：请告知发送人升级 Signal 后重新发送。";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "收到了一个重复的消息。";
@@ -797,10 +818,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "成员列表";
 
 /* No comment provided by engineer. */
-"LOGGING_SECTION" = "信息记录日志";
+"load_earlier_messages" = "加载早前的消息";
 
 /* No comment provided by engineer. */
-"ME_STRING" = "我";
+"LOGGING_SECTION" = "信息记录日志";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "相机";
@@ -862,8 +883,7 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "消息";
 
-/* message footer for delivered messages
-   message status for message delivered to their recipient. */
+/* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "已传达";
 
 /* message footer for failed messages */
@@ -937,23 +957,8 @@
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal需要访问您的摄像头";
 
-/* No comment provided by engineer. */
-"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY" = "来电未接，因为他们的安全码已改变。";
-
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "来自 %@ 的未接来电。";
-
-/* No comment provided by engineer. */
-"MSGVIEW_RECEIVED_CALL" = "您收到了 %@ 的来电。";
-
-/* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ 拨打了您的电话。";
-
-/* No comment provided by engineer. */
-"MSGVIEW_YOU_CALLED" = "您呼叫了 %@。";
-
-/* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "您拨打了%@的电话。";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "您无法匹配更多的设备。";
@@ -1015,6 +1020,9 @@
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "未保存的修改";
 
+/* No comment provided by engineer. */
+"new_message" = "新消息";
+
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "搜索";
 
@@ -1071,7 +1079,7 @@
 "OUTGOING_INCOMPLETE_CALL" = "未应答的拨出呼叫";
 
 /* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@... [点击查看更多]";
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
 
 /* The title of the 'oversize text message' view. */
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "消息";
@@ -1340,7 +1348,7 @@
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "重新发送";
 
-/* No comment provided by engineer. */
+/* Label for the send button in the conversation view. */
 "SEND_BUTTON_TITLE" = "发送";
 
 /* Header title for the 'send external file' view. */

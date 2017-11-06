@@ -76,17 +76,11 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "תצריף";
 
-/* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "תצריף";
-
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "סוג קובץ: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "גודל: %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "שלח";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "תצריף";
@@ -238,6 +232,9 @@
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "End call";
 
+/* Accessibility label for muting the microphone */
+"CALL_VIEW_MUTE_LABEL" = "Mute";
+
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "ניתן לענות לשיחות ממסך הנעילה ולראות את השם ומספר הטלפון של שיחות נכנסות ע״י שינוי ההגדרות שלך.\n\nראה/י הגדרות פרטיות לפרטים נוספים.";
 
@@ -255,9 +252,6 @@
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
-
-/* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Mute";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "חיוג חוזר";
@@ -399,6 +393,9 @@
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "משתמש זה אינו באנשי הקשר שלך.";
+
+/* Indicator on truncated text messages that they can be tapped to see the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap For More";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "חסום משתמש זה";
@@ -570,6 +567,9 @@
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "איש קשר אינו משתמש סיגנל";
+
+/* Error message when unable to receive an attachment because the sending client is too old. */
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Failure: Ask sender to update Signal and resend.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "הגיע מסר כפול.";
@@ -818,10 +818,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "חברי הקבוצה";
 
 /* No comment provided by engineer. */
-"LOGGING_SECTION" = "רישום יומן";
+"load_earlier_messages" = "טען הודעות מוקדמות יותר";
 
 /* No comment provided by engineer. */
-"ME_STRING" = "אני";
+"LOGGING_SECTION" = "רישום יומן";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "מצלמה";
@@ -883,8 +883,7 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "הודעה";
 
-/* message footer for delivered messages
-   message status for message delivered to their recipient. */
+/* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "נשלח";
 
 /* message footer for failed messages */
@@ -958,23 +957,8 @@
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "סיגנל צריך לקבל גישה למצלמה שלך.";
 
-/* No comment provided by engineer. */
-"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY" = "Missed call because their safety number has changed.";
-
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "שיחה שלא נענתה מ%@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_RECEIVED_CALL" = "קיבלת שיחה מאת %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ ניסה לחייג אליך.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_YOU_CALLED" = "התקשרת אל %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "ניסית לחייג אל %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "לא ניתן לשייך עוד מכשירים.";
@@ -1036,6 +1020,9 @@
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "שינויים בלתי שמורים";
 
+/* No comment provided by engineer. */
+"new_message" = "הודעה חדשה";
+
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "חפש";
 
@@ -1092,7 +1079,7 @@
 "OUTGOING_INCOMPLETE_CALL" = "Unanswered outgoing call";
 
 /* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Tap For More]";
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
 
 /* The title of the 'oversize text message' view. */
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "הודעה";
