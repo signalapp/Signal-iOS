@@ -422,6 +422,7 @@
 		34330AA21E79686200DF2FB9 /* OWSProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProgressView.m; sourceTree = "<group>"; };
 		343D3D991E9283F100165CA4 /* BlockListUIUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListUIUtils.h; sourceTree = "<group>"; };
 		343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListUIUtils.m; sourceTree = "<group>"; };
+		34491FC11FB0F78500B3E5A3 /* my */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = my; path = translations/my.lproj/Localizable.strings; sourceTree = "<group>"; };
 		344F2F651E57A932000D9322 /* UIViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+OWS.h"; path = "util/UIViewController+OWS.h"; sourceTree = "<group>"; };
 		344F2F661E57A932000D9322 /* UIViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+OWS.m"; path = "util/UIViewController+OWS.m"; sourceTree = "<group>"; };
 		34533F161EA8D2070006114F /* OWSAudioAttachmentPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioAttachmentPlayer.h; sourceTree = "<group>"; };
@@ -1929,6 +1930,7 @@
 				km,
 				lt,
 				he,
+				my,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -2524,6 +2526,7 @@
 				456D0FD51F63094D008499CD /* km */,
 				456D0FD81F631F4E008499CD /* lt */,
 				340B02B61F9FD31800F9CFEC /* he */,
+				34491FC11FB0F78500B3E5A3 /* my */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

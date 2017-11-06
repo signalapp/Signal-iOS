@@ -76,17 +76,11 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Atașament";
 
-/* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Atașament";
-
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tip fișier: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Mărime: %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Trimite";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Atașament";
@@ -226,6 +220,21 @@
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Apelez?";
 
+/* Accessibility label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Acceptă apelul de intrare";
+
+/* Accessibility label for selection the audio source */
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Audio";
+
+/* Accessibility label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Refuză apelul de intrare";
+
+/* Accessibility label for hang up call */
+"CALL_VIEW_HANGUP_LABEL" = "Închidere apel";
+
+/* Accessibility label for muting the microphone */
+"CALL_VIEW_MUTE_LABEL" = "Mut";
+
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Poți răspunde la apeluri direct din ecranul de blocare și să vezi numele și numărul de telefon pentru apelurile primite dacă îți schimbi setările.\n\n Uită-te la setările de confidențialitate pentru mai multe detalii.";
 
@@ -237,6 +246,12 @@
 
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Arată setările de confidențialitate";
+
+/* Accessibility label to switch to audio only */
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Treceți la apel audio";
+
+/* Accessibility label to switch to video call */
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Treceți la apel video";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Apelează înapoi";
@@ -281,7 +296,7 @@
 "CONFIRM_LEAVE_GROUP_TITLE" = "Ești sigur că vrei să părăsești grupul?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Conectează un dispozitiv nou";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Asociază un dispozitiv nou";
 
 /* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ și-a reinstalat aplicația sau a schimbat dispozitivul. Verifică numărul tău de siguranță cu el/ea pentru a asigura confidențialitatea.";
@@ -379,6 +394,9 @@
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Acest utilizator nu se află în lista ta de contacte.";
 
+/* Indicator on truncated text messages that they can be tapped to see the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Apasă pentru detalii";
+
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Blochează acest utilizator";
 
@@ -404,7 +422,7 @@
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Activ ultima oară: %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Conectat: %@";
+"DEVICE_LINKED_AT_LABEL" = "Asociat: %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Actualizarea listei de dispozitive a eșuat.";
@@ -462,6 +480,9 @@
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Copiază";
+
+/* Short name for edit menu item to delete contents of media message. */
+"EDIT_ITEM_DELETE_ACTION" = "Șterge";
 
 /* Short name for edit menu item to show message metadata. */
 "EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Informații";
@@ -773,34 +794,34 @@
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Acest dispozitiv va putea vedea grupurile și contactele tale, citi toate mesajele tale și să trimită mesaje în numele tău.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Conectez acest dispozitiv?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Asociez acest dispozitiv?";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Re-încearcă";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scanează codul QR afișat pe dispozitivul care trebuie conectat.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scanează codul QR afișat pe dispozitivul care trebuie asociat.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Scanează cod QR";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Conectează dispozitiv nou";
+"LINK_NEW_DEVICE_TITLE" = "Asociază un dispozitiv nou";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "Dispozitive conectate";
+"LINKED_DEVICES_TITLE" = "Dispozitive asociate";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Conectarea dispozitivului a eșuat";
+"LINKING_DEVICE_FAILED_TITLE" = "Asocierea dispozitivului a eșuat";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Membrii grupului";
 
 /* No comment provided by engineer. */
-"LOGGING_SECTION" = "Jurnalizare";
+"load_earlier_messages" = "Încarcă mesajele anterioare";
 
 /* No comment provided by engineer. */
-"ME_STRING" = "Eu";
+"LOGGING_SECTION" = "Jurnalizare";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Cameră";
@@ -862,8 +883,7 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Mesaj";
 
-/* message footer for delivered messages
-   message status for message delivered to their recipient. */
+/* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Trimis";
 
 /* message footer for failed messages */
@@ -937,23 +957,8 @@
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal are nevoie de acces la camera ta.";
 
-/* No comment provided by engineer. */
-"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY" = "Apel ratat deoarece numărul lor de siguranță s-a schimbat.";
-
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Apel ratat de la %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_RECEIVED_CALL" = "Ai primit un apel de la %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ a încercat să te sune.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_YOU_CALLED" = "Ai apelat pe %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "Ai încercat să suni pe %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Nu mai poți conecta alte dispozitive.";
@@ -1015,6 +1020,9 @@
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Schimbări nesalvate";
 
+/* No comment provided by engineer. */
+"new_message" = "Mesaj Nou";
+
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Căutare";
 
@@ -1071,7 +1079,7 @@
 "OUTGOING_INCOMPLETE_CALL" = "Apel de ieșire fără răspuns";
 
 /* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [Apasă pentru detalii]";
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
 
 /* The title of the 'oversize text message' view. */
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Mesaj";
@@ -1340,7 +1348,7 @@
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Trimite din nou";
 
-/* No comment provided by engineer. */
+/* Label for the send button in the conversation view. */
 "SEND_BUTTON_TITLE" = "Trimite";
 
 /* Header title for the 'send external file' view. */
@@ -1569,16 +1577,16 @@
 "UNKNOWN_CONTACT_NAME" = "Contact necunoscut";
 
 /* button title for unlinking a device */
-"UNLINK_ACTION" = "Deconectează";
+"UNLINK_ACTION" = "Disociază";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "Prin deconectarea acestui dispozitiv, nu se vor mai putea trimite și primi mesaje pe dispozitiv.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Prin disocierea acestui dispozitiv, nu se vor mai putea trimite și primi mesaje pe dispozitiv.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "Deconectez \"%@\"?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "Disociez \"%@\"?";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal nu a putut deconecta dispozitivul tău.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal nu a putut disocia dispozitivul tău.";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Dispozitiv fără nume";

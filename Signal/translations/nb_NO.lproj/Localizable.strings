@@ -76,17 +76,11 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Vedlegg";
 
-/* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Vedlegg";
-
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Filtype: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Størrelse: %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Vedlegg";
@@ -226,6 +220,21 @@
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Ringe?";
 
+/* Accessibility label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Svar innkommende samtale";
+
+/* Accessibility label for selection the audio source */
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Lyd";
+
+/* Accessibility label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Avvis innkommende samtale";
+
+/* Accessibility label for hang up call */
+"CALL_VIEW_HANGUP_LABEL" = "Avslutt samtale";
+
+/* Accessibility label for muting the microphone */
+"CALL_VIEW_MUTE_LABEL" = "Demp";
+
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Du kan besvare oppringninger direkte fra låst skjerm, og se navn og telefonnummer for den som ringer hvis du endrer dine innstillinger.\n\nSe i innstillinger for personvern for mer detaljer.";
 
@@ -237,6 +246,12 @@
 
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Vis innstillinger for personvern";
+
+/* Accessibility label to switch to audio only */
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Bytt til lydsamtale";
+
+/* Accessibility label to switch to video call */
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Bytt til videosamtale";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Ring tilbake";
@@ -379,6 +394,9 @@
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Denne brukeren er ikke i kontaktene dine.";
 
+/* Indicator on truncated text messages that they can be tapped to see the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Trykk for mer";
+
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Blokker denne brukeren";
 
@@ -462,6 +480,9 @@
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Kopier";
+
+/* Short name for edit menu item to delete contents of media message. */
+"EDIT_ITEM_DELETE_ACTION" = "Slett";
 
 /* Short name for edit menu item to show message metadata. */
 "EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Info";
@@ -797,10 +818,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Gruppemedlemmer";
 
 /* No comment provided by engineer. */
-"LOGGING_SECTION" = "Logger";
+"load_earlier_messages" = "Last inn tidligere meldinger";
 
 /* No comment provided by engineer. */
-"ME_STRING" = "Meg";
+"LOGGING_SECTION" = "Logger";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
@@ -862,8 +883,7 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Melding";
 
-/* message footer for delivered messages
-   message status for message delivered to their recipient. */
+/* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Levert";
 
 /* message footer for failed messages */
@@ -937,23 +957,8 @@
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal trenger tilgang til ditt kamera.";
 
-/* No comment provided by engineer. */
-"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY" = "Tapt anrop fordi sikkerhetsnummer har endret seg.";
-
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Tapt anrop fra %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_RECEIVED_CALL" = "Du mottok en anrop fra %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ prøvde å ringe deg.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_YOU_CALLED" = "Du ringte %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "Du prøvde å ringe %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Du kan ikke koble til flere enheter.";
@@ -1015,6 +1020,9 @@
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Ulagrede endringer";
 
+/* No comment provided by engineer. */
+"new_message" = "Ny melding";
+
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Søk";
 
@@ -1071,7 +1079,7 @@
 "OUTGOING_INCOMPLETE_CALL" = "Ubesvart utgående samtale";
 
 /* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@... [Trykk for mer]";
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
 
 /* The title of the 'oversize text message' view. */
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Melding";
@@ -1340,7 +1348,7 @@
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Send på nytt";
 
-/* No comment provided by engineer. */
+/* Label for the send button in the conversation view. */
 "SEND_BUTTON_TITLE" = "Send";
 
 /* Header title for the 'send external file' view. */

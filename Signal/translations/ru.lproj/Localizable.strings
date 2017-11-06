@@ -76,17 +76,11 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Вложение";
 
-/* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Вложение";
-
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Тип файла: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Размер: %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Отправить";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Вложение";
@@ -226,6 +220,21 @@
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Позвонить?";
 
+/* Accessibility label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Принять входящий звонок";
+
+/* Accessibility label for selection the audio source */
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Аудио";
+
+/* Accessibility label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Отклонить входящий звонок";
+
+/* Accessibility label for hang up call */
+"CALL_VIEW_HANGUP_LABEL" = "Завершить звонок";
+
+/* Accessibility label for muting the microphone */
+"CALL_VIEW_MUTE_LABEL" = "Откл. микр.";
+
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Можно отвечать на звонки непосредственно с экрана блокировки и просматривать имя и номер телефона для входящих звонков.\n\nПодробнее смотрите Настройки конфиденциальности.";
 
@@ -237,6 +246,12 @@
 
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Показать настройки конфиденциальности";
+
+/* Accessibility label to switch to audio only */
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Только аудио";
+
+/* Accessibility label to switch to video call */
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Вкл. видео";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Перезвонить";
@@ -379,6 +394,9 @@
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Этот пользователь отсутствует в списке контактов.";
 
+/* Indicator on truncated text messages that they can be tapped to see the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Развернуть";
+
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Блокировать этого пользователя";
 
@@ -462,6 +480,9 @@
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Скопировать";
+
+/* Short name for edit menu item to delete contents of media message. */
+"EDIT_ITEM_DELETE_ACTION" = "Удалить";
 
 /* Short name for edit menu item to show message metadata. */
 "EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Информация";
@@ -797,10 +818,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Участники группы";
 
 /* No comment provided by engineer. */
-"LOGGING_SECTION" = "Журнал отладки";
+"load_earlier_messages" = "Загрузить более ранние сообщения";
 
 /* No comment provided by engineer. */
-"ME_STRING" = "Я";
+"LOGGING_SECTION" = "Журнал отладки";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Камера";
@@ -862,8 +883,7 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Сообщение";
 
-/* message footer for delivered messages
-   message status for message delivered to their recipient. */
+/* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Доставлено";
 
 /* message footer for failed messages */
@@ -937,23 +957,8 @@
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal необходим доступ к камере устройства.";
 
-/* No comment provided by engineer. */
-"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY" = "Звонок пропущен, так как код безопасности сменился.";
-
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Пропущенный звонок от %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_RECEIVED_CALL" = "Вы приняли звонок от %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "Пользователь %@ не смог дозвониться.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_YOU_CALLED" = "Вы звонили  %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "Вы не смогли дозвониться пользователю %@.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Вы не можете соединить больше устройств.";
@@ -1015,6 +1020,9 @@
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Несохраненные изменения";
 
+/* No comment provided by engineer. */
+"new_message" = "Новое сообщение";
+
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Поиск";
 
@@ -1071,7 +1079,7 @@
 "OUTGOING_INCOMPLETE_CALL" = "Неотвеченный исходящий вызов";
 
 /* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@... [Нажмите для получения подробностей]";
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
 
 /* The title of the 'oversize text message' view. */
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Сообщение";
@@ -1340,7 +1348,7 @@
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Отправить еще раз";
 
-/* No comment provided by engineer. */
+/* Label for the send button in the conversation view. */
 "SEND_BUTTON_TITLE" = "Отправить";
 
 /* Header title for the 'send external file' view. */

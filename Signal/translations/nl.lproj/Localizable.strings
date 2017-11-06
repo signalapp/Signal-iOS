@@ -76,17 +76,11 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Bijlage";
 
-/* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Bijlage";
-
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Bestandstype: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Grootte: %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Stuur";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Bijlage";
@@ -209,7 +203,7 @@
 "CALL_LABEL" = "Bellen";
 
 /* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Werk je apparaat bij naar iOS9 of hoger om externe video te kunnen bekijken.";
+"CALL_REMOTE_VIDEO_DISABLED" = "Werk je apparaat bij naar iOS 9 of hoger om externe video te kunnen bekijken.";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Geen antwoord.";
@@ -226,6 +220,21 @@
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Bellen?";
 
+/* Accessibility label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Inkomende oproep aanvaarden";
+
+/* Accessibility label for selection the audio source */
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Audio";
+
+/* Accessibility label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Inkomende oproep weigeren";
+
+/* Accessibility label for hang up call */
+"CALL_VIEW_HANGUP_LABEL" = "Gesprek beëindigen";
+
+/* Accessibility label for muting the microphone */
+"CALL_VIEW_MUTE_LABEL" = "Dempen";
+
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Je kan oproepen rechtstreeks beantwoorden vanop het vergrendelscherm en de namen en telefoonnummers van inkomende oproepen weergeven.\n\nZie de privacyinstellingen voor meer informatie.";
 
@@ -237,6 +246,12 @@
 
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Toon privacyinstellingen";
+
+/* Accessibility label to switch to audio only */
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Schakel over naar audio";
+
+/* Accessibility label to switch to video call */
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Schakel over naar video";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Terugbellen";
@@ -379,6 +394,9 @@
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Deze gebruiker staat niet in je contacten.";
 
+/* Indicator on truncated text messages that they can be tapped to see the entire text message. */
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tik voor meer";
+
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Deze gebruiker blokkeren";
 
@@ -462,6 +480,9 @@
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Kopiëren";
+
+/* Short name for edit menu item to delete contents of media message. */
+"EDIT_ITEM_DELETE_ACTION" = "Verwijder";
 
 /* Short name for edit menu item to show message metadata. */
 "EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Info";
@@ -719,7 +740,7 @@
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Geef Signal toegang tot je contacten in je systeeminstellingen om de namen van je contacten te zien.";
 
 /* notification body */
-"INCOMING_CALL" = "Binnenkomende oproep";
+"INCOMING_CALL" = "Inkomende oproep";
 
 /* notification body */
 "INCOMING_CALL_FROM" = "Inkomende oproep van %@";
@@ -797,10 +818,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Groepsleden";
 
 /* No comment provided by engineer. */
-"LOGGING_SECTION" = "Logging";
+"load_earlier_messages" = "Vorige berichten laden";
 
 /* No comment provided by engineer. */
-"ME_STRING" = "Ik";
+"LOGGING_SECTION" = "Logging";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Camera";
@@ -862,8 +883,7 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Bericht";
 
-/* message footer for delivered messages
-   message status for message delivered to their recipient. */
+/* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Afgeleverd";
 
 /* message footer for failed messages */
@@ -937,23 +957,8 @@
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal heeft toegang tot je camera nodig.";
 
-/* No comment provided by engineer. */
-"MSGVIEW_MISSED_CALL_BECAUSE_OF_CHANGED_IDENTITY" = "Oproep gemist wegens veranderd veiligheidsnummer.";
-
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Gemiste oproep van %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_RECEIVED_CALL" = "%@ heeft je gebeld.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_THEY_TRIED_TO_CALL_YOU" = "%@ probeerde je te bellen.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_YOU_CALLED" = "Je belde %@.";
-
-/* No comment provided by engineer. */
-"MSGVIEW_YOU_TRIED_TO_CALL" = "Je probeerde %@ te bellen.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Je kan niet nog meer apparaten koppelen.";
@@ -1015,6 +1020,9 @@
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Niet-opgeslagen wijzigingen";
 
+/* No comment provided by engineer. */
+"new_message" = "Nieuw bericht";
+
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Zoeken";
 
@@ -1071,7 +1079,7 @@
 "OUTGOING_INCOMPLETE_CALL" = "Niet-beantwoorde uitgaande oproep";
 
 /* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@… [tik voor meer info]";
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
 
 /* The title of the 'oversize text message' view. */
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Bericht";
@@ -1340,7 +1348,7 @@
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Opnieuw sturen";
 
-/* No comment provided by engineer. */
+/* Label for the send button in the conversation view. */
 "SEND_BUTTON_TITLE" = "Stuur";
 
 /* Header title for the 'send external file' view. */
