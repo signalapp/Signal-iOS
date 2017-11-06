@@ -772,10 +772,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             @"%@ ignoring %s because environment is not yet set up: %@.", self.tag, __PRETTY_FUNCTION__, notification);
         return;
     }
-    if (application.applicationState != UIApplicationStateActive) {
-        DDLogInfo(@"%@ ignoring %s because app is not yet active: %@.", self.tag, __PRETTY_FUNCTION__, notification);
-        return;
-    }
     DDLogInfo(@"%@ %s %@", self.tag, __PRETTY_FUNCTION__, notification);
 
     [AppStoreRating preventPromptAtNextTest];
