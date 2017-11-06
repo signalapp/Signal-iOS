@@ -72,7 +72,14 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 {
     self.layoutMargins = UIEdgeInsetsZero;
 
-    self.backgroundColor = [UIColor colorWithWhite:249 / 255.f alpha:1.f];
+    self.backgroundColor = [UIColor colorWithWhite:245 / 255.f alpha:1.f];
+
+    UIView *borderView = [UIView new];
+    borderView.backgroundColor = [UIColor colorWithWhite:238 / 255.f alpha:1.f];
+    [self addSubview:borderView];
+    [borderView autoPinWidthToSuperview];
+    [borderView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [borderView autoSetDimension:ALDimensionHeight toSize:0.5f];
 
     _contentView = [UIView containerView];
     [self addSubview:self.contentView];
