@@ -978,7 +978,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // of new secondary devices when this message send fails.
             DDLogWarn(@"%@ sync message has no device messages but account has secondary devices.", self.logTag);
         } else if (hasDeviceMessages) {
-            OWSFail(@"%@ sync message has device messages for unknown secondary devices.", self.logTag);
+            for (NSDictionary *deviceMessage in deviceMessages) {
+                NSNumber *_Nullable deviceId = deviceMessage[@"destinationDeviceId"];
+                if (deviceId && [deviceId isKindOfClass:[NSNumber class]] && [deviceId isEqualToNumber:@(1)]) {
+                    DDLogWarn(@"%@ trying to sending sync message to primary device, presumably because user has just "
+                              @"registered.",
+                        self.logTag);
+                } else {
+                    OWSFail(@"%@ sync message has device messages for unknown secondary devices.", self.logTag);
+                }
+            }
         } else {
             // Account has secondary devices; proceed as usual.
         }
