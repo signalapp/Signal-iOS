@@ -107,9 +107,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                                          DDLogInfo(@"%@ Uploaded attachment: %p.", self.tag, attachmentStream);
                                          attachmentStream.serverId = serverId;
                                          attachmentStream.isUploaded = YES;
-                                         [attachmentStream save];
-
-                                         successHandlerWrapper();
+                                         [attachmentStream saveAsyncWithCompletionBlock:successHandlerWrapper];
                                      }
                                      failure:failureHandlerWrapper];
 

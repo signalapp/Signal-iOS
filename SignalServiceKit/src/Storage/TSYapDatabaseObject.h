@@ -81,9 +81,10 @@
 + (instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID NS_SWIFT_NAME(fetch(uniqueId:));
 
 /**
- *  Saves the object with a new YapDatabaseConnection
+ *  Saves the object with shared readWrite connection.
  */
 - (void)save;
+- (void)saveAsyncWithCompletionBlock:(void (^_Nullable)(void))completionBlock;
 
 /**
  *  Saves the object with the provided transaction
