@@ -615,8 +615,8 @@ NS_ASSUME_NONNULL_BEGIN
                 }];
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
-            DataSource *dataSource =
-                [DataSourceValue dataSourceWithSyncMessage:[syncGroupsMessage buildPlainTextAttachmentData]];
+            DataSource *dataSource = [DataSourceValue
+                dataSourceWithSyncMessage:[syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction]];
             [self.messageSender sendTemporaryAttachmentData:dataSource
                 contentType:OWSMimeTypeApplicationOctetStream
                 inMessage:syncGroupsMessage
