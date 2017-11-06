@@ -4,6 +4,7 @@
 
 #import "PushManager.h"
 #import "AppDelegate.h"
+#import "NotificationsManager.h"
 #import "OWSContactsManager.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
@@ -34,6 +35,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSMessageFetcherJob *messageFetcherJob;
 @property (nonatomic, readonly) CallUIAdapter *callUIAdapter;
+@property (nonatomic, readonly) NotificationsManager *notificationsManager;
 
 @end
 
@@ -53,13 +55,15 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     return [self initWithMessageFetcherJob:[Environment getCurrent].messageFetcherJob
                             storageManager:[TSStorageManager sharedManager]
                              callUIAdapter:[Environment getCurrent].callService.callUIAdapter
-                             messageSender:[Environment getCurrent].messageSender];
+                             messageSender:[Environment getCurrent].messageSender
+                      notificationsManager:[Environment getCurrent].notificationsManager];
 }
 
 - (instancetype)initWithMessageFetcherJob:(OWSMessageFetcherJob *)messageFetcherJob
                            storageManager:(TSStorageManager *)storageManager
                             callUIAdapter:(CallUIAdapter *)callUIAdapter
                             messageSender:(OWSMessageSender *)messageSender
+                     notificationsManager:(NotificationsManager *)notificationsManager
 {
     self = [super init];
     if (!self) {
@@ -72,6 +76,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     _callBackgroundTask = UIBackgroundTaskInvalid;
     // TODO: consolidate notification tracking with NotificationsManager, which also maintains a list of notifications.
     _currentNotifications = [NSMutableArray array];
+    _notificationsManager = notificationsManager;
 
     OWSSingletonAssert();
 
@@ -129,6 +134,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
+    OWSAssert([NSThread isMainThread]);
     DDLogInfo(@"%@ launched from local notification", self.tag);
 
     NSString *_Nullable threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
@@ -138,6 +144,11 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     } else {
         OWSFail(@"%@ threadId was unexpectedly nil in %s", self.tag, __PRETTY_FUNCTION__);
     }
+
+    // We only want to receive a single local notification per launch.
+    [application cancelAllLocalNotifications];
+    [self.currentNotifications removeAllObjects];
+    [self.notificationsManager clearAllNotifications];
 }
 
 - (void)application:(UIApplication *)application

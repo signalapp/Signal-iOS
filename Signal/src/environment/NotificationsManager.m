@@ -422,6 +422,13 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
     });
 }
 
+- (void)clearAllNotifications
+{
+    OWSAssert([NSThread isMainThread]);
+
+    [self.currentNotifications removeAllObjects];
+}
+
 #pragma mark - Logging
 
 + (NSString *)tag
