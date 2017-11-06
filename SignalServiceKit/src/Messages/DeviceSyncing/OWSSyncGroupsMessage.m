@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
-- (NSData *)buildPlainTextAttachmentData
+- (NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     // TODO use temp file stream to avoid loading everything into memory at once
     // First though, we need to re-engineer our attachment process to accept streams (encrypting with stream,
@@ -49,14 +49,16 @@ NS_ASSUME_NONNULL_BEGIN
     [dataOutputStream open];
     OWSGroupsOutputStream *groupsOutputStream = [OWSGroupsOutputStream streamWithOutputStream:dataOutputStream];
 
-    [TSGroupThread enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
-        if (![obj isKindOfClass:[TSGroupThread class]]) {
-            DDLogVerbose(@"Ignoring non group thread in thread collection: %@", obj);
-            return;
-        }
-        TSGroupModel *group = ((TSGroupThread *)obj).groupModel;
-        [groupsOutputStream writeGroup:group];
-    }];
+    [TSGroupThread
+        enumerateCollectionObjectsWithTransaction:transaction
+                                       usingBlock:^(id obj, BOOL *stop) {
+                                           if (![obj isKindOfClass:[TSGroupThread class]]) {
+                                               DDLogVerbose(@"Ignoring non group thread in thread collection: %@", obj);
+                                               return;
+                                           }
+                                           TSGroupModel *group = ((TSGroupThread *)obj).groupModel;
+                                           [groupsOutputStream writeGroup:group];
+                                       }];
 
     [groupsOutputStream flush];
     [dataOutputStream close];
