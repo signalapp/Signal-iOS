@@ -81,9 +81,20 @@
 + (instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID NS_SWIFT_NAME(fetch(uniqueId:));
 
 /**
- *  Saves the object with shared readWrite connection.
+ * Saves the object with the shared readWrite connection.
+ *
+ * This method will block if another readWrite transaction is open.
  */
 - (void)save;
+
+/**
+ * Saves the object with the shared readWrite connection - does not block.
+ *
+ * Be mindful that this method may clobber other changes persisted
+ * while waiting to open the readWrite transaction.
+ *
+ * @param completionBlock is called on the main thread
+ */
 - (void)saveAsyncWithCompletionBlock:(void (^_Nullable)(void))completionBlock;
 
 /**
