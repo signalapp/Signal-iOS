@@ -23,7 +23,23 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _devices = [NSMutableOrderedSet orderedSetWithObject:[NSNumber numberWithInt:1]];
+    OWSAssert([TSAccountManager localNumber].length > 0);
+    if ([[TSAccountManager localNumber] isEqualToString:textSecureIdentifier]) {
+        // Default to no devices.
+        //
+        // This instance represents our own account and is used for sending
+        // sync message to linked devices.  We shouldn't have any linked devices
+        // yet when we create the "self" SignalRecipient, and we don't need to
+        // send sync messages to the primary - we ARE the primary.
+        _devices = [NSMutableOrderedSet new];
+    } else {
+        // Default to sending to just primary device.
+        //
+        // OWSMessageSender will correct this if it is wrong the next time
+        // we send a message to this recipient.
+        _devices = [NSMutableOrderedSet orderedSetWithObject:@(1)];
+    }
+
     _relay = [relay isEqualToString:@""] ? nil : relay;
 
     return self;
