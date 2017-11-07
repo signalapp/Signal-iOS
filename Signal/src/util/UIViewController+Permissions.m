@@ -23,8 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
         });
     };
 
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-        DDLogError(@"Skipping camera permissions request when app is not active.");
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        DDLogError(@"Skipping camera permissions request when app is in background.");
         callback(NO);
         return;
     }
@@ -85,8 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
         });
     };
 
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-        DDLogError(@"Skipping microphone permissions request when app is not active.");
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        DDLogError(@"Skipping microphone permissions request when app is in background.");
         callback(NO);
         return;
     }
