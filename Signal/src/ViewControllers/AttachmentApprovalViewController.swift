@@ -155,7 +155,7 @@ class AttachmentApprovalViewController: OWSViewController {
                                     backgroundColor:color,
                                     width:buttonWidth,
                                     height:buttonHeight,
-                                    target:target,
+                                    target:self,
                                     selector:action)
     }
 
