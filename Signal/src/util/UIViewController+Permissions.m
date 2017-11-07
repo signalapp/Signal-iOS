@@ -6,35 +6,32 @@
 #import "UIUtil.h"
 #import "UIViewController+Permissions.h"
 #import <AVFoundation/AVFoundation.h>
+#import <SignalServiceKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation UIViewController (Permissions)
 
-- (void)ows_askForCameraPermissions:(void (^)(void))successCallback
-{
-    [self ows_askForCameraPermissions:successCallback failureCallback:nil];
-}
-
-- (void)ows_askForCameraPermissions:(void (^)(void))successCallback failureCallback:(nullable void (^)(void))failureCallback
+- (void)ows_askForCameraPermissions:(void (^)(BOOL granted))callbackParam
 {
     DDLogVerbose(@"[%@] ows_askForCameraPermissions", NSStringFromClass(self.class));
 
-    // Avoid nil tests below.
-    if (!failureCallback) {
-        failureCallback = ^{
-        };
-    }
+    // Ensure callback is invoked on main thread.
+    void (^callback)(BOOL) = ^(BOOL granted) {
+        DispatchMainThreadSafe(^{
+            callbackParam(granted);
+        });
+    };
 
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
         DDLogError(@"Skipping camera permissions request when app is not active.");
-        failureCallback();
+        callback(NO);
         return;
     }
 
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         DDLogError(@"Camera ImagePicker source not available");
-        failureCallback();
+        callback(NO);
         return;
     }
 
@@ -52,34 +49,28 @@ NS_ASSUME_NONNULL_BEGIN
                                      style:UIAlertActionStyleDefault
                                    handler:^(UIAlertAction *_Nonnull action) {
                                        [[UIApplication sharedApplication] openSystemSettings];
-                                       failureCallback();
+                                       callback(NO);
                                    }];
         [alert addAction:openSettingsAction];
 
         UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
                                                                 style:UIAlertActionStyleCancel
                                                               handler:^(UIAlertAction *action) {
-                                                                  failureCallback();
+                                                                  callback(NO);
                                                               }];
         [alert addAction:dismissAction];
 
         [self presentViewController:alert animated:YES completion:nil];
     } else if (status == AVAuthorizationStatusAuthorized) {
-        successCallback();
+        callback(YES);
     } else if (status == AVAuthorizationStatusNotDetermined) {
         [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
                                  completionHandler:^(BOOL granted) {
-                                     dispatch_async(dispatch_get_main_queue(), ^{
-                                         if (granted) {
-                                             successCallback();
-                                         } else {
-                                             failureCallback();
-                                         }
-                                     });
+                                     callback(granted);
                                  }];
     } else {
         DDLogError(@"Unknown AVAuthorizationStatus: %ld", (long)status);
-        failureCallback();
+        callback(NO);
     }
 }
 
@@ -89,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Ensure callback is invoked on main thread.
     void (^callback)(BOOL) = ^(BOOL granted) {
-        dispatch_async(dispatch_get_main_queue(), ^{
+        DispatchMainThreadSafe(^{
             callbackParam(granted);
         });
     };

@@ -1108,16 +1108,15 @@ protocol CallServiceObserver: class {
             return
         }
 
-        frontmostViewController.ows_ask(forCameraPermissions: { [weak self] in
-            // Success callback; camera permissions are granted.
-
+        frontmostViewController.ows_ask(forCameraPermissions: { [weak self] granted in
             guard let strongSelf = self else {
                 return
             }
 
-            strongSelf.setHasLocalVideoWithCameraPermissions(hasLocalVideo: hasLocalVideo)
-
-            }, failureCallback: {
+            if (granted) {
+                // Success callback; camera permissions are granted.
+                strongSelf.setHasLocalVideoWithCameraPermissions(hasLocalVideo: hasLocalVideo)
+            } else {
                 // Failed callback; camera permissions are _NOT_ granted.
 
                 // We don't need to worry about the user granting or remoting this permission
@@ -1125,6 +1124,7 @@ protocol CallServiceObserver: class {
                 // permission kills the app.
                 OWSAlerts.showAlert(withTitle: NSLocalizedString("MISSING_CAMERA_PERMISSION_TITLE", comment: "Alert title when camera is not authorized"),
                                     message: NSLocalizedString("MISSING_CAMERA_PERMISSION_MESSAGE", comment: "Alert body when camera is not authorized"))
+            }
         })
     }
 

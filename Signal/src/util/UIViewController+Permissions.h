@@ -8,8 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIViewController (Permissions)
 
-- (void)ows_askForCameraPermissions:(void (^)())successCallback;
-- (void)ows_askForCameraPermissions:(void (^)())successCallback failureCallback:(nullable void (^)())failureCallback;
+- (void)ows_askForCameraPermissions:(void (^)(BOOL granted))callback;
 
 - (void)ows_askForMicrophonePermissions:(void (^)(BOOL granted))callback;
 

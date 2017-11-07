@@ -118,19 +118,19 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidAppear:animated];
 
-    [self ows_askForCameraPermissions:^{
+    [self ows_askForCameraPermissions:^(BOOL granted) {
+        if (granted) {
+            // Camera stops capturing when "sharing" while in capture mode.
+            // Also, it's less obvious whats being "shared" at this point,
+            // so just disable sharing when in capture mode.
 
-        // Camera stops capturing when "sharing" while in capture mode.
-        // Also, it's less obvious whats being "shared" at this point,
-        // so just disable sharing when in capture mode.
+            DDLogInfo(@"%@ Showing Scanner", self.logTag);
 
-        DDLogInfo(@"%@ Showing Scanner", self.logTag);
-
-        [self.qrScanningController startCapture];
-    }
-        failureCallback:^{
+            [self.qrScanningController startCapture];
+        } else {
             [self.navigationController popViewControllerAnimated:YES];
-        }];
+        }
+    }];
 }
 
 #pragma mark - OWSQRScannerDelegate

@@ -2473,7 +2473,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)takePictureOrVideo
 {
-    [self ows_askForCameraPermissions:^{
+    [self ows_askForCameraPermissions:^(BOOL granted) {
+        if (!granted) {
+            return;
+        }
         UIImagePickerController *picker = [[UIImagePickerController alloc] init];
         picker.sourceType = UIImagePickerControllerSourceTypeCamera;
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
@@ -3060,33 +3063,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             return;
         }
 
-<<<<<<< HEAD
-            if (granted) {
-                [strongSelf startRecordingVoiceMemo];
-            } else {
-                DDLogInfo(@"%@ we do not have recording permission.", self.logTag);
-                [strongSelf cancelVoiceMemo];
-                [OWSAlerts showNoMicrophonePermissionAlert];
-            }
-        });
-||||||| merged common ancestors
-            if (granted) {
-                [strongSelf startRecordingVoiceMemo];
-            } else {
-                DDLogInfo(@"%@ we do not have recording permission.", self.tag);
-                [strongSelf cancelVoiceMemo];
-                [OWSAlerts showNoMicrophonePermissionAlert];
-            }
-        });
-=======
         if (granted) {
             [strongSelf startRecordingVoiceMemo];
         } else {
-            DDLogInfo(@"%@ we do not have recording permission.", self.tag);
+            DDLogInfo(@"%@ we do not have recording permission.", self.logTag);
             [strongSelf cancelVoiceMemo];
             [OWSAlerts showNoMicrophonePermissionAlert];
         }
->>>>>>> Don't ask for microphone permissions if app is not active.
     }];
 }
 

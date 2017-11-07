@@ -256,7 +256,10 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
     if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionAddDevice)
     {
-        [self ows_askForCameraPermissions:^{
+        [self ows_askForCameraPermissions:^(BOOL granted) {
+            if (!granted) {
+                return;
+            }
             [self performSegueWithIdentifier:@"LinkDeviceSegue" sender:self];
         }];
     }
