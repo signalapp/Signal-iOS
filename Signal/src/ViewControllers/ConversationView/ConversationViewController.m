@@ -479,6 +479,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self loadDraftInCompose];
 }
 
+- (void)loadView
+{
+    [super loadView];
+
+    self.view.backgroundColor = [UIColor ows_inputToolbarBackgroundColor];
+}
+
 - (void)createContents
 {
     _layout = [ConversationViewLayout new];

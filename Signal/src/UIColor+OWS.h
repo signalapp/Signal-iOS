@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIColor *)ows_blackColor;
 + (UIColor *)ows_errorMessageBorderColor;
 + (UIColor *)ows_infoMessageBorderColor;
++ (UIColor *)ows_inputToolbarBackgroundColor;
 + (UIColor *)backgroundColorForContact:(NSString *)contactIdentifier;
 + (UIColor *)colorWithRGBHex:(unsigned long)value;
 

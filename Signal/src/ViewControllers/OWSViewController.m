@@ -110,7 +110,8 @@ NS_ASSUME_NONNULL_BEGIN
     CGRect keyboardEndFrameConverted = [self.view convertRect:keyboardEndFrame fromView:nil];
     // Adjust the position of the bottom view to account for the keyboard's
     // intrusion into the view.
-    CGFloat offset = -MAX(0, (self.view.height - keyboardEndFrameConverted.origin.y));
+    // We offset by the bottomLayoutGuide for iPhoneX users, else there is an unnecessary gap between the keyboard and input bar.
+    CGFloat offset = -MAX(0, (self.view.height - keyboardEndFrameConverted.origin.y - self.bottomLayoutGuide.length));
 
     // There's no need to use: [UIView animateWithDuration:...].
     // Any layout changes made during these notifications are

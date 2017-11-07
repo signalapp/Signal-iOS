@@ -75,6 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
+    self.view.backgroundColor = UIColor.whiteColor;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _nonContactAccountSet = [NSMutableSet set];
     _collation = [UILocalizedIndexedCollation currentCollation];
