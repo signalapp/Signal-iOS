@@ -76,7 +76,9 @@ class AccountManager: NSObject {
 
     private func syncPushTokens() -> Promise<Void> {
         Logger.info("\(self.TAG) in \(#function)")
-        return SyncPushTokensJob.run(accountManager: self, preferences: self.preferences)
+        let job = SyncPushTokensJob(accountManager: self, preferences: self.preferences)
+        job.uploadOnlyIfStale = false
+        return job.run()
     }
 
     private func completeRegistration() {
