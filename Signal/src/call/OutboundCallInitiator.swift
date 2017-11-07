@@ -44,6 +44,10 @@ import Foundation
             owsFail("\(TAG) can't initiate call because callUIAdapter is nil")
             return false
         }
+        guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
+            owsFail("\(TAG) could not identify frontmostViewController in \(#function)")
+            return false
+        }
 
         let showedAlert = SafetyNumberConfirmationAlert.presentAlertIfNecessary(recipientId: recipientId,
                                                                                 confirmationText: CallStrings.confirmAndCallButtonTitle,
@@ -59,17 +63,22 @@ import Foundation
         // Check for microphone permissions
         // Alternative way without prompting for permissions:
         // if AVAudioSession.sharedInstance().recordPermission() == .denied {
-        AVAudioSession.sharedInstance().requestRecordPermission { isGranted in
-            DispatchQueue.main.async {
-                // Here the permissions are either granted or denied
-                guard isGranted == true else {
-                    Logger.warn("\(self.TAG) aborting due to missing microphone permissions.")
-                    OWSAlerts.showNoMicrophonePermissionAlert()
-                    return
-                }
-                callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId)
+        frontmostViewController.ows_ask(forMicrophonePermissions: { [weak self] granted in
+            // Success callback; camera permissions are granted.
+
+            guard let strongSelf = self else {
+                return
             }
-        }
+
+            // Here the permissions are either granted or denied
+            guard granted == true else {
+                Logger.warn("\(strongSelf.TAG) aborting due to missing microphone permissions.")
+                OWSAlerts.showNoMicrophonePermissionAlert()
+                return
+            }
+            callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId)
+        })
+
         return true
     }
 }

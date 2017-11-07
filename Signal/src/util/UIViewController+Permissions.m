@@ -2,24 +2,23 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "UIViewController+CameraPermissions.h"
 #import "Signal-Swift.h"
 #import "UIUtil.h"
+#import "UIViewController+Permissions.h"
 #import <AVFoundation/AVFoundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation UIViewController (CameraPermissions)
+@implementation UIViewController (Permissions)
 
-- (void)ows_askForCameraPermissions:(void (^)(void))permissionsGrantedCallback
+- (void)ows_askForCameraPermissions:(void (^)(void))successCallback
 {
-    [self ows_askForCameraPermissions:permissionsGrantedCallback failureCallback:nil];
+    [self ows_askForCameraPermissions:successCallback failureCallback:nil];
 }
 
-- (void)ows_askForCameraPermissions:(void (^)(void))permissionsGrantedCallback
-                    failureCallback:(nullable void (^)(void))failureCallback
+- (void)ows_askForCameraPermissions:(void (^)(void))successCallback failureCallback:(nullable void (^)(void))failureCallback
 {
-    DDLogVerbose(@"%@ ows_askForCameraPermissions", NSStringFromClass(self.class));
+    DDLogVerbose(@"[%@] ows_askForCameraPermissions", NSStringFromClass(self.class));
 
     // Avoid nil tests below.
     if (!failureCallback) {
@@ -41,15 +40,20 @@ NS_ASSUME_NONNULL_BEGIN
 
     AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     if (status == AVAuthorizationStatusDenied) {
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_TITLE", @"Alert title")
-                                                                       message:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_MESSAGE", @"Alert body")
-                                                                preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *alert = [UIAlertController
+            alertControllerWithTitle:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_TITLE", @"Alert title")
+                             message:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_MESSAGE", @"Alert body")
+                      preferredStyle:UIAlertControllerStyleAlert];
 
-        NSString *settingsTitle = NSLocalizedString(@"OPEN_SETTINGS_BUTTON", @"Button text which opens the settings app");
-        UIAlertAction *openSettingsAction = [UIAlertAction actionWithTitle:settingsTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [[UIApplication sharedApplication] openSystemSettings];
-            failureCallback();
-        }];
+        NSString *settingsTitle
+            = NSLocalizedString(@"OPEN_SETTINGS_BUTTON", @"Button text which opens the settings app");
+        UIAlertAction *openSettingsAction =
+            [UIAlertAction actionWithTitle:settingsTitle
+                                     style:UIAlertActionStyleDefault
+                                   handler:^(UIAlertAction *_Nonnull action) {
+                                       [[UIApplication sharedApplication] openSystemSettings];
+                                       failureCallback();
+                                   }];
         [alert addAction:openSettingsAction];
 
         UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
@@ -61,13 +65,13 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self presentViewController:alert animated:YES completion:nil];
     } else if (status == AVAuthorizationStatusAuthorized) {
-        permissionsGrantedCallback();
+        successCallback();
     } else if (status == AVAuthorizationStatusNotDetermined) {
         [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
                                  completionHandler:^(BOOL granted) {
                                      dispatch_async(dispatch_get_main_queue(), ^{
                                          if (granted) {
-                                             permissionsGrantedCallback();
+                                             successCallback();
                                          } else {
                                              failureCallback();
                                          }
@@ -77,6 +81,28 @@ NS_ASSUME_NONNULL_BEGIN
         DDLogError(@"Unknown AVAuthorizationStatus: %ld", (long)status);
         failureCallback();
     }
+}
+
+- (void)ows_askForMicrophonePermissions:(void (^)(BOOL granted))callbackParam
+{
+    DDLogVerbose(@"[%@] ows_askForMicrophonePermissions", NSStringFromClass(self.class));
+
+    // Ensure callback is invoked on main thread.
+    void (^callback)(BOOL) = ^(BOOL granted) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            callbackParam(granted);
+        });
+    };
+
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+        DDLogError(@"Skipping microphone permissions request when app is not active.");
+        callback(NO);
+        return;
+    }
+
+    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+        callback(granted);
+    }];
 }
 
 @end

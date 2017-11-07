@@ -373,7 +373,7 @@
 		E1370BE518A0686C00826894 /* r.caf in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40C18A05754001A532A /* r.caf */; };
 		E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40D18A05754001A532A /* sonarping.mp3 */; };
 		E32B0699162419B7046BC643 /* libPods-Signal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DB8EE72F8522189E3E2CB45 /* libPods-Signal.a */; };
-		EF764C351DB67CC5000D9A87 /* UIViewController+CameraPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF764C341DB67CC5000D9A87 /* UIViewController+CameraPermissions.m */; };
+		EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
 		FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF371A3393DD00B47253 /* error_white@2x.png */; };
 		FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF381A3393DD00B47253 /* warning_white@2x.png */; };
@@ -870,8 +870,8 @@
 		E18AB40D18A05754001A532A /* sonarping.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = sonarping.mp3; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E85DB184824BA9DC302EC8B3 /* Pods-SignalTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.app store release.xcconfig"; sourceTree = "<group>"; };
-		EF764C331DB67CC5000D9A87 /* UIViewController+CameraPermissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+CameraPermissions.h"; path = "util/UIViewController+CameraPermissions.h"; sourceTree = "<group>"; };
-		EF764C341DB67CC5000D9A87 /* UIViewController+CameraPermissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+CameraPermissions.m"; path = "util/UIViewController+CameraPermissions.m"; sourceTree = "<group>"; };
+		EF764C331DB67CC5000D9A87 /* UIViewController+Permissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+Permissions.h"; path = "util/UIViewController+Permissions.h"; sourceTree = "<group>"; };
+		EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+Permissions.m"; path = "util/UIViewController+Permissions.m"; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		FC5CDF371A3393DD00B47253 /* error_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "error_white@2x.png"; sourceTree = "<group>"; };
 		FC5CDF381A3393DD00B47253 /* warning_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "warning_white@2x.png"; sourceTree = "<group>"; };
@@ -1766,24 +1766,24 @@
 		FCFA64B11A24F29E0007FB87 /* UI Categories */ = {
 			isa = PBXGroup;
 			children = (
+				45638BDE1F3DDB2200128435 /* MessageSender+Promise.swift */,
+				450449371F45EE7D002D1ADA /* NSString+OWS.h */,
+				450449381F45EE7D002D1ADA /* NSString+OWS.m */,
+				45C0DC1A1E68FE9000E04C47 /* UIApplication+OWS.swift */,
 				FCFA64B21A24F3880007FB87 /* UIColor+OWS.h */,
 				FCFA64B31A24F3880007FB87 /* UIColor+OWS.m */,
+				45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */,
 				FCFA64B51A24F6730007FB87 /* UIFont+OWS.h */,
 				FCFA64B61A24F6730007FB87 /* UIFont+OWS.m */,
 				B68112E81A4D9EC400BA82FF /* UIImage+OWS.h */,
 				B68112E91A4D9EC400BA82FF /* UIImage+OWS.m */,
+				45C0DC1D1E69011F00E04C47 /* UIStoryboard+OWS.swift */,
 				34535D801E256BE9008A4747 /* UIView+OWS.h */,
 				34535D811E256BE9008A4747 /* UIView+OWS.m */,
-				EF764C331DB67CC5000D9A87 /* UIViewController+CameraPermissions.h */,
-				EF764C341DB67CC5000D9A87 /* UIViewController+CameraPermissions.m */,
 				344F2F651E57A932000D9322 /* UIViewController+OWS.h */,
 				344F2F661E57A932000D9322 /* UIViewController+OWS.m */,
-				45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */,
-				45C0DC1A1E68FE9000E04C47 /* UIApplication+OWS.swift */,
-				45C0DC1D1E69011F00E04C47 /* UIStoryboard+OWS.swift */,
-				45638BDE1F3DDB2200128435 /* MessageSender+Promise.swift */,
-				450449371F45EE7D002D1ADA /* NSString+OWS.h */,
-				450449381F45EE7D002D1ADA /* NSString+OWS.m */,
+				EF764C331DB67CC5000D9A87 /* UIViewController+Permissions.h */,
+				EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */,
 			);
 			name = "UI Categories";
 			path = ..;
@@ -2213,7 +2213,7 @@
 				4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */,
 				34CCAF381F0C0599004084F4 /* AppUpdateNag.m in Sources */,
 				45387B041E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.m in Sources */,
-				EF764C351DB67CC5000D9A87 /* UIViewController+CameraPermissions.m in Sources */,
+				EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */,
 				45CD81EF1DC030E7004C9430 /* AccountManager.swift in Sources */,
 				45794E861E00620000066731 /* CallUIAdapter.swift in Sources */,
 				4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift in Sources */,

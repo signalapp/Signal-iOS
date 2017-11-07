@@ -39,7 +39,7 @@
 #import "UIImage+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
-#import "UIViewController+CameraPermissions.h"
+#import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <Foundation/Foundation.h>

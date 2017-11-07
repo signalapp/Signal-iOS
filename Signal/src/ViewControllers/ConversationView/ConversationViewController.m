@@ -48,8 +48,8 @@
 #import "ThreadUtil.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
-#import "UIViewController+CameraPermissions.h"
 #import "UIViewController+OWS.h"
+#import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"
 #import <AVFoundation/AVFoundation.h>
 #import <AddressBookUI/AddressBookUI.h>
@@ -3048,19 +3048,19 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.voiceMessageUUID = voiceMessageUUID;
 
     __weak typeof(self) weakSelf = self;
-    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            __strong typeof(self) strongSelf = weakSelf;
-            if (!strongSelf) {
-                return;
-            }
+    [self ows_askForMicrophonePermissions:^(BOOL granted) {
+        __strong typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
 
-            if (strongSelf.voiceMessageUUID != voiceMessageUUID) {
-                // This voice message recording has been cancelled
-                // before recording could begin.
-                return;
-            }
+        if (strongSelf.voiceMessageUUID != voiceMessageUUID) {
+            // This voice message recording has been cancelled
+            // before recording could begin.
+            return;
+        }
 
+<<<<<<< HEAD
             if (granted) {
                 [strongSelf startRecordingVoiceMemo];
             } else {
@@ -3069,6 +3069,24 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 [OWSAlerts showNoMicrophonePermissionAlert];
             }
         });
+||||||| merged common ancestors
+            if (granted) {
+                [strongSelf startRecordingVoiceMemo];
+            } else {
+                DDLogInfo(@"%@ we do not have recording permission.", self.tag);
+                [strongSelf cancelVoiceMemo];
+                [OWSAlerts showNoMicrophonePermissionAlert];
+            }
+        });
+=======
+        if (granted) {
+            [strongSelf startRecordingVoiceMemo];
+        } else {
+            DDLogInfo(@"%@ we do not have recording permission.", self.tag);
+            [strongSelf cancelVoiceMemo];
+            [OWSAlerts showNoMicrophonePermissionAlert];
+        }
+>>>>>>> Don't ask for microphone permissions if app is not active.
     }];
 }
 
