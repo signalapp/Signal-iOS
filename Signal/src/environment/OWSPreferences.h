@@ -79,6 +79,8 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 - (void)setVoipToken:(NSString *)value;
 - (nullable NSString *)getVoipToken;
 
+- (void)unsetRecordedAPNSTokens;
+
 @end
 
 NS_ASSUME_NONNULL_END
