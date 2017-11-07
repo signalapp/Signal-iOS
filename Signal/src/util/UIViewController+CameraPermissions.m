@@ -19,10 +19,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ows_askForCameraPermissions:(void (^)(void))permissionsGrantedCallback
                     failureCallback:(nullable void (^)(void))failureCallback
 {
+    DDLogVerbose(@"%@ ows_askForCameraPermissions", NSStringFromClass(self.class));
+
     // Avoid nil tests below.
     if (!failureCallback) {
         failureCallback = ^{
         };
+    }
+
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+        DDLogError(@"Skipping camera permissions request when app is not active.");
+        failureCallback();
+        return;
     }
 
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
