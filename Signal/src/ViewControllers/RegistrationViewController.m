@@ -61,41 +61,46 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
 - (void)createViews
 {
-    self.view.backgroundColor = [UIColor ows_signalBrandBlueColor];
+    self.view.backgroundColor = [UIColor whiteColor];
     self.view.userInteractionEnabled = YES;
     [self.view
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(backgroundTapped:)]];
 
-    UIView *header = [UIView new];
-    header.backgroundColor = [UIColor ows_signalBrandBlueColor];
-    [self.view addSubview:header];
-    [header autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    [header autoPinWidthToSuperview];
+    UIView *headerWrapper = [UIView containerView];
+    [self.view addSubview:headerWrapper];
+    headerWrapper.backgroundColor = UIColor.ows_signalBrandBlueColor;
+    
+    UIView *headerContent = [UIView new];
+    [headerWrapper addSubview:headerContent];
+    [headerWrapper autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeBottom];
+    [headerContent autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [headerContent autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [headerContent autoPinWidthToSuperview];
 
     UILabel *headerLabel = [UILabel new];
     headerLabel.text = NSLocalizedString(@"REGISTRATION_TITLE_LABEL", @"");
     headerLabel.textColor = [UIColor whiteColor];
     headerLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(20.f, 24.f)];
-    [header addSubview:headerLabel];
+    [headerContent addSubview:headerLabel];
     [headerLabel autoHCenterInSuperview];
     [headerLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:14.f];
 
     CGFloat screenHeight = MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
     if (screenHeight < 568) {
         // iPhone 4s or smaller.
-        [header autoSetDimension:ALDimensionHeight toSize:20];
+        [headerContent autoSetDimension:ALDimensionHeight toSize:20];
         headerLabel.hidden = YES;
     } else if (screenHeight < 667) {
         // iPhone 5 or smaller.
-        [header autoSetDimension:ALDimensionHeight toSize:80];
+        [headerContent autoSetDimension:ALDimensionHeight toSize:80];
     } else {
-        [header autoSetDimension:ALDimensionHeight toSize:220];
+        [headerContent autoSetDimension:ALDimensionHeight toSize:220];
 
         UIImage *logo = [UIImage imageNamed:@"logoSignal"];
         OWSAssert(logo);
         UIImageView *logoView = [UIImageView new];
         logoView.image = logo;
-        [header addSubview:logoView];
+        [headerContent addSubview:logoView];
         [logoView autoHCenterInSuperview];
         [logoView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:headerLabel withOffset:-14.f];
     }
@@ -112,7 +117,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [self.view addSubview:contentView];
     [contentView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
     [contentView autoPinWidthToSuperview];
-    [contentView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:header];
+    [contentView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:headerContent];
 
     // Country
     UIView *countryRow = [UIView containerView];
