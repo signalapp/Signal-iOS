@@ -10,7 +10,7 @@ target 'Signal' do
     pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'signal-master', :inhibit_warnings => true
     #pod 'JSQMessagesViewController',   path: '../JSQMessagesViewController'
     pod 'PureLayout', :inhibit_warnings => true
-    pod 'OpenSSL',                    git: 'https://github.com/WhisperSystems/OpenSSL-Pod', :inhibit_warnings => true
+    pod 'OpenSSL',                    git: 'https://github.com/WhisperSystems/OpenSSL-Pod', inhibit_warnings: true
     pod 'Reachability', :inhibit_warnings => true
     pod 'SignalServiceKit',           path: '.'
     pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git', :inhibit_warnings => true
