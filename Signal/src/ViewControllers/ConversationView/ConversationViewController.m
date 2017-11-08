@@ -3226,15 +3226,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 #pragma mark GifPickerViewControllerDelegate
 
-- (void)gifPickerWillSend
+- (void)gifPickerDidSelectWithAttachment:(SignalAttachment *)attachment
 {
+    OWSAssert(attachment);
+
+    [self tryToSendAttachmentIfApproved:attachment];
+
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-}
-
-- (void)gifPickerDidSendWithOutgoingMessage:(TSOutgoingMessage *)message
-{
-    [self messageWasSent:message];
-
     [self ensureDynamicInteractions];
 }
 
