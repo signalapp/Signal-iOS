@@ -354,7 +354,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
         if (error) {
-            DDLogError(@"%@ Error when requesting contacts: %@", self.tag, error);
+            DDLogError(@"%@ Error when requesting contacts: %@", self.logTag, error);
         }
         // Even if there is an error fetching contacts we proceed to the next screen.
         // As the compose view will present the proper thing depending on contact access.
@@ -605,9 +605,9 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
     OWSAssert([NSThread isMainThread]);
-    DDLogInfo(@"%@ beggining refreshing.", self.tag);
+    DDLogInfo(@"%@ beggining refreshing.", self.logTag);
     [[Environment getCurrent].messageFetcherJob run].always(^{
-        DDLogInfo(@"%@ ending refreshing.", self.tag);
+        DDLogInfo(@"%@ ending refreshing.", self.logTag);
         [refreshControl endRefreshing];
     });
 }
@@ -799,7 +799,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                         animateDismissal:animateDismissal];
 }
 
-- (void)presentViewControllerWithBlock:(void (^)())presentationBlock animateDismissal:(BOOL)animateDismissal
+- (void)presentViewControllerWithBlock:(void (^)(void))presentationBlock animateDismissal:(BOOL)animateDismissal
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(presentationBlock);
@@ -811,7 +811,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     // Third present the new view controller using presentationBlock.
 
     // Define a block to perform the second step.
-    void (^dismissNavigationBlock)() = ^{
+    void (^dismissNavigationBlock)(void) = ^{
         if (self.navigationController.viewControllers.lastObject != self) {
             [CATransaction begin];
             [CATransaction setCompletionBlock:^{
@@ -1053,18 +1053,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                             value:[UIColor ows_darkGrayColor]
                             range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     _emptyBoxLabel.attributedText = fullLabelString;
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

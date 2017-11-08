@@ -96,7 +96,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     if (localNumber) {
         self.hasCensoredPhoneNumber = [self.censorshipConfiguration isCensoredPhoneNumber:localNumber];
     } else {
-        DDLogError(@"%@ no known phone number to check for censorship.", self.tag);
+        DDLogError(@"%@ no known phone number to check for censorship.", self.logTag);
         self.hasCensoredPhoneNumber = NO;
     }
 
@@ -158,7 +158,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)signalServiceSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
-        DDLogInfo(@"%@ using reflector HTTPSessionManager via: %@", self.tag, self.domainFrontingBaseURL);
+        DDLogInfo(@"%@ using reflector HTTPSessionManager via: %@", self.logTag, self.domainFrontingBaseURL);
         return self.reflectorSignalServiceSessionManager;
     } else {
         return self.defaultSignalServiceSessionManager;
@@ -223,7 +223,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)CDNSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
-        DDLogInfo(@"%@ using reflector CDNSessionManager via: %@", self.tag, self.domainFrontingBaseURL);
+        DDLogInfo(@"%@ using reflector CDNSessionManager via: %@", self.logTag, self.domainFrontingBaseURL);
         return self.reflectorCDNSessionManager;
     } else {
         return self.defaultCDNSessionManager;
@@ -268,14 +268,14 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 + (nullable NSData *)certificateDataWithName:(NSString *)name error:(NSError **)error
 {
     if (!name.length) {
-        OWSFail(@"%@ expected name with length > 0", self.tag);
+        OWSFail(@"%@ expected name with length > 0", self.logTag);
         *error = OWSErrorMakeAssertionError();
         return nil;
     }
 
     NSString *path = [NSBundle.mainBundle pathForResource:name ofType:@"crt"];
     if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-        OWSFail(@"%@ Missing certificate for name: %@", self.tag, name);
+        OWSFail(@"%@ Missing certificate for name: %@", self.logTag, name);
         *error = OWSErrorMakeAssertionError();
         return nil;
     }
@@ -283,16 +283,16 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     NSData *_Nullable certData = [NSData dataWithContentsOfFile:path options:0 error:error];
 
     if (*error != nil) {
-        OWSFail(@"%@ Failed to read cert file with path: %@", self.tag, path);
+        OWSFail(@"%@ Failed to read cert file with path: %@", self.logTag, path);
         return nil;
     }
 
     if (certData.length == 0) {
-        OWSFail(@"%@ empty certData for name: %@", self.tag, name);
+        OWSFail(@"%@ empty certData for name: %@", self.logTag, name);
         return nil;
     }
 
-    DDLogVerbose(@"%@ read cert data with name: %@ length: %lu", self.tag, name, (unsigned long)certData.length);
+    DDLogVerbose(@"%@ read cert data with name: %@ length: %lu", self.logTag, name, (unsigned long)certData.length);
     return certData;
 }
 
@@ -315,14 +315,14 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
             NSError *error;
             NSData *certData = [self certificateDataWithName:certName error:&error];
             if (error) {
-                DDLogError(@"%@ Failed to get %@ certificate data with error: %@", self.tag, certName, error);
+                DDLogError(@"%@ Failed to get %@ certificate data with error: %@", self.logTag, certName, error);
                 @throw [NSException exceptionWithName:@"OWSSignalService_UnableToReadCertificate"
                                                reason:error.description
                                              userInfo:nil];
             }
 
             if (!certData) {
-                DDLogError(@"%@ No data for certificate: %@", self.tag, certName);
+                DDLogError(@"%@ No data for certificate: %@", self.logTag, certName);
                 @throw [NSException exceptionWithName:@"OWSSignalService_UnableToReadCertificate"
                                                reason:error.description
                                              userInfo:nil];
@@ -383,18 +383,6 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     [[TSStorageManager sharedManager] setObject:value
                                          forKey:kTSStorageManager_ManualCensorshipCircumventionCountryCode
                                    inCollection:kTSStorageManager_OWSSignalService];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

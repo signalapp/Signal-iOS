@@ -4,8 +4,8 @@
 
 @interface LockInteractionController : NSObject
 
-typedef void (^LIControllerCompletionBlock)();
-typedef BOOL (^LIControllerBlockingOperation)();
+typedef void (^LIControllerCompletionBlock)(void);
+typedef BOOL (^LIControllerBlockingOperation)(void);
 typedef void (^LIControllerRetryBlock)(LIControllerBlockingOperation operationBlock,
                                        LIControllerCompletionBlock completionBlock);
 

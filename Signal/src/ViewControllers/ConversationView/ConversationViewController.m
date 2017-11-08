@@ -558,7 +558,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    DDLogDebug(@"%@ viewWillAppear", self.tag);
+    DDLogDebug(@"%@ viewWillAppear", self.logTag);
 
     [self ensureBannerState];
 
@@ -997,7 +997,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 // until `viewDidDisappear`.
 - (void)viewWillDisappear:(BOOL)animated
 {
-    DDLogDebug(@"%@ viewWillDisappear", self.tag);
+    DDLogDebug(@"%@ viewWillDisappear", self.logTag);
 
     [super viewWillDisappear:animated];
 
@@ -1152,7 +1152,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             barButtonSize = 105;
             break;
         default:
-            OWSFail(@"%@ Unexpected number of right navbar items.", self.tag);
+            OWSFail(@"%@ Unexpected number of right navbar items.", self.logTag);
         // In production, fall through to the largest defined case.
         case 2:
             barButtonSize = 150;
@@ -1391,7 +1391,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
  */
 - (void)didChangePreferredContentSize:(NSNotification *)notification
 {
-    DDLogInfo(@"%@ didChangePreferredContentSize", self.tag);
+    DDLogInfo(@"%@ didChangePreferredContentSize", self.logTag);
 
     // Evacuate cached cell sizes.
     for (ConversationViewItem *viewItem in self.viewItems) {
@@ -1423,7 +1423,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)showConversationSettingsAndShowVerification:(BOOL)showVerification
 {
     if (self.userLeftGroup) {
-        DDLogDebug(@"%@ Ignoring request to show conversation settings, since user left group", self.tag);
+        DDLogDebug(@"%@ Ignoring request to show conversation settings, since user left group", self.logTag);
         return;
     }
 
@@ -1436,7 +1436,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)didTapTimerInNavbar:(id)sender
 {
-    DDLogDebug(@"%@ Tapped timer in navbar", self.tag);
+    DDLogDebug(@"%@ Tapped timer in navbar", self.logTag);
     [self showConversationSettings];
 }
 
@@ -1459,7 +1459,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)loadMoreHeaderTapped:(id)sender
 {
     if (self.isUserScrolling) {
-        DDLogError(@"%@ Ignoring load more tap while user is scrolling.", self.tag);
+        DDLogError(@"%@ Ignoring load more tap while user is scrolling.", self.logTag);
         return;
     }
 
@@ -1612,13 +1612,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                                     networkManager:self.networkManager
                                                                     storageManager:self.storageManager];
                     [processor fetchAttachmentsForMessage:message
-                                           storageManager:self.storageManager
+                        storageManager:self.storageManager
                         success:^(TSAttachmentStream *_Nonnull attachmentStream) {
                             DDLogInfo(
-                                @"%@ Successfully redownloaded attachment in thread: %@", self.tag, message.thread);
+                                @"%@ Successfully redownloaded attachment in thread: %@", self.logTag, message.thread);
                         }
                         failure:^(NSError *_Nonnull error) {
-                            DDLogWarn(@"%@ Failed to redownload message with error: %@", self.tag, error);
+                            DDLogWarn(@"%@ Failed to redownload message with error: %@", self.logTag, error);
                         }];
                 }];
 
@@ -1649,10 +1649,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                handler:^(UIAlertAction *_Nonnull action) {
                                    [self.messageSender sendMessage:message
                                        success:^{
-                                           DDLogInfo(@"%@ Successfully resent failed message.", self.tag);
+                                           DDLogInfo(@"%@ Successfully resent failed message.", self.logTag);
                                        }
                                        failure:^(NSError *_Nonnull error) {
-                                           DDLogWarn(@"%@ Failed to send message with error: %@", self.tag, error);
+                                           DDLogWarn(@"%@ Failed to send message with error: %@", self.logTag, error);
                                        }];
                                }];
 
@@ -1697,7 +1697,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             return;
     }
 
-    DDLogWarn(@"%@ Unhandled tap for error message:%@", self.tag, message);
+    DDLogWarn(@"%@ Unhandled tap for error message:%@", self.logTag, message);
 }
 
 - (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalId
@@ -1705,11 +1705,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (signalId == nil) {
         if (self.thread.isGroupThread) {
             // Before 2.13 we didn't track the recipient id in the identity change error.
-            DDLogWarn(@"%@ Ignoring tap on legacy nonblocking identity change since it has no signal id", self.tag);
+            DDLogWarn(@"%@ Ignoring tap on legacy nonblocking identity change since it has no signal id", self.logTag);
         } else {
             DDLogInfo(
                 @"%@ Assuming tap on legacy nonblocking identity change corresponds to current contact thread: %@",
-                self.tag,
+                self.logTag,
                 self.thread.contactIdentifier);
             signalId = self.thread.contactIdentifier;
         }
@@ -1755,7 +1755,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             break;
     }
 
-    DDLogInfo(@"%@ Unhandled tap for info message:%@", self.tag, message);
+    DDLogInfo(@"%@ Unhandled tap for info message:%@", self.logTag, message);
 }
 
 - (void)tappedCorruptedMessage:(TSErrorMessage *)message
@@ -1775,7 +1775,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 handler:^(UIAlertAction *_Nonnull action) {
                     if (![self.thread isKindOfClass:[TSContactThread class]]) {
                         // Corrupt Message errors only appear in contact threads.
-                        DDLogError(@"%@ Unexpected request to reset session in group thread. Refusing", self.tag);
+                        DDLogError(@"%@ Unexpected request to reset session in group thread. Refusing", self.logTag);
                         return;
                     }
                     TSContactThread *contactThread = (TSContactThread *)self.thread;
@@ -1805,7 +1805,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *_Nonnull action) {
-                                   DDLogInfo(@"%@ Remote Key Changed actions: Show fingerprint display", self.tag);
+                                   DDLogInfo(@"%@ Remote Key Changed actions: Show fingerprint display", self.logTag);
                                    [self showFingerprintWithRecipientId:errorMessage.theirSignalId];
                                }];
     [actionSheetController addAction:showSafteyNumberAction];
@@ -1814,7 +1814,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [UIAlertAction actionWithTitle:NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *_Nonnull action) {
-                                   DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.tag);
+                                   DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.logTag);
 
                                    // DEPRECATED: we're no longer creating these incoming SN error's per message,
                                    // but there will be some legacy ones in the wild, behind which await
@@ -1833,7 +1833,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     OWSAssert(call);
 
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFail(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -1872,7 +1872,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction
 {
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFail(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
@@ -1894,7 +1894,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                             @"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION", @"Action sheet that will block an unknown user.")
                   style:UIAlertActionStyleDestructive
                 handler:^(UIAlertAction *_Nonnull action) {
-                    DDLogInfo(@"%@ Blocking an unknown user.", self.tag);
+                    DDLogInfo(@"%@ Blocking an unknown user.", self.logTag);
                     [self.blockingManager addBlockedPhoneNumber:interaction.recipientId];
                     // Delete the offers.
                     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1911,11 +1911,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)tappedAddToContactsOfferMessage:(OWSContactOffersInteraction *)interaction
 {
     if (!self.contactsManager.supportsContactEditing) {
-        OWSFail(@"%@ Contact editing not supported", self.tag);
+        OWSFail(@"%@ Contact editing not supported", self.logTag);
         return;
     }
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFail(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
@@ -1935,7 +1935,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     // This is accessed via the contact offer. Group whitelisting happens via a different interaction.
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFail(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
@@ -1950,7 +1950,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }];
 }
 
-- (void)presentAddThreadToProfileWhitelistWithSuccess:(void (^)())successHandler
+- (void)presentAddThreadToProfileWhitelistWithSuccess:(void (^)(void))successHandler
 {
     [[OWSProfileManager sharedManager] presentAddThreadToProfileWhitelist:self.thread
                                                        fromViewController:self
@@ -1984,7 +1984,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:[attachmentStream.mediaURL path]]) {
-        OWSFail(@"%@ Missing video file: %@", self.tag, attachmentStream.mediaURL);
+        OWSFail(@"%@ Missing video file: %@", self.logTag, attachmentStream.mediaURL);
     }
 
     [self dismissKeyBoard];
@@ -2018,7 +2018,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:[attachmentStream.mediaURL path]]) {
-        OWSFail(@"%@ Missing video file: %@", self.tag, attachmentStream.mediaURL);
+        OWSFail(@"%@ Missing video file: %@", self.logTag, attachmentStream.mediaURL);
     }
 
     [self dismissKeyBoard];
@@ -2097,7 +2097,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 // these cases.
 - (void)moviePlayerWillExitFullscreen:(id)sender
 {
-    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [self clearVideoPlayer];
 }
@@ -2105,7 +2105,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 // See comment on moviePlayerWillExitFullscreen:
 - (void)moviePlayerDidExitFullscreen:(id)sender
 {
-    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [self clearVideoPlayer];
 }
@@ -2146,7 +2146,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)didFinishEditingContact
 {
-    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [self dismissViewControllerAnimated:NO completion:nil];
 }
@@ -2160,10 +2160,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         // Saving normally returns you to the "Show Contact" view
         // which we're not interested in, so we skip it here. There is
         // an unfortunate blip of the "Show Contact" view on slower devices.
-        DDLogDebug(@"%@ completed editing contact.", self.tag);
+        DDLogDebug(@"%@ completed editing contact.", self.logTag);
         [self dismissViewControllerAnimated:NO completion:nil];
     } else {
-        DDLogDebug(@"%@ canceled editing contact.", self.tag);
+        DDLogDebug(@"%@ canceled editing contact.", self.logTag);
         [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
@@ -2393,7 +2393,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url
 {
-    DDLogDebug(@"%@ Picked document at url: %@", self.tag, url);
+    DDLogDebug(@"%@ Picked document at url: %@", self.logTag, url);
 
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
         // post iOS11, document picker has no blue header.
@@ -2409,10 +2409,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     NSError *typeError;
     [url getResourceValue:&type forKey:NSURLTypeIdentifierKey error:&typeError];
     if (typeError) {
-        OWSFail(@"%@ Determining type of picked document at url: %@ failed with error: %@", self.tag, url, typeError);
+        OWSFail(
+            @"%@ Determining type of picked document at url: %@ failed with error: %@", self.logTag, url, typeError);
     }
     if (!type) {
-        OWSFail(@"%@ falling back to default filetype for picked document at url: %@", self.tag, url);
+        OWSFail(@"%@ falling back to default filetype for picked document at url: %@", self.logTag, url);
         type = (__bridge NSString *)kUTTypeData;
     }
 
@@ -2421,11 +2422,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:&isDirectoryError];
     if (isDirectoryError) {
         OWSFail(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
-            self.tag,
+            self.logTag,
             url,
             isDirectoryError);
     } else if ([isDirectory boolValue]) {
-        DDLogInfo(@"%@ User picked directory at url: %@", self.tag, url);
+        DDLogInfo(@"%@ User picked directory at url: %@", self.logTag, url);
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [OWSAlerts
@@ -2441,7 +2442,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     NSString *filename = url.lastPathComponent;
     if (!filename) {
-        OWSFail(@"%@ Unable to determine filename from url: %@", self.tag, url);
+        OWSFail(@"%@ Unable to determine filename from url: %@", self.logTag, url);
         filename = NSLocalizedString(
             @"ATTACHMENT_DEFAULT_FILENAME", @"Generic filename for an attachment with no known name");
     }
@@ -2450,7 +2451,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     OWSAssert(filename);
     DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
     if (!dataSource) {
-        OWSFail(@"%@ attachment data was unexpectedly empty for picked document url: %@", self.tag, url);
+        OWSFail(@"%@ attachment data was unexpectedly empty for picked document url: %@", self.logTag, url);
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE",
@@ -2587,7 +2588,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                                                filename:filename];
                                          if (!attachment || [attachment hasError]) {
                                              DDLogWarn(@"%@ %s Invalid attachment: %@.",
-                                                 self.tag,
+                                                 self.logTag,
                                                  __PRETTY_FUNCTION__,
                                                  attachment ? [attachment errorName] : @"Missing data");
                                              [self showErrorAlertForAttachment:attachment];
@@ -2638,7 +2639,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                         OWSAssert([NSThread isMainThread]);
                                                         if (!attachment || [attachment hasError]) {
                                                             DDLogWarn(@"%@ %s Invalid attachment: %@.",
-                                                                self.tag,
+                                                                self.logTag,
                                                                 __PRETTY_FUNCTION__,
                                                                 attachment ? [attachment errorName] : @"Missing data");
                                                             [self showErrorAlertForAttachment:attachment];
@@ -2725,7 +2726,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                                          dataUTI:(NSString *)kUTTypeMPEG4];
                                   if (!attachment || [attachment hasError]) {
                                       DDLogError(@"%@ %s Invalid attachment: %@.",
-                                          self.tag,
+                                          self.logTag,
                                           __PRETTY_FUNCTION__,
                                           attachment ? [attachment errorName] : @"Missing data");
                                       [self showErrorAlertForAttachment:attachment];
@@ -2800,7 +2801,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 if (updatedThread) {
                     self.thread = updatedThread;
                 } else {
-                    OWSFail(@"%@ Could not reload thread.", self.tag);
+                    OWSFail(@"%@ Could not reload thread.", self.logTag);
                 }
             }
         }];
@@ -2876,7 +2877,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
 
-    void (^batchUpdates)() = ^{
+    void (^batchUpdates)(void) = ^{
         for (YapDatabaseViewRowChange *rowChange in rowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
@@ -2933,7 +2934,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         OWSAssert([NSThread isMainThread]);
 
         if (!finished) {
-            DDLogInfo(@"%@ performBatchUpdates did not finish", self.tag);
+            DDLogInfo(@"%@ performBatchUpdates did not finish", self.logTag);
         }
 
         [self updateLastVisibleTimestamp];
@@ -3063,7 +3064,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             if (granted) {
                 [strongSelf startRecordingVoiceMemo];
             } else {
-                DDLogInfo(@"%@ we do not have recording permission.", self.tag);
+                DDLogInfo(@"%@ we do not have recording permission.", self.logTag);
                 [strongSelf cancelVoiceMemo];
                 [OWSAlerts showNoMicrophonePermissionAlert];
             }
@@ -3093,7 +3094,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     NSError *error;
     [session setCategory:AVAudioSessionCategoryRecord error:&error];
     if (error) {
-        OWSFail(@"%@ Couldn't configure audio session: %@", self.tag, error);
+        OWSFail(@"%@ Couldn't configure audio session: %@", self.logTag, error);
         [self cancelVoiceMemo];
         return;
     }
@@ -3108,7 +3109,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                      }
                                                         error:&error];
     if (error) {
-        OWSFail(@"%@ Couldn't create audioRecorder: %@", self.tag, error);
+        OWSFail(@"%@ Couldn't create audioRecorder: %@", self.logTag, error);
         [self cancelVoiceMemo];
         return;
     }
@@ -3116,13 +3117,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.audioRecorder.meteringEnabled = YES;
 
     if (![self.audioRecorder prepareToRecord]) {
-        OWSFail(@"%@ audioRecorder couldn't prepareToRecord.", self.tag);
+        OWSFail(@"%@ audioRecorder couldn't prepareToRecord.", self.logTag);
         [self cancelVoiceMemo];
         return;
     }
 
     if (![self.audioRecorder record]) {
-        OWSFail(@"%@ audioRecorder couldn't record.", self.tag);
+        OWSFail(@"%@ audioRecorder couldn't record.", self.logTag);
         [self cancelVoiceMemo];
         return;
     }
@@ -3139,7 +3140,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (!self.audioRecorder) {
         // No voice message recording is in progress.
         // We may be cancelling before the recording could begin.
-        DDLogError(@"%@ Missing audioRecorder", self.tag);
+        DDLogError(@"%@ Missing audioRecorder", self.logTag);
         return;
     }
 
@@ -3168,7 +3169,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.audioRecorder = nil;
 
     if (!dataSource) {
-        OWSFail(@"%@ Couldn't load audioRecorder data", self.tag);
+        OWSFail(@"%@ Couldn't load audioRecorder data", self.logTag);
         self.audioRecorder = nil;
         return;
     }
@@ -3180,10 +3181,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [dataSource setShouldDeleteOnDeallocation];
     SignalAttachment *attachment =
         [SignalAttachment voiceMessageAttachmentWithDataSource:dataSource dataUTI:(NSString *)kUTTypeMPEG4Audio];
-    DDLogVerbose(@"%@ voice memo duration: %f, file size: %zd", self.tag, durationSeconds, [dataSource dataLength]);
+    DDLogVerbose(@"%@ voice memo duration: %f, file size: %zd", self.logTag, durationSeconds, [dataSource dataLength]);
     if (!attachment || [attachment hasError]) {
         DDLogWarn(@"%@ %s Invalid attachment: %@.",
-            self.tag,
+            self.logTag,
             __PRETTY_FUNCTION__,
             attachment ? [attachment errorName] : @"Missing data");
         [self showErrorAlertForAttachment:attachment];
@@ -3357,7 +3358,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeTimestamp:lastVisibleTimestamp thread:self.thread];
 }
 
-- (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)())successCompletion
+- (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)(void))successCompletion
 {
     __block TSGroupThread *groupThread;
     __block TSOutgoingMessage *message;
@@ -3384,24 +3385,24 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             sourceFilename:nil
             inMessage:message
             success:^{
-                DDLogDebug(@"%@ Successfully sent group update with avatar", self.tag);
+                DDLogDebug(@"%@ Successfully sent group update with avatar", self.logTag);
                 if (successCompletion) {
                     successCompletion();
                 }
             }
             failure:^(NSError *_Nonnull error) {
-                DDLogError(@"%@ Failed to send group avatar update with error: %@", self.tag, error);
+                DDLogError(@"%@ Failed to send group avatar update with error: %@", self.logTag, error);
             }];
     } else {
         [self.messageSender sendMessage:message
             success:^{
-                DDLogDebug(@"%@ Successfully sent group update", self.tag);
+                DDLogDebug(@"%@ Successfully sent group update", self.logTag);
                 if (successCompletion) {
                     successCompletion();
                 }
             }
             failure:^(NSError *_Nonnull error) {
-                DDLogError(@"%@ Failed to send group update with error: %@", self.tag, error);
+                DDLogError(@"%@ Failed to send group update with error: %@", self.logTag, error);
             }];
     }
 
@@ -3519,7 +3520,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)didPasteAttachment:(SignalAttachment *_Nullable)attachment
 {
-    DDLogError(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [self tryToSendAttachmentIfApproved:attachment];
 }
@@ -3532,7 +3533,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)tryToSendAttachmentIfApproved:(SignalAttachment *_Nullable)attachment
                    skipApprovalDialog:(BOOL)skipApprovalDialog
 {
-    DDLogError(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     DispatchMainThreadSafe(^{
         __weak ConversationViewController *weakSelf = self;
@@ -3559,7 +3560,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
         if (attachment == nil || [attachment hasError]) {
             DDLogWarn(@"%@ %s Invalid attachment: %@.",
-                self.tag,
+                self.logTag,
                 __PRETTY_FUNCTION__,
                 attachment ? [attachment errorName] : @"Missing data");
             [self showErrorAlertForAttachment:attachment];
@@ -3585,7 +3586,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     NSString *errorMessage
         = (attachment ? [attachment localizedErrorDescription] : [SignalAttachment missingDataErrorMessage]);
 
-    DDLogError(@"%@ %s: %@", self.tag, __PRETTY_FUNCTION__, errorMessage);
+    DDLogError(@"%@ %s: %@", self.logTag, __PRETTY_FUNCTION__, errorMessage);
 
     [OWSAlerts showAlertWithTitle:NSLocalizedString(
                                       @"ATTACHMENT_ERROR_ALERT_TITLE", @"The title of the 'attachment error' alert.")
@@ -4102,7 +4103,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         TSInteraction *_Nullable interaction =
             [TSInteraction fetchObjectWithUniqueID:viewItem.interaction.uniqueId transaction:transaction];
         if (!interaction) {
-            OWSFail(@"%@ could not reload interaction", self.tag);
+            OWSFail(@"%@ could not reload interaction", self.logTag);
         } else {
             [viewItem replaceInteraction:interaction];
         }
@@ -4112,7 +4113,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (nullable ConversationViewItem *)viewItemForIndex:(NSInteger)index
 {
     if (index < 0 || index >= (NSInteger)self.viewItems.count) {
-        OWSFail(@"%@ Invalid view item index: %zd", self.tag, index);
+        OWSFail(@"%@ Invalid view item index: %zd", self.logTag, index);
         return nil;
     }
     return self.viewItems[(NSUInteger)index];
@@ -4131,7 +4132,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:indexPath.row];
     ConversationViewCell *cell = [viewItem dequeueCellForCollectionView:self.collectionView indexPath:indexPath];
     if (!cell) {
-        OWSFail(@"%@ Could not dequeue cell.", self.tag);
+        OWSFail(@"%@ Could not dequeue cell.", self.logTag);
         return cell;
     }
     cell.viewItem = viewItem;
@@ -4169,14 +4170,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                                      mode:MessageMetadataViewModeFocusOnMetadata];
                 [self.navigationController pushViewController:view animated:YES];
             } else {
-                OWSFail(@"%@ Can't show message metadata for message of type: %@", self.tag, [interaction class]);
+                OWSFail(@"%@ Can't show message metadata for message of type: %@", self.logTag, [interaction class]);
             }
             break;
         }
         case UIGestureRecognizerStateChanged: {
             UIPercentDrivenInteractiveTransition *transition = self.showMessageDetailsTransition;
             if (!transition) {
-                DDLogVerbose(@"%@ transition not set up yet", self.tag);
+                DDLogVerbose(@"%@ transition not set up yet", self.logTag);
                 return;
             }
             [transition updateInteractiveTransition:ratioComplete];
@@ -4187,7 +4188,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
             UIPercentDrivenInteractiveTransition *transition = self.showMessageDetailsTransition;
             if (!transition) {
-                DDLogVerbose(@"%@ transition not set up yet", self.tag);
+                DDLogVerbose(@"%@ transition not set up yet", self.logTag);
                 return;
             }
 
@@ -4204,7 +4205,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         case UIGestureRecognizerStateFailed: {
             UIPercentDrivenInteractiveTransition *transition = self.showMessageDetailsTransition;
             if (!transition) {
-                DDLogVerbose(@"%@ transition not set up yet", self.tag);
+                DDLogVerbose(@"%@ transition not set up yet", self.logTag);
                 return;
             }
 
@@ -4269,18 +4270,6 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 
     ConversationViewCell *conversationViewCell = (ConversationViewCell *)cell;
     conversationViewCell.isCellVisible = NO;
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

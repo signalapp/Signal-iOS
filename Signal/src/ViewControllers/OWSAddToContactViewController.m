@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didFinishEditingContact
 {
-    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [self dismissViewControllerAnimated:NO
                              completion:^{
                                  [self.navigationController popViewControllerAnimated:YES];
@@ -94,13 +94,13 @@ NS_ASSUME_NONNULL_BEGIN
         // Saving normally returns you to the "Show Contact" view
         // which we're not interested in, so we skip it here. There is
         // an unfortunate blip of the "Show Contact" view on slower devices.
-        DDLogDebug(@"%@ completed editing contact.", self.tag);
+        DDLogDebug(@"%@ completed editing contact.", self.logTag);
         [self dismissViewControllerAnimated:NO
                                  completion:^{
                                      [self.navigationController popViewControllerAnimated:YES];
                                  }];
     } else {
-        DDLogDebug(@"%@ canceled editing contact.", self.tag);
+        DDLogDebug(@"%@ canceled editing contact.", self.logTag);
         [self dismissViewControllerAnimated:YES
                                  completion:^{
                                      [self.navigationController popViewControllerAnimated:YES];
@@ -195,25 +195,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.recipientId);
 
     if (!self.contactsManager.supportsContactEditing) {
-        OWSFail(@"%@ Contact editing not supported", self.tag);
+        OWSFail(@"%@ Contact editing not supported", self.logTag);
         return;
     }
     [self.contactsViewHelper presentContactViewControllerForRecipientId:self.recipientId
                                                      fromViewController:self
                                                         editImmediately:YES
                                                  addToExistingCnContact:contact.cnContact];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

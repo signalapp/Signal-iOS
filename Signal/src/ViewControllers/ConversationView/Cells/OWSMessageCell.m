@@ -366,7 +366,7 @@ NS_ASSUME_NONNULL_BEGIN
 // but lazy-load any expensive media (photo, gif, etc.) used in those views. Note that
 // this lazy-load can fail, in which case we modify the view hierarchy to use an "error"
 // state. The didCellMediaFailToLoad reflects media load fails.
-- (nullable id)tryToLoadCellMedia:(nullable id (^)())loadCellMediaBlock
+- (nullable id)tryToLoadCellMedia:(nullable id (^)(void))loadCellMediaBlock
                         mediaView:(UIView *)mediaView
                          cacheKey:(NSString *)cacheKey
 {

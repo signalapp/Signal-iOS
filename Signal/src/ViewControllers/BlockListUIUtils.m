@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^BlockAlertCompletionBlock)();
+typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 
 @implementation BlockListUIUtils
 
@@ -69,7 +69,7 @@ typedef void (^BlockAlertCompletionBlock)();
                                message:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE",
                                            @"The message of the 'You can't block yourself' alert.")
                     fromViewController:fromViewController
-                       completionBlock:^{
+                       completionBlock:^(UIAlertAction *action) {
                            if (completionBlock) {
                                completionBlock(NO);
                            }
@@ -97,7 +97,7 @@ typedef void (^BlockAlertCompletionBlock)();
                                 displayName:displayName
                          fromViewController:fromViewController
                             blockingManager:blockingManager
-                            completionBlock:^{
+                            completionBlock:^(UIAlertAction *ignore) {
                                 if (completionBlock) {
                                     completionBlock(YES);
                                 }
@@ -201,7 +201,7 @@ typedef void (^BlockAlertCompletionBlock)();
                                               displayName:displayName
                                        fromViewController:fromViewController
                                           blockingManager:blockingManager
-                                          completionBlock:^{
+                                          completionBlock:^(UIAlertAction *ignore) {
                                               if (completionBlock) {
                                                   completionBlock(NO);
                                               }
@@ -313,18 +313,6 @@ typedef void (^BlockAlertCompletionBlock)();
     }
 
     return displayName;
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

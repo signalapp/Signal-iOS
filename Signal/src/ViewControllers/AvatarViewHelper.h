@@ -6,9 +6,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SignalAccount;
 @class AvatarViewHelper;
 @class OWSContactsManager;
+@class SignalAccount;
 @class TSThread;
 
 @protocol AvatarViewHelperDelegate <NSObject>
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-typedef void (^AvatarViewSuccessBlock)();
+typedef void (^AvatarViewSuccessBlock)(void);
 
 @interface AvatarViewHelper : NSObject
 

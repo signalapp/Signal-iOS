@@ -70,7 +70,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
         if ([message isKindOfClass:[TSOutgoingMessage class]]) {
             block(message);
         } else {
-            DDLogError(@"%@ unexpected object: %@", self.tag, message);
+            DDLogError(@"%@ unexpected object: %@", self.logTag, message);
         }
     }
 }
@@ -85,12 +85,13 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
                 // sanity check
                 OWSAssert(message.messageState == TSOutgoingMessageStateAttemptingOut);
                 if (message.messageState != TSOutgoingMessageStateAttemptingOut) {
-                    DDLogError(
-                        @"%@ Refusing to mark as unsent message with state: %d", self.tag, (int)message.messageState);
+                    DDLogError(@"%@ Refusing to mark as unsent message with state: %d",
+                        self.logTag,
+                        (int)message.messageState);
                     return;
                 }
 
-                DDLogDebug(@"%@ marking message as unsent: %@", self.tag, message.uniqueId);
+                DDLogDebug(@"%@ marking message as unsent: %@", self.logTag, message.uniqueId);
                 [message updateWithMessageState:TSOutgoingMessageStateUnsent transaction:transaction];
                 OWSAssert(message.messageState == TSOutgoingMessageStateUnsent);
 
@@ -99,7 +100,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
                                               transaction:transaction];
         }];
 
-    DDLogDebug(@"%@ Marked %u messages as unsent", self.tag, count);
+    DDLogDebug(@"%@ Marked %u messages as unsent", self.logTag, count);
 }
 
 #pragma mark - YapDatabaseExtension
@@ -139,23 +140,11 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
                                                 withName:OWSFailedMessagesJobMessageStateIndex
                                          completionBlock:^(BOOL ready) {
                                              if (ready) {
-                                                 DDLogDebug(@"%@ completed registering extension async.", self.tag);
+                                                 DDLogDebug(@"%@ completed registering extension async.", self.logTag);
                                              } else {
-                                                 DDLogError(@"%@ failed registering extension async.", self.tag);
+                                                 DDLogError(@"%@ failed registering extension async.", self.logTag);
                                              }
                                          }];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

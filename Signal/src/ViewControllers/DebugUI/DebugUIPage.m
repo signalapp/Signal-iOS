@@ -9,18 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIPage
 
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
-}
-
 #pragma mark - Factory Methods
 
 - (NSString *)name

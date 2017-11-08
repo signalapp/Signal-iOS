@@ -19,18 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIStress
 
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
-}
-
 #pragma mark - Factory Methods
 
 - (NSString *)name
@@ -450,12 +438,12 @@ NS_ASSUME_NONNULL_BEGIN
     
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
     [messageSender sendMessage:message
-                       success:^{
-                           DDLogInfo(@"%@ Successfully sent message.", self.tag);
-                       }
-                       failure:^(NSError *error) {
-                           DDLogWarn(@"%@ Failed to deliver message with error: %@", self.tag, error);
-                       }];
+        success:^{
+            DDLogInfo(@"%@ Successfully sent message.", self.logTag);
+        }
+        failure:^(NSError *error) {
+            DDLogWarn(@"%@ Failed to deliver message with error: %@", self.logTag, error);
+        }];
 }
 
 + (void)sendStressMessage:(TSThread *)thread

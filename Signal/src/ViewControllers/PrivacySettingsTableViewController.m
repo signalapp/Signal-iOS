@@ -144,26 +144,26 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didToggleScreenSecuritySwitch:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
-    DDLogInfo(@"%@ toggled screen security: %@", self.tag, enabled ? @"ON" : @"OFF");
+    DDLogInfo(@"%@ toggled screen security: %@", self.logTag, enabled ? @"ON" : @"OFF");
     [Environment.preferences setScreenSecurity:enabled];
 }
 
 - (void)didToggleReadReceiptsSwitch:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
-    DDLogInfo(@"%@ toggled areReadReceiptsEnabled: %@", self.tag, enabled ? @"ON" : @"OFF");
+    DDLogInfo(@"%@ toggled areReadReceiptsEnabled: %@", self.logTag, enabled ? @"ON" : @"OFF");
     [OWSReadReceiptManager.sharedManager setAreReadReceiptsEnabled:enabled];
 }
 
 - (void)didToggleCallsHideIPAddressSwitch:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
-    DDLogInfo(@"%@ toggled callsHideIPAddress: %@", self.tag, enabled ? @"ON" : @"OFF");
+    DDLogInfo(@"%@ toggled callsHideIPAddress: %@", self.logTag, enabled ? @"ON" : @"OFF");
     [Environment.preferences setDoCallsHideIPAddress:enabled];
 }
 
 - (void)didToggleEnableCallKitSwitch:(UISwitch *)sender {
-    DDLogInfo(@"%@ user toggled call kit preference: %@", self.tag, (sender.isOn ? @"ON" : @"OFF"));
+    DDLogInfo(@"%@ user toggled call kit preference: %@", self.logTag, (sender.isOn ? @"ON" : @"OFF"));
     [[Environment getCurrent].preferences setIsCallKitEnabled:sender.isOn];
     // rebuild callUIAdapter since CallKit vs not changed.
     [[Environment getCurrent].callService createCallUIAdapter];
@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)didToggleEnableCallKitPrivacySwitch:(UISwitch *)sender {
-    DDLogInfo(@"%@ user toggled call kit privacy preference: %@", self.tag, (sender.isOn ? @"ON" : @"OFF"));
+    DDLogInfo(@"%@ user toggled call kit privacy preference: %@", self.logTag, (sender.isOn ? @"ON" : @"OFF"));
     [[Environment getCurrent].preferences setIsCallKitPrivacyEnabled:!sender.isOn];
 }
 
@@ -184,7 +184,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)tag
 {
-    return self.class.tag;
+    return self.class.logTag;
 }
 
 @end

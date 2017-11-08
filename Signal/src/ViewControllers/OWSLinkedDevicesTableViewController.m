@@ -325,7 +325,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     }
 }
 
-- (void)touchedUnlinkControlForDevice:(OWSDevice *)device success:(void (^)())successCallback
+- (void)touchedUnlinkControlForDevice:(OWSDevice *)device success:(void (^)(void))successCallback
 {
     NSString *confirmationTitleFormat
         = NSLocalizedString(@"UNLINK_CONFIRMATION_ALERT_TITLE", @"Alert title for confirming device deletion");
@@ -353,7 +353,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     });
 }
 
-- (void)unlinkDevice:(OWSDevice *)device success:(void (^)())successCallback
+- (void)unlinkDevice:(OWSDevice *)device success:(void (^)(void))successCallback
 {
     [[OWSDevicesService new] unlinkDevice:device
                                   success:successCallback

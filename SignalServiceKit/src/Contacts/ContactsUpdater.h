@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
                   failure:(void (^)(NSError *error))failure;
 
 - (void)updateSignalContactIntersectionWithABContacts:(NSArray<Contact *> *)abContacts
-                                              success:(void (^)())success
+                                              success:(void (^)(void))success
                                               failure:(void (^)(NSError *error))failure;
 
 @end

@@ -201,7 +201,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!(self.groupMetaMessage == TSGroupMessageDeliver || self.groupMetaMessage == TSGroupMessageNone)) {
-        DDLogDebug(@"%@ Skipping save for group meta message.", self.tag);
+        DDLogDebug(@"%@ Skipping save for group meta message.", self.logTag);
         return;
     }
 
@@ -223,7 +223,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
             return NO;
         case TSOutgoingMessageStateSent_OBSOLETE:
         case TSOutgoingMessageStateDelivered_OBSOLETE:
-            OWSFail(@"%@ Obsolete message state.", self.tag);
+            OWSFail(@"%@ Obsolete message state.", self.logTag);
             return self.isExpiringMessage;
     }
 }
@@ -549,18 +549,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     [builder setDigest:attachmentStream.digest];
     [builder setFlags:(self.isVoiceMessage ? OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage : 0)];
     return [builder build];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

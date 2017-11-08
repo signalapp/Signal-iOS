@@ -439,7 +439,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didFinishEditingContact
 {
-    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -448,7 +448,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)contactViewController:(CNContactViewController *)viewController
        didCompleteWithContact:(nullable CNContact *)contact
 {
-    DDLogDebug(@"%@ done editing contact.", self.tag);
+    DDLogDebug(@"%@ done editing contact.", self.logTag);
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -459,18 +459,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([NSThread isMainThread]);
 
     [self updateTableContents];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

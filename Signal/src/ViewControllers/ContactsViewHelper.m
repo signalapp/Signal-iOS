@@ -349,7 +349,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
-        OWSFail(@"%@ Contact editing not supported.", self.tag);
+        OWSFail(@"%@ Contact editing not supported.", self.logTag);
         return;
     }
 
@@ -440,18 +440,6 @@ NS_ASSUME_NONNULL_BEGIN
     // RADAR rdar://28433898 http://www.openradar.me/28433898
     // CNContactViewController incompatible with opaque navigation bar
     [UIUtil applyDefaultSystemAppearence];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

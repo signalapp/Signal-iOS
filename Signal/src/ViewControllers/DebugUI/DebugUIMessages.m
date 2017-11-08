@@ -27,18 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIMessages
 
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
-}
-
 #pragma mark - Factory Methods
 
 - (NSString *)name
@@ -227,16 +215,17 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem
             itemWithTitle:@"Request Bogus group info"
               actionBlock:^{
-                  DDLogInfo(@"%@ Requesting bogus group info for thread: %@", self.tag, thread);
+                  DDLogInfo(@"%@ Requesting bogus group info for thread: %@", self.logTag, thread);
                   OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
                       [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread
                                                                   groupId:[Randomness generateRandomBytes:16]];
                   [[Environment getCurrent].messageSender sendMessage:syncGroupsRequestMessage
                       success:^{
-                          DDLogWarn(@"%@ Successfully sent Request Group Info message.", self.tag);
+                          DDLogWarn(@"%@ Successfully sent Request Group Info message.", self.logTag);
                       }
                       failure:^(NSError *error) {
-                          DDLogError(@"%@ Failed to send Request Group Info message with error: %@", self.tag, error);
+                          DDLogError(
+                              @"%@ Failed to send Request Group Info message with error: %@", self.logTag, error);
                       }];
               }],
         [OWSTableItem itemWithTitle:@"Inject 10 fake incoming messages"
@@ -312,7 +301,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)ensureRandomFileWithURL:(NSString *)url
                        filename:(NSString *)filename
                         success:(nullable void (^)(NSString *filePath))success
-                        failure:(nullable void (^)())failure
+                        failure:(nullable void (^)(void))failure
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *documentDirectoryURL =
@@ -361,8 +350,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendAttachment:(NSString *)filePath
                 thread:(TSThread *)thread
-               success:(nullable void (^)())success
-               failure:(nullable void (^)())failure
+               success:(nullable void (^)(void))success
+               failure:(nullable void (^)(void))failure
 {
     OWSAssert(filePath);
     OWSAssert(thread);
@@ -383,7 +372,8 @@ NS_ASSUME_NONNULL_BEGIN
     success();
 }
 
-+ (void)ensureRandomGifWithSuccess:(nullable void (^)(NSString *filePath))success failure:(nullable void (^)())failure
++ (void)ensureRandomGifWithSuccess:(nullable void (^)(NSString *filePath))success
+                           failure:(nullable void (^)(void))failure
 {
     [self ensureRandomFileWithURL:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-gif.gif"
                          filename:@"random-gif.gif"
@@ -392,8 +382,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (void)sendRandomGifInThread:(TSThread *)thread
-                      success:(nullable void (^)())success
-                      failure:(nullable void (^)())failure
+                      success:(nullable void (^)(void))success
+                      failure:(nullable void (^)(void))failure
 {
     [self ensureRandomGifWithSuccess:^(NSString *filePath) {
         [self sendAttachment:filePath thread:thread success:success failure:failure];
@@ -424,7 +414,8 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
 }
 
-+ (void)ensureRandomJpegWithSuccess:(nullable void (^)(NSString *filePath))success failure:(nullable void (^)())failure
++ (void)ensureRandomJpegWithSuccess:(nullable void (^)(NSString *filePath))success
+                            failure:(nullable void (^)(void))failure
 {
     [self ensureRandomFileWithURL:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-jpg.JPG"
                          filename:@"random-jpg.jpg"
@@ -433,8 +424,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (void)sendRandomJpegInThread:(TSThread *)thread
-                       success:(nullable void (^)())success
-                       failure:(nullable void (^)())failure
+                       success:(nullable void (^)(void))success
+                       failure:(nullable void (^)(void))failure
 {
     [self ensureRandomJpegWithSuccess:^(NSString *filePath) {
         [self sendAttachment:filePath thread:thread success:success failure:failure];
@@ -465,7 +456,8 @@ NS_ASSUME_NONNULL_BEGIN
                               }];
 }
 
-+ (void)ensureRandomMp3WithSuccess:(nullable void (^)(NSString *filePath))success failure:(nullable void (^)())failure
++ (void)ensureRandomMp3WithSuccess:(nullable void (^)(NSString *filePath))success
+                           failure:(nullable void (^)(void))failure
 {
     [self ensureRandomFileWithURL:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp3.mp3"
                          filename:@"random-mp3.mp3"
@@ -474,8 +466,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (void)sendRandomMp3InThread:(TSThread *)thread
-                      success:(nullable void (^)())success
-                      failure:(nullable void (^)())failure
+                      success:(nullable void (^)(void))success
+                      failure:(nullable void (^)(void))failure
 {
     [self ensureRandomMp3WithSuccess:^(NSString *filePath) {
         [self sendAttachment:filePath thread:thread success:success failure:failure];
@@ -506,7 +498,8 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
 }
 
-+ (void)ensureRandomMp4WithSuccess:(nullable void (^)(NSString *filePath))success failure:(nullable void (^)())failure
++ (void)ensureRandomMp4WithSuccess:(nullable void (^)(NSString *filePath))success
+                           failure:(nullable void (^)(void))failure
 {
     [self ensureRandomFileWithURL:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp4.mp4"
                          filename:@"random-mp4.mp4"
@@ -515,8 +508,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (void)sendRandomMp4InThread:(TSThread *)thread
-                      success:(nullable void (^)())success
-                      failure:(nullable void (^)())failure
+                      success:(nullable void (^)(void))success
+                      failure:(nullable void (^)(void))failure
 {
     [self ensureRandomMp4WithSuccess:^(NSString *filePath) {
         [self sendAttachment:filePath thread:thread success:success failure:failure];
@@ -551,7 +544,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(count > 0);
 
-    void (^success)() = ^{
+    void (^success)(void) = ^{
         if (count <= 1) {
             return;
         }
@@ -1066,7 +1059,7 @@ NS_ASSUME_NONNULL_BEGIN
     [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
-    void (^completion)() = ^{
+    void (^completion)(void) = ^{
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             [ThreadUtil sendMessageWithText:[@(counter) description] inThread:thread messageSender:messageSender];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -1074,7 +1067,11 @@ NS_ASSUME_NONNULL_BEGIN
             });
         });
     };
-    [messageSender sendMessage:message success:completion failure:completion];
+    [messageSender sendMessage:message
+                       success:completion
+                       failure:^(NSError *error) {
+                           completion();
+                       }];
 }
 
 + (void)injectFakeIncomingMessages:(int)counter thread:(TSThread *)thread

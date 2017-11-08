@@ -130,8 +130,8 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
 
 - (void)intersectContactsWithRetryDelay:(double)retryDelaySeconds
 {
-    void (^success)() = ^{
-        DDLogInfo(@"%@ Successfully intersected contacts.", self.tag);
+    void (^success)(void) = ^{
+        DDLogInfo(@"%@ Successfully intersected contacts.", self.logTag);
         [self updateSignalAccounts];
     };
     void (^failure)(NSError *error) = ^(NSError *error) {
@@ -141,7 +141,7 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
             return;
         }
 
-        DDLogWarn(@"%@ Failed to intersect contacts with error: %@. Rescheduling", self.tag, error);
+        DDLogWarn(@"%@ Failed to intersect contacts with error: %@. Rescheduling", self.logTag, error);
 
         // Retry with exponential backoff.
         //
@@ -370,7 +370,7 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
         if (self.cachedAccountNameMap || self.cachedFirstNameMap || self.cachedLastNameMap) {
             // If these properties have already been populated from system contacts,
             // don't overwrite.  In practice this should never happen.
-            OWSFail(@"%@ Unexpected cache state", self.tag);
+            OWSFail(@"%@ Unexpected cache state", self.logTag);
             return;
         }
 
@@ -724,18 +724,6 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
     }
     
     return name;
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

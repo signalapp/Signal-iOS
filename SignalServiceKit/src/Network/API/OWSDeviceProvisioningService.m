@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)provisionWithMessageBody:(NSData *)messageBody
                ephemeralDeviceId:(NSString *)deviceId
-                         success:(void (^)())successCallback
+                         success:(void (^)(void))successCallback
                          failure:(void (^)(NSError *))failureCallback
 {
     OWSDeviceProvisioningRequest *request =

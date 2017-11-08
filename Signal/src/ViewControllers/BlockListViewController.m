@@ -121,18 +121,6 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
                          profileKey:(NSData *)profileKey
                 readReceiptsEnabled:(BOOL)areReadReceiptsEnabled;
 
-- (void)provisionWithSuccess:(void (^)())successCallback failure:(void (^)(NSError *))failureCallback;
+- (void)provisionWithSuccess:(void (^)(void))successCallback failure:(void (^)(NSError *))failureCallback;
 
 @end
 

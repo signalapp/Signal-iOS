@@ -67,7 +67,7 @@ NS_SWIFT_NAME(MessageSender)
  */
 // TODO: make transaction nonnull and remove `sendMessage:success:failure`
 - (void)sendMessage:(TSOutgoingMessage *)message
-            success:(void (^)())successHandler
+            success:(void (^)(void))successHandler
             failure:(void (^)(NSError *error))failureHandler;
 
 /**
@@ -78,7 +78,7 @@ NS_SWIFT_NAME(MessageSender)
                contentType:(NSString *)contentType
             sourceFilename:(nullable NSString *)sourceFilename
                  inMessage:(TSOutgoingMessage *)outgoingMessage
-                   success:(void (^)())successHandler
+                   success:(void (^)(void))successHandler
                    failure:(void (^)(NSError *error))failureHandler;
 
 /**
@@ -88,7 +88,7 @@ NS_SWIFT_NAME(MessageSender)
 - (void)sendTemporaryAttachmentData:(DataSource *)dataSource
                         contentType:(NSString *)contentType
                           inMessage:(TSOutgoingMessage *)outgoingMessage
-                            success:(void (^)())successHandler
+                            success:(void (^)(void))successHandler
                             failure:(void (^)(NSError *error))failureHandler;
 
 /**

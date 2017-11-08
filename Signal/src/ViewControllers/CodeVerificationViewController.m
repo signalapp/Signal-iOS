@@ -264,7 +264,7 @@ NS_ASSUME_NONNULL_BEGIN
         .then(^{
             OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
 
-            DDLogInfo(@"%@ Successfully registered Signal account.", weakSelf.tag);
+            DDLogInfo(@"%@ Successfully registered Signal account.", weakSelf.logTag);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf stopActivityIndicator];
                 [weakSelf vericationWasCompleted];
@@ -272,7 +272,7 @@ NS_ASSUME_NONNULL_BEGIN
         })
         .catch(^(NSError *_Nonnull error) {
             OWSProdInfo([OWSAnalyticsEvents registrationRegistrationFailed]);
-            DDLogError(@"%@ error verifying challenge: %@", weakSelf.tag, error);
+            DDLogError(@"%@ error verifying challenge: %@", weakSelf.logTag, error);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf stopActivityIndicator];
                 [weakSelf presentAlertWithVerificationError:error];
@@ -327,12 +327,12 @@ NS_ASSUME_NONNULL_BEGIN
     [_requestCodeAgainSpinner startAnimating];
     __weak CodeVerificationViewController *weakSelf = self;
     [TSAccountManager rerequestSMSWithSuccess:^{
-        DDLogInfo(@"%@ Successfully requested SMS code", weakSelf.tag);
+        DDLogInfo(@"%@ Successfully requested SMS code", weakSelf.logTag);
         [weakSelf enableServerActions:YES];
         [weakSelf.requestCodeAgainSpinner stopAnimating];
     }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to request SMS code with error: %@", weakSelf.tag, error);
+            DDLogError(@"%@ Failed to request SMS code with error: %@", weakSelf.logTag, error);
             [weakSelf showRegistrationErrorMessage:error];
             [weakSelf enableServerActions:YES];
             [weakSelf.requestCodeAgainSpinner stopAnimating];
@@ -348,13 +348,13 @@ NS_ASSUME_NONNULL_BEGIN
     [_requestCallSpinner startAnimating];
     __weak CodeVerificationViewController *weakSelf = self;
     [TSAccountManager rerequestVoiceWithSuccess:^{
-        DDLogInfo(@"%@ Successfully requested voice code", weakSelf.tag);
+        DDLogInfo(@"%@ Successfully requested voice code", weakSelf.logTag);
 
         [weakSelf enableServerActions:YES];
         [weakSelf.requestCallSpinner stopAnimating];
     }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to request voice code with error: %@", weakSelf.tag, error);
+            DDLogError(@"%@ Failed to request voice code with error: %@", weakSelf.logTag, error);
             [weakSelf showRegistrationErrorMessage:error];
             [weakSelf enableServerActions:YES];
             [weakSelf.requestCallSpinner stopAnimating];
@@ -470,18 +470,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.challengeTextField.selectedTextRange = [self.challengeTextField textRangeFromPosition:newPosition
                                                                                     toPosition:newPosition];
     [self submitVerificationCode];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

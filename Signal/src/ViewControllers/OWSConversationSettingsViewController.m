@@ -180,7 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self updateTableContents];
 
-    DDLogDebug(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [self dismissViewControllerAnimated:NO completion:nil];
 }
 
@@ -195,10 +195,10 @@ NS_ASSUME_NONNULL_BEGIN
         // Saving normally returns you to the "Show Contact" view
         // which we're not interested in, so we skip it here. There is
         // an unfortunate blip of the "Show Contact" view on slower devices.
-        DDLogDebug(@"%@ completed editing contact.", self.tag);
+        DDLogDebug(@"%@ completed editing contact.", self.logTag);
         [self dismissViewControllerAnimated:NO completion:nil];
     } else {
-        DDLogDebug(@"%@ canceled editing contact.", self.tag);
+        DDLogDebug(@"%@ canceled editing contact.", self.logTag);
         [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
@@ -821,11 +821,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)presentContactViewController
 {
     if (!self.contactsManager.supportsContactEditing) {
-        OWSFail(@"%@ Contact editing not supported", self.tag);
+        OWSFail(@"%@ Contact editing not supported", self.logTag);
         return;
     }
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFail(@"%@ unexpected thread: %@ in %s", self.tag, self.thread, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -839,7 +839,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
-        OWSFail(@"%@ Contact editing not supported.", self.tag);
+        OWSFail(@"%@ Contact editing not supported.", self.logTag);
         return;
     }
 
@@ -887,10 +887,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                              groupMetaMessage:TSGroupMessageQuit];
     [self.messageSender sendMessage:message
         success:^{
-            DDLogInfo(@"%@ Successfully left group.", self.tag);
+            DDLogInfo(@"%@ Successfully left group.", self.logTag);
         }
         failure:^(NSError *error) {
-            DDLogWarn(@"%@ Failed to leave group with error: %@", self.tag, error);
+            DDLogWarn(@"%@ Failed to leave group with error: %@", self.logTag, error);
         }];
 
     NSMutableArray *newGroupMemberIds = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
@@ -915,7 +915,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(!self.isGroupThread);
 
     if (![sender isKindOfClass:[UISwitch class]]) {
-        OWSFail(@"%@ Unexpected sender for block user switch: %@", self.tag, sender);
+        OWSFail(@"%@ Unexpected sender for block user switch: %@", self.logTag, sender);
     }
     UISwitch *blockUserSwitch = (UISwitch *)sender;
 
@@ -1127,18 +1127,6 @@ NS_ASSUME_NONNULL_BEGIN
         [self.thread.contactIdentifier isEqualToString:recipientId]) {
         [self updateTableContents];
     }
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

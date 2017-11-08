@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaUrl error:&error];
         if (error) {
-            DDLogError(@"%@ error: %@", self.tag, error);
+            DDLogError(@"%@ error: %@", self.logTag, error);
             [self stop];
 
             if ([error.domain isEqualToString:NSOSStatusErrorDomain]
@@ -156,18 +156,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([NSThread isMainThread]);
 
     [self stop];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.scanDelegate) {
         if ([self.scanDelegate respondsToSelector:@selector(controller:didDetectQRCodeWithData:)]) {
-            DDLogInfo(@"%@ Scanned Data Code.", self.tag);
+            DDLogInfo(@"%@ Scanned Data Code.", self.logTag);
             ZXByteArray *byteArray = result.resultMetadata[@(kResultMetadataTypeByteSegments)][0];
             NSData *decodedData = [NSData dataWithBytes:byteArray.array length:byteArray.length];
 
@@ -143,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         if ([self.scanDelegate respondsToSelector:@selector(controller:didDetectQRCodeWithString:)]) {
-            DDLogInfo(@"%@ Scanned String Code.", self.tag);
+            DDLogInfo(@"%@ Scanned String Code.", self.logTag);
             [self.scanDelegate controller:self didDetectQRCodeWithString:result.text];
         }
     }
@@ -156,7 +156,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)tag
 {
-    return self.class.tag;
+    return self.class.logTag;
 }
 
 @end

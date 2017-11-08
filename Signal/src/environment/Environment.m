@@ -12,9 +12,9 @@
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import <SignalServiceKit/ContactsUpdater.h>
-#import <SignalServiceKit/Threading.h>
-#import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
+#import <SignalServiceKit/OWSSignalService.h>
+#import <SignalServiceKit/Threading.h>
 
 static Environment *environment = nil;
 
@@ -238,7 +238,7 @@ static Environment *environment = nil;
 
     TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
     if (thread == nil) {
-        OWSFail(@"%@ unable to find thread with id: %@", self.tag, threadId);
+        OWSFail(@"%@ unable to find thread with id: %@", self.logTag, threadId);
         return;
     }
 
@@ -263,7 +263,7 @@ static Environment *environment = nil;
     OWSAssert(!keyboardOnViewAppearing || !callOnViewAppearing);
 
     if (!thread) {
-        OWSFail(@"%@ Can't present nil thread.", self.tag);
+        OWSFail(@"%@ Can't present nil thread.", self.logTag);
         return;
     }
 
@@ -287,7 +287,7 @@ static Environment *environment = nil;
 
 + (void)resetAppData {
     // This _should_ be wiped out below.
-    DDLogError(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
 
     [[TSStorageManager sharedManager] resetSignalStorage];
@@ -297,18 +297,6 @@ static Environment *environment = nil;
 
     [DebugLogger.sharedLogger wipeLogs];
     exit(0);
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

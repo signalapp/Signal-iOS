@@ -38,7 +38,7 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
                                          if (![object isKindOfClass:[NSData class]]) {
                                              OWSFail(
                                                  @"%@ Unexpected object in trusted keys collection key: %@ object: %@",
-                                                 self.tag,
+                                                 self.logTag,
                                                  recipientId,
                                                  object);
                                              return;
@@ -49,7 +49,7 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
 
         [identityKeys enumerateKeysAndObjectsUsingBlock:^(
             NSString *_Nonnull recipientId, NSData *_Nonnull identityKey, BOOL *_Nonnull stop) {
-            DDLogInfo(@"%@ Migrating identity key for recipient: %@", self.tag, recipientId);
+            DDLogInfo(@"%@ Migrating identity key for recipient: %@", self.logTag, recipientId);
             [[[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
                                                    identityKey:identityKey
                                                isFirstKnownKey:NO
@@ -60,18 +60,6 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
 
         [self saveWithTransaction:transaction];
     }];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

@@ -30,7 +30,7 @@
     @synchronized(self) {
         int preKeyId = [self nextPreKeyId];
 
-        DDLogInfo(@"%@ building %d new preKeys starting from preKeyId: %d", self.tag, BATCH_SIZE, preKeyId);
+        DDLogInfo(@"%@ building %d new preKeys starting from preKeyId: %d", self.logTag, BATCH_SIZE, preKeyId);
         for (int i = 0; i < BATCH_SIZE; i++) {
             ECKeyPair *keyPair   = [Curve25519 generateKeyPair];
             PreKeyRecord *record = [[PreKeyRecord alloc] initWithId:preKeyId keyPair:keyPair];
@@ -102,7 +102,7 @@
 
 - (NSString *)tag
 {
-    return self.class.tag;
+    return self.class.logTag;
 }
 
 @end

@@ -277,18 +277,6 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
     return YES;
 }
 
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

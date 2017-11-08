@@ -127,30 +127,18 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
 
 + (void)printAllIdentities
 {
-    DDLogInfo(@"%@ ### All Recipient Identities ###", self.tag);
+    DDLogInfo(@"%@ ### All Recipient Identities ###", self.logTag);
     __block int count = 0;
     [self enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
         count++;
         if (![obj isKindOfClass:[self class]]) {
-            OWSFail(@"%@ unexpected object in collection: %@", self.tag, obj);
+            OWSFail(@"%@ unexpected object in collection: %@", self.logTag, obj);
             return;
         }
         OWSRecipientIdentity *recipientIdentity = (OWSRecipientIdentity *)obj;
 
-        DDLogInfo(@"%@ Identity %d: %@", self.tag, count, recipientIdentity.debugDescription);
+        DDLogInfo(@"%@ Identity %d: %@", self.logTag, count, recipientIdentity.debugDescription);
     }];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

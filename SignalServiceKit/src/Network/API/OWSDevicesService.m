@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (devices) {
                 successCallback(devices);
             } else {
-                DDLogError(@"%@ unable to parse devices response:%@", self.tag, responseObject);
+                DDLogError(@"%@ unable to parse devices response:%@", self.logTag, responseObject);
                 NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
                 failureCallback(error);
             }
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)unlinkDevice:(OWSDevice *)device
-             success:(void (^)())successCallback
+             success:(void (^)(void))successCallback
              failure:(void (^)(NSError *))failureCallback
 {
     OWSDeleteDeviceRequest *request = [[OWSDeleteDeviceRequest alloc] initWithDevice:device];
@@ -86,18 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return [devices copy];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

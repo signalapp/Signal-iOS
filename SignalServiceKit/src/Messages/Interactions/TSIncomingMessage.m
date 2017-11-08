@@ -156,7 +156,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    DDLogDebug(@"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.tag, self.uniqueId, self.timestamp);
+    DDLogDebug(
+        @"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.logTag, self.uniqueId, self.timestamp);
     _read = YES;
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];
@@ -168,18 +169,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (sendReadReceipt) {
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
     }
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

@@ -216,7 +216,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 - (NSString *)tag
 {
-    return self.class.tag;
+    return self.class.logTag;
 }
 
 @end
@@ -324,7 +324,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     OWSAssert(jobs);
     if (jobs.count < 1) {
         self.isDrainingQueue = NO;
-        DDLogVerbose(@"%@ Queue is drained", self.tag);
+        DDLogVerbose(@"%@ Queue is drained", self.logTag);
         return;
     }
 
@@ -333,7 +333,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     [self.finder removeJobsWithIds:jobs.uniqueIds];
 
     DDLogVerbose(@"%@ completed %zd jobs. %zd jobs left.",
-        self.tag,
+        self.logTag,
         jobs.count,
         [OWSMessageContentJob numberOfKeysInCollection]);
 
@@ -368,7 +368,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 - (NSString *)tag
 {
-    return self.class.tag;
+    return self.class.logTag;
 }
 
 @end
