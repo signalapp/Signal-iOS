@@ -15,8 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSContactOffersCell ()
 
-@property (nonatomic, nullable) OWSContactOffersInteraction *interaction;
-
 @property (nonatomic) UILabel *titleLabel;
 @property (nonatomic) UIButton *addToContactsButton;
 @property (nonatomic) UIButton *addToProfileWhitelistButton;
@@ -195,14 +193,18 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
-- (void)prepareForReuse
-{
-    [super prepareForReuse];
-
-    self.interaction = nil;
-}
-
 #pragma mark - Events
+
+- (nullable OWSContactOffersInteraction *)interaction
+{
+    OWSAssert(self.viewItem);
+    OWSAssert(self.viewItem.interaction);
+    if (![self.viewItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
+        OWSFail(@"%@ expected OWSContactOffersInteraction but found: %@", self.logTag, self.viewItem.interaction);
+        return nil;
+    }
+    return (OWSContactOffersInteraction *)self.viewItem.interaction;
+}
 
 - (void)addToContacts
 {
