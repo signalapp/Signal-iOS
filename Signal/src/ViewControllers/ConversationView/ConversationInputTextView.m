@@ -129,16 +129,6 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (BOOL)becomeFirstResponder
-{
-    BOOL becameFirstResponder = [super becomeFirstResponder];
-    if (becameFirstResponder) {
-        // Intercept to scroll to bottom when text view is tapped.
-        [self.inputTextViewDelegate inputTextViewDidBecomeFirstResponder];
-    }
-    return becameFirstResponder;
-}
-
 - (BOOL)pasteboardHasPossibleAttachment
 {
     // We don't want to load/convert images more than once so we
