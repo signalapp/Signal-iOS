@@ -15,8 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSContactOffersCell ()
 
-@property (nonatomic, nullable, readonly) OWSContactOffersInteraction *interaction;
-
 @property (nonatomic) UILabel *titleLabel;
 @property (nonatomic) UIButton *addToContactsButton;
 @property (nonatomic) UIButton *addToProfileWhitelistButton;
