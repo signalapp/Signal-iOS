@@ -101,10 +101,7 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
                                         voipToken:(NSString *)voipToken
                                           success:(void (^)(void))successHandler
                                           failure:(void (^)(NSError *error))failureHandler
-    NS_SWIFT_NAME(registerForPushNotifications(pushToken:voipToken
-:success
-:failure
-:));
+    NS_SWIFT_NAME(registerForPushNotifications(pushToken:voipToken:success:failure:));
 
 #endif
 
