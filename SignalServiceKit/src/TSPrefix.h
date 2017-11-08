@@ -4,9 +4,10 @@
 
 #import "Asserts.h"
 #import "Constraints.h"
-#import "iOSVersions.h"
+#import "NSObject+OWS.h"
 #import "OWSAnalytics.h"
 #import "OWSDispatch.h"
+#import "iOSVersions.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Foundation/Foundation.h>
 
