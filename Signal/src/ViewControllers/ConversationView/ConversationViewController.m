@@ -2551,7 +2551,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
-                         filename:(NSString *)filename
+                         filename:(NSString *_Nullable)filename
 {
     OWSAssert([NSThread isMainThread]);
 

@@ -279,8 +279,9 @@ const NSUInteger kAvatarViewDiameter = 52;
 
 - (void)prepareForReuse
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super prepareForReuse];
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Name

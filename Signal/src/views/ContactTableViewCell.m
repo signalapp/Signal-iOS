@@ -249,6 +249,8 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
 
 - (void)prepareForReuse
 {
+    [super prepareForReuse];
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
     self.accessoryMessage = nil;

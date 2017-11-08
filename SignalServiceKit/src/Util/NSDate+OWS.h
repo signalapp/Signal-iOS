@@ -24,8 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDate *)ows_dateWithMillisecondsSince1970:(uint64_t)milliseconds;
 + (uint64_t)ows_millisecondsSince1970ForDate:(NSDate *)date;
 
-+ (NSString *)formatPastTimestampRelativeToNow:(uint64_t)timestamp;
-
 @end
 
 NS_ASSUME_NONNULL_END

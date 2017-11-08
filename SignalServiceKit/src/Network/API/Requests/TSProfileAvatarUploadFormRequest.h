@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)init;
 
-- (instancetype)init NS_UNAVAILABLE;
-
 @end
 
 NS_ASSUME_NONNULL_END

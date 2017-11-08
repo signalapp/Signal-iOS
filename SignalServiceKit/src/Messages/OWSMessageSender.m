@@ -547,9 +547,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssert(dataSource);
 
     dispatch_async([OWSDispatch attachmentsQueue], ^{
-        TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:contentType
-                                                                                     byteCount:dataSource.dataLength
-                                                                                sourceFilename:sourceFilename];
+        TSAttachmentStream *attachmentStream =
+            [[TSAttachmentStream alloc] initWithContentType:contentType
+                                                  byteCount:(UInt32)dataSource.dataLength
+                                             sourceFilename:sourceFilename];
         if (message.isVoiceMessage) {
             attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
         }
