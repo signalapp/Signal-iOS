@@ -84,6 +84,13 @@
 				<key>NSIncludesSubdomains</key>
 				<true/>
 			</dict>
+			<key>signal.org</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
 		</dict>
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
