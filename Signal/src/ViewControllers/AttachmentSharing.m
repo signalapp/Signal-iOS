@@ -4,8 +4,8 @@
 
 #import "AttachmentSharing.h"
 #import "TSAttachmentStream.h"
-#import "Threading.h"
 #import "UIUtil.h"
+#import <SignalServiceKit/Threading.h>
 
 @implementation AttachmentSharing
 

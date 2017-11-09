@@ -6,7 +6,7 @@
 #import "OWSDeviceTableViewCell.h"
 #import "OWSLinkDeviceViewController.h"
 #import "Signal-Swift.h"
-#import "UIViewController+CameraPermissions.h"
+#import "UIViewController+Permissions.h"
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDevicesService.h>
@@ -256,7 +256,10 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
     if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionAddDevice)
     {
-        [self ows_askForCameraPermissions:^{
+        [self ows_askForCameraPermissions:^(BOOL granted) {
+            if (!granted) {
+                return;
+            }
             [self performSegueWithIdentifier:@"LinkDeviceSegue" sender:self];
         }];
     }
