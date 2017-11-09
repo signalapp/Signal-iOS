@@ -72,7 +72,7 @@ void AssertIsOnSessionStoreQueue()
 {
     // Deprecated. We aren't currently using this anywhere, but it's "required" by the SessionStore protocol.
     // If we are going to start using it I'd want to re-verify it works as intended.
-    OWSFail(@"%@ subDevicesSessions is deprecated", self.tag);
+    OWSFail(@"%@ subDevicesSessions is deprecated", self.logTag);
     AssertIsOnSessionStoreQueue();
 
     __block NSDictionary *dictionary;
@@ -191,7 +191,7 @@ void AssertIsOnSessionStoreQueue()
 
 - (void)resetSessionStore
 {
-    DDLogWarn(@"%@ resetting session store", self.tag);
+    DDLogWarn(@"%@ resetting session store", self.logTag);
     [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [transaction removeAllObjectsInCollection:TSStorageManagerSessionStoreCollection];
     }];
@@ -239,18 +239,6 @@ void AssertIsOnSessionStoreQueue()
                                          }];
                                      }];
     }];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

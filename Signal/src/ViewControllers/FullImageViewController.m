@@ -200,7 +200,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)shareWasPressed:(id)sender {
-    DDLogInfo(@"%@: sharing image.", self.tag);
+    DDLogInfo(@"%@: sharing image.", self.logTag);
 
     [AttachmentSharing showShareUIForURL:self.attachmentUrl];
 }
@@ -546,18 +546,6 @@ NS_ASSUME_NONNULL_BEGIN
                   error.localizedDescription,
                   __PRETTY_FUNCTION__);
     }
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

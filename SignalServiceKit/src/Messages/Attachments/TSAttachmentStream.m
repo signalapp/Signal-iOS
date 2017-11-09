@@ -122,16 +122,16 @@ NS_ASSUME_NONNULL_BEGIN
                                               sourceFilename:self.sourceFilename
                                                     inFolder:attachmentsFolder];
     if (!filePath) {
-        OWSFail(@"%@ Could not generate path for attachment.", self.tag);
+        OWSFail(@"%@ Could not generate path for attachment.", self.logTag);
         return;
     }
     if (![filePath hasPrefix:attachmentsFolder]) {
-        OWSFail(@"%@ Attachment paths should all be in the attachments folder.", self.tag);
+        OWSFail(@"%@ Attachment paths should all be in the attachments folder.", self.logTag);
         return;
     }
     NSString *localRelativeFilePath = [filePath substringFromIndex:attachmentsFolder.length];
     if (localRelativeFilePath.length < 1) {
-        OWSFail(@"%@ Empty local relative attachment paths.", self.tag);
+        OWSFail(@"%@ Empty local relative attachment paths.", self.logTag);
         return;
     }
 
@@ -146,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
     *error = nil;
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        OWSFail(@"%@ Missing path for attachment.", self.tag);
+        OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return nil;
     }
     return [NSData dataWithContentsOfFile:filePath options:0 error:error];
@@ -159,10 +159,10 @@ NS_ASSUME_NONNULL_BEGIN
     *error = nil;
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        OWSFail(@"%@ Missing path for attachment.", self.tag);
+        OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return NO;
     }
-    DDLogInfo(@"%@ Writing attachment to file: %@", self.tag, filePath);
+    DDLogInfo(@"%@ Writing attachment to file: %@", self.logTag, filePath);
     return [data writeToFile:filePath options:0 error:error];
 }
 
@@ -172,10 +172,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        OWSFail(@"%@ Missing path for attachment.", self.tag);
+        OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return NO;
     }
-    DDLogInfo(@"%@ Writing attachment to file: %@", self.tag, filePath);
+    DDLogInfo(@"%@ Writing attachment to file: %@", self.logTag, filePath);
     return [dataSource writeToPath:filePath];
 }
 
@@ -211,7 +211,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)filePath
 {
     if (!self.localRelativeFilePath) {
-        OWSFail(@"%@ Attachment missing local file path.", self.tag);
+        OWSFail(@"%@ Attachment missing local file path.", self.logTag);
         return nil;
     }
 
@@ -222,7 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        OWSFail(@"%@ Missing path for attachment.", self.tag);
+        OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return nil;
     }
     return [NSURL fileURLWithPath:filePath];
@@ -232,14 +232,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        OWSFail(@"%@ Missing path for attachment.", self.tag);
+        OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return;
     }
     NSError *error;
     [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
 
     if (error) {
-        DDLogError(@"%@ remove file errored with: %@", self.tag, error);
+        DDLogError(@"%@ remove file errored with: %@", self.logTag, error);
     }
 }
 
@@ -342,7 +342,7 @@ NS_ASSUME_NONNULL_BEGIN
         // With CGImageSource we avoid loading the whole image into memory.
         CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)mediaUrl, NULL);
         if (!source) {
-            OWSFail(@"%@ Could not load image: %@", self.tag, mediaUrl);
+            OWSFail(@"%@ Could not load image: %@", self.logTag, mediaUrl);
             return CGSizeZero;
         }
 
@@ -365,7 +365,7 @@ NS_ASSUME_NONNULL_BEGIN
                         [self applyImageOrientation:(UIImageOrientation)orientation.intValue toImageSize:imageSize];
                 }
             } else {
-                OWSFail(@"%@ Could not determine size of image: %@", self.tag, mediaUrl);
+                OWSFail(@"%@ Could not determine size of image: %@", self.logTag, mediaUrl);
             }
         }
         CFRelease(source);
@@ -416,7 +416,7 @@ NS_ASSUME_NONNULL_BEGIN
             [latestInstance saveWithTransaction:transaction];
         } else {
             // This message has not yet been saved; do nothing.
-            OWSFail(@"%@ Attachment not yet saved.", self.tag);
+            OWSFail(@"%@ Attachment not yet saved.", self.logTag);
         }
     };
 
@@ -487,7 +487,7 @@ NS_ASSUME_NONNULL_BEGIN
             [latestInstance saveWithTransaction:transaction];
         } else {
             // This message has not yet been saved; do nothing.
-            OWSFail(@"%@ Attachment not yet saved.", self.tag);
+            OWSFail(@"%@ Attachment not yet saved.", self.logTag);
         }
     };
 
@@ -515,18 +515,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([NSThread isMainThread]);
 
     return [self ensureCachedAudioDurationSecondsWithTransaction:nil];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

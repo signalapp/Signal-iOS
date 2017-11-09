@@ -458,7 +458,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
     for (NSString *mimeType in mimeTypes) {
         NSString *_Nullable utiType = [self utiTypeForMIMEType:mimeType];
         if (!utiType) {
-            OWSFail(@"%@ unknown utiType for mimetype: %@", self.tag, mimeType);
+            OWSFail(@"%@ unknown utiType for mimetype: %@", self.logTag, mimeType);
             continue;
         }
         [result addObject:utiType];
@@ -1437,7 +1437,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"text/pascal" : @"pas",
             @"text/plain" : @"txt",
             @"text/plain-bas" : @"par",
-            @"text/prs.lines.tag" : @"dsc",
+            @"text/prs.lines.logTag" : @"dsc",
             @"text/richtext" : @"rtf",
             @"text/scriplet" : @"wsc",
             @"text/scriptlet" : @"sct",
@@ -1769,7 +1769,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"dp" : @"application/vnd.osgi.dp",
             @"dpg" : @"application/vnd.dpgraph",
             @"dra" : @"audio/vnd.dra",
-            @"dsc" : @"text/prs.lines.tag",
+            @"dsc" : @"text/prs.lines.logTag",
             @"dssc" : @"application/dssc+der",
             @"dtb" : @"application/x-dtbook+xml",
             @"dtd" : @"application/xml-dtd",
@@ -2605,18 +2605,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
     NSString *_Nullable utiType = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(
         kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, NULL);
     return utiType;
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

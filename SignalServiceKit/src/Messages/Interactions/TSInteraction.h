@@ -27,8 +27,6 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
 @property (nonatomic, readonly) TSThread *thread;
 @property (nonatomic, readonly) uint64_t timestamp;
 
-- (BOOL)isDynamicInteraction;
-
 - (OWSInteractionType)interactionType;
 
 - (TSThread *)threadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;

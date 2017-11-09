@@ -5,8 +5,8 @@
 #import "OWSDeviceProvisioner.h"
 #import "OWSDeviceProvisioningCodeService.h"
 #import "OWSDeviceProvisioningService.h"
-#import "OWSProvisioningMessage.h"
 #import "OWSError.h"
+#import "OWSProvisioningMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
                  provisioningService:[OWSDeviceProvisioningService new]];
 }
 
-- (void)provisionWithSuccess:(void (^)())successCallback failure:(void (^)(NSError *_Nonnull))failureCallback
+- (void)provisionWithSuccess:(void (^)(void))successCallback failure:(void (^)(NSError *_Nonnull))failureCallback
 {
     [self.provisioningCodeService requestProvisioningCodeWithSuccess:^(NSString *provisioningCode) {
         DDLogInfo(@"Retrieved provisioning code.");
@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)provisionWithCode:(NSString *)provisioningCode
-                  success:(void (^)())successCallback
+                  success:(void (^)(void))successCallback
                   failure:(void (^)(NSError *_Nonnull))failureCallback
 {
     OWSProvisioningMessage *message = [[OWSProvisioningMessage alloc] initWithMyPublicKey:self.myPublicKey

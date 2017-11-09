@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     NSError *error = nil;
     NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
     if (error) {
-        DDLogError(@"%@ could not read image data: %@", self.tag, error);
+        DDLogError(@"%@ could not read image data: %@", self.logTag, error);
     }
 
     return [data ows_isValidImage];
@@ -123,18 +123,6 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     const NSUInteger kMaxValidSize = 1 << 18;
 
     return (width > 0 && width < kMaxValidSize && height > 0 && height < kMaxValidSize);
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

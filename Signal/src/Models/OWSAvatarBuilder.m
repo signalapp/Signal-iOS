@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread];
     } else {
-        DDLogError(@"%@ called with unsupported thread: %@", self.tag, thread);
+        DDLogError(@"%@ called with unsupported thread: %@", self.logTag, thread);
     }
     return [avatarBuilder build];
 }
@@ -93,18 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
         exceptionWithName:NSInternalInconsistencyException
                    reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
                  userInfo:nil];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

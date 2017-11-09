@@ -78,19 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)debugDescription
 {
-    return [NSString stringWithFormat:@"%@ with message timestamps: %zd", self.tag, self.messageTimestamps.count];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
+    return [NSString stringWithFormat:@"%@ with message timestamps: %zd", self.logTag, self.messageTimestamps.count];
 }
 
 @end

@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/25/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob.h"
 #import "OWSDisappearingMessagesConfigurationMessage.h"
@@ -51,26 +52,14 @@ NS_ASSUME_NONNULL_BEGIN
     [self.messageSender sendMessage:message
         success:^{
             DDLogDebug(
-                @"%@ Successfully notified %@ of new disappearing messages configuration", self.tag, self.thread);
+                @"%@ Successfully notified %@ of new disappearing messages configuration", self.logTag, self.thread);
         }
         failure:^(NSError *error) {
             DDLogError(@"%@ Failed to notify %@ of new disappearing messages configuration with error: %@",
-                self.tag,
+                self.logTag,
                 self.thread,
                 error);
         }];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

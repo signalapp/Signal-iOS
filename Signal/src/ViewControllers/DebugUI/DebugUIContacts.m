@@ -11,18 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIContacts
 
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
-}
-
 #pragma mark - Factory Methods
 
 - (NSString *)name
@@ -1167,7 +1155,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)createRandomContactsBatch:(NSUInteger)count
                    contactHandler:(nullable void (^)(
                                       CNContact *_Nonnull contact, NSUInteger idx, BOOL *_Nonnull stop))contactHandler
-           batchCompletionHandler:(nullable void (^)())batchCompletionHandler
+           batchCompletionHandler:(nullable void (^)(void))batchCompletionHandler
 {
     OWSAssert(count > 0);
     OWSAssert(batchCompletionHandler);

@@ -59,7 +59,7 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
  */
 - (void)presentIncomingCall:(SignalCall *)call callerName:(NSString *)callerName
 {
-    DDLogDebug(@"%@ incoming call from: %@", self.tag, call.remotePhoneNumber);
+    DDLogDebug(@"%@ incoming call from: %@", self.logTag, call.remotePhoneNumber);
 
     UILocalNotification *notification = [UILocalNotification new];
     notification.category = PushManagerCategoriesIncomingCall;
@@ -401,7 +401,7 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
         }
 
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
-        DDLogDebug(@"%@ presenting notification with identifier: %@", self.tag, identifier);
+        DDLogDebug(@"%@ presenting notification with identifier: %@", self.logTag, identifier);
 
         self.currentNotifications[identifier] = notification;
     });
@@ -413,7 +413,7 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
         UILocalNotification *notification = self.currentNotifications[identifier];
         if (!notification) {
             DDLogWarn(
-                @"%@ Couldn't cancel notification because none was found with identifier: %@", self.tag, identifier);
+                @"%@ Couldn't cancel notification because none was found with identifier: %@", self.logTag, identifier);
             return;
         }
         [self.currentNotifications removeObjectForKey:identifier];
@@ -427,18 +427,6 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
     OWSAssert([NSThread isMainThread]);
 
     [self.currentNotifications removeAllObjects];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

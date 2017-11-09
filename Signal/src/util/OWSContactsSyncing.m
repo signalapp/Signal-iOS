@@ -119,7 +119,7 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
             contentType:OWSMimeTypeApplicationOctetStream
             inMessage:syncContactsMessage
             success:^{
-                DDLogInfo(@"%@ Successfully sent contacts sync message.", self.tag);
+                DDLogInfo(@"%@ Successfully sent contacts sync message.", self.logTag);
 
                 [[TSStorageManager sharedManager] setObject:messageData
                                                      forKey:kTSStorageManagerOWSContactsSyncingLastMessageKey
@@ -130,7 +130,7 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
                 });
             }
             failure:^(NSError *error) {
-                DDLogError(@"%@ Failed to send contacts sync message with error: %@", self.tag, error);
+                DDLogError(@"%@ Failed to send contacts sync message with error: %@", self.logTag, error);
 
                 dispatch_async(self.serialQueue, ^{
                     self.isRequestInFlight = NO;
@@ -151,18 +151,6 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
     if ([TSAccountManager sharedInstance]) {
         [self sendSyncContactsMessageIfNecessary];
     }
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

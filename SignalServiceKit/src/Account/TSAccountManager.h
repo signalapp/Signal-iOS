@@ -69,19 +69,19 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 #pragma mark - Register with phone number
 
 + (void)registerWithPhoneNumber:(NSString *)phoneNumber
-                        success:(void (^)())successBlock
+                        success:(void (^)(void))successBlock
                         failure:(void (^)(NSError *error))failureBlock
                 smsVerification:(BOOL)isSMS;
 
-+ (void)rerequestSMSWithSuccess:(void (^)())successBlock failure:(void (^)(NSError *error))failureBlock;
++ (void)rerequestSMSWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
 
-+ (void)rerequestVoiceWithSuccess:(void (^)())successBlock failure:(void (^)(NSError *error))failureBlock;
++ (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode
-                      success:(void (^)())successBlock
+                      success:(void (^)(void))successBlock
                       failure:(void (^)(NSError *error))failureBlock;
 
-- (void)registerForManualMessageFetchingWithSuccess:(void (^)())successBlock
+- (void)registerForManualMessageFetchingWithSuccess:(void (^)(void))successBlock
                                             failure:(void (^)(NSError *error))failureBlock;
 
 // Called once registration is complete - meaning the following have succeeded:
@@ -99,13 +99,13 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
  */
 - (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
                                         voipToken:(NSString *)voipToken
-                                          success:(void (^)())successHandler
+                                          success:(void (^)(void))successHandler
                                           failure:(void (^)(NSError *error))failureHandler
     NS_SWIFT_NAME(registerForPushNotifications(pushToken:voipToken:success:failure:));
 
 #endif
 
-+ (void)unregisterTextSecureWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failureBlock;
++ (void)unregisterTextSecureWithSuccess:(void (^)(void))success failure:(void (^)(NSError *error))failureBlock;
 
 @end
 

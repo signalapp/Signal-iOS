@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
         setCategory:(shouldIgnore ? AVAudioSessionCategoryPlayback : AVAudioSessionCategoryPlayAndRecord)error:&error];
     OWSAssert(!error);
     if (!success || error) {
-        DDLogError(@"%@ Error in setAudioIgnoresHardwareMuteSwitch: %d", self.tag, shouldIgnore);
+        DDLogError(@"%@ Error in setAudioIgnoresHardwareMuteSwitch: %d", self.logTag, shouldIgnore);
     }
 }
 
@@ -154,18 +154,6 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         return [NSString stringWithFormat:@"%ld:%02ld", minutes, seconds];
     }
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

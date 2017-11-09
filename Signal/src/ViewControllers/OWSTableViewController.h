@@ -49,8 +49,8 @@ typedef NS_ENUM(NSInteger, OWSTableItemType) {
     OWSTableItemTypeAction,
 };
 
-typedef void (^OWSTableActionBlock)();
-typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)();
+typedef void (^OWSTableActionBlock)(void);
+typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 
 @interface OWSTableItem : NSObject
 

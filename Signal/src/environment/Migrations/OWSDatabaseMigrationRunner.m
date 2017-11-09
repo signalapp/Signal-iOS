@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)assumeAllExistingMigrationsRun
 {
     for (OWSDatabaseMigration *migration in self.allMigrations) {
-        DDLogInfo(@"%@ Skipping migration on new install: %@", self.tag, migration);
+        DDLogInfo(@"%@ Skipping migration on new install: %@", self.logTag, migration);
         [migration save];
     }
 }
@@ -69,24 +69,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     for (OWSDatabaseMigration *migration in migrations) {
         if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId]) {
-            DDLogDebug(@"%@ Skipping previously run migration: %@", self.tag, migration);
+            DDLogDebug(@"%@ Skipping previously run migration: %@", self.logTag, migration);
         } else {
-            DDLogWarn(@"%@ Running migration: %@", self.tag, migration);
+            DDLogWarn(@"%@ Running migration: %@", self.logTag, migration);
             [migration runUp];
         }
     }
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

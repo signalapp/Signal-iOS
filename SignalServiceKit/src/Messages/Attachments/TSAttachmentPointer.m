@@ -66,21 +66,9 @@ NS_ASSUME_NONNULL_BEGIN
             // For legacy instances, try to parse the serverId from the uniqueId.
             self.serverId = [self.uniqueId integerValue];
         } else {
-            DDLogError(@"%@ invalid legacy attachment uniqueId: %@.", self.tag, self.uniqueId);
+            DDLogError(@"%@ invalid legacy attachment uniqueId: %@.", self.logTag, self.uniqueId);
         }
     }
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

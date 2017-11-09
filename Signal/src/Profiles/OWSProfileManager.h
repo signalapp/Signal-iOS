@@ -45,8 +45,8 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 // This method should only be called from the main thread.
 - (void)updateLocalProfileName:(nullable NSString *)profileName
                    avatarImage:(nullable UIImage *)avatarImage
-                       success:(void (^)())successBlock
-                       failure:(void (^)())failureBlock;
+                       success:(void (^)(void))successBlock
+                       failure:(void (^)(void))failureBlock;
 
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName;
 
@@ -86,7 +86,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 - (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
                         fromViewController:(UIViewController *)fromViewController
-                                   success:(void (^)())successHandler;
+                                   success:(void (^)(void))successHandler;
 
 @end
 

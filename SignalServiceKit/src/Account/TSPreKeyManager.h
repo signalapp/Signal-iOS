@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, RefreshPreKeysMode) {
 + (BOOL)isAppLockedDueToPreKeyUpdateFailures;
 
 + (void)registerPreKeysWithMode:(RefreshPreKeysMode)mode
-                        success:(void (^)())successHandler
+                        success:(void (^)(void))successHandler
                         failure:(void (^)(NSError *error))failureHandler;
 
 + (void)checkPreKeys;

@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSInteractionType)interactionType
 {
-    OWSFail(@"%@ unknown interaction type.", self.tag);
+    OWSFail(@"%@ unknown interaction type.", self.logTag);
 
     return OWSInteractionType_Unknown;
 }
@@ -153,18 +153,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isDynamicInteraction
 {
     return NO;
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

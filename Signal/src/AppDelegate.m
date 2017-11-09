@@ -63,26 +63,26 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 @synthesize window = _window;
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    DDLogWarn(@"%@ applicationDidEnterBackground.", self.tag);
-    
+    DDLogWarn(@"%@ applicationDidEnterBackground.", self.logTag);
+
     [DDLog flushLog];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-    DDLogWarn(@"%@ applicationWillEnterForeground.", self.tag);
-    
+    DDLogWarn(@"%@ applicationWillEnterForeground.", self.logTag);
+
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
 {
-    DDLogWarn(@"%@ applicationDidReceiveMemoryWarning.", self.tag);
+    DDLogWarn(@"%@ applicationDidReceiveMemoryWarning.", self.logTag);
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-    DDLogWarn(@"%@ applicationWillTerminate.", self.tag);
-    
+    DDLogWarn(@"%@ applicationWillTerminate.", self.logTag);
+
     [DDLog flushLog];
 }
 
@@ -100,7 +100,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [DebugLogger.sharedLogger enableFileLogging];
     }
 
-    DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.tag);
+    DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.logTag);
 
     [AppVersion instance];
 
@@ -164,7 +164,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                                  name:kNSNotificationName_RegistrationStateDidChange
                                                object:nil];
 
-    DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.tag);
+    DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.logTag);
 
     [OWSAnalytics appLaunchDidBegin];
 
@@ -205,7 +205,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         && (!lastCompletedLaunchAppVersion ||
                [VersionMigrations isVersion:lastCompletedLaunchAppVersion
                                    lessThan:kLastVersionWithDatabaseViewChange]));
-    DDLogInfo(@"%@ mayNeedUpgrade: %d", self.tag, mayNeedUpgrade);
+    DDLogInfo(@"%@ mayNeedUpgrade: %d", self.logTag, mayNeedUpgrade);
     if (mayNeedUpgrade) {
         UIView *rootView = viewController.view;
         UIImageView *iconView = nil;
@@ -271,15 +271,16 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    DDLogInfo(@"%@ registered vanilla push token: %@", self.tag, deviceToken);
+    DDLogInfo(@"%@ registered vanilla push token: %@", self.logTag, deviceToken);
     [PushRegistrationManager.sharedManager didReceiveVanillaPushToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    DDLogError(@"%@ failed to register vanilla push token with error: %@", self.tag, error);
+    DDLogError(@"%@ failed to register vanilla push token with error: %@", self.logTag, error);
 #ifdef DEBUG
-    DDLogWarn(@"%@ We're in debug mode. Faking success for remote registration with a fake push identifier", self.tag);
+    DDLogWarn(
+        @"%@ We're in debug mode. Faking success for remote registration with a fake push identifier", self.logTag);
     [PushRegistrationManager.sharedManager didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
 #else
     OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
@@ -290,7 +291,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application
     didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
-    DDLogInfo(@"%@ registered user notification settings", self.tag);
+    DDLogInfo(@"%@ registered user notification settings", self.logTag);
     [PushRegistrationManager.sharedManager didRegisterUserNotificationSettings];
 }
 
@@ -319,7 +320,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     } else if ([url.scheme.lowercaseString isEqualToString:@"file"]) {
 
         if ([Environment getCurrent].callService.call != nil) {
-            DDLogWarn(@"%@ ignoring 'open with Signal' due to ongoing WebRTC call.", self.tag);
+            DDLogWarn(@"%@ ignoring 'open with Signal' due to ongoing WebRTC call.", self.logTag);
             return NO;
         }
 
@@ -351,12 +352,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         NSError *typeError;
         [url getResourceValue:&utiType forKey:NSURLTypeIdentifierKey error:&typeError];
         if (typeError) {
-            OWSFail(
-                @"%@ Determining type of picked document at url: %@ failed with error: %@", self.tag, url, typeError);
+            OWSFail(@"%@ Determining type of picked document at url: %@ failed with error: %@",
+                self.logTag,
+                url,
+                typeError);
             return NO;
         }
         if (!utiType) {
-            OWSFail(@"%@ falling back to default filetype for picked document at url: %@", self.tag, url);
+            OWSFail(@"%@ falling back to default filetype for picked document at url: %@", self.logTag, url);
             utiType = (__bridge NSString *)kUTTypeData;
             return NO;
         }
@@ -366,12 +369,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:&isDirectoryError];
         if (isDirectoryError) {
             OWSFail(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
-                self.tag,
+                self.logTag,
                 url,
                 isDirectoryError);
             return NO;
         } else if ([isDirectory boolValue]) {
-            DDLogInfo(@"%@ User picked directory at url: %@", self.tag, url);
+            DDLogInfo(@"%@ User picked directory at url: %@", self.logTag, url);
             DDLogError(@"Application opened with URL of unknown UTI type: %@", url);
             [OWSAlerts
                 showAlertWithTitle:
@@ -462,7 +465,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    DDLogWarn(@"%@ applicationDidBecomeActive.", self.tag);
+    DDLogWarn(@"%@ applicationDidBecomeActive.", self.logTag);
 
     if (getenv("runningTests_dontStartApp")) {
         return;
@@ -483,8 +486,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                DDLogInfo(@"%@ running post launch block for registered user: %@", self.tag, [TSAccountManager localNumber]);
-                
+                DDLogInfo(@"%@ running post launch block for registered user: %@",
+                    self.logTag,
+                    [TSAccountManager localNumber]);
+
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.
                 [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
@@ -503,7 +508,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 [AppStoreRating setupRatingLibrary];
             });
         } else {
-            DDLogInfo(@"%@ running post launch block for unregistered user.", self.tag);
+            DDLogInfo(@"%@ running post launch block for unregistered user.", self.logTag);
 
             // Unregistered user should have no unread messages. e.g. if you delete your account.
             [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
@@ -529,7 +534,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
                 DDLogInfo(
-                    @"%@ Retrying to register for remote notifications since user hasn't registered yet.", self.tag);
+                    @"%@ Retrying to register for remote notifications since user hasn't registered yet.", self.logTag);
                 // Push tokens don't normally change while the app is launched, so checking once during launch is
                 // usually sufficient, but e.g. on iOS11, users who have disabled "Allow Notifications" and disabled
                 // "Background App Refresh" will not be able to obtain an APN token. Enabling those settings does not
@@ -542,11 +547,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         
     }
 
-    DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.tag);
+    DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.logTag);
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-    DDLogWarn(@"%@ applicationWillResignActive.", self.tag);
+    DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
 
     UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:nil];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -598,23 +603,23 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 {
     if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
         if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
-            DDLogError(@"%@ unexpectedly received INStartVideoCallIntent pre iOS10", self.tag);
+            DDLogError(@"%@ unexpectedly received INStartVideoCallIntent pre iOS10", self.logTag);
             return NO;
         }
 
-        DDLogInfo(@"%@ got start video call intent", self.tag);
+        DDLogInfo(@"%@ got start video call intent", self.logTag);
 
         INInteraction *interaction = [userActivity interaction];
         INIntent *intent = interaction.intent;
 
         if (![intent isKindOfClass:[INStartVideoCallIntent class]]) {
-            DDLogError(@"%@ unexpected class for start call video: %@", self.tag, intent);
+            DDLogError(@"%@ unexpected class for start call video: %@", self.logTag, intent);
             return NO;
         }
         INStartVideoCallIntent *startCallIntent = (INStartVideoCallIntent *)intent;
         NSString *_Nullable handle = startCallIntent.contacts.firstObject.personHandle.value;
         if (!handle) {
-            DDLogWarn(@"%@ unable to find handle in startCallIntent: %@", self.tag, startCallIntent);
+            DDLogWarn(@"%@ unable to find handle in startCallIntent: %@", self.logTag, startCallIntent);
             return NO;
         }
 
@@ -622,7 +627,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
             phoneNumber = [[TSStorageManager sharedManager] phoneNumberForCallKitId:handle];
             if (phoneNumber.length < 1) {
-                DDLogWarn(@"%@ ignoring attempt to initiate video call to unknown anonymous signal user.", self.tag);
+                DDLogWarn(@"%@ ignoring attempt to initiate video call to unknown anonymous signal user.", self.logTag);
                 return NO;
             }
         }
@@ -637,12 +642,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         //   to that user - unless there already is another call in progress.
         if ([Environment getCurrent].callService.call != nil) {
             if ([phoneNumber isEqualToString:[Environment getCurrent].callService.call.remotePhoneNumber]) {
-                DDLogWarn(@"%@ trying to upgrade ongoing call to video.", self.tag);
+                DDLogWarn(@"%@ trying to upgrade ongoing call to video.", self.logTag);
                 [[Environment getCurrent].callService handleCallKitStartVideo];
                 return YES;
             } else {
                 DDLogWarn(
-                    @"%@ ignoring INStartVideoCallIntent due to ongoing WebRTC call with another party.", self.tag);
+                    @"%@ ignoring INStartVideoCallIntent due to ongoing WebRTC call with another party.", self.logTag);
                 return NO;
             }
         }
@@ -653,23 +658,23 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
 
         if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
-            DDLogError(@"%@ unexpectedly received INStartAudioCallIntent pre iOS10", self.tag);
+            DDLogError(@"%@ unexpectedly received INStartAudioCallIntent pre iOS10", self.logTag);
             return NO;
         }
 
-        DDLogInfo(@"%@ got start audio call intent", self.tag);
+        DDLogInfo(@"%@ got start audio call intent", self.logTag);
 
         INInteraction *interaction = [userActivity interaction];
         INIntent *intent = interaction.intent;
 
         if (![intent isKindOfClass:[INStartAudioCallIntent class]]) {
-            DDLogError(@"%@ unexpected class for start call audio: %@", self.tag, intent);
+            DDLogError(@"%@ unexpected class for start call audio: %@", self.logTag, intent);
             return NO;
         }
         INStartAudioCallIntent *startCallIntent = (INStartAudioCallIntent *)intent;
         NSString *_Nullable handle = startCallIntent.contacts.firstObject.personHandle.value;
         if (!handle) {
-            DDLogWarn(@"%@ unable to find handle in startCallIntent: %@", self.tag, startCallIntent);
+            DDLogWarn(@"%@ unable to find handle in startCallIntent: %@", self.logTag, startCallIntent);
             return NO;
         }
 
@@ -677,13 +682,13 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
             phoneNumber = [[TSStorageManager sharedManager] phoneNumberForCallKitId:handle];
             if (phoneNumber.length < 1) {
-                DDLogWarn(@"%@ ignoring attempt to initiate audio call to unknown anonymous signal user.", self.tag);
+                DDLogWarn(@"%@ ignoring attempt to initiate audio call to unknown anonymous signal user.", self.logTag);
                 return NO;
             }
         }
 
         if ([Environment getCurrent].callService.call != nil) {
-            DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing WebRTC call.", self.tag);
+            DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing WebRTC call.", self.logTag);
             return NO;
         }
 
@@ -692,7 +697,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return [outboundCallInitiator initiateCallWithHandle:phoneNumber];
     } else {
         DDLogWarn(@"%@ called %s with userActivity: %@, but not yet supported.",
-            self.tag,
+            self.logTag,
             __PRETTY_FUNCTION__,
             userActivity.activityType);
     }
@@ -768,11 +773,13 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssert([NSThread isMainThread]);
 
     if (!self.isEnvironmentSetup) {
-        OWSFail(
-            @"%@ ignoring %s because environment is not yet set up: %@.", self.tag, __PRETTY_FUNCTION__, notification);
+        OWSFail(@"%@ ignoring %s because environment is not yet set up: %@.",
+            self.logTag,
+            __PRETTY_FUNCTION__,
+            notification);
         return;
     }
-    DDLogInfo(@"%@ %s %@", self.tag, __PRETTY_FUNCTION__, notification);
+    DDLogInfo(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, notification);
 
     [AppStoreRating preventPromptAtNextTest];
     [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
@@ -784,7 +791,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
              completionHandler:(void (^)())completionHandler
 {
     if (!self.isEnvironmentSetup) {
-        OWSFail(@"%@ ignoring %s because environment is not yet set up.", self.tag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ ignoring %s because environment is not yet set up.", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -801,7 +808,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
              completionHandler:(void (^)())completionHandler
 {
     if (!self.isEnvironmentSetup) {
-        OWSFail(@"%@ ignoring %s because environment is not yet set up.", self.tag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ ignoring %s because environment is not yet set up.", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -822,7 +829,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     if (![TSStorageManager isDatabasePasswordAccessible]) {
-        DDLogInfo(@"%@ exiting because we are in the background and the database password is not accessible.", self.tag);
+        DDLogInfo(
+            @"%@ exiting because we are in the background and the database password is not accessible.", self.logTag);
         [DDLog flushLog];
         exit(0);
     }
@@ -830,7 +838,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)databaseViewRegistrationComplete
 {
-    DDLogInfo(@"%@ databaseViewRegistrationComplete", self.tag);
+    DDLogInfo(@"%@ databaseViewRegistrationComplete", self.logTag);
 
     if ([TSAccountManager isRegistered]) {
         DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
@@ -901,7 +909,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)ensureRootViewController
 {
-    DDLogInfo(@"%@ ensureRootViewController", self.tag);
+    DDLogInfo(@"%@ ensureRootViewController", self.logTag);
 
     if ([TSDatabaseView hasPendingViewRegistrations] || self.hasInitialRootViewController) {
         return;
@@ -924,18 +932,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

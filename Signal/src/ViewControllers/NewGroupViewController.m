@@ -453,7 +453,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     
     [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
 
-    void (^successHandler)() = ^{
+    void (^successHandler)(void) = ^{
         DDLogError(@"Group creation successful.");
 
         dispatch_async(dispatch_get_main_queue(), ^{

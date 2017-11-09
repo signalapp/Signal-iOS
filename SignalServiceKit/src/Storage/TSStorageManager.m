@@ -186,21 +186,9 @@ void setDatabaseInitialized()
 
 - (nullable Class)unarchiver:(NSKeyedUnarchiver *)unarchiver cannotDecodeObjectOfClassName:(NSString *)name originalClasses:(NSArray<NSString *> *)classNames
 {
-    DDLogError(@"%@ Could not decode object: %@", self.tag, name);
+    DDLogError(@"%@ Could not decode object: %@", self.logTag, name);
     OWSProdError([OWSAnalyticsEvents storageErrorCouldNotDecodeClass]);
     return [OWSUnknownObject class];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end
@@ -466,7 +454,7 @@ void setDatabaseInitialized()
     if (keyFetchError) {
         UIApplicationState applicationState = [UIApplication sharedApplication].applicationState;
         NSString *errorDescription = [NSString stringWithFormat:@"Database password inaccessible. No unlock since device restart? Error: %@ ApplicationState: %d", keyFetchError, (int)applicationState];
-        DDLogError(@"%@ %@", self.tag, errorDescription);
+        DDLogError(@"%@ %@", self.logTag, errorDescription);
         [DDLog flushLog];
 
         if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
@@ -667,18 +655,6 @@ void setDatabaseInitialized()
     [self deleteDatabaseFile];
 
     [TSAttachmentStream deleteAttachments];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

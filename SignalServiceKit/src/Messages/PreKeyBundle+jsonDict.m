@@ -2,8 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "NSData+Base64.h"
 #import "PreKeyBundle+jsonDict.h"
+#import "NSData+Base64.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *_Nullable preKeyPublic;
 
         if (!preKeyDict) {
-            DDLogInfo(@"%@ No one-time prekey included in the bundle.", self.tag);
+            DDLogInfo(@"%@ No one-time prekey included in the bundle.", self.logTag);
             prekeyId = -1;
         } else {
             prekeyId = [[preKeyDict objectForKey:@"keyId"] intValue];
@@ -103,18 +103,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return bundle;
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

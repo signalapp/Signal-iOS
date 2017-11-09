@@ -94,7 +94,7 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
 
 - (void)appUpdaterDidShowUpdateDialog
 {
-    DDLogInfo(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [self.dbConnection setDate:[NSDate new]
                         forKey:TSStorageManagerAppUpgradeNagDate
@@ -103,24 +103,12 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
 
 - (void)appUpdaterUserDidLaunchAppStore
 {
-    DDLogInfo(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 }
 
 - (void)appUpdaterUserDidCancel
 {
-    DDLogInfo(@"%@ %s", self.tag, __PRETTY_FUNCTION__);
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 }
 
 @end

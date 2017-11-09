@@ -104,7 +104,8 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         return;
     }
 
-    DDLogDebug(@"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.tag, self.uniqueId, self.timestamp);
+    DDLogDebug(
+        @"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.logTag, self.uniqueId, self.timestamp);
     _read = YES;
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];
@@ -117,7 +118,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 - (void)updateCallType:(RPRecentCallType)callType
 {
     DDLogInfo(@"%@ updating call type of call: %d with uniqueId: %@ which has timestamp: %llu",
-        self.tag,
+        self.logTag,
         (int)self.callType,
         self.uniqueId,
         self.timestamp);
@@ -130,18 +131,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         // redraw any thread-related unread count UI.
         [self touchThreadWithTransaction:transaction];
     }];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

@@ -18,8 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)showVerificationFailedWithError:(NSError *)error
                          viewController:(UIViewController *)viewController
-                             retryBlock:(void (^_Nullable)())retryBlock
-                            cancelBlock:(void (^_Nonnull)())cancelBlock
+                             retryBlock:(void (^_Nullable)(void))retryBlock
+                            cancelBlock:(void (^_Nonnull)(void))cancelBlock
                                     tag:(NSString *)tag;
 
 @end

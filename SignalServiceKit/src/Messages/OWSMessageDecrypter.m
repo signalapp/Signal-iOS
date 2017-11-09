@@ -108,11 +108,11 @@ NS_ASSUME_NONNULL_BEGIN
             failureBlockParameter();
         });
     };
-    DDLogInfo(@"%@ decrypting envelope: %@", self.tag, [self descriptionForEnvelope:envelope]);
+    DDLogInfo(@"%@ decrypting envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
 
     OWSAssert(envelope.source.length > 0);
     if ([self isEnvelopeBlocked:envelope]) {
-        DDLogInfo(@"%@ ignoring blocked envelope: %@", self.tag, envelope.source);
+        DDLogInfo(@"%@ ignoring blocked envelope: %@", self.logTag, envelope.source);
         failureBlock();
         return;
     }
@@ -122,12 +122,12 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSSignalServiceProtosEnvelopeTypeCiphertext: {
                 [self decryptSecureMessage:envelope
                     successBlock:^(NSData *_Nullable plaintextData) {
-                        DDLogDebug(@"%@ decrypted secure message.", self.tag);
+                        DDLogDebug(@"%@ decrypted secure message.", self.logTag);
                         successBlock(plaintextData);
                     }
                     failureBlock:^(NSError *_Nullable error) {
                         DDLogError(@"%@ decrypting secure message from address: %@ failed with error: %@",
-                            self.tag,
+                            self.logTag,
                             envelopeAddress(envelope),
                             error);
                         OWSProdError([OWSAnalyticsEvents messageManagerErrorCouldNotHandleSecureMessage]);
@@ -139,13 +139,13 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSSignalServiceProtosEnvelopeTypePrekeyBundle: {
                 [self decryptPreKeyBundle:envelope
                     successBlock:^(NSData *_Nullable plaintextData) {
-                        DDLogDebug(@"%@ decrypted pre-key whisper message", self.tag);
+                        DDLogDebug(@"%@ decrypted pre-key whisper message", self.logTag);
                         successBlock(plaintextData);
                     }
                     failureBlock:^(NSError *_Nullable error) {
                         DDLogError(@"%@ decrypting pre-key whisper message from address: %@ failed "
                                    @"with error: %@",
-                            self.tag,
+                            self.logTag,
                             envelopeAddress(envelope),
                             error);
                         OWSProdError([OWSAnalyticsEvents messageManagerErrorCouldNotHandlePrekeyBundle]);
@@ -261,7 +261,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)processException:(NSException *)exception envelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
     DDLogError(@"%@ Got exception: %@ of type: %@ with reason: %@",
-        self.tag,
+        self.logTag,
         exception.description,
         exception.name,
         exception.reason);
@@ -286,7 +286,8 @@ NS_ASSUME_NONNULL_BEGIN
         } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
             // Should no longer get here, since we now record the new identity for incoming messages.
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorUntrustedIdentityKeyException], envelope);
-            OWSFail(@"%@ Failed to trust identity on incoming message from: %@", self.tag, envelopeAddress(envelope));
+            OWSFail(
+                @"%@ Failed to trust identity on incoming message from: %@", self.logTag, envelopeAddress(envelope));
             return;
         } else {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);
@@ -306,18 +307,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source];
     [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage inThread:contactThread];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

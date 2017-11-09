@@ -45,13 +45,13 @@
             NSArray *__nullable returnedItems,
             NSError *__nullable activityError) {
 
-            DDLogDebug(@"%@ applying signal appearence", self.tag);
+            DDLogDebug(@"%@ applying signal appearence", self.logTag);
             [UIUtil applySignalAppearence];
 
             if (activityError) {
-                DDLogInfo(@"%@ Failed to share with activityError: %@", self.tag, activityError);
+                DDLogInfo(@"%@ Failed to share with activityError: %@", self.logTag, activityError);
             } else if (completed) {
-                DDLogInfo(@"%@ Did share with activityType: %@", self.tag, activityType);
+                DDLogInfo(@"%@ Did share with activityType: %@", self.logTag, activityType);
             }
         }];
 
@@ -66,22 +66,10 @@
         [fromViewController presentViewController:activityViewController
                                          animated:YES
                                        completion:^{
-                                           DDLogDebug(@"%@ applying default system appearence", self.tag);
+                                           DDLogDebug(@"%@ applying default system appearence", self.logTag);
                                            [UIUtil applyDefaultSystemAppearence];
                                        }];
     });
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

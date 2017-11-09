@@ -69,7 +69,7 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             block(attachment);
         } else {
-            DDLogError(@"%@ unexpected object: %@", self.tag, attachment);
+            DDLogError(@"%@ unexpected object: %@", self.logTag, attachment);
         }
     }
 }
@@ -82,7 +82,7 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
             [self enumerateAttemptingOutAttachmentsWithBlock:^(TSAttachmentPointer *attachment) {
                 // sanity check
                 if (attachment.state != TSAttachmentPointerStateFailed) {
-                    DDLogDebug(@"%@ marking attachment as failed", self.tag);
+                    DDLogDebug(@"%@ marking attachment as failed", self.logTag);
                     attachment.state = TSAttachmentPointerStateFailed;
                     [attachment saveWithTransaction:transaction];
                     count++;
@@ -91,7 +91,7 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
                                                  transaction:transaction];
         }];
 
-    DDLogDebug(@"%@ Marked %u attachments as unsent", self.tag, count);
+    DDLogDebug(@"%@ Marked %u attachments as unsent", self.logTag, count);
 }
 
 #pragma mark - YapDatabaseExtension
@@ -131,23 +131,11 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
                                                 withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex
                                          completionBlock:^(BOOL ready) {
                                              if (ready) {
-                                                 DDLogDebug(@"%@ completed registering extension async.", self.tag);
+                                                 DDLogDebug(@"%@ completed registering extension async.", self.logTag);
                                              } else {
-                                                 DDLogError(@"%@ failed registering extension async.", self.tag);
+                                                 DDLogError(@"%@ failed registering extension async.", self.logTag);
                                              }
                                          }];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

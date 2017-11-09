@@ -584,18 +584,6 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     }
 }
 
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
-}
-
 #pragma mark - Presentation
 
 - (void)presentFromViewController:(UIViewController *)fromViewController

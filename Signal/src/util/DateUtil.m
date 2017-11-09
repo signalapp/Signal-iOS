@@ -82,16 +82,4 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     }
 }
 
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
-}
-
 @end

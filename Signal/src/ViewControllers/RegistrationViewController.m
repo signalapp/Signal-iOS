@@ -443,7 +443,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     NSError *error;
     [SAMKeychain setPassword:value forService:kKeychainService_LastRegistered account:key error:&error];
     if (error) {
-        DDLogError(@"%@ Error persisting 'last registered' value in keychain: %@", self.tag, error);
+        DDLogError(@"%@ Error persisting 'last registered' value in keychain: %@", self.logTag, error);
     }
 }
 
@@ -468,18 +468,6 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 }
 
 #endif
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
-}
 
 @end
 

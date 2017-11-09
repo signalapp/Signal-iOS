@@ -23,7 +23,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^CustomLayoutBlock)();
+typedef void (^CustomLayoutBlock)(void);
 
 @interface CustomLayoutView : UIView
 
@@ -402,7 +402,7 @@ typedef void (^CustomLayoutBlock)();
 
 - (void)showSharingActivityWithCompletion:(nullable void (^)(void))completionHandler
 {
-    DDLogDebug(@"%@ Sharing safety numbers", self.tag);
+    DDLogDebug(@"%@ Sharing safety numbers", self.logTag);
 
     OWSCompareSafetyNumbersActivity *compareActivity = [[OWSCompareSafetyNumbersActivity alloc] initWithDelegate:self];
 
@@ -452,7 +452,7 @@ typedef void (^CustomLayoutBlock)();
                                                  identityKey:self.identityKey
                                                  recipientId:self.recipientId
                                                  contactName:self.contactName
-                                                         tag:self.tag];
+                                                         tag:self.logTag];
 }
 
 - (void)showVerificationFailedWithError:(NSError *)error
@@ -464,7 +464,7 @@ typedef void (^CustomLayoutBlock)();
                                                        cancelBlock:^{
                                                            // Do nothing.
                                                        }
-                                                               tag:self.tag];
+                                                               tag:self.logTag];
 }
 
 #pragma mark - Action
@@ -533,18 +533,6 @@ typedef void (^CustomLayoutBlock)();
     OWSAssert([NSThread isMainThread]);
 
     [self updateVerificationStateLabel];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

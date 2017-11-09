@@ -163,7 +163,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                 self.state = SocketManagerStateOpen;
                 return;
             case SR_CONNECTING:
-                DDLogVerbose(@"%@ WebSocket is already connecting", self.tag);
+                DDLogVerbose(@"%@ WebSocket is already connecting", self.logTag);
                 self.state = SocketManagerStateConnecting;
                 return;
             default:
@@ -171,7 +171,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         }
     }
 
-    DDLogWarn(@"%@ Creating new websocket", self.tag);
+    DDLogWarn(@"%@ Creating new websocket", self.logTag);
 
     // If socket is not already open or connecting, connect now.
     //
@@ -238,7 +238,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     }
 
     DDLogWarn(@"%@ Socket state: %@ -> %@",
-        self.tag,
+        self.logTag,
         [self stringFromSocketManagerState:_state],
         [self stringFromSocketManagerState:state]);
 
@@ -318,7 +318,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     OWSAssert([NSThread isMainThread]);
 
     if (self.websocket) {
-        DDLogWarn(@"%@ closeWebSocket.", self.tag);
+        DDLogWarn(@"%@ closeWebSocket.", self.logTag);
     }
 
     self.state = SocketManagerStateClosed;
@@ -372,7 +372,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 - (void)processWebSocketRequestMessage:(WebSocketRequestMessage *)message {
     OWSAssert([NSThread isMainThread]);
 
-    DDLogInfo(@"%@ Got message with verb: %@ and path: %@", self.tag, message.verb, message.path);
+    DDLogInfo(@"%@ Got message with verb: %@ and path: %@", self.logTag, message.verb, message.path);
 
     // If we receive a message over the socket while the app is in the background,
     // prolong how long the socket stays open.
@@ -386,7 +386,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                 [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:TSAccountManager.signalingKey];
 
             if (!decryptedPayload) {
-                DDLogWarn(@"%@ Failed to decrypt incoming payload or bad HMAC", self.tag);
+                DDLogWarn(@"%@ Failed to decrypt incoming payload or bad HMAC", self.logTag);
                 [self sendWebSocketMessageAcknowledgement:message];
                 return;
             }
@@ -400,7 +400,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             });
         });
     } else {
-        DDLogWarn(@"%@ Unsupported WebSocket Request", self.tag);
+        DDLogWarn(@"%@ Unsupported WebSocket Request", self.logTag);
 
         [self sendWebSocketMessageAcknowledgement:message];
     }
@@ -498,7 +498,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     }
 
     if (self.signalService.isCensorshipCircumventionActive) {
-        DDLogWarn(@"%@ Skipping opening of websocket due to censorship circumvention.", self.tag);
+        DDLogWarn(@"%@ Skipping opening of websocket due to censorship circumvention.", self.logTag);
         return NO;
     }
 
@@ -687,18 +687,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     OWSAssert([NSThread isMainThread]);
 
     [self applyDesiredSocketState];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

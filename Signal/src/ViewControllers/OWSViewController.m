@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSValue *_Nullable keyboardEndFrameValue = userInfo[UIKeyboardFrameEndUserInfoKey];
     if (!keyboardEndFrameValue) {
-        OWSFail(@"%@ Missing keyboard end frame", self.tag);
+        OWSFail(@"%@ Missing keyboard end frame", self.logTag);
         return;
     }
 
@@ -117,18 +117,6 @@ NS_ASSUME_NONNULL_BEGIN
     // automatically animated.
     self.bottomLayoutConstraint.constant = offset;
     [self.bottomLayoutView.superview layoutIfNeeded];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

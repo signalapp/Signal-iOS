@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
         [loggingSection
             addItem:[OWSTableItem actionItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", @"")
                                          actionBlock:^{
-                                             DDLogInfo(@"%@ Submitting debug logs", weakSelf.tag);
+                                             DDLogInfo(@"%@ Submitting debug logs", weakSelf.logTag);
                                              [DDLog flushLog];
                                              [Pastelog submitLogs];
                                          }]];
@@ -273,18 +273,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated = sender.isOn;
 
     [self updateTableContents];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

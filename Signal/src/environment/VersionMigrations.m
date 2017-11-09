@@ -3,7 +3,6 @@
 //
 
 #import "VersionMigrations.h"
-
 #import "Environment.h"
 #import "LockInteractionController.h"
 #import "OWSDatabaseMigrationRunner.h"
@@ -36,8 +35,10 @@
     NSString *previousVersion = AppVersion.instance.lastAppVersion;
     NSString *currentVersion = AppVersion.instance.currentAppVersion;
 
-    DDLogInfo(
-        @"%@ Checking migrations. currentVersion: %@, lastRanVersion: %@", self.tag, currentVersion, previousVersion);
+    DDLogInfo(@"%@ Checking migrations. currentVersion: %@, lastRanVersion: %@",
+        self.logTag,
+        currentVersion,
+        previousVersion);
 
     if (!previousVersion) {
         DDLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
@@ -185,18 +186,6 @@
     } else {
         DDLogDebug(@"No bloom filter cache to remove.");
     }
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

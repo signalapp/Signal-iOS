@@ -2,13 +2,15 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSRequest.h"
-
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSProfileAvatarUploadFormRequest : TSRequest
+@interface NSObject (OWS)
 
-- (nullable instancetype)init;
+#pragma mark - Logging
+
++ (NSString *)logTag;
+
+- (NSString *)logTag;
 
 @end
 

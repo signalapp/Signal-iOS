@@ -30,31 +30,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSData *)data
 {
-    OWSFail(@"%@ Missing required method: data", self.tag);
+    OWSFail(@"%@ Missing required method: data", self.logTag);
     return nil;
 }
 
 - (nullable NSURL *)dataUrl
 {
-    OWSFail(@"%@ Missing required method: dataUrl", self.tag);
+    OWSFail(@"%@ Missing required method: dataUrl", self.logTag);
     return nil;
 }
 
 - (nullable NSString *)dataPathIfOnDisk
 {
-    OWSFail(@"%@ Missing required method: dataPathIfOnDisk", self.tag);
+    OWSFail(@"%@ Missing required method: dataPathIfOnDisk", self.logTag);
     return nil;
 }
 
 - (NSUInteger)dataLength
 {
-    OWSFail(@"%@ Missing required method: dataLength", self.tag);
+    OWSFail(@"%@ Missing required method: dataLength", self.logTag);
     return 0;
 }
 
 - (BOOL)writeToPath:(NSString *)dstFilePath
 {
-    OWSFail(@"%@ Missing required method: writeToPath:", self.tag);
+    OWSFail(@"%@ Missing required method: writeToPath:", self.logTag);
     return NO;
 }
 
@@ -74,18 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     NSData *data = [self data];
     return [data ows_isValidImage];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end
@@ -191,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
             if ([self writeToPath:filePath]) {
                 self.cachedFilePath = filePath;
             } else {
-                OWSFail(@"%@ Could not write data to disk: %@", self.tag, self.fileExtension);
+                OWSFail(@"%@ Could not write data to disk: %@", self.logTag, self.fileExtension);
             }
         }
 
@@ -222,23 +210,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     BOOL success = [dataCopy writeToFile:dstFilePath atomically:YES];
     if (!success) {
-        OWSFail(@"%@ Could not write data to disk: %@", self.tag, dstFilePath);
+        OWSFail(@"%@ Could not write data to disk: %@", self.logTag, dstFilePath);
         return NO;
     } else {
         return YES;
     }
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end
@@ -322,11 +298,11 @@ NS_ASSUME_NONNULL_BEGIN
     @synchronized(self)
     {
         if (!self.cachedData) {
-            DDLogError(@"%@ ---- reading data", self.tag);
+            DDLogError(@"%@ ---- reading data", self.logTag);
             self.cachedData = [NSData dataWithContentsOfFile:self.filePath];
         }
         if (!self.cachedData) {
-            OWSFail(@"%@ Could not read data from disk: %@", self.tag, self.filePath);
+            OWSFail(@"%@ Could not read data from disk: %@", self.logTag, self.filePath);
             self.cachedData = [NSData new];
         }
         return self.cachedData;
@@ -365,7 +341,7 @@ NS_ASSUME_NONNULL_BEGIN
             NSDictionary<NSFileAttributeKey, id> *_Nullable attributes =
                 [[NSFileManager defaultManager] attributesOfItemAtPath:self.filePath error:&error];
             if (!attributes || error) {
-                OWSFail(@"%@ Could not read data length from disk: %@, %@", self.tag, self.filePath, error);
+                OWSFail(@"%@ Could not read data length from disk: %@, %@", self.logTag, self.filePath, error);
                 self.cachedDataLength = @(0);
             } else {
                 uint64_t fileSize = [attributes fileSize];
@@ -383,23 +359,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     BOOL success = [[NSFileManager defaultManager] copyItemAtPath:self.filePath toPath:dstFilePath error:&error];
     if (!success || error) {
-        OWSFail(@"%@ Could not write data from path: %@, to path: %@, %@", self.tag, self.filePath, dstFilePath, error);
+        OWSFail(
+            @"%@ Could not write data from path: %@, to path: %@, %@", self.logTag, self.filePath, dstFilePath, error);
         return NO;
     } else {
         return YES;
     }
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

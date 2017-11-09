@@ -26,31 +26,19 @@ static NSString *const OWS102MoveLoggingPreferenceToUserDefaultsMigrationId = @"
         [transaction objectForKey:OWSPreferencesKeyEnableDebugLog inCollection:OWSPreferencesSignalDatabaseCollection];
 
     if (existingValue) {
-        DDLogInfo(@"%@ assigning existing value: %@", self.tag, existingValue);
+        DDLogInfo(@"%@ assigning existing value: %@", self.logTag, existingValue);
         [OWSPreferences setLoggingEnabled:[existingValue boolValue]];
 
         if (![existingValue boolValue]) {
-            DDLogInfo(@"%@ Disabling file logger after one-time log settings migration.", self.tag);
+            DDLogInfo(@"%@ Disabling file logger after one-time log settings migration.", self.logTag);
             // Since we're migrating, we didn't have the appropriate value on startup, and incorrectly started logging.
             [DebugLogger.sharedLogger disableFileLogging];
         } else {
-            DDLogInfo(@"%@ Continuing to log after one-time log settings migration.", self.tag);
+            DDLogInfo(@"%@ Continuing to log after one-time log settings migration.", self.logTag);
         }
     } else {
-        DDLogInfo(@"%@ not assigning any value, since no previous value was stored.", self.tag);
+        DDLogInfo(@"%@ not assigning any value, since no previous value was stored.", self.logTag);
     }
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

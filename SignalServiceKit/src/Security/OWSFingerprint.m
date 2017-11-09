@@ -98,13 +98,13 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
             return NO;
         } else {
             // Sync log in case we bail.
-            DDLogError(@"%@ parsing QRCode data failed with error: %@", self.tag, exception);
+            DDLogError(@"%@ parsing QRCode data failed with error: %@", self.logTag, exception);
             @throw exception;
         }
     }
 
     if (logicalFingerprints.version < OWSFingerprintScannableFormatVersion) {
-        DDLogWarn(@"%@ Verification failed. They're running an old version.", self.tag);
+        DDLogWarn(@"%@ Verification failed. They're running an old version.", self.logTag);
         NSString *description
             = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION", @"alert body");
         *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
@@ -112,7 +112,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     }
 
     if (logicalFingerprints.version > OWSFingerprintScannableFormatVersion) {
-        DDLogWarn(@"%@ Verification failed. We're running an old version.", self.tag);
+        DDLogWarn(@"%@ Verification failed. We're running an old version.", self.logTag);
         NSString *description = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION", @"alert body");
         *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
         return NO;
@@ -123,7 +123,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     OWSFingerprintProtosLogicalFingerprint *remoteFingerprint = logicalFingerprints.localFingerprint;
 
     if (![remoteFingerprint.identityData isEqual:[self scannableData:self.theirFingerprintData]]) {
-        DDLogWarn(@"%@ Verification failed. We have the wrong fingerprint for them", self.tag);
+        DDLogWarn(@"%@ Verification failed. We have the wrong fingerprint for them", self.logTag);
         NSString *descriptionFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM",
             @"Alert body when verifying with {{contact name}}");
         NSString *description = [NSString stringWithFormat:descriptionFormat, self.theirName];
@@ -132,7 +132,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     }
 
     if (![localFingerprint.identityData isEqual:[self scannableData:self.myFingerprintData]]) {
-        DDLogWarn(@"%@ Verification failed. They have the wrong fingerprint for us", self.tag);
+        DDLogWarn(@"%@ Verification failed. They have the wrong fingerprint for us", self.logTag);
         NSString *descriptionFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME",
             @"Alert body when verifying with {{contact name}}");
         NSString *description = [NSString stringWithFormat:descriptionFormat, self.theirName];
@@ -140,7 +140,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
         return NO;
     }
 
-    DDLogWarn(@"%@ Verification Succeeded.", self.tag);
+    DDLogWarn(@"%@ Verification Succeeded.", self.logTag);
     return YES;
 }
 
@@ -287,7 +287,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     // Build ByteMode QR (Latin-1 encodable data)
     NSData *fingerprintData = [logicalFingerprintsBuilder build].data;
 
-    DDLogDebug(@"%@ Building fingerprint with data: %@", self.tag, fingerprintData);
+    DDLogDebug(@"%@ Building fingerprint with data: %@", self.logTag, fingerprintData);
 
     CIFilter *filter = [CIFilter filterWithName:@"CIQRCodeGenerator"];
     [filter setDefaults];
@@ -295,7 +295,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
     CIImage *ciImage = [filter outputImage];
     if (!ciImage) {
-        DDLogError(@"%@ Failed to create QR image from fingerprint text: %@", self.tag, self.text);
+        DDLogError(@"%@ Failed to create QR image from fingerprint text: %@", self.logTag, self.text);
         return nil;
     }
 
@@ -316,7 +316,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
 - (NSString *)tag
 {
-    return self.class.tag;
+    return self.class.logTag;
 }
 
 @end

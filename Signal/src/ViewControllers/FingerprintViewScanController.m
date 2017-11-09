@@ -124,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Also, it's less obvious whats being "shared" at this point,
         // so just disable sharing when in capture mode.
 
-        DDLogInfo(@"%@ Showing Scanner", self.tag);
+        DDLogInfo(@"%@ Showing Scanner", self.logTag);
 
         [self.qrScanningController startCapture];
     }
@@ -156,7 +156,7 @@ NS_ASSUME_NONNULL_BEGIN
                               identityKey:self.identityKey
                               recipientId:self.recipientId
                               contactName:self.contactName
-                                      tag:self.tag];
+                                      tag:self.logTag];
 }
 
 - (void)showVerificationFailedWithError:(NSError *)error
@@ -170,7 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
         cancelBlock:^{
             [self.navigationController popViewControllerAnimated:YES];
         }
-        tag:self.tag];
+        tag:self.logTag];
 }
 
 + (void)showVerificationSucceeded:(UIViewController *)viewController
@@ -219,8 +219,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)showVerificationFailedWithError:(NSError *)error
                          viewController:(UIViewController *)viewController
-                             retryBlock:(void (^_Nullable)())retryBlock
-                            cancelBlock:(void (^_Nonnull)())cancelBlock
+                             retryBlock:(void (^_Nullable)(void))retryBlock
+                            cancelBlock:(void (^_Nonnull)(void))cancelBlock
                                     tag:(NSString *)tag
 {
     OWSAssert(viewController);
@@ -258,18 +258,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.qrScanningController.view.hidden = YES;
 
     [super dismissViewControllerAnimated:animated completion:completion];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

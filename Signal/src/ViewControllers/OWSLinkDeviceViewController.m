@@ -178,7 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (UIAlertController *)retryAlertControllerWithError:(NSError *)error retryBlock:(void (^)())retryBlock
+- (UIAlertController *)retryAlertControllerWithError:(NSError *)error retryBlock:(void (^)(void))retryBlock
 {
     NSString *title = NSLocalizedString(@"LINKING_DEVICE_FAILED_TITLE", @"Alert Title");
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title

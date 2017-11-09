@@ -93,7 +93,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 {
     OWSAssert(phoneNumber.length > 0);
 
-    DDLogInfo(@"%@ addBlockedPhoneNumber: %@", self.tag, phoneNumber);
+    DDLogInfo(@"%@ addBlockedPhoneNumber: %@", self.logTag, phoneNumber);
 
     @synchronized(self)
     {
@@ -114,7 +114,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 {
     OWSAssert(phoneNumber.length > 0);
 
-    DDLogInfo(@"%@ removeBlockedPhoneNumber: %@", self.tag, phoneNumber);
+    DDLogInfo(@"%@ removeBlockedPhoneNumber: %@", self.logTag, phoneNumber);
 
     @synchronized(self)
     {
@@ -135,7 +135,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 {
     OWSAssert(blockedPhoneNumbers != nil);
 
-    DDLogInfo(@"%@ setBlockedPhoneNumbers: %d", self.tag, (int)blockedPhoneNumbers.count);
+    DDLogInfo(@"%@ setBlockedPhoneNumbers: %d", self.logTag, (int)blockedPhoneNumbers.count);
 
     @synchronized(self)
     {
@@ -246,7 +246,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
                            inCollection:kOWSBlockingManager_BlockedPhoneNumbersCollection];
     NSSet *syncedBlockedPhoneNumberSet = [[NSSet alloc] initWithArray:(syncedBlockedPhoneNumbers ?: [NSArray new])];
     if (![_blockedPhoneNumberSet isEqualToSet:syncedBlockedPhoneNumberSet]) {
-        DDLogInfo(@"%@ retrying sync of blocked phone numbers", self.tag);
+        DDLogInfo(@"%@ retrying sync of blocked phone numbers", self.logTag);
         [self sendBlockedPhoneNumbersMessage:self.blockedPhoneNumbers];
     }
 }
@@ -260,13 +260,13 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 
     [self.messageSender sendMessage:message
         success:^{
-            DDLogInfo(@"%@ Successfully sent blocked phone numbers sync message", self.tag);
+            DDLogInfo(@"%@ Successfully sent blocked phone numbers sync message", self.logTag);
 
             // Record the last set of "blocked phone numbers" which we successfully synced.
             [self saveSyncedBlockedPhoneNumbers:blockedPhoneNumbers];
         }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to send blocked phone numbers sync message with error: %@", self.tag, error);
+            DDLogError(@"%@ Failed to send blocked phone numbers sync message with error: %@", self.logTag, error);
         }];
 }
 
@@ -290,18 +290,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
     {
         [self syncBlockedPhoneNumbersIfNecessary];
     }
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

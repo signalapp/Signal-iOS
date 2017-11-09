@@ -3,11 +3,10 @@
 //
 
 #import "ContactsUpdater.h"
-
 #import "Contact.h"
 #import "Cryptography.h"
-#import "PhoneNumber.h"
 #import "OWSError.h"
+#import "PhoneNumber.h"
 #import "TSContactsIntersectionRequest.h"
 #import "TSNetworkManager.h"
 #import "TSStorageManager.h"
@@ -69,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // This should never happen according to nullability annotations... but IIRC it does. =/
     if (!identifier) {
-        OWSFail(@"%@ Cannot lookup nil identifier", self.tag);
+        OWSFail(@"%@ Cannot lookup nil identifier", self.logTag);
         failure(OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup nil identifier"));
         return;
     }
@@ -90,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
                  failure:(void (^)(NSError *error))failure
 {
     if (identifiers.count < 1) {
-        OWSFail(@"%@ Cannot lookup zero identifiers", self.tag);
+        OWSFail(@"%@ Cannot lookup zero identifiers", self.logTag);
         failure(OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup zero identifiers"));
         return;
     }
@@ -111,8 +110,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)updateSignalContactIntersectionWithABContacts:(NSArray<Contact *> *)abContacts
-                                              success:(void (^)())success
-                                              failure:(void (^)(NSError *error))failure {
+                                              success:(void (^)(void))success
+                                              failure:(void (^)(NSError *error))failure
+{
     NSMutableSet<NSString *> *abPhoneNumbers = [NSMutableSet set];
 
     for (Contact *contact in abContacts) {
@@ -146,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          }
                                      }];
 
-                                 DDLogInfo(@"%@ successfully intersected contacts.", self.tag);
+                                 DDLogInfo(@"%@ successfully intersected contacts.", self.logTag);
                                  success();
                              }
                              failure:failure];
@@ -176,7 +176,7 @@ NS_ASSUME_NONNULL_BEGIN
                       NSString *identifier = [phoneNumbersByHashes objectForKey:hash];
 
                       if (!identifier) {
-                          DDLogWarn(@"%@ An interesecting hash wasn't found in the mapping.", self.tag);
+                          DDLogWarn(@"%@ An interesecting hash wasn't found in the mapping.", self.logTag);
                           break;
                       }
 
@@ -218,18 +218,6 @@ NS_ASSUME_NONNULL_BEGIN
               }
           }];
     });
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

@@ -94,18 +94,18 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 
 - (void)asyncRegisterExtension
 {
-    DDLogInfo(@"%@ registering async.", self.tag);
+    DDLogInfo(@"%@ registering async.", self.logTag);
     [self.database asyncRegisterExtension:self.indexExtension
                                  withName:OWSIncomingMessageFinderExtensionName
                           completionBlock:^(BOOL ready) {
-                              DDLogInfo(@"%@ finished registering async.", self.tag);
+                              DDLogInfo(@"%@ finished registering async.", self.logTag);
                           }];
 }
 
 // We should not normally hit this, as we should have prefer registering async, but it is useful for testing.
 - (void)registerExtension
 {
-    DDLogError(@"%@ registering SYNC. We should prefer async when possible.", self.tag);
+    DDLogError(@"%@ registering SYNC. We should prefer async when possible.", self.logTag);
     [self.database registerExtension:self.indexExtension withName:OWSIncomingMessageFinderExtensionName];
 }
 
@@ -117,7 +117,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
                        transaction:(YapDatabaseReadTransaction *)transaction
 {
     if (![self.database registeredExtension:OWSIncomingMessageFinderExtensionName]) {
-        OWSFail(@"%@ in %s but extension is not registered", self.tag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ in %s but extension is not registered", self.logTag, __PRETTY_FUNCTION__);
 
         // we should be initializing this at startup rather than have an unexpectedly slow lazy setup at random.
         [self registerExtension];
@@ -133,23 +133,11 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
     NSUInteger count;
     BOOL success = [[transaction ext:OWSIncomingMessageFinderExtensionName] getNumberOfRows:&count matchingQuery:query];
     if (!success) {
-        OWSFail(@"%@ Could not execute query", self.tag);
+        OWSFail(@"%@ Could not execute query", self.logTag);
         return NO;
     }
 
     return count > 0;
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

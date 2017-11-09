@@ -6,9 +6,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSOutgoingMessage;
-@class TSNetworkManager;
 @class TSAttachmentStream;
+@class TSNetworkManager;
+@class TSOutgoingMessage;
 
 extern NSString *const kAttachmentUploadProgressNotification;
 extern NSString *const kAttachmentUploadProgressKey;
@@ -21,7 +21,7 @@ extern NSString *const kAttachmentUploadAttachmentIDKey;
 
 - (void)uploadAttachmentStream:(TSAttachmentStream *)attachmentStream
                        message:(TSOutgoingMessage *)outgoingMessage
-                       success:(void (^)())successHandler
+                       success:(void (^)(void))successHandler
                        failure:(RetryableFailureHandler)failureHandler;
 
 @end

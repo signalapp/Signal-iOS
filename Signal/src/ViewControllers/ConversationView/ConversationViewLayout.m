@@ -64,12 +64,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     id<ConversationViewLayoutDelegate> delegate = self.delegate;
     if (!delegate) {
-        OWSFail(@"%@ Missing delegate", self.tag);
+        OWSFail(@"%@ Missing delegate", self.logTag);
         [self clearState];
         return;
     }
     if (self.collectionView.bounds.size.width <= 0.f || self.collectionView.bounds.size.height <= 0.f) {
-        OWSFail(@"%@ Collection view has invalid size: %@", self.tag, NSStringFromCGRect(self.collectionView.bounds));
+        OWSFail(
+            @"%@ Collection view has invalid size: %@", self.logTag, NSStringFromCGRect(self.collectionView.bounds));
         [self clearState];
         return;
     }
@@ -80,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.hasLayout = YES;
 
     // TODO: Remove this log statement after we've reduced the invalidation churn.
-    DDLogVerbose(@"%@ prepareLayout", self.tag);
+    DDLogVerbose(@"%@ prepareLayout", self.logTag);
 
     const int vInset = 8;
     const int hInset = 10;
@@ -163,18 +164,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
 {
     return self.collectionView.bounds.size.width != newBounds.size.width;
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

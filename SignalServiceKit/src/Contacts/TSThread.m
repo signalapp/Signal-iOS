@@ -203,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
                       NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
 
                       if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                          OWSFail(@"%@ Unexpected object in unseen messages: %@", self.tag, object);
+                          OWSFail(@"%@ Unexpected object in unseen messages: %@", self.logTag, object);
                           return;
                       }
                       [messages addObject:(id<OWSReadTracking>)object];
@@ -221,7 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
                       NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
 
                       if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                          OWSFail(@"%@ Unexpected object in unread messages: %@", self.tag, object);
+                          OWSFail(@"%@ Unexpected object in unread messages: %@", self.logTag, object);
                           return;
                       }
                       [messages addObject:(id<OWSReadTracking>)object];
@@ -410,18 +410,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                 [thread setMutedUntilDate:mutedUntilDate];
                                             }];
     }];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

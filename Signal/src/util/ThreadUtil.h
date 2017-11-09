@@ -10,8 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalAttachment;
 @class TSContactThread;
 @class TSInteraction;
-@class YapDatabaseConnection;
 @class TSThread;
+@class YapDatabaseConnection;
 
 @interface ThreadDynamicInteractions : NSObject
 
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
                                   inThread:(TSThread *)thread
                              messageSender:(OWSMessageSender *)messageSender
-                                   success:(void (^)())successHandler
+                                   success:(void (^)(void))successHandler
                                    failure:(void (^)(NSError *error))failureHandler;
 
 + (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
