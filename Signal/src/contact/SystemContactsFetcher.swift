@@ -373,32 +373,40 @@ class SystemContactsFetcher: NSObject {
      *
      * @param   completion  completion handler is called on main thread.
      */
-    public func requestOnce(completion: ((Error?) -> Void)?) {
+    public func requestOnce(completion completionParam: ((Error?) -> Void)?) {
         AssertIsOnMainThread()
 
+        // Ensure completion is invoked on main thread.
+        let completion = { error in
+            DispatchMainThreadSafe({
+                completionParam?(error)
+            })
+        }
+
         guard !systemContactsHaveBeenRequestedAtLeastOnce else {
-            completion?(nil)
+            completion(nil)
             return
         }
         setupObservationIfNecessary()
 
         switch authorizationStatus {
         case .notDetermined:
+            if UIApplication.shared.applicationState == .background {
+                Logger.error("\(self.TAG) do not request contacts permission when app is in background")
+                completion(nil)
+                return
+            }
             self.contactStoreAdapter.requestAccess { (granted, error) in
                 if let error = error {
                     Logger.error("\(self.TAG) error fetching contacts: \(error)")
-                    DispatchQueue.main.async {
-                        completion?(error)
-                    }
+                    completion(error)
                     return
                 }
 
                 guard granted else {
                     // This case should have been caught be the error guard a few lines up.
                     owsFail("\(self.TAG) declined contact access.")
-                    DispatchQueue.main.async {
-                        completion?(nil)
-                    }
+                    completion(nil)
                     return
                 }
 
@@ -410,9 +418,7 @@ class SystemContactsFetcher: NSObject {
             self.updateContacts(completion: completion)
         case .denied, .restricted:
             Logger.debug("\(TAG) contacts were \(self.authorizationStatus)")
-            DispatchQueue.main.async {
-                completion?(nil)
-            }
+            completion(nil)
         }
     }
 
@@ -425,7 +431,7 @@ class SystemContactsFetcher: NSObject {
             return
         }
 
-        updateContacts(completion: nil, alwaysNotify:false)
+        updateContacts(completion: nil, alwaysNotify: false)
     }
 
     public func fetchIfAlreadyAuthorizedAndAlwaysNotify() {
@@ -434,11 +440,18 @@ class SystemContactsFetcher: NSObject {
             return
         }
 
-        updateContacts(completion: nil, alwaysNotify:true)
+        updateContacts(completion: nil, alwaysNotify: true)
     }
 
-    private func updateContacts(completion: ((Error?) -> Void)?, alwaysNotify: Bool = false) {
+    private func updateContacts(completion completionParam: ((Error?) -> Void)?, alwaysNotify: Bool = false) {
         AssertIsOnMainThread()
+
+        // Ensure completion is invoked on main thread.
+        let completion = { error in
+            DispatchMainThreadSafe({
+                completionParam?(error)
+            })
+        }
 
         systemContactsHaveBeenRequestedAtLeastOnce = true
         setupObservationIfNecessary()
@@ -452,13 +465,13 @@ class SystemContactsFetcher: NSObject {
             case .success(let result):
                 fetchedContacts = result
             case .error(let error):
-                completion?(error)
+                completion(error)
                 return
             }
 
             guard let contacts = fetchedContacts else {
                 owsFail("\(self.TAG) contacts was unexpectedly not set.")
-                completion?(nil)
+                completion(nil)
             }
 
             let contactsHash  = HashableArray(contacts).hashValue
@@ -478,7 +491,7 @@ class SystemContactsFetcher: NSObject {
                     if let lastDelegateNotificationDate = self.lastDelegateNotificationDate {
                         let kDebounceInterval = TimeInterval(12 * 60 * 60)
 
-                        let expiresAtDate = Date(timeInterval: kDebounceInterval, since:lastDelegateNotificationDate)
+                        let expiresAtDate = Date(timeInterval: kDebounceInterval, since: lastDelegateNotificationDate)
                         if  Date() > expiresAtDate {
                             Logger.info("\(self.TAG) debounce interval expired at: \(expiresAtDate)")
                             shouldNotifyDelegate = true
@@ -494,7 +507,7 @@ class SystemContactsFetcher: NSObject {
                 guard shouldNotifyDelegate else {
                     Logger.info("\(self.TAG) no reason to notify delegate.")
 
-                    completion?(nil)
+                    completion(nil)
 
                     return
                 }
@@ -503,7 +516,7 @@ class SystemContactsFetcher: NSObject {
                 self.lastContactUpdateHash = contactsHash
 
                 self.delegate?.systemContactsFetcher(self, updatedContacts: contacts)
-                completion?(nil)
+                completion(nil)
             }
         }
     }
