@@ -65,9 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
         callback(YES);
     } else if (status == AVAuthorizationStatusNotDetermined) {
         [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
-                                 completionHandler:^(BOOL granted) {
-                                     callback(granted);
-                                 }];
+                                 completionHandler:callback];
     } else {
         DDLogError(@"Unknown AVAuthorizationStatus: %ld", (long)status);
         callback(NO);
@@ -91,9 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
-        callback(granted);
-    }];
+    [[AVAudioSession sharedInstance] requestRecordPermission:callback];
 }
 
 @end

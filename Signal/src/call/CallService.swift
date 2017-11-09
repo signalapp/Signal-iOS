@@ -1434,8 +1434,8 @@ protocol CallServiceObserver: class {
     public func handleFailedCall(failedCall: SignalCall?, error: CallError) {
         AssertIsOnMainThread()
 
-        if case CallError.assertionError(description: let description) = error {
-            Logger.error(description)
+        if case CallError.assertionError(description:let description) = error {
+            owsFail(description)
         }
 
         if let failedCall = failedCall {
