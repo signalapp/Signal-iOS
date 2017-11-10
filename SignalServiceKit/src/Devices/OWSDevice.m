@@ -16,6 +16,67 @@ uint32_t const OWSDevicePrimaryDeviceId = 1;
 NSString *const kTSStorageManager_OWSDeviceCollection = @"kTSStorageManager_OWSDeviceCollection";
 NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_MayHaveLinkedDevices";
 
+@interface OWSDeviceManager ()
+
+@property (atomic, nullable) NSNumber *mayHaveLinkedDevicesCached;
+
+@end
+
+#pragma mark -
+
+@implementation OWSDeviceManager
+
++ (instancetype)sharedManager
+{
+    static OWSDeviceManager *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [[self alloc] initDefault];
+    });
+    return instance;
+}
+
+- (instancetype)initDefault
+{
+    return [super init];
+}
+
+- (BOOL)mayHaveLinkedDevices:(YapDatabaseConnection *)dbConnection
+{
+    OWSAssert(dbConnection);
+
+    @synchronized(self)
+    {
+        if (!self.mayHaveLinkedDevicesCached) {
+            self.mayHaveLinkedDevicesCached = @([dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
+                                                            inCollection:kTSStorageManager_OWSDeviceCollection
+                                                            defaultValue:YES]);
+        }
+
+        return [self.mayHaveLinkedDevicesCached boolValue];
+    }
+}
+
+- (void)setMayHaveLinkedDevices:(BOOL)value dbConnection:(YapDatabaseConnection *)dbConnection
+{
+    OWSAssert(dbConnection);
+
+    @synchronized(self)
+    {
+        self.mayHaveLinkedDevicesCached = @(YES);
+
+        [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [transaction setObject:@(value)
+                            forKey:kTSStorageManager_MayHaveLinkedDevices
+                      inCollection:kTSStorageManager_OWSDeviceCollection];
+        }];
+    }
+}
+
+@end
+
+#pragma mark -
+
 @interface OWSDevice ()
 
 @property (nonatomic) NSInteger deviceId;
@@ -180,26 +241,6 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 - (BOOL)isEqualToDevice:(OWSDevice *)device
 {
     return self.deviceId == device.deviceId;
-}
-
-#pragma mark - "May Have Linked Devices" Flag
-
-+ (BOOL)mayHaveLinkedDevices:(YapDatabaseConnection *)dbConnection
-{
-    OWSAssert(dbConnection);
-
-    return [dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
-                       inCollection:kTSStorageManager_OWSDeviceCollection
-                       defaultValue:YES];
-}
-
-+ (void)setMayHaveLinkedDevices:(BOOL)value dbConnection:(YapDatabaseConnection *)dbConnection
-{
-    OWSAssert(dbConnection);
-
-    [dbConnection setBool:value
-                   forKey:kTSStorageManager_MayHaveLinkedDevices
-             inCollection:kTSStorageManager_OWSDeviceCollection];
 }
 
 @end

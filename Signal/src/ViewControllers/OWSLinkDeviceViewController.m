@@ -147,7 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)provisionWithParser:(OWSDeviceProvisioningURLParser *)parser
 {
     // Optimistically set this flag.
-    [OWSDevice setMayHaveLinkedDevices:YES dbConnection:self.dbConnection];
+    [OWSDeviceManager.sharedManager setMayHaveLinkedDevices:YES dbConnection:self.dbConnection];
 
     ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
     OWSAssert(identityKeyPair);

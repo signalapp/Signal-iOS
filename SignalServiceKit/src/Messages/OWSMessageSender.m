@@ -971,7 +971,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // devices, then can safely skip sending sync message.
 
         // 1. Check OWSDevice's state.
-        BOOL mayHaveLinkedDevices = [OWSDevice mayHaveLinkedDevices:self.dbConnection];
+        BOOL mayHaveLinkedDevices = [OWSDeviceManager.sharedManager mayHaveLinkedDevices:self.dbConnection];
 
         // 2. Check SignalRecipient's state.
         BOOL hasDeviceMessages = deviceMessages.count > 0;
@@ -1113,7 +1113,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if (missingDevices.count > 0) {
         NSString *localNumber = [TSAccountManager localNumber];
         if ([localNumber isEqualToString:recipient.uniqueId]) {
-            [OWSDevice setMayHaveLinkedDevices:YES dbConnection:self.dbConnection];
+            [OWSDeviceManager.sharedManager setMayHaveLinkedDevices:YES dbConnection:self.dbConnection];
         }
     }
 

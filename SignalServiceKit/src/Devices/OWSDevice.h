@@ -9,6 +9,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern uint32_t const OWSDevicePrimaryDeviceId;
 
+@interface OWSDeviceManager : NSObject
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)sharedManager;
+
+- (BOOL)mayHaveLinkedDevices:(YapDatabaseConnection *)dbConnection;
+- (void)setMayHaveLinkedDevices:(BOOL)value dbConnection:(YapDatabaseConnection *)dbConnection;
+
+@end
+
+#pragma mark -
+
 @interface OWSDevice : TSYapDatabaseObject <MTLJSONSerializing>
 
 @property (nonatomic, readonly) NSInteger deviceId;
@@ -51,11 +64,6 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
  *  YES if any values on self changed, else NO
  */
 - (BOOL)updateAttributesWithDevice:(OWSDevice *)other;
-
-#pragma mark - "May Have Linked Devices" Flag
-
-+ (BOOL)mayHaveLinkedDevices:(YapDatabaseConnection *)dbConnection;
-+ (void)setMayHaveLinkedDevices:(BOOL)value dbConnection:(YapDatabaseConnection *)dbConnection;
 
 @end
 
