@@ -2884,8 +2884,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         for (YapDatabaseViewRowChange *rowChange in rowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
-                    DDLogInfo(@"YapDatabaseViewChangeDelete: %@, %@", rowChange.collectionKey, rowChange.indexPath);
-                    [DDLog flushLog];
+                    DDLogVerbose(@"YapDatabaseViewChangeDelete: %@, %@", rowChange.collectionKey, rowChange.indexPath);
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
                     YapCollectionKey *collectionKey = rowChange.collectionKey;
@@ -2893,8 +2892,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     break;
                 }
                 case YapDatabaseViewChangeInsert: {
-                    DDLogInfo(@"YapDatabaseViewChangeInsert: %@, %@", rowChange.collectionKey, rowChange.newIndexPath);
-                    [DDLog flushLog];
+                    DDLogVerbose(
+                        @"YapDatabaseViewChangeInsert: %@, %@", rowChange.collectionKey, rowChange.newIndexPath);
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                     [rowsThatChangedSize removeObject:@(rowChange.newIndexPath.row)];
 
@@ -2909,18 +2908,16 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     break;
                 }
                 case YapDatabaseViewChangeMove: {
-                    DDLogInfo(@"YapDatabaseViewChangeMove: %@, %@, %@",
+                    DDLogVerbose(@"YapDatabaseViewChangeMove: %@, %@, %@",
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         rowChange.newIndexPath);
-                    [DDLog flushLog];
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
-                    DDLogInfo(@"YapDatabaseViewChangeUpdate: %@, %@", rowChange.collectionKey, rowChange.indexPath);
-                    [DDLog flushLog];
+                    DDLogVerbose(@"YapDatabaseViewChangeUpdate: %@, %@", rowChange.collectionKey, rowChange.indexPath);
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
                     break;
@@ -2932,10 +2929,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         // as they may affect which cells show "date" headers or "status" footers.
         NSMutableArray<NSIndexPath *> *rowsToReload = [NSMutableArray new];
         for (NSNumber *row in rowsThatChangedSize) {
-            DDLogInfo(@"YapDatabaseViewChange reload other row: %@", row);
             [rowsToReload addObject:[NSIndexPath indexPathForRow:row.integerValue inSection:0]];
         }
-        [DDLog flushLog];
         [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
     };
     void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
@@ -2952,18 +2947,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         }
     };
 
-    DDLogInfo(@"Before performBatchUpdates: %d", shouldAnimateUpdates);
-    [DDLog flushLog];
     if (shouldAnimateUpdates) {
         [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
     } else {
         [CATransaction begin];
-        [CATransaction setAnimationDuration:0.1f];
+        [CATransaction setAnimationDuration:0.05f];
         [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
         [CATransaction commit];
     }
-    DDLogInfo(@"After performBatchUpdates");
-    [DDLog flushLog];
 }
 
 - (BOOL)shouldAnimateRowUpdates:(NSArray<YapDatabaseViewRowChange *> *)rowChanges
