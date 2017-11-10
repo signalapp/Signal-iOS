@@ -1177,6 +1177,37 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [TSContactThread getOrCreateThreadWithContactId:contactId transaction:transaction];
         [cThread saveWithTransaction:transaction];
 
+        // We need to clone any attachments for message sent to self; otherwise deleting
+        // the incoming or outgoing copy of the message will break the other.
+        NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
+        for (NSString *attachmentId in outgoingMessage.attachmentIds) {
+            TSAttachmentStream *_Nullable outgoingAttachment =
+                [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
+            OWSAssert(outgoingAttachment);
+            if (!outgoingAttachment) {
+                DDLogError(@"%@ Couldn't load outgoing attachment for message sent to self.", self.logTag);
+            } else {
+                TSAttachmentStream *incomingAttachment =
+                    [[TSAttachmentStream alloc] initWithContentType:outgoingAttachment.contentType
+                                                          byteCount:outgoingAttachment.byteCount
+                                                     sourceFilename:outgoingAttachment.sourceFilename];
+                NSError *error;
+                NSData *_Nullable data = [outgoingAttachment readDataFromFileWithError:&error];
+                if (!data || error) {
+                    DDLogError(@"%@ Couldn't load attachment data for message sent to self: %@.", self.logTag, error);
+                } else {
+                    [incomingAttachment writeData:data error:&error];
+                    if (error) {
+                        DDLogError(
+                            @"%@ Couldn't copy attachment data for message sent to self: %@.", self.logTag, error);
+                    } else {
+                        [incomingAttachment saveWithTransaction:transaction];
+                        [attachmentIds addObject:incomingAttachment.uniqueId];
+                    }
+                }
+            }
+        }
+
         // We want the incoming message to appear after the outgoing message.
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initWithTimestamp:(outgoingMessage.timestamp + 1)
@@ -1184,7 +1215,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                 authorId:[cThread contactIdentifier]
                                           sourceDeviceId:[OWSDevice currentDeviceId]
                                              messageBody:outgoingMessage.body
-                                           attachmentIds:outgoingMessage.attachmentIds
+                                           attachmentIds:attachmentIds
                                         expiresInSeconds:outgoingMessage.expiresInSeconds];
         [incomingMessage saveWithTransaction:transaction];
     }];
