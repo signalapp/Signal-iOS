@@ -63,7 +63,7 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 
     @synchronized(self)
     {
-        self.mayHaveLinkedDevicesCached = @(YES);
+        self.mayHaveLinkedDevicesCached = @(value);
 
         [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [transaction setObject:@(value)
