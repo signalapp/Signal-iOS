@@ -113,6 +113,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
     [self.attachmentButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
+    self.attachmentButton.contentEdgeInsets = UIEdgeInsetsMake(0, 3, 0, 3);
     [self.leftButtonWrapper addSubview:self.attachmentButton];
 
     // TODO: Fix layout in this class.
