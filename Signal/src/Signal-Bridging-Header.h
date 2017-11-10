@@ -109,6 +109,7 @@
 #import <SignalServiceKit/TSStorageManager+Calling.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
 #import <SignalServiceKit/TSThread.h>
+#import <SignalServiceKit/Threading.h>
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>
 #import <YYImage/YYImage.h>

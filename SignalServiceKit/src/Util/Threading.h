@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^SimpleBlock)();
+typedef void (^SimpleBlock)(void);
 
 // The block is executed immediately if called from the
 // main thread; otherwise it is disptached async to the
