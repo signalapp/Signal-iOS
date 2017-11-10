@@ -9,6 +9,7 @@
 #import "OWSProfileManager.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/ECKeyPair+OWSPrivateKey.h>
+#import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDeviceProvisioner.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
@@ -18,9 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSLinkDeviceViewController ()
 
-@property (strong, nonatomic) IBOutlet UIView *qrScanningView;
-@property (strong, nonatomic) IBOutlet UILabel *scanningInstructionsLabel;
-@property (strong, nonatomic) OWSQRCodeScanningViewController *qrScanningController;
+@property (nonatomic) YapDatabaseConnection *dbConnection;
+@property (nonatomic) IBOutlet UIView *qrScanningView;
+@property (nonatomic) IBOutlet UILabel *scanningInstructionsLabel;
+@property (nonatomic) OWSQRCodeScanningViewController *qrScanningController;
 @property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;
 
 @end
@@ -30,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    self.dbConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
 
     // HACK to get full width preview layer
     CGRect oldFrame = self.qrScanningView.frame;
@@ -142,6 +146,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)provisionWithParser:(OWSDeviceProvisioningURLParser *)parser
 {
+    // Optimistically set this flag.
+    [OWSDeviceManager.sharedManager setMayHaveLinkedDevices:YES dbConnection:self.dbConnection];
+
     ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
     OWSAssert(identityKeyPair);
     NSData *myPublicKey = identityKeyPair.publicKey;

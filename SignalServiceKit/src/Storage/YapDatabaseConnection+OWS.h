@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasObjectForKey:(NSString *)key inCollection:(NSString *)collection;
 - (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection;
+- (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection defaultValue:(BOOL)defaultValue;
 - (int)intForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable id)objectForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable NSDate *)dateForKey:(NSString *)key inCollection:(NSString *)collection;

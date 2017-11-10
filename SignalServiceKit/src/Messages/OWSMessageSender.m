@@ -954,14 +954,29 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSString *localNumber = [TSAccountManager localNumber];
     if ([localNumber isEqualToString:recipient.uniqueId]) {
-        __block BOOL hasSecondaryDevices;
-        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            hasSecondaryDevices = [OWSDevice hasSecondaryDevicesWithTransaction:transaction];
-        }];
+        OWSAssert([message isKindOfClass:[OWSOutgoingSyncMessage class]]);
+        // Messages send to the "local number" should be sync messages.
+        //
+        // We can skip sending sync messages if we know that we have no linked
+        // devices. However, we need to be sure to handle the case where the
+        // linked device list has just changed.
+        //
+        // The linked device list is reflected in two separate pieces of state:
+        //
+        // * OWSDevice's state is updated when you link or unlink a device.
+        // * SignalRecipient's state is updated by 409 "Mismatched devices"
+        //   responses from the service.
+        //
+        // If _both_ of these pieces of state agree that there are no linked
+        // devices, then can safely skip sending sync message.
 
+        // 1. Check OWSDevice's state.
+        BOOL mayHaveLinkedDevices = [OWSDeviceManager.sharedManager mayHaveLinkedDevices:self.dbConnection];
+
+        // 2. Check SignalRecipient's state.
         BOOL hasDeviceMessages = deviceMessages.count > 0;
 
-        if (!hasSecondaryDevices && !hasDeviceMessages) {
+        if (!mayHaveLinkedDevices && !hasDeviceMessages) {
             DDLogInfo(@"%@ Ignoring sync message without secondary devices: %@", self.logTag, [message class]);
             OWSAssert([message isKindOfClass:[OWSOutgoingSyncMessage class]]);
 
@@ -972,10 +987,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             });
 
             return;
-        } else if (hasSecondaryDevices) {
+        } else if (mayHaveLinkedDevices) {
             // We may have just linked a new secondary device which is not yet reflected in
             // the SignalRecipient that corresponds to ourself.  Proceed.  Client should learn
-            // of new secondary devices when this message send fails.
+            // of new secondary devices via 409 "Mismatched devices" response.
             DDLogWarn(@"%@ sync message has no device messages but account has secondary devices.", self.logTag);
         } else if (hasDeviceMessages) {
             OWSFail(@"%@ sync message has device messages for unknown secondary devices.", self.logTag);
@@ -1094,6 +1109,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     NSArray *extraDevices = [dictionary objectForKey:@"extraDevices"];
     NSArray *missingDevices = [dictionary objectForKey:@"missingDevices"];
+
+    if (missingDevices.count > 0) {
+        NSString *localNumber = [TSAccountManager localNumber];
+        if ([localNumber isEqualToString:recipient.uniqueId]) {
+            [OWSDeviceManager.sharedManager setMayHaveLinkedDevices:YES dbConnection:self.dbConnection];
+        }
+    }
 
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
         if (extraDevices.count < 1 && missingDevices.count < 1) {

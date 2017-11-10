@@ -52,8 +52,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection
 {
-    NSNumber *_Nullable number = [self objectForKey:key inCollection:collection ofExpectedType:[NSNumber class]];
-    return [number boolValue];
+    return [self boolForKey:key inCollection:collection defaultValue:NO];
+}
+
+- (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection defaultValue:(BOOL)defaultValue
+{
+    NSNumber *_Nullable value = [self objectForKey:key inCollection:collection ofExpectedType:[NSNumber class]];
+    return value ? [value boolValue] : defaultValue;
 }
 
 - (nullable NSData *)dataForKey:(NSString *)key inCollection:(NSString *)collection

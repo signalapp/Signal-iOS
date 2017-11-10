@@ -9,12 +9,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern uint32_t const OWSDevicePrimaryDeviceId;
 
+@interface OWSDeviceManager : NSObject
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)sharedManager;
+
+- (BOOL)mayHaveLinkedDevices:(YapDatabaseConnection *)dbConnection;
+- (void)setMayHaveLinkedDevices:(BOOL)value dbConnection:(YapDatabaseConnection *)dbConnection;
+
+@end
+
+#pragma mark -
+
 @interface OWSDevice : TSYapDatabaseObject <MTLJSONSerializing>
 
 @property (nonatomic, readonly) NSInteger deviceId;
-@property (nullable, readonly) NSString *name;
-@property (readonly) NSDate *createdAt;
-@property (readonly) NSDate *lastSeenAt;
+@property (nonatomic, readonly, nullable) NSString *name;
+@property (nonatomic, readonly) NSDate *createdAt;
+@property (nonatomic, readonly) NSDate *lastSeenAt;
 
 + (instancetype)deviceFromJSONDictionary:(NSDictionary *)deviceAttributes error:(NSError **)error;
 

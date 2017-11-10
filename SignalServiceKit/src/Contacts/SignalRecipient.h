@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeDevices:(NSSet *)set;
 
 @property (nonatomic, nullable) NSString *relay;
-@property (nonatomic, retain) NSMutableOrderedSet *devices;
+@property (nonatomic) NSMutableOrderedSet *devices;
 
 - (BOOL)supportsVoice;
 // This property indicates support for both WebRTC audio and video calls.
