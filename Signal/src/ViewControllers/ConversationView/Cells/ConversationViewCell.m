@@ -30,6 +30,15 @@ NS_ASSUME_NONNULL_BEGIN
     return CGSizeZero;
 }
 
+- (void)setIsCellVisible:(BOOL)isCellVisible
+{
+    _isCellVisible = isCellVisible;
+
+    if (isCellVisible) {
+        [self layoutIfNeeded];
+    }
+}
+
 #pragma mark - Logging
 
 + (NSString *)logTag
