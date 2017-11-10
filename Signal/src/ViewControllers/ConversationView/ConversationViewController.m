@@ -2957,9 +2957,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (shouldAnimateUpdates) {
         [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
     } else {
-        [UIView performWithoutAnimation:^{
-            [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
-        }];
+        [CATransaction begin];
+        [CATransaction setAnimationDuration:0.f];
+        [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
+        [CATransaction commit];
     }
     DDLogInfo(@"After performBatchUpdates");
     [DDLog flushLog];
