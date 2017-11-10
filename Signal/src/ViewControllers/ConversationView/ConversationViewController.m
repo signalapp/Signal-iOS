@@ -2943,7 +2943,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [self updateLastVisibleTimestamp];
 
         if (scrollToBottom) {
-            [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
+            [self scrollToBottomAnimated:shouldAnimateScrollToBottom && shouldAnimateUpdates];
         }
     };
 
@@ -2953,7 +2953,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         // We want these animations to be as short as possible, but `performBatchUpdates`
         // will SIGABORT in some cases if the animation duration is zero.
         [CATransaction begin];
-        [CATransaction setAnimationDuration:0.05f];
+        [CATransaction setAnimationDuration:0.001f];
         [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
         [CATransaction commit];
     }
