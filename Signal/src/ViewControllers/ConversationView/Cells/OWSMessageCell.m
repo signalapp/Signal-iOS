@@ -973,6 +973,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isIncoming) {
         return NO;
     }
+    if (self.cellType == OWSMessageCellType_DownloadingAttachment) {
+        return NO;
+    }
     if (!self.attachmentStream) {
         return NO;
     }
