@@ -408,7 +408,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     DDLogVerbose(@"%@ message: %@", self.logTag, message.description);
     OWSFail(@"%@ Unknown cell type", self.logTag);
 
+    // Messages of unknown type (including messages with missing attachments)
+    // are rendered like empty text messages, but without any interactivity.
     self.messageCellType = OWSMessageCellType_Unknown;
+    self.displayableText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
 }
 
 - (OWSMessageCellType)messageCellType
