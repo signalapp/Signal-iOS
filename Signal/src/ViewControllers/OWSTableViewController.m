@@ -390,6 +390,12 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpartial-availability"
+        self.tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+#pragma clang diagnostic pop
+    }
     [self.view addSubview:self.tableView];
     [self.tableView autoPinToSuperviewEdges];
 
