@@ -20,10 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSLinkedDevicesTableViewController ()
 
-@property YapDatabaseConnection *dbConnection;
-@property YapDatabaseViewMappings *deviceMappings;
-@property NSTimer *pollingRefreshTimer;
-@property BOOL isExpectingMoreDevices;
+@property (nonatomic) YapDatabaseConnection *dbConnection;
+@property (nonatomic) YapDatabaseViewMappings *deviceMappings;
+@property (nonatomic) NSTimer *pollingRefreshTimer;
+@property (nonatomic) BOOL isExpectingMoreDevices;
 
 @end
 
@@ -131,6 +131,14 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [[OWSDevicesService new] getDevicesWithSuccess:^(NSArray<OWSDevice *> *devices) {
+            // If we have more than one device; we may have a linked device.
+            if (devices.count > 1) {
+                // Setting this flag here shouldn't be necessary, but we do so
+                // because the "cost" is low and it will improve robustness.
+                [OWSDevice setMayHaveLinkedDevices:YES
+                                      dbConnection:[[TSStorageManager sharedManager] newDatabaseConnection]];
+            }
+
             if (devices.count > [OWSDevice numberOfKeysInCollection]) {
                 // Got our new device, we can stop refreshing.
                 wself.isExpectingMoreDevices = NO;
@@ -243,7 +251,6 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
             return (NSInteger)[self.deviceMappings numberOfItemsInSection:(NSUInteger)section];
         case OWSLinkedDevicesTableViewControllerSectionAddDevice:
             return 1;
-
         default:
             DDLogError(@"Unknown section: %ld", (long)section);
             return 0;

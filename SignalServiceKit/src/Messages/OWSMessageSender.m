@@ -971,15 +971,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // devices, then can safely skip sending sync message.
 
         // 1. Check OWSDevice's state.
-        __block BOOL hasSecondaryDevices;
-        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            hasSecondaryDevices = [OWSDevice hasSecondaryDevicesWithTransaction:transaction];
-        }];
+        BOOL mayHaveLinkedDevices = [OWSDevice mayHaveLinkedDevices:self.dbConnection];
 
         // 2. Check SignalRecipient's state.
         BOOL hasDeviceMessages = deviceMessages.count > 0;
 
-        if (!hasSecondaryDevices && !hasDeviceMessages) {
+        if (!mayHaveLinkedDevices && !hasDeviceMessages) {
             DDLogInfo(@"%@ Ignoring sync message without secondary devices: %@", self.logTag, [message class]);
             OWSAssert([message isKindOfClass:[OWSOutgoingSyncMessage class]]);
 
@@ -990,7 +987,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             });
 
             return;
-        } else if (hasSecondaryDevices) {
+        } else if (mayHaveLinkedDevices) {
             // We may have just linked a new secondary device which is not yet reflected in
             // the SignalRecipient that corresponds to ourself.  Proceed.  Client should learn
             // of new secondary devices via 409 "Mismatched devices" response.
@@ -1112,6 +1109,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     NSArray *extraDevices = [dictionary objectForKey:@"extraDevices"];
     NSArray *missingDevices = [dictionary objectForKey:@"missingDevices"];
+
+    if (missingDevices.count > 0) {
+        NSString *localNumber = [TSAccountManager localNumber];
+        if ([localNumber isEqualToString:recipient.uniqueId]) {
+            [OWSDevice setMayHaveLinkedDevices:YES dbConnection:self.dbConnection];
+        }
+    }
 
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
         if (extraDevices.count < 1 && missingDevices.count < 1) {

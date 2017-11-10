@@ -5,26 +5,29 @@
 #import "OWSDevice.h"
 #import "NSDate+OWS.h"
 #import "OWSError.h"
+#import "TSStorageManager.h"
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"
 #import <Mantle/MTLValueTransformer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-static MTLValueTransformer *_millisecondTimestampToDateTransformer;
 uint32_t const OWSDevicePrimaryDeviceId = 1;
+NSString *const kTSStorageManager_OWSDeviceCollection = @"kTSStorageManager_OWSDeviceCollection";
+NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_MayHaveLinkedDevices";
 
 @interface OWSDevice ()
 
-@property NSString *name;
-@property NSDate *createdAt;
-@property NSDate *lastSeenAt;
+@property (nonatomic) NSInteger deviceId;
+@property (nonatomic, nullable) NSString *name;
+@property (nonatomic) NSDate *createdAt;
+@property (nonatomic) NSDate *lastSeenAt;
 
 @end
 
-@implementation OWSDevice
+#pragma mark -
 
-@synthesize name = _name;
+@implementation OWSDevice
 
 + (instancetype)deviceFromJSONDictionary:(NSDictionary *)deviceAttributes error:(NSError **)error
 {
@@ -76,38 +79,39 @@ uint32_t const OWSDevicePrimaryDeviceId = 1;
 
 + (MTLValueTransformer *)millisecondTimestampToDateTransformer
 {
-    if (!_millisecondTimestampToDateTransformer) {
-        _millisecondTimestampToDateTransformer =
-            [MTLValueTransformer transformerUsingForwardBlock:^id(id value, BOOL *success, NSError **error) {
-                if ([value isKindOfClass:[NSNumber class]]) {
-                    NSNumber *number = (NSNumber *)value;
-                    NSDate *result = [NSDate ows_dateWithMillisecondsSince1970:[number longLongValue]];
+    static MTLValueTransformer *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [MTLValueTransformer transformerUsingForwardBlock:^id(id value, BOOL *success, NSError **error) {
+            if ([value isKindOfClass:[NSNumber class]]) {
+                NSNumber *number = (NSNumber *)value;
+                NSDate *result = [NSDate ows_dateWithMillisecondsSince1970:[number longLongValue]];
+                if (result) {
+                    *success = YES;
+                    return result;
+                }
+            }
+            *success = NO;
+            DDLogError(@"%@ unable to decode date from %@", self.logTag, value);
+            *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecodeJson, @"Unable to decode date from %@");
+            return nil;
+        }
+            reverseBlock:^id(id value, BOOL *success, NSError **error) {
+                if ([value isKindOfClass:[NSDate class]]) {
+                    NSDate *date = (NSDate *)value;
+                    NSNumber *result = [NSNumber numberWithLongLong:[NSDate ows_millisecondsSince1970ForDate:date]];
                     if (result) {
                         *success = YES;
                         return result;
                     }
                 }
+                DDLogError(@"%@ unable to encode date from %@", self.logTag, value);
+                *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToEncodeJson, @"Unable to encode date");
                 *success = NO;
-                DDLogError(@"%@ unable to decode date from %@", self.logTag, value);
-                *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecodeJson, @"Unable to decode date from %@");
                 return nil;
-            }
-                reverseBlock:^id(id value, BOOL *success, NSError **error) {
-                    if ([value isKindOfClass:[NSDate class]]) {
-                        NSDate *date = (NSDate *)value;
-                        NSNumber *result = [NSNumber numberWithLongLong:[NSDate ows_millisecondsSince1970ForDate:date]];
-                        if (result) {
-                            *success = YES;
-                            return result;
-                        }
-                    }
-                    DDLogError(@"%@ unable to encode date from %@", self.logTag, value);
-                    *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToEncodeJson, @"Unable to encode date");
-                    *success = NO;
-                    return nil;
-                }];
-    }
-    return _millisecondTimestampToDateTransformer;
+            }];
+    });
+    return instance;
 }
 
 + (uint32_t)currentDeviceId
@@ -176,6 +180,26 @@ uint32_t const OWSDevicePrimaryDeviceId = 1;
 - (BOOL)isEqualToDevice:(OWSDevice *)device
 {
     return self.deviceId == device.deviceId;
+}
+
+#pragma mark - "May Have Linked Devices" Flag
+
++ (BOOL)mayHaveLinkedDevices:(YapDatabaseConnection *)dbConnection
+{
+    OWSAssert(dbConnection);
+
+    return [dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
+                       inCollection:kTSStorageManager_OWSDeviceCollection
+                       defaultValue:YES];
+}
+
++ (void)setMayHaveLinkedDevices:(BOOL)value dbConnection:(YapDatabaseConnection *)dbConnection
+{
+    OWSAssert(dbConnection);
+
+    [dbConnection setBool:value
+                   forKey:kTSStorageManager_MayHaveLinkedDevices
+             inCollection:kTSStorageManager_OWSDeviceCollection];
 }
 
 @end

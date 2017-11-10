@@ -12,9 +12,9 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
 @interface OWSDevice : TSYapDatabaseObject <MTLJSONSerializing>
 
 @property (nonatomic, readonly) NSInteger deviceId;
-@property (nullable, readonly) NSString *name;
-@property (readonly) NSDate *createdAt;
-@property (readonly) NSDate *lastSeenAt;
+@property (nonatomic, readonly, nullable) NSString *name;
+@property (nonatomic, readonly) NSDate *createdAt;
+@property (nonatomic, readonly) NSDate *lastSeenAt;
 
 + (instancetype)deviceFromJSONDictionary:(NSDictionary *)deviceAttributes error:(NSError **)error;
 
@@ -51,6 +51,11 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
  *  YES if any values on self changed, else NO
  */
 - (BOOL)updateAttributesWithDevice:(OWSDevice *)other;
+
+#pragma mark - "May Have Linked Devices" Flag
+
++ (BOOL)mayHaveLinkedDevices:(YapDatabaseConnection *)dbConnection;
++ (void)setMayHaveLinkedDevices:(BOOL)value dbConnection:(YapDatabaseConnection *)dbConnection;
 
 @end
 
