@@ -2958,7 +2958,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
     } else {
         [CATransaction begin];
-        [CATransaction setAnimationDuration:0.f];
+        [CATransaction setAnimationDuration:0.1f];
         [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
         [CATransaction commit];
     }
