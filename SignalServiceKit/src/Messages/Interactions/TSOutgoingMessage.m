@@ -349,7 +349,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     [self applyChangeToSelfAndLatestOutgoingMessage:transaction
                                         changeBlock:^(TSOutgoingMessage *message) {
                                             [message setMessageState:TSOutgoingMessageStateSentToService];
-                                            [message setWasDelivered:YES];
                                             [message setIsFromLinkedDevice:YES];
                                         }];
 }
