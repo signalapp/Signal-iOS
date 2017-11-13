@@ -1297,6 +1297,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    _isPresentingMenuController = isPresentingMenuController;
+
     if (isPresentingMenuController) {
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(didHideMenuController:)
