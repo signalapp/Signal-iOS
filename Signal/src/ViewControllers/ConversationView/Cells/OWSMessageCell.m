@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
 @implementation BubbleMaskingView
 
 - (void)setFrame:(CGRect)frame
@@ -65,6 +67,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface OWSMessageTextView : UITextView
+
+@end
+
+#pragma mark -
+
+@implementation OWSMessageTextView
+
+// Our message text views are never used for editing;
+// suppress their ability to become first responder
+// so that tapping on them doesn't hide keyboard.
+- (BOOL)canBecomeFirstResponder
+{
+    return NO;
+}
+
+@end
+
+#pragma mark -
+
 @interface OWSMessageCell ()
 
 // The nullable properties are created as needed.
@@ -90,6 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *dateHeaderConstraints;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *contentConstraints;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *footerConstraints;
+@property (nonatomic) BOOL isPresentingMenuController;
 
 @end
 
@@ -132,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.payloadView addSubview:self.bubbleImageView];
     [self.bubbleImageView autoPinToSuperviewEdges];
 
-    self.textView = [UITextView new];
+    self.textView = [OWSMessageTextView new];
     self.textView.backgroundColor = [UIColor clearColor];
     self.textView.opaque = NO;
     self.textView.editable = NO;
@@ -1038,6 +1061,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.expirationTimerView clearAnimations];
     [self.expirationTimerView removeFromSuperview];
     self.expirationTimerView = nil;
+
+    self.isPresentingMenuController = NO;
 }
 
 #pragma mark - Notifications
@@ -1061,6 +1086,16 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else {
         [self.expirationTimerView clearAnimations];
+    }
+
+    [self debugFirstResponder:self depth:0];
+}
+
+- (void)debugFirstResponder:(UIView *)view depth:(int)depth
+{
+    DDLogError(@"debugFirstResponder[%@ / %d]: %d", view.class, depth, [view canBecomeFirstResponder]);
+    for (UIView *subview in view.subviews) {
+        [self debugFirstResponder:subview depth:depth + 1];
     }
 }
 
@@ -1159,6 +1194,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showMenuController:(CGPoint)fromLocation
 {
+    // We don't want taps on messages to hide the keyboard,
+    // so we only let messages become first responder
+    // while they are trying to present the menu controller.
+    self.isPresentingMenuController = YES;
+
     [self becomeFirstResponder];
 
     if ([UIMenuController sharedMenuController].isMenuVisible) {
@@ -1208,7 +1248,35 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canBecomeFirstResponder
 {
-    return YES;
+    return self.isPresentingMenuController;
+}
+
+- (void)didHideMenuController:(NSNotification *)notification
+{
+    self.isPresentingMenuController = NO;
+}
+
+- (void)setIsPresentingMenuController:(BOOL)isPresentingMenuController
+{
+    if (_isPresentingMenuController == isPresentingMenuController) {
+        return;
+    }
+
+    if (isPresentingMenuController) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(didHideMenuController:)
+                                                     name:UIMenuControllerDidHideMenuNotification
+                                                   object:nil];
+    } else {
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                        name:UIMenuControllerDidHideMenuNotification
+                                                      object:nil];
+    }
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Logging
