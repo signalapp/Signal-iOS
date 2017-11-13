@@ -1132,16 +1132,6 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         [self.expirationTimerView clearAnimations];
     }
-
-    [self debugFirstResponder:self depth:0];
-}
-
-- (void)debugFirstResponder:(UIView *)view depth:(int)depth
-{
-    DDLogError(@"debugFirstResponder[%@ / %d]: %d", view.class, depth, [view canBecomeFirstResponder]);
-    for (UIView *subview in view.subviews) {
-        [self debugFirstResponder:subview depth:depth + 1];
-    }
 }
 
 // case TSInfoMessageAdapter: {
