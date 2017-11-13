@@ -69,6 +69,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageTextView : UITextView
 
+@property (nonatomic) BOOL shouldIgnoreEvents;
+
 @end
 
 #pragma mark -
@@ -83,6 +85,50 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+// Ignore interactions with the text view _except_ taps on links.
+//
+// We want to disable "partial" selection of text in the message
+// and we want to enable "tap to resend" by tapping on a message.
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *_Nullable)event
+{
+    if (self.shouldIgnoreEvents) {
+        // We ignore all events for failed messages so that users
+        // can tap-to-resend even "all link" messages.
+        return NO;
+    }
+
+    // Find the nearest text position to the event.
+    UITextPosition *_Nullable position = [self closestPositionToPoint:point];
+    if (!position) {
+        return NO;
+    }
+    // Find the range of the character in the text which contains the event.
+    //
+    // Try every layout direction (this might not be necessary).
+    UITextRange *_Nullable range = nil;
+    for (NSNumber *textLayoutDirection in @[
+             @(UITextLayoutDirectionLeft),
+             @(UITextLayoutDirectionRight),
+             @(UITextLayoutDirectionUp),
+             @(UITextLayoutDirectionDown),
+         ]) {
+        range = [self.tokenizer rangeEnclosingPosition:position
+                                       withGranularity:UITextGranularityCharacter
+                                           inDirection:(UITextDirection)textLayoutDirection.intValue];
+        if (range) {
+            break;
+        }
+    }
+    if (!range) {
+        return NO;
+    }
+    // Ignore the event unless it occurred inside a link.
+    NSInteger startIndex = [self offsetFromPosition:self.beginningOfDocument toPosition:range.start];
+    BOOL result =
+        [self.attributedText attribute:NSLinkAttributeName atIndex:(NSUInteger)startIndex effectiveRange:nil] != nil;
+    return result;
+}
+
 @end
 
 #pragma mark -
@@ -94,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
 // to always keep one around.
 @property (nonatomic) BubbleMaskingView *payloadView;
 @property (nonatomic) UILabel *dateHeaderLabel;
-@property (nonatomic) UITextView *textView;
+@property (nonatomic) OWSMessageTextView *textView;
 @property (nonatomic, nullable) UIImageView *failedSendBadgeView;
 @property (nonatomic, nullable) UILabel *tapForMoreLabel;
 @property (nonatomic, nullable) UIImageView *bubbleImageView;
@@ -669,21 +715,20 @@ NS_ASSUME_NONNULL_BEGIN
     self.textView.textColor = textColor;
     // Honor dynamic type in the message bodies.
     self.textView.font = [self textMessageFont];
+    self.textView.linkTextAttributes = @{
+        NSForegroundColorAttributeName : textColor,
+        NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
+    };
+    self.textView.dataDetectorTypes
+        = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
 
-    // Don't link outgoing messages that haven't been sent yet, as
-    // this interferes with "tap to retry".
-    BOOL canLinkify = YES;
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        // Ignore taps on links in outgoing messages that haven't been sent yet, as
+        // this interferes with "tap to retry".
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        canLinkify = outgoingMessage.messageState == TSOutgoingMessageStateSentToService;
-    }
-    if (canLinkify) {
-        self.textView.linkTextAttributes = @{
-            NSForegroundColorAttributeName : textColor,
-            NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
-        };
-        self.textView.dataDetectorTypes
-            = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
+        self.textView.shouldIgnoreEvents = outgoingMessage.messageState != TSOutgoingMessageStateSentToService;
+    } else {
+        self.textView.shouldIgnoreEvents = NO;
     }
 
     if (self.displayableText.isTextTruncated) {
