@@ -173,7 +173,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (void)updateWithMessageState:(TSOutgoingMessageState)messageState
                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithSendingError:(NSError *)error;
-- (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript;
+- (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript
+                          transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithCustomMessage:(NSString *)customMessage;
 // deliveryTimestamp is an optional parameter, since legacy
@@ -196,7 +197,6 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (NSUInteger)sentRecipientsCount;
 - (BOOL)wasSentToRecipient:(NSString *)contactId;
 - (void)updateWithSentRecipient:(NSString *)contactId transaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)updateWithSentRecipient:(NSString *)contactId;
 
 @end
 
