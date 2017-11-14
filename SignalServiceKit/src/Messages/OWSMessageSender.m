@@ -448,22 +448,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         //
         // So we're using YDB behavior to ensure this invariant, which is a bit
         // unorthodox.
-        // Update the message unless it has been deleted.
-        //        __block BOOL isMessageDeleted = NO;
-        //        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        //            if ([TSOutgoingMessage fetchObjectWithUniqueID:message.uniqueId
-        //                 transaction:transaction]) {
-        //                [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut transaction:transaction];
-        //            } else {
-        //                DDLogInfo(@"%@ not marking message as sending; message deleted.", self.logTag);
-        //                isMessageDeleted = YES;
-        //            }
-        //        }];
-        //        if (isMessageDeleted) {
-        //            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageDeletedBeforeSent, @"Message was
-        //            deleted before it could be sent."); failureHandler(error); return;
-        //        }
-        DDLogError(@"------ TSOutgoingMessageStateAttemptingOut: %@ %@", message.debugDescription, message.description);
         [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut];
 
         OWSSendMessageOperation *sendMessageOperation =
