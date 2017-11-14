@@ -88,14 +88,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     BOOL loggingIsEnabled;
-#ifdef DEBUG
+    //#ifdef DEBUG
     // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
     // the phone directory being looked up during tests.
     loggingIsEnabled = TRUE;
-    [DebugLogger.sharedLogger enableTTYLogging];
-#elif RELEASE
-    loggingIsEnabled = OWSPreferences.loggingIsEnabled;
-#endif
+//    [DebugLogger.sharedLogger enableTTYLogging];
+    //#elif RELEASE
+    //    loggingIsEnabled = OWSPreferences.loggingIsEnabled;
+    //#endif
     if (loggingIsEnabled) {
         [DebugLogger.sharedLogger enableFileLogging];
     }

@@ -2888,19 +2888,21 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
 
     void (^batchUpdates)(void) = ^{
+        //        @try {
+
         for (YapDatabaseViewRowChange *rowChange in rowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
-                    DDLogVerbose(@"YapDatabaseViewChangeDelete: %@, %@", rowChange.collectionKey, rowChange.indexPath);
+                    DDLogInfo(@"YapDatabaseViewChangeDelete: %@, %@", rowChange.collectionKey, rowChange.indexPath);
+                    [DDLog flushLog];
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
-                    YapCollectionKey *collectionKey = rowChange.collectionKey;
-                    OWSAssert(collectionKey.key.length > 0);
+                    OWSAssert(rowChange.collectionKey.key.length > 0);
                     break;
                 }
                 case YapDatabaseViewChangeInsert: {
-                    DDLogVerbose(
-                        @"YapDatabaseViewChangeInsert: %@, %@", rowChange.collectionKey, rowChange.newIndexPath);
+                    DDLogInfo(@"YapDatabaseViewChangeInsert: %@, %@", rowChange.collectionKey, rowChange.newIndexPath);
+                    [DDLog flushLog];
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                     [rowsThatChangedSize removeObject:@(rowChange.newIndexPath.row)];
 
@@ -2915,16 +2917,18 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     break;
                 }
                 case YapDatabaseViewChangeMove: {
-                    DDLogVerbose(@"YapDatabaseViewChangeMove: %@, %@, %@",
+                    DDLogInfo(@"YapDatabaseViewChangeMove: %@, %@, %@",
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         rowChange.newIndexPath);
+                    [DDLog flushLog];
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
-                    DDLogVerbose(@"YapDatabaseViewChangeUpdate: %@, %@", rowChange.collectionKey, rowChange.indexPath);
+                    DDLogInfo(@"YapDatabaseViewChangeUpdate: %@, %@", rowChange.collectionKey, rowChange.indexPath);
+                    [DDLog flushLog];
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
                     break;
@@ -2936,9 +2940,24 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         // as they may affect which cells show "date" headers or "status" footers.
         NSMutableArray<NSIndexPath *> *rowsToReload = [NSMutableArray new];
         for (NSNumber *row in rowsThatChangedSize) {
+            DDLogInfo(@"rowsToReload: %zd", row.integerValue);
             [rowsToReload addObject:[NSIndexPath indexPathForRow:row.integerValue inSection:0]];
         }
-        [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
+        DDLogInfo(@"rowsToReload: %zd, oldViewItemCount: %zd", rowsToReload.count, oldViewItemCount);
+        [DDLog flushLog];
+        if (rowsToReload.count > 0) {
+            //            [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
+        }
+
+        //        } @catch (NSException *exception) {
+        //            DDLogError(@"exception: %@", exception);
+        //            DDLogError(@"exception: %@", exception.name);
+        //            DDLogError(@"exception: %@", exception.reason);
+        //            DDLogError(@"exception: %@", exception.userInfo);
+        //            DDLogError(@"exception: %@", [exception class]);
+        //            [DDLog flushLog];
+        //            [exception raise];
+        //        }
     };
     void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
         OWSAssert([NSThread isMainThread]);
@@ -2954,6 +2973,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         }
     };
 
+    DDLogInfo(@"performBatchUpdates: %d", shouldAnimateUpdates);
+    //    [DDLog flushLog];
     if (shouldAnimateUpdates) {
         [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
     } else {
@@ -4127,6 +4148,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
+    //    DDLogInfo(@"collectionView: numberOfItemsInSection:: %zd", self.viewItems.count);
+    //    [DDLog flushLog];
+
     return (NSInteger)self.viewItems.count;
 }
 
