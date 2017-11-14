@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
     footer.backgroundColor = darkGrey;
     [self.view addSubview:footer];
     [footer autoPinWidthToSuperview];
-    [footer autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    [footer autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [footer autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.qrScanningController.view];
 
     UILabel *cameraInstructionLabel = [UILabel new];
@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
     [footer addSubview:cameraInstructionLabel];
     [cameraInstructionLabel autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5To7Plus(16.f, 30.f)];
     CGFloat instructionsVMargin = ScaleFromIPhone5To7Plus(10.f, 20.f);
-    [cameraInstructionLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:instructionsVMargin];
+    [cameraInstructionLabel autoPinToBottomLayoutGuideOfViewController:self withInset:instructionsVMargin];
     [cameraInstructionLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:instructionsVMargin];
 }
 

@@ -110,7 +110,12 @@ NS_ASSUME_NONNULL_BEGIN
     CGRect keyboardEndFrameConverted = [self.view convertRect:keyboardEndFrame fromView:nil];
     // Adjust the position of the bottom view to account for the keyboard's
     // intrusion into the view.
-    CGFloat offset = -MAX(0, (self.view.height - keyboardEndFrameConverted.origin.y));
+    //
+    // On iPhoneX, when no keyboard is present, we include a buffer at the bottom of the screen so the bottom view
+    // clears the floating "home button". But because the keyboard includes it's own buffer, we subtract the length
+    // (height) of the bottomLayoutGuide, else we'd have an unnecessary buffer between the popped keyboard and the input
+    // bar.
+    CGFloat offset = -MAX(0, (self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y));
 
     // There's no need to use: [UIView animateWithDuration:...].
     // Any layout changes made during these notifications are

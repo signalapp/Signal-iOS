@@ -33,6 +33,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
 
     var contactNameLabel: MarqueeLabel!
     var contactAvatarView: AvatarImageView!
+    var contactAvatarContainerView: UIView!
     var callStatusLabel: UILabel!
     var callDurationTimer: Timer?
 
@@ -270,8 +271,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
         callStatusLabel.layer.shadowRadius = 4
         self.view.addSubview(callStatusLabel)
 
+        contactAvatarContainerView = UIView.container()
+        self.view.addSubview(contactAvatarContainerView)
         contactAvatarView = AvatarImageView()
-        self.view.addSubview(contactAvatarView)
+        contactAvatarContainerView.addSubview(contactAvatarView)
     }
 
     func createSettingsNagViews() {
@@ -340,25 +343,25 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
                                           action:#selector(didPressAudioSource))
         audioSourceButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_AUDIO_SOURCE_LABEL",
                                                                  comment: "Accessibility label for selection the audio source")
-        
+
         hangUpButton = createButton(imageName:"hangup-active-wide",
                                     action:#selector(didPressHangup))
         hangUpButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_HANGUP_LABEL",
                                                             comment: "Accessibility label for hang up call")
-        
+
         audioModeMuteButton = createButton(imageName:"audio-call-mute-inactive",
                                            action:#selector(didPressMute))
         audioModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL",
                                                                    comment: "Accessibility label for muting the microphone")
-        
+
         videoModeMuteButton = createButton(imageName:"video-mute-unselected",
                                            action:#selector(didPressMute))
         videoModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL", comment: "Accessibility label for muting the microphone")
-        
+
         audioModeVideoButton = createButton(imageName:"audio-call-video-inactive",
                                             action:#selector(didPressVideo))
         audioModeVideoButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_TO_VIDEO_LABEL", comment: "Accessibility label to switch to video call")
-        
+
         videoModeVideoButton = createButton(imageName:"video-video-unselected",
                                             action:#selector(didPressVideo))
         videoModeVideoButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_TO_AUDIO_LABEL", comment: "Accessibility label to switch to audio only")
@@ -569,19 +572,29 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
             contactNameLabel.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
             contactNameLabel.autoPinLeadingToSuperview(withMargin: contactHMargin)
             contactNameLabel.setContentHuggingVerticalHigh()
+            contactNameLabel.setCompressionResistanceHigh()
 
             callStatusLabel.autoPinEdge(.top, to:.bottom, of:contactNameLabel, withOffset:contactVSpacing)
             callStatusLabel.autoPinLeadingToSuperview(withMargin: contactHMargin)
             callStatusLabel.setContentHuggingVerticalHigh()
+            callStatusLabel.setCompressionResistanceHigh()
 
-            contactAvatarView.autoPinEdge(.top, to:.bottom, of:callStatusLabel, withOffset:+avatarTopSpacing)
-            contactAvatarView.autoPinEdge(.bottom, to:.top, of:ongoingCallView, withOffset:-avatarBottomSpacing)
-            contactAvatarView.autoHCenterInSuperview()
-            // Stretch that avatar to fill the available space.
-            contactAvatarView.setContentHuggingLow()
-            contactAvatarView.setCompressionResistanceLow()
-            // Preserve square aspect ratio of contact avatar.
-            contactAvatarView.autoMatch(.width, to:.height, of:contactAvatarView)
+            contactAvatarContainerView.autoPinEdge(.top, to:.bottom, of:callStatusLabel, withOffset:+avatarTopSpacing)
+            contactAvatarContainerView.autoPinEdge(.bottom, to:.top, of:ongoingCallView, withOffset:-avatarBottomSpacing)
+            contactAvatarContainerView.autoPinWidthToSuperview(withMargin: avatarTopSpacing)
+
+            contactAvatarView.autoCenterInSuperview()
+
+            // Ensure ContacAvatarView gets as close as possible to it's superview edges while maintaining
+            // aspect ratio.
+            contactAvatarView.autoPinToSquareAspectRatio()
+            contactAvatarView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+            contactAvatarView.autoPinEdge(toSuperviewEdge: .right, withInset: 0, relation: .greaterThanOrEqual)
+            contactAvatarView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
+            contactAvatarView.autoPinEdge(toSuperviewEdge: .left, withInset: 0, relation: .greaterThanOrEqual)
+            NSLayoutConstraint.autoSetPriority(UILayoutPriorityDefaultLow) {
+                contactAvatarView.autoPinEdgesToSuperviewMargins()
+            }
 
             // Ongoing call controls
             ongoingCallView.autoPinEdge(toSuperviewEdge:.bottom, withInset:ongoingBottomMargin)

@@ -72,7 +72,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 {
     self.layoutMargins = UIEdgeInsetsZero;
 
-    self.backgroundColor = [UIColor colorWithWhite:245 / 255.f alpha:1.f];
+    self.backgroundColor = [UIColor ows_inputToolbarBackgroundColor];
 
     UIView *borderView = [UIView new];
     borderView.backgroundColor = [UIColor colorWithWhite:238 / 255.f alpha:1.f];
