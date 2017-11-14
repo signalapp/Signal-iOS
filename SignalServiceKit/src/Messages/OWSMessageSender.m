@@ -190,7 +190,12 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
             return;
         }
 
-        [message updateWithMessageState:TSOutgoingMessageStateSentToService];
+        // Update the message unless it has been deleted.
+        if ([TSOutgoingMessage fetchObjectWithUniqueID:message.uniqueId]) {
+            [message updateWithMessageState:TSOutgoingMessageStateSentToService];
+        } else {
+            DDLogInfo(@"%@ not marking message sent; message deleted.", strongSelf.logTag);
+        }
 
         aSuccessHandler();
 
@@ -204,7 +209,12 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
             return;
         }
 
-        [strongSelf.message updateWithSendingError:error];
+        // Update the message unless it has been deleted.
+        if ([TSOutgoingMessage fetchObjectWithUniqueID:message.uniqueId]) {
+            [strongSelf.message updateWithSendingError:error];
+        } else {
+            DDLogInfo(@"%@ not marking message failed; message deleted.", strongSelf.logTag);
+        }
 
         DDLogDebug(@"%@ failed with error: %@", strongSelf.logTag, error);
         aFailureHandler(error);
@@ -280,6 +290,15 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 
 - (void)tryWithRemainingRetries:(NSUInteger)remainingRetries
 {
+    // If the message has been deleted, abort send.
+    if (![TSOutgoingMessage fetchObjectWithUniqueID:self.message.uniqueId]) {
+        DDLogInfo(@"%@ aborting message send; message deleted.", self.logTag);
+        NSError *error = OWSErrorWithCodeDescription(
+            OWSErrorCodeMessageDeletedBeforeSent, @"Message was deleted before it could be sent.");
+        self.failureHandler(error);
+        return;
+    }
+
     // Use this flag to ensure a given operation only succeeds or fails once.
     __block BOOL onceFlag = NO;
     RetryableFailureHandler retryableFailureHandler = ^(NSError *_Nonnull error) {
@@ -429,6 +448,22 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         //
         // So we're using YDB behavior to ensure this invariant, which is a bit
         // unorthodox.
+        // Update the message unless it has been deleted.
+        //        __block BOOL isMessageDeleted = NO;
+        //        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        //            if ([TSOutgoingMessage fetchObjectWithUniqueID:message.uniqueId
+        //                 transaction:transaction]) {
+        //                [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut transaction:transaction];
+        //            } else {
+        //                DDLogInfo(@"%@ not marking message as sending; message deleted.", self.logTag);
+        //                isMessageDeleted = YES;
+        //            }
+        //        }];
+        //        if (isMessageDeleted) {
+        //            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageDeletedBeforeSent, @"Message was
+        //            deleted before it could be sent."); failureHandler(error); return;
+        //        }
+        DDLogError(@"------ TSOutgoingMessageStateAttemptingOut: %@ %@", message.debugDescription, message.description);
         [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut];
 
         OWSSendMessageOperation *sendMessageOperation =
@@ -704,7 +739,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         attempts:OWSMessageSenderRetryAttempts
         success:^{
             DDLogInfo(@"%@ Marking group message as sent to recipient: %@", self.logTag, recipient.uniqueId);
-            [message updateWithSentRecipient:recipient.uniqueId];
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                // Update the message unless it has been deleted.
+                if ([TSOutgoingMessage fetchObjectWithUniqueID:message.uniqueId]) {
+                    [message updateWithSentRecipient:recipient.uniqueId transaction:transaction];
+                } else {
+                    DDLogInfo(@"%@ not marking message as sent to recipient; message deleted.", self.logTag);
+                }
+            }];
             [futureSource trySetResult:@1];
         }
         failure:^(NSError *error) {
@@ -1146,7 +1188,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if (message.shouldSyncTranscript) {
         // TODO: I suspect we shouldn't optimistically set hasSyncedTranscript.
         //       We could set this in a success handler for [sendSyncTranscriptForMessage:].
-        [message updateWithHasSyncedTranscript:YES];
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            // Update the message unless it has been deleted.
+            if ([TSOutgoingMessage fetchObjectWithUniqueID:message.uniqueId]) {
+                [message updateWithHasSyncedTranscript:YES transaction:transaction];
+            } else {
+                DDLogInfo(@"%@ not marking message as having synced transcript; message deleted.", self.logTag);
+            }
+        }];
         [self sendSyncTranscriptForMessage:message];
     }
 

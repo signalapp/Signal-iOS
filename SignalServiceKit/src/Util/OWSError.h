@@ -26,6 +26,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeMessageSendNoValidRecipients = 777407,
     OWSErrorCodeContactsUpdaterRateLimit = 777408,
     OWSErrorCodeCouldNotWriteAttachmentData = 777409,
+    OWSErrorCodeMessageDeletedBeforeSent = 777410,
 };
 
 extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);

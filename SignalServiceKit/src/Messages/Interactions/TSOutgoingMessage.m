@@ -292,13 +292,12 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 }
 
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript
+                          transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestOutgoingMessage:transaction
-                                            changeBlock:^(TSOutgoingMessage *message) {
-                                                [message setHasSyncedTranscript:hasSyncedTranscript];
-                                            }];
-    }];
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            [message setHasSyncedTranscript:hasSyncedTranscript];
+                                        }];
 }
 
 - (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -419,13 +418,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                         changeBlock:^(TSOutgoingMessage *message) {
                                             [message addSentRecipient:contactId];
                                         }];
-}
-
-- (void)updateWithSentRecipient:(NSString *)contactId
-{
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self updateWithSentRecipient:contactId transaction:transaction];
-    }];
 }
 
 - (void)updateWithReadRecipientId:(NSString *)recipientId
