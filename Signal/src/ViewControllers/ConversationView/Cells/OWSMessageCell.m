@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
 @implementation BubbleMaskingView
 
 - (void)setFrame:(CGRect)frame
@@ -65,6 +67,72 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface OWSMessageTextView : UITextView
+
+@property (nonatomic) BOOL shouldIgnoreEvents;
+
+@end
+
+#pragma mark -
+
+@implementation OWSMessageTextView
+
+// Our message text views are never used for editing;
+// suppress their ability to become first responder
+// so that tapping on them doesn't hide keyboard.
+- (BOOL)canBecomeFirstResponder
+{
+    return NO;
+}
+
+// Ignore interactions with the text view _except_ taps on links.
+//
+// We want to disable "partial" selection of text in the message
+// and we want to enable "tap to resend" by tapping on a message.
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *_Nullable)event
+{
+    if (self.shouldIgnoreEvents) {
+        // We ignore all events for failed messages so that users
+        // can tap-to-resend even "all link" messages.
+        return NO;
+    }
+
+    // Find the nearest text position to the event.
+    UITextPosition *_Nullable position = [self closestPositionToPoint:point];
+    if (!position) {
+        return NO;
+    }
+    // Find the range of the character in the text which contains the event.
+    //
+    // Try every layout direction (this might not be necessary).
+    UITextRange *_Nullable range = nil;
+    for (NSNumber *textLayoutDirection in @[
+             @(UITextLayoutDirectionLeft),
+             @(UITextLayoutDirectionRight),
+             @(UITextLayoutDirectionUp),
+             @(UITextLayoutDirectionDown),
+         ]) {
+        range = [self.tokenizer rangeEnclosingPosition:position
+                                       withGranularity:UITextGranularityCharacter
+                                           inDirection:(UITextDirection)textLayoutDirection.intValue];
+        if (range) {
+            break;
+        }
+    }
+    if (!range) {
+        return NO;
+    }
+    // Ignore the event unless it occurred inside a link.
+    NSInteger startIndex = [self offsetFromPosition:self.beginningOfDocument toPosition:range.start];
+    BOOL result =
+        [self.attributedText attribute:NSLinkAttributeName atIndex:(NSUInteger)startIndex effectiveRange:nil] != nil;
+    return result;
+}
+
+@end
+
+#pragma mark -
+
 @interface OWSMessageCell ()
 
 // The nullable properties are created as needed.
@@ -72,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
 // to always keep one around.
 @property (nonatomic) BubbleMaskingView *payloadView;
 @property (nonatomic) UILabel *dateHeaderLabel;
-@property (nonatomic) UITextView *textView;
+@property (nonatomic) OWSMessageTextView *textView;
 @property (nonatomic, nullable) UIImageView *failedSendBadgeView;
 @property (nonatomic, nullable) UILabel *tapForMoreLabel;
 @property (nonatomic, nullable) UIImageView *bubbleImageView;
@@ -90,6 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *dateHeaderConstraints;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *contentConstraints;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *footerConstraints;
+@property (nonatomic) BOOL isPresentingMenuController;
 
 @end
 
@@ -132,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.payloadView addSubview:self.bubbleImageView];
     [self.bubbleImageView autoPinToSuperviewEdges];
 
-    self.textView = [UITextView new];
+    self.textView = [OWSMessageTextView new];
     self.textView.backgroundColor = [UIColor clearColor];
     self.textView.opaque = NO;
     self.textView.editable = NO;
@@ -646,21 +715,20 @@ NS_ASSUME_NONNULL_BEGIN
     self.textView.textColor = textColor;
     // Honor dynamic type in the message bodies.
     self.textView.font = [self textMessageFont];
+    self.textView.linkTextAttributes = @{
+        NSForegroundColorAttributeName : textColor,
+        NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
+    };
+    self.textView.dataDetectorTypes
+        = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
 
-    // Don't link outgoing messages that haven't been sent yet, as
-    // this interferes with "tap to retry".
-    BOOL canLinkify = YES;
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        // Ignore taps on links in outgoing messages that haven't been sent yet, as
+        // this interferes with "tap to retry".
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        canLinkify = outgoingMessage.messageState == TSOutgoingMessageStateSentToService;
-    }
-    if (canLinkify) {
-        self.textView.linkTextAttributes = @{
-            NSForegroundColorAttributeName : textColor,
-            NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
-        };
-        self.textView.dataDetectorTypes
-            = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
+        self.textView.shouldIgnoreEvents = outgoingMessage.messageState != TSOutgoingMessageStateSentToService;
+    } else {
+        self.textView.shouldIgnoreEvents = NO;
     }
 
     if (self.displayableText.isTextTruncated) {
@@ -1038,6 +1106,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.expirationTimerView clearAnimations];
     [self.expirationTimerView removeFromSuperview];
     self.expirationTimerView = nil;
+
+    self.isPresentingMenuController = NO;
 }
 
 #pragma mark - Notifications
@@ -1159,6 +1229,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showMenuController:(CGPoint)fromLocation
 {
+    // We don't want taps on messages to hide the keyboard,
+    // so we only let messages become first responder
+    // while they are trying to present the menu controller.
+    self.isPresentingMenuController = YES;
+
     [self becomeFirstResponder];
 
     if ([UIMenuController sharedMenuController].isMenuVisible) {
@@ -1208,7 +1283,37 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canBecomeFirstResponder
 {
-    return YES;
+    return self.isPresentingMenuController;
+}
+
+- (void)didHideMenuController:(NSNotification *)notification
+{
+    self.isPresentingMenuController = NO;
+}
+
+- (void)setIsPresentingMenuController:(BOOL)isPresentingMenuController
+{
+    if (_isPresentingMenuController == isPresentingMenuController) {
+        return;
+    }
+
+    _isPresentingMenuController = isPresentingMenuController;
+
+    if (isPresentingMenuController) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(didHideMenuController:)
+                                                     name:UIMenuControllerDidHideMenuNotification
+                                                   object:nil];
+    } else {
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                        name:UIMenuControllerDidHideMenuNotification
+                                                      object:nil];
+    }
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Logging
