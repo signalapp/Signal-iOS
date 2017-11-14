@@ -172,11 +172,19 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.collectionView.autoPinWidthToSuperview()
         self.collectionView.autoPinEdge(.top, to: .bottom, of: searchBar)
 
+        // for iPhoneX devices, extends the black background to the bottom edge of the view.
+        let bottomBannerContainer = UIView()
+        bottomBannerContainer.backgroundColor = UIColor.black
+        self.view.addSubview(bottomBannerContainer)
+        bottomBannerContainer.autoPinWidthToSuperview()
+        bottomBannerContainer.autoPinEdge(.top, to: .bottom, of: self.collectionView)
+        bottomBannerContainer.autoPinEdge(toSuperviewEdge: .bottom)
+
         let bottomBanner = UIView()
-        bottomBanner.backgroundColor = UIColor.black
-        self.view.addSubview(bottomBanner)
+        bottomBannerContainer.addSubview(bottomBanner)
+
+        bottomBanner.autoPinEdge(toSuperviewEdge: .top)
         bottomBanner.autoPinWidthToSuperview()
-        bottomBanner.autoPinEdge(.top, to: .bottom, of: self.collectionView)
         self.autoPinView(toBottomGuideOrKeyboard:bottomBanner)
 
         // The Giphy API requires us to "show their trademark prominently" in our GIF experience.
