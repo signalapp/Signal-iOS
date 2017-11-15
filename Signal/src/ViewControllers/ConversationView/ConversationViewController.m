@@ -2910,6 +2910,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     DDLogVerbose(
                         @"YapDatabaseViewChangeInsert: %@, %@", rowChange.collectionKey, rowChange.newIndexPath);
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
+                    // We don't want to reload a row that we just inserted.
                     [rowsThatChangedSize removeObject:@(rowChange.newIndexPath.row)];
 
                     ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:rowChange.newIndexPath.row];
@@ -2929,12 +2930,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                         rowChange.newIndexPath);
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
+                    // We don't want to reload a row that we just moved.
                     [rowsThatChangedSize removeObject:@(rowChange.newIndexPath.row)];
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
                     DDLogVerbose(@"YapDatabaseViewChangeUpdate: %@, %@", rowChange.collectionKey, rowChange.indexPath);
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
+                    // We don't want to reload a row that we've already reloaded.
                     [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
                     break;
                 }
