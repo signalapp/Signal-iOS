@@ -31,11 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (BOOL)shouldBeSaved
 {
-    // override superclass with no-op.
-    //
-    // There's no need to save this message, since it's not displayed to the user.
+    return NO;
 }
 
 - (BOOL)shouldSyncTranscript

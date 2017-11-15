@@ -281,7 +281,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 - (void)tryWithRemainingRetries:(NSUInteger)remainingRetries
 {
     // If the message has been deleted, abort send.
-    if (![TSOutgoingMessage fetchObjectWithUniqueID:self.message.uniqueId]) {
+    if (self.message.shouldBeSaved && ![TSOutgoingMessage fetchObjectWithUniqueID:self.message.uniqueId]) {
         DDLogInfo(@"%@ aborting message send; message deleted.", self.logTag);
         NSError *error = OWSErrorWithCodeDescription(
             OWSErrorCodeMessageDeletedBeforeSent, @"Message was deleted before it could be sent.");

@@ -148,6 +148,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (OWSSignalServiceProtosAttachmentPointer *)buildAttachmentProtoForAttachmentId:(NSString *)attachmentId
                                                                         filename:(nullable NSString *)filename;
 
+- (BOOL)shouldBeSaved;
+
 #pragma mark - Update With... Methods
 
 - (void)updateWithMessageState:(TSOutgoingMessageState)messageState;

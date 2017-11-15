@@ -171,13 +171,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - TSYapDatabaseObject overrides
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (BOOL)shouldBeSaved
 {
-    // override superclass with no-op.
-    //
-    // There's no need to save this message, since it's not displayed to the user.
-    //
-    // Should we find a need to save this in the future, we need to exclude any non-serializable properties.
+    return NO;
 }
 
 - (NSString *)debugDescription
