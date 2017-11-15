@@ -2902,7 +2902,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 case YapDatabaseViewChangeDelete: {
                     DDLogVerbose(@"YapDatabaseViewChangeDelete: %@, %@", rowChange.collectionKey, rowChange.indexPath);
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
-                    [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
                     YapCollectionKey *collectionKey = rowChange.collectionKey;
                     OWSAssert(collectionKey.key.length > 0);
                     break;
@@ -2911,6 +2910,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     DDLogVerbose(
                         @"YapDatabaseViewChangeInsert: %@, %@", rowChange.collectionKey, rowChange.newIndexPath);
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
+                    // We don't want to reload a row that we just inserted.
                     [rowsThatChangedSize removeObject:@(rowChange.newIndexPath.row)];
 
                     ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:rowChange.newIndexPath.row];
@@ -2930,11 +2930,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                         rowChange.newIndexPath);
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
+                    // We don't want to reload a row that we just moved.
+                    [rowsThatChangedSize removeObject:@(rowChange.newIndexPath.row)];
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
                     DDLogVerbose(@"YapDatabaseViewChangeUpdate: %@, %@", rowChange.collectionKey, rowChange.indexPath);
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
+                    // We don't want to reload a row that we've already reloaded.
                     [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
                     break;
                 }
@@ -2947,7 +2950,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         for (NSNumber *row in rowsThatChangedSize) {
             [rowsToReload addObject:[NSIndexPath indexPathForRow:row.integerValue inSection:0]];
         }
-        [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
+        if (rowsToReload.count > 0) {
+            [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
+        }
     };
     void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
         OWSAssert([NSThread isMainThread]);
