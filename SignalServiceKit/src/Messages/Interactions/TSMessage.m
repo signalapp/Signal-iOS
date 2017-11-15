@@ -281,33 +281,16 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
     return YES;
 }
 
-#pragma mark - Update Methods
-
-// This method does the work for the "updateWith..." methods.  Please see
-// the header for a discussion of those methods.
-- (void)applyChangeToSelfAndLatestMessage:(YapDatabaseReadWriteTransaction *)transaction
-                              changeBlock:(void (^)(TSMessage *))changeBlock
-{
-    OWSAssert(transaction);
-
-    changeBlock(self);
-
-    NSString *collection = [[self class] collection];
-    TSMessage *latestMessage = [transaction objectForKey:self.uniqueId inCollection:collection];
-    if (latestMessage) {
-        changeBlock(latestMessage);
-        [latestMessage saveWithTransaction:transaction];
-    }
-}
+#pragma mark - Update With... Methods
 
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(expireStartedAt > 0);
 
-    [self applyChangeToSelfAndLatestMessage:transaction
-                                changeBlock:^(TSMessage *message) {
-                                    [message setExpireStartedAt:expireStartedAt];
-                                }];
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSMessage *message) {
+                                 [message setExpireStartedAt:expireStartedAt];
+                             }];
 }
 
 @end

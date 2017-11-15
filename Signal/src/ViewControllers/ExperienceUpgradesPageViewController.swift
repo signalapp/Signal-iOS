@@ -526,7 +526,11 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
     }
 
     public func addViewController(experienceUpgrade: ExperienceUpgrade) {
-        guard let identifier = ExperienceUpgradeId(rawValue: experienceUpgrade.uniqueId) else {
+        guard let uniqueId = experienceUpgrade.uniqueId else {
+            Logger.error("\(self.TAG) experienceUpgrade is missing uniqueId.")
+            return
+        }
+        guard let identifier = ExperienceUpgradeId(rawValue: uniqueId) else {
             owsFail("\(TAG) unknown experience upgrade. skipping")
             return
         }

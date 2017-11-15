@@ -551,7 +551,11 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         AssertIsOnMainThread()
 
         self.databaseConnection.read { transaction in
-            guard let newMessage = TSInteraction.fetch(uniqueId: self.message.uniqueId, transaction: transaction) as? TSMessage else {
+            guard let uniqueId = self.message.uniqueId else {
+                Logger.error("\(self.TAG) Message is missing uniqueId.")
+                return
+            }
+            guard let newMessage = TSInteraction.fetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
                 Logger.error("\(self.TAG) Couldn't reload message.")
                 return
             }
@@ -564,7 +568,11 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
 
         let notifications = self.databaseConnection.beginLongLivedReadTransaction()
 
-        guard self.databaseConnection.hasChange(forKey: message.uniqueId,
+        guard let uniqueId = self.message.uniqueId else {
+            Logger.error("\(self.TAG) Message is missing uniqueId.")
+            return
+        }
+        guard self.databaseConnection.hasChange(forKey: uniqueId,
                                                  inCollection: TSInteraction.collection(),
                                                  in: notifications) else {
                                                     Logger.debug("\(TAG) No relevant changes.")
