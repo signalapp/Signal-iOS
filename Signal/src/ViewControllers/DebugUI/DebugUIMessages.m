@@ -219,7 +219,7 @@ NS_ASSUME_NONNULL_BEGIN
                   OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
                       [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread
                                                                   groupId:[Randomness generateRandomBytes:16]];
-                  [[Environment getCurrent].messageSender enqueueOutgoingMessage:syncGroupsRequestMessage
+                  [[Environment getCurrent].messageSender enqueueMessage:syncGroupsRequestMessage
                       success:^{
                           DDLogWarn(@"%@ Successfully sent Request Group Info message.", self.logTag);
                       }
@@ -1066,11 +1066,11 @@ NS_ASSUME_NONNULL_BEGIN
             });
         });
     };
-    [messageSender enqueueOutgoingMessage:message
-                                  success:completion
-                                  failure:^(NSError *error) {
-                                      completion();
-                                  }];
+    [messageSender enqueueMessage:message
+                          success:completion
+                          failure:^(NSError *error) {
+                              completion();
+                          }];
 }
 
 + (void)injectFakeIncomingMessages:(int)counter thread:(TSThread *)thread

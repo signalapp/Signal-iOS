@@ -258,7 +258,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
     OWSBlockedPhoneNumbersMessage *message =
         [[OWSBlockedPhoneNumbersMessage alloc] initWithPhoneNumbers:blockedPhoneNumbers];
 
-    [self.messageSender enqueueOutgoingMessage:message
+    [self.messageSender enqueueMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully sent blocked phone numbers sync message", self.logTag);
 

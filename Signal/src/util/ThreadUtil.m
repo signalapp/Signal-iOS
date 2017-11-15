@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        attachmentIds:[NSMutableArray new]
                                     expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
 
-    [messageSender enqueueOutgoingMessage:message success:successHandler failure:failureHandler];
+    [messageSender enqueueMessage:message success:successHandler failure:failureHandler];
 
     return message;
 }
@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
                                             inThread:thread
                                       isVoiceMessage:[attachment isVoiceMessage]
                                     expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
-    [messageSender enqueueOutgoingAttachment:attachment.dataSource
+    [messageSender enqueueAttachment:attachment.dataSource
         contentType:attachment.mimeType
         sourceFilename:attachment.filenameOrDefault
         inMessage:message

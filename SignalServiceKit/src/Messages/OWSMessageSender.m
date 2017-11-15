@@ -419,9 +419,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 }
 
-- (void)enqueueOutgoingMessage:(TSOutgoingMessage *)message
-                       success:(void (^)(void))successHandler
-                       failure:(void (^)(NSError *error))failureHandler
+- (void)enqueueMessage:(TSOutgoingMessage *)message
+               success:(void (^)(void))successHandler
+               failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssert(message);
 
@@ -509,11 +509,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                           failure:failureHandler];
 }
 
-- (void)enqueueOutgoingTemporaryAttachment:(DataSource *)dataSource
-                               contentType:(NSString *)contentType
-                                 inMessage:(TSOutgoingMessage *)message
-                                   success:(void (^)(void))successHandler
-                                   failure:(void (^)(NSError *error))failureHandler
+- (void)enqueueTemporaryAttachment:(DataSource *)dataSource
+                       contentType:(NSString *)contentType
+                         inMessage:(TSOutgoingMessage *)message
+                           success:(void (^)(void))successHandler
+                           failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssert(dataSource);
 
@@ -531,20 +531,20 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [message remove];
     };
 
-    [self enqueueOutgoingAttachment:dataSource
-                        contentType:contentType
-                     sourceFilename:nil
-                          inMessage:message
-                            success:successWithDeleteHandler
-                            failure:failureWithDeleteHandler];
+    [self enqueueAttachment:dataSource
+                contentType:contentType
+             sourceFilename:nil
+                  inMessage:message
+                    success:successWithDeleteHandler
+                    failure:failureWithDeleteHandler];
 }
 
-- (void)enqueueOutgoingAttachment:(DataSource *)dataSource
-                      contentType:(NSString *)contentType
-                   sourceFilename:(nullable NSString *)sourceFilename
-                        inMessage:(TSOutgoingMessage *)message
-                          success:(void (^)(void))successHandler
-                          failure:(void (^)(NSError *error))failureHandler
+- (void)enqueueAttachment:(DataSource *)dataSource
+              contentType:(NSString *)contentType
+           sourceFilename:(nullable NSString *)sourceFilename
+                inMessage:(TSOutgoingMessage *)message
+                  success:(void (^)(void))successHandler
+                  failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssert(dataSource);
 
@@ -569,7 +569,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             message.attachmentFilenameMap[attachmentStream.uniqueId] = sourceFilename;
         }
 
-        [self enqueueOutgoingMessage:message success:successHandler failure:failureHandler];
+        [self enqueueMessage:message success:successHandler failure:failureHandler];
     });
 }
 

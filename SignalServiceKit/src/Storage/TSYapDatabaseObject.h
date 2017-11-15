@@ -81,8 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
                                      transaction:(YapDatabaseReadTransaction *)transaction
-    NS_SWIFT_NAME(fetch(uniqueId:transaction
-:));
+    NS_SWIFT_NAME(fetch(uniqueId:transaction:));
 + (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID NS_SWIFT_NAME(fetch(uniqueId:));
 
 /**

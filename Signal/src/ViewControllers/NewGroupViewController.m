@@ -500,16 +500,14 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                               NSData *data = UIImagePNGRepresentation(model.groupImage);
                               DataSource *_Nullable dataSource =
                                   [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-                              [self.messageSender enqueueOutgoingAttachment:dataSource
-                                                                contentType:OWSMimeTypeImagePng
-                                                             sourceFilename:nil
-                                                                  inMessage:message
-                                                                    success:successHandler
-                                                                    failure:failureHandler];
+                              [self.messageSender enqueueAttachment:dataSource
+                                                        contentType:OWSMimeTypeImagePng
+                                                     sourceFilename:nil
+                                                          inMessage:message
+                                                            success:successHandler
+                                                            failure:failureHandler];
                           } else {
-                              [self.messageSender enqueueOutgoingMessage:message
-                                                                 success:successHandler
-                                                                 failure:failureHandler];
+                              [self.messageSender enqueueMessage:message success:successHandler failure:failureHandler];
                           }
                       });
                   }];

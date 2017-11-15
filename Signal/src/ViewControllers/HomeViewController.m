@@ -679,7 +679,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
             TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                              inThread:thread
                                                                      groupMetaMessage:TSGroupMessageQuit];
-            [self.messageSender enqueueOutgoingMessage:message
+            [self.messageSender enqueueMessage:message
                 success:^{
                     [self dismissViewControllerAnimated:YES
                                              completion:^{

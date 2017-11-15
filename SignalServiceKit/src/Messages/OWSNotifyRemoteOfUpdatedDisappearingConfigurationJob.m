@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSDisappearingMessagesConfigurationMessage alloc] initWithConfiguration:self.configuration
                                                                             thread:self.thread];
 
-    [self.messageSender enqueueOutgoingMessage:message
+    [self.messageSender enqueueMessage:message
         success:^{
             DDLogDebug(
                 @"%@ Successfully notified %@ of new disappearing messages configuration", self.logTag, self.thread);

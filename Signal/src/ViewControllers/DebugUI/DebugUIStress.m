@@ -437,7 +437,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(message);
     
     OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
-    [messageSender enqueueOutgoingMessage:message
+    [messageSender enqueueMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully sent message.", self.logTag);
         }
