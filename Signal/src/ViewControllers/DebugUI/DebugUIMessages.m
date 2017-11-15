@@ -18,6 +18,7 @@
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/TSCall.h>
+#import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSStorageManager+SessionStore.h>
@@ -239,6 +240,10 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Inject 1,000 fake incoming messages"
                         actionBlock:^{
                             [DebugUIMessages injectFakeIncomingMessages:1000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Perform 100 random actions"
+                        actionBlock:^{
+                            [DebugUIMessages performRandomActions:100 thread:thread];
                         }],
     ] mutableCopy];
     if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -1128,6 +1133,246 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(envelopeData);
 
     [[OWSBatchMessageProcessor sharedInstance] enqueueEnvelopeData:envelopeData plaintextData:plaintextData];
+}
+
++ (void)performRandomActions:(int)counter thread:(TSThread *)thread
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(),
+                   ^{
+                       [self performRandomActionInThread:thread counter:counter];
+                       if (counter > 0) {
+                           [self performRandomActions:counter - 1 thread:thread];
+                       }
+                   });
+}
+
++ (void)performRandomActionInThread:(TSThread *)thread
+                            counter:(int)counter
+{
+    typedef void (^ActionBlock)(void);
+    NSArray<ActionBlock> *actionBlocks = @[
+                                           ^{
+                                               [self injectIncomingMessageInThread:thread counter:counter];
+                                           },
+                                            ^{
+                                                [self sendTextMessageInThread:thread counter:counter];
+                                            },
+                                            ^{
+                                                NSUInteger messageCount = (NSUInteger) (1 + arc4random_uniform(4));
+                                                [self sendFakeMessages:messageCount thread:thread];
+                                            },
+                                            ^{
+                                                NSUInteger messageCount = (NSUInteger) (1 + arc4random_uniform(4));
+                                                [self deleteRandomMessages:messageCount thread:thread];
+                                            },
+                                            ^{
+                                                [self deleteLastMessageInThread:thread];
+                                            },
+                                            ^{
+                                                NSUInteger messageCount = (NSUInteger) (1 + arc4random_uniform(4));
+                                                [self deleteRandomRecentMessages:messageCount thread:thread];
+                                            },
+                                            ^{
+                                                NSUInteger messageCount = (NSUInteger) (1 + arc4random_uniform(4));
+                                                [self insertAndDeleteNewOutgoingMessages:messageCount thread:thread];
+                                            },
+                                            ^{
+                                                NSUInteger messageCount = (NSUInteger) (1 + arc4random_uniform(4));
+                                                [self resurrectNewOutgoingMessages1:messageCount thread:thread];
+                                            },
+                                            ^{
+                                                NSUInteger messageCount = (NSUInteger) (1 + arc4random_uniform(4));
+                                                [self resurrectNewOutgoingMessages2:messageCount thread:thread];
+                                            },
+                                           ];
+    ActionBlock actionBlock = actionBlocks[(NSUInteger) arc4random_uniform((uint32_t) actionBlocks.count)];
+    actionBlock();
+}
+
++ (void)deleteRandomMessages:(NSUInteger)count thread:(TSThread *)thread
+{
+    [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
+                                                                               YapDatabaseReadWriteTransaction *transaction) {
+        
+        YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
+        NSUInteger messageCount = [interactionsByThread numberOfItemsInGroup:thread.uniqueId];
+        
+        NSMutableArray<NSNumber *> *messageIndices = [NSMutableArray new];
+        for (NSUInteger messageIdx =0; messageIdx < messageCount; messageIdx++) {
+            [messageIndices addObject:@(messageIdx)];
+        }
+        NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
+        for (NSUInteger i =0; i < count && messageIndices.count > 0; i++) {
+            NSUInteger idx = (NSUInteger) arc4random_uniform((uint32_t) messageIndices.count);
+            NSNumber *messageIdx = messageIndices[idx];
+            [messageIndices removeObjectAtIndex:idx];
+            
+            TSInteraction *_Nullable interaction =
+            [interactionsByThread objectAtIndex:messageIdx.unsignedIntegerValue inGroup:thread.uniqueId];
+            OWSAssert(interaction);
+            [interactions addObject:interaction];
+        }
+        
+        for (TSInteraction *interaction in interactions) {
+            [interaction removeWithTransaction:transaction];
+        }
+    }];
+}
+
++ (void)deleteLastMessageInThread:(TSThread *)thread
+{
+    [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
+                                                                               YapDatabaseReadWriteTransaction *transaction) {
+        
+        YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
+        TSInteraction *_Nullable interaction = [interactionsByThread lastObjectInGroup:thread.uniqueId];
+        if (interaction) {
+            [interaction removeWithTransaction:transaction];
+        }
+    }];
+}
+
++ (void)deleteRandomRecentMessages:(NSUInteger)count thread:(TSThread *)thread
+{
+    [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
+                                                                               YapDatabaseReadWriteTransaction *transaction) {
+        
+        YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
+        NSInteger messageCount = (NSInteger) [interactionsByThread numberOfItemsInGroup:thread.uniqueId];
+        
+        NSMutableArray<NSNumber *> *messageIndices = [NSMutableArray new];
+        const NSInteger kRecentMessageCount = 10;
+        for (NSInteger i =0; i < kRecentMessageCount; i++) {
+            NSInteger messageIdx = messageCount - (1 + i);
+            if (messageIdx >= 0) {
+                [messageIndices addObject:@(messageIdx)];
+            }
+        }
+        NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
+        for (NSUInteger i =0; i < count && messageIndices.count > 0; i++) {
+            NSUInteger idx = (NSUInteger) arc4random_uniform((uint32_t) messageIndices.count);
+            NSNumber *messageIdx = messageIndices[idx];
+            [messageIndices removeObjectAtIndex:idx];
+            
+            TSInteraction *_Nullable interaction =
+            [interactionsByThread objectAtIndex:messageIdx.unsignedIntegerValue inGroup:thread.uniqueId];
+            OWSAssert(interaction);
+            [interactions addObject:interaction];
+        }
+        for (TSInteraction *interaction in interactions) {
+            [interaction removeWithTransaction:transaction];
+        }
+    }];
+}
+
++ (void)insertAndDeleteNewOutgoingMessages:(NSUInteger)count thread:(TSThread *)thread
+{
+    NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
+    for (NSUInteger i =0; i < count; i++) {
+        NSString *text = [self randomText];
+        OWSDisappearingMessagesConfiguration *configuration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
+        TSOutgoingMessage *message =
+        [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                            inThread:thread
+                                         messageBody:text
+                                       attachmentIds:[NSMutableArray new]
+                                    expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
+        [messages addObject:message];
+    }
+    
+    [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
+                                                                               YapDatabaseReadWriteTransaction *transaction) {
+        for (TSOutgoingMessage *message in messages) {
+            [message saveWithTransaction:transaction];
+        }
+        for (TSOutgoingMessage *message in messages) {
+            [message removeWithTransaction:transaction];
+        }
+    }];
+}
+
++ (void)resurrectNewOutgoingMessages1:(NSUInteger)count thread:(TSThread *)thread
+{
+    NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
+    for (NSUInteger i =0; i < count; i++) {
+        NSString *text = [self randomText];
+        OWSDisappearingMessagesConfiguration *configuration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
+        TSOutgoingMessage *message =
+        [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                            inThread:thread
+                                         messageBody:text
+                                       attachmentIds:[NSMutableArray new]
+                                    expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
+        [messages addObject:message];
+    }
+    
+    [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
+                                                                               YapDatabaseReadWriteTransaction *transaction) {
+        for (TSOutgoingMessage *message in messages) {
+            [message saveWithTransaction:transaction];
+        }
+    }];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(),
+                   ^{
+                       [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
+                                                                                                  YapDatabaseReadWriteTransaction *transaction) {
+                           for (TSOutgoingMessage *message in messages) {
+                               [message removeWithTransaction:transaction];
+                           }
+                           for (TSOutgoingMessage *message in messages) {
+                               [message saveWithTransaction:transaction];
+                           }
+                       }];
+                   });
+}
+
++ (void)resurrectNewOutgoingMessages2:(NSUInteger)count thread:(TSThread *)thread
+{
+    NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
+    for (NSUInteger i =0; i < count; i++) {
+        NSString *text = [self randomText];
+        OWSDisappearingMessagesConfiguration *configuration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
+        TSOutgoingMessage *message =
+        [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                            inThread:thread
+                                         messageBody:text
+                                       attachmentIds:[NSMutableArray new]
+                                    expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
+        [messages addObject:message];
+    }
+    
+    [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
+                                                                               YapDatabaseReadWriteTransaction *transaction) {
+        for (TSOutgoingMessage *message in messages) {
+            [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut transaction:transaction];
+            [message saveWithTransaction:transaction];
+        }
+    }];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(),
+                   ^{
+                       [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
+                                                                                                  YapDatabaseReadWriteTransaction *transaction) {
+                           for (TSOutgoingMessage *message in messages) {
+                               [message removeWithTransaction:transaction];
+                           }
+                       }];
+                       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)),
+                                      dispatch_get_main_queue(),
+                                      ^{
+                                          [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
+                                                                                                                     YapDatabaseReadWriteTransaction *transaction) {
+                                              for (TSOutgoingMessage *message in messages) {
+                                                  [message saveWithTransaction:transaction];
+                                              }
+                                          }];
+                                      });
+                   });
 }
 
 @end
