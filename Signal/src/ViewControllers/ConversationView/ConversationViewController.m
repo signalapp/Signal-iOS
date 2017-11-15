@@ -4180,13 +4180,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
                 // Canary check in case we later have another reason to set navigationController.delegate - we don't
                 // want to inadvertently clobber it here.
-                OWSAssert(self.navigationController.delegate == nil) self.navigationController.delegate = self;
-                TSMessage *message = (TSMessage *)interaction;
-                MessageDetailViewController *view =
-                    [[MessageDetailViewController alloc] initWithViewItem:conversationItem
-                                                                  message:message
-                                                                     mode:MessageMetadataViewModeFocusOnMetadata];
-                [self.navigationController pushViewController:view animated:YES];
+                OWSAssert(self.navigationController.delegate == nil);
+                self.navigationController.delegate = self;
+
+                [self showMetadataViewForViewItem:conversationItem];
             } else {
                 OWSFail(@"%@ Can't show message metadata for message of type: %@", self.logTag, [interaction class]);
             }
