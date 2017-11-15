@@ -38,7 +38,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
     var messageTextProxyViewHeightConstraint: NSLayoutConstraint?
     var bubbleViewWidthConstraint: NSLayoutConstraint?
 
-    var scrollView: UIScrollView?
+    var scrollView: UIScrollView!
     var contentView: UIView?
 
     var attachment: TSAttachment?
@@ -96,11 +96,22 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
                 view.setNeedsLayout()
                 view.layoutIfNeeded()
 
+                let contentHeight = scrollView.contentSize.height
+                let scrollViewHeight = scrollView.frame.size.height
+                guard contentHeight >=  scrollViewHeight else {
+                    // All content is visible within the scroll view. No need to offset.
+                    return
+                }
+
+                // We want to include at least a little portion of the message, but scroll no farther than necessary.
                 let showAtLeast: CGFloat = 50
-                let middleCenter = CGPoint(x: bubbleView.frame.origin.x + bubbleView.frame.width / 2,
-                                           y: bubbleView.frame.origin.y + bubbleView.frame.height - showAtLeast)
-                let offset = bubbleView.superview!.convert(middleCenter, to: scrollView)
-                self.scrollView!.setContentOffset(offset, animated: false)
+                let bubbleViewBottom = bubbleView.superview!.convert(bubbleView.frame, to: scrollView).maxY
+                let maxOffset =  bubbleViewBottom - showAtLeast
+                let lastPage = contentHeight - scrollViewHeight
+
+                let offset = CGPoint(x: 0, y: min(maxOffset, lastPage))
+
+                scrollView.setContentOffset(offset, animated: false)
             }
         }
     }
