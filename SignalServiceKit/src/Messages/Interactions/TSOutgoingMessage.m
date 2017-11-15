@@ -242,8 +242,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 // This method does the work for the "updateWith..." methods.  Please see
 // the header for a discussion of those methods.
-- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
-                           changeBlock:(void (^)(TSOutgoingMessage *))changeBlock
+- (void)applyChangeToSelfAndLatestOutgoingMessage:(YapDatabaseReadWriteTransaction *)transaction
+                                      changeBlock:(void (^)(TSOutgoingMessage *))changeBlock
 {
     OWSAssert(transaction);
 
@@ -262,11 +262,11 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     OWSAssert(error);
 
     [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestCopy:transaction
-                                 changeBlock:^(TSOutgoingMessage *message) {
-                                     [message setMessageState:TSOutgoingMessageStateUnsent];
-                                     [message setMostRecentFailureText:error.localizedDescription];
-                                 }];
+        [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                            changeBlock:^(TSOutgoingMessage *message) {
+                                                [message setMessageState:TSOutgoingMessageStateUnsent];
+                                                [message setMostRecentFailureText:error.localizedDescription];
+                                            }];
     }];
 }
 
@@ -282,19 +282,19 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 {
     OWSAssert(transaction);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 [message setMessageState:messageState];
-                             }];
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            [message setMessageState:messageState];
+                                        }];
 }
 
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript
                           transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 [message setHasSyncedTranscript:hasSyncedTranscript];
-                             }];
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            [message setHasSyncedTranscript:hasSyncedTranscript];
+                                        }];
 }
 
 - (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -302,10 +302,10 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     OWSAssert(customMessage);
     OWSAssert(transaction);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 [message setCustomMessage:customMessage];
-                             }];
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            [message setCustomMessage:customMessage];
+                                        }];
 }
 
 - (void)updateWithCustomMessage:(NSString *)customMessage
@@ -322,31 +322,32 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     OWSAssert(recipientId.length > 0);
     OWSAssert(transaction);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
 
-                                 if (deliveryTimestamp) {
-                                     NSMutableDictionary<NSString *, NSNumber *> *recipientDeliveryMap
-                                         = (message.recipientDeliveryMap ? [message.recipientDeliveryMap mutableCopy]
-                                                                         : [NSMutableDictionary new]);
-                                     recipientDeliveryMap[recipientId] = deliveryTimestamp;
-                                     message.recipientDeliveryMap = [recipientDeliveryMap copy];
-                                 }
+                                            if (deliveryTimestamp) {
+                                                NSMutableDictionary<NSString *, NSNumber *> *recipientDeliveryMap
+                                                    = (message.recipientDeliveryMap
+                                                            ? [message.recipientDeliveryMap mutableCopy]
+                                                            : [NSMutableDictionary new]);
+                                                recipientDeliveryMap[recipientId] = deliveryTimestamp;
+                                                message.recipientDeliveryMap = [recipientDeliveryMap copy];
+                                            }
 
-                                 [message setWasDelivered:YES];
-                             }];
+                                            [message setWasDelivered:YES];
+                                        }];
 }
 
 - (void)updateWithWasSentFromLinkedDeviceWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 [message setMessageState:TSOutgoingMessageStateSentToService];
-                                 [message setWasDelivered:YES];
-                                 [message setIsFromLinkedDevice:YES];
-                             }];
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            [message setMessageState:TSOutgoingMessageStateSentToService];
+                                            [message setWasDelivered:YES];
+                                            [message setIsFromLinkedDevice:YES];
+                                        }];
 }
 
 - (void)updateWithSingleGroupRecipient:(NSString *)singleGroupRecipient
@@ -355,10 +356,10 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     OWSAssert(transaction);
     OWSAssert(singleGroupRecipient.length > 0);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 [message setSingleGroupRecipient:singleGroupRecipient];
-                             }];
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            [message setSingleGroupRecipient:singleGroupRecipient];
+                                        }];
 }
 
 #pragma mark - Sent Recipients
@@ -410,10 +411,10 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 - (void)updateWithSentRecipient:(NSString *)contactId transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 [message addSentRecipient:contactId];
-                             }];
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            [message addSentRecipient:contactId];
+                                        }];
 }
 
 - (void)updateWithReadRecipientId:(NSString *)recipientId
@@ -423,14 +424,14 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     OWSAssert(recipientId.length > 0);
     OWSAssert(transaction);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 NSMutableDictionary<NSString *, NSNumber *> *recipientReadMap
-                                     = (message.recipientReadMap ? [message.recipientReadMap mutableCopy]
-                                                                 : [NSMutableDictionary new]);
-                                 recipientReadMap[recipientId] = @(readTimestamp);
-                                 message.recipientReadMap = [recipientReadMap copy];
-                             }];
+    [self applyChangeToSelfAndLatestOutgoingMessage:transaction
+                                        changeBlock:^(TSOutgoingMessage *message) {
+                                            NSMutableDictionary<NSString *, NSNumber *> *recipientReadMap
+                                                = (message.recipientReadMap ? [message.recipientReadMap mutableCopy]
+                                                                            : [NSMutableDictionary new]);
+                                            recipientReadMap[recipientId] = @(readTimestamp);
+                                            message.recipientReadMap = [recipientReadMap copy];
+                                        }];
 }
 
 - (nullable NSNumber *)firstRecipientReadTimestamp
