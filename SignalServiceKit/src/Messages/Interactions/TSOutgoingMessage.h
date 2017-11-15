@@ -148,19 +148,20 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (OWSSignalServiceProtosAttachmentPointer *)buildAttachmentProtoForAttachmentId:(NSString *)attachmentId
                                                                         filename:(nullable NSString *)filename;
 
-// TSOutgoingMessage are updated from many threads. We don't want to save
-// our local copy (this instance) since it may be out of date.  Instead, we
+// This model may be updated from many threads. We don't want to save
+// our local copy (this instance) since it may be out of date.  We also
+// want to avoid re-saving a model that has been deleted.  Therefore, we
 // use these "updateWith..." methods to:
 //
 // a) Update a property of this instance.
-// b) Load an up-to-date instance of this model from from the data store.
-// c) Update and save that fresh instance.
-// d) If this message hasn't yet been saved, save this local instance.
+// b) If a copy of this model exists in the database, load an up-to-date copy,
+//    and update and save that copy.
+// b) If a copy of this model _DOES NOT_ exist in the database, do _NOT_ save
+//    this local instance.
 //
 // After "updateWith...":
 //
-// a) An updated copy of this message will always have been saved in the
-//    data store.
+// a) An copy of this model in the database will have been updated.
 // b) The local property on this instance will always have been updated.
 // c) Other properties on this instance may be out of date.
 //

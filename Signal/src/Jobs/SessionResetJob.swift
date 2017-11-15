@@ -30,9 +30,9 @@ class SessionResetJob: NSObject {
             self.storageManager.deleteAllSessions(forContact: self.recipientId)
 
             DispatchQueue.main.async {
-                let endSessionMessage = EndSessionMessage(timestamp:NSDate.ows_millisecondTimeStamp(), in: self.thread)
+                let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.thread)
 
-                self.messageSender.send(endSessionMessage, success: {
+                self.messageSender.enqueue(endSessionMessage, success: {
                     Logger.info("\(self.TAG) successfully sent EndSession<essage.")
                     let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                                 in: self.thread,

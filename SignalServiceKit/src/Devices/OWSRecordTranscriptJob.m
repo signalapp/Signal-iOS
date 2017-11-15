@@ -109,6 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    [outgoingMessage saveWithTransaction:transaction];
     [outgoingMessage updateWithWasSentFromLinkedDeviceWithTransaction:transaction];
     [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:outgoingMessage
                                                             contactsManager:self.contactsManager];
@@ -138,6 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      expiresInSeconds:transcript.expirationDuration
                                                                       expireStartedAt:transcript.expirationStartedAt];
         // Since textMessage is a new message, updateWithWasSentAndDelivered will save it.
+        [textMessage saveWithTransaction:transaction];
         [textMessage updateWithWasSentFromLinkedDeviceWithTransaction:transaction];
     }
 }

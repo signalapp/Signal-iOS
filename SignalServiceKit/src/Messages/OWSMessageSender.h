@@ -63,33 +63,33 @@ NS_SWIFT_NAME(MessageSender)
 
 /**
  * Send and resend text messages or resend messages with existing attachments.
- * If you haven't yet created the attachment, see the `sendAttachmentData:` variants.
+ * If you haven't yet created the attachment, see the ` enqueueOutgoingAttachment:` variants.
  */
 // TODO: make transaction nonnull and remove `sendMessage:success:failure`
-- (void)sendMessage:(TSOutgoingMessage *)message
-            success:(void (^)(void))successHandler
-            failure:(void (^)(NSError *error))failureHandler;
+- (void)enqueueOutgoingMessage:(TSOutgoingMessage *)message
+                       success:(void (^)(void))successHandler
+                       failure:(void (^)(NSError *error))failureHandler;
 
 /**
  * Takes care of allocating and uploading the attachment, then sends the message.
  * Only necessary to call once. If sending fails, retry with `sendMessage:`.
  */
-- (void)sendAttachmentData:(DataSource *)dataSource
-               contentType:(NSString *)contentType
-            sourceFilename:(nullable NSString *)sourceFilename
-                 inMessage:(TSOutgoingMessage *)outgoingMessage
-                   success:(void (^)(void))successHandler
-                   failure:(void (^)(NSError *error))failureHandler;
+- (void)enqueueOutgoingAttachment:(DataSource *)dataSource
+                      contentType:(NSString *)contentType
+                   sourceFilename:(nullable NSString *)sourceFilename
+                        inMessage:(TSOutgoingMessage *)outgoingMessage
+                          success:(void (^)(void))successHandler
+                          failure:(void (^)(NSError *error))failureHandler;
 
 /**
- * Same as `sendAttachmentData:`, but deletes the local copy of the attachment after sending.
+ * Same as ` enqueueOutgoingAttachment:`, but deletes the local copy of the attachment after sending.
  * Used for sending sync request data, not for user visible attachments.
  */
-- (void)sendTemporaryAttachmentData:(DataSource *)dataSource
-                        contentType:(NSString *)contentType
-                          inMessage:(TSOutgoingMessage *)outgoingMessage
-                            success:(void (^)(void))successHandler
-                            failure:(void (^)(NSError *error))failureHandler;
+- (void)enqueueOutgoingTemporaryAttachment:(DataSource *)dataSource
+                               contentType:(NSString *)contentType
+                                 inMessage:(TSOutgoingMessage *)outgoingMessage
+                                   success:(void (^)(void))successHandler
+                                   failure:(void (^)(NSError *error))failureHandler;
 
 /**
  * Set local configuration to match that of the of `outgoingMessage`'s sender

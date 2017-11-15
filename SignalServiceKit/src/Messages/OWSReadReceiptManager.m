@@ -229,7 +229,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             OWSReadReceiptsForLinkedDevicesMessage *message =
                 [[OWSReadReceiptsForLinkedDevicesMessage alloc] initWithReadReceipts:readReceiptsForLinkedDevices];
 
-            [self.messageSender sendMessage:message
+            [self.messageSender enqueueOutgoingMessage:message
                 success:^{
                     DDLogInfo(@"%@ Successfully sent %zd read receipt to linked devices.",
                         self.logTag,
@@ -253,7 +253,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                     [[OWSReadReceiptsForSenderMessage alloc] initWithThread:thread
                                                           messageTimestamps:timestamps.allObjects];
 
-                [self.messageSender sendMessage:message
+                [self.messageSender enqueueOutgoingMessage:message
                     success:^{
                         DDLogInfo(@"%@ Successfully sent %zd read receipts to sender.", self.logTag, timestamps.count);
                     }
@@ -590,7 +590,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
     OWSSyncConfigurationMessage *syncConfigurationMessage =
         [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:value];
-    [self.messageSender sendMessage:syncConfigurationMessage
+    [self.messageSender enqueueOutgoingMessage:syncConfigurationMessage
         success:^{
             DDLogInfo(@"%@ Successfully sent Configuration syncMessage.", self.logTag);
         }

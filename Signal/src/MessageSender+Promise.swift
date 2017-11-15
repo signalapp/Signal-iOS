@@ -12,7 +12,7 @@ public extension MessageSender {
      */
     public func sendPromise(message: TSOutgoingMessage) -> Promise<Void> {
         let promise: Promise<Void> = Promise { fulfill, reject in
-            self.send(message, success: fulfill, failure: reject)
+            self.enqueue(message, success: fulfill, failure: reject)
         }
 
         // Ensure sends complete before they're GC'd.
