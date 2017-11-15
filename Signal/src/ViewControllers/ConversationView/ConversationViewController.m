@@ -2976,7 +2976,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     };
 
     DDLogInfo(@"performBatchUpdates: %d", shouldAnimateUpdates);
-    //    [DDLog flushLog];
+    [DDLog flushLog];
     if (shouldAnimateUpdates) {
         [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
     } else {
@@ -4150,8 +4150,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    //    DDLogInfo(@"collectionView: numberOfItemsInSection:: %zd", self.viewItems.count);
-    //    [DDLog flushLog];
+    DDLogInfo(@"collectionView: numberOfItemsInSection: %zd", self.viewItems.count);
+    [DDLog flushLog];
 
     return (NSInteger)self.viewItems.count;
 }
@@ -4159,6 +4159,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
                   cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    DDLogInfo(@"collectionView: cellForItemAtIndexPath: %@", indexPath);
+    [DDLog flushLog];
+
     ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:indexPath.row];
     ConversationViewCell *cell = [viewItem dequeueCellForCollectionView:self.collectionView indexPath:indexPath];
     if (!cell) {
@@ -4288,6 +4291,9 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 {
     OWSAssert([cell isKindOfClass:[ConversationViewCell class]]);
 
+    DDLogInfo(@"collectionView: willDisplayCell: %@", indexPath);
+    [DDLog flushLog];
+
     ConversationViewCell *conversationViewCell = (ConversationViewCell *)cell;
     conversationViewCell.isCellVisible = YES;
 }
@@ -4297,6 +4303,9 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
       forItemAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
     OWSAssert([cell isKindOfClass:[ConversationViewCell class]]);
+
+    DDLogInfo(@"collectionView: didEndDisplayingCell: %@", indexPath);
+    [DDLog flushLog];
 
     ConversationViewCell *conversationViewCell = (ConversationViewCell *)cell;
     conversationViewCell.isCellVisible = NO;
