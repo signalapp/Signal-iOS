@@ -4151,7 +4151,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     DDLogInfo(@"collectionView: numberOfItemsInSection: %zd", self.viewItems.count);
-    [DDLog flushLog];
+    //    [DDLog flushLog];
 
     return (NSInteger)self.viewItems.count;
 }
@@ -4160,7 +4160,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                   cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     DDLogInfo(@"collectionView: cellForItemAtIndexPath: %@", indexPath);
-    [DDLog flushLog];
+    //    [DDLog flushLog];
 
     ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:indexPath.row];
     ConversationViewCell *cell = [viewItem dequeueCellForCollectionView:self.collectionView indexPath:indexPath];
@@ -4292,7 +4292,7 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
     OWSAssert([cell isKindOfClass:[ConversationViewCell class]]);
 
     DDLogInfo(@"collectionView: willDisplayCell: %@", indexPath);
-    [DDLog flushLog];
+    //    [DDLog flushLog];
 
     ConversationViewCell *conversationViewCell = (ConversationViewCell *)cell;
     conversationViewCell.isCellVisible = YES;
@@ -4305,7 +4305,7 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
     OWSAssert([cell isKindOfClass:[ConversationViewCell class]]);
 
     DDLogInfo(@"collectionView: didEndDisplayingCell: %@", indexPath);
-    [DDLog flushLog];
+    //    [DDLog flushLog];
 
     ConversationViewCell *conversationViewCell = (ConversationViewCell *)cell;
     conversationViewCell.isCellVisible = NO;
