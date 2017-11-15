@@ -384,8 +384,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This method does the work for the "updateWith..." methods.  Please see
 // the header for a discussion of those methods.
-- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
-                           changeBlock:(void (^)(TSThread *))changeBlock
+- (void)applyChangeToSelfAndLatestThread:(YapDatabaseReadWriteTransaction *)transaction
+                             changeBlock:(void (^)(TSThread *))changeBlock
 {
     OWSAssert(transaction);
     
@@ -402,10 +402,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate
 {
     [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestCopy:transaction
-                                 changeBlock:^(TSThread *thread) {
-                                     [thread setMutedUntilDate:mutedUntilDate];
-                                 }];
+        [self applyChangeToSelfAndLatestThread:transaction
+                                   changeBlock:^(TSThread *thread) {
+                                       [thread setMutedUntilDate:mutedUntilDate];
+                                   }];
     }];
 }
 
