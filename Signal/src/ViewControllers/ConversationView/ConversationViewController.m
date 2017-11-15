@@ -1654,7 +1654,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *_Nonnull action) {
-                                   [self.messageSender sendMessage:message
+                                   [self.messageSender enqueueOutgoingMessage:message
                                        success:^{
                                            DDLogInfo(@"%@ Successfully resent failed message.", self.logTag);
                                        }
@@ -3391,7 +3391,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (newGroupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(newGroupModel.groupImage);
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-        [self.messageSender sendAttachmentData:dataSource
+        [self.messageSender enqueueOutgoingAttachment:dataSource
             contentType:OWSMimeTypeImagePng
             sourceFilename:nil
             inMessage:message
@@ -3405,7 +3405,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 DDLogError(@"%@ Failed to send group avatar update with error: %@", self.logTag, error);
             }];
     } else {
-        [self.messageSender sendMessage:message
+        [self.messageSender enqueueOutgoingMessage:message
             success:^{
                 DDLogDebug(@"%@ Successfully sent group update", self.logTag);
                 if (successCompletion) {

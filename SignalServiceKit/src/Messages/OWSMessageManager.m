@@ -366,7 +366,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
         [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupId];
-    [self.messageSender sendMessage:syncGroupsRequestMessage
+    [self.messageSender enqueueOutgoingMessage:syncGroupsRequestMessage
         success:^{
             DDLogWarn(@"%@ Successfully sent Request Group Info message.", self.logTag);
         }
@@ -609,7 +609,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         profileManager:self.profileManager];
             DataSource *dataSource =
                 [DataSourceValue dataSourceWithSyncMessage:[syncContactsMessage buildPlainTextAttachmentData]];
-            [self.messageSender sendTemporaryAttachmentData:dataSource
+            [self.messageSender enqueueOutgoingTemporaryAttachment:dataSource
                 contentType:OWSMimeTypeApplicationOctetStream
                 inMessage:syncContactsMessage
                 success:^{
@@ -622,7 +622,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
             DataSource *dataSource = [DataSourceValue
                 dataSourceWithSyncMessage:[syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction]];
-            [self.messageSender sendTemporaryAttachmentData:dataSource
+            [self.messageSender enqueueOutgoingTemporaryAttachment:dataSource
                 contentType:OWSMimeTypeApplicationOctetStream
                 inMessage:syncGroupsMessage
                 success:^{
@@ -639,7 +639,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [[OWSReadReceiptManager sharedManager] areReadReceiptsEnabledWithTransaction:transaction];
             OWSSyncConfigurationMessage *syncConfigurationMessage =
                 [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled];
-            [self.messageSender sendMessage:syncConfigurationMessage
+            [self.messageSender enqueueOutgoingMessage:syncConfigurationMessage
                 success:^{
                     DDLogInfo(@"%@ Successfully sent Configuration response syncMessage.", self.logTag);
                 }
@@ -774,7 +774,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (gThread.groupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(gThread.groupModel.groupImage);
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-        [self.messageSender sendAttachmentData:dataSource
+        [self.messageSender enqueueOutgoingAttachment:dataSource
             contentType:OWSMimeTypeImagePng
             sourceFilename:nil
             inMessage:message
@@ -785,7 +785,7 @@ NS_ASSUME_NONNULL_BEGIN
                 DDLogError(@"%@ Failed to send group avatar update with error: %@", self.logTag, error);
             }];
     } else {
-        [self.messageSender sendMessage:message
+        [self.messageSender enqueueOutgoingMessage:message
             success:^{
                 DDLogDebug(@"%@ Successfully sent group update", self.logTag);
             }
