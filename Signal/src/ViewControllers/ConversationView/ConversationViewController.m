@@ -2948,7 +2948,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         DDLogInfo(@"rowsToReload: %zd, oldViewItemCount: %zd", rowsToReload.count, oldViewItemCount);
         [DDLog flushLog];
         if (rowsToReload.count > 0) {
-            //            [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
+            [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
         }
 
         //        } @catch (NSException *exception) {
