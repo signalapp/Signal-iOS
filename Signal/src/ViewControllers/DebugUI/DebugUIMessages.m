@@ -1152,46 +1152,49 @@ NS_ASSUME_NONNULL_BEGIN
 {
     typedef void (^ActionBlock)(void);
     NSArray<ActionBlock> *actionBlocks = @[
-                                           ^{
-                                               [self injectIncomingMessageInThread:thread counter:counter];
-                                           },
-                                            ^{
-                                                [self sendTextMessageInThread:thread counter:counter];
-                                            },
-                                            ^{
-                                                NSUInteger messageCount = (NSUInteger) (1 + arc4random_uniform(4));
-                                                [self sendFakeMessages:messageCount thread:thread];
-                                            },
-                                            ^{
-                                                NSUInteger messageCount = (NSUInteger) (1 + arc4random_uniform(4));
-                                                [self deleteRandomMessages:messageCount thread:thread];
-                                            },
-                                            ^{
-                                                [self deleteLastMessageInThread:thread];
-                                            },
-                                            ^{
-                                                NSUInteger messageCount = (NSUInteger) (1 + arc4random_uniform(4));
-                                                [self deleteRandomRecentMessages:messageCount thread:thread];
-                                            },
-                                            ^{
-                                                NSUInteger messageCount = (NSUInteger) (1 + arc4random_uniform(4));
-                                                [self insertAndDeleteNewOutgoingMessages:messageCount thread:thread];
-                                            },
-                                            ^{
-                                                NSUInteger messageCount = (NSUInteger) (1 + arc4random_uniform(4));
-                                                [self resurrectNewOutgoingMessages1:messageCount thread:thread];
-                                            },
-                                            ^{
-                                                NSUInteger messageCount = (NSUInteger) (1 + arc4random_uniform(4));
-                                                [self resurrectNewOutgoingMessages2:messageCount thread:thread];
-                                            },
-                                           ];
+        ^{
+            [self injectIncomingMessageInThread:thread counter:counter];
+        },
+        ^{
+            [self sendTextMessageInThread:thread counter:counter];
+        },
+        ^{
+            NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
+            [self sendFakeMessages:messageCount thread:thread];
+        },
+        ^{
+            NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
+            [self deleteRandomMessages:messageCount thread:thread];
+        },
+        ^{
+            NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
+            [self deleteLastMessages:messageCount thread:thread];
+        },
+        ^{
+            NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
+            [self deleteRandomRecentMessages:messageCount thread:thread];
+        },
+        ^{
+            NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
+            [self insertAndDeleteNewOutgoingMessages:messageCount thread:thread];
+        },
+        ^{
+            NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
+            [self resurrectNewOutgoingMessages1:messageCount thread:thread];
+        },
+        ^{
+            NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
+            [self resurrectNewOutgoingMessages2:messageCount thread:thread];
+        },
+    ];
     ActionBlock actionBlock = actionBlocks[(NSUInteger) arc4random_uniform((uint32_t) actionBlocks.count)];
     actionBlock();
 }
 
 + (void)deleteRandomMessages:(NSUInteger)count thread:(TSThread *)thread
 {
+    DDLogInfo(@"%@ deleteRandomMessages: %zd", self.logTag, count);
+
     [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
                                                                                YapDatabaseReadWriteTransaction *transaction) {
         
@@ -1220,14 +1223,30 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-+ (void)deleteLastMessageInThread:(TSThread *)thread
++ (void)deleteLastMessages:(NSUInteger)count thread:(TSThread *)thread
 {
+    DDLogInfo(@"%@ deleteLastMessages", self.logTag);
+
+
     [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
                                                                                YapDatabaseReadWriteTransaction *transaction) {
         
         YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
-        TSInteraction *_Nullable interaction = [interactionsByThread lastObjectInGroup:thread.uniqueId];
-        if (interaction) {
+        NSUInteger messageCount = (NSInteger)[interactionsByThread numberOfItemsInGroup:thread.uniqueId];
+
+        NSMutableArray<NSNumber *> *messageIndices = [NSMutableArray new];
+        for (NSUInteger i = 0; i < count && i < messageCount; i++) {
+            NSUInteger messageIdx = messageCount - (1 + i);
+            [messageIndices addObject:@(messageIdx)];
+        }
+        NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
+        for (NSNumber *messageIdx in messageIndices) {
+            TSInteraction *_Nullable interaction =
+                [interactionsByThread objectAtIndex:messageIdx.unsignedIntegerValue inGroup:thread.uniqueId];
+            OWSAssert(interaction);
+            [interactions addObject:interaction];
+        }
+        for (TSInteraction *interaction in interactions) {
             [interaction removeWithTransaction:transaction];
         }
     }];
@@ -1235,6 +1254,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteRandomRecentMessages:(NSUInteger)count thread:(TSThread *)thread
 {
+    DDLogInfo(@"%@ deleteRandomRecentMessages: %zd", self.logTag, count);
+
     [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
                                                                                YapDatabaseReadWriteTransaction *transaction) {
         
@@ -1268,6 +1289,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)insertAndDeleteNewOutgoingMessages:(NSUInteger)count thread:(TSThread *)thread
 {
+    DDLogInfo(@"%@ insertAndDeleteNewOutgoingMessages: %zd", self.logTag, count);
+
     NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
@@ -1295,6 +1318,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)resurrectNewOutgoingMessages1:(NSUInteger)count thread:(TSThread *)thread
 {
+    DDLogInfo(@"%@ resurrectNewOutgoingMessages1.1: %zd", self.logTag, count);
+
     NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
@@ -1315,23 +1340,24 @@ NS_ASSUME_NONNULL_BEGIN
             [message saveWithTransaction:transaction];
         }
     }];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)),
-                   dispatch_get_main_queue(),
-                   ^{
-                       [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
-                                                                                                  YapDatabaseReadWriteTransaction *transaction) {
-                           for (TSOutgoingMessage *message in messages) {
-                               [message removeWithTransaction:transaction];
-                           }
-                           for (TSOutgoingMessage *message in messages) {
-                               [message saveWithTransaction:transaction];
-                           }
-                       }];
-                   });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        DDLogInfo(@"%@ resurrectNewOutgoingMessages1.2: %zd", self.logTag, count);
+        [TSStorageManager.sharedManager.dbReadWriteConnection
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                for (TSOutgoingMessage *message in messages) {
+                    [message removeWithTransaction:transaction];
+                }
+                for (TSOutgoingMessage *message in messages) {
+                    [message saveWithTransaction:transaction];
+                }
+            }];
+    });
 }
 
 + (void)resurrectNewOutgoingMessages2:(NSUInteger)count thread:(TSThread *)thread
 {
+    DDLogInfo(@"%@ resurrectNewOutgoingMessages2.1: %zd", self.logTag, count);
+
     NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
@@ -1353,26 +1379,24 @@ NS_ASSUME_NONNULL_BEGIN
             [message saveWithTransaction:transaction];
         }
     }];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)),
-                   dispatch_get_main_queue(),
-                   ^{
-                       [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
-                                                                                                  YapDatabaseReadWriteTransaction *transaction) {
-                           for (TSOutgoingMessage *message in messages) {
-                               [message removeWithTransaction:transaction];
-                           }
-                       }];
-                       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)),
-                                      dispatch_get_main_queue(),
-                                      ^{
-                                          [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
-                                                                                                                     YapDatabaseReadWriteTransaction *transaction) {
-                                              for (TSOutgoingMessage *message in messages) {
-                                                  [message saveWithTransaction:transaction];
-                                              }
-                                          }];
-                                      });
-                   });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        DDLogInfo(@"%@ resurrectNewOutgoingMessages2.2: %zd", self.logTag, count);
+        [TSStorageManager.sharedManager.dbReadWriteConnection
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                for (TSOutgoingMessage *message in messages) {
+                    [message removeWithTransaction:transaction];
+                }
+            }];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            DDLogInfo(@"%@ resurrectNewOutgoingMessages2.3: %zd", self.logTag, count);
+            [TSStorageManager.sharedManager.dbReadWriteConnection
+                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    for (TSOutgoingMessage *message in messages) {
+                        [message saveWithTransaction:transaction];
+                    }
+                }];
+        });
+    });
 }
 
 @end
