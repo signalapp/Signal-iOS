@@ -1465,7 +1465,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         return;
     }
 
-    [self.messageSender sendMessage:message
+    [self.messageSender enqueueMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully sent profile key message to thread: %@", self.logTag, thread);
             [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];

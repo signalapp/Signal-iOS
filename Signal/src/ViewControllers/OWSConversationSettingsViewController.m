@@ -885,7 +885,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                      inThread:gThread
                                                              groupMetaMessage:TSGroupMessageQuit];
-    [self.messageSender sendMessage:message
+    [self.messageSender enqueueMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully left group.", self.logTag);
         }

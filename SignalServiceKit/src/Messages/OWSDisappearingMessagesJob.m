@@ -184,8 +184,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Don't clobber if multiple actions simultaneously triggered expiration.
     if (message.expireStartedAt == 0 || message.expireStartedAt > expirationStartedAt) {
-        message.expireStartedAt = expirationStartedAt;
-        [message saveWithTransaction:transaction];
+        [message updateWithExpireStartedAt:expirationStartedAt transaction:transaction];
     }
 
     // Necessary that the async expiration run happens *after* the message is saved with expiration configuration.

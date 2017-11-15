@@ -517,10 +517,10 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     // subsequently
     OWSOutgoingNullMessage *nullMessage = [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread
                                                                    verificationStateSyncMessage:message];
-    [self.messageSender sendMessage:nullMessage
+    [self.messageSender enqueueMessage:nullMessage
         success:^{
             DDLogInfo(@"%@ Successfully sent verification state NullMessage", self.logTag);
-            [self.messageSender sendMessage:message
+            [self.messageSender enqueueMessage:message
                 success:^{
                     DDLogInfo(@"%@ Successfully sent verification state sync message", self.logTag);
 

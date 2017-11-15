@@ -43,8 +43,8 @@ import PromiseKit
                                                         identityManager: self.identityManager,
                                                         profileManager: self.profileManager)
 
-        let dataSource = DataSourceValue.dataSource(withSyncMessage:syncContactsMessage.buildPlainTextAttachmentData())
-        self.messageSender.sendTemporaryAttachmentData(dataSource,
+        let dataSource = DataSourceValue.dataSource(withSyncMessage: syncContactsMessage.buildPlainTextAttachmentData())
+        self.messageSender.enqueueTemporaryAttachment(dataSource,
             contentType: OWSMimeTypeApplicationOctetStream,
             in: syncContactsMessage,
             success: {

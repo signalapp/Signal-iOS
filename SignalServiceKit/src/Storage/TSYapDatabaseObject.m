@@ -6,6 +6,8 @@
 #import "TSStorageManager.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation TSYapDatabaseObject
 
 - (instancetype)init
@@ -13,7 +15,7 @@
     return [self initWithUniqueId:[[NSUUID UUID] UUIDString]];
 }
 
-- (instancetype)initWithUniqueId:(NSString *)aUniqueId
+- (instancetype)initWithUniqueId:(NSString *_Nullable)aUniqueId
 {
     self = [super init];
     if (!self) {
@@ -23,6 +25,11 @@
     _uniqueId = aUniqueId;
 
     return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -176,18 +183,40 @@
     }];
 }
 
-+ (instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID transaction:(YapDatabaseReadTransaction *)transaction
++ (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
+                                     transaction:(YapDatabaseReadTransaction *)transaction
 {
     return [transaction objectForKey:uniqueID inCollection:[self collection]];
 }
 
-+ (instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
++ (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
 {
-    __block id object;
+    __block id _Nullable object = nil;
     [[self dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         object = [transaction objectForKey:uniqueID inCollection:[self collection]];
     }];
     return object;
 }
 
+#pragma mark Update With...
+
+// This method does the work for the "updateWith..." methods.  Please see
+// the header for a discussion of those methods.
+- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
+                           changeBlock:(void (^)(id))changeBlock
+{
+    OWSAssert(transaction);
+
+    changeBlock(self);
+
+    NSString *collection = [[self class] collection];
+    id latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
+    if (latestInstance) {
+        changeBlock(latestInstance);
+        [latestInstance saveWithTransaction:transaction];
+    }
+}
+
 @end
+
+NS_ASSUME_NONNULL_END

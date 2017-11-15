@@ -27,7 +27,7 @@ const uint32_t OWSDisappearingMessagesConfigurationDefaultExpirationDuration = k
                   durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
 }
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
 

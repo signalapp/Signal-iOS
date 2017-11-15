@@ -16,6 +16,10 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
 
 @interface TSMessage ()
 
+@property (nonatomic, nullable) NSString *body;
+@property (nonatomic) uint32_t expiresInSeconds;
+@property (nonatomic) uint64_t expireStartedAt;
+
 /**
  * The version of the model class's schema last used to serialize this model. Use this to manage data migrations during
  * object de/serialization.
@@ -275,6 +279,18 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
 - (BOOL)shouldUseReceiptDateForSorting
 {
     return YES;
+}
+
+#pragma mark - Update With... Methods
+
+- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(expireStartedAt > 0);
+
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSMessage *message) {
+                                 [message setExpireStartedAt:expireStartedAt];
+                             }];
 }
 
 @end

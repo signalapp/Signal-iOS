@@ -115,7 +115,7 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
 
         DataSource *dataSource =
             [DataSourceValue dataSourceWithSyncMessage:[syncContactsMessage buildPlainTextAttachmentData]];
-        [self.messageSender sendTemporaryAttachmentData:dataSource
+        [self.messageSender enqueueTemporaryAttachment:dataSource
             contentType:OWSMimeTypeApplicationOctetStream
             inMessage:syncContactsMessage
             success:^{
