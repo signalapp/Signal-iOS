@@ -718,12 +718,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         success:^{
             DDLogInfo(@"%@ Marking group message as sent to recipient: %@", self.logTag, recipient.uniqueId);
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                // Update the message unless it has been deleted.
-                if ([TSOutgoingMessage fetchObjectWithUniqueID:message.uniqueId]) {
-                    [message updateWithSentRecipient:recipient.uniqueId transaction:transaction];
-                } else {
-                    DDLogInfo(@"%@ not marking message as sent to recipient; message deleted.", self.logTag);
-                }
+                [message updateWithSentRecipient:recipient.uniqueId transaction:transaction];
             }];
             [futureSource trySetResult:@1];
         }
