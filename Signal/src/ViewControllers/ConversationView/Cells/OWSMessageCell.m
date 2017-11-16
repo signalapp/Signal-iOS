@@ -372,16 +372,10 @@ NS_ASSUME_NONNULL_BEGIN
         self.payloadConstraints = [self.payloadView autoPinWidthToSuperview];
     }
 
-    JSQMessagesBubbleImage *bubbleImageData;
-    if ([self.viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
-        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
-            bubbleImageData = self.bubbleFactory.outgoingFailed;
-        } else {
-            bubbleImageData = self.bubbleFactory.outgoing;
-        }
-    } else {
-        bubbleImageData = self.bubbleFactory.incoming;
+    JSQMessagesBubbleImage *_Nullable bubbleImageData;
+    if ([self.viewItem.interaction isKindOfClass:[TSMessage class]]) {
+        TSMessage *message = (TSMessage *)self.viewItem.interaction;
+        bubbleImageData = [self.bubbleFactory bubbleWithMessage:message];
     }
 
     self.bubbleImageView.image = bubbleImageData.messageBubbleImage;
