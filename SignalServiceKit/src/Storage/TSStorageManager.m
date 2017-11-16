@@ -5,10 +5,13 @@
 #import "TSStorageManager.h"
 #import "NSData+Base64.h"
 #import "OWSAnalytics.h"
+#import "OWSBatchMessageProcessor.h"
 #import "OWSDisappearingMessagesFinder.h"
 #import "OWSFailedAttachmentDownloadsJob.h"
 #import "OWSFailedMessagesJob.h"
+#import "OWSFileSystem.h"
 #import "OWSIncomingMessageFinder.h"
+#import "OWSMessageReceiver.h"
 #import "SignalRecipient.h"
 #import "TSAttachmentStream.h"
 #import "TSDatabaseSecondaryIndexes.h"
@@ -17,8 +20,6 @@
 #import "TSThread.h"
 #import <25519/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
-#import <SignalServiceKit/OWSBatchMessageProcessor.h>
-#import <SignalServiceKit/OWSMessageReceiver.h>
 #import <YapDatabase/YapDatabaseRelationship.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -349,29 +350,9 @@ void setDatabaseInitialized()
 }
 
 - (void)protectSignalFiles {
-    [self protectFolderAtPath:[TSAttachmentStream attachmentsFolder]];
-    [self protectFolderAtPath:[self dbPath]];
-    [self protectFolderAtPath:[[self dbPath] stringByAppendingString:@"-shm"]];
-    [self protectFolderAtPath:[[self dbPath] stringByAppendingString:@"-wal"]];
-}
-
-- (void)protectFolderAtPath:(NSString *)path {
-    if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
-        return;
-    }
-
-    NSError *error;
-    NSDictionary *fileProtection = @{NSFileProtectionKey : NSFileProtectionCompleteUntilFirstUserAuthentication};
-    [[NSFileManager defaultManager] setAttributes:fileProtection ofItemAtPath:path error:&error];
-
-    NSDictionary *resourcesAttrs = @{ NSURLIsExcludedFromBackupKey : @YES };
-
-    NSURL *ressourceURL = [NSURL fileURLWithPath:path];
-    BOOL success        = [ressourceURL setResourceValues:resourcesAttrs error:&error];
-
-    if (error || !success) {
-        OWSProdCritical([OWSAnalyticsEvents storageErrorFileProtection]);
-    }
+    [OWSFileSystem protectFolderAtPath:[self dbPath]];
+    [OWSFileSystem protectFolderAtPath:[[self dbPath] stringByAppendingString:@"-shm"]];
+    [OWSFileSystem protectFolderAtPath:[[self dbPath] stringByAppendingString:@"-wal"]];
 }
 
 - (nullable YapDatabaseConnection *)newDatabaseConnection

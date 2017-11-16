@@ -5,6 +5,7 @@
 #import "TSAttachmentStream.h"
 #import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
 #import <ImageIO/ImageIO.h>
@@ -205,15 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
-        NSURL *dirURL = [NSURL fileURLWithPath:attachmentsFolder];
-        NSError *error = nil;
-        [dirURL setResourceValues:@{
-            NSURLIsExcludedFromBackupKey : @(YES),
-        }
-                            error:&error];
-        if (error) {
-            OWSFail(@"Failed to exclude attachments directory from backup: %@", error);
-        }
+        [OWSFileSystem protectFolderAtPath:attachmentsFolder];
     });
     return attachmentsFolder;
 }
