@@ -586,10 +586,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // unless it ever becomes possible to load this VC without going via the HomeViewController.
     [self.contactsManager requestSystemContactsOnce];
 
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        self.disappearingMessagesConfiguration =
-            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId transaction:transaction];
-    }];
+    [self updateDisappearingMessagesConfiguration];
 
     [self updateBarButtonItems];
     [self setNavigationTitle];
@@ -1526,6 +1523,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [self.collectionView.collectionViewLayout invalidateLayout];
         [self.collectionView reloadData];
     }
+}
+
+- (void)updateDisappearingMessagesConfiguration
+{
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        self.disappearingMessagesConfiguration =
+            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId transaction:transaction];
+    }];
 }
 
 - (void)setDisappearingMessagesConfiguration:
@@ -2818,10 +2823,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [self setNavigationTitle];
     }
 
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        self.disappearingMessagesConfiguration =
-            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId transaction:transaction];
-    }];
+    [self updateDisappearingMessagesConfiguration];
 
     if (![[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] hasChangesForGroup:self.thread.uniqueId
                                                                                 inNotifications:notifications]) {
