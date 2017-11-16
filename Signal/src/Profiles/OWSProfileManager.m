@@ -11,6 +11,7 @@
 #import <SignalServiceKit/NSData+hexString.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
+#import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSRequestBuilder.h>
 #import <SignalServiceKit/SecurityUtils.h>
@@ -1408,6 +1409,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 DDLogError(@"Failed to create profile avatars directory: %@", error);
             }
         }
+
+        [OWSFileSystem protectFolderAtPath:profileAvatarsDirPath];
     });
     return profileAvatarsDirPath;
 }

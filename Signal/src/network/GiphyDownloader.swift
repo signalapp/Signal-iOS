@@ -842,6 +842,9 @@ extension URLSessionTask {
                                                 attributes:nil)
                 gifFolderPath = dirPath
             }
+
+            // Don't back up Giphy downloads.
+            OWSFileSystem.protectFolder(atPath:dirPath)
         } catch let error as NSError {
             owsFail("\(GiphyAsset.TAG) ensureTempFolder failed: \(dirPath), \(error)")
             gifFolderPath = tempDirPath
