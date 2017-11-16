@@ -2963,12 +2963,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (shouldAnimateUpdates) {
         [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
     } else {
-        // We want these animations to be as short as possible, but `performBatchUpdates`
-        // will SIGABORT in some cases if the animation duration is zero.
-        [CATransaction begin];
-        [CATransaction setAnimationDuration:0.001f];
-        [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
-        [CATransaction commit];
+        [UIView performWithoutAnimation:^{
+            [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
+        }];
     }
 }
 
