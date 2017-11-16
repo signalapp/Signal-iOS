@@ -89,7 +89,7 @@
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Fallo al descargar. Toca para reintentar.";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Descargando ...";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Descargando...";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "En la cola";
@@ -461,7 +461,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Editar grupo";
 
 /* Label for the cell that lets you add a new member to a group. */
-"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Añadir ...";
+"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Añadir...";
 
 /* a title for the members section of the 'new/update group' view. */
 "EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Miembros";
@@ -722,13 +722,13 @@
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Bloqueado";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "conectando ...";
+"IN_CALL_CONNECTING" = "conectando...";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "sonando ...";
+"IN_CALL_RINGING" = "sonando...";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "respondida. Asegurando ...";
+"IN_CALL_SECURING" = "respondida. Asegurando...";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "llamada finalizada.";
@@ -893,13 +893,13 @@
 "MESSAGE_STATUS_READ" = "Leído";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Enviando ...";
+"MESSAGE_STATUS_SENDING" = "Enviando...";
 
 /* message footer for sent messages */
 "MESSAGE_STATUS_SENT" = "Enviado";
 
 /* message footer while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Cargando ...";
+"MESSAGE_STATUS_UPLOADING" = "Cargando...";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "Las cifras de seguridad con %@ han cambiado y no han sido verificadas. Toca para ver opciones.";
@@ -1079,7 +1079,7 @@
 "OUTGOING_INCOMPLETE_CALL" = "Llamada realizada sin respuesta";
 
 /* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@ ...";
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@...";
 
 /* The title of the 'oversize text message' view. */
 "OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "Mensaje";
@@ -1211,7 +1211,7 @@
 "PROFILE_VIEW_SAVE_BUTTON" = "Guardar";
 
 /* Alert title that indicates the user's profile view is being saved. */
-"PROFILE_VIEW_SAVING" = "Guardando ...";
+"PROFILE_VIEW_SAVING" = "Guardando...";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Perfil";
@@ -1415,7 +1415,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Avanzado";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Añadir ...";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Añadir...";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "No tienes contactos en Signal.";
@@ -1445,7 +1445,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Borrar cuenta";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "¿Estás seguro de querer borrar todo el historial (mensajes, adjuntos, lista de llamadas, ...)? Esta acción es irreversible.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "¿Estás seguro de querer borrar todo el historial (mensajes, adjuntos, lista de llamadas...)? Esta acción es irreversible.";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Estoy seguro";
@@ -1637,7 +1637,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Ahora Signal permite hacer vídeollamadas seguras. Inicia simplemente una llamada de Signal, toca el botón de la cámara y saluda.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "¡Hola vídeollamadas seguras!";
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "¡Saluda a las vídeollamadas seguras!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal va a necesitar en los próximos meses por lo menos iOS 9 para funcionar. Actualiza tu iPhone en Ajustes >> General >> Actualización de Software  ";

@@ -137,7 +137,7 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Haut-parleurs";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_BEHAVIOR_EXPLANATION" = "Les utilisateurs bloqués ne pourront pas vous appeler ou vous envoyer des messages.";
+"BLOCK_BEHAVIOR_EXPLANATION" = "Les utilisateurs bloqués ne pourront pas vous appeler ni vous envoyer de messages.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Bloquer";
@@ -440,7 +440,7 @@
 "DISAPPEARING_MESSAGES_LABEL" = "Paramètres des messages disparus";
 
 /* Short text to dismiss current modal / actionsheet / screen */
-"DISMISS_BUTTON_TEXT" = "Ignorer";
+"DISMISS_BUTTON_TEXT" = "Annuler";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Mise en place du contournement de la censure";
@@ -458,7 +458,7 @@
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contacts";
 
 /* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Editer groupe";
+"EDIT_GROUP_DEFAULT_TITLE" = "Éditer le groupe";
 
 /* Label for the cell that lets you add a new member to a group. */
 "EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Ajouter...";
@@ -485,7 +485,7 @@
 "EDIT_ITEM_DELETE_ACTION" = "Effacer";
 
 /* Short name for edit menu item to show message metadata. */
-"EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Info";
+"EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Infos";
 
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Sauvegarder";
@@ -494,7 +494,7 @@
 "EDIT_ITEM_SHARE_ACTION" = "Partager";
 
 /* No comment provided by engineer. */
-"EDIT_TXT" = "Editer";
+"EDIT_TXT" = "Éditer";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
 "EMAIL_INVITE_BODY" = "Hey,\n\nDernièrement, j'ai utilisé Signal pour garder privées les conversations sur mon iPhone. J'aimerais que vous l'installiez aussi, afin que nous puissions être sûrs que seuls vous et moi pouvons lire nos messages ou écouter nos appels.\n\nSignal est disponible pour iPhone et Android. À télécharger ici : %@\n\nSignal fonctionne comme votre application de messagerie existante. Nous pouvons envoyer des photos et des vidéos, passer des appels et commencer des discussions de groupe. Le mieux est que personne d'autre ne peut voir tout cela, pas même les gens qui font Signal !\n\nVous pouvez en savoir plus sur Open Whisper Systems, les personnes qui font Signal, ici : %@ ";
@@ -671,7 +671,7 @@
 "GROUP_CREATION_FAILED" = "Tous les membres ne peuvent pas être ajoutés au groupe. Cliquer pour réessayer.";
 
 /* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "Gestion de Groupes";
+"GROUP_MANAGEMENT_SECTION" = "Gestion du groupe";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_JOINED" = "%@ a rejoint le groupe.";
@@ -719,7 +719,7 @@
 "GROUP_YOU_LEFT" = "Vous avez quitté le groupe.";
 
 /* A label for conversations with blocked users. */
-"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Bloqué";
+"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Bloqués";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Connexion en cours...";
@@ -821,7 +821,7 @@
 "load_earlier_messages" = "Charger des messages antérieurs";
 
 /* No comment provided by engineer. */
-"LOGGING_SECTION" = "Authentification";
+"LOGGING_SECTION" = "Journalisation";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Caméra";
@@ -848,7 +848,7 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "Pas encore téléchargé";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Livré";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Distribué";
 
 /* Status label for messages which are failed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Echoué";
@@ -985,7 +985,7 @@
 "NETWORK_STATUS_CONNECTING" = "Connexion en cours";
 
 /* No comment provided by engineer. */
-"NETWORK_STATUS_HEADER" = "Etat du réseau";
+"NETWORK_STATUS_HEADER" = "État du réseau";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_OFFLINE" = "Hors connexion";
@@ -1042,10 +1042,10 @@
 "NOTIFICATIONS_NONE" = "Ni nom de l'expéditeur ni message";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SECTION_BACKGROUND" = "Notifications d'arrière plan";
+"NOTIFICATIONS_SECTION_BACKGROUND" = "Notifications en arrière-plan";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SECTION_INAPP" = "Notifications In-App";
+"NOTIFICATIONS_SECTION_INAPP" = "Notifications dans l'application";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nom de l'expéditeur et message";
@@ -1397,19 +1397,19 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Le contournement de la censure a été activé en fonction du numéro de téléphone de votre compte.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Le contournement de la censure ne peut être activé que lorsqu'il est connecté à Internet.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Le contournement de la censure ne peut être activé que lorsque la connexion à Internet est établie.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Le contournement de la censure n'est pas nécessaire; Vous êtes déjà connecté au service Signal.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Le contournement de la censure n'est pas nécessaire ; vous êtes déjà connecté au service Signal.";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Contournement de la censure";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Activer le log de débuggage";
+"SETTINGS_ADVANCED_DEBUGLOG" = "Activer le journal de débogage";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Envoyer le log de débuggage";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Envoyer le journal de débogage";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avancé";
@@ -1424,19 +1424,19 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Aucun résultat trouvé";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Bloqué";
+"SETTINGS_BLOCK_LIST_TITLE" = "Bloqués";
 
 /* Accessibility hint for the settings button */
 "SETTINGS_BUTTON_ACCESSIBILITY" = "Paramètres";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Toujours relayer des appels";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Toujours relayer les appels";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relayer tous les appels via le serveur de Signal pour éviter de révéler votre adresse IP à votre contact. L'activation réduit la qualité de l'appel.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Effacer les logs de l'historique";
+"SETTINGS_CLEAR_HISTORY" = "Effacer l'historique";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Copyright Open Whisper Systems\nSous licence GPLv3";
@@ -1445,7 +1445,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Supprimer le compte";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Êtes-vous sûr de vouloir supprimer tout votre historique (messages, pièces jointes, historique des appels...) ? Cette action ne peut pas être réversible.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Êtes-vous sûr de vouloir supprimer tout votre historique (messages, pièces jointes, historique des appels...) ? Cette action est irréversible.";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Je suis sûr.";
@@ -1475,7 +1475,7 @@
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Afficher le nom et le numéro de l'appelant";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Intégration d'appels iOS";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Call Integration";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Vie privée";
@@ -1493,13 +1493,13 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Empêcher les prévisualisations de Signal d'apparaître dans le commutateur d'applications.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "IOS Call Integration affiche les appels de Signal sur votre écran de verrouillage et dans l'historique des appels du système. Vous pouvez éventuellement indiquer le nom et le numéro de votre contact. Si iCloud est activé, cet historique d'appels sera partagé avec Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration affiche les appels de Signal sur votre écran de verrouillage et dans l'historique des appels du système. Vous pouvez éventuellement indiquer le nom et le numéro de votre contact. Si iCloud est activé, cet historique d'appels sera partagé avec Apple.";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Appel";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "Sécurité écran";
+"SETTINGS_SECURITY_TITLE" = "Sécurité d'écran";
 
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "Assistance";
@@ -1643,7 +1643,7 @@
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal nécessitera bientôt iOS 9 ou ultérieur. Mettre à niveau dans l'application Réglages >> Général >> Mise à jour logicielle.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Mise à niveau de iOS";
+"UPGRADE_IOS_ALERT_TITLE" = "Mettre à niveau iOS";
 
 /* No comment provided by engineer. */
 "Upgrading Signal ..." = "Mise à jour de Signal...";

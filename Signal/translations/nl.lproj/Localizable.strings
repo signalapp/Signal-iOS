@@ -1036,7 +1036,7 @@
 "NOTIFICATION_SEND_FAILED" = "Versturen van bericht aan %@ mislukt.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Door bekende fouten in Apple's push framework zijn  zijn voorvertoningen van berichten alleen mogelijk wanneer het bericht binnen 30 seconden na versturen is ontvangen. Hierdoor kan het nummer op badge-appsymbool niet kloppen.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Door bekende fouten in Apple's push framework, worden voorvertoningen van berichten alleen getoond  wanneer het bericht binnen 30 seconden na verzending is ontvangen. Hierdoor kan het nummer op het badge-appsymbool onnauwkeurig zijn.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Geen naam of bericht";
