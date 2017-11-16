@@ -1107,7 +1107,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.expirationTimerView removeFromSuperview];
     self.expirationTimerView = nil;
 
-    self.isPresentingMenuController = NO;
+    [self hideMenuControllerIfNecessary];
 }
 
 #pragma mark - Notifications
@@ -1131,6 +1131,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else {
         [self.expirationTimerView clearAnimations];
+
+        [self hideMenuControllerIfNecessary];
     }
 }
 
@@ -1300,6 +1302,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                         name:UIMenuControllerDidHideMenuNotification
                                                       object:nil];
     }
+}
+
+- (void)hideMenuControllerIfNecessary
+{
+    if (self.isPresentingMenuController) {
+        [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
+    }
+    self.isPresentingMenuController = NO;
 }
 
 - (void)dealloc
