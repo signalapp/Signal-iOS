@@ -198,8 +198,20 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     return self;
 }
 
+- (BOOL)shouldBeSaved
+{
+    return YES;
+}
+
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    if (!self.shouldBeSaved) {
+        // There's no need to save this message, since it's not displayed to the user.
+        //
+        // Should we find a need to save this in the future, we need to exclude any non-serializable properties.
+        return;
+    }
+
     if (!(self.groupMetaMessage == TSGroupMessageDeliver || self.groupMetaMessage == TSGroupMessageNone)) {
         DDLogDebug(@"%@ Skipping save for group meta message.", self.logTag);
         return;
