@@ -515,7 +515,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.loadMoreHeader = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.loadMoreHeader setTitle:NSLocalizedString(@"load_earlier_messages", @"") forState:UIControlStateNormal];
     [self.loadMoreHeader setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
-    self.loadMoreHeader.titleLabel.font = [UIFont ows_mediumFontWithSize:20.f];
+    self.loadMoreHeader.titleLabel.font = [UIFont ows_mediumFontWithSize:16.f];
     [self.loadMoreHeader addTarget:self
                             action:@selector(loadMoreHeaderTapped:)
                   forControlEvents:UIControlEventTouchUpInside];
