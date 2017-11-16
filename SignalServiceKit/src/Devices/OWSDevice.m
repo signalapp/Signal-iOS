@@ -19,6 +19,7 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 @interface OWSDeviceManager ()
 
 @property (atomic, nullable) NSNumber *mayHaveLinkedDevicesCached;
+@property (atomic) NSDate *lastReceivedSyncMessage;
 
 @end
 
@@ -71,6 +72,16 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
                       inCollection:kTSStorageManager_OWSDeviceCollection];
         }];
     }
+}
+
+- (BOOL)hasReceivedSyncMessageInLastSeconds:(NSTimeInterval)intervalSeconds
+{
+    return (self.lastReceivedSyncMessage && fabs(self.lastReceivedSyncMessage.timeIntervalSinceNow) < intervalSeconds);
+}
+
+- (void)setHasReceivedSyncMessage
+{
+    self.lastReceivedSyncMessage = [NSDate new];
 }
 
 @end

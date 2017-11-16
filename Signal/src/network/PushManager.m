@@ -9,6 +9,7 @@
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <SignalServiceKit/NSDate+OWS.h>
+#import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
@@ -440,10 +441,17 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
     dispatch_async(dispatch_get_main_queue(), ^{
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
         if (checkForCancel && threadId != nil) {
-            // The longer we wait, the more obsolete notifications we can suppress -
-            // but the more lag we introduce to notification delivery.
-            const CGFloat kDelaySeconds = 0.5f;
-            notification.fireDate = [NSDate dateWithTimeIntervalSinceNow:kDelaySeconds];
+            if ([[OWSDeviceManager sharedManager] hasReceivedSyncMessageInLastSeconds:60.f]) {
+                // "If you’ve heard from desktop in last minute, wait 5 seconds."
+                //
+                // This provides a window in which we can cancel notifications
+                // already viewed on desktop before they are presented here.
+                const CGFloat kDelaySeconds = 5.f;
+                notification.fireDate = [NSDate dateWithTimeIntervalSinceNow:kDelaySeconds];
+            } else {
+                notification.fireDate = [NSDate new];
+            }
+
             notification.timeZone = [NSTimeZone localTimeZone];
         }
 
