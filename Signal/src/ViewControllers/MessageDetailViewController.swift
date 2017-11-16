@@ -353,7 +353,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
             messageTextView.textColor = isIncoming ? UIColor.black : UIColor.white
             messageTextView.text = messageBody
 
-            let bubbleImageData = isIncoming ? bubbleFactory.incoming : bubbleFactory.outgoing
+            let bubbleImageData = bubbleFactory.bubble(message: message)
 
             let messageTextProxyView = UIView()
             messageTextProxyView.layoutMargins = UIEdgeInsets.zero
