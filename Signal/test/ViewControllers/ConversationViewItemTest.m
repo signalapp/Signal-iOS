@@ -48,7 +48,10 @@
     TSOutgoingMessage *message =
         [[TSOutgoingMessage alloc] initWithTimestamp:1 inThread:nil messageBody:self.fakeTextMessageText];
     [message save];
-    ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithTSInteraction:message isGroupThread:NO];
+    __block ConversationViewItem *viewItem = nil;
+    [TSYapDatabaseObject.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        viewItem = [[ConversationViewItem alloc] initWithInteraction:message isGroupThread:NO transaction:transaction];
+    }];
     return viewItem;
 }
 
@@ -72,7 +75,7 @@
     TSOutgoingMessage *message =
         [[TSOutgoingMessage alloc] initWithTimestamp:1 inThread:nil messageBody:nil attachmentIds:attachmentIds];
     [message save];
-    ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithTSInteraction:message isGroupThread:NO];
+    ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:message isGroupThread:NO];
     return viewItem;
 }
 

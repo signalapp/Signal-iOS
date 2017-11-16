@@ -63,7 +63,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 @implementation ConversationViewItem
 
-- (instancetype)initWithTSInteraction:(TSInteraction *)interaction isGroupThread:(BOOL)isGroupThread
+- (instancetype)initWithInteraction:(TSInteraction *)interaction
+                      isGroupThread:(BOOL)isGroupThread
+                        transaction:(YapDatabaseReadTransaction *)transaction
 {
     self = [super init];
 
@@ -76,10 +78,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.row = NSNotFound;
     self.previousRow = NSNotFound;
 
+    [self ensureViewState:transaction];
+
     return self;
 }
 
-- (void)replaceInteraction:(TSInteraction *)interaction
+- (void)replaceInteraction:(TSInteraction *)interaction transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(interaction);
 
@@ -93,6 +97,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.contentSize = CGSizeZero;
 
     [self clearCachedLayoutState];
+
+    [self ensureViewState:transaction];
 }
 
 - (void)setShouldShowDate:(BOOL)shouldShowDate
@@ -332,7 +338,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 }
 
 - (nullable TSAttachment *)firstAttachmentIfAnyOfMessage:(TSMessage *)message
+                                             transaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(transaction);
+
     if (message.attachmentIds.count == 0) {
         return nil;
     }
@@ -340,21 +349,22 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (attachmentId.length == 0) {
         return nil;
     }
-    return [TSAttachment fetchObjectWithUniqueID:attachmentId];
+    return [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
 }
 
-- (void)ensureViewState
+- (void)ensureViewState:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert([NSThread isMainThread]);
+    OWSAssert(transaction);
+    OWSAssert(!self.hasViewState);
+
     OWSAssert([self.interaction isKindOfClass:[TSOutgoingMessage class]] ||
         [self.interaction isKindOfClass:[TSIncomingMessage class]]);
 
-    if (self.hasViewState) {
-        return;
-    }
     self.hasViewState = YES;
 
     TSMessage *message = (TSMessage *)self.interaction;
-    TSAttachment *_Nullable attachment = [self firstAttachmentIfAnyOfMessage:message];
+    TSAttachment *_Nullable attachment = [self firstAttachmentIfAnyOfMessage:message transaction:transaction];
     if (attachment) {
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
             self.attachmentStream = (TSAttachmentStream *)attachment;
@@ -418,16 +428,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     OWSAssert([NSThread isMainThread]);
 
-    [self ensureViewState];
-
     return _messageCellType;
 }
 
 - (nullable DisplayableText *)displayableText
 {
     OWSAssert([NSThread isMainThread]);
-
-    [self ensureViewState];
+    OWSAssert(self.hasViewState);
 
     OWSAssert(_displayableText);
     OWSAssert(_displayableText.displayText);
@@ -439,8 +446,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (nullable TSAttachmentStream *)attachmentStream
 {
     OWSAssert([NSThread isMainThread]);
-
-    [self ensureViewState];
+    OWSAssert(self.hasViewState);
 
     return _attachmentStream;
 }
@@ -448,8 +454,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (nullable TSAttachmentPointer *)attachmentPointer
 {
     OWSAssert([NSThread isMainThread]);
-
-    [self ensureViewState];
+    OWSAssert(self.hasViewState);
 
     return _attachmentPointer;
 }
@@ -457,8 +462,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (CGSize)contentSize
 {
     OWSAssert([NSThread isMainThread]);
-
-    [self ensureViewState];
+    OWSAssert(self.hasViewState);
 
     return _contentSize;
 }
