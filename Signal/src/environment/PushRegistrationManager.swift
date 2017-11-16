@@ -152,15 +152,13 @@ public enum PushRegistrationError: Error {
     }
 
     /**
-     * work around for iOS11 bug, wherein for users who have disabled notifications
-     * and background fetch, the AppDelegate will neither succeed nor fail at registering
-     * for a vanilla push token.
+     * When users have disabled notifications and background fetch, the system hangs when returning a push token.
+     * More specifically, after registering for remote notification, the app delegate calls neither
+     * `didFailToRegisterForRemoteNotificationsWithError` nor `didRegisterForRemoteNotificationsWithDeviceToken`
+     * This behavior is identical to what you'd see if we hadn't previously registered for user notification settings, though
+     * in this case we've verified that we *have* properly registered notification settings.
      */
     private var isSusceptibleToFailedPushRegistration: Bool {
-        // Only affects iOS11 users
-        guard #available(iOS 11.0, *) else {
-            return false
-        }
 
         // Only affects users who have disabled both: background refresh *and* notifications
         guard UIApplication.shared.backgroundRefreshStatus == .denied else {

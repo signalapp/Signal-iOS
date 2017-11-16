@@ -270,8 +270,8 @@ NSString *const OWSPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
 - (void)unsetRecordedAPNSTokens
 {
     DDLogWarn(@"%@ Forgetting recorded APNS tokens", self.tag);
-    [self setValue:nil forKey:OWSPreferencesKeyLastRecordedPushToken];
-    [self setValue:nil forKey:OWSPreferencesKeyLastRecordedVoipToken];
+    [self setValueForKey:OWSPreferencesKeyLastRecordedPushToken toValue:nil];
+    [self setValueForKey:OWSPreferencesKeyLastRecordedVoipToken toValue:nil];
 }
 
 #pragma mark - Logging
