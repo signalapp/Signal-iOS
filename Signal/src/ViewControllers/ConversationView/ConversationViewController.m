@@ -208,7 +208,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic, nullable) ThreadDynamicInteractions *dynamicInteractions;
 @property (nonatomic) BOOL hasClearedUnreadMessagesIndicator;
 @property (nonatomic) BOOL showLoadMoreHeader;
-@property (nonatomic) UIButton *loadMoreHeader;
+@property (nonatomic) UILabel *loadMoreHeader;
 @property (nonatomic) uint64_t lastVisibleTimestamp;
 
 @property (nonatomic, readonly) BOOL isGroupConversation;
@@ -512,13 +512,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.inputToolbar autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.collectionView];
     [self autoPinViewToBottomGuideOrKeyboard:self.inputToolbar];
 
-    self.loadMoreHeader = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.loadMoreHeader setTitle:NSLocalizedString(@"load_earlier_messages", @"") forState:UIControlStateNormal];
-    [self.loadMoreHeader setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
-    self.loadMoreHeader.titleLabel.font = [UIFont ows_mediumFontWithSize:16.f];
-    [self.loadMoreHeader addTarget:self
-                            action:@selector(loadMoreHeaderTapped:)
-                  forControlEvents:UIControlEventTouchUpInside];
+    self.loadMoreHeader = [UILabel new];
+    self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
+        @"Indicates that the app is loading more messages in this conversation.");
+    self.loadMoreHeader.textColor = [UIColor ows_materialBlueColor];
+    self.loadMoreHeader.font = [UIFont ows_mediumFontWithSize:16.f];
     [self.collectionView addSubview:self.loadMoreHeader];
     [self.loadMoreHeader autoPinWidthToWidthOfView:self.view];
     [self.loadMoreHeader autoPinEdgeToSuperviewEdge:ALEdgeTop];
@@ -1458,16 +1456,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (self.collectionView.contentOffset.y < kThreshold) {
         [self loadMoreMessages];
     }
-}
-
-- (void)loadMoreHeaderTapped:(id)sender
-{
-    if (self.isUserScrolling) {
-        DDLogError(@"%@ Ignoring load more tap while user is scrolling.", self.logTag);
-        return;
-    }
-
-    [self loadMoreMessages];
 }
 
 - (void)loadMoreMessages
