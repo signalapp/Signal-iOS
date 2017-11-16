@@ -11,6 +11,7 @@
 #import "OWSAttachmentsProcessor.h"
 #import "OWSBlockingManager.h"
 #import "OWSCallMessageHandler.h"
+#import "OWSDevice.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -267,6 +268,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (content.hasSyncMessage) {
             [self handleIncomingEnvelope:envelope withSyncMessage:content.syncMessage transaction:transaction];
+
+            [[OWSDeviceManager sharedManager] setHasReceivedSyncMessage];
         } else if (content.hasDataMessage) {
             [self handleIncomingEnvelope:envelope withDataMessage:content.dataMessage transaction:transaction];
         } else if (content.hasCallMessage) {
