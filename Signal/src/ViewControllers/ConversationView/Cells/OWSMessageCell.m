@@ -1134,19 +1134,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-// case TSInfoMessageAdapter: {
-//    // HACK this will get called when we get a new info message, but there's gotta be a better spot for this.
-//    OWSDisappearingMessagesConfiguration *configuration =
-//    [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-//    [self setBarButtonItemsForDisappearingMessagesConfiguration:configuration];
-//
-//    if (message.shouldStartExpireTimer && [cell conformsToProtocol:@protocol(OWSExpirableMessageView)]) {
-//        id<OWSExpirableMessageView> expirableView = (id<OWSExpirableMessageView>)cell;
-//        [expirableView startExpirationTimerWithExpiresAtSeconds:message.expiresAtSeconds
-//                                         initialDurationSeconds:message.expiresInSeconds];
-//    }
-//
-
 #pragma mark - Gesture recognizers
 
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender
