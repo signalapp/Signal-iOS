@@ -358,8 +358,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     OWSAssert(transaction);
     OWSAssert(!self.hasViewState);
 
-    OWSAssert([self.interaction isKindOfClass:[TSOutgoingMessage class]] ||
-        [self.interaction isKindOfClass:[TSIncomingMessage class]]);
+    if (![self.interaction isKindOfClass:[TSOutgoingMessage class]]
+        && ![self.interaction isKindOfClass:[TSIncomingMessage class]]) {
+        // Only text & attachment messages have "view state".
+        return;
+    }
 
     self.hasViewState = YES;
 
