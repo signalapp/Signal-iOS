@@ -30,6 +30,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSInteraction;
+@class YapDatabaseReadTransaction;
 
 // This is a ViewModel for cells in the conversation view.
 //
@@ -55,15 +56,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 // previous update.
 @property (nonatomic) NSInteger previousRow;
 
-//@property (nonatomic, weak) ConversationViewCell *lastCell;
-
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithTSInteraction:(TSInteraction *)interaction isGroupThread:(BOOL)isGroupThread;
+- (instancetype)initWithInteraction:(TSInteraction *)interaction
+                      isGroupThread:(BOOL)isGroupThread
+                        transaction:(YapDatabaseReadTransaction *)transaction;
 
 - (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
                                              indexPath:(NSIndexPath *)indexPath;
 
-- (void)replaceInteraction:(TSInteraction *)interaction;
+- (void)replaceInteraction:(TSInteraction *)interaction transaction:(YapDatabaseReadTransaction *)transaction;
 
 - (void)clearCachedLayoutState;
 

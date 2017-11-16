@@ -4007,7 +4007,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             if (viewItem) {
                 viewItem.previousRow = viewItem.row;
             } else {
-                viewItem = [[ConversationViewItem alloc] initWithTSInteraction:interaction isGroupThread:isGroupThread];
+                viewItem = [[ConversationViewItem alloc] initWithInteraction:interaction
+                                                               isGroupThread:isGroupThread
+                                                                 transaction:transaction];
             }
             viewItem.row = (NSInteger)row;
             [viewItems addObject:viewItem];
@@ -4125,7 +4127,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         if (!interaction) {
             OWSFail(@"%@ could not reload interaction", self.logTag);
         } else {
-            [viewItem replaceInteraction:interaction];
+            [viewItem replaceInteraction:interaction transaction:transaction];
         }
     }];
 }
