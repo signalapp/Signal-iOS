@@ -252,17 +252,18 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(DisplayableText.kMaxJumbomojiCount == 5);
 
+    CGFloat basePointSize = [UIFont ows_dynamicTypeBodyFont].pointSize;
     switch (self.displayableText.jumbomojiCount) {
         case 0:
             break;
         case 1:
-            return [UIFont ows_regularFontWithSize:35.f];
+            return [UIFont ows_regularFontWithSize:basePointSize * 2.f];
         case 2:
-            return [UIFont ows_regularFontWithSize:30.f];
+            return [UIFont ows_regularFontWithSize:basePointSize * 1.666f];
         case 3:
         case 4:
         case 5:
-            return [UIFont ows_regularFontWithSize:25.f];
+            return [UIFont ows_regularFontWithSize:basePointSize * 1.333f];
         default:
             OWSFail(@"%@ Unexpected jumbomoji count: %zd", self.logTag, self.displayableText.jumbomojiCount);
             break;
