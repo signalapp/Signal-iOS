@@ -97,7 +97,7 @@ static const int kYapDatabasePageSize = 50;
 static const int kYapDatabaseMaxPageCount = 500;
 // Never show more than 6*50 = 300 messages in conversation view when user
 // arrives.
-static const int kYapDatabaseMaxInitialPageCount = 500;
+static const int kYapDatabaseMaxInitialPageCount = 6;
 static const int kConversationInitialMaxRangeSize = kYapDatabasePageSize * kYapDatabaseMaxInitialPageCount;
 static const int kYapDatabaseRangeMaxLength = kYapDatabasePageSize * kYapDatabaseMaxPageCount;
 static const int kYapDatabaseRangeMinLength = 0;
@@ -2891,7 +2891,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         rowChange.finalIndex);
-                    [DDLog flushLog];
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     YapCollectionKey *collectionKey = rowChange.collectionKey;
                     OWSAssert(collectionKey.key.length > 0);
@@ -2902,7 +2901,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                         rowChange.collectionKey,
                         rowChange.newIndexPath,
                         rowChange.finalIndex);
-                    [DDLog flushLog];
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                     // We don't want to reload a row that we just inserted.
                     [rowsThatChangedSize removeObject:@(rowChange.finalIndex)];
@@ -2923,7 +2921,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                         rowChange.indexPath,
                         rowChange.newIndexPath,
                         rowChange.finalIndex);
-                    [DDLog flushLog];
                     [self.collectionView moveItemAtIndexPath:rowChange.indexPath toIndexPath:rowChange.newIndexPath];
                     // We don't want to reload a row that we just moved.
                     [rowsThatChangedSize removeObject:@(rowChange.finalIndex)];
@@ -2934,7 +2931,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         rowChange.finalIndex);
-                    [DDLog flushLog];
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     // We don't want to reload a row that we've already reloaded.
                     [rowsThatChangedSize removeObject:@(rowChange.finalIndex)];
@@ -2951,13 +2947,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             [rowsToReload addObject:[NSIndexPath indexPathForRow:row.integerValue inSection:0]];
         }
         if (rowsToReload.count > 0) {
-            [DDLog flushLog];
             [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
         }
     };
 
     DDLogVerbose(@"self.viewItems.count: %zd -> %zd", oldViewItemCount, self.viewItems.count);
-    [DDLog flushLog];
 
     BOOL shouldReloadCollection = [self shouldReloadCollection:rowChanges];
     if (shouldReloadCollection) {
@@ -2994,62 +2988,17 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     OWSAssert(rowChanges);
 
-    BOOL hasDeletes = NO;
-    BOOL hasInserts = NO;
-    BOOL hasMoves = NO;
-    BOOL hasUpdates = NO;
     for (YapDatabaseViewRowChange *rowChange in rowChanges) {
         switch (rowChange.type) {
-            case YapDatabaseViewChangeDelete:
-                DDLogVerbose(@"? YapDatabaseViewChangeDelete: %@, %@, %zd",
-                    rowChange.collectionKey,
-                    rowChange.indexPath,
-                    rowChange.finalIndex);
-                [DDLog flushLog];
-                hasDeletes = YES;
-                break;
-            case YapDatabaseViewChangeInsert:
-                DDLogVerbose(@"...YapDatabaseViewChangeInsert: %@, %@, %zd",
-                    rowChange.collectionKey,
-                    rowChange.newIndexPath,
-                    rowChange.finalIndex);
-                [DDLog flushLog];
-                hasInserts = YES;
-                break;
             case YapDatabaseViewChangeMove:
-                DDLogVerbose(@"...YapDatabaseViewChangeMove: %@, %@, %@, %zd",
-                    rowChange.collectionKey,
-                    rowChange.indexPath,
-                    rowChange.newIndexPath,
-                    rowChange.finalIndex);
-                [DDLog flushLog];
-                hasMoves = YES;
-                break;
-            case YapDatabaseViewChangeUpdate:
-                DDLogVerbose(@"...YapDatabaseViewChangeUpdate: %@, %@, %zd",
-                    rowChange.collectionKey,
-                    rowChange.indexPath,
-                    rowChange.finalIndex);
-                [DDLog flushLog];
-                hasUpdates = YES;
+                // "Move" changes cannot be safely performed using
+                // [UICollectionView performBatchUpdates:].  This appears to be a
+                // bug in YapDatabase.
+                return YES;
+            default:
                 break;
         }
     }
-    if (hasMoves) {
-        // "Move" changes cannot be safely performed using
-        // [UICollectionView performBatchUpdates:].  This appears to be a
-        // bug in YapDatabase.
-        return YES;
-    }
-    //    if (hasDeletes && hasInserts) {
-    //        return YES;
-    //    }
-    //    if (hasDeletes && hasUpdates) {
-    //        return YES;
-    //    }
-    //    if (hasInserts && hasUpdates) {
-    //        return YES;
-    //    }
     return NO;
 }
 
@@ -3057,40 +3006,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                oldViewItemCount:(NSUInteger)oldViewItemCount
 {
     OWSAssert(rowChanges);
-
-    //    for (YapDatabaseViewRowChange *rowChange in rowChanges) {
-    //        switch (rowChange.type) {
-    //            case YapDatabaseViewChangeDelete:
-    //                DDLogVerbose(@"...YapDatabaseViewChangeDelete: %@, %@, %zd",
-    //                             rowChange.collectionKey,
-    //                             rowChange.indexPath,
-    //                             rowChange.finalIndex);
-    //                [DDLog flushLog];
-    //                break;
-    //            case YapDatabaseViewChangeInsert:
-    //                DDLogVerbose(@"...YapDatabaseViewChangeInsert: %@, %@, %zd",
-    //                             rowChange.collectionKey,
-    //                             rowChange.newIndexPath,
-    //                             rowChange.finalIndex);
-    //                [DDLog flushLog];
-    //                break;
-    //            case YapDatabaseViewChangeMove:
-    //                DDLogVerbose(@"...YapDatabaseViewChangeMove: %@, %@, %@, %zd",
-    //                             rowChange.collectionKey,
-    //                             rowChange.indexPath,
-    //                             rowChange.newIndexPath,
-    //                             rowChange.finalIndex);
-    //                [DDLog flushLog];
-    //                break;
-    //            case YapDatabaseViewChangeUpdate:
-    //                DDLogVerbose(@"...YapDatabaseViewChangeUpdate: %@, %@, %zd",
-    //                             rowChange.collectionKey,
-    //                             rowChange.indexPath,
-    //                             rowChange.finalIndex);
-    //                [DDLog flushLog];
-    //                break;
-    //        }
-    //    }
 
     // If user sends a new outgoing message, don't animate the change.
     BOOL isOnlyInsertingNewOutgoingMessages = YES;
