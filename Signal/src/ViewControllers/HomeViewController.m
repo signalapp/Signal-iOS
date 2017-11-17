@@ -550,7 +550,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (BOOL)shouldShowMissingContactsPermissionView
 {
-    if ([TSContactThread numberOfKeysInCollection] == 0) {
+    if (!self.contactsManager.systemContactsHaveBeenRequestedAtLeastOnce) {
         return NO;
     }
 

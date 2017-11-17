@@ -342,7 +342,7 @@ class SystemContactsFetcher: NSObject {
         return self.authorizationStatus == .authorized
     }
 
-    private var systemContactsHaveBeenRequestedAtLeastOnce = false
+    private(set) var systemContactsHaveBeenRequestedAtLeastOnce = false
     private var hasSetupObservation = false
 
     override init() {
