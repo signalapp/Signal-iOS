@@ -62,12 +62,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)audioDurationSeconds
 {
-    NSNumber *_Nullable audioDurationSeconds = self.viewItem.audioDurationSeconds;
-    if (!audioDurationSeconds) {
-        audioDurationSeconds = @([self.attachmentStream audioDurationSecondsWithoutTransaction]);
-        self.viewItem.audioDurationSeconds = audioDurationSeconds;
-    }
-    return [audioDurationSeconds floatValue];
+    OWSAssert(self.viewItem.audioDurationSeconds);
+
+    return [self.viewItem.audioDurationSeconds floatValue];
 }
 
 - (AudioPlaybackState)audioPlaybackState

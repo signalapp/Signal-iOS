@@ -396,7 +396,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (CGSize)ensureCachedImageSizeWithTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
+- (CGSize)imageSize
 {
     OWSAssert([NSThread isMainThread]);
 
@@ -408,45 +408,23 @@ NS_ASSUME_NONNULL_BEGIN
     self.cachedImageWidth = @(imageSize.width);
     self.cachedImageHeight = @(imageSize.height);
 
-    void (^updateDataStore)() = ^(YapDatabaseReadWriteTransaction *transaction) {
-        OWSAssert(transaction);
-
-        NSString *collection = [[self class] collection];
-        TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
-        if (latestInstance) {
-            latestInstance.cachedImageWidth = @(imageSize.width);
-            latestInstance.cachedImageHeight = @(imageSize.height);
-            [latestInstance saveWithTransaction:transaction];
-        } else {
-            // This message has not yet been saved; do nothing.
-            OWSFail(@"%@ Attachment not yet saved.", self.logTag);
-        }
-    };
-
-    if (transaction) {
-        updateDataStore(transaction);
-    } else {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            updateDataStore(transaction);
+
+            NSString *collection = [[self class] collection];
+            TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
+            if (latestInstance) {
+                latestInstance.cachedImageWidth = @(imageSize.width);
+                latestInstance.cachedImageHeight = @(imageSize.height);
+                [latestInstance saveWithTransaction:transaction];
+            } else {
+                // This message has not yet been saved; do nothing.
+                OWSFail(@"%@ Attachment not yet saved.", self.logTag);
+            }
         }];
-    }
+    });
 
     return imageSize;
-}
-
-- (CGSize)imageSizeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssert([NSThread isMainThread]);
-    OWSAssert(transaction);
-
-    return [self ensureCachedImageSizeWithTransaction:transaction];
-}
-
-- (CGSize)imageSizeWithoutTransaction
-{
-    OWSAssert([NSThread isMainThread]);
-
-    return [self ensureCachedImageSizeWithTransaction:nil];
 }
 
 - (CGFloat)calculateAudioDurationSeconds
@@ -454,22 +432,24 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([NSThread isMainThread]);
     OWSAssert([self isAudio]);
 
-    NSError *error;
-    AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaURL error:&error];
-    if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]
-        && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
-        // Ignore "invalid audio file" errors.
-        return 0.f;
-    }
-    if (!error) {
-        return (CGFloat)[audioPlayer duration];
-    } else {
-        OWSFail(@"Could not find audio duration: %@", self.mediaURL);
-        return 0;
-    }
+    return 0;
+
+    //    NSError *error;
+    //    AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaURL error:&error];
+    //    if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]
+    //        && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
+    //        // Ignore "invalid audio file" errors.
+    //        return 0.f;
+    //    }
+    //    if (!error) {
+    //        return (CGFloat)[audioPlayer duration];
+    //    } else {
+    //        OWSFail(@"Could not find audio duration: %@", self.mediaURL);
+    //        return 0;
+    //    }
 }
 
-- (CGFloat)ensureCachedAudioDurationSecondsWithTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
+- (CGFloat)audioDurationSeconds
 {
     OWSAssert([NSThread isMainThread]);
 
@@ -480,44 +460,23 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat audioDurationSeconds = [self calculateAudioDurationSeconds];
     self.cachedAudioDurationSeconds = @(audioDurationSeconds);
 
-    void (^updateDataStore)() = ^(YapDatabaseReadWriteTransaction *transaction) {
-        OWSAssert(transaction);
-
-        NSString *collection = [[self class] collection];
-        TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
-        if (latestInstance) {
-            latestInstance.cachedAudioDurationSeconds = @(audioDurationSeconds);
-            [latestInstance saveWithTransaction:transaction];
-        } else {
-            // This message has not yet been saved; do nothing.
-            OWSFail(@"%@ Attachment not yet saved.", self.logTag);
-        }
-    };
-
-    if (transaction) {
-        updateDataStore(transaction);
-    } else {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            updateDataStore(transaction);
+            NSString *collection = [[self class] collection];
+            TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
+            if (latestInstance) {
+                latestInstance.cachedAudioDurationSeconds = @(audioDurationSeconds);
+                [latestInstance saveWithTransaction:transaction];
+            } else {
+                // This message has not yet been saved or has been deleted; do nothing.
+                // This isn't an error per se, but these race conditions should be
+                // _very_ rare.
+                OWSFail(@"%@ Attachment not yet saved.", self.logTag);
+            }
         }];
-    }
+    });
 
     return audioDurationSeconds;
-}
-
-- (CGFloat)audioDurationSecondsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssert([NSThread isMainThread]);
-    OWSAssert(transaction);
-
-    return [self ensureCachedAudioDurationSecondsWithTransaction:transaction];
-}
-
-- (CGFloat)audioDurationSecondsWithoutTransaction
-{
-    OWSAssert([NSThread isMainThread]);
-
-    return [self ensureCachedAudioDurationSecondsWithTransaction:nil];
 }
 
 @end
