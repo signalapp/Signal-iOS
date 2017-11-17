@@ -58,6 +58,24 @@ public class OWSMessagesBubbleImageFactory: NSObject {
         }
     }
 
+    public func bubbleColor(message: TSMessage) -> UIColor {
+        if message is TSIncomingMessage {
+            return UIColor.jsq_messageBubbleLightGray()!
+        } else if let outgoingMessage = message as? TSOutgoingMessage {
+            switch outgoingMessage.messageState {
+            case .unsent:
+                return UIColor.gray
+            case .attemptingOut:
+                return UIColor.ows_fadedBlue
+            default:
+                return UIColor.ows_materialBlue
+            }
+        } else {
+            owsFail("Unexpected message type: \(message)")
+            return UIColor.ows_materialBlue
+        }
+    }
+
     private func outgoing(color: UIColor) -> JSQMessagesBubbleImage {
         if isRTL {
             return jsqFactory.incomingMessagesBubbleImage(with: color)

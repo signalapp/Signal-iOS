@@ -55,11 +55,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 @property (nonatomic) BOOL hasViewState;
 @property (nonatomic) OWSMessageCellType messageCellType;
+// TODO: Rename to displayableBodyText.
 @property (nonatomic, nullable) DisplayableText *displayableText;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic) CGSize mediaSize;
-@property (nonatomic) BOOL hasText;
+// TODO: Remove in favor of displayableBodyText nil test.
+//@property (nonatomic) BOOL hasText;
 
 @end
 
@@ -84,6 +86,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     [self ensureViewState:transaction];
 
+    //    OWSAssert(self.hasViewState);
+
     return self;
 }
 
@@ -103,6 +107,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self clearCachedLayoutState];
 
     [self ensureViewState:transaction];
+
+    //    OWSAssert(self.hasViewState);
+}
+
+- (BOOL)hasText
+{
+    return _displayableText != nil;
 }
 
 - (void)setShouldShowDate:(BOOL)shouldShowDate
@@ -287,8 +298,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                                        }];
 }
 
-- (DisplayableText *)displayableTextForAttachmentStream:(TSAttachmentStream *)attachmentStream
-                                          interactionId:(NSString *)interactionId
+- (DisplayableText *)displayableTextForOversizeTextAttachment:(TSAttachmentStream *)attachmentStream
+                                                interactionId:(NSString *)interactionId
 {
     OWSAssert(attachmentStream);
     OWSAssert(interactionId.length > 0);
@@ -353,9 +364,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
             if ([attachment.contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
                 self.messageCellType = OWSMessageCellType_OversizeTextMessage;
-                self.displayableText =
-                    [self displayableTextForAttachmentStream:self.attachmentStream interactionId:message.uniqueId];
-                self.hasText = YES;
+                self.displayableText = [self displayableTextForOversizeTextAttachment:self.attachmentStream
+                                                                        interactionId:message.uniqueId];
+                //                self.hasText = YES;
             } else if ([self.attachmentStream isAnimated] || [self.attachmentStream isImage] ||
                 [self.attachmentStream isVideo]) {
                 if ([self.attachmentStream isAnimated]) {
@@ -392,8 +403,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
     }
 
+    // Ignore message body for oversize text attachments.
     if (message.body.length > 0) {
-        self.hasText = YES;
+        if (self.hasText) {
+            OWSFail(@"%@ oversize text message has unexpected caption.", self.logTag);
+        }
+
+        //        self.hasText = YES;
         // If we haven't already assigned an attachment type at this point, message.body isn't a caption,
         // it's a stand-alone text message.
         if (self.messageCellType == OWSMessageCellType_Unknown) {
@@ -401,7 +417,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             self.messageCellType = OWSMessageCellType_TextMessage;
         }
         self.displayableText = [self displayableTextForText:message.body interactionId:message.uniqueId];
-            OWSAssert(self.displayableText);
+        OWSAssert(self.displayableText);
     }
 
     if (self.messageCellType == OWSMessageCellType_Unknown) {
@@ -409,7 +425,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         // are rendered like empty text messages, but without any interactivity.
         DDLogWarn(@"%@ Treating unknown message as empty text message: %@", self.logTag, message.description);
         self.messageCellType = OWSMessageCellType_TextMessage;
-        self.hasText = YES;
+        //        self.hasText = YES;
         self.displayableText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
     }
 }

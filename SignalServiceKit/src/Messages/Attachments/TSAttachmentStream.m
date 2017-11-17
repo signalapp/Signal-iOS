@@ -572,19 +572,21 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssert([self isAudio]);
 
-    NSError *error;
-    AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaURL error:&error];
-    if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]
-        && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
-        // Ignore "invalid audio file" errors.
-        return 0.f;
-    }
-    if (!error) {
-        return (CGFloat)[audioPlayer duration];
-    } else {
-        OWSFail(@"Could not find audio duration: %@", self.mediaURL);
-        return 0;
-    }
+    return 0;
+
+    //    NSError *error;
+    //    AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaURL error:&error];
+    //    if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]
+    //        && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
+    //        // Ignore "invalid audio file" errors.
+    //        return 0.f;
+    //    }
+    //    if (!error) {
+    //        return (CGFloat)[audioPlayer duration];
+    //    } else {
+    //        OWSFail(@"Could not find audio duration: %@", self.mediaURL);
+    //        return 0;
+    //    }
 }
 
 - (CGFloat)audioDurationSeconds
