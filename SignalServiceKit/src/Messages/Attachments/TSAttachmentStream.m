@@ -418,7 +418,9 @@ NS_ASSUME_NONNULL_BEGIN
                 latestInstance.cachedImageHeight = @(imageSize.height);
                 [latestInstance saveWithTransaction:transaction];
             } else {
-                // This message has not yet been saved; do nothing.
+                // This message has not yet been saved or has been deleted; do nothing.
+                // This isn't an error per se, but these race conditions should be
+                // _very_ rare.
                 OWSFail(@"%@ Attachment not yet saved.", self.logTag);
             }
         }];
