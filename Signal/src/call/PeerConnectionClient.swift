@@ -359,7 +359,11 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 }
                 Logger.verbose("\(self.TAG) setting local session description: \(sessionDescription)")
                 self.peerConnection.setLocalDescription(sessionDescription.rtcSessionDescription,
-                                                        completionHandler: { _ in
+                                                        completionHandler: { error in
+                                                            guard error == nil else {
+                                                                reject(error!)
+                                                                return
+                                                            }
                                                             fulfill()
                 })
             }
@@ -387,7 +391,11 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 }
                 Logger.verbose("\(self.TAG) setting remote description: \(sessionDescription)")
                 self.peerConnection.setRemoteDescription(sessionDescription,
-                                                         completionHandler: { _ in
+                                                         completionHandler: { error in
+                                                            guard error == nil else {
+                                                                reject(error!)
+                                                                return
+                                                            }
                                                             fulfill()
                 })
             }
@@ -512,6 +520,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
             guard let dataChannel = self.dataChannel else {
                 Logger.error("\(self.TAG) in \(#function) ignoring sending \(data) for nil dataChannel: \(description)")
+                if isCritical {
+                    owsFail("\(self.TAG) in \(#function) ignoring sending \(data) for nil dataChannel: \(description)")
+                }
                 return
             }
 
