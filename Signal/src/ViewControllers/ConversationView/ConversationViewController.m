@@ -2892,20 +2892,25 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         for (YapDatabaseViewRowChange *rowChange in rowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
-                    DDLogVerbose(@"YapDatabaseViewChangeDelete: %@, %@", rowChange.collectionKey, rowChange.indexPath);
+                    DDLogVerbose(@"YapDatabaseViewChangeDelete: %@, %@, %zd",
+                        rowChange.collectionKey,
+                        rowChange.indexPath,
+                        rowChange.finalIndex);
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     YapCollectionKey *collectionKey = rowChange.collectionKey;
                     OWSAssert(collectionKey.key.length > 0);
                     break;
                 }
                 case YapDatabaseViewChangeInsert: {
-                    DDLogVerbose(
-                        @"YapDatabaseViewChangeInsert: %@, %@", rowChange.collectionKey, rowChange.newIndexPath);
+                    DDLogVerbose(@"YapDatabaseViewChangeInsert: %@, %@, %zd",
+                        rowChange.collectionKey,
+                        rowChange.newIndexPath,
+                        rowChange.finalIndex);
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                     // We don't want to reload a row that we just inserted.
-                    [rowsThatChangedSize removeObject:@(rowChange.newIndexPath.row)];
+                    [rowsThatChangedSize removeObject:@(rowChange.finalIndex)];
 
-                    ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:rowChange.newIndexPath.row];
+                    ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
                     if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
                         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
                         if (!outgoingMessage.isFromLinkedDevice) {
@@ -2916,21 +2921,25 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     break;
                 }
                 case YapDatabaseViewChangeMove: {
-                    DDLogVerbose(@"YapDatabaseViewChangeMove: %@, %@, %@",
+                    DDLogVerbose(@"YapDatabaseViewChangeMove: %@, %@, %@, %zd",
                         rowChange.collectionKey,
                         rowChange.indexPath,
-                        rowChange.newIndexPath);
+                        rowChange.newIndexPath,
+                        rowChange.finalIndex);
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                     // We don't want to reload a row that we just moved.
-                    [rowsThatChangedSize removeObject:@(rowChange.newIndexPath.row)];
+                    [rowsThatChangedSize removeObject:@(rowChange.finalIndex)];
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
-                    DDLogVerbose(@"YapDatabaseViewChangeUpdate: %@, %@", rowChange.collectionKey, rowChange.indexPath);
+                    DDLogVerbose(@"YapDatabaseViewChangeUpdate: %@, %@, %zd",
+                        rowChange.collectionKey,
+                        rowChange.indexPath,
+                        rowChange.finalIndex);
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     // We don't want to reload a row that we've already reloaded.
-                    [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
+                    [rowsThatChangedSize removeObject:@(rowChange.finalIndex)];
                     break;
                 }
             }
@@ -2990,13 +2999,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 break;
             case YapDatabaseViewChangeInsert: {
                 isOnlyUpdatingLastOutgoingMessage = NO;
-                ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:rowChange.newIndexPath.row];
+                ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
                 if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]
-                    && rowChange.newIndexPath.row >= (NSInteger)oldViewItemCount) {
+                    && rowChange.finalIndex >= oldViewItemCount) {
                     continue;
                 }
-                if (!lastNonUpdateRow || lastNonUpdateRow.integerValue < rowChange.newIndexPath.row) {
-                    lastNonUpdateRow = @(rowChange.newIndexPath.row);
+                if (!lastNonUpdateRow || lastNonUpdateRow.unsignedIntegerValue < rowChange.finalIndex) {
+                    lastNonUpdateRow = @(rowChange.finalIndex);
                 }
             }
             case YapDatabaseViewChangeMove:
@@ -3005,13 +3014,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 if (!lastNonUpdateRow || lastNonUpdateRow.integerValue < rowChange.indexPath.row) {
                     lastNonUpdateRow = @(rowChange.indexPath.row);
                 }
-                if (!lastNonUpdateRow || lastNonUpdateRow.integerValue < rowChange.newIndexPath.row) {
-                    lastNonUpdateRow = @(rowChange.newIndexPath.row);
+                if (!lastNonUpdateRow || lastNonUpdateRow.unsignedIntegerValue < rowChange.finalIndex) {
+                    lastNonUpdateRow = @(rowChange.finalIndex);
                 }
                 break;
             case YapDatabaseViewChangeUpdate: {
                 isOnlyInsertingNewOutgoingMessages = NO;
-                ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:rowChange.indexPath.row];
+                ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
                 if (![viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]
                     || rowChange.indexPath.row != (NSInteger)(oldViewItemCount - 1)) {
                     isOnlyUpdatingLastOutgoingMessage = NO;

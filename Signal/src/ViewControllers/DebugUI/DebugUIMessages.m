@@ -245,6 +245,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages performRandomActions:100 thread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"Perform 1,000 random actions"
+                        actionBlock:^{
+                            [DebugUIMessages performRandomActions:1000 thread:thread];
+                        }],
     ] mutableCopy];
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
