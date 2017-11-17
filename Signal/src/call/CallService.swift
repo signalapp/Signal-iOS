@@ -991,8 +991,10 @@ protocol CallServiceObserver: class {
         AssertIsOnMainThread()
 
         guard let currentCall = self.call else {
-            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
-            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(TAG) ignoring \(#function) since there is no current call"))
+            Logger.info("\(TAG) in \(#function), but no current call. Other party hung up just before us.")
+
+            // terminating the call might be redundant, but it shouldn't hurt.
+            terminateCall()
             return
         }
 
