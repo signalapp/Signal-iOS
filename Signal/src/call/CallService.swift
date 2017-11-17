@@ -1580,7 +1580,7 @@ protocol CallServiceObserver: class {
         self.peerConnectionClient?.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack)
 
         let message = DataChannelMessage.forVideoStreamingStatus(callId: call.signalingId, enabled: shouldHaveLocalVideoTrack)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description: "videoStreamingStatus")
+        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description: "videoStreamingStatus", isCritical: false)
     }
 
     // MARK: - Observers
