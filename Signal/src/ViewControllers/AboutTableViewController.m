@@ -3,6 +3,9 @@
 //
 
 #import "AboutTableViewController.h"
+#import "Environment.h"
+#import "OWSPreferences.h"
+#import "Signal-Swift.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
 #import <SignalServiceKit/TSDatabaseView.h>
@@ -10,12 +13,25 @@
 
 @implementation AboutTableViewController
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 
     self.title = NSLocalizedString(@"SETTINGS_ABOUT", @"Navbar title");
 
+    [self updateTableContents];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(pushTokensDidChange:)
+                                                 name:[OWSSyncPushTokensJob PushTokensDidChange]
+                                               object:nil];
+}
+
+- (void)pushTokensDidChange:(NSNotification *)notification {
     [self updateTableContents];
 }
 
@@ -64,6 +80,12 @@
     [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Threads: %zd", threadCount]]];
     [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Messages: %zd", messageCount]]];
     [contents addSection:debugSection];
+
+    OWSPreferences *preferences = [Environment preferences];
+    NSString *_Nullable pushToken = [preferences getPushToken];
+    NSString *_Nullable voipToken = [preferences getVoipToken];
+    [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Push Token: %@", pushToken ?: @"None" ]]];
+    [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"VOIP Token: %@", voipToken ?: @"None" ]]];
 #endif
 
     self.contents = contents;
