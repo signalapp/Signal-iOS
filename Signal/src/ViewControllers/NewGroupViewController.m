@@ -591,7 +591,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 #pragma mark - OWSTableViewControllerDelegate
 
-- (void)tableViewDidScroll
+- (void)tableViewWillBeginDragging
 {
     [self.groupNameTextField resignFirstResponder];
 }

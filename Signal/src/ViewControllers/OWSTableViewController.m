@@ -616,9 +616,9 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 #pragma mark - UIScrollViewDelegate
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-    [self.delegate tableViewDidScroll];
+    [self.delegate tableViewWillBeginDragging];
 }
 
 @end
