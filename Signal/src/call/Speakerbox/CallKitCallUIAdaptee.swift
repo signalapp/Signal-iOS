@@ -40,9 +40,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         providerConfiguration.supportedHandleTypes = [.phoneNumber, .generic]
 
-        if let iconMaskImage = UIImage(named: "IconMask") {
-            providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation(iconMaskImage)
-        }
+        let iconMaskImage = #imageLiteral(resourceName: "logoSignal")
+        providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation(iconMaskImage)
 
         providerConfiguration.ringtoneSound = "r.caf"
 
