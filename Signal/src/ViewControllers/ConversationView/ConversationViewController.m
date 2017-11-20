@@ -3942,11 +3942,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
         NSUInteger oldCellCount = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
 
-        [self resetMappings];
-
-        // ViewItem's modified while we were not observing may be stale.
-        // TODO have a more fine-grained cache expiration based on rows modified.
+        // ViewItems modified while we were not observing may be stale.
+        //
+        // TODO: have a more fine-grained cache expiration based on rows modified.
         [self.viewItemMap removeAllObjects];
+
+        [self resetMappings];
 
         NSUInteger newCellCount = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
 
