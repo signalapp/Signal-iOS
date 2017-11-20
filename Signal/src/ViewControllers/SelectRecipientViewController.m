@@ -573,7 +573,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 #pragma mark - OWSTableViewControllerDelegate
 
-- (void)tableViewDidScroll
+- (void)tableViewWillBeginDragging
 {
     [self.phoneNumberTextField resignFirstResponder];
 }

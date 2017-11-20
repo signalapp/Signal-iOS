@@ -152,7 +152,7 @@
 
 #pragma mark - OWSTableViewControllerDelegate
 
-- (void)tableViewDidScroll
+- (void)tableViewWillBeginDragging
 {
     [self.searchBar resignFirstResponder];
 }
