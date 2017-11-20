@@ -239,13 +239,13 @@
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Durch Ändern deiner Einstellungen kannst du Anrufe direkt aus dem Sperrbildschirm heraus beantworten sowie Name und Rufnummer für eingehende Anrufe sehen.\n\nSiehe die Datenschutz-Einstelllungen für Details.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Durch Ändern deiner Einstellungen kannst du Name und Rufnummer für eingehende Anrufe sehen.\n\nSiehe die Datenschutz-Einstellungen für Details.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Durch Ändern deiner Einstellungen kannst du Name und Rufnummer für eingehende Anrufe sehen.\n\nSiehe die Datenschutzeinstellungen für Details.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Nicht jetzt";
 
 /* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Datenschutz-Einstellungen anzeigen";
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Datenschutzeinstellungen anzeigen";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Zu Audioanruf wechseln";
@@ -1607,10 +1607,10 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Nicht zulässig";
 
 /* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Mit der iOS-Anrufintegration ist das Beanworten von Anrufen aus dem Sperrbildschirm heraus einfach. Weiterhin ist es vertraulich, denn deine Anrufer werden standardmäßig anonymisiert.";
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Mit der iOS-Anrufintegration ist das Beanworten von Anrufen aus dem Sperrbildschirm heraus einfach. Weiterhin ist es vertraulich, denn mit der Standardeinstellung werden deine Anrufer anonymisiert.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Erfahre mehr in den Datenschutz-Einstellungen.";
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Erfahre mehr in den Datenschutzeinstellungen.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Zum Antworten wischen";
@@ -1628,7 +1628,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Optional kannst du jetzt sehen und teilen, wann Nachrichten gelesen wurden.";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Aktiviere Lesebestätigungen in deinen Datenschutz-Einstellungen.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Aktiviere Lesebestätigungen in deinen Datenschutzeinstellungen.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Neu: Lesebestätigungen";
