@@ -987,9 +987,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         _callOnOpen = NO;
     }
 
-    if (!self.viewHasEverAppeared) {
-        [self.inputToolbar endEditing:YES];
-    }
     self.viewHasEverAppeared = YES;
 }
 
