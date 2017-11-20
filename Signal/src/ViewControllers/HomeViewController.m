@@ -129,6 +129,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                                                  name:UIApplicationDidEnterBackgroundNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
                                                object:nil];
@@ -490,6 +494,19 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.isAppInBackground = YES;
 }
 
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+    // It's possible a thread was created while we where in the background. But since we don't honor contact
+    // requests unless the app is in the foregrond, we must check again here upon becoming active.
+    if ([TSThread numberOfKeysInCollection] > 0) {
+        [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self updateReminderViews];
+            });
+        }];
+    }
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
@@ -550,7 +567,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (BOOL)shouldShowMissingContactsPermissionView
 {
-    if ([TSContactThread numberOfKeysInCollection] == 0) {
+    if (!self.contactsManager.systemContactsHaveBeenRequestedAtLeastOnce) {
         return NO;
     }
 

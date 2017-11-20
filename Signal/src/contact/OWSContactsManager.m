@@ -108,6 +108,11 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
     return self.systemContactsFetcher.isAuthorized;
 }
 
+- (BOOL)systemContactsHaveBeenRequestedAtLeastOnce
+{
+    return self.systemContactsFetcher.systemContactsHaveBeenRequestedAtLeastOnce;
+}
+
 - (BOOL)supportsContactEditing
 {
     return self.systemContactsFetcher.supportsContactEditing;

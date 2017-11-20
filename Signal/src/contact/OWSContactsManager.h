@@ -61,6 +61,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 // Must call `requestSystemContactsOnce` before accessing this method
 @property (nonatomic, readonly) BOOL isSystemContactsAuthorized;
+@property (nonatomic, readonly) BOOL systemContactsHaveBeenRequestedAtLeastOnce;
 
 @property (nonatomic, readonly) BOOL supportsContactEditing;
 
