@@ -1197,11 +1197,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // We "eagerly" respond when the long press begins, not when it ends.
     if (sender.state == UIGestureRecognizerStateBegan) {
-        // Show the menu controller from the centroid of the cell,
-        // not the touch location.  This disambiguates which cell
-        // is the context for the menu if the user presents the menu
-        // controller from the border between two cells.
-        CGPoint location = CGPointMake(self.width * 0.5f, self.height * 0.5f);
+        CGPoint location = [sender locationInView:self];
         [self showMenuController:location];
     }
 }
