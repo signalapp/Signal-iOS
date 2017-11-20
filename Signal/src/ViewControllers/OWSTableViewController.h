@@ -100,7 +100,7 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 
 @protocol OWSTableViewControllerDelegate <NSObject>
 
-- (void)tableViewDidScroll;
+- (void)tableViewWillBeginDragging;
 
 @end
 
