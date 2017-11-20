@@ -46,6 +46,14 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 70;
 
+    // Fix a bug that only affects iOS 11.0.x and 11.1.x.
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0) && !SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 2)) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpartial-availability"
+        self.tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+#pragma clang diagnostic pop
+    }
+
     self.dbConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
     [self.dbConnection beginLongLivedReadTransaction];
     self.deviceMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ TSSecondaryDevicesGroup ]
