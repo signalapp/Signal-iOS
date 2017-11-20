@@ -137,9 +137,8 @@ struct AudioSource: Hashable {
     // `pulseDuration` is the small pause between the two vibrations in the pair.
     private let pulseDuration = 0.2
 
-    static private let sharedAudioSession = CallAudioSession()
     var audioSession: CallAudioSession {
-        return type(of: self).sharedAudioSession
+        return CallAudioSession.shared
     }
 
     // MARK: - Initializers
@@ -248,12 +247,6 @@ struct AudioSource: Hashable {
             }
         } catch {
             owsFail("\(TAG) failed setting audio source with error: \(error) isSpeakerPhoneEnabled: \(call.isSpeakerphoneEnabled)")
-        }
-
-        if call.state == .connected, !call.isOnHold {
-            audioSession.isRTCAudioEnabled = true
-        } else {
-            audioSession.isRTCAudioEnabled = false
         }
     }
 

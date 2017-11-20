@@ -81,6 +81,7 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
             return
         }
 
+        CallAudioSession.shared.isRTCAudioEnabled = true
         self.callService.handleAnswerCall(call)
     }
 
@@ -113,7 +114,8 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
 
     func recipientAcceptedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
-        // no-op
+
+        CallAudioSession.shared.isRTCAudioEnabled = true
     }
 
     func localHangupCall(_ call: SignalCall) {

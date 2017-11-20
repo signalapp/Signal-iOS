@@ -359,7 +359,11 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 }
                 Logger.verbose("\(self.TAG) setting local session description: \(sessionDescription)")
                 self.peerConnection.setLocalDescription(sessionDescription.rtcSessionDescription,
-                                                        completionHandler: { _ in
+                                                        completionHandler: { error in
+                                                            guard error == nil else {
+                                                                reject(error!)
+                                                                return
+                                                            }
                                                             fulfill()
                 })
             }
@@ -387,7 +391,11 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 }
                 Logger.verbose("\(self.TAG) setting remote description: \(sessionDescription)")
                 self.peerConnection.setRemoteDescription(sessionDescription,
-                                                         completionHandler: { _ in
+                                                         completionHandler: { error in
+                                                            guard error == nil else {
+                                                                reject(error!)
+                                                                return
+                                                            }
                                                             fulfill()
                 })
             }
@@ -501,7 +509,15 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     // MARK: - Data Channel
 
-    public func sendDataChannelMessage(data: Data, description: String, isCritical: Bool = false) {
+    // should only be accessed on PeerConnectionClient.signalingQueue
+    var pendingDataChannelMessages: [PendingDataChannelMessage] = []
+    struct PendingDataChannelMessage {
+        let data: Data
+        let description: String
+        let isCritical: Bool
+    }
+
+    public func sendDataChannelMessage(data: Data, description: String, isCritical: Bool) {
         AssertIsOnMainThread()
 
         PeerConnectionClient.signalingQueue.async {
@@ -511,7 +527,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             }
 
             guard let dataChannel = self.dataChannel else {
-                Logger.error("\(self.TAG) in \(#function) ignoring sending \(data) for nil dataChannel: \(description)")
+                if isCritical {
+                    Logger.info("\(self.TAG) in \(#function) enqueuing critical data channel message for after we have a dataChannel: \(description)")
+                    self.pendingDataChannelMessages.append(PendingDataChannelMessage(data: data, description: description, isCritical: isCritical))
+                } else {
+                    Logger.error("\(self.TAG) in \(#function) ignoring sending \(data) for nil dataChannel: \(description)")
+                }
                 return
             }
 
@@ -697,6 +718,16 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             assert(self.dataChannel == nil)
             self.dataChannel = dataChannel
             dataChannel.delegate = self
+
+            let pendingMessages = self.pendingDataChannelMessages
+            self.pendingDataChannelMessages = []
+            DispatchQueue.main.async { [weak self] in
+                guard let strongSelf = self else { return }
+
+                pendingMessages.forEach { message in
+                    strongSelf.sendDataChannelMessage(data: message.data, description: message.description, isCritical: message.isCritical)
+                }
+            }
         }
     }
 
