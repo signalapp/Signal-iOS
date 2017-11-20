@@ -167,18 +167,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.progressView.frame = progressFrame;
 }
 
-#pragma mark - Logging
-
-+ (NSString *)logTag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)logTag
-{
-    return self.class.logTag;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END
