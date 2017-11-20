@@ -8,6 +8,8 @@ import PromiseKit
 class SyncPushTokensJob: NSObject {
     let TAG = "[SyncPushTokensJob]"
 
+    @objc public static let PushTokensDidChange = Notification.Name("PushTokensDidChange")
+
     // MARK: Dependencies
     let accountManager: AccountManager
     let preferences: OWSPreferences
@@ -90,14 +92,24 @@ class SyncPushTokensJob: NSObject {
     private func recordPushTokensLocally(pushToken: String, voipToken: String) -> Promise<Void> {
         Logger.warn("\(TAG) Recording push tokens locally. pushToken: \(pushToken), voipToken: \(voipToken)")
 
+        var didTokensChange = false
+
         if (pushToken != self.preferences.getPushToken()) {
             Logger.info("\(TAG) Recording new plain push token")
             self.preferences.setPushToken(pushToken)
+            didTokensChange = true
         }
 
         if (voipToken != self.preferences.getVoipToken()) {
             Logger.info("\(TAG) Recording new voip token")
             self.preferences.setVoipToken(voipToken)
+            didTokensChange = true
+        }
+
+        if (didTokensChange) {
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: SyncPushTokensJob.PushTokensDidChange, object: nil)
+            }
         }
 
         return Promise(value: ())
