@@ -3941,7 +3941,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         CGFloat viewTopToContentBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
 
         NSUInteger oldCellCount = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
+
+        // ViewItems modified while we were not observing may be stale.
+        //
+        // TODO: have a more fine-grained cache expiration based on rows modified.
+        [self.viewItemMap removeAllObjects];
+
         [self resetMappings];
+
         NSUInteger newCellCount = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
 
         // Detect changes in the mapping's "window" size.
