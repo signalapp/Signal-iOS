@@ -31,7 +31,8 @@
                                                object:nil];
 }
 
-- (void)pushTokensDidChange:(NSNotification *)notification {
+- (void)pushTokensDidChange:(NSNotification *)notification
+{
     [self updateTableContents];
 }
 
