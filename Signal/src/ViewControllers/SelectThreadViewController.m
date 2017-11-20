@@ -279,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - OWSTableViewControllerDelegate
 
-- (void)tableViewDidScroll
+- (void)tableViewWillBeginDragging
 {
     [self.searchBar resignFirstResponder];
 }
