@@ -721,9 +721,11 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
             let pendingMessages = self.pendingDataChannelMessages
             self.pendingDataChannelMessages = []
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let strongSelf = self else { return }
+
                 pendingMessages.forEach { message in
-                    self.sendDataChannelMessage(data: message.data, description: message.description, isCritical: message.isCritical)
+                    strongSelf.sendDataChannelMessage(data: message.data, description: message.description, isCritical: message.isCritical)
                 }
             }
         }
