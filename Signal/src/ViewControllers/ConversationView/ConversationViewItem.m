@@ -47,6 +47,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 @property (nonatomic) AudioPlaybackState audioPlaybackState;
 @property (nonatomic) CGFloat audioProgressSeconds;
+@property (nonatomic) CGFloat audioDurationSeconds;
 
 #pragma mark - View State
 
@@ -251,9 +252,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     OWSAssert([NSThread isMainThread]);
 
     self.audioProgressSeconds = progress;
-    if (duration > 0) {
-        self.audioDurationSeconds = @(duration);
-    }
 
     [self.lastAudioMessageView updateContents];
 }
@@ -390,13 +388,19 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                     self.messageCellType = OWSMessageCellType_GenericAttachment;
                     return;
                 }
-                self.contentSize = [self.attachmentStream imageSizeWithoutTransaction];
+                self.contentSize = [self.attachmentStream imageSize];
                 if (self.contentSize.width <= 0 || self.contentSize.height <= 0) {
                     self.messageCellType = OWSMessageCellType_GenericAttachment;
                 }
                 return;
             } else if ([self.attachmentStream isAudio]) {
-                self.messageCellType = OWSMessageCellType_Audio;
+                CGFloat audioDurationSeconds = [self.attachmentStream audioDurationSeconds];
+                if (audioDurationSeconds > 0) {
+                    self.audioDurationSeconds = audioDurationSeconds;
+                    self.messageCellType = OWSMessageCellType_Audio;
+                } else {
+                    self.messageCellType = OWSMessageCellType_GenericAttachment;
+                }
                 return;
             } else {
                 self.messageCellType = OWSMessageCellType_GenericAttachment;

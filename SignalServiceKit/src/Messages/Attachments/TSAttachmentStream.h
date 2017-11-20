@@ -4,8 +4,10 @@
 
 #import "DataSource.h"
 #import "TSAttachment.h"
+
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
@@ -51,11 +53,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)deleteAttachments;
 + (NSString *)attachmentsFolder;
 
-- (CGSize)imageSizeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (CGSize)imageSizeWithoutTransaction;
+- (CGSize)imageSize;
 
-- (CGFloat)audioDurationSecondsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (CGFloat)audioDurationSecondsWithoutTransaction;
+- (CGFloat)audioDurationSeconds;
 
 @end
 

@@ -363,7 +363,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                     = (NSArray<TSOutgoingMessage *> *)[TSInteraction interactionsWithTimestamp:sentTimestamp
                                                                                        ofClass:[TSOutgoingMessage class]
                                                                                withTransaction:transaction];
-                OWSAssert(messages.count <= 1);
+                if (messages.count > 1) {
+                    OWSFail(@"%@ More than one matching message with timestamp: %llu.", self.logTag, sentTimestamp);
+                }
                 if (messages.count > 0) {
                     // TODO: We might also need to "mark as read by recipient" any older messages
                     // from us in that thread.  Or maybe this state should hang on the thread?

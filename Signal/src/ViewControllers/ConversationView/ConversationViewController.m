@@ -2883,26 +2883,29 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // b) is inserting new interactions.
     __block BOOL scrollToBottom = wasAtBottom;
 
-    BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
-
     void (^batchUpdates)(void) = ^{
         for (YapDatabaseViewRowChange *rowChange in rowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
-                    DDLogVerbose(@"YapDatabaseViewChangeDelete: %@, %@", rowChange.collectionKey, rowChange.indexPath);
+                    DDLogVerbose(@"YapDatabaseViewChangeDelete: %@, %@, %zd",
+                        rowChange.collectionKey,
+                        rowChange.indexPath,
+                        rowChange.finalIndex);
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     YapCollectionKey *collectionKey = rowChange.collectionKey;
                     OWSAssert(collectionKey.key.length > 0);
                     break;
                 }
                 case YapDatabaseViewChangeInsert: {
-                    DDLogVerbose(
-                        @"YapDatabaseViewChangeInsert: %@, %@", rowChange.collectionKey, rowChange.newIndexPath);
+                    DDLogVerbose(@"YapDatabaseViewChangeInsert: %@, %@, %zd",
+                        rowChange.collectionKey,
+                        rowChange.newIndexPath,
+                        rowChange.finalIndex);
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                     // We don't want to reload a row that we just inserted.
-                    [rowsThatChangedSize removeObject:@(rowChange.newIndexPath.row)];
+                    [rowsThatChangedSize removeObject:@(rowChange.finalIndex)];
 
-                    ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:rowChange.newIndexPath.row];
+                    ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
                     if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
                         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
                         if (!outgoingMessage.isFromLinkedDevice) {
@@ -2913,21 +2916,24 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     break;
                 }
                 case YapDatabaseViewChangeMove: {
-                    DDLogVerbose(@"YapDatabaseViewChangeMove: %@, %@, %@",
+                    DDLogVerbose(@"YapDatabaseViewChangeMove: %@, %@, %@, %zd",
                         rowChange.collectionKey,
                         rowChange.indexPath,
-                        rowChange.newIndexPath);
-                    [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
-                    [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
+                        rowChange.newIndexPath,
+                        rowChange.finalIndex);
+                    [self.collectionView moveItemAtIndexPath:rowChange.indexPath toIndexPath:rowChange.newIndexPath];
                     // We don't want to reload a row that we just moved.
-                    [rowsThatChangedSize removeObject:@(rowChange.newIndexPath.row)];
+                    [rowsThatChangedSize removeObject:@(rowChange.finalIndex)];
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
-                    DDLogVerbose(@"YapDatabaseViewChangeUpdate: %@, %@", rowChange.collectionKey, rowChange.indexPath);
+                    DDLogVerbose(@"YapDatabaseViewChangeUpdate: %@, %@, %zd",
+                        rowChange.collectionKey,
+                        rowChange.indexPath,
+                        rowChange.finalIndex);
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     // We don't want to reload a row that we've already reloaded.
-                    [rowsThatChangedSize removeObject:@(rowChange.indexPath.row)];
+                    [rowsThatChangedSize removeObject:@(rowChange.finalIndex)];
                     break;
                 }
             }
@@ -2937,33 +2943,63 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         // as they may affect which cells show "date" headers or "status" footers.
         NSMutableArray<NSIndexPath *> *rowsToReload = [NSMutableArray new];
         for (NSNumber *row in rowsThatChangedSize) {
+            DDLogVerbose(@"rowsToReload: %@", row);
             [rowsToReload addObject:[NSIndexPath indexPathForRow:row.integerValue inSection:0]];
         }
         if (rowsToReload.count > 0) {
             [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
         }
     };
-    void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
-        OWSAssert([NSThread isMainThread]);
 
-        if (!finished) {
-            DDLogInfo(@"%@ performBatchUpdates did not finish", self.logTag);
-        }
+    DDLogVerbose(@"self.viewItems.count: %zd -> %zd", oldViewItemCount, self.viewItems.count);
 
-        [self updateLastVisibleTimestamp];
-
-        if (scrollToBottom) {
-            [self scrollToBottomAnimated:shouldAnimateScrollToBottom && shouldAnimateUpdates];
-        }
-    };
-
-    if (shouldAnimateUpdates) {
-        [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
-    } else {
+    BOOL shouldReloadCollection = [self shouldReloadCollection:rowChanges];
+    if (shouldReloadCollection) {
         [UIView performWithoutAnimation:^{
-            [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
+            [self.collectionView reloadData];
         }];
+        [self updateLastVisibleTimestamp];
+    } else {
+        BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
+        void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
+            OWSAssert([NSThread isMainThread]);
+
+            if (!finished) {
+                DDLogInfo(@"%@ performBatchUpdates did not finish", self.logTag);
+            }
+
+            [self updateLastVisibleTimestamp];
+
+            if (scrollToBottom) {
+                [self scrollToBottomAnimated:shouldAnimateScrollToBottom && shouldAnimateUpdates];
+            }
+        };
+        if (shouldAnimateUpdates) {
+            [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
+        } else {
+            [UIView performWithoutAnimation:^{
+                [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
+            }];
+        }
     }
+}
+
+- (BOOL)shouldReloadCollection:(NSArray<YapDatabaseViewRowChange *> *)rowChanges
+{
+    OWSAssert(rowChanges);
+
+    for (YapDatabaseViewRowChange *rowChange in rowChanges) {
+        switch (rowChange.type) {
+            case YapDatabaseViewChangeMove:
+                // "Move" changes cannot be safely performed using
+                // [UICollectionView performBatchUpdates:].  This appears to be a
+                // bug in YapDatabase.
+                return YES;
+            default:
+                break;
+        }
+    }
+    return NO;
 }
 
 - (BOOL)shouldAnimateRowUpdates:(NSArray<YapDatabaseViewRowChange *> *)rowChanges
@@ -2987,13 +3023,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 break;
             case YapDatabaseViewChangeInsert: {
                 isOnlyUpdatingLastOutgoingMessage = NO;
-                ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:rowChange.newIndexPath.row];
+                ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
                 if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]
-                    && rowChange.newIndexPath.row >= (NSInteger)oldViewItemCount) {
+                    && rowChange.finalIndex >= oldViewItemCount) {
                     continue;
                 }
-                if (!lastNonUpdateRow || lastNonUpdateRow.integerValue < rowChange.newIndexPath.row) {
-                    lastNonUpdateRow = @(rowChange.newIndexPath.row);
+                if (!lastNonUpdateRow || lastNonUpdateRow.unsignedIntegerValue < rowChange.finalIndex) {
+                    lastNonUpdateRow = @(rowChange.finalIndex);
                 }
             }
             case YapDatabaseViewChangeMove:
@@ -3002,13 +3038,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 if (!lastNonUpdateRow || lastNonUpdateRow.integerValue < rowChange.indexPath.row) {
                     lastNonUpdateRow = @(rowChange.indexPath.row);
                 }
-                if (!lastNonUpdateRow || lastNonUpdateRow.integerValue < rowChange.newIndexPath.row) {
-                    lastNonUpdateRow = @(rowChange.newIndexPath.row);
+                if (!lastNonUpdateRow || lastNonUpdateRow.unsignedIntegerValue < rowChange.finalIndex) {
+                    lastNonUpdateRow = @(rowChange.finalIndex);
                 }
                 break;
             case YapDatabaseViewChangeUpdate: {
                 isOnlyInsertingNewOutgoingMessages = NO;
-                ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:rowChange.indexPath.row];
+                ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
                 if (![viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]
                     || rowChange.indexPath.row != (NSInteger)(oldViewItemCount - 1)) {
                     isOnlyUpdatingLastOutgoingMessage = NO;
@@ -3316,20 +3352,23 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self presentViewController:actionSheetController animated:true completion:nil];
 }
 
-- (NSIndexPath *)lastVisibleIndexPath
+- (nullable NSIndexPath *)lastVisibleIndexPath
 {
-    NSIndexPath *lastVisibleIndexPath = nil;
+    NSIndexPath *_Nullable lastVisibleIndexPath = nil;
     for (NSIndexPath *indexPath in [self.collectionView indexPathsForVisibleItems]) {
         if (!lastVisibleIndexPath || indexPath.row > lastVisibleIndexPath.row) {
             lastVisibleIndexPath = indexPath;
         }
+    }
+    if (lastVisibleIndexPath && lastVisibleIndexPath.row >= self.viewItems.count) {
+        return (self.viewItems.count > 0 ? [NSIndexPath indexPathForRow:self.viewItems.count - 1 inSection:0] : nil);
     }
     return lastVisibleIndexPath;
 }
 
 - (nullable ConversationViewItem *)lastVisibleViewItem
 {
-    NSIndexPath *lastVisibleIndexPath = [self lastVisibleIndexPath];
+    NSIndexPath *_Nullable lastVisibleIndexPath = [self lastVisibleIndexPath];
     if (!lastVisibleIndexPath) {
         return nil;
     }
