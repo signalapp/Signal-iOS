@@ -811,6 +811,8 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 - (void)viewWillDisappear:(BOOL)animated
 {
     [self.attachmentView viewWillDisappear:animated];
+
+    [self endEditingTextMessage];
 }
 
 - (nullable NSString *)textInputPrimaryLanguage
