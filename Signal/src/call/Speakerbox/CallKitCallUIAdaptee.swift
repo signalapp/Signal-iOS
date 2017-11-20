@@ -341,17 +341,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         Logger.debug("\(TAG) Received \(#function)")
 
-        // Audio Session is managed by CallAudioService, which observes changes on the
-        // SignalCall directly.
+        CallAudioSession.shared.isRTCAudioEnabled = true
     }
 
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
 
         Logger.debug("\(TAG) Received \(#function)")
-
-        // Audio Session is managed by CallAudioService, which observes changes on the
-        // SignalCall directly.
+        CallAudioSession.shared.isRTCAudioEnabled = false
     }
 
     // MARK: - Util

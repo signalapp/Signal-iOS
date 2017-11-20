@@ -17,6 +17,11 @@ import WebRTC
 class CallAudioSession {
 
     let TAG = "[CallAudioSession]"
+
+    // Force singleton access
+    static let shared = CallAudioSession()
+    private init() {}
+
     /**
      * The private class that manages AVAudioSession for WebRTC
      */
@@ -33,7 +38,7 @@ class CallAudioSession {
 
     /**
      * Because we useManualAudio with our RTCAudioSession, we have to start/stop the recording audio session ourselves.
-     * Else, we start recording before the next call is ringing.
+     * See header for details on  manual audio.
      */
     var isRTCAudioEnabled: Bool {
         get {
