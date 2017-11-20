@@ -408,23 +408,21 @@ NS_ASSUME_NONNULL_BEGIN
     self.cachedImageWidth = @(imageSize.width);
     self.cachedImageHeight = @(imageSize.height);
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
 
-            NSString *collection = [[self class] collection];
-            TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
-            if (latestInstance) {
-                latestInstance.cachedImageWidth = @(imageSize.width);
-                latestInstance.cachedImageHeight = @(imageSize.height);
-                [latestInstance saveWithTransaction:transaction];
-            } else {
-                // This message has not yet been saved or has been deleted; do nothing.
-                // This isn't an error per se, but these race conditions should be
-                // _very_ rare.
-                OWSFail(@"%@ Attachment not yet saved.", self.logTag);
-            }
-        }];
-    });
+        NSString *collection = [[self class] collection];
+        TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
+        if (latestInstance) {
+            latestInstance.cachedImageWidth = @(imageSize.width);
+            latestInstance.cachedImageHeight = @(imageSize.height);
+            [latestInstance saveWithTransaction:transaction];
+        } else {
+            // This message has not yet been saved or has been deleted; do nothing.
+            // This isn't an error per se, but these race conditions should be
+            // _very_ rare.
+            OWSFail(@"%@ Attachment not yet saved.", self.logTag);
+        }
+    }];
 
     return imageSize;
 }
@@ -460,21 +458,19 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat audioDurationSeconds = [self calculateAudioDurationSeconds];
     self.cachedAudioDurationSeconds = @(audioDurationSeconds);
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            NSString *collection = [[self class] collection];
-            TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
-            if (latestInstance) {
-                latestInstance.cachedAudioDurationSeconds = @(audioDurationSeconds);
-                [latestInstance saveWithTransaction:transaction];
-            } else {
-                // This message has not yet been saved or has been deleted; do nothing.
-                // This isn't an error per se, but these race conditions should be
-                // _very_ rare.
-                OWSFail(@"%@ Attachment not yet saved.", self.logTag);
-            }
-        }];
-    });
+    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        NSString *collection = [[self class] collection];
+        TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
+        if (latestInstance) {
+            latestInstance.cachedAudioDurationSeconds = @(audioDurationSeconds);
+            [latestInstance saveWithTransaction:transaction];
+        } else {
+            // This message has not yet been saved or has been deleted; do nothing.
+            // This isn't an error per se, but these race conditions should be
+            // _very_ rare.
+            OWSFail(@"%@ Attachment not yet saved.", self.logTag);
+        }
+    }];
 
     return audioDurationSeconds;
 }

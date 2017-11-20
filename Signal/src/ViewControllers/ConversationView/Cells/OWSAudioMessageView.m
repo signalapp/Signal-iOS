@@ -62,9 +62,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)audioDurationSeconds
 {
-    OWSAssert(self.viewItem.audioDurationSeconds);
+    OWSAssert(self.viewItem.audioDurationSeconds > 0.f);
 
-    return [self.viewItem.audioDurationSeconds floatValue];
+    return self.viewItem.audioDurationSeconds;
 }
 
 - (AudioPlaybackState)audioPlaybackState

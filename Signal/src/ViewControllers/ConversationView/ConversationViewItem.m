@@ -47,7 +47,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 @property (nonatomic) AudioPlaybackState audioPlaybackState;
 @property (nonatomic) CGFloat audioProgressSeconds;
-@property (nonatomic, nullable) NSNumber *audioDurationSeconds;
+@property (nonatomic) CGFloat audioDurationSeconds;
 
 #pragma mark - View State
 
@@ -396,7 +396,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             } else if ([self.attachmentStream isAudio]) {
                 CGFloat audioDurationSeconds = [self.attachmentStream audioDurationSeconds];
                 if (audioDurationSeconds > 0) {
-                    self.audioDurationSeconds = @(audioDurationSeconds);
+                    self.audioDurationSeconds = audioDurationSeconds;
                     self.messageCellType = OWSMessageCellType_Audio;
                 } else {
                     self.messageCellType = OWSMessageCellType_GenericAttachment;

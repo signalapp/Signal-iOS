@@ -72,7 +72,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 @property (nonatomic, weak) OWSAudioMessageView *lastAudioMessageView;
 
-@property (nonatomic, readonly, nullable) NSNumber *audioDurationSeconds;
+@property (nonatomic, readonly) CGFloat audioDurationSeconds;
 
 - (CGFloat)audioProgressSeconds;
 
