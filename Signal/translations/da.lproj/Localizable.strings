@@ -1573,6 +1573,9 @@
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Ukendt kontakt";
 
+/* Indicates an unknown or unrecognizable value. */
+"UNKNOWN_VALUE" = "Unknown";
+
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "Frakobl";
 
