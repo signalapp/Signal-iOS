@@ -20,7 +20,7 @@ class SlideOffAnimatedTransition: NSObject, UIViewControllerAnimatedTransitionin
         }
 
         let width = containerView.frame.width
-        let offsetLeft = fromView.frame.offsetBy(dx: -width, dy: 0)
+        let offsetFrame = fromView.frame.offsetBy(dx: (containerView.isRTL() ? +width : -width), dy: 0)
         toView.frame = fromView.frame
 
         fromView.layer.shadowRadius = 15.0
@@ -29,7 +29,7 @@ class SlideOffAnimatedTransition: NSObject, UIViewControllerAnimatedTransitionin
 
         containerView.insertSubview(toView, belowSubview: fromView)
         UIView.animate(withDuration: transitionDuration(using: transitionContext), delay:0, options: .curveLinear, animations: {
-            fromView.frame = offsetLeft
+            fromView.frame = offsetFrame
 
             toView.layer.opacity = 1.0
             fromView.layer.shadowOpacity = 0.1
