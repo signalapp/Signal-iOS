@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (!countryMetadata) {
-        countryCode = [NSLocale.currentLocale objectForKey:NSLocaleCountryCode];
+        countryCode = [PhoneNumber defaultCountryCode];
         if (countryCode) {
             countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
         }

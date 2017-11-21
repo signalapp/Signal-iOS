@@ -42,4 +42,6 @@
 
 - (NSComparisonResult)compare:(PhoneNumber *)other;
 
++ (NSString *)defaultCountryCode;
+
 @end

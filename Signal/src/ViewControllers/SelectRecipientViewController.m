@@ -224,8 +224,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     }
 
     if (!countryCode || !callingCode) {
-        NSLocale *locale = NSLocale.currentLocale;
-        countryCode = [locale objectForKey:NSLocaleCountryCode];
+        countryCode = [PhoneNumber defaultCountryCode];
         callingCode = [[PhoneNumberUtil sharedUtil].nbPhoneNumberUtil getCountryCodeForRegion:countryCode];
     }
 

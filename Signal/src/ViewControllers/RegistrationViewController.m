@@ -241,8 +241,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 #pragma mark - Country
 
 - (void)populateDefaultCountryNameAndCode {
-    NSLocale *locale      = NSLocale.currentLocale;
-    NSString *countryCode = [locale objectForKey:NSLocaleCountryCode];
+    NSString *countryCode = [PhoneNumber defaultCountryCode];
 
 #ifdef DEBUG
     if ([self lastRegisteredCountryCode].length > 0) {
