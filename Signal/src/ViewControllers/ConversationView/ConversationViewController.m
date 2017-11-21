@@ -526,6 +526,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
         @"Indicates that the app is loading more messages in this conversation.");
     self.loadMoreHeader.textColor = [UIColor ows_materialBlueColor];
+    self.loadMoreHeader.textAlignment = NSTextAlignmentCenter;
     self.loadMoreHeader.font = [UIFont ows_mediumFontWithSize:16.f];
     [self.collectionView addSubview:self.loadMoreHeader];
     [self.loadMoreHeader autoPinWidthToWidthOfView:self.view];
