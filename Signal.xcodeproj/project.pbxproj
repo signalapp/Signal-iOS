@@ -21,6 +21,7 @@
 		34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
 		34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34330AA21E79686200DF2FB9 /* OWSProgressView.m */; };
 		343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */; };
+		343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */; };
 		343D3D9B1E9283F100165CA4 /* BlockListUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */; };
 		344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F2F661E57A932000D9322 /* UIViewController+OWS.m */; };
 		34533F181EA8D2070006114F /* OWSAudioAttachmentPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */; };
@@ -424,6 +425,8 @@
 		34330AA21E79686200DF2FB9 /* OWSProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProgressView.m; sourceTree = "<group>"; };
 		343A65931FC47D5D000477A1 /* DebugUISyncMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUISyncMessages.h; sourceTree = "<group>"; };
 		343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUISyncMessages.m; sourceTree = "<group>"; };
+		343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationScrollButton.m; sourceTree = "<group>"; };
+		343A65971FC4CFE7000477A1 /* ConversationScrollButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationScrollButton.h; sourceTree = "<group>"; };
 		343D3D991E9283F100165CA4 /* BlockListUIUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListUIUtils.h; sourceTree = "<group>"; };
 		343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListUIUtils.m; sourceTree = "<group>"; };
 		34491FC11FB0F78500B3E5A3 /* my */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = my; path = translations/my.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -972,6 +975,8 @@
 				34D1F0681F8678AA0066283D /* ConversationInputTextView.m */,
 				34D1F0691F8678AA0066283D /* ConversationInputToolbar.h */,
 				34D1F06A1F8678AA0066283D /* ConversationInputToolbar.m */,
+				343A65971FC4CFE7000477A1 /* ConversationScrollButton.h */,
+				343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */,
 				34D1F06D1F8678AA0066283D /* ConversationViewController.h */,
 				34D1F06E1F8678AA0066283D /* ConversationViewController.m */,
 				34D1F06F1F8678AA0066283D /* ConversationViewItem.h */,
@@ -2210,6 +2215,7 @@
 				45CD81F21DC03A22004C9430 /* OWSLogger.m in Sources */,
 				4542F0941EB9372700C7EE92 /* SystemContactsFetcher.swift in Sources */,
 				B60C16651988999D00E97A6C /* VersionMigrations.m in Sources */,
+				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
 				B97940271832BD2400BD66CB /* UIUtil.m in Sources */,
 				34CE88ED1F3237260098030F /* ProfileFetcherJob.swift in Sources */,
 				34B3F8791E8DF1700035BE1A /* CountryCodeViewController.m in Sources */,

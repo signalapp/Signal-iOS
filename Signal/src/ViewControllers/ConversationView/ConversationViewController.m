@@ -11,6 +11,7 @@
 #import "ConversationHeaderView.h"
 #import "ConversationInputTextView.h"
 #import "ConversationInputToolbar.h"
+#import "ConversationScrollButton.h"
 #import "ConversationViewCell.h"
 #import "ConversationViewItem.h"
 #import "ConversationViewLayout.h"
@@ -214,9 +215,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic, readonly) BOOL isGroupConversation;
 @property (nonatomic) BOOL isUserScrolling;
 
-@property (nonatomic) UIView *scrollDownButton;
+@property (nonatomic) ConversationScrollButton *scrollDownButton;
 #ifdef DEBUG
-@property (nonatomic) UIView *scrollUpButton;
+@property (nonatomic) ConversationScrollButton *scrollUpButton;
 #endif
 
 @property (nonatomic) BOOL isViewVisible;
@@ -225,6 +226,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic) BOOL wasScrolledToBottomBeforeKeyboardShow;
 @property (nonatomic) BOOL wasScrolledToBottomBeforeLayoutChange;
+@property (nonatomic) BOOL hasUnreadMessages;
 
 @end
 
@@ -472,7 +474,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [self registerCellClasses];
 
-    [self createScrollButtons];
+    [self createConversationScrollButtons];
     [self createHeaderViews];
     [self createBackButton];
     [self addNotificationListeners];
@@ -596,12 +598,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [self updateBarButtonItems];
     [self setNavigationTitle];
-    [self updateLastVisibleTimestamp];
 
     // We want to set the initial scroll state the first time we enter the view.
     if (!self.viewHasEverAppeared) {
         [self scrollToDefaultPosition];
     }
+
+    [self updateLastVisibleTimestamp];
 }
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
@@ -2222,51 +2225,41 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 }
 
-- (void)createScrollButtons
+- (void)createConversationScrollButtons
 {
-    self.scrollDownButton = [self createScrollButton:@"\uf103" selector:@selector(scrollDownButtonTapped)];
+    self.scrollDownButton = [[ConversationScrollButton alloc] initWithIconText:@"\uf103"];
+    [self.scrollDownButton addTarget:self
+                              action:@selector(scrollDownButtonTapped)
+                    forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.scrollDownButton];
+    [self.scrollDownButton autoSetDimension:ALDimensionWidth toSize:self.scrollDownButton.width];
+    [self.scrollDownButton autoSetDimension:ALDimensionHeight toSize:self.scrollDownButton.width];
+    [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.inputToolbar];
+    [self.scrollDownButton autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+
 #ifdef DEBUG
-    self.scrollUpButton = [self createScrollButton:@"\uf102" selector:@selector(scrollUpButtonTapped)];
+    self.scrollUpButton = [[ConversationScrollButton alloc] initWithIconText:@"\uf102"];
+    [self.scrollUpButton addTarget:self
+                            action:@selector(scrollUpButtonTapped)
+                  forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.scrollUpButton];
+    [self.scrollUpButton autoSetDimension:ALDimensionWidth toSize:self.scrollUpButton.width];
+    [self.scrollUpButton autoSetDimension:ALDimensionHeight toSize:self.scrollUpButton.width];
+    [self.scrollUpButton autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [self.scrollUpButton autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
 #endif
 }
 
-- (UIView *)createScrollButton:(NSString *)label selector:(SEL)selector
+- (void)setHasUnreadMessages:(BOOL)hasUnreadMessages
 {
-    const CGFloat kCircleSize = ScaleFromIPhone5To7Plus(35.f, 40.f);
+    if (_hasUnreadMessages == hasUnreadMessages) {
+        return;
+    }
 
-    UILabel *iconLabel = [UILabel new];
-    iconLabel.attributedText =
-        [[NSAttributedString alloc] initWithString:label
-                                        attributes:@{
-                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:kCircleSize * 0.8f],
-                                            NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
-                                            NSBaselineOffsetAttributeName : @(-0.5f),
-                                        }];
-    iconLabel.userInteractionEnabled = NO;
+    _hasUnreadMessages = hasUnreadMessages;
 
-    UIView *circleView = [UIView new];
-    circleView.backgroundColor = [UIColor colorWithWhite:0.95f alpha:1.f];
-    circleView.userInteractionEnabled = NO;
-    circleView.layer.cornerRadius = kCircleSize * 0.5f;
-    circleView.layer.shadowColor = [UIColor colorWithWhite:0.5f alpha:1.f].CGColor;
-    circleView.layer.shadowOffset = CGSizeMake(+1.f, +2.f);
-    circleView.layer.shadowRadius = 1.5f;
-    circleView.layer.shadowOpacity = 0.35f;
-    [circleView autoSetDimension:ALDimensionWidth toSize:kCircleSize];
-    [circleView autoSetDimension:ALDimensionHeight toSize:kCircleSize];
-
-    const CGFloat kButtonSize = kCircleSize + 2 * 15.f;
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
-    button.frame = CGRectMake(0, 0, kButtonSize, kButtonSize);
-    [self.view addSubview:button];
-
-    [button addSubview:circleView];
-    [button addSubview:iconLabel];
-    [circleView autoCenterInSuperview];
-    [iconLabel autoCenterInSuperview];
-
-    return button;
+    self.scrollDownButton.hasUnreadMessages = hasUnreadMessages;
+    [self ensureDynamicInteractions];
 }
 
 - (void)scrollDownButtonTapped
@@ -2330,11 +2323,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (shouldShowScrollDownButton) {
         self.scrollDownButton.hidden = NO;
 
-        self.scrollDownButton.frame
-            = CGRectMake((self.view.isRTL ? 0.f : self.scrollDownButton.superview.width - self.scrollDownButton.width),
-                self.inputToolbar.top - self.scrollDownButton.height,
-                self.scrollDownButton.width,
-                self.scrollDownButton.height);
     } else {
         self.scrollDownButton.hidden = YES;
     }
@@ -2343,11 +2331,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     BOOL shouldShowScrollUpButton = self.collectionView.contentOffset.y > 0;
     if (shouldShowScrollUpButton) {
         self.scrollUpButton.hidden = NO;
-        self.scrollUpButton.frame
-            = CGRectMake((self.view.isRTL ? 0.f : self.scrollUpButton.superview.width - self.scrollUpButton.width),
-                0,
-                self.scrollUpButton.width,
-                self.scrollUpButton.height);
     } else {
         self.scrollUpButton.hidden = YES;
     }
@@ -3407,6 +3390,23 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     return [self viewItemForIndex:lastVisibleIndexPath.row];
 }
 
+// In the case where we explicitly scroll to bottom, we want to synchronously
+// update the UI to reflect that, since the "mark as read" logic is asynchronous
+// and won't update the UI state immediately.
+- (void)didScrollToBottom
+{
+
+    ConversationViewItem *_Nullable lastVisibleViewItem = [self.viewItems lastObject];
+    if (lastVisibleViewItem) {
+        uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForSorting;
+        self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, lastVisibleTimestamp);
+    }
+
+    self.scrollDownButton.hidden = YES;
+
+    self.hasUnreadMessages = NO;
+}
+
 - (void)updateLastVisibleTimestamp
 {
     ConversationViewItem *_Nullable lastVisibleViewItem = [self lastVisibleViewItem];
@@ -3416,6 +3416,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 
     [self ensureScrollDownButton];
+
+    __block NSUInteger numberOfUnreadMessages;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        numberOfUnreadMessages =
+            [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
+    }];
+    self.hasUnreadMessages = numberOfUnreadMessages > 0;
 }
 
 - (void)updateLastVisibleTimestamp:(uint64_t)timestamp
@@ -3697,6 +3704,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     CGFloat contentHeight = self.safeContentHeight;
     CGFloat dstY = MAX(0, contentHeight - self.collectionView.height);
     [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:animated];
+
+    [self didScrollToBottom];
 }
 
 #pragma mark - UIScrollViewDelegate
