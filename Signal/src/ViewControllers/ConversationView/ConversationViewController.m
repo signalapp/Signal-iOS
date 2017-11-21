@@ -2308,10 +2308,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (shouldShowScrollDownButton) {
         self.scrollDownButton.hidden = NO;
 
-        self.scrollDownButton.frame = CGRectMake(self.scrollDownButton.superview.width - self.scrollDownButton.width,
-            self.inputToolbar.top - self.scrollDownButton.height,
-            self.scrollDownButton.width,
-            self.scrollDownButton.height);
+        self.scrollDownButton.frame
+            = CGRectMake((self.view.isRTL ? 0.f : self.scrollDownButton.superview.width - self.scrollDownButton.width),
+                self.inputToolbar.top - self.scrollDownButton.height,
+                self.scrollDownButton.width,
+                self.scrollDownButton.height);
     } else {
         self.scrollDownButton.hidden = YES;
     }
@@ -2320,10 +2321,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     BOOL shouldShowScrollUpButton = self.collectionView.contentOffset.y > 0;
     if (shouldShowScrollUpButton) {
         self.scrollUpButton.hidden = NO;
-        self.scrollUpButton.frame = CGRectMake(self.scrollUpButton.superview.width - self.scrollUpButton.width,
-            0,
-            self.scrollUpButton.width,
-            self.scrollUpButton.height);
+        self.scrollUpButton.frame
+            = CGRectMake((self.view.isRTL ? 0.f : self.scrollUpButton.superview.width - self.scrollUpButton.width),
+                0,
+                self.scrollUpButton.width,
+                self.scrollUpButton.height);
     } else {
         self.scrollUpButton.hidden = YES;
     }
