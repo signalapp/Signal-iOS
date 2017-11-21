@@ -2271,6 +2271,28 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)scrollDownButtonTapped
 {
+    NSIndexPath *indexPathOfUnreadMessagesIndicator = [self indexPathOfUnreadMessagesIndicator];
+    if (indexPathOfUnreadMessagesIndicator != nil) {
+        NSInteger unreadRow = indexPathOfUnreadMessagesIndicator.row;
+
+        BOOL isScrolledAboveUnreadIndicator = YES;
+        NSArray<NSIndexPath *> *visibleIndices = self.collectionView.indexPathsForVisibleItems;
+        for (NSIndexPath *indexPath in visibleIndices) {
+            if (indexPath.row > unreadRow) {
+                isScrolledAboveUnreadIndicator = NO;
+                break;
+            }
+        }
+
+        if (isScrolledAboveUnreadIndicator) {
+            // Only scroll as far as the unread indicator if we're scrolled above the unread indicator.
+            [[self collectionView] scrollToItemAtIndexPath:indexPathOfUnreadMessagesIndicator
+                                          atScrollPosition:UICollectionViewScrollPositionTop
+                                                  animated:YES];
+            return;
+        }
+    }
+
     [self scrollToBottomAnimated:YES];
 }
 
