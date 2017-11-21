@@ -9,6 +9,7 @@
 #import "DebugUIMisc.h"
 #import "DebugUISessionState.h"
 #import "DebugUIStress.h"
+#import "DebugUISyncMessages.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSThread.h>
@@ -87,6 +88,8 @@ NS_ASSUME_NONNULL_BEGIN
     [subsectionItems addObject:[self itemForSubsection:[DebugUIProfile new] viewController:viewController thread:thread]];
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUIStress new] viewController:viewController thread:thread]];
+    [subsectionItems
+        addObject:[self itemForSubsection:[DebugUISyncMessages new] viewController:viewController thread:thread]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:thread]];
 
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
@@ -108,6 +111,8 @@ NS_ASSUME_NONNULL_BEGIN
     [subsectionItems addObject:[self itemForSubsection:[DebugUIContacts new] viewController:viewController thread:nil]];
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUIDiskUsage new] viewController:viewController thread:nil]];
+    [subsectionItems
+        addObject:[self itemForSubsection:[DebugUISyncMessages new] viewController:viewController thread:nil]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:nil]];
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
 

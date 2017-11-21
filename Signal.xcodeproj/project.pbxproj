@@ -20,6 +20,7 @@
 		34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
 		34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
 		34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34330AA21E79686200DF2FB9 /* OWSProgressView.m */; };
+		343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */; };
 		343D3D9B1E9283F100165CA4 /* BlockListUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */; };
 		344F2F671E57A932000D9322 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F2F661E57A932000D9322 /* UIViewController+OWS.m */; };
 		34533F181EA8D2070006114F /* OWSAudioAttachmentPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */; };
@@ -421,6 +422,8 @@
 		34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ElegantIcons.ttf; sourceTree = "<group>"; };
 		34330AA11E79686200DF2FB9 /* OWSProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSProgressView.h; sourceTree = "<group>"; };
 		34330AA21E79686200DF2FB9 /* OWSProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProgressView.m; sourceTree = "<group>"; };
+		343A65931FC47D5D000477A1 /* DebugUISyncMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUISyncMessages.h; sourceTree = "<group>"; };
+		343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUISyncMessages.m; sourceTree = "<group>"; };
 		343D3D991E9283F100165CA4 /* BlockListUIUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListUIUtils.h; sourceTree = "<group>"; };
 		343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListUIUtils.m; sourceTree = "<group>"; };
 		34491FC11FB0F78500B3E5A3 /* my */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = my; path = translations/my.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1183,6 +1186,8 @@
 				452037D01EE84975004E4CDF /* DebugUISessionState.m */,
 				34BECE291F74C12700D7438D /* DebugUIStress.h */,
 				34BECE2A1F74C12700D7438D /* DebugUIStress.m */,
+				343A65931FC47D5D000477A1 /* DebugUISyncMessages.h */,
+				343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */,
 				34D8C0251ED3673300188D7C /* DebugUITableViewController.h */,
 				34D8C0261ED3673300188D7C /* DebugUITableViewController.m */,
 			);
@@ -2272,6 +2277,7 @@
 				450DF2051E0D74AC003D14BE /* Platform.swift in Sources */,
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
 				3472229F1EB22FFE00E53955 /* AddToGroupViewController.m in Sources */,
+				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,
 				45666F561D9B2827008FE134 /* OWSScrubbingLogFormatter.m in Sources */,
 				45C0DC1E1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
 				34B3F8861E8DF1700035BE1A /* NotificationSettingsOptionsViewController.m in Sources */,
