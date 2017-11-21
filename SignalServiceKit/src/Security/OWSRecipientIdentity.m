@@ -123,6 +123,35 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
     return sharedDBConnection;
 }
 
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction.connection == [OWSRecipientIdentity dbConnection]);
+
+    [super saveWithTransaction:transaction];
+}
+
+- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction.connection == [OWSRecipientIdentity dbConnection]);
+
+    [super removeWithTransaction:transaction];
+}
+
+- (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction.connection == [OWSRecipientIdentity dbConnection]);
+
+    [super touchWithTransaction:transaction];
+}
+
++ (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
+                                     transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(transaction.connection == [OWSRecipientIdentity dbConnection]);
+
+    return [super fetchObjectWithUniqueID:uniqueID transaction:transaction];
+}
+
 #pragma mark - debug
 
 + (void)printAllIdentities

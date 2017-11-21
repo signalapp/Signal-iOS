@@ -606,21 +606,30 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if (syncMessage.hasRequest) {
         if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
-            OWSSyncContactsMessage *syncContactsMessage =
-                [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
-                                                       identityManager:self.identityManager
-                                                        profileManager:self.profileManager];
-            DataSource *dataSource =
-                [DataSourceValue dataSourceWithSyncMessage:[syncContactsMessage buildPlainTextAttachmentData]];
-            [self.messageSender enqueueTemporaryAttachment:dataSource
-                contentType:OWSMimeTypeApplicationOctetStream
-                inMessage:syncContactsMessage
-                success:^{
-                    DDLogInfo(@"%@ Successfully sent Contacts response syncMessage.", self.logTag);
-                }
-                failure:^(NSError *error) {
-                    DDLogError(@"%@ Failed to send Contacts response syncMessage with error: %@", self.logTag, error);
-                }];
+            // We respond asynchronously because populating the sync message will
+            // create transactions and it's not practical (due to locking in the OWSIdentityManager)
+            // to plumb our transaction through.
+            //
+            // In rare cases this means we won't respond to the sync request, but that's
+            // acceptable.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                OWSSyncContactsMessage *syncContactsMessage =
+                    [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
+                                                           identityManager:self.identityManager
+                                                            profileManager:self.profileManager];
+                DataSource *dataSource =
+                    [DataSourceValue dataSourceWithSyncMessage:[syncContactsMessage buildPlainTextAttachmentData]];
+                [self.messageSender enqueueTemporaryAttachment:dataSource
+                    contentType:OWSMimeTypeApplicationOctetStream
+                    inMessage:syncContactsMessage
+                    success:^{
+                        DDLogInfo(@"%@ Successfully sent Contacts response syncMessage.", self.logTag);
+                    }
+                    failure:^(NSError *error) {
+                        DDLogError(
+                            @"%@ Failed to send Contacts response syncMessage with error: %@", self.logTag, error);
+                    }];
+            });
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
             DataSource *dataSource = [DataSourceValue
