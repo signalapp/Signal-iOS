@@ -203,7 +203,7 @@
 "CALL_LABEL" = "ការហៅ";
 
 /* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Please upgrade to iOS 9 or newer to see remote video.";
+"CALL_REMOTE_VIDEO_DISABLED" = "សូមដំឡើងទៅ iOS 9 ឬខ្ពស់ជាងនេះ ដើម្បីមើលវីដេអូពីចម្ងាយ។";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "គ្មានឆ្លើយតប";
@@ -221,19 +221,19 @@
 "CALL_USER_ALERT_TITLE" = "ហៅ?";
 
 /* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Accept incoming call";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "ទទួលការហៅចូល";
 
 /* Accessibility label for selection the audio source */
-"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Audio";
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "សំឡេង";
 
 /* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline incoming call";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "បដិសេធការហៅចូល";
 
 /* Accessibility label for hang up call */
-"CALL_VIEW_HANGUP_LABEL" = "End call";
+"CALL_VIEW_HANGUP_LABEL" = "បញ្ចប់ការហៅ";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Mute";
+"CALL_VIEW_MUTE_LABEL" = "បិទសំឡេង";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "អ្នកអាចលើកទូរស័ព្ទដោយផ្ទាល់ពីអេក្រង់ចាក់សោរ ហើយឃើញឈ្មោះ និងលេខទូរស័ព្ទហៅចូល ប្រសិនបើ​អ្នកផ្លាស់ប្តូរក្នុងការកំណត់។\n\nមើលការកំណត់ឯកជនភាពសម្រាប់លម្អិត។";
@@ -248,10 +248,10 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "បង្ហាញការកំណត់ឯកជន";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to audio call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "ផ្លាស់ប្តូរជាការហៅសំឡេង";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "ផ្លាស់ប្តូរជាការហៅវីដេអូ";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "ហៅទៅវិញ";
@@ -272,13 +272,13 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "ប្រៀបធៀបជាមួយ Clipboard";
 
 /* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contacts";
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "បញ្ជីទំនាក់ទំនង";
 
 /* Table section header for group listing when composing a new message */
-"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Groups";
+"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "ក្រុម";
 
 /* Table section header for invite listing when composing a new message */
-"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Invite";
+"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "អញ្ជើញ";
 
 /* Multiline label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "អនុញ្ញាតចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនងក្នុងការកំណត់ប្រព័ន្ធរបស់អ្នក ដើម្បីពិនិត្យមើលថាលេខទំនាក់ទំនងណាមួយជា អ្នកប្រើប្រាស់ Signal។";
@@ -394,8 +394,11 @@
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "អ្នកប្រើនេះមិនមានក្នុងបញ្ជីទំនាក់ទំនងរបស់អ្នកទេ។";
 
+/* Indicates that the app is loading more messages in this conversation. */
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages...";
+
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap For More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "ចុច សម្រាប់បន្ថែម";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "ហាមឃាត់អ្នកប្រើនេះ";
@@ -482,7 +485,7 @@
 "EDIT_ITEM_COPY_ACTION" = "ចម្លង";
 
 /* Short name for edit menu item to delete contents of media message. */
-"EDIT_ITEM_DELETE_ACTION" = "Delete";
+"EDIT_ITEM_DELETE_ACTION" = "លុបចោល";
 
 /* Short name for edit menu item to show message metadata. */
 "EDIT_ITEM_MESSAGE_METADATA_ACTION" = "ព័ត៌មាន";
@@ -569,7 +572,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "លេខទំនាក់ទំនងមិនមែនជាអ្នកប្រើប្រាស់ Signal។";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Failure: Ask sender to update Signal and resend.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "បរាជ័យ៖ សាកសួរអ្នកផ្ញើ ឲ្យធ្វើបច្ចុប្បន្នភាព Signal និងសាកល្បងម្តងទៀត។";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "ទទួលបានសារស្ទួនគ្នាមួយ។";
@@ -638,13 +641,13 @@
 "GENERIC_ATTACHMENT_LABEL" = "ឯកសារភ្ជាប់";
 
 /* Error displayed when there is a failure fetching gifs from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "បរាជ័យក្នុងការទាញយក GIF។ សូមផ្ទៀងផ្ទាត់ថា អ្នកកំពុងអនឡាញ។";
 
 /* Generic error displayed when picking a gif */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occured.";
+"GIF_PICKER_ERROR_GENERIC" = "បញ្ហាមួយកើតឡើង។";
 
 /* Shown when selected gif couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "Unable to Choose GIF";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "មិនអាចជ្រើសរើស GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "សូមបញ្ចូលការស្វែងរករបស់អ្នក។";
@@ -653,10 +656,10 @@
 "GIF_PICKER_VIEW_TITLE" = "ស្វែងរកជា GIF";
 
 /* Indicates that an error occured while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Error. Tap to Retry.";
+"GIF_VIEW_SEARCH_ERROR" = "បញ្ហា។ ចុច ដើម្បីសាកល្បងម្តងទៀត។";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "No Results.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "គ្មានលទ្ធផល។";
 
 /* Placeholder text for the search field in gif view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "បញ្ចូលការស្វែងរករបស់អ្នក";
@@ -816,9 +819,6 @@
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "សមាជិកក្រុម";
-
-/* No comment provided by engineer. */
-"load_earlier_messages" = "ផ្ទុកសារពីមុន";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "កំពុងចូល";
@@ -1080,9 +1080,6 @@
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
-
-/* The title of the 'oversize text message' view. */
-"OVERSIZE_TEXT_MESSAGE_VIEW_TITLE" = "សារ";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "ឧទាហរណ៍៖ %@";
