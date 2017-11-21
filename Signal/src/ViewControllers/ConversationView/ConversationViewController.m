@@ -3413,6 +3413,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (lastVisibleViewItem) {
         uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForSorting;
         self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, lastVisibleTimestamp);
+
+        // If we delete the last unread message (manually or due to disappearing messages)
+        // we may need to clean up an obsolete unread indicator.
+        if (lastVisibleViewItem.interaction.interactionType == OWSInteractionType_UnreadIndicator) {
+            [self ensureDynamicInteractions];
+        }
     }
 
     [self ensureScrollDownButton];

@@ -137,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      dbConnection:(YapDatabaseConnection *)dbConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                   firstUnseenInteractionTimestamp:
-                                      (nullable NSNumber *)firstUnseenInteractionTimestampParameter
+                                      (nullable NSNumber *)firstUnseenInteractionTimestampParam
                                                      maxRangeSize:(int)maxRangeSize
 {
     OWSAssert(thread);
@@ -232,6 +232,21 @@ NS_ASSUME_NONNULL_BEGIN
         // have been marked as read.
         //
         // IFF this variable is non-null, there are unseen messages in the thread.
+        //
+        // Make a local copy of this parameter that we can modify.
+        NSNumber *_Nullable firstUnseenInteractionTimestampParameter = firstUnseenInteractionTimestampParam;
+        if (firstUnseenInteractionTimestampParameter) {
+            // Due to disappearing messages or manual deletion,
+            // firstUnseenInteractionTimestampParameter may refer to an obsolete
+            // interaction in which case we want to discard it.
+            TSInteraction *_Nullable lastInteraction =
+                [[transaction ext:TSMessageDatabaseViewExtensionName] lastObjectInGroup:thread.uniqueId];
+            if (!lastInteraction
+                || lastInteraction.timestampForSorting
+                    < firstUnseenInteractionTimestampParameter.unsignedLongLongValue) {
+                firstUnseenInteractionTimestampParameter = nil;
+            }
+        }
         if (firstUnseenInteractionTimestampParameter) {
             result.firstUnseenInteractionTimestamp = firstUnseenInteractionTimestampParameter;
         } else {
