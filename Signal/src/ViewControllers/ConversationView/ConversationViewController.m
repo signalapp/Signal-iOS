@@ -4211,8 +4211,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     self.currentShowMessageDetailsPanGesture = gestureRecognizer;
 
-    const CGFloat leftTranslation = -1 * [gestureRecognizer translationInView:self.view].x;
-    const CGFloat ratioComplete = Clamp(leftTranslation / self.view.frame.size.width, 0, 1);
+    const CGFloat swipeTranslation
+        = ([gestureRecognizer translationInView:self.view].x * (self.view.isRTL ? +1.f : -1.f));
+    const CGFloat ratioComplete = Clamp(swipeTranslation / self.view.frame.size.width, 0, 1);
 
     switch (gestureRecognizer.state) {
         case UIGestureRecognizerStateBegan: {
