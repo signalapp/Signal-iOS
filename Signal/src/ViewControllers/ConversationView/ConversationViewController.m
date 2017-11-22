@@ -2232,8 +2232,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                               action:@selector(scrollDownButtonTapped)
                     forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.scrollDownButton];
-    [self.scrollDownButton autoSetDimension:ALDimensionWidth toSize:self.scrollDownButton.width];
-    [self.scrollDownButton autoSetDimension:ALDimensionHeight toSize:self.scrollDownButton.width];
+    [self.scrollDownButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
+    [self.scrollDownButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
     [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.inputToolbar];
     [self.scrollDownButton autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
 
@@ -2243,8 +2243,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                             action:@selector(scrollUpButtonTapped)
                   forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.scrollUpButton];
-    [self.scrollUpButton autoSetDimension:ALDimensionWidth toSize:self.scrollUpButton.width];
-    [self.scrollUpButton autoSetDimension:ALDimensionHeight toSize:self.scrollUpButton.width];
+    [self.scrollUpButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
+    [self.scrollUpButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
     [self.scrollUpButton autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [self.scrollUpButton autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
 #endif

@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL hasUnreadMessages;
 
++ (CGFloat)buttonSize;
+
 - (nullable instancetype)initWithIconText:(NSString *)iconText;
 
 @end

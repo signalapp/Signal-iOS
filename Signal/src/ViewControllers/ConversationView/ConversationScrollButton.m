@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithIconText:(NSString *)iconText
 {
-    self = [super initWithFrame:CGRectMake(0, 0, self.buttonSize, self.buttonSize)];
+    self = [super initWithFrame:CGRectZero];
     if (!self) {
         return self;
     }
@@ -35,12 +35,12 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (CGFloat)circleSize
++ (CGFloat)circleSize
 {
     return ScaleFromIPhone5To7Plus(35.f, 40.f);
 }
 
-- (CGFloat)buttonSize
++ (CGFloat)buttonSize
 {
     return self.circleSize + 2 * 15.f;
 }
@@ -51,17 +51,18 @@ NS_ASSUME_NONNULL_BEGIN
     self.iconLabel = iconLabel;
     iconLabel.userInteractionEnabled = NO;
 
+    const CGFloat circleSize = self.class.circleSize;
     UIView *circleView = [UIView new];
     self.circleView = circleView;
     circleView.backgroundColor = [UIColor colorWithWhite:0.95f alpha:1.f];
     circleView.userInteractionEnabled = NO;
-    circleView.layer.cornerRadius = self.circleSize * 0.5f;
+    circleView.layer.cornerRadius = circleSize * 0.5f;
     circleView.layer.shadowColor = [UIColor colorWithWhite:0.5f alpha:1.f].CGColor;
     circleView.layer.shadowOffset = CGSizeMake(+1.f, +2.f);
     circleView.layer.shadowRadius = 1.5f;
     circleView.layer.shadowOpacity = 0.35f;
-    [circleView autoSetDimension:ALDimensionWidth toSize:self.circleSize];
-    [circleView autoSetDimension:ALDimensionHeight toSize:self.circleSize];
+    [circleView autoSetDimension:ALDimensionWidth toSize:circleSize];
+    [circleView autoSetDimension:ALDimensionHeight toSize:circleSize];
 
     [self addSubview:circleView];
     [self addSubview:iconLabel];
@@ -80,12 +81,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateColors
 {
+    const CGFloat circleSize = self.class.circleSize;
     self.circleView.backgroundColor
         = (self.hasUnreadMessages ? [UIColor ows_materialBlueColor] : [UIColor colorWithWhite:0.95f alpha:1.f]);
     self.iconLabel.attributedText = [[NSAttributedString alloc]
         initWithString:self.iconText
             attributes:@{
-                NSFontAttributeName : [UIFont ows_fontAwesomeFont:self.circleSize * 0.8f],
+                NSFontAttributeName : [UIFont ows_fontAwesomeFont:circleSize * 0.8f],
                 NSForegroundColorAttributeName :
                     (self.hasUnreadMessages ? [UIColor whiteColor] : [UIColor ows_materialBlueColor]),
                 NSBaselineOffsetAttributeName : @(-0.5f),
