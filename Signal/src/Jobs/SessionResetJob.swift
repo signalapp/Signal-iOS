@@ -33,6 +33,12 @@ class SessionResetJob: NSObject {
                 let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.thread)
 
                 self.messageSender.enqueue(endSessionMessage, success: {
+                    OWSDispatch.sessionStoreQueue().async {
+                        // Archive the just-created session since the recipient should delete their corresponding
+                        // session upon receiving and decrypting our EndSession message.
+                        // Otherwise if we send another message before them, they wont have the session to decrypt it.
+                        self.storageManager.archiveAllSessions(forContact: self.recipientId)
+                    }
                     Logger.info("\(self.TAG) successfully sent EndSession<essage.")
                     let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                                 in: self.thread,
