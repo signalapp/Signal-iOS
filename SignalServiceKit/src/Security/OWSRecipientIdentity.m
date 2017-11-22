@@ -103,12 +103,17 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
     }];
 }
 
++ (YapDatabaseConnection *)dbReadConnection
+{
+    return self.dbReadWriteConnection;
+}
+
 /**
  * Override to disable the object cache to better enforce transaction semantics on the store.
  * Note that it's still technically possible to access this collection from a different collection,
  * but that should be considered a bug.
  */
-+ (YapDatabaseConnection *)dbConnection
++ (YapDatabaseConnection *)dbReadWriteConnection
 {
     static dispatch_once_t onceToken;
     static YapDatabaseConnection *sharedDBConnection;
@@ -125,21 +130,21 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction.connection == [OWSRecipientIdentity dbConnection]);
+    OWSAssert(transaction.connection == [OWSRecipientIdentity dbReadWriteConnection]);
 
     [super saveWithTransaction:transaction];
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction.connection == [OWSRecipientIdentity dbConnection]);
+    OWSAssert(transaction.connection == [OWSRecipientIdentity dbReadWriteConnection]);
 
     [super removeWithTransaction:transaction];
 }
 
 - (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction.connection == [OWSRecipientIdentity dbConnection]);
+    OWSAssert(transaction.connection == [OWSRecipientIdentity dbReadWriteConnection]);
 
     [super touchWithTransaction:transaction];
 }
@@ -147,7 +152,7 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
 + (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
                                      transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(transaction.connection == [OWSRecipientIdentity dbConnection]);
+    OWSAssert(transaction.connection == [OWSRecipientIdentity dbReadConnection]);
 
     return [super fetchObjectWithUniqueID:uniqueID transaction:transaction];
 }
