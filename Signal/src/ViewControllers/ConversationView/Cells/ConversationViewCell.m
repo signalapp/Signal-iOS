@@ -35,51 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
     _isCellVisible = isCellVisible;
 
     if (isCellVisible) {
-        [self forceLayoutImmediately];
+        [self layoutIfNeeded];
     }
-}
-
-- (void)setFrame:(CGRect)frame
-{
-    BOOL didSizeChange = CGSizeEqualToSize(self.frame.size, frame.size);
-
-    [super setFrame:frame];
-
-    if (didSizeChange) {
-        [self forceLayoutImmediately];
-    }
-}
-
-- (void)setBounds:(CGRect)bounds
-{
-    BOOL didSizeChange = CGSizeEqualToSize(self.bounds.size, bounds.size);
-
-    [super setBounds:bounds];
-
-    if (didSizeChange) {
-        [self forceLayoutImmediately];
-    }
-}
-
-- (void)forceLayoutImmediately
-{
-    NSArray<UIView *> *descendents = [ConversationViewCell collectSubviewsOfViewDepthFirst:self];
-    for (UIView *view in descendents) {
-        [view setNeedsLayout];
-    }
-    for (UIView *view in descendents.reverseObjectEnumerator) {
-        [view layoutIfNeeded];
-    }
-}
-
-+ (NSArray<UIView *> *)collectSubviewsOfViewDepthFirst:(UIView *)view
-{
-    NSMutableArray<UIView *> *result = [NSMutableArray new];
-    for (UIView *subview in view.subviews) {
-        [result addObjectsFromArray:[self collectSubviewsOfViewDepthFirst:subview]];
-    }
-    [result addObject:view];
-    return result;
 }
 
 @end
