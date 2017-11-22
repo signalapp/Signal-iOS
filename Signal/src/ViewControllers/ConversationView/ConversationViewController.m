@@ -2859,6 +2859,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     // We need to reload any modified interactions _before_ we call
     // reloadViewItems.
+    BOOL hasDeletions = NO;
     for (YapDatabaseViewRowChange *rowChange in rowChanges) {
         switch (rowChange.type) {
             case YapDatabaseViewChangeUpdate: {
@@ -2877,6 +2878,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 if (collectionKey.key) {
                     [self.viewItemMap removeObjectForKey:collectionKey.key];
                 }
+                hasDeletions = YES;
                 break;
             }
             default:
@@ -2974,6 +2976,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             [self.collectionView reloadData];
         }];
         [self updateLastVisibleTimestamp];
+        if (hasDeletions) {
+            [self cleanUpUnreadIndicatorIfNecessary];
+        }
     } else {
         BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
         void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
@@ -2987,6 +2992,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
             if (scrollToBottom) {
                 [self scrollToBottomAnimated:shouldAnimateScrollToBottom && shouldAnimateUpdates];
+            }
+            if (hasDeletions) {
+                [self cleanUpUnreadIndicatorIfNecessary];
             }
         };
         if (shouldAnimateUpdates) {
@@ -3413,12 +3421,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (lastVisibleViewItem) {
         uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForSorting;
         self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, lastVisibleTimestamp);
-
-        // If we delete the last unread message (manually or due to disappearing messages)
-        // we may need to clean up an obsolete unread indicator.
-        if (lastVisibleViewItem.interaction.interactionType == OWSInteractionType_UnreadIndicator) {
-            [self ensureDynamicInteractions];
-        }
     }
 
     [self ensureScrollDownButton];
@@ -3429,6 +3431,25 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
     }];
     self.hasUnreadMessages = numberOfUnreadMessages > 0;
+}
+
+- (void)cleanUpUnreadIndicatorIfNecessary
+{
+    BOOL hasUnreadIndicator = self.dynamicInteractions.unreadIndicatorPosition != nil;
+    if (!hasUnreadIndicator) {
+        return;
+    }
+    __block BOOL hasUnseenInteractions = NO;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        hasUnseenInteractions =
+            [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId] > 0;
+    }];
+    if (hasUnseenInteractions) {
+        return;
+    }
+    // If the last unread message was deleted (manually or due to disappearing messages)
+    // we may need to clean up an obsolete unread indicator.
+    [self ensureDynamicInteractions];
 }
 
 - (void)updateLastVisibleTimestamp:(uint64_t)timestamp

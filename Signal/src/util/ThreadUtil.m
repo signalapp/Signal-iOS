@@ -239,18 +239,40 @@ NS_ASSUME_NONNULL_BEGIN
             // Due to disappearing messages or manual deletion,
             // firstUnseenInteractionTimestampParameter may refer to an obsolete
             // interaction in which case we want to discard it.
-            TSInteraction *_Nullable lastInteraction =
-                [[transaction ext:TSMessageDatabaseViewExtensionName] lastObjectInGroup:thread.uniqueId];
-            if (!lastInteraction
-                || lastInteraction.timestampForSorting
-                    < firstUnseenInteractionTimestampParameter.unsignedLongLongValue) {
+            //
+            // Therefore, we should discard the existing unread indicator
+            // position if there are no "unreadable" messages after it.
+            __block TSInteraction *lastCallOrMessage = nil;
+            [[transaction ext:TSMessageDatabaseViewExtensionName]
+                enumerateRowsInGroup:thread.uniqueId
+                         withOptions:NSEnumerationReverse
+                          usingBlock:^(NSString *collection,
+                              NSString *key,
+                              id object,
+                              id metadata,
+                              NSUInteger index,
+                              BOOL *stop) {
+
+                              OWSAssert([object isKindOfClass:[TSInteraction class]]);
+
+                              if ([object isKindOfClass:[TSIncomingMessage class]] ||
+                                  [object isKindOfClass:[TSOutgoingMessage class]] ||
+                                  [object isKindOfClass:[TSCall class]]) {
+                                  lastCallOrMessage = object;
+                                  *stop = YES;
+                              }
+                              if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
+                                  *stop = YES;
+                              }
+                          }];
+            if (!lastCallOrMessage) {
                 firstUnseenInteractionTimestampParameter = nil;
             }
         }
         if (firstUnseenInteractionTimestampParameter) {
             result.firstUnseenInteractionTimestamp = firstUnseenInteractionTimestampParameter;
         } else {
-            TSInteraction *firstUnseenInteraction =
+            TSInteraction *_Nullable firstUnseenInteraction =
                 [[TSDatabaseView unseenDatabaseViewExtension:transaction] firstObjectInGroup:thread.uniqueId];
             if (firstUnseenInteraction) {
                 result.firstUnseenInteractionTimestamp = @(firstUnseenInteraction.timestampForSorting);
