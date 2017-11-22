@@ -37,7 +37,7 @@ typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
 @interface ConversationViewLayout : UICollectionViewLayout
 
 @property (nonatomic, weak) id<ConversationViewLayoutDelegate> delegate;
-
+@property (nonatomic, readonly) BOOL hasLayout;
 @property (nonatomic, readonly) int contentWidth;
 
 @end
