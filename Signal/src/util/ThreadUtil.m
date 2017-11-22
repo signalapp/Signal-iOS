@@ -137,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      dbConnection:(YapDatabaseConnection *)dbConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                   firstUnseenInteractionTimestamp:
-                                      (nullable NSNumber *)firstUnseenInteractionTimestampParam
+                                      (nullable NSNumber *)firstUnseenInteractionTimestampParameter
                                                      maxRangeSize:(int)maxRangeSize
 {
     OWSAssert(thread);
@@ -232,43 +232,6 @@ NS_ASSUME_NONNULL_BEGIN
         // have been marked as read.
         //
         // IFF this variable is non-null, there are unseen messages in the thread.
-        //
-        // Make a local copy of this parameter that we can modify.
-        NSNumber *_Nullable firstUnseenInteractionTimestampParameter = firstUnseenInteractionTimestampParam;
-        if (firstUnseenInteractionTimestampParameter) {
-            // Due to disappearing messages or manual deletion,
-            // firstUnseenInteractionTimestampParameter may refer to an obsolete
-            // interaction in which case we want to discard it.
-            //
-            // Therefore, we should discard the existing unread indicator
-            // position if there are no "unreadable" messages after it.
-            __block TSInteraction *lastCallOrMessage = nil;
-            [[transaction ext:TSMessageDatabaseViewExtensionName]
-                enumerateRowsInGroup:thread.uniqueId
-                         withOptions:NSEnumerationReverse
-                          usingBlock:^(NSString *collection,
-                              NSString *key,
-                              id object,
-                              id metadata,
-                              NSUInteger index,
-                              BOOL *stop) {
-
-                              OWSAssert([object isKindOfClass:[TSInteraction class]]);
-
-                              if ([object isKindOfClass:[TSIncomingMessage class]] ||
-                                  [object isKindOfClass:[TSOutgoingMessage class]] ||
-                                  [object isKindOfClass:[TSCall class]]) {
-                                  lastCallOrMessage = object;
-                                  *stop = YES;
-                              }
-                              if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
-                                  *stop = YES;
-                              }
-                          }];
-            if (!lastCallOrMessage) {
-                firstUnseenInteractionTimestampParameter = nil;
-            }
-        }
         if (firstUnseenInteractionTimestampParameter) {
             result.firstUnseenInteractionTimestamp = firstUnseenInteractionTimestampParameter;
         } else {
@@ -353,9 +316,12 @@ NS_ASSUME_NONNULL_BEGIN
                               }
                           }];
 
-            OWSAssert(interactionAfterUnreadIndicator);
-
-            if (result.hasMoreUnseenMessages) {
+            if (!interactionAfterUnreadIndicator) {
+                // If we can't find an interaction after the unread indicator,
+                // remove it.  All unread messages may have been deleted or
+                // expired.
+                result.firstUnseenInteractionTimestamp = nil;
+            } else if (result.hasMoreUnseenMessages) {
                 NSMutableSet<NSData *> *missingUnseenSafetyNumberChanges = [NSMutableSet set];
                 for (TSInvalidIdentityKeyErrorMessage *safetyNumberChange in blockingSafetyNumberChanges) {
                     BOOL isUnseen = safetyNumberChange.timestampForSorting
