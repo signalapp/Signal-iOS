@@ -168,7 +168,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic, readonly) ConversationViewLayout *layout;
 
 @property (nonatomic) NSArray<ConversationViewItem *> *viewItems;
-@property (nonatomic) NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemMap;
+@property (nonatomic) NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache;
 
 @property (nonatomic, nullable) MPMoviePlayerController *videoPlayer;
 @property (nonatomic, nullable) AVAudioRecorder *audioRecorder;
@@ -2866,7 +2866,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 YapCollectionKey *collectionKey = rowChange.collectionKey;
                 OWSAssert(collectionKey.key.length > 0);
                 if (collectionKey.key) {
-                    ConversationViewItem *viewItem = self.viewItemMap[collectionKey.key];
+                    ConversationViewItem *viewItem = self.viewItemCache[collectionKey.key];
                     [self reloadInteractionForViewItem:viewItem];
                 }
                 break;
@@ -2876,7 +2876,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 YapCollectionKey *collectionKey = rowChange.collectionKey;
                 OWSAssert(collectionKey.key.length > 0);
                 if (collectionKey.key) {
-                    [self.viewItemMap removeObjectForKey:collectionKey.key];
+                    [self.viewItemCache removeObjectForKey:collectionKey.key];
                 }
                 hasDeletions = YES;
                 break;
@@ -2920,7 +2920,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                         rowChange.finalIndex);
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                     // We don't want to reload a row that we just inserted.
-                    [rowsThatChangedSize removeObject:@(rowChange.finalIndex)];
+                    [rowsThatChangedSize removeObject:@(rowChange.originalIndex)];
 
                     ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
                     if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
@@ -2940,7 +2940,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                         rowChange.finalIndex);
                     [self.collectionView moveItemAtIndexPath:rowChange.indexPath toIndexPath:rowChange.newIndexPath];
                     // We don't want to reload a row that we just moved.
-                    [rowsThatChangedSize removeObject:@(rowChange.finalIndex)];
+                    [rowsThatChangedSize removeObject:@(rowChange.originalIndex)];
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
@@ -2950,7 +2950,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                         rowChange.finalIndex);
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     // We don't want to reload a row that we've already reloaded.
-                    [rowsThatChangedSize removeObject:@(rowChange.finalIndex)];
+                    [rowsThatChangedSize removeObject:@(rowChange.originalIndex)];
                     break;
                 }
             }
@@ -2970,59 +2970,31 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     DDLogVerbose(@"self.viewItems.count: %zd -> %zd", oldViewItemCount, self.viewItems.count);
 
-    BOOL shouldReloadCollection = [self shouldReloadCollection:rowChanges];
-    if (shouldReloadCollection) {
-        [UIView performWithoutAnimation:^{
-            [self.collectionView reloadData];
-        }];
+    BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
+    void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
+        OWSAssert([NSThread isMainThread]);
+
+
+        if (!finished) {
+            DDLogInfo(@"%@ performBatchUpdates did not finish", self.logTag);
+        }
+
         [self updateLastVisibleTimestamp];
+
+        if (scrollToBottom) {
+            [self scrollToBottomAnimated:shouldAnimateScrollToBottom && shouldAnimateUpdates];
+        }
         if (hasDeletions) {
             [self cleanUpUnreadIndicatorIfNecessary];
         }
+    };
+    if (shouldAnimateUpdates) {
+        [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
     } else {
-        BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
-        void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
-            OWSAssert([NSThread isMainThread]);
-
-            if (!finished) {
-                DDLogInfo(@"%@ performBatchUpdates did not finish", self.logTag);
-            }
-
-            [self updateLastVisibleTimestamp];
-
-            if (scrollToBottom) {
-                [self scrollToBottomAnimated:shouldAnimateScrollToBottom && shouldAnimateUpdates];
-            }
-            if (hasDeletions) {
-                [self cleanUpUnreadIndicatorIfNecessary];
-            }
-        };
-        if (shouldAnimateUpdates) {
+        [UIView performWithoutAnimation:^{
             [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
-        } else {
-            [UIView performWithoutAnimation:^{
-                [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
-            }];
-        }
+        }];
     }
-}
-
-- (BOOL)shouldReloadCollection:(NSArray<YapDatabaseViewRowChange *> *)rowChanges
-{
-    OWSAssert(rowChanges);
-
-    for (YapDatabaseViewRowChange *rowChange in rowChanges) {
-        switch (rowChange.type) {
-            case YapDatabaseViewChangeMove:
-                // "Move" changes cannot be safely performed using
-                // [UICollectionView performBatchUpdates:].  This appears to be a
-                // bug in YapDatabase.
-                return YES;
-            default:
-                break;
-        }
-    }
-    return NO;
 }
 
 - (BOOL)shouldAnimateRowUpdates:(NSArray<YapDatabaseViewRowChange *> *)rowChanges
@@ -4013,7 +3985,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         // ViewItems modified while we were not observing may be stale.
         //
         // TODO: have a more fine-grained cache expiration based on rows modified.
-        [self.viewItemMap removeAllObjects];
+        [self.viewItemCache removeAllObjects];
 
         [self resetMappings];
 
@@ -4088,7 +4060,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (NSSet<NSNumber *> *)reloadViewItems
 {
     NSMutableArray<ConversationViewItem *> *viewItems = [NSMutableArray new];
-    NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemMap = [NSMutableDictionary new];
+    NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache = [NSMutableDictionary new];
 
     NSUInteger count = [self.messageMappings numberOfItemsInSection:0];
     BOOL isGroupThread = self.isGroupConversation;
@@ -4101,7 +4073,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 [viewTransaction objectAtRow:row inSection:0 withMappings:self.messageMappings];
             OWSAssert(interaction);
 
-            ConversationViewItem *_Nullable viewItem = self.viewItemMap[interaction.uniqueId];
+            ConversationViewItem *_Nullable viewItem = self.viewItemCache[interaction.uniqueId];
             if (viewItem) {
                 viewItem.previousRow = viewItem.row;
             } else {
@@ -4111,8 +4083,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             }
             viewItem.row = (NSInteger)row;
             [viewItems addObject:viewItem];
-            OWSAssert(!viewItemMap[interaction.uniqueId]);
-            viewItemMap[interaction.uniqueId] = viewItem;
+            OWSAssert(!viewItemCache[interaction.uniqueId]);
+            viewItemCache[interaction.uniqueId] = viewItem;
         }
     }];
 
@@ -4202,7 +4174,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 
     self.viewItems = viewItems;
-    self.viewItemMap = viewItemMap;
+    self.viewItemCache = viewItemCache;
 
     return [rowsThatChangedSize copy];
 }
