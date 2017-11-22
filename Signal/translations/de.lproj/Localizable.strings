@@ -1574,7 +1574,7 @@
 "UNKNOWN_CONTACT_NAME" = "Unbekannter Kontakt";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "Unknown";
+"UNKNOWN_VALUE" = "Unbekannt";
 
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "Entfernen";

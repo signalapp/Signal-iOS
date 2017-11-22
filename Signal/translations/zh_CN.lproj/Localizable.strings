@@ -395,7 +395,7 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "该用户不在您的联系人列表中。";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "正在加载消息...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "点击查看详情";
@@ -1574,7 +1574,7 @@
 "UNKNOWN_CONTACT_NAME" = "未知的联系人";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "Unknown";
+"UNKNOWN_VALUE" = "无法识别";
 
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "解绑";

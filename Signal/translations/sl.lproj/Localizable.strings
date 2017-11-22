@@ -1574,7 +1574,7 @@
 "UNKNOWN_CONTACT_NAME" = "Neznana oseba";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "Unknown";
+"UNKNOWN_VALUE" = "Neznano";
 
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "Prekini povezavo";

@@ -1574,7 +1574,7 @@
 "UNKNOWN_CONTACT_NAME" = "Неизвестный контакт";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "Unknown";
+"UNKNOWN_VALUE" = "Неизвестно";
 
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "Отвязать";

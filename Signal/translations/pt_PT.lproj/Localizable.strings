@@ -395,7 +395,7 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Este utilizador não está presente nos seus contactos.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "A carregar mais mensagens...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Toque Para Mais";
@@ -854,7 +854,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Falhou";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Lido";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Lida";
 
 /* Status label for messages which are sending. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "A enviar";
@@ -890,7 +890,7 @@
 "MESSAGE_STATUS_FAILED" = " Falha no envio. Toque para mais informação. ";
 
 /* message footer for read messages */
-"MESSAGE_STATUS_READ" = "Lido";
+"MESSAGE_STATUS_READ" = "Lida";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "A enviar...";
@@ -1214,7 +1214,7 @@
 "PROFILE_VIEW_TITLE" = "Perfil";
 
 /* No comment provided by engineer. */
-"PUSH_MANAGER_MARKREAD" = "Marcar como Lido";
+"PUSH_MANAGER_MARKREAD" = "Marcar como Lida";
 
 /* No comment provided by engineer. */
 "PUSH_MANAGER_REPLY" = "Responder";
@@ -1574,7 +1574,7 @@
 "UNKNOWN_CONTACT_NAME" = "Contacto Desconhecido";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "Unknown";
+"UNKNOWN_VALUE" = "Desconhecido";
 
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "Desassociar";
