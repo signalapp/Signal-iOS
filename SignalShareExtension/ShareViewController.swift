@@ -5,7 +5,14 @@
 import UIKit
 import Social
 
+import SignalMessaging
+
 class ShareViewController: SLComposeServiceViewController {
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.placeholder = StorageCoordinator.shared.path
+    }
 
     override func isContentValid() -> Bool {
         // Do validation of contentText and/or NSExtensionContext attachments here

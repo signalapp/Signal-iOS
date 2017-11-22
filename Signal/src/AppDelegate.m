@@ -38,6 +38,7 @@
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSStorageManager+Calling.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
+#import <SignalMessaging/SignalMessaging.h>
 
 @import WebRTC;
 @import Intents;
@@ -122,6 +123,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // This block will be cleared in databaseViewRegistrationComplete.
     [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 
+    DDLogVerbose(@"%@ shared path: %@", self.logTag, [[StorageCoordinator shared] path]);
+    
     [self setupEnvironment];
 
     [UIUtil applySignalAppearence];
