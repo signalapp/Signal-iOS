@@ -30,14 +30,6 @@ It's the eternal debate. We chose to adopt spaces. Please set your default Xcode
 
 If you don't agree with us, you can use the [ClangFormat Xcode plugin](https://github.com/travisjeffery/ClangFormat-Xcode) to code with your favorite indentation style!
 
-## BitHub
-
-Open Whisper Systems is currently [experimenting](https://whispersystems.org/blog/bithub/) with the funding privacy Free and Open Source software. For example, this is the current Open WhisperSystems payout per commit, rendered dynamically as an image by the Open WhisperSystems BitHub instance:
-
-[![Bithub Payment Amount](https://bithub.herokuapp.com/v1/status/payment/commit)](https://whispersystems.org/blog/bithub/)
-
-If you'd like to opt out of receiving a payment, simply include the string "FREEBIE" somewhere in your commit message, and you will not receive BTC for that commit.
-
 ## Contributors
 
 Signal wouldn’t be possible without the many open-source projects we depend on. Big shoutout to the maintainers of all the [pods](https://github.com/WhisperSystems/Signal-iOS/blob/master/Podfile) we use!
