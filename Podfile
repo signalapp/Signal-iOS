@@ -1,28 +1,38 @@
 platform :ios, '8.0'
 source 'https://github.com/CocoaPods/Specs.git'
 
-target 'Signal' do
-    pod 'Mantle', :inhibit_warnings => true    
-    pod 'YapDatabase/SQLCipher', '~> 2.9.3', :inhibit_warnings => true    
-    pod 'ATAppUpdater', :inhibit_warnings => true
-    pod 'AxolotlKit',                 git: 'https://github.com/WhisperSystems/SignalProtocolKit.git'
-    #pod 'AxolotlKit',                 path: '../SignalProtocolKit'
-    pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'signal-master', :inhibit_warnings => true
-    #pod 'JSQMessagesViewController',   path: '../JSQMessagesViewController'
-    pod 'PureLayout', :inhibit_warnings => true
-    pod 'OpenSSL',                    git: 'https://github.com/WhisperSystems/OpenSSL-Pod', inhibit_warnings: true
-    pod 'Reachability', :inhibit_warnings => true
-    pod 'SignalServiceKit',           path: '.'
-    pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git', :inhibit_warnings => true
-    pod 'YYImage'
-    target 'SignalTests' do
-      inherit! :search_paths
-    end
+def shared_pods
+  pod 'Mantle', :inhibit_warnings => true    
+  pod 'YapDatabase/SQLCipher', '~> 2.9.3', :inhibit_warnings => true    
+  pod 'AxolotlKit',                 git: 'https://github.com/WhisperSystems/SignalProtocolKit.git'
+  #pod 'AxolotlKit',                 path: '../SignalProtocolKit'
+  pod 'PureLayout', :inhibit_warnings => true
+  pod 'OpenSSL',                    git: 'https://github.com/WhisperSystems/OpenSSL-Pod', inhibit_warnings: true
+  pod 'Reachability', :inhibit_warnings => true
+  pod 'SignalServiceKit',           path: '.'
+  pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git', :inhibit_warnings => true
+  pod 'YYImage'
+end
 
-    post_install do |installer|
-      # Disable some asserts when building for tests
-      set_building_for_tests_config(installer, 'SignalServiceKit')
-    end
+post_install do |installer|
+  # Disable some asserts when building for tests
+  set_building_for_tests_config(installer, 'SignalServiceKit')
+	enable_extension_support_for_purelayout(installer)
+end
+
+target 'Signal' do
+  shared_pods
+  pod 'ATAppUpdater', :inhibit_warnings => true
+  pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'signal-master', :inhibit_warnings => true
+  #pod 'JSQMessagesViewController',   path: '../JSQMessagesViewController'
+
+  target 'SignalTests' do
+    inherit! :search_paths
+  end
+end
+
+target 'SignalShareExtension' do
+  shared_pods
 end
 
 # There are some asserts and debug checks that make testing difficult - e.g. Singleton asserts
@@ -45,5 +55,17 @@ def set_building_for_tests_config(installer, target_name)
     existing_definitions = "$(inheritied)"
   end
   build_config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = "#{existing_definitions} POD_CONFIGURATION_TEST=1 COCOAPODS=1 SSK_BUILDING_FOR_TESTS=1"
+end
+
+def enable_extension_support_for_purelayout(installer)
+	installer.pods_project.targets.each do |target|
+    if target.name.end_with? "PureLayout"
+      target.build_configurations.each do |build_configuration|
+        if build_configuration.build_settings['APPLICATION_EXTENSION_API_ONLY'] == 'YES'
+          build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = ['$(inherited)', 'PURELAYOUT_APP_EXTENSIONS=1']
+        end
+      end
+    end
+  end
 end
 

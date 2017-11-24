@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C08FF1D425152263FA4A34F /* libPods-SignalShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1887AA0D47FC18AB4F5B9189 /* libPods-SignalShareExtension.a */; };
 		3400C7931EAF89CD008A8584 /* SendExternalFileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3400C7911EAF89CD008A8584 /* SendExternalFileViewController.m */; };
 		3400C7961EAF99F4008A8584 /* SelectThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3400C7951EAF99F4008A8584 /* SelectThreadViewController.m */; };
 		3400C7991EAFB772008A8584 /* ThreadViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3400C7981EAFB772008A8584 /* ThreadViewHelper.m */; };
@@ -444,7 +445,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1887AA0D47FC18AB4F5B9189 /* libPods-SignalShareExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SignalShareExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B5E7D6C9007F5E5761D79DD /* libPods-SignalTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SignalTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
 		34009B651EC4CB11001D95D1 /* OWSMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMath.h; sourceTree = "<group>"; };
 		3400C7901EAF89CD008A8584 /* SendExternalFileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendExternalFileViewController.h; sourceTree = "<group>"; };
@@ -650,6 +653,7 @@
 		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = views/OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
+		435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		450449371F45EE7D002D1ADA /* NSString+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+OWS.h"; path = "util/NSString+OWS.h"; sourceTree = "<group>"; };
 		450449381F45EE7D002D1ADA /* NSString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+OWS.m"; path = "util/NSString+OWS.m"; sourceTree = "<group>"; };
 		450573FC1E78A06D00615BB4 /* OWS103EnableVideoCalling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWS103EnableVideoCalling.h; path = Migrations/OWS103EnableVideoCalling.h; sourceTree = "<group>"; };
@@ -780,6 +784,7 @@
 		45F659811E1BE77000444429 /* NonCallKitCallUIAdaptee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NonCallKitCallUIAdaptee.swift; sourceTree = "<group>"; };
 		45FBC59A1DF8575700E9B410 /* CallKitCallManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallKitCallManager.swift; sourceTree = "<group>"; };
 		45FBC5D01DF8592E00E9B410 /* SignalCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalCall.swift; sourceTree = "<group>"; };
+		69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		7038632318F70C0700D4A43F /* CryptoTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoTools.h; sourceTree = "<group>"; };
 		7038632418F70C0700D4A43F /* CryptoTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptoTools.m; sourceTree = "<group>"; };
@@ -953,6 +958,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				453518A21FC63E2900210559 /* SignalMessaging.framework in Frameworks */,
+				1C08FF1D425152263FA4A34F /* libPods-SignalShareExtension.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1633,6 +1639,9 @@
 				E85DB184824BA9DC302EC8B3 /* Pods-SignalTests.app store release.xcconfig */,
 				1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */,
 				8981C8F64D94D3C52EB67A2C /* Pods-SignalTests.test.xcconfig */,
+				69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */,
+				1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */,
+				435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -1823,6 +1832,7 @@
 				D221A091169C9E5E00537ABF /* CoreGraphics.framework */,
 				7DB8EE72F8522189E3E2CB45 /* libPods-Signal.a */,
 				1B5E7D6C9007F5E5761D79DD /* libPods-SignalTests.a */,
+				1887AA0D47FC18AB4F5B9189 /* libPods-SignalShareExtension.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1913,9 +1923,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 453518761FC635DD00210559 /* Build configuration list for PBXNativeTarget "SignalShareExtension" */;
 			buildPhases = (
+				16FA77C536F8C08C5046FA6B /* [CP] Check Pods Manifest.lock */,
 				453518641FC635DD00210559 /* Sources */,
 				453518651FC635DD00210559 /* Frameworks */,
 				453518661FC635DD00210559 /* Resources */,
+				7B85A55670DC3D49AFBF7359 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -2210,6 +2222,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		16FA77C536F8C08C5046FA6B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SignalShareExtension-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		3465F381B1856CC06933B3A8 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2322,6 +2352,32 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7B85A55670DC3D49AFBF7359 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension-resources.sh",
+				"${PODS_ROOT}/SAMKeychain/Support/SAMKeychain.bundle",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/textsecure.cer",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GIAG2.crt",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GSR2.crt",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GSR4.crt",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GTSR1.crt",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GTSR2.crt",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GTSR3.crt",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GTSR4.crt",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B4E9B04E862FB64FC9A8F79B /* [CP] Embed Pods Frameworks */ = {
@@ -2952,6 +3008,7 @@
 		};
 		453518731FC635DD00210559 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -2991,6 +3048,7 @@
 		};
 		453518741FC635DD00210559 /* Test */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3051,6 +3109,7 @@
 		};
 		453518751FC635DD00210559 /* App Store Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
