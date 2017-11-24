@@ -90,7 +90,8 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
 
 + (void)checkPreKeysIfNecessary
 {
-    OWSAssert([UIApplication sharedApplication].applicationState == UIApplicationStateActive);
+    // FIXME SHARINGEXTENSION
+    //    OWSAssert([UIApplication sharedApplication].applicationState == UIApplicationStateActive);
 
     // Update the prekey check timestamp.
     dispatch_async(TSPreKeyManager.prekeyQueue, ^{

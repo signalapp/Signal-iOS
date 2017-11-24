@@ -225,15 +225,17 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     AssertIsOnMainThread();
     OWSAssert(self.backgroundTaskIdentifier == UIBackgroundTaskInvalid);
 
-    self.backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-        DDLogWarn(@"%@ Timed out while in background trying to send message: %@", self.logTag, self.message);
-        [self endBackgroundTask];
-    }];
+    // FIXME SHARINGEXTENSION
+    //    self.backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+    //        DDLogWarn(@"%@ Timed out while in background trying to send message: %@", self.logTag, self.message);
+    //        [self endBackgroundTask];
+    //    }];
 }
 
 - (void)endBackgroundTask
 {
-    [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTaskIdentifier];
+    // FIXME SHARINGEXTENSION
+    //    [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTaskIdentifier];
 }
 
 - (void)setBackgroundTaskIdentifier:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier

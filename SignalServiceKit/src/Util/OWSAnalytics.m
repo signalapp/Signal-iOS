@@ -231,11 +231,12 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
     DDLogDebug(@"%@ submitting: %@", self.logTag, eventKey);
 
     __block UIBackgroundTaskIdentifier task;
-    task = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
-        failureBlock();
-
-        [UIApplication.sharedApplication endBackgroundTask:task];
-    }];
+    // FIXME SHARINGEXTENSION can't use UIApplication.sharedAplication
+    //    task = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
+    //        failureBlock();
+    //
+    //        [UIApplication.sharedApplication endBackgroundTask:task];
+    //    }];
 
     // Until we integrate with an analytics platform, behave as though all event delivery succeeds.
     dispatch_async(self.serialQueue, ^{
@@ -245,8 +246,8 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
         } else {
             failureBlock();
         }
-
-        [UIApplication.sharedApplication endBackgroundTask:task];
+        // FIXME SHARINGEXTENSION can't use UIApplication.sharedAplication
+        //        [UIApplication.sharedApplication endBackgroundTask:task];
     });
 }
 

@@ -14,7 +14,7 @@
 #import "TSStorageManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
+// Can we move to Signal-iOS?
 @interface OWSDisappearingMessagesJob ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *databaseConnection;
@@ -320,10 +320,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(date);
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-            // Don't schedule run when inactive.
-            return;
-        }
+
+        // FIXME SHARINGEXTENSION
+        //        if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+        //            // Don't schedule run when inactive.
+        //            return;
+        //        }
 
         NSDateFormatter *dateFormatter = [NSDateFormatter new];
         dateFormatter.dateStyle = NSDateFormatterNoStyle;
@@ -364,11 +366,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([NSThread isMainThread]);
 
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-        // Don't run when inactive.
-        OWSFail(@"%@ Disappearing messages job timer fired while app inactive.", self.logTag);
-        return;
-    }
+    // FIXME SHARINGEXTENSION
+    //    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+    //        // Don't run when inactive.
+    //        OWSFail(@"%@ Disappearing messages job timer fired while app inactive.", self.logTag);
+    //        return;
+    //    }
 
     [self resetTimer];
 

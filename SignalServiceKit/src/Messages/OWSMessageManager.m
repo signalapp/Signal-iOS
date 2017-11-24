@@ -1137,7 +1137,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateApplicationBadgeCount
 {
     NSUInteger numberOfItems = [self unreadMessagesCount];
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:numberOfItems];
+    // FIXME SHARINGEXTENSION can't use UIApplication.sharedAplication
+    //    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:numberOfItems];
 }
 
 - (NSUInteger)unreadMessagesInThread:(TSThread *)thread
