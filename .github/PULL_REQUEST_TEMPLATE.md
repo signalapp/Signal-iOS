@@ -13,7 +13,6 @@
 - [ ] I have tested my contribution on these devices:
  * iDevice A, iOS X.Y.Z
  * iDevice B, iOS Z.Y
-- [ ] I have made the choice whether I want the [BitHub reward](https://github.com/WhisperSystems/Signal-Android/wiki/BitHub-Rewards) or not by omitting or adding the word `FREEBIE` in my commit message
 
 - - - - - - - - - -
 
