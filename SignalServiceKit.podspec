@@ -38,7 +38,7 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'YapDatabase/SQLCipher', '~> 2.9.3'
   s.dependency 'SocketRocket'
   s.dependency 'libPhoneNumber-iOS'
-  # TODO use framework compatible OpenSSL
+  # FIXME SHARINGEXTENSION use up-to-date framework compatible OpenSSL
   #s.dependency 'OpenSSL'
   s.dependency 'GRKOpenSSLFramework'
   s.dependency 'SAMKeychain'

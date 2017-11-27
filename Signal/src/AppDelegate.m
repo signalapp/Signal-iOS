@@ -123,6 +123,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // This block will be cleared in databaseViewRegistrationComplete.
     [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 
+    // TODO this code is just to prove that the embedded framework is accessible from
+    // the main app.
     DDLogVerbose(@"%@ shared path: %@", self.logTag, [[StorageCoordinator shared] path]);
     
     [self setupEnvironment];

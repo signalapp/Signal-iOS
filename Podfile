@@ -12,8 +12,8 @@ def shared_pods
   #pod 'HKDFKit', path: '../HKDFKit'
   pod 'Curve25519Kit', git: 'https://github.com/WhisperSystems/Curve25519Kit', branch: 'mkirk/framework-friendly'
   #pod 'Curve25519Kit', path: '../Curve25519Kit'
+  # FIXME SHARINGEXTENSION use up-to-date framework compatible OpenSSL
   #pod 'OpenSSL', git: 'https://github.com/WhisperSystems/OpenSSL-Pod', inhibit_warnings: true
-  # TODO switch OpenSSL lib
   pod 'GRKOpenSSLFramework'
 
   # third party pods

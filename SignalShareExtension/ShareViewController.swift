@@ -7,16 +7,31 @@ import Social
 
 import SignalMessaging
 import PureLayout
+import SignalServiceKit
 
 class ShareViewController: SLComposeServiceViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        // None of the following code is intended to be used, it only serves to prove
+        // the project has been configured correctly
+
+        // Proof of cocoapods, utilizes PureLayout
         let someView = UIView()
         someView.backgroundColor = UIColor.green
         view.addSubview(someView)
         someView.autoPinEdgesToSuperviewEdges()
-        self.placeholder = StorageCoordinator.shared.path
+        someView.alpha = 0.2
+
+        let proofOfSharedFramework = StorageCoordinator.shared.path
+        let proofOfSSK = textSecureServerURL
+
+        // TODO: Shared Storage via app container
+        //let proofOfSharedStorage = TSAccountManager.localNumber()
+        let proofOfSharedStorage = "TODO"
+
+        self.placeholder = "shared framework: \(proofOfSharedFramework) \n sharedStorage: \(proofOfSharedStorage) \n proof of ssk: \(proofOfSSK)"
     }
 
     override func isContentValid() -> Bool {
