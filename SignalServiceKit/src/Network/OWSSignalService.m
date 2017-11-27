@@ -29,7 +29,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 @property (nonatomic, readonly) OWSCensorshipConfiguration *censorshipConfiguration;
 
-@property (nonatomic) BOOL hasCensoredPhoneNumber;
+@property (atomic) BOOL hasCensoredPhoneNumber;
 
 @property (atomic) BOOL isCensorshipCircumventionActive;
 
@@ -89,8 +89,6 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (void)updateHasCensoredPhoneNumber
 {
-    OWSAssert([NSThread isMainThread]);
-
     NSString *localNumber = [TSAccountManager localNumber];
 
     if (localNumber) {
@@ -111,8 +109,6 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (void)setIsCensorshipCircumventionManuallyActivated:(BOOL)value
 {
-    OWSAssert([NSThread isMainThread]);
-
     [[TSStorageManager sharedManager] setObject:@(value)
                                          forKey:kTSStorageManager_isCensorshipCircumventionManuallyActivated
                                    inCollection:kTSStorageManager_OWSSignalService];
@@ -122,16 +118,12 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (void)updateIsCensorshipCircumventionActive
 {
-    OWSAssert([NSThread isMainThread]);
-
     self.isCensorshipCircumventionActive
         = (self.isCensorshipCircumventionManuallyActivated || self.hasCensoredPhoneNumber);
 }
 
 - (void)setIsCensorshipCircumventionActive:(BOOL)isCensorshipCircumventionActive
 {
-    OWSAssert([NSThread isMainThread]);
-
     @synchronized(self)
     {
         if (_isCensorshipCircumventionActive == isCensorshipCircumventionActive) {
@@ -339,16 +331,12 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (void)registrationStateDidChange:(NSNotification *)notification
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self updateHasCensoredPhoneNumber];
-    });
+    [self updateHasCensoredPhoneNumber];
 }
 
 - (void)localNumberDidChange:(NSNotification *)notification
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self updateHasCensoredPhoneNumber];
-    });
+    [self updateHasCensoredPhoneNumber];
 }
 
 #pragma mark - Manual Censorship Circumvention
@@ -361,8 +349,6 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (void)setManualCensorshipCircumventionDomain:(NSString *)value
 {
-    OWSAssert([NSThread isMainThread]);
-
     [[TSStorageManager sharedManager] setObject:value
                                          forKey:kTSStorageManager_ManualCensorshipCircumventionDomain
                                    inCollection:kTSStorageManager_OWSSignalService];
@@ -370,16 +356,12 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (NSString *)manualCensorshipCircumventionCountryCode
 {
-    OWSAssert([NSThread isMainThread]);
-
     return [[TSStorageManager sharedManager] objectForKey:kTSStorageManager_ManualCensorshipCircumventionCountryCode
                                              inCollection:kTSStorageManager_OWSSignalService];
 }
 
 - (void)setManualCensorshipCircumventionCountryCode:(NSString *)value
 {
-    OWSAssert([NSThread isMainThread]);
-
     [[TSStorageManager sharedManager] setObject:value
                                          forKey:kTSStorageManager_ManualCensorshipCircumventionCountryCode
                                    inCollection:kTSStorageManager_OWSSignalService];
