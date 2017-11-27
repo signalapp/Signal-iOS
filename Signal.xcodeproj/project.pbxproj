@@ -221,6 +221,14 @@
 		4585C4601ED4FD0400896AEA /* OWS104CreateRecipientIdentities.m in Sources */ = {isa = PBXBuildFile; fileRef = 4585C45F1ED4FD0400896AEA /* OWS104CreateRecipientIdentities.m */; };
 		4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */; };
 		458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458967101DC117CC00E9DD21 /* AccountManagerTest.swift */; };
+		458D51481FCCD82500B5BC53 /* GSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51401FCCD82400B5BC53 /* GSR4.crt */; };
+		458D51491FCCD82500B5BC53 /* GTSR3.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51411FCCD82400B5BC53 /* GTSR3.crt */; };
+		458D514A1FCCD82500B5BC53 /* GIAG2.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51421FCCD82400B5BC53 /* GIAG2.crt */; };
+		458D514B1FCCD82500B5BC53 /* GSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51431FCCD82500B5BC53 /* GSR2.crt */; };
+		458D514C1FCCD82500B5BC53 /* GTSR1.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51441FCCD82500B5BC53 /* GTSR1.crt */; };
+		458D514D1FCCD82500B5BC53 /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = 458D51451FCCD82500B5BC53 /* textsecure.cer */; };
+		458D514E1FCCD82500B5BC53 /* GTSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51461FCCD82500B5BC53 /* GTSR2.crt */; };
+		458D514F1FCCD82500B5BC53 /* GTSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51471FCCD82500B5BC53 /* GTSR4.crt */; };
 		458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458DE9D51DEE3FD00071BB03 /* PeerConnectionClient.swift */; };
 		458DE9D91DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m in Sources */ = {isa = PBXBuildFile; fileRef = 458DE9D81DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m */; };
 		458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */; };
@@ -354,7 +362,6 @@
 		B6B1013C196D213F007E3930 /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */; };
 		B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6B226961BE4B7D200860F4D /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
-		B6C6AE551A305ED1006BAF8F /* redphone.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6C6AE531A305ED1006BAF8F /* redphone.cer */; };
 		B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C93C4D199567AD00EDF894 /* DebugLogger.m */; };
 		B6DA6B071B8A2F9A00CA6F98 /* AppStoreRating.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DA6B061B8A2F9A00CA6F98 /* AppStoreRating.m */; };
 		B6F509971AA53F760068F56A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
@@ -740,6 +747,14 @@
 		4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafetyNumberConfirmationAlert.swift; sourceTree = "<group>"; };
 		4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SignalTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		458967101DC117CC00E9DD21 /* AccountManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountManagerTest.swift; path = Models/AccountManagerTest.swift; sourceTree = "<group>"; };
+		458D51401FCCD82400B5BC53 /* GSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GSR4.crt; sourceTree = "<group>"; };
+		458D51411FCCD82400B5BC53 /* GTSR3.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR3.crt; sourceTree = "<group>"; };
+		458D51421FCCD82400B5BC53 /* GIAG2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GIAG2.crt; sourceTree = "<group>"; };
+		458D51431FCCD82500B5BC53 /* GSR2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GSR2.crt; sourceTree = "<group>"; };
+		458D51441FCCD82500B5BC53 /* GTSR1.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR1.crt; sourceTree = "<group>"; };
+		458D51451FCCD82500B5BC53 /* textsecure.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = textsecure.cer; sourceTree = "<group>"; };
+		458D51461FCCD82500B5BC53 /* GTSR2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR2.crt; sourceTree = "<group>"; };
+		458D51471FCCD82500B5BC53 /* GTSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR4.crt; sourceTree = "<group>"; };
 		458DE9D51DEE3FD00071BB03 /* PeerConnectionClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeerConnectionClient.swift; sourceTree = "<group>"; };
 		458DE9D71DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSWebRTCDataProtos.pb.h; sourceTree = "<group>"; };
 		458DE9D81DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSWebRTCDataProtos.pb.m; sourceTree = "<group>"; };
@@ -902,7 +917,6 @@
 		B6B9ECFA198B31BA00C620D3 /* PushManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = PushManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B6B9ECFB198B31BA00C620D3 /* PushManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PushManager.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6BC3D0C1AA544B100C2907F /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = translations/da.lproj/Localizable.strings; sourceTree = "<group>"; };
-		B6C6AE531A305ED1006BAF8F /* redphone.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = redphone.cer; sourceTree = "<group>"; };
 		B6C93C4C199567AD00EDF894 /* DebugLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugLogger.h; sourceTree = "<group>"; };
 		B6C93C4D199567AD00EDF894 /* DebugLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugLogger.m; sourceTree = "<group>"; };
 		B6DA6B051B8A2F9A00CA6F98 /* AppStoreRating.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppStoreRating.h; sourceTree = "<group>"; };
@@ -1767,7 +1781,14 @@
 		B6C6AE521A305ED1006BAF8F /* Certificates */ = {
 			isa = PBXGroup;
 			children = (
-				B6C6AE531A305ED1006BAF8F /* redphone.cer */,
+				458D51421FCCD82400B5BC53 /* GIAG2.crt */,
+				458D51431FCCD82500B5BC53 /* GSR2.crt */,
+				458D51401FCCD82400B5BC53 /* GSR4.crt */,
+				458D51441FCCD82500B5BC53 /* GTSR1.crt */,
+				458D51461FCCD82500B5BC53 /* GTSR2.crt */,
+				458D51411FCCD82400B5BC53 /* GTSR3.crt */,
+				458D51471FCCD82500B5BC53 /* GTSR4.crt */,
+				458D51451FCCD82500B5BC53 /* textsecure.cer */,
 			);
 			path = Certificates;
 			sourceTree = "<group>";
@@ -2147,9 +2168,11 @@
 			files = (
 				AD41D7B61A6F6F0600241130 /* play_button@2x.png in Resources */,
 				AD83FF3F1A73426500B5C81A /* audio_pause_button_blue.png in Resources */,
+				458D514E1FCCD82500B5BC53 /* GTSR2.crt in Resources */,
 				34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */,
 				A5509ECA1A69AB8B00ABA4BC /* Main.storyboard in Resources */,
 				AD83FF421A73426500B5C81A /* audio_play_button.png in Resources */,
+				458D51491FCCD82500B5BC53 /* GTSR3.crt in Resources */,
 				34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */,
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
@@ -2160,14 +2183,17 @@
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
 				B10C9B611A7049EC00ECA2BF /* play_icon.png in Resources */,
+				458D514D1FCCD82500B5BC53 /* textsecure.cer in Resources */,
 				AD83FF401A73426500B5C81A /* audio_pause_button_blue@2x.png in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
 				4517642A1DE939FD00EDB8B9 /* ContactCell.xib in Resources */,
 				AD83FF431A73426500B5C81A /* audio_play_button@2x.png in Resources */,
+				458D51481FCCD82500B5BC53 /* GSR4.crt in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
 				34B3F8781E8DF1700035BE1A /* ContactsPicker.xib in Resources */,
 				B633C5C31A1D190B0059AC12 /* mute_off@2x.png in Resources */,
 				AD83FF411A73426500B5C81A /* audio_play_button_blue@2x.png in Resources */,
+				458D514B1FCCD82500B5BC53 /* GSR2.crt in Resources */,
 				FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */,
 				E1370BE018A0686600826894 /* busy.mp3 in Resources */,
 				E1370BE218A0686C00826894 /* failure.mp3 in Resources */,
@@ -2178,11 +2204,13 @@
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				E1370BE418A0686C00826894 /* outring.mp3 in Resources */,
 				B10C9B601A7049EC00ECA2BF /* pause_icon@2x.png in Resources */,
-				B6C6AE551A305ED1006BAF8F /* redphone.cer in Resources */,
+				458D514C1FCCD82500B5BC53 /* GTSR1.crt in Resources */,
 				E1370BE518A0686C00826894 /* r.caf in Resources */,
 				FC9120411A39EFB70074545C /* qr@2x.png in Resources */,
+				458D514A1FCCD82500B5BC53 /* GIAG2.crt in Resources */,
 				E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */,
 				B10C9B5F1A7049EC00ECA2BF /* pause_icon.png in Resources */,
+				458D514F1FCCD82500B5BC53 /* GTSR4.crt in Resources */,
 				AD83FF471A73428300B5C81A /* audio_play_button_blue.png in Resources */,
 				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
 				AD83FF451A73426500B5C81A /* audio_pause_button@2x.png in Resources */,
@@ -2891,7 +2919,11 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "DEBUG=1 $(inherited) SSK_BUILDING_FOR_TESTS=1";
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
+					"DEBUG=1",
+					"$(inherited)",
+					"SSK_BUILDING_FOR_TESTS=1",
+				);
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
