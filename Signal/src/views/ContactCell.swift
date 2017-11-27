@@ -4,6 +4,7 @@
 
 import UIKit
 import Contacts
+import SignalServiceKit
 
 @available(iOS 9.0, *)
 class ContactCell: UITableViewCell {

@@ -4,6 +4,8 @@
 
 import Foundation
 import PromiseKit
+import SignalServiceKit
+import YYImage
 
 class GifPickerCell: UICollectionViewCell {
     let TAG = "[GifPickerCell]"

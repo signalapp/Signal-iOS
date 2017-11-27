@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "PreKeyBundle.h"
+#import <AxolotlKit/PreKeyBundle.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

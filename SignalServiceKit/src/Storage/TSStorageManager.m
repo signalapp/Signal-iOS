@@ -18,7 +18,7 @@
 #import "TSDatabaseView.h"
 #import "TSInteraction.h"
 #import "TSThread.h"
-#import <25519/Randomness.h>
+#import <Curve25519Kit/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
 #import <YapDatabase/YapDatabaseRelationship.h>
 

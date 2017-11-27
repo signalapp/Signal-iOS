@@ -6,11 +6,16 @@ import UIKit
 import Social
 
 import SignalMessaging
+import PureLayout
 
 class ShareViewController: SLComposeServiceViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        let someView = UIView()
+        someView.backgroundColor = UIColor.green
+        view.addSubview(someView)
+        someView.autoPinEdgesToSuperviewEdges()
         self.placeholder = StorageCoordinator.shared.path
     }
 

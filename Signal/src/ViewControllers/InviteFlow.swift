@@ -6,6 +6,7 @@ import Foundation
 import Social
 import ContactsUI
 import MessageUI
+import SignalServiceKit
 
 @objc(OWSInviteFlow)
 class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, ContactsPickerDelegate {

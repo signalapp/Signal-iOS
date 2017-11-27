@@ -5,7 +5,7 @@
 #import "OWSProvisioningMessage.h"
 #import "OWSProvisioningCipher.h"
 #import "OWSProvisioningProtos.pb.h"
-#import <25519/Curve25519.h>
+#import <Curve25519Kit/Curve25519.h>
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <HKDFKit/HKDFKit.h>
 

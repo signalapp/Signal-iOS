@@ -3,7 +3,7 @@
 //
 
 #import "OWSPreferences.h"
-#import "TSStorageHeaders.h"
+#import <SignalServiceKit/TSStorageHeaders.h>
 
 /**
  *

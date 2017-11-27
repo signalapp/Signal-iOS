@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SignalServiceKit
 
 /**
  * Used to distribute our profile key to legacy linked devices, newly linked devices will have our profile key as part of provisioning.

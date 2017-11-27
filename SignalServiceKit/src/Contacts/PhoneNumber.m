@@ -4,11 +4,11 @@
 
 #import "PhoneNumber.h"
 #import "PhoneNumberUtil.h"
-#import <libPhoneNumber-iOS/NBAsYouTypeFormatter.h>
-#import <libPhoneNumber-iOS/NBMetadataHelper.h>
-#import <libPhoneNumber-iOS/NBPhoneMetaData.h>
-#import <libPhoneNumber-iOS/NBPhoneNumber.h>
-#import <libPhoneNumber-iOS/NBPhoneNumberUtil.h>
+#import <libPhoneNumber_iOS/NBAsYouTypeFormatter.h>
+#import <libPhoneNumber_iOS/NBMetadataHelper.h>
+#import <libPhoneNumber_iOS/NBPhoneMetaData.h>
+#import <libPhoneNumber_iOS/NBPhoneNumber.h>
+#import <libPhoneNumber_iOS/NBPhoneNumberUtil.h>
 
 static NSString *const RPDefaultsKeyPhoneNumberString    = @"RPDefaultsKeyPhoneNumberString";
 static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneNumberCanonical";

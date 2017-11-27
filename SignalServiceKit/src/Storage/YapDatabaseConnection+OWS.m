@@ -3,7 +3,7 @@
 //
 
 #import "YapDatabaseConnection+OWS.h"
-#import <25519/Curve25519.h>
+#import <Curve25519Kit/Curve25519.h>
 #import <AxolotlKit/PreKeyRecord.h>
 #import <AxolotlKit/SignedPrekeyRecord.h>
 #import <YapDatabase/YapDatabaseTransaction.h>

@@ -4,9 +4,9 @@
 
 #import "PhoneNumberUtil.h"
 #import "ContactsManagerProtocol.h"
-#import "FunctionalUtil.h"
 #import "Util.h"
-#import <libPhoneNumber-iOS/NBPhoneNumber.h>
+#import "FunctionalUtil.h"
+#import <libPhoneNumber_iOS/NBPhoneNumber.h>
 
 @interface PhoneNumberUtil ()
 

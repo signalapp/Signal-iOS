@@ -5,6 +5,7 @@
 import Foundation
 import WebRTC
 import PromiseKit
+import SignalServiceKit
 
 // TODO: Add category so that button handlers can be defined where button is created.
 // TODO: Ensure buttons enabled & disabled as necessary.

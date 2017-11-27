@@ -5,7 +5,7 @@
 #import "TSRegisterSignedPrekeyRequest.h"
 #import "TSConstants.h"
 
-#import <25519/Curve25519.h>
+#import <Curve25519Kit/Curve25519.h>
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/PreKeyRecord.h>
 #import <AxolotlKit/SignedPreKeyStore.h>

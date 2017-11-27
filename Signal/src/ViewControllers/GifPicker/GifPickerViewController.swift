@@ -3,6 +3,8 @@
 //
 
 import Foundation
+import SignalServiceKit
+import Reachability
 
 @objc
 protocol GifPickerViewControllerDelegate: class {

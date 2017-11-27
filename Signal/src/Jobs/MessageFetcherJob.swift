@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SignalServiceKit
 
 @objc(OWSMessageFetcherJob)
 class MessageFetcherJob: NSObject {

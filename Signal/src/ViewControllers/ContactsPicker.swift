@@ -9,6 +9,7 @@
 
 import UIKit
 import Contacts
+import SignalServiceKit
 
 @available(iOS 9.0, *)
 public protocol ContactsPickerDelegate {

@@ -1,5 +1,4 @@
 PODS:
-  - 25519 (2.0.2)
   - AFNetworking (3.1.0):
     - AFNetworking/NSURLSession (= 3.1.0)
     - AFNetworking/Reachability (= 3.1.0)
@@ -16,9 +15,9 @@ PODS:
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
   - ATAppUpdater (2.0)
-  - AxolotlKit (0.8.1):
-    - 25519 (~> 2.0.1)
+  - AxolotlKit (0.9.0):
     - CocoaLumberjack
+    - Curve25519Kit (~> 2.1.0)
     - HKDFKit (~> 0.0.3)
     - ProtocolBuffers (~> 1.9.8)
   - CocoaLumberjack (2.4.0):
@@ -29,7 +28,9 @@ PODS:
     - CocoaLumberjack/Core
   - CocoaLumberjack/Extensions (2.4.0):
     - CocoaLumberjack/Default
-  - HKDFKit (0.0.3)
+  - Curve25519Kit (2.1.0)
+  - GRKOpenSSLFramework (1.0.2.11.2)
+  - HKDFKit (0.0.4)
   - JSQMessagesViewController (7.3.4):
     - JSQSystemSoundPlayer (~> 2.0.1)
   - JSQSystemSoundPlayer (2.0.1)
@@ -37,19 +38,18 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - OpenSSL (1.0.213)
   - ProtocolBuffers (1.9.11)
   - PureLayout (3.0.2)
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
   - SignalServiceKit (0.9.0):
-    - 25519
     - AFNetworking
     - AxolotlKit
     - CocoaLumberjack
+    - Curve25519Kit
+    - GRKOpenSSLFramework
     - libPhoneNumber-iOS
     - Mantle
-    - OpenSSL
     - Reachability
     - SAMKeychain
     - SocketRocket
@@ -116,10 +116,12 @@ PODS:
 
 DEPENDENCIES:
   - ATAppUpdater
-  - AxolotlKit (from `https://github.com/WhisperSystems/SignalProtocolKit.git`)
+  - AxolotlKit (from `https://github.com/WhisperSystems/SignalProtocolKit.git`, branch `mkirk/framework-friendly`)
+  - Curve25519Kit (from `https://github.com/WhisperSystems/Curve25519Kit`, branch `mkirk/framework-friendly`)
+  - GRKOpenSSLFramework
+  - HKDFKit (from `https://github.com/WhisperSystems/HKDFKit.git`, branch `mkirk/framework-friendly`)
   - JSQMessagesViewController (from `https://github.com/WhisperSystems/JSQMessagesViewController.git`, branch `signal-master`)
   - Mantle
-  - OpenSSL (from `https://github.com/WhisperSystems/OpenSSL-Pod`)
   - PureLayout
   - Reachability
   - SignalServiceKit (from `.`)
@@ -129,12 +131,17 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   AxolotlKit:
+    :branch: mkirk/framework-friendly
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
+  Curve25519Kit:
+    :branch: mkirk/framework-friendly
+    :git: https://github.com/WhisperSystems/Curve25519Kit
+  HKDFKit:
+    :branch: mkirk/framework-friendly
+    :git: https://github.com/WhisperSystems/HKDFKit.git
   JSQMessagesViewController:
     :branch: signal-master
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
-  OpenSSL:
-    :git: https://github.com/WhisperSystems/OpenSSL-Pod
   SignalServiceKit:
     :path: .
   SocketRocket:
@@ -142,35 +149,38 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 6e9d5e8c3dc87e397b4b7485172507b0990a22dd
+    :commit: 6dd55895b523e887c633bd31b9eedbfb515b8a5d
     :git: https://github.com/WhisperSystems/SignalProtocolKit.git
+  Curve25519Kit:
+    :commit: 03a19c80aafc10a3464f0c086b1eb38239c507ac
+    :git: https://github.com/WhisperSystems/Curve25519Kit
+  HKDFKit:
+    :commit: d2e2e50990e88537d6c4e38cc32a6f6debd83446
+    :git: https://github.com/WhisperSystems/HKDFKit.git
   JSQMessagesViewController:
     :commit: 7d9e7562c67f3c7c71962bf9fe15c1695333c92f
     :git: https://github.com/WhisperSystems/JSQMessagesViewController.git
-  OpenSSL:
-    :commit: 6abae10151c621c523fc7d9faf9d1f7dac1da669
-    :git: https://github.com/WhisperSystems/OpenSSL-Pod
   SocketRocket:
     :commit: 28035e1a98a427853e4038ff1b70479fa8374cfa
     :git: https://github.com/facebook/SocketRocket.git
 
 SPEC CHECKSUMS:
-  25519: dc4bad7e2dbcbf1efa121068a705a44cd98c80fc
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   ATAppUpdater: a9f7027060959d47e58733d3b48f6b9a28cb8de1
-  AxolotlKit: ba0ab24b879d34559a68e1270b079cc9bd7b3417
+  AxolotlKit: 7cfd2e71329b8dc398734e95b936450a2081fd60
   CocoaLumberjack: aa9dcab71bdf9eaf2a63bbd9ddc87863efe45457
-  HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
+  Curve25519Kit: 76d0859ecb34704f7732847812363f83b23a6a59
+  GRKOpenSSLFramework: 39829d7b30f95133301f44514d4d7c070961e9f8
+  HKDFKit: 3fb424060aaf69795bc8ab34c4c233b98dc6303b
   JSQMessagesViewController: 39fed975e3c9f8eba7292071e29eeb541d105e66
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libPhoneNumber-iOS: f721ae4d5854bce60934f9fb9b0b28e8e68913cb
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
-  OpenSSL: 336ec50b5bc20b52dcd16cb1dd196f617d841e49
   ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SignalServiceKit: b84d80de0bfd5f863994a1ce1f5b742b91c46cb5
+  SignalServiceKit: c56f5dfdfa2e77c26b231c351c1ba458e7b94541
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: 43d12c0eb9c57fb438749618fc3ce0065509a559
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
@@ -178,6 +188,6 @@ SPEC CHECKSUMS:
   YapDatabase: cd911121580ff16675f65ad742a9eb0ab4d9e266
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: f4fae6cdf4f646cae494d89c98fe225f455836fe
+PODFILE CHECKSUM: 8e42a06de2d254e448580cfd6212545739de62d6
 
 COCOAPODS: 1.3.1

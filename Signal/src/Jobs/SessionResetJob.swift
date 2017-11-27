@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SignalServiceKit
 
 @objc(OWSSessionResetJob)
 class SessionResetJob: NSObject {
