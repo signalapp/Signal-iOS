@@ -140,6 +140,14 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages createFakeLargeOutgoingAttachments:100 thread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"Create 1k fake large attachments"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeLargeOutgoingAttachments:1000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 10k fake large attachments"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeLargeOutgoingAttachments:10000 thread:thread];
+                        }],
         [OWSTableItem itemWithTitle:@"Send text/x-signal-plain"
                         actionBlock:^{
                             [DebugUIMessages sendOversizeTextMessage:thread];
@@ -1072,10 +1080,11 @@ NS_ASSUME_NONNULL_BEGIN
         if (filename) {
             message.attachmentFilenameMap[attachmentStream.uniqueId] = filename;
         }
+        [message updateWithMessageState:TSOutgoingMessageStateUnsent transaction:transaction];
         [message saveWithTransaction:transaction];
     }];
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self createFakeLargeOutgoingAttachments:counter - 1 thread:thread];
     });
 }
