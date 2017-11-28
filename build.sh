@@ -52,6 +52,8 @@ build()
    SDK=$2
    TYPE=$3
 
+   echo "Building: ARCH: ${ARCH} SDK: ${SDK} TYPE: ${TYPE}..."
+
    export BUILD_TOOLS="${DEVELOPER}"
    export CC="${BUILD_TOOLS}/usr/bin/gcc -fembed-bitcode -arch ${ARCH}"
 
@@ -59,7 +61,7 @@ build()
    
    rm -rf openssl-${OPENSSL_VERSION}
    tar xfz openssl-${OPENSSL_VERSION}.tar.gz
-   pushd .
+   pushd . > /dev/null
    cd "openssl-${OPENSSL_VERSION}"
 
    #fix header for Swift
@@ -86,7 +88,7 @@ build()
 
    make &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.log"
    make install &> "/tmp/openssl-${OPENSSL_VERSION}-${ARCH}.log"
-   popd
+   popd > /dev/null
 
    # Add arch to library
    if [ -f "lib-${TYPE}/libcrypto.a" ]; then
