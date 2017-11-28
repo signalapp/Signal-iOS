@@ -3,6 +3,7 @@
 //
 
 #import "OWSFileSystem.h"
+#import "TSConstants.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -38,8 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)appSharedDataDirectoryPath
 {
-    NSURL *groupContainerDirectoryURL = [[NSFileManager defaultManager]
-        containerURLForSecurityApplicationGroupIdentifier:@"group.org.whispersystems.signal.group"];
+    NSURL *groupContainerDirectoryURL =
+        [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:SignalApplicationGroup];
     return [groupContainerDirectoryURL path];
 }
 
@@ -52,7 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if ([fileManager fileExistsAtPath:newFilePath]) {
-        DDLogError(@"");
+        OWSFail(
+            @"%@ Can't move file from %@ to %@; destination already exists.", self.logTag, oldFilePath, newFilePath);
         return;
     }
     
@@ -62,11 +64,11 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
     if (!success || error) {
         NSString *errorDescription =
-        [NSString stringWithFormat:@"%@ Could not move database file from %@ to %@, error: %@",
-         self.logTag,
-         oldFilePath,
-         newFilePath,
-         error];
+            [NSString stringWithFormat:@"%@ Could not move file or directory from %@ to %@, error: %@",
+                      self.logTag,
+                      oldFilePath,
+                      newFilePath,
+                      error];
         OWSFail(@"%@", errorDescription);
         [NSException raise:exceptionName format:@"%@", errorDescription];
     }

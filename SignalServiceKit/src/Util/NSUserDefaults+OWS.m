@@ -3,6 +3,7 @@
 //
 
 #import "NSUserDefaults+OWS.h"
+#import "TSConstants.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -10,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSUserDefaults *)appUserDefaults
 {
-    return [[NSUserDefaults alloc] initWithSuiteName:@"group.org.whispersystems.signal.group"];
+    return [[NSUserDefaults alloc] initWithSuiteName:SignalApplicationGroup];
 }
 
 + (void)migrateToSharedUserDefaults

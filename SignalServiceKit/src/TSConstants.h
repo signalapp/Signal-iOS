@@ -57,6 +57,8 @@ typedef enum { kSMSVerification, kPhoneNumberVerification } VerificationTranspor
 #define textSecureSetProfileNameAPIFormat @"v1/profile/name/%@"
 #define textSecureProfileAvatarFormAPI @"v1/profile/form/avatar"
 
+#define SignalApplicationGroup @"group.org.whispersystems.signal.group"
+
 #pragma mark Push RegistrationSpecific Constants
 typedef NS_ENUM(NSInteger, TSPushRegistrationError) {
     TSPushRegistrationErrorNetwork,

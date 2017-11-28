@@ -106,10 +106,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // We need to this _after_ we set up logging but _before_ we do
     // anything else.
-    [self ensureMigrationToSharedData];
+    [self ensureIsReadyForAppExtensions];
 
 #if RELEASE
-    // ensureMigrationToSharedData may have changed the state of the logging
+    // ensureIsReadyForAppExtensions may have changed the state of the logging
     // preference, so honor that change if necessary.
     if (loggingIsEnabled && !OWSPreferences.loggingIsEnabled) {
         [DebugLogger.sharedLogger disableFileLogging];
@@ -189,9 +189,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     return YES;
 }
 
-- (void)ensureMigrationToSharedData
+- (void)ensureIsReadyForAppExtensions
 {
-    if ([OWSPreferences hasMigratedToSharedData]) {
+    if ([OWSPreferences isReadyForAppExtensions]) {
         return;
     }
 
@@ -201,7 +201,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [OWSProfileManager migrateToSharedData];
     [TSAttachmentStream migrateToSharedData];
 
-    [OWSPreferences setHasMigratedToSharedData:YES];
+    [OWSPreferences setIsReadyForAppExtensions:YES];
 }
 
 - (void)startupLogging

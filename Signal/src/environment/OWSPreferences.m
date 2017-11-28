@@ -23,7 +23,7 @@ NSString *const OWSPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled
 NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 NSString *const OWSPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
-NSString *const OWSPreferencesKey_HasMigratedToSharedData = @"hasMigratedToSharedData";
+NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions";
 
 @implementation OWSPreferences
 
@@ -60,9 +60,9 @@ NSString *const OWSPreferencesKey_HasMigratedToSharedData = @"hasMigratedToShare
 
 #pragma mark - Specific Preferences
 
-+ (BOOL)hasMigratedToSharedData
++ (BOOL)isReadyForAppExtensions
 {
-    NSNumber *preference = [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKey_HasMigratedToSharedData];
+    NSNumber *preference = [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKey_IsReadyForAppExtensions];
 
     if (preference) {
         return [preference boolValue];
@@ -71,9 +71,9 @@ NSString *const OWSPreferencesKey_HasMigratedToSharedData = @"hasMigratedToShare
     }
 }
 
-+ (void)setHasMigratedToSharedData:(BOOL)value
++ (void)setIsReadyForAppExtensions:(BOOL)value
 {
-    [NSUserDefaults.appUserDefaults setObject:@(value) forKey:OWSPreferencesKey_HasMigratedToSharedData];
+    [NSUserDefaults.appUserDefaults setObject:@(value) forKey:OWSPreferencesKey_IsReadyForAppExtensions];
     [NSUserDefaults.appUserDefaults synchronize];
 }
 
