@@ -27,6 +27,9 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 
 #pragma mark - Specific Preferences
 
++ (BOOL)hasMigratedToSharedData;
++ (void)setHasMigratedToSharedData:(BOOL)value;
+
 - (BOOL)getHasSentAMessage;
 - (void)setHasSentAMessage:(BOOL)enabled;
 

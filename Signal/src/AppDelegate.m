@@ -24,6 +24,7 @@
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
+#import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSFailedAttachmentDownloadsJob.h>
@@ -103,6 +104,18 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.logTag);
 
+    // We need to this _after_ we set up logging but _before_ we do
+    // anything else.
+    [self ensureMigrationToSharedData];
+
+#if RELEASE
+    // ensureMigrationToSharedData may have changed the state of the logging
+    // preference, so honor that change if necessary.
+    if (loggingIsEnabled && !OWSPreferences.loggingIsEnabled) {
+        [DebugLogger.sharedLogger disableFileLogging];
+    }
+#endif
+
     [AppVersion instance];
 
     [self startupLogging];
@@ -174,6 +187,21 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [OWSAnalytics appLaunchDidBegin];
 
     return YES;
+}
+
+- (void)ensureMigrationToSharedData
+{
+    if ([OWSPreferences hasMigratedToSharedData]) {
+        return;
+    }
+
+    [NSUserDefaults migrateToSharedUserDefaults];
+
+    [TSStorageManager migrateToSharedData];
+    [OWSProfileManager migrateToSharedData];
+    [TSAttachmentStream migrateToSharedData];
+
+    [OWSPreferences setHasMigratedToSharedData:YES];
 }
 
 - (void)startupLogging

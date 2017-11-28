@@ -207,10 +207,11 @@ void setDatabaseInitialized()
     static TSStorageManager *sharedManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedManager = [[self alloc] initDefault];
 #if TARGET_OS_IPHONE
-        [sharedManager protectSignalFiles];
+        [TSStorageManager protectSignalFiles];
 #endif
+
+        sharedManager = [[self alloc] initDefault];
     });
     return sharedManager;
 }
@@ -355,7 +356,8 @@ void setDatabaseInitialized()
     [TSDatabaseView asyncRegistrationCompletion];
 }
 
-- (void)protectSignalFiles {
++ (void)protectSignalFiles
+{
     // The old database location was in the Document directory,
     // so protect the database files individually.
     [OWSFileSystem protectFolderAtPath:[self oldDatabaseFilePath]];
@@ -375,12 +377,12 @@ void setDatabaseInitialized()
     return FALSE;
 }
 
-- (NSString *)oldDatabaseDirPath
++ (NSString *)oldDatabaseDirPath
 {
     return [OWSFileSystem appDocumentDirectoryPath];
 }
 
-- (NSString *)newDatabaseDirPath
++ (NSString *)newDatabaseDirPath
 {
     NSString *databaseDirPath = [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"database"];
 
@@ -405,52 +407,52 @@ void setDatabaseInitialized()
     return databaseDirPath;
 }
 
-- (NSString *)databaseFilename
++ (NSString *)databaseFilename
 {
     return @"Signal.sqlite";
 }
 
-- (NSString *)databaseFilename_SHM
++ (NSString *)databaseFilename_SHM
 {
     return [self.databaseFilename stringByAppendingString:@"-shm"];
 }
 
-- (NSString *)databaseFilename_WAL
++ (NSString *)databaseFilename_WAL
 {
     return [self.databaseFilename stringByAppendingString:@"-wal"];
 }
 
-- (NSString *)oldDatabaseFilePath
++ (NSString *)oldDatabaseFilePath
 {
     return [self.oldDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
 }
 
-- (NSString *)oldDatabaseFilePath_SHM
++ (NSString *)oldDatabaseFilePath_SHM
 {
     return [self.oldDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
 }
 
-- (NSString *)oldDatabaseFilePath_WAL
++ (NSString *)oldDatabaseFilePath_WAL
 {
     return [self.oldDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
 }
 
-- (NSString *)newDatabaseFilePath
++ (NSString *)newDatabaseFilePath
 {
     return [self.newDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
 }
 
-- (NSString *)newDatabaseFilePath_SHM
++ (NSString *)newDatabaseFilePath_SHM
 {
     return [self.newDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
 }
 
-- (NSString *)newDatabaseFilePath_WAL
++ (NSString *)newDatabaseFilePath_WAL
 {
     return [self.newDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
 }
 
-- (NSString *)dbPath
++ (void)migrateToSharedData
 {
     [OWSFileSystem moveAppFilePath:self.oldDatabaseFilePath
                 sharedDataFilePath:self.newDatabaseFilePath
@@ -461,32 +463,13 @@ void setDatabaseInitialized()
     [OWSFileSystem moveAppFilePath:self.oldDatabaseFilePath_WAL
                 sharedDataFilePath:self.newDatabaseFilePath_WAL
                      exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
+}
 
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    BOOL hasAllNewFiles = ([fileManager fileExistsAtPath:self.newDatabaseFilePath] &&
-        [fileManager fileExistsAtPath:self.newDatabaseFilePath_SHM] &&
-        [fileManager fileExistsAtPath:self.newDatabaseFilePath_WAL]);
-    BOOL hasAnyNewFiles = ([fileManager fileExistsAtPath:self.newDatabaseFilePath] ||
-        [fileManager fileExistsAtPath:self.newDatabaseFilePath_SHM] ||
-        [fileManager fileExistsAtPath:self.newDatabaseFilePath_WAL]);
-    if (!hasAllNewFiles && !hasAnyNewFiles) {
-        for (NSString *filePath in @[
-                 self.newDatabaseFilePath,
-                 self.newDatabaseFilePath_SHM,
-                 self.newDatabaseFilePath_WAL,
-                 self.newDatabaseFilePath,
-                 self.newDatabaseFilePath_SHM,
-                 self.newDatabaseFilePath_WAL,
-             ]) {
-            DDLogInfo(@"%@ Database file %@ exists %d", self.logTag, filePath, [fileManager fileExistsAtPath:filePath]);
-        }
-        OWSFail(@"%@ Incomplete set of database files.", self.logTag);
-    }
+- (NSString *)dbPath
+{
+    DDLogVerbose(@"databasePath: %@", TSStorageManager.newDatabaseFilePath);
 
-    DDLogError(@"databasePath: %@", self.newDatabaseFilePath);
-    [DDLog flushLog];
-
-    return self.newDatabaseFilePath;
+    return TSStorageManager.newDatabaseFilePath;
 }
 
 + (BOOL)isDatabasePasswordAccessible

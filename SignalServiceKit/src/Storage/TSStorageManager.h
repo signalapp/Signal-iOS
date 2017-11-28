@@ -63,6 +63,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nullable, nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
 
++ (void)migrateToSharedData;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -1384,22 +1384,29 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return image;
 }
 
++ (NSString *)oldProfileAvatarsDirPath
+{
+    return [[OWSFileSystem appDocumentDirectoryPath] stringByAppendingPathComponent:@"ProfileAvatars"];
+}
+
++ (NSString *)newProfileAvatarsDirPath
+{
+    return [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"ProfileAvatars"];
+}
+
++ (void)migrateToSharedData
+{
+    [OWSFileSystem moveAppFilePath:self.oldProfileAvatarsDirPath
+                sharedDataFilePath:self.newProfileAvatarsDirPath
+                     exceptionName:@"ProfileManagerCouldNotMigrateProfileDirectory"];
+}
+
 - (NSString *)profileAvatarsDirPath
 {
     static NSString *profileAvatarsDirPath = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSString *documentDirPath = [OWSFileSystem appDocumentDirectoryPath];
-        NSString *sharedDataDirPath = [OWSFileSystem appSharedDataDirectoryPath];
-
-        NSString *oldProfileAvatarsDirPath = [documentDirPath stringByAppendingPathComponent:@"ProfileAvatars"];
-        NSString *newProfileAvatarsDirPath = [sharedDataDirPath stringByAppendingPathComponent:@"ProfileAvatars"];
-
-        [OWSFileSystem moveAppFilePath:oldProfileAvatarsDirPath
-                    sharedDataFilePath:newProfileAvatarsDirPath
-                         exceptionName:@"ProfileManagerCouldNotMigrateProfileDirectory"];
-
-        profileAvatarsDirPath = newProfileAvatarsDirPath;
+        profileAvatarsDirPath = OWSProfileManager.newProfileAvatarsDirPath;
 
         BOOL isDirectory;
         BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:profileAvatarsDirPath isDirectory:&isDirectory];

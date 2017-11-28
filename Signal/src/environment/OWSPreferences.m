@@ -4,6 +4,7 @@
 
 #import "OWSPreferences.h"
 #import "TSStorageHeaders.h"
+#import <SignalServiceKit/NSUserDefaults+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,6 +23,7 @@ NSString *const OWSPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled
 NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 NSString *const OWSPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
+NSString *const OWSPreferencesKey_HasMigratedToSharedData = @"hasMigratedToSharedData";
 
 @implementation OWSPreferences
 
@@ -40,10 +42,7 @@ NSString *const OWSPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
 #pragma mark - Helpers
 
 - (void)clear {
-    @synchronized(self) {
-        NSString *appDomain = NSBundle.mainBundle.bundleIdentifier;
-        [NSUserDefaults.standardUserDefaults removePersistentDomainForName:appDomain];
-    }
+    [NSUserDefaults removeAll];
 }
 
 - (nullable id)tryGetValueForKey:(NSString *)key
@@ -60,6 +59,23 @@ NSString *const OWSPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
 }
 
 #pragma mark - Specific Preferences
+
++ (BOOL)hasMigratedToSharedData
+{
+    NSNumber *preference = [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKey_HasMigratedToSharedData];
+
+    if (preference) {
+        return [preference boolValue];
+    } else {
+        return NO;
+    }
+}
+
++ (void)setHasMigratedToSharedData:(BOOL)value
+{
+    [NSUserDefaults.appUserDefaults setObject:@(value) forKey:OWSPreferencesKey_HasMigratedToSharedData];
+    [NSUserDefaults.appUserDefaults synchronize];
+}
 
 - (BOOL)screenSecurityIsEnabled
 {
@@ -94,7 +110,7 @@ NSString *const OWSPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
 
 + (BOOL)loggingIsEnabled
 {
-    NSNumber *preference = [NSUserDefaults.standardUserDefaults objectForKey:OWSPreferencesKeyEnableDebugLog];
+    NSNumber *preference = [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKeyEnableDebugLog];
 
     if (preference) {
         return [preference boolValue];
@@ -108,8 +124,8 @@ NSString *const OWSPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
     // Logging preferences are stored in UserDefaults instead of the database, so that we can (optionally) start
     // logging before the database is initialized. This is important because sometimes there are problems *with* the
     // database initialization, and without logging it would be hard to track down.
-    [NSUserDefaults.standardUserDefaults setObject:@(flag) forKey:OWSPreferencesKeyEnableDebugLog];
-    [NSUserDefaults.standardUserDefaults synchronize];
+    [NSUserDefaults.appUserDefaults setObject:@(flag) forKey:OWSPreferencesKeyEnableDebugLog];
+    [NSUserDefaults.appUserDefaults synchronize];
 }
 
 - (void)setHasSentAMessage:(BOOL)enabled

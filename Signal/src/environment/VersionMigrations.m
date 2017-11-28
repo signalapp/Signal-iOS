@@ -8,9 +8,10 @@
 #import "OWSDatabaseMigrationRunner.h"
 #import "PushManager.h"
 #import "SignalKeyingStorage.h"
-#import "TSAccountManager.h"
-#import "TSNetworkManager.h"
 #import <SignalServiceKit/AppVersion.h>
+#import <SignalServiceKit/NSUserDefaults+OWS.h>
+#import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSNetworkManager.h>
 
 #define NEEDS_TO_REGISTER_PUSH_KEY @"Register For Push"
 #define NEEDS_TO_REGISTER_ATTRIBUTES @"Register Attributes"
@@ -125,39 +126,39 @@
 
 + (void)blockingAttributesUpdate {
     LIControllerBlockingOperation blockingOperation = ^BOOL(void) {
-      [[NSUserDefaults standardUserDefaults] setObject:@YES forKey:NEEDS_TO_REGISTER_ATTRIBUTES];
+        [[NSUserDefaults appUserDefaults] setObject:@YES forKey:NEEDS_TO_REGISTER_ATTRIBUTES];
 
-      __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+        __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
 
-      __block BOOL success;
+        __block BOOL success;
 
-      TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithManualMessageFetching:NO];
-      [[TSNetworkManager sharedManager] makeRequest:request
-          success:^(NSURLSessionDataTask *task, id responseObject) {
-              success = YES;
-              dispatch_semaphore_signal(sema);
-          }
-          failure:^(NSURLSessionDataTask *task, NSError *error) {
-              if (!IsNSErrorNetworkFailure(error)) {
-                  OWSProdError([OWSAnalyticsEvents errorUpdateAttributesRequestFailed]);
-              }
-              success = NO;
-              DDLogError(@"Updating attributess failed with error: %@", error.description);
-              dispatch_semaphore_signal(sema);
-          }];
+        TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithManualMessageFetching:NO];
+        [[TSNetworkManager sharedManager] makeRequest:request
+            success:^(NSURLSessionDataTask *task, id responseObject) {
+                success = YES;
+                dispatch_semaphore_signal(sema);
+            }
+            failure:^(NSURLSessionDataTask *task, NSError *error) {
+                if (!IsNSErrorNetworkFailure(error)) {
+                    OWSProdError([OWSAnalyticsEvents errorUpdateAttributesRequestFailed]);
+                }
+                success = NO;
+                DDLogError(@"Updating attributess failed with error: %@", error.description);
+                dispatch_semaphore_signal(sema);
+            }];
 
 
-      dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
 
-      return success;
+        return success;
     };
 
     LIControllerRetryBlock retryBlock = [LockInteractionController defaultNetworkRetry];
 
     [LockInteractionController performBlock:blockingOperation
                             completionBlock:^{
-                              [[NSUserDefaults standardUserDefaults] removeObjectForKey:NEEDS_TO_REGISTER_ATTRIBUTES];
-                              DDLogWarn(@"Successfully updated attributes.");
+                                [[NSUserDefaults appUserDefaults] removeObjectForKey:NEEDS_TO_REGISTER_ATTRIBUTES];
+                                DDLogWarn(@"Successfully updated attributes.");
                             }
                                  retryBlock:retryBlock
                                 usesNetwork:YES];
