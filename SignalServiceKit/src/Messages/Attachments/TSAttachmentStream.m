@@ -185,9 +185,17 @@ NS_ASSUME_NONNULL_BEGIN
     static NSString *attachmentsFolder = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSString *documentsPath =
-            [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-        attachmentsFolder = [documentsPath stringByAppendingPathComponent:@"Attachments"];
+        NSString *documentDirPath = [OWSFileSystem appDocumentDirectoryPath];
+        NSString *sharedDataDirPath = [OWSFileSystem appSharedDataDirectoryPath];
+
+        NSString *oldAttachmentsDirPath = [documentDirPath stringByAppendingPathComponent:@"Attachments"];
+        NSString *newAttachmentsDirPath = [sharedDataDirPath stringByAppendingPathComponent:@"Attachments"];
+
+        [OWSFileSystem moveAppFilePath:oldAttachmentsDirPath
+                    sharedDataFilePath:newAttachmentsDirPath
+                         exceptionName:@"CouldNotMigrateAttachmentsDirectory"];
+
+        attachmentsFolder = newAttachmentsDirPath;
 
         BOOL isDirectory;
         BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:attachmentsFolder isDirectory:&isDirectory];

@@ -1389,9 +1389,17 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     static NSString *profileAvatarsDirPath = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSString *documentsPath =
-            [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-        profileAvatarsDirPath = [documentsPath stringByAppendingPathComponent:@"ProfileAvatars"];
+        NSString *documentDirPath = [OWSFileSystem appDocumentDirectoryPath];
+        NSString *sharedDataDirPath = [OWSFileSystem appSharedDataDirectoryPath];
+
+        NSString *oldProfileAvatarsDirPath = [documentDirPath stringByAppendingPathComponent:@"ProfileAvatars"];
+        NSString *newProfileAvatarsDirPath = [sharedDataDirPath stringByAppendingPathComponent:@"ProfileAvatars"];
+
+        [OWSFileSystem moveAppFilePath:oldProfileAvatarsDirPath
+                    sharedDataFilePath:newProfileAvatarsDirPath
+                         exceptionName:@"ProfileManagerCouldNotMigrateProfileDirectory"];
+
+        profileAvatarsDirPath = newProfileAvatarsDirPath;
 
         BOOL isDirectory;
         BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:profileAvatarsDirPath isDirectory:&isDirectory];
