@@ -4,6 +4,7 @@
 
 import XCTest
 import PromiseKit
+import SignalServiceKit
 
 struct VerificationFailedError: Error { }
 struct FailedToGetRPRegistrationTokenError: Error { }

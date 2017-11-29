@@ -9,14 +9,15 @@ class SearcherTest: XCTestCase {
     struct TestCharacter {
         let name: String
         let description: String
+        let phoneNumber: String?
     }
 
-    let smerdyakov = TestCharacter(name: "Pavel Fyodorovich Smerdyakov", description: "A rusty hue in the sky")
-    let stinkingLizaveta = TestCharacter(name: "Stinking Lizaveta", description: "object of pity")
-    let regularLizaveta = TestCharacter(name: "Lizaveta", description: "")
+    let smerdyakov = TestCharacter(name: "Pavel Fyodorovich Smerdyakov", description: "A rusty hue in the sky", phoneNumber: nil)
+    let stinkingLizaveta = TestCharacter(name: "Stinking Lizaveta", description: "object of pity", phoneNumber: "+13235555555")
+    let regularLizaveta = TestCharacter(name: "Lizaveta", description: "", phoneNumber: "1 (415) 555-5555")
 
     let indexer = { (character: TestCharacter) in
-        return "\(character.name) \(character.description)"
+        return "\(character.name) \(character.description) \(character.phoneNumber ?? "")"
     }
 
     var searcher: Searcher<TestCharacter> {
@@ -56,5 +57,21 @@ class SearcherTest: XCTestCase {
         XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Lizaveta Stinking"))
         XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Lizaveta St"))
         XCTAssert(searcher.matches(item: stinkingLizaveta, query: "  Lizaveta St "))
+    }
+
+    func testFormattingChars() {
+        XCTAssert(searcher.matches(item: stinkingLizaveta, query:"323"))
+        XCTAssert(searcher.matches(item: stinkingLizaveta, query:"1-323-555-5555"))
+        XCTAssert(searcher.matches(item: stinkingLizaveta, query:"13235555555"))
+        XCTAssert(searcher.matches(item: stinkingLizaveta, query:"+1-323"))
+        XCTAssert(searcher.matches(item: stinkingLizaveta, query:"Liza +1-323"))
+
+        // Sanity check, match both by names
+        XCTAssert(searcher.matches(item: stinkingLizaveta, query:"Liza"))
+        XCTAssert(searcher.matches(item: regularLizaveta, query:"Liza"))
+
+        // Disambiguate the two Liza's by area code
+        XCTAssert(searcher.matches(item: stinkingLizaveta, query:"Liza 323"))
+        XCTAssertFalse(searcher.matches(item: regularLizaveta, query:"Liza 323"))
     }
 }

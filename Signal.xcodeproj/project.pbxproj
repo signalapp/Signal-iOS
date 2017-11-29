@@ -279,7 +279,6 @@
 		45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */; };
 		45F170AC1E2F0351003FC1F2 /* CallAudioSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170AB1E2F0351003FC1F2 /* CallAudioSession.swift */; };
 		45F170AD1E2F0351003FC1F2 /* CallAudioSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170AB1E2F0351003FC1F2 /* CallAudioSession.swift */; };
-		45F170AF1E2F0393003FC1F2 /* CallAudioSessionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170AE1E2F0393003FC1F2 /* CallAudioSessionTest.swift */; };
 		45F170BB1E2FC5D3003FC1F2 /* CallAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170BA1E2FC5D3003FC1F2 /* CallAudioService.swift */; };
 		45F170BC1E2FC5D3003FC1F2 /* CallAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170BA1E2FC5D3003FC1F2 /* CallAudioService.swift */; };
 		45F170CC1E310E22003FC1F2 /* WeakTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170CB1E310E22003FC1F2 /* WeakTimer.swift */; };
@@ -866,7 +865,6 @@
 		45E615151E8C590B0018AD52 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableText.swift; sourceTree = "<group>"; };
 		45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableTextFilterTest.swift; sourceTree = "<group>"; };
 		45F170AB1E2F0351003FC1F2 /* CallAudioSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallAudioSession.swift; sourceTree = "<group>"; };
-		45F170AE1E2F0393003FC1F2 /* CallAudioSessionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallAudioSessionTest.swift; sourceTree = "<group>"; };
 		45F170B31E2F0A6A003FC1F2 /* RTCAudioSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTCAudioSession.h; sourceTree = "<group>"; };
 		45F170BA1E2FC5D3003FC1F2 /* CallAudioService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallAudioService.swift; sourceTree = "<group>"; };
 		45F170CB1E310E22003FC1F2 /* WeakTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeakTimer.swift; sourceTree = "<group>"; };
@@ -1837,7 +1835,6 @@
 		B660F6731C29867F00687D6E /* call */ = {
 			isa = PBXGroup;
 			children = (
-				45F170AE1E2F0393003FC1F2 /* CallAudioSessionTest.swift */,
 				456F6E2E1E261D1000FD2210 /* PeerConnectionClientTest.swift */,
 			);
 			path = call;
@@ -2928,7 +2925,6 @@
 				458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */,
 				452D1EE81DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift in Sources */,
 				451DE9FE1DC1A28200810E42 /* SyncPushTokensJob.swift in Sources */,
-				45F170AF1E2F0393003FC1F2 /* CallAudioSessionTest.swift in Sources */,
 				456F6E231E24133500FD2210 /* Platform.swift in Sources */,
 				4539B5871F79348F007141FF /* PushRegistrationManager.swift in Sources */,
 				4504493A1F45EE7D002D1ADA /* NSString+OWS.m in Sources */,

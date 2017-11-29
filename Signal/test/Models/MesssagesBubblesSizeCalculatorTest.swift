@@ -3,6 +3,7 @@
 //
 
 import XCTest
+import SignalServiceKit
 
 /**
  * This is a brittle test, which will break if our layout changes.
@@ -23,7 +24,12 @@ class MesssagesBubblesSizeCalculatorTest: XCTestCase {
     func viewItemForText(_ text: String?) -> ConversationViewItem {
         let interaction = TSOutgoingMessage(timestamp: 0, in: thread, messageBody: text)
         interaction.save()
-        let viewItem = ConversationViewItem(tsInteraction:interaction, isGroupThread:false)
+
+        var viewItem: ConversationViewItem!
+        interaction.dbReadWriteConnection().readWrite { transaction in
+            viewItem = ConversationViewItem(interaction: interaction, isGroupThread: false, transaction: transaction)
+        }
+
         viewItem.shouldShowDate = false
         viewItem.shouldHideRecipientStatus = true
         return viewItem

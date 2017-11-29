@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL shouldNotifyDelegateOfUpdatedContacts;
 @property (nonatomic) BOOL hasUpdatedContactsAtLeastOnce;
 @property (nonatomic) OWSProfileManager *profileManager;
+@property (nonatomic, readonly) AnySearcher *signalAccountSearcher;
 
 @end
 
@@ -58,6 +59,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.shouldNotifyDelegateOfUpdatedContacts = YES;
     [self updateContacts];
     self.shouldNotifyDelegateOfUpdatedContacts = NO;
+
+    _signalAccountSearcher = [self buildAccountSearcher];
 
     [self observeNotifications];
 
@@ -98,6 +101,24 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Contacts
+
+- (AnySearcher *)buildAccountSearcher
+{
+    return [[AnySearcher alloc] initWithIndexer:^NSString *_Nonnull(id _Nonnull obj) {
+        if (![obj isKindOfClass:[SignalAccount class]]) {
+            OWSFail(@"unexpected item in searcher");
+            return @"";
+        }
+
+        SignalAccount *signalAccount = (SignalAccount *)obj;
+
+        NSString *recipientId = signalAccount.recipientId;
+        NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:recipientId];
+        NSString *profileName = [self.contactsManager profileNameForRecipientId:recipientId];
+
+        return [NSString stringWithFormat:@"%@ %@ %@", recipientId, contactName, profileName];
+    }];
+}
 
 - (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId
 {
@@ -173,37 +194,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (BOOL)doesSignalAccount:(SignalAccount *)signalAccount matchSearchTerm:(NSString *)searchTerm
-{
-    OWSAssert(signalAccount);
-    OWSAssert(searchTerm.length > 0);
-
-    if ([signalAccount.contact.fullName.lowercaseString containsString:searchTerm.lowercaseString]) {
-        return YES;
-    }
-
-    NSString *asPhoneNumber = [PhoneNumber removeFormattingCharacters:searchTerm];
-    if (asPhoneNumber.length > 0 && [signalAccount.recipientId containsString:asPhoneNumber]) {
-        return YES;
-    }
-
-    return NO;
-}
-
-- (BOOL)doesSignalAccount:(SignalAccount *)signalAccount matchSearchTerms:(NSArray<NSString *> *)searchTerms
-{
-    OWSAssert(signalAccount);
-    OWSAssert(searchTerms.count > 0);
-
-    for (NSString *searchTerm in searchTerms) {
-        if (![self doesSignalAccount:signalAccount matchSearchTerm:searchTerm]) {
-            return NO;
-        }
-    }
-
-    return YES;
-}
-
 - (NSArray<NSString *> *)searchTermsForSearchString:(NSString *)searchText
 {
     return [[[searchText ows_stripped]
@@ -225,7 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.signalAccounts
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
-            return [self doesSignalAccount:signalAccount matchSearchTerms:searchTerms];
+            return [self.signalAccountSearcher item:signalAccount doesMatchQuery:searchText];
         }]];
 }
 
