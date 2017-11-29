@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 static id<AppContext> currentAppContext = nil;
 
-id<AppContext> CurrentAppContext()
+id<AppContext> CurrentAppContext(void)
 {
     OWSCAssert(currentAppContext);
 

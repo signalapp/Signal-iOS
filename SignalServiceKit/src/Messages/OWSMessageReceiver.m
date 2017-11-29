@@ -3,6 +3,7 @@
 //
 
 #import "OWSMessageReceiver.h"
+#import "AppContext.h"
 #import "NSArray+OWS.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSMessageDecrypter.h"
@@ -274,6 +275,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)drainQueue
 {
+    // Don't decrypt messages in app extensions.
+    if (!CurrentAppContext().isMainApp) {
+        return;
+    }
+
     dispatch_async(self.serialQueue, ^{
         if ([TSDatabaseView hasPendingViewRegistrations]) {
             // We don't want to process incoming messages until database

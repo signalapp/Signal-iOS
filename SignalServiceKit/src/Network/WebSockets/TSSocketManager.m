@@ -3,6 +3,7 @@
 //
 
 #import "TSSocketManager.h"
+#import "AppContext.h"
 #import "Cryptography.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NSTimer+OWS.h"
@@ -120,9 +121,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     }
     self.hasObservedNotifications = YES;
 
-    //    // FIXME SHARINGEXTENSION
-    //    self.appIsActive = [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
-    self.appIsActive = YES;
+    self.appIsActive = CurrentAppContext().isMainAppAndActive;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
@@ -495,6 +494,11 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 {
     OWSAssert([NSThread isMainThread]);
 
+    // Don't open socket in app extensions.
+    if (!CurrentAppContext().isMainApp) {
+        return NO;
+    }
+
     if (![TSAccountManager isRegistered]) {
         return NO;
     }
@@ -547,16 +551,14 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         // Additionally, we want the reconnect timer to work in the background too.
         [[NSRunLoop mainRunLoop] addTimer:self.backgroundKeepAliveTimer forMode:NSDefaultRunLoopMode];
 
-        // FIXME SHARINGEXTENSION
-        //        self.fetchingTaskIdentifier =
-        //        [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-        //            OWSAssert([NSThread isMainThread]);
-        //
-        //            DDLogInfo(@"%s background task expired", __PRETTY_FUNCTION__);
-        //
-        //            [self clearBackgroundState];
-        //            [self applyDesiredSocketState];
-        //        }];
+        self.fetchingTaskIdentifier = [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
+            OWSAssert([NSThread isMainThread]);
+
+            DDLogInfo(@"%s background task expired", __PRETTY_FUNCTION__);
+
+            [self clearBackgroundState];
+            [self applyDesiredSocketState];
+        }];
     } else {
         OWSAssert(self.backgroundKeepAliveUntilDate);
         OWSAssert(self.backgroundKeepAliveTimer);
@@ -623,8 +625,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     self.backgroundKeepAliveTimer = nil;
 
     if (self.fetchingTaskIdentifier != UIBackgroundTaskInvalid) {
-        // FIXME SHARINGEXTENSION
-        //        [[UIApplication sharedApplication] endBackgroundTask:self.fetchingTaskIdentifier];
+        [CurrentAppContext() endBackgroundTask:self.fetchingTaskIdentifier];
         self.fetchingTaskIdentifier = UIBackgroundTaskInvalid;
     }
 }

@@ -3,6 +3,7 @@
 //
 
 #import "TSStorageManager.h"
+#import "AppContext.h"
 #import "NSData+Base64.h"
 #import "OWSAnalytics.h"
 #import "OWSBatchMessageProcessor.h"

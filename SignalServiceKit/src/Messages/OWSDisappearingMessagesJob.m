@@ -3,6 +3,7 @@
 //
 
 #import "OWSDisappearingMessagesJob.h"
+#import "AppContext.h"
 #import "ContactsManagerProtocol.h"
 #import "NSDate+OWS.h"
 #import "NSTimer+OWS.h"
@@ -320,12 +321,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(date);
 
     dispatch_async(dispatch_get_main_queue(), ^{
-
-        // FIXME SHARINGEXTENSION
-        //        if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-        //            // Don't schedule run when inactive.
-        //            return;
-        //        }
+        if (!CurrentAppContext().isMainAppAndActive) {
+            // Don't schedule run when inactive or not in main app.
+            return;
+        }
 
         NSDateFormatter *dateFormatter = [NSDateFormatter new];
         dateFormatter.dateStyle = NSDateFormatterNoStyle;
@@ -366,12 +365,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([NSThread isMainThread]);
 
-    // FIXME SHARINGEXTENSION
-    //    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-    //        // Don't run when inactive.
-    //        OWSFail(@"%@ Disappearing messages job timer fired while app inactive.", self.logTag);
-    //        return;
-    //    }
+    if (!CurrentAppContext().isMainAppAndActive) {
+        // Don't schedule run when inactive or not in main app.
+        return;
+    }
 
     [self resetTimer];
 

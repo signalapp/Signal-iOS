@@ -3,6 +3,7 @@
 //
 
 #import "TSPreKeyManager.h"
+#import "AppContext.h"
 #import "NSDate+OWS.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSIdentityManager.h"
@@ -90,8 +91,9 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
 
 + (void)checkPreKeysIfNecessary
 {
-    // FIXME SHARINGEXTENSION
-    //    OWSAssert([UIApplication sharedApplication].applicationState == UIApplicationStateActive);
+    if (CurrentAppContext().isMainApp) {
+        OWSAssert(CurrentAppContext().isMainAppAndActive);
+    }
 
     // Update the prekey check timestamp.
     dispatch_async(TSPreKeyManager.prekeyQueue, ^{

@@ -3,6 +3,7 @@
 //
 
 #import "OWSMessageSender.h"
+#import "AppContext.h"
 #import "ContactsUpdater.h"
 #import "NSData+keyVersionByte.h"
 #import "NSData+messagePadding.h"

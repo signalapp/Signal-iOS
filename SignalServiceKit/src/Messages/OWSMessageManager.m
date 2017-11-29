@@ -3,6 +3,7 @@
 //
 
 #import "OWSMessageManager.h"
+#import "AppContext.h"
 #import "ContactsManagerProtocol.h"
 #import "Cryptography.h"
 #import "MimeTypeUtil.h"
@@ -149,6 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(envelope);
     OWSAssert(transaction);
     OWSAssert([TSAccountManager isRegistered]);
+    OWSAssert(CurrentAppContext().isMainApp);
 
     DDLogInfo(@"%@ handling decrypted envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
 
@@ -1136,9 +1138,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateApplicationBadgeCount
 {
+    if (!CurrentAppContext().isMainApp) {
+        return;
+    }
+
     NSUInteger numberOfItems = [self unreadMessagesCount];
-    // FIXME SHARINGEXTENSION can't use UIApplication.sharedAplication
-    //    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:numberOfItems];
+    [CurrentAppContext() setMainAppBadgeNumber:numberOfItems];
 }
 
 - (NSUInteger)unreadMessagesInThread:(TSThread *)thread
