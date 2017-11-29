@@ -9,33 +9,35 @@ import SignalServiceKit
 @objc
 class OWSMessagesBubbleImageFactory: NSObject {
 
+    static let shared = OWSMessagesBubbleImageFactory()
+
     private let jsqFactory = JSQMessagesBubbleImageFactory()!
 
     // TODO: UIView is a little bit expensive to instantiate.
     //       Can we cache this value?
-    private var isRTL: Bool {
+    private lazy var isRTL: Bool = {
         return UIView().isRTL()
-    }
+    }()
 
-    public var incoming: JSQMessagesBubbleImage {
+    public lazy var incoming: JSQMessagesBubbleImage = {
         let color = UIColor.jsq_messageBubbleLightGray()!
-        return incoming(color: color)
-    }
+        return self.incoming(color: color)
+    }()
 
-    public var outgoing: JSQMessagesBubbleImage {
+    public lazy var outgoing: JSQMessagesBubbleImage = {
         let color = UIColor.ows_materialBlue()
-        return outgoing(color: color)
-    }
+        return self.outgoing(color: color)
+    }()
 
-    public var currentlyOutgoing: JSQMessagesBubbleImage {
+    public lazy var currentlyOutgoing: JSQMessagesBubbleImage = {
         let color = UIColor.ows_fadedBlue()
-        return outgoing(color: color)
-    }
+        return self.outgoing(color: color)
+    }()
 
-    public var outgoingFailed: JSQMessagesBubbleImage {
+    public lazy var outgoingFailed: JSQMessagesBubbleImage = {
         let color = UIColor.gray
-        return outgoing(color: color)
-    }
+        return self.outgoing(color: color)
+    }()
 
     public func bubble(message: TSMessage) -> JSQMessagesBubbleImage {
         if message is TSIncomingMessage {

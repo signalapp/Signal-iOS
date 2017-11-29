@@ -1048,12 +1048,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSMessagesBubbleImageFactory *)bubbleFactory
 {
-    static OWSMessagesBubbleImageFactory *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [OWSMessagesBubbleImageFactory new];
-    });
-    return instance;
+    return [OWSMessagesBubbleImageFactory shared];
 }
 
 - (void)prepareForReuse
