@@ -132,6 +132,22 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages createFakeUnreadMessages:10 thread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"Create 10 fake large attachments"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeLargeOutgoingAttachments:10 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 100 fake large attachments"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeLargeOutgoingAttachments:100 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 1k fake large attachments"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeLargeOutgoingAttachments:1000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 10k fake large attachments"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeLargeOutgoingAttachments:10000 thread:thread];
+                        }],
         [OWSTableItem itemWithTitle:@"Send text/x-signal-plain"
                         actionBlock:^{
                             [DebugUIMessages sendOversizeTextMessage:thread];
@@ -1033,6 +1049,44 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     }
+}
+
++ (void)createFakeLargeOutgoingAttachments:(int)counter thread:(TSThread *)thread
+{
+    if (counter < 1) {
+        return;
+    }
+
+    [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
+        YapDatabaseReadWriteTransaction *transaction) {
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                         inThread:thread
+                                                                   isVoiceMessage:NO
+                                                                 expiresInSeconds:0];
+        DDLogError(@"%@ sendFakeMessages outgoing attachment timestamp: %llu.", self.logTag, message.timestamp);
+
+        NSString *filename = @"test.mp3";
+        UInt32 filesize = 8 * 1024 * 1024;
+
+        TSAttachmentStream *attachmentStream =
+            [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3" byteCount:filesize sourceFilename:filename];
+
+        NSError *error;
+        BOOL success = [attachmentStream writeData:[self createRandomNSDataOfSize:filesize] error:&error];
+        OWSAssert(success && !error);
+
+        [attachmentStream saveWithTransaction:transaction];
+        [message.attachmentIds addObject:attachmentStream.uniqueId];
+        if (filename) {
+            message.attachmentFilenameMap[attachmentStream.uniqueId] = filename;
+        }
+        [message updateWithMessageState:TSOutgoingMessageStateUnsent transaction:transaction];
+        [message saveWithTransaction:transaction];
+    }];
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self createFakeLargeOutgoingAttachments:counter - 1 thread:thread];
+    });
 }
 
 + (void)sendTinyAttachments:(int)counter thread:(TSThread *)thread
