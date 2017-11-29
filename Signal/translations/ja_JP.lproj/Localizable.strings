@@ -371,10 +371,10 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "消音をやめる";
 
 /* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "私のプロフィールを見れる";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "私のプロフィールを閲覧可能";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "私のプロフィールを見れる";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "私のプロフィールを閲覧可能";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "プロフィールを共有する";
@@ -395,7 +395,7 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "この人は連絡先にいません";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "メッセージを読込中";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "詳細";
@@ -1574,7 +1574,7 @@
 "UNKNOWN_CONTACT_NAME" = "不明な連絡先";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "Unknown";
+"UNKNOWN_VALUE" = "不明";
 
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "登録解除";
