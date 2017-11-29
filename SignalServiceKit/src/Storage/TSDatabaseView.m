@@ -11,6 +11,7 @@
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
+#import <YapDatabase/YapDatabaseCrossProcessNotification.h>
 #import <YapDatabase/YapDatabaseView.h>
 
 NSString *const kNSNotificationName_DatabaseViewRegistrationComplete =
@@ -86,6 +87,15 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
 
         self.areAllAsyncRegistrationsComplete = YES;
     }
+}
+
++ (void)registerCrossProcessNotifier
+{
+    // I don't think the identifier and name of this extension matter for our purposes,
+    // so long as they don't conflict with any other extension names.
+    YapDatabaseExtension *extension =
+        [[YapDatabaseCrossProcessNotification alloc] initWithIdentifier:@"SignalCrossProcessNotifier"];
+    [[TSStorageManager sharedManager].database registerExtension:extension withName:@"SignalCrossProcessNotifier"];
 }
 
 + (void)registerMessageDatabaseViewWithName:(NSString *)viewName

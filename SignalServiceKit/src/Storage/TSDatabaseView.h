@@ -25,6 +25,8 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 // This method can be called from any thread.
 + (BOOL)hasPendingViewRegistrations;
 
++ (void)registerCrossProcessNotifier;
+
 // This method must be called _AFTER_ registerThreadInteractionsDatabaseView.
 + (void)registerThreadDatabaseView;
 
