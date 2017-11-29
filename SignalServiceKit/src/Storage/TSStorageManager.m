@@ -492,8 +492,8 @@ void setDatabaseInitialized()
 
 - (void)backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:(NSString *)errorDescription
 {
-    // FIXME SHARINGEXTENSION
-    //    OWSAssert([UIApplication sharedApplication].applicationState == UIApplicationStateBackground);
+    OWSAssert(
+        CurrentAppContext().isMainApp && CurrentAppContext().mainApplicationState == UIApplicationStateBackground);
 
     // Sleep to give analytics events time to be delivered.
     [NSThread sleepForTimeInterval:5.0f];
@@ -514,20 +514,26 @@ void setDatabaseInitialized()
         [SAMKeychain passwordForService:keychainService account:keychainDBPassAccount error:&keyFetchError];
 
     if (keyFetchError) {
-        // FIXME SHARINGEXTENSION
-        //        UIApplicationState applicationState = [UIApplication sharedApplication].applicationState;
-        //        NSString *errorDescription = [NSString stringWithFormat:@"Database password inaccessible. No unlock
-        //        since device restart? Error: %@ ApplicationState: %d", keyFetchError, (int)applicationState];
-        //        DDLogError(@"%@ %@", self.logTag, errorDescription);
-        //        [DDLog flushLog];
+        NSString *errorDescription =
+            [NSString stringWithFormat:@"Database password inaccessible. No unlock since device restart? Error: %@",
+                      keyFetchError];
+        if (CurrentAppContext().isMainApp) {
+            UIApplicationState applicationState = CurrentAppContext().mainApplicationState;
+            errorDescription =
+                [errorDescription stringByAppendingFormat:@", ApplicationState: %d", (int)applicationState];
+        }
+        DDLogError(@"%@ %@", self.logTag, errorDescription);
+        [DDLog flushLog];
 
-        // FIXME SHARINGEXTENSION
-        //        if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-        //            // TODO: Rather than crash here, we should detect the situation earlier
-        //            // and exit gracefully - (in the app delegate?). See the `
-        //            // This is a last ditch effort to avoid blowing away the user's database.
-        //            [self backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:errorDescription];
-        //        }
+        if (CurrentAppContext().isMainApp) {
+            UIApplicationState applicationState = CurrentAppContext().mainApplicationState;
+            if (applicationState == UIApplicationStateBackground) {
+                // TODO: Rather than crash here, we should detect the situation earlier
+                // and exit gracefully - (in the app delegate?). See the `
+                // This is a last ditch effort to avoid blowing away the user's database.
+                [self backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:errorDescription];
+            }
+        }
 
         // At this point, either this is a new install so there's no existing password to retrieve
         // or the keychain has become corrupt.  Either way, we want to get back to a
@@ -541,9 +547,9 @@ void setDatabaseInitialized()
         // Try to reset app by deleting database.
         // FIXME SHARINGEXTENSION
         OWSFail(@"disabled while Share extension is WIP");
-        //        [self resetSignalStorage];
+        [self resetSignalStorage];
 
-        //        dbPassword = [self createAndSetNewDatabasePassword];
+        dbPassword = [self createAndSetNewDatabasePassword];
     }
 
     return [dbPassword dataUsingEncoding:NSUTF8StringEncoding];

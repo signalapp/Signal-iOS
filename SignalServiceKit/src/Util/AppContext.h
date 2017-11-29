@@ -11,9 +11,16 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 - (BOOL)isMainApp;
 - (BOOL)isMainAppAndActive;
 
-// Is a NOOP if isMainApp is NO.
+// Should only be called if isMainApp is YES.
+//
+// In general, isMainAppAndActive will probably yield more readable code.
+- (UIApplicationState)mainApplicationState;
+
+// Should start a background task if isMainApp is YES.
+// Should just return UIBackgroundTaskInvalid if isMainApp is NO.
 - (UIBackgroundTaskIdentifier)beginBackgroundTaskWithExpirationHandler:
     (BackgroundTaskExpirationHandler)expirationHandler;
+// Should be a NOOP if isMainApp is NO.
 - (void)endBackgroundTask:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier;
 
 // Should only be called if isMainApp is YES.

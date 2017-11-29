@@ -18,6 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
 }
 
+- (UIApplicationState)mainApplicationState
+{
+    return [UIApplication sharedApplication].applicationState;
+}
+
 - (UIBackgroundTaskIdentifier)beginBackgroundTaskWithExpirationHandler:
     (BackgroundTaskExpirationHandler)expirationHandler
 {
