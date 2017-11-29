@@ -25,6 +25,7 @@
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
 #import <SignalMessaging/SignalMessaging.h>
+#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -50,7 +51,7 @@ static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewContr
 static NSString *const kURLSchemeSGNLKey                = @"sgnl";
 static NSString *const kURLHostVerifyPrefix             = @"verify";
 
-@interface AppDelegate ()
+@interface AppDelegate () <AppContext>
 
 @property (nonatomic) UIWindow *screenProtectionWindow;
 @property (nonatomic) OWSContactsSyncing *contactsSyncing;
@@ -89,6 +90,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+    // This should be the first thing we do.
+    SetCurrentAppContext(self);
+
     BOOL loggingIsEnabled;
 #ifdef DEBUG
     // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
@@ -966,6 +971,24 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
+}
+
+#pragma mark - AppContext
+
+- (BOOL)isMainApp
+{
+    return YES;
+}
+
+- (BOOL)isMainAppAndActive
+{
+    return [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
+}
+
+- (UIBackgroundTaskIdentifier)beginBackgroundTaskWithExpirationHandler:
+    (BackgroundTaskExpirationHandler)expirationHandler
+{
+    return [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:expirationHandler];
 }
 
 @end
