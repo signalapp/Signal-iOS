@@ -53,8 +53,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if ([fileManager fileExistsAtPath:newFilePath]) {
-        OWSFail(
-            @"%@ Can't move file from %@ to %@; destination already exists.", self.logTag, oldFilePath, newFilePath);
+        OWSFail(@"%@ Can't move file or directory from %@ to %@; destination already exists.",
+            self.logTag,
+            oldFilePath,
+            newFilePath);
         return;
     }
     
