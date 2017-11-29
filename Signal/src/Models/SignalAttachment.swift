@@ -14,6 +14,24 @@ enum SignalAttachmentError: Error {
     case invalidFileFormat
 }
 
+extension String {
+    var filenameWithoutExtension: String {
+        return (self as NSString).deletingPathExtension
+    }
+
+    var fileExtension: String? {
+        return (self as NSString).pathExtension
+    }
+
+    func appendingFileExtension(_ fileExtension: String) -> String {
+        guard let result = (self as NSString).appendingPathExtension(fileExtension) else {
+            owsFail("Failed to append file extension: \(fileExtension) to string: \(self)")
+            return self
+        }
+        return result
+    }
+}
+
 extension SignalAttachmentError: LocalizedError {
     public var errorDescription: String {
         switch self {
@@ -484,6 +502,7 @@ class SignalAttachment: NSObject {
                 attachment.error = .fileSizeTooLarge
                 return attachment
             }
+
             // Never re-encode animated images (i.e. GIFs) as JPEGs.
             Logger.verbose("\(TAG) Sending raw \(attachment.mimeType) to retain any animation")
             return attachment
@@ -495,6 +514,25 @@ class SignalAttachment: NSObject {
             attachment.cachedImage = image
 
             if isInputImageValidOutputImage(image: image, dataSource: dataSource, dataUTI: dataUTI) {
+                if let sourceFilename = dataSource.sourceFilename,
+                   let sourceFileExtension = sourceFilename.fileExtension,
+                   ["heic", "heif"].contains(sourceFileExtension.lowercased()) {
+
+                    // If a .heic file actually contains jpeg data, update the extension to match.
+                    //
+                    // Here's how that can happen:
+                    // In iOS11, the Photos.app records photos with HEIC UTIType, with the .HEIC extension.
+                    // Since HEIC isn't a valid output format for Signal, we'll detect that and convert to JPEG,
+                    // updating the extension as well. No problem.
+                    // However the problem comes in when you edit an HEIC image in Photos.app - the image is saved
+                    // in the Photos.app as a JPEG, but retains the (now incongruous) HEIC extension in the filename.
+                    assert(dataUTI == kUTTypeJPEG as String)
+                    Logger.verbose("\(self.TAG) changing extension: \(sourceFileExtension) to match jpg uti type")
+
+                    let baseFilename = sourceFilename.filenameWithoutExtension
+                    dataSource.sourceFilename = baseFilename.appendingFileExtension("jpg")
+                }
+
                 Logger.verbose("\(TAG) Sending raw \(attachment.mimeType)")
                 return attachment
             }
@@ -579,7 +617,10 @@ class SignalAttachment: NSObject {
                 attachment.error = .couldNotConvertToJpeg
                 return attachment
             }
-            dataSource.sourceFilename = filename
+
+            let baseFilename = filename?.filenameWithoutExtension
+            let jpgFilename = baseFilename?.appendingFileExtension("jpg")
+            dataSource.sourceFilename = jpgFilename
 
             if UInt(jpgImageData.count) <= kMaxFileSizeImage {
                 let recompressedAttachment = SignalAttachment(dataSource : dataSource, dataUTI: kUTTypeJPEG as String)
