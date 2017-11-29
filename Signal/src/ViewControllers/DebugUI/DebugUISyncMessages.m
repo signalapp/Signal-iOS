@@ -8,7 +8,7 @@
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
-#import <25519/Randomness.h>
+#import <Curve25519Kit/Randomness.h>
 #import <AFNetworking/AFNetworking.h>
 #import <AxolotlKit/PreKeyBundle.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>

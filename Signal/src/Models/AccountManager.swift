@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SignalServiceKit
 
 /**
  * Signal is actually two services - textSecure for messages and red phone (for calls). 

@@ -225,15 +225,17 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     AssertIsOnMainThread();
     OWSAssert(self.backgroundTaskIdentifier == UIBackgroundTaskInvalid);
 
-    self.backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-        DDLogWarn(@"%@ Timed out while in background trying to send message: %@", self.logTag, self.message);
-        [self endBackgroundTask];
-    }];
+    // FIXME SHARINGEXTENSION
+    //    self.backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+    //        DDLogWarn(@"%@ Timed out while in background trying to send message: %@", self.logTag, self.message);
+    //        [self endBackgroundTask];
+    //    }];
 }
 
 - (void)endBackgroundTask
 {
-    [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTaskIdentifier];
+    // FIXME SHARINGEXTENSION
+    //    [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTaskIdentifier];
 }
 
 - (void)setBackgroundTaskIdentifier:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier
@@ -263,7 +265,9 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 {
     // Should call `startBackgroundTask` before enqueuing the operation
     // to ensure we don't get suspended before the operation completes.
-    OWSAssert(self.backgroundTaskIdentifier != UIBackgroundTaskInvalid);
+
+    // FIXME SHARINGEXTENSION
+    // OWSAssert(self.backgroundTaskIdentifier != UIBackgroundTaskInvalid);
 
     [self willChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
     self.operationState = OWSSendMessageOperationStateExecuting;
@@ -454,7 +458,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         dispatch_async(dispatch_get_main_queue(), ^{
             // We call `startBackgroundTask` here to prevent our app from suspending while being backgrounded
             // until the operation is completed - at which point the OWSSendMessageOperation ends it's background task.
-            [sendMessageOperation startBackgroundTask];
+
+            // FIXME SHARINGEXTENSION
+            //            [sendMessageOperation startBackgroundTask];
 
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];

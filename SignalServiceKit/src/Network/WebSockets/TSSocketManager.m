@@ -120,7 +120,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     }
     self.hasObservedNotifications = YES;
 
-    self.appIsActive = [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
+    //    // FIXME SHARINGEXTENSION
+    //    self.appIsActive = [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
+    self.appIsActive = YES;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
@@ -545,15 +547,16 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         // Additionally, we want the reconnect timer to work in the background too.
         [[NSRunLoop mainRunLoop] addTimer:self.backgroundKeepAliveTimer forMode:NSDefaultRunLoopMode];
 
-        self.fetchingTaskIdentifier =
-        [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            OWSAssert([NSThread isMainThread]);
-
-            DDLogInfo(@"%s background task expired", __PRETTY_FUNCTION__);
-
-            [self clearBackgroundState];
-            [self applyDesiredSocketState];
-        }];
+        // FIXME SHARINGEXTENSION
+        //        self.fetchingTaskIdentifier =
+        //        [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        //            OWSAssert([NSThread isMainThread]);
+        //
+        //            DDLogInfo(@"%s background task expired", __PRETTY_FUNCTION__);
+        //
+        //            [self clearBackgroundState];
+        //            [self applyDesiredSocketState];
+        //        }];
     } else {
         OWSAssert(self.backgroundKeepAliveUntilDate);
         OWSAssert(self.backgroundKeepAliveTimer);
@@ -620,7 +623,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     self.backgroundKeepAliveTimer = nil;
 
     if (self.fetchingTaskIdentifier != UIBackgroundTaskInvalid) {
-        [[UIApplication sharedApplication] endBackgroundTask:self.fetchingTaskIdentifier];
+        // FIXME SHARINGEXTENSION
+        //        [[UIApplication sharedApplication] endBackgroundTask:self.fetchingTaskIdentifier];
         self.fetchingTaskIdentifier = UIBackgroundTaskInvalid;
     }
 }

@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "SRWebSocket.h"
+#import <SocketRocket/SRWebSocket.h>
 
 static void *SocketManagerStateObservationContext = &SocketManagerStateObservationContext;
 

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 enum CallState: String {
     case idle

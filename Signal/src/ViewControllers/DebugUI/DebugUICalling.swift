@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 class DebugUICalling: DebugUIPage {
 

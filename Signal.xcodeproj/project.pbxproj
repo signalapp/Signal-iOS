@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
 		3400C7931EAF89CD008A8584 /* SendExternalFileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3400C7911EAF89CD008A8584 /* SendExternalFileViewController.m */; };
 		3400C7961EAF99F4008A8584 /* SelectThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3400C7951EAF99F4008A8584 /* SelectThreadViewController.m */; };
 		3400C7991EAFB772008A8584 /* ThreadViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3400C7981EAFB772008A8584 /* ThreadViewHelper.m */; };
@@ -160,6 +161,14 @@
 		452EA09E1EA7ABE00078744B /* AttachmentPointerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EA09D1EA7ABE00078744B /* AttachmentPointerView.swift */; };
 		452ECA4D1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */; };
 		452ECA4E1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */; };
+		4535186B1FC635DD00210559 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4535186A1FC635DD00210559 /* ShareViewController.swift */; };
+		4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4535186C1FC635DD00210559 /* MainInterface.storyboard */; };
+		453518721FC635DD00210559 /* SignalShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 453518681FC635DD00210559 /* SignalShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		453518961FC63DBF00210559 /* SignalMessaging.h in Headers */ = {isa = PBXBuildFile; fileRef = 453518941FC63DBF00210559 /* SignalMessaging.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		453518991FC63DBF00210559 /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
+		4535189A1FC63DBF00210559 /* SignalMessaging.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		453518A11FC63DD500210559 /* StorageCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453518A01FC63DD500210559 /* StorageCoordinator.swift */; };
+		453518A21FC63E2900210559 /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
 		45360B8D1F9521F800FA666C /* Searcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45360B8C1F9521F800FA666C /* Searcher.swift */; };
 		45360B8E1F9521F800FA666C /* Searcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45360B8C1F9521F800FA666C /* Searcher.swift */; };
 		45360B901F9527DA00FA666C /* SearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45360B8F1F9527DA00FA666C /* SearcherTest.swift */; };
@@ -212,6 +221,14 @@
 		4585C4601ED4FD0400896AEA /* OWS104CreateRecipientIdentities.m in Sources */ = {isa = PBXBuildFile; fileRef = 4585C45F1ED4FD0400896AEA /* OWS104CreateRecipientIdentities.m */; };
 		4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */; };
 		458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458967101DC117CC00E9DD21 /* AccountManagerTest.swift */; };
+		458D51481FCCD82500B5BC53 /* GSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51401FCCD82400B5BC53 /* GSR4.crt */; };
+		458D51491FCCD82500B5BC53 /* GTSR3.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51411FCCD82400B5BC53 /* GTSR3.crt */; };
+		458D514A1FCCD82500B5BC53 /* GIAG2.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51421FCCD82400B5BC53 /* GIAG2.crt */; };
+		458D514B1FCCD82500B5BC53 /* GSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51431FCCD82500B5BC53 /* GSR2.crt */; };
+		458D514C1FCCD82500B5BC53 /* GTSR1.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51441FCCD82500B5BC53 /* GTSR1.crt */; };
+		458D514D1FCCD82500B5BC53 /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = 458D51451FCCD82500B5BC53 /* textsecure.cer */; };
+		458D514E1FCCD82500B5BC53 /* GTSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51461FCCD82500B5BC53 /* GTSR2.crt */; };
+		458D514F1FCCD82500B5BC53 /* GTSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51471FCCD82500B5BC53 /* GTSR4.crt */; };
 		458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458DE9D51DEE3FD00071BB03 /* PeerConnectionClient.swift */; };
 		458DE9D91DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m in Sources */ = {isa = PBXBuildFile; fileRef = 458DE9D81DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m */; };
 		458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */; };
@@ -260,7 +277,6 @@
 		45FBC5C91DF8575700E9B410 /* CallKitCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBC59A1DF8575700E9B410 /* CallKitCallManager.swift */; };
 		45FBC5D11DF8592E00E9B410 /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBC5D01DF8592E00E9B410 /* SignalCall.swift */; };
 		45FBC5D21DF8592E00E9B410 /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBC5D01DF8592E00E9B410 /* SignalCall.swift */; };
-		56EAA22E1901718F78C6DBB4 /* libPods-SignalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B5E7D6C9007F5E5761D79DD /* libPods-SignalTests.a */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		7038632718F70C0700D4A43F /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
@@ -346,7 +362,6 @@
 		B6B1013C196D213F007E3930 /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */; };
 		B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6B226961BE4B7D200860F4D /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
-		B6C6AE551A305ED1006BAF8F /* redphone.cer in Resources */ = {isa = PBXBuildFile; fileRef = B6C6AE531A305ED1006BAF8F /* redphone.cer */; };
 		B6C93C4E199567AD00EDF894 /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C93C4D199567AD00EDF894 /* DebugLogger.m */; };
 		B6DA6B071B8A2F9A00CA6F98 /* AppStoreRating.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DA6B061B8A2F9A00CA6F98 /* AppStoreRating.m */; };
 		B6F509971AA53F760068F56A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
@@ -354,6 +369,8 @@
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B97940271832BD2400BD66CB /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B97940261832BD2400BD66CB /* UIUtil.m */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
+		BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D17BB5C25D615AB49813100C /* Pods_Signal.framework */; };
+		CC875800737563D6891B741D /* Pods_SignalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */; };
 		D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
 		D202868316DBE0FC009068E9 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */; };
@@ -374,7 +391,6 @@
 		E1370BE418A0686C00826894 /* outring.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40B18A05754001A532A /* outring.mp3 */; };
 		E1370BE518A0686C00826894 /* r.caf in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40C18A05754001A532A /* r.caf */; };
 		E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40D18A05754001A532A /* sonarping.mp3 */; };
-		E32B0699162419B7046BC643 /* libPods-Signal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DB8EE72F8522189E3E2CB45 /* libPods-Signal.a */; };
 		EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
 		FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF371A3393DD00B47253 /* error_white@2x.png */; };
@@ -387,6 +403,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		453518701FC635DD00210559 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 453518671FC635DD00210559;
+			remoteInfo = SignalShareExtension;
+		};
+		453518971FC63DBF00210559 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 453518911FC63DBF00210559;
+			remoteInfo = SignalMessaging;
+		};
 		B6AFCEBA19A93DA60098CFCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
@@ -396,8 +426,34 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		453518771FC635DD00210559 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				453518721FC635DD00210559 /* SignalShareExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4535189F1FC63DBF00210559 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				4535189A1FC63DBF00210559 /* SignalMessaging.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		1B5E7D6C9007F5E5761D79DD /* libPods-SignalTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SignalTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
 		34009B651EC4CB11001D95D1 /* OWSMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMath.h; sourceTree = "<group>"; };
 		3400C7901EAF89CD008A8584 /* SendExternalFileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendExternalFileViewController.h; sourceTree = "<group>"; };
@@ -603,6 +659,7 @@
 		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = views/OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
+		435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		450449371F45EE7D002D1ADA /* NSString+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+OWS.h"; path = "util/NSString+OWS.h"; sourceTree = "<group>"; };
 		450449381F45EE7D002D1ADA /* NSString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+OWS.m"; path = "util/NSString+OWS.m"; sourceTree = "<group>"; };
 		450573FC1E78A06D00615BB4 /* OWS103EnableVideoCalling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWS103EnableVideoCalling.h; path = Migrations/OWS103EnableVideoCalling.h; sourceTree = "<group>"; };
@@ -633,6 +690,14 @@
 		452D1EE71DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MesssagesBubblesSizeCalculatorTest.swift; path = Models/MesssagesBubblesSizeCalculatorTest.swift; sourceTree = "<group>"; };
 		452EA09D1EA7ABE00078744B /* AttachmentPointerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentPointerView.swift; sourceTree = "<group>"; };
 		452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MessageFetcherJob.swift; path = Jobs/MessageFetcherJob.swift; sourceTree = "<group>"; };
+		453518681FC635DD00210559 /* SignalShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SignalShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		4535186A1FC635DD00210559 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		4535186D1FC635DD00210559 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		4535186F1FC635DD00210559 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		453518921FC63DBF00210559 /* SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		453518941FC63DBF00210559 /* SignalMessaging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SignalMessaging.h; sourceTree = "<group>"; };
+		453518951FC63DBF00210559 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		453518A01FC63DD500210559 /* StorageCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageCoordinator.swift; sourceTree = "<group>"; };
 		45360B8C1F9521F800FA666C /* Searcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Searcher.swift; sourceTree = "<group>"; };
 		45360B8F1F9527DA00FA666C /* SearcherTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearcherTest.swift; sourceTree = "<group>"; };
 		45387B021E36D650005D00B3 /* OWS102MoveLoggingPreferenceToUserDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWS102MoveLoggingPreferenceToUserDefaults.h; path = Migrations/OWS102MoveLoggingPreferenceToUserDefaults.h; sourceTree = "<group>"; };
@@ -682,6 +747,14 @@
 		4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafetyNumberConfirmationAlert.swift; sourceTree = "<group>"; };
 		4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SignalTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		458967101DC117CC00E9DD21 /* AccountManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountManagerTest.swift; path = Models/AccountManagerTest.swift; sourceTree = "<group>"; };
+		458D51401FCCD82400B5BC53 /* GSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GSR4.crt; sourceTree = "<group>"; };
+		458D51411FCCD82400B5BC53 /* GTSR3.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR3.crt; sourceTree = "<group>"; };
+		458D51421FCCD82400B5BC53 /* GIAG2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GIAG2.crt; sourceTree = "<group>"; };
+		458D51431FCCD82500B5BC53 /* GSR2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GSR2.crt; sourceTree = "<group>"; };
+		458D51441FCCD82500B5BC53 /* GTSR1.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR1.crt; sourceTree = "<group>"; };
+		458D51451FCCD82500B5BC53 /* textsecure.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = textsecure.cer; sourceTree = "<group>"; };
+		458D51461FCCD82500B5BC53 /* GTSR2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR2.crt; sourceTree = "<group>"; };
+		458D51471FCCD82500B5BC53 /* GTSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR4.crt; sourceTree = "<group>"; };
 		458DE9D51DEE3FD00071BB03 /* PeerConnectionClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeerConnectionClient.swift; sourceTree = "<group>"; };
 		458DE9D71DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSWebRTCDataProtos.pb.h; sourceTree = "<group>"; };
 		458DE9D81DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSWebRTCDataProtos.pb.m; sourceTree = "<group>"; };
@@ -725,9 +798,11 @@
 		45F659811E1BE77000444429 /* NonCallKitCallUIAdaptee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NonCallKitCallUIAdaptee.swift; sourceTree = "<group>"; };
 		45FBC59A1DF8575700E9B410 /* CallKitCallManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallKitCallManager.swift; sourceTree = "<group>"; };
 		45FBC5D01DF8592E00E9B410 /* SignalCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalCall.swift; sourceTree = "<group>"; };
+		69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		7038632318F70C0700D4A43F /* CryptoTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoTools.h; sourceTree = "<group>"; };
 		7038632418F70C0700D4A43F /* CryptoTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptoTools.m; sourceTree = "<group>"; };
+		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		768A1A2A17FC9CD300E00ED8 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -751,7 +826,6 @@
 		76EB04FB18170B33006006FC /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
 		76EB052E18170B33006006FC /* ContactTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
 		76EB052F18170B33006006FC /* ContactTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewCell.m; sourceTree = "<group>"; };
-		7DB8EE72F8522189E3E2CB45 /* libPods-Signal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Signal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8981C8F64D94D3C52EB67A2C /* Pods-SignalTests.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.test.xcconfig"; sourceTree = "<group>"; };
 		954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsPickerTest.swift; sourceTree = "<group>"; };
 		A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -843,7 +917,6 @@
 		B6B9ECFA198B31BA00C620D3 /* PushManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = PushManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B6B9ECFB198B31BA00C620D3 /* PushManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PushManager.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6BC3D0C1AA544B100C2907F /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = translations/da.lproj/Localizable.strings; sourceTree = "<group>"; };
-		B6C6AE531A305ED1006BAF8F /* redphone.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = redphone.cer; sourceTree = "<group>"; };
 		B6C93C4C199567AD00EDF894 /* DebugLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugLogger.h; sourceTree = "<group>"; };
 		B6C93C4D199567AD00EDF894 /* DebugLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugLogger.m; sourceTree = "<group>"; };
 		B6DA6B051B8A2F9A00CA6F98 /* AppStoreRating.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppStoreRating.h; sourceTree = "<group>"; };
@@ -855,6 +928,7 @@
 		B97940251832BD2400BD66CB /* UIUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIUtil.h; sourceTree = "<group>"; };
 		B97940261832BD2400BD66CB /* UIUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIUtil.m; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		D17BB5C25D615AB49813100C /* Pods_Signal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Signal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		D221A089169C9E5E00537ABF /* Signal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Signal.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -893,6 +967,22 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		453518651FC635DD00210559 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				453518A21FC63E2900210559 /* SignalMessaging.framework in Frameworks */,
+				2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4535188E1FC63DBF00210559 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D221A086169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -910,6 +1000,7 @@
 				FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */,
 				70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */,
 				B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */,
+				453518991FC63DBF00210559 /* SignalMessaging.framework in Frameworks */,
 				76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */,
 				768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */,
 				A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */,
@@ -923,7 +1014,7 @@
 				D221A090169C9E5E00537ABF /* Foundation.framework in Frameworks */,
 				D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */,
 				D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */,
-				E32B0699162419B7046BC643 /* libPods-Signal.a in Frameworks */,
+				BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -946,7 +1037,7 @@
 				D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */,
 				D221A0AD169C9E5F00537ABF /* UIKit.framework in Frameworks */,
 				D221A0AE169C9E5F00537ABF /* Foundation.framework in Frameworks */,
-				56EAA22E1901718F78C6DBB4 /* libPods-SignalTests.a in Frameworks */,
+				CC875800737563D6891B741D /* Pods_SignalTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1229,6 +1320,26 @@
 				450DF2081E0DD2C6003D14BE /* UserNotificationsAdaptee.swift */,
 			);
 			name = Notifications;
+			sourceTree = "<group>";
+		};
+		453518691FC635DD00210559 /* SignalShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				4535186A1FC635DD00210559 /* ShareViewController.swift */,
+				4535186C1FC635DD00210559 /* MainInterface.storyboard */,
+				4535186F1FC635DD00210559 /* Info.plist */,
+			);
+			path = SignalShareExtension;
+			sourceTree = "<group>";
+		};
+		453518931FC63DBF00210559 /* SignalMessaging */ = {
+			isa = PBXGroup;
+			children = (
+				453518941FC63DBF00210559 /* SignalMessaging.h */,
+				453518951FC63DBF00210559 /* Info.plist */,
+				453518A01FC63DD500210559 /* StorageCoordinator.swift */,
+			);
+			path = SignalMessaging;
 			sourceTree = "<group>";
 		};
 		45464DB81DFA03D8001D3FD6 /* Signaling */ = {
@@ -1542,6 +1653,9 @@
 				E85DB184824BA9DC302EC8B3 /* Pods-SignalTests.app store release.xcconfig */,
 				1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */,
 				8981C8F64D94D3C52EB67A2C /* Pods-SignalTests.test.xcconfig */,
+				69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */,
+				1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */,
+				435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -1667,7 +1781,14 @@
 		B6C6AE521A305ED1006BAF8F /* Certificates */ = {
 			isa = PBXGroup;
 			children = (
-				B6C6AE531A305ED1006BAF8F /* redphone.cer */,
+				458D51421FCCD82400B5BC53 /* GIAG2.crt */,
+				458D51431FCCD82500B5BC53 /* GSR2.crt */,
+				458D51401FCCD82400B5BC53 /* GSR4.crt */,
+				458D51441FCCD82500B5BC53 /* GTSR1.crt */,
+				458D51461FCCD82500B5BC53 /* GTSR2.crt */,
+				458D51411FCCD82400B5BC53 /* GTSR3.crt */,
+				458D51471FCCD82500B5BC53 /* GTSR4.crt */,
+				458D51451FCCD82500B5BC53 /* textsecure.cer */,
 			);
 			path = Certificates;
 			sourceTree = "<group>";
@@ -1677,6 +1798,8 @@
 			children = (
 				D221A093169C9E5E00537ABF /* Signal */,
 				45F170B01E2F0A35003FC1F2 /* Libraries */,
+				453518691FC635DD00210559 /* SignalShareExtension */,
+				453518931FC63DBF00210559 /* SignalMessaging */,
 				D221A08C169C9E5E00537ABF /* Frameworks */,
 				D221A08A169C9E5E00537ABF /* Products */,
 				9404664EC513585B05DF1350 /* Pods */,
@@ -1688,6 +1811,8 @@
 			children = (
 				D221A089169C9E5E00537ABF /* Signal.app */,
 				D221A0AA169C9E5F00537ABF /* SignalTests.xctest */,
+				453518681FC635DD00210559 /* SignalShareExtension.appex */,
+				453518921FC63DBF00210559 /* SignalMessaging.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1726,8 +1851,9 @@
 				D221A08D169C9E5E00537ABF /* UIKit.framework */,
 				D221A08F169C9E5E00537ABF /* Foundation.framework */,
 				D221A091169C9E5E00537ABF /* CoreGraphics.framework */,
-				7DB8EE72F8522189E3E2CB45 /* libPods-Signal.a */,
-				1B5E7D6C9007F5E5761D79DD /* libPods-SignalTests.a */,
+				D17BB5C25D615AB49813100C /* Pods_Signal.framework */,
+				0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */,
+				748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1802,7 +1928,55 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		4535188F1FC63DBF00210559 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				453518961FC63DBF00210559 /* SignalMessaging.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		453518671FC635DD00210559 /* SignalShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 453518761FC635DD00210559 /* Build configuration list for PBXNativeTarget "SignalShareExtension" */;
+			buildPhases = (
+				16FA77C536F8C08C5046FA6B /* [CP] Check Pods Manifest.lock */,
+				453518641FC635DD00210559 /* Sources */,
+				453518651FC635DD00210559 /* Frameworks */,
+				453518661FC635DD00210559 /* Resources */,
+				7B85A55670DC3D49AFBF7359 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SignalShareExtension;
+			productName = SignalShareExtension;
+			productReference = 453518681FC635DD00210559 /* SignalShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		453518911FC63DBF00210559 /* SignalMessaging */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4535189E1FC63DBF00210559 /* Build configuration list for PBXNativeTarget "SignalMessaging" */;
+			buildPhases = (
+				4535188D1FC63DBF00210559 /* Sources */,
+				4535188E1FC63DBF00210559 /* Frameworks */,
+				4535188F1FC63DBF00210559 /* Headers */,
+				453518901FC63DBF00210559 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SignalMessaging;
+			productName = SignalMessaging;
+			productReference = 453518921FC63DBF00210559 /* SignalMessaging.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		D221A088169C9E5E00537ABF /* Signal */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D221A0BC169C9E5F00537ABF /* Build configuration list for PBXNativeTarget "Signal" */;
@@ -1815,10 +1989,14 @@
 				59C9DBA462715B5C999FFB02 /* [CP] Embed Pods Frameworks */,
 				3465F381B1856CC06933B3A8 /* [CP] Copy Pods Resources */,
 				451DE9EE1DC1546A00810E42 /* [Carthage] Copy Frameworks */,
+				453518771FC635DD00210559 /* Embed App Extensions */,
+				4535189F1FC63DBF00210559 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				453518711FC635DD00210559 /* PBXTargetDependency */,
+				453518981FC63DBF00210559 /* PBXTargetDependency */,
 			);
 			name = Signal;
 			productName = RedPhone;
@@ -1853,11 +2031,22 @@
 		D221A080169C9E5E00537ABF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0720;
+				LastSwiftUpdateCheck = 0920;
 				LastTestingUpgradeCheck = 0600;
 				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = "Open Whisper Systems";
 				TargetAttributes = {
+					453518671FC635DD00210559 = {
+						CreatedOnToolsVersion = 9.2;
+						DevelopmentTeam = U68MSDN6DR;
+						ProvisioningStyle = Automatic;
+					};
+					453518911FC63DBF00210559 = {
+						CreatedOnToolsVersion = 9.2;
+						DevelopmentTeam = U68MSDN6DR;
+						LastSwiftMigration = 0920;
+						ProvisioningStyle = Automatic;
+					};
 					D221A088169C9E5E00537ABF = {
 						DevelopmentTeam = U68MSDN6DR;
 						LastSwiftMigration = 0800;
@@ -1951,20 +2140,39 @@
 			targets = (
 				D221A088169C9E5E00537ABF /* Signal */,
 				D221A0A9169C9E5F00537ABF /* SignalTests */,
+				453518671FC635DD00210559 /* SignalShareExtension */,
+				453518911FC63DBF00210559 /* SignalMessaging */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		453518661FC635DD00210559 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		453518901FC63DBF00210559 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D221A087169C9E5E00537ABF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				AD41D7B61A6F6F0600241130 /* play_button@2x.png in Resources */,
 				AD83FF3F1A73426500B5C81A /* audio_pause_button_blue.png in Resources */,
+				458D514E1FCCD82500B5BC53 /* GTSR2.crt in Resources */,
 				34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */,
 				A5509ECA1A69AB8B00ABA4BC /* Main.storyboard in Resources */,
 				AD83FF421A73426500B5C81A /* audio_play_button.png in Resources */,
+				458D51491FCCD82500B5BC53 /* GTSR3.crt in Resources */,
 				34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */,
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
@@ -1975,14 +2183,17 @@
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
 				B10C9B611A7049EC00ECA2BF /* play_icon.png in Resources */,
+				458D514D1FCCD82500B5BC53 /* textsecure.cer in Resources */,
 				AD83FF401A73426500B5C81A /* audio_pause_button_blue@2x.png in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
 				4517642A1DE939FD00EDB8B9 /* ContactCell.xib in Resources */,
 				AD83FF431A73426500B5C81A /* audio_play_button@2x.png in Resources */,
+				458D51481FCCD82500B5BC53 /* GSR4.crt in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
 				34B3F8781E8DF1700035BE1A /* ContactsPicker.xib in Resources */,
 				B633C5C31A1D190B0059AC12 /* mute_off@2x.png in Resources */,
 				AD83FF411A73426500B5C81A /* audio_play_button_blue@2x.png in Resources */,
+				458D514B1FCCD82500B5BC53 /* GSR2.crt in Resources */,
 				FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */,
 				E1370BE018A0686600826894 /* busy.mp3 in Resources */,
 				E1370BE218A0686C00826894 /* failure.mp3 in Resources */,
@@ -1993,11 +2204,13 @@
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				E1370BE418A0686C00826894 /* outring.mp3 in Resources */,
 				B10C9B601A7049EC00ECA2BF /* pause_icon@2x.png in Resources */,
-				B6C6AE551A305ED1006BAF8F /* redphone.cer in Resources */,
+				458D514C1FCCD82500B5BC53 /* GTSR1.crt in Resources */,
 				E1370BE518A0686C00826894 /* r.caf in Resources */,
 				FC9120411A39EFB70074545C /* qr@2x.png in Resources */,
+				458D514A1FCCD82500B5BC53 /* GIAG2.crt in Resources */,
 				E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */,
 				B10C9B5F1A7049EC00ECA2BF /* pause_icon.png in Resources */,
+				458D514F1FCCD82500B5BC53 /* GTSR4.crt in Resources */,
 				AD83FF471A73428300B5C81A /* audio_play_button_blue.png in Resources */,
 				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
 				AD83FF451A73426500B5C81A /* audio_pause_button@2x.png in Resources */,
@@ -2031,6 +2244,24 @@
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-Signal-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		16FA77C536F8C08C5046FA6B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SignalShareExtension-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2124,9 +2355,54 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Signal/Pods-Signal-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
+				"${BUILT_PRODUCTS_DIR}/ATAppUpdater/ATAppUpdater.framework",
+				"${BUILT_PRODUCTS_DIR}/AxolotlKit/AxolotlKit.framework",
+				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
+				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
+				"${PODS_ROOT}/GRKOpenSSLFramework/OpenSSL-iOS/bin/openssl.framework",
+				"${BUILT_PRODUCTS_DIR}/HKDFKit/HKDFKit.framework",
+				"${BUILT_PRODUCTS_DIR}/JSQMessagesViewController/JSQMessagesViewController.framework",
+				"${BUILT_PRODUCTS_DIR}/JSQSystemSoundPlayer/JSQSystemSoundPlayer.framework",
+				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
+				"${BUILT_PRODUCTS_DIR}/ProtocolBuffers/ProtocolBuffers.framework",
+				"${BUILT_PRODUCTS_DIR}/PureLayout/PureLayout.framework",
+				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
+				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
+				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
+				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
+				"${BUILT_PRODUCTS_DIR}/TwistedOakCollapsingFutures/TwistedOakCollapsingFutures.framework",
+				"${BUILT_PRODUCTS_DIR}/UnionFind/UnionFind.framework",
+				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
+				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
+				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ATAppUpdater.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AxolotlKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HKDFKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQMessagesViewController.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQSystemSoundPlayer.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ProtocolBuffers.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PureLayout.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwistedOakCollapsingFutures.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UnionFind.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2149,6 +2425,32 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7B85A55670DC3D49AFBF7359 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension-resources.sh",
+				"${PODS_ROOT}/SAMKeychain/Support/SAMKeychain.bundle",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/textsecure.cer",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GIAG2.crt",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GSR2.crt",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GSR4.crt",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GTSR1.crt",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GTSR2.crt",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GTSR3.crt",
+				"${PODS_ROOT}/../SignalServiceKit/src/Security/PinningCertificate/GTSR4.crt",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B4E9B04E862FB64FC9A8F79B /* [CP] Embed Pods Frameworks */ = {
@@ -2184,6 +2486,22 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		453518641FC635DD00210559 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4535186B1FC635DD00210559 /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4535188D1FC63DBF00210559 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				453518A11FC63DD500210559 /* StorageCoordinator.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D221A085169C9E5E00537ABF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2489,6 +2807,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		453518711FC635DD00210559 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 453518671FC635DD00210559 /* SignalShareExtension */;
+			targetProxy = 453518701FC635DD00210559 /* PBXContainerItemProxy */;
+		};
+		453518981FC63DBF00210559 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 453518911FC63DBF00210559 /* SignalMessaging */;
+			targetProxy = 453518971FC63DBF00210559 /* PBXContainerItemProxy */;
+		};
 		B6AFCEBB19A93DA60098CFCB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D221A088169C9E5E00537ABF /* Signal */;
@@ -2497,6 +2825,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		4535186C1FC635DD00210559 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4535186D1FC635DD00210559 /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
 		B6F509951AA53F760068F56A /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -2627,6 +2963,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Signal/Signal.entitlements;
@@ -2741,6 +3078,352 @@
 				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
 			};
 			name = Test;
+		};
+		453518731FC635DD00210559 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = U68MSDN6DR;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = SignalShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = org.whispersystems.signal.SignalShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		453518741FC635DD00210559 /* Test */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = U68MSDN6DR;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = SignalShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.whispersystems.signal.SignalShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Test;
+		};
+		453518751FC635DD00210559 /* App Store Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = U68MSDN6DR;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = SignalShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.whispersystems.signal.SignalShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "App Store Release";
+		};
+		4535189B1FC63DBF00210559 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = U68MSDN6DR;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = SignalMessaging/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = org.whispersystems.signal.SignalMessaging;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		4535189C1FC63DBF00210559 /* Test */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = U68MSDN6DR;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = SignalMessaging/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.whispersystems.signal.SignalMessaging;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Test;
+		};
+		4535189D1FC63DBF00210559 /* App Store Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = U68MSDN6DR;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = SignalMessaging/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.whispersystems.signal.SignalMessaging;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = "App Store Release";
 		};
 		D221A0BA169C9E5F00537ABF /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -2883,6 +3566,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Signal/Signal.entitlements;
@@ -2943,6 +3627,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DF728B4B438716EAF95CEC18 /* Pods-Signal.app store release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Signal/Signal.entitlements;
@@ -3117,6 +3802,26 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		453518761FC635DD00210559 /* Build configuration list for PBXNativeTarget "SignalShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				453518731FC635DD00210559 /* Debug */,
+				453518741FC635DD00210559 /* Test */,
+				453518751FC635DD00210559 /* App Store Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "App Store Release";
+		};
+		4535189E1FC63DBF00210559 /* Build configuration list for PBXNativeTarget "SignalMessaging" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4535189B1FC63DBF00210559 /* Debug */,
+				4535189C1FC63DBF00210559 /* Test */,
+				4535189D1FC63DBF00210559 /* App Store Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "App Store Release";
+		};
 		D221A083169C9E5E00537ABF /* Build configuration list for PBXProject "Signal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -63,7 +63,7 @@
 #import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
 #import <JSQMessagesViewController/JSQSystemSoundPlayer+JSQMessages.h>
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
-#import <JSQSystemSoundPlayer.h>
+#import <JSQSystemSoundPlayer/JSQSystemSoundPlayer.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/ContactsUpdater.h>

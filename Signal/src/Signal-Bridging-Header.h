@@ -48,7 +48,7 @@
 #import <JSQMessagesViewController/JSQMessagesBubbleImageFactory.h>
 #import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
-#import <JSQSystemSoundPlayer.h>
+#import <JSQSystemSoundPlayer/JSQSystemSoundPlayer.h>
 #import <PureLayout/PureLayout.h>
 #import <Reachability/Reachability.h>
 #import <SignalServiceKit/AppVersion.h>

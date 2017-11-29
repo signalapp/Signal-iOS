@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SignalServiceKit
 
 class OWS106EnsureProfileComplete: OWSDatabaseMigration {
 

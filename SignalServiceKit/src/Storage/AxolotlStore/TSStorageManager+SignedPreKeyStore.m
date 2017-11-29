@@ -7,7 +7,7 @@
 #import "TSStorageManager+SignedPreKeyStore.h"
 #import "TSStorageManager+keyFromIntLong.h"
 
-#import <25519/Ed25519.h>
+#import <Curve25519Kit/Ed25519.h>
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/NSData+keyVersionByte.h>
 

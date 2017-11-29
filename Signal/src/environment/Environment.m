@@ -5,7 +5,6 @@
 #import "Environment.h"
 #import "ConversationViewController.h"
 #import "DebugLogger.h"
-#import "FunctionalUtil.h"
 #import "HomeViewController.h"
 #import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"

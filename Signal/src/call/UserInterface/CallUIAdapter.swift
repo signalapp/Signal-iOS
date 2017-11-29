@@ -5,6 +5,7 @@
 import Foundation
 import PromiseKit
 import CallKit
+import SignalServiceKit
 import WebRTC
 
 protocol CallUIAdaptee {

@@ -19,7 +19,7 @@
 #import "TSStorageManager+sessionStore.h"
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
-#import <25519/Curve25519.h>
+#import <Curve25519Kit/Curve25519.h>
 #import <AxolotlKit/NSData+keyVersionByte.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -443,12 +443,13 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     OWSAssert([NSThread isMainThread]);
 
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-        // Only try to sync if the app is active to avoid interfering with startup.
-        //
-        // applicationDidBecomeActive: will try to sync again when the app becomes active.
-        return;
-    }
+    // FIXME SHARINGEXTENSION
+    //    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+    //        // Only try to sync if the app is active to avoid interfering with startup.
+    //        //
+    //        // applicationDidBecomeActive: will try to sync again when the app becomes active.
+    //        return;
+    //    }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)

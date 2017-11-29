@@ -27,19 +27,10 @@ An Objective-C library for communicating with the Signal messaging service.
   s.requires_arc = true
   s.source_files = 'SignalServiceKit/src/**/*.{h,m,mm}'
 
-  s.resources = ['SignalServiceKit/src/Security/PinningCertificate/textsecure.cer',
-                 'SignalServiceKit/src/Security/PinningCertificate/GIAG2.crt',
-                 'SignalServiceKit/src/Security/PinningCertificate/GSR2.crt',
-                 'SignalServiceKit/src/Security/PinningCertificate/GSR4.crt',
-                 'SignalServiceKit/src/Security/PinningCertificate/GTSR1.crt',
-                 'SignalServiceKit/src/Security/PinningCertificate/GTSR2.crt',
-                 'SignalServiceKit/src/Security/PinningCertificate/GTSR3.crt',
-                 'SignalServiceKit/src/Security/PinningCertificate/GTSR4.crt']
-
   s.prefix_header_file = 'SignalServiceKit/src/TSPrefix.h'
   s.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
 
-  s.dependency '25519'
+  s.dependency 'Curve25519Kit'
   s.dependency 'CocoaLumberjack'
   s.dependency 'AFNetworking'
   s.dependency 'AxolotlKit'
@@ -47,7 +38,9 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'YapDatabase/SQLCipher', '~> 2.9.3'
   s.dependency 'SocketRocket'
   s.dependency 'libPhoneNumber-iOS'
-  s.dependency 'OpenSSL'
+  # FIXME SHARINGEXTENSION use up-to-date framework compatible OpenSSL
+  #s.dependency 'OpenSSL'
+  s.dependency 'GRKOpenSSLFramework'
   s.dependency 'SAMKeychain'
   s.dependency 'TwistedOakCollapsingFutures'
   s.dependency 'Reachability'
