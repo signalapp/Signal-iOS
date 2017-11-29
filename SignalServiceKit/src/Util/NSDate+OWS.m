@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (uint64_t)ows_millisecondTimeStamp
 {
+    // FIXME SHARINGEXTENSION revert to using chrono if possible
     NSDate *now = [self new];
     return (uint64_t)(now.timeIntervalSince1970 * 1000);
 }
