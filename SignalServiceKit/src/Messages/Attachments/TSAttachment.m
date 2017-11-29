@@ -72,6 +72,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     if (!self) {
         return self;
     }
+    DDLogVerbose(@"%@ init attachment with uniqueId: %@", self.logTag, self.uniqueId);
 
     _contentType = contentType;
     _byteCount = byteCount;

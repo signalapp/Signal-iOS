@@ -526,14 +526,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     void (^successWithDeleteHandler)(void) = ^() {
         successHandler();
 
-        DDLogDebug(@"Removing temporary attachment message.");
+        DDLogDebug(@"%@ Removing successful temporary attachment message with attachment ids: %@",
+            self.logTag,
+            message.attachmentIds);
         [message remove];
     };
 
     void (^failureWithDeleteHandler)(NSError *error) = ^(NSError *error) {
         failureHandler(error);
 
-        DDLogDebug(@"Removing temporary attachment message.");
+        DDLogDebug(@"%@ Removing failed temporary attachment message with attachment ids: %@",
+            self.logTag,
+            message.attachmentIds);
         [message remove];
     };
 
