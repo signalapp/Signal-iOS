@@ -66,7 +66,10 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
                                                object:self.dbConnection.database];
-
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(yapDatabaseModified:)
+                                                 name:YapDatabaseModifiedExternallyNotification
+                                               object:self.dbConnection.database];
 
     self.refreshControl = [UIRefreshControl new];
     [self.refreshControl addTarget:self action:@selector(refreshDevices) forControlEvents:UIControlEventValueChanged];

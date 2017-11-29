@@ -125,6 +125,10 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(yapDatabaseModified:)
+                                                 name:YapDatabaseModifiedExternallyNotification
+                                               object:nil];
 }
 
 - (void)yapDatabaseModified:(NSNotification *)notification
