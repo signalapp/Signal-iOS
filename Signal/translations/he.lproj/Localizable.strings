@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "לא עכשיו";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "אשר/י מספר ביטחון חדש";
+"ACCEPT_NEW_IDENTITY_ACTION" = "קבל מספר בטיחות חדש";
 
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "הוסף";
@@ -203,7 +203,7 @@
 "CALL_LABEL" = "חייג";
 
 /* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Please upgrade to iOS 9 or newer to see remote video.";
+"CALL_REMOTE_VIDEO_DISABLED" = "אנא שדרג אל iOS 9 או גרסה חדשה יותר כדי לראות וידאו מרוחק.";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "אין מענה.";
@@ -221,19 +221,19 @@
 "CALL_USER_ALERT_TITLE" = "לחייג?";
 
 /* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Accept incoming call";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "קבל שיחה נכנסת";
 
 /* Accessibility label for selection the audio source */
-"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Audio";
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "שמע";
 
 /* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline incoming call";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "דחה שיחה נכנסת";
 
 /* Accessibility label for hang up call */
-"CALL_VIEW_HANGUP_LABEL" = "End call";
+"CALL_VIEW_HANGUP_LABEL" = "סיים שיחה";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Mute";
+"CALL_VIEW_MUTE_LABEL" = "השתק";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "ניתן לענות לשיחות ממסך הנעילה ולראות את השם ומספר הטלפון של שיחות נכנסות ע״י שינוי ההגדרות שלך.\n\nראה/י הגדרות פרטיות לפרטים נוספים.";
@@ -248,10 +248,10 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "הראה הגדרות פרטיות";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to audio call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "החלף אל שיחת שמע";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "החלף אל שיחת וידאו";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "חיוג חוזר";
@@ -272,13 +272,13 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "השווה ללוח גזירים";
 
 /* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contacts";
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "אנשי קשר";
 
 /* Table section header for group listing when composing a new message */
-"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Groups";
+"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "קבוצות";
 
 /* Table section header for invite listing when composing a new message */
-"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Invite";
+"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "הזמן";
 
 /* Multiline label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "כדי לראות מי מאנשי הקשר שלך הם משתמשי סיגנל, התר גישה לאנשי הקשר בהגדרות המערכת שלך.";
@@ -299,10 +299,10 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "קשר מכשיר חדש";
 
 /* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "ייתכן ו%@ התקין מחדש את האפילקציה או החליף מכשיר. אמת את מספר הביטחון שלך עמו כדי להבטיח פרטיות.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "ייתכן כי %@ התקין מחדש או החליף מכשירים. וודא את מספר הבטיחות שלך איתו כדי להבטיח פרטיות.";
 
 /* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "מספר הביטחון עם %@ השתנה";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "מספר בטיחות עם %@ השתנה";
 
 /* Generic button text to proceed with an action */
 "CONFIRMATION_TITLE" = "אישור";
@@ -395,10 +395,10 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "משתמש זה אינו באנשי הקשר שלך.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "טוען עוד הודעות...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap For More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "הקש לעוד";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "חסום משתמש זה";
@@ -485,7 +485,7 @@
 "EDIT_ITEM_COPY_ACTION" = "העתק";
 
 /* Short name for edit menu item to delete contents of media message. */
-"EDIT_ITEM_DELETE_ACTION" = "Delete";
+"EDIT_ITEM_DELETE_ACTION" = "מחק";
 
 /* Short name for edit menu item to show message metadata. */
 "EDIT_ITEM_MESSAGE_METADATA_ACTION" = "מידע";
@@ -590,16 +590,16 @@
 "ERROR_MESSAGE_NO_SESSION" = "אין התחברות זמינה לאיש הקשר הזה.";
 
 /* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "מספר ביטחון שונה";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "מספר בטיחות השתנה.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "מספר הביטחון עם %@ השתנה";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "מספר הבטיחות שלך עם %@ השתנה.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "התרחשה שגיאה לא ידועה";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "מספר ביטחון התשתנה. הקש לאימות.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "מספר בטיחות השתנה. הקש כדי לוודא.";
 
 /* Message for the alert indicating the 'export with signal' file had an invalid filename. */
 "EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "שם קובץ לא חוקי.";
@@ -620,10 +620,10 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "שגיאות רבות מידי עם איש קשר זה. נסה שוב עוד מספר רגעים.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "מספר הביטחון עם %@ השתנה. מומלץ לוודא את המספר לפני השליחה.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "מספר הבטיחות שלך עם %@ השתנה לאחרונה. מומלץ לוודא לפני שליחה מחדש.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "שגיאה באימות מספר ביטחון";
+"FAILED_VERIFICATION_TITLE" = "נכשל בוידוא מספר בטיחות!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "סמן כמאומת";
@@ -644,10 +644,10 @@
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
 
 /* Generic error displayed when picking a gif */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occured.";
+"GIF_PICKER_ERROR_GENERIC" = "שגיאה בלתי ידועה התרחשה.";
 
 /* Shown when selected gif couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "Unable to Choose GIF";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "לא היה ניתן לבחור GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "אנא הכנס את חיפושך.";
@@ -656,10 +656,10 @@
 "GIF_PICKER_VIEW_TITLE" = "חיפוש GIF";
 
 /* Indicates that an error occured while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Error. Tap to Retry.";
+"GIF_VIEW_SEARCH_ERROR" = "שגיאה. הקש כדי לנסות שוב.";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "No Results.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "אין תוצאות.";
 
 /* Placeholder text for the search field in gif view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "הכנס את חיפושך";
@@ -692,7 +692,7 @@
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "בטל אישורים לכולם";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "פעולה זו תבטל את האישורים לכל המשתמשים שמספר הביטחון שונה מאז שאומתו לאחרונה.";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "זה ינקה את הוידוא של כל חברי הקבוצה שמספרי הבטיחות שלהם השתנו מאז שוודאו בפעם האחרונה.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "חברים";
@@ -755,7 +755,7 @@
 "INCOMING_INCOMPLETE_CALL" = "שיחה נכנסת לקויה מאת";
 
 /* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "שיחה נדחתה בגלל שמספר הביטחון של איש הקשר השתנה.";
+"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "שיחה לא נענתה מאחר שמספר הבטיחות של איש הקשר השתנה.";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "קובץ שמע לא חוקי";
@@ -1124,7 +1124,7 @@
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "You have not marked %@ as verified.";
 
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verified";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "מוודא";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ is verified.";
@@ -1136,7 +1136,7 @@
 "PRIVACY_TAP_TO_SCAN" = "הקש כדי לסרוק";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Clear Verification";
+"PRIVACY_UNVERIFY_BUTTON" = "נקה וידוא";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
@@ -1163,10 +1163,10 @@
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "If you wish to verify the security of your end-to-end encryption with %@, compare the numbers above with the numbers on their device.\n\nAlternatively, you can scan the code on their phone, or ask them to scan your code.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
+"PRIVACY_VERIFICATION_TITLE" = "וודא מספר בטיחות";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Mark as Verified";
+"PRIVACY_VERIFY_BUTTON" = "סמן כמוודא";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "המשך";
@@ -1280,7 +1280,7 @@
 "REGISTRATION_TITLE_LABEL" = "מספר הטלפון שלך";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verification Failed";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "וידוא נכשל";
 
 /* Alert body, during registration */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "The numbers you submitted don't match what we sent. Want to double check?";
@@ -1289,10 +1289,10 @@
 "REGISTRATION_VERIFY_DEVICE" = "שפעל מכשיר זה";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a valid phone number to register.";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "אנא הכנס מספר תקף של טלפון כדי להירשם.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Invalid Phone Number";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "מספר לא תקף של טלפון";
 
 /* Message of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "אנא הכנס מספר טלפון כדי לרשום אותו.";
@@ -1361,7 +1361,7 @@
 "SEND_INVITE_SUCCESS" = "הזמנת את חברך להשתמש בסיגנל!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Invite via SMS: %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "הזמן דרך מסרון: %@";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "הזמן חבר דרך SMS (ערוץ לא מבוטח)";
@@ -1385,7 +1385,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "עקיפת צנזורה";
 
 /* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Location: %@";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "מיקום: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "אם מאופשר, סיגנל ינסה לעקוף צנזורה. אל תאפשר מאפיין זה אלא אם אתה במיקום שבו סיגנל מצונזר.";
@@ -1514,7 +1514,7 @@
 "SHARE_ACTION_TWEET" = "טוויטר";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show New Safety Number";
+"SHOW_SAFETY_NUMBER_ACTION" = "הראה מספר בטיחות חדש";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "הצג שיחה";
@@ -1526,7 +1526,7 @@
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "מספר בטיחות תואם!";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ ימים";
@@ -1574,7 +1574,7 @@
 "UNKNOWN_CONTACT_NAME" = "איש קשר בלתי ידוע";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "Unknown";
+"UNKNOWN_VALUE" = "בלתי ידוע";
 
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "Unlink";
@@ -1679,13 +1679,13 @@
 "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "You marked %@ as verified on another device.";
 
 /* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "Verification state changed.";
+"VERIFICATION_STATE_CHANGE_GENERIC" = "מצב וידוא השתנה.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "הראה מספר ביטחון";
+"VERIFY_PRIVACY" = "הראה מספר בטיחות";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "סקור מספר ביטחון";
+"VERIFY_PRIVACY_MULTIPLE" = "סקור מספרי בטיחות";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "החלק כדי לבטל";

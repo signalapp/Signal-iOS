@@ -2734,9 +2734,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                               }
 
                               [modalActivityIndicator dismissWithCompletion:^{
+                                  
+                                  NSString *baseFilename = filename.stringByDeletingPathExtension;
+                                  NSString *mp4Filename = [baseFilename stringByAppendingPathExtension:@"mp4"];
                                   DataSource *_Nullable dataSource =
                                       [DataSourcePath dataSourceWithURL:compressedVideoUrl];
-                                  [dataSource setSourceFilename:filename];
+                                  [dataSource setSourceFilename:mp4Filename];
+                                  
                                   // Remove temporary file when complete.
                                   [dataSource setShouldDeleteOnDeallocation];
                                   SignalAttachment *attachment =

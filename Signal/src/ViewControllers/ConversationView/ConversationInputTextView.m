@@ -198,16 +198,31 @@ NS_ASSUME_NONNULL_BEGIN
     // We don't support shift-return because it is often used for "newline" in other
     // messaging apps.
     return @[
-        [UIKeyCommand keyCommandWithInput:@"\r"
-                            modifierFlags:UIKeyModifierCommand
-                                   action:@selector(modifiedReturnPressed:)
-                     discoverabilityTitle:@"Send Message"],
+        [self keyCommandWithInput:@"\r"
+                    modifierFlags:UIKeyModifierCommand
+                           action:@selector(modifiedReturnPressed:)
+             discoverabilityTitle:@"Send Message"],
         // "Alternate" is option.
-        [UIKeyCommand keyCommandWithInput:@"\r"
-                            modifierFlags:UIKeyModifierAlternate
-                                   action:@selector(modifiedReturnPressed:)
-                     discoverabilityTitle:@"Send Message"],
+        [self keyCommandWithInput:@"\r"
+                    modifierFlags:UIKeyModifierAlternate
+                           action:@selector(modifiedReturnPressed:)
+             discoverabilityTitle:@"Send Message"],
     ];
+}
+
+- (UIKeyCommand *)keyCommandWithInput:(NSString *)input
+                        modifierFlags:(UIKeyModifierFlags)modifierFlags
+                               action:(SEL)action
+                 discoverabilityTitle:(NSString *)discoverabilityTitle
+{
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+        return [UIKeyCommand keyCommandWithInput:input
+                                   modifierFlags:modifierFlags
+                                          action:action
+                            discoverabilityTitle:discoverabilityTitle];
+    } else {
+        return [UIKeyCommand keyCommandWithInput:input modifierFlags:modifierFlags action:action];
+    }
 }
 
 - (void)modifiedReturnPressed:(UIKeyCommand *)sender
