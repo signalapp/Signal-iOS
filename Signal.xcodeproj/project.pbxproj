@@ -405,6 +405,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		34480B391FD0950000BC14EF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 453518911FC63DBF00210559;
+			remoteInfo = SignalMessaging;
+		};
 		453518701FC635DD00210559 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
@@ -1977,6 +1984,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				34480B3A1FD0950000BC14EF /* PBXTargetDependency */,
 			);
 			name = SignalShareExtension;
 			productName = SignalShareExtension;
@@ -2854,6 +2862,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		34480B3A1FD0950000BC14EF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 453518911FC63DBF00210559 /* SignalMessaging */;
+			targetProxy = 34480B391FD0950000BC14EF /* PBXContainerItemProxy */;
+		};
 		453518711FC635DD00210559 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 453518671FC635DD00210559 /* SignalShareExtension */;
