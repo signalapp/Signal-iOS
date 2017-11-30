@@ -3,6 +3,7 @@
 //
 
 #import "OWSBatchMessageProcessor.h"
+#import "AppContext.h"
 #import "NSArray+OWS.h"
 #import "OWSMessageManager.h"
 #import "OWSQueues.h"
@@ -297,6 +298,11 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 - (void)drainQueue
 {
+    // Don't process incoming messages in app extensions.
+    if (!CurrentAppContext().isMainApp) {
+        return;
+    }
+
     dispatch_async(self.serialQueue, ^{
         if ([TSDatabaseView hasPendingViewRegistrations]) {
             // We don't want to process incoming messages until database

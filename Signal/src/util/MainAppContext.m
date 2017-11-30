@@ -18,10 +18,25 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
 }
 
+- (UIApplicationState)mainApplicationState
+{
+    return [UIApplication sharedApplication].applicationState;
+}
+
 - (UIBackgroundTaskIdentifier)beginBackgroundTaskWithExpirationHandler:
     (BackgroundTaskExpirationHandler)expirationHandler
 {
     return [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:expirationHandler];
+}
+
+- (void)endBackgroundTask:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier
+{
+    [UIApplication.sharedApplication endBackgroundTask:backgroundTaskIdentifier];
+}
+
+- (void)setMainAppBadgeNumber:(NSInteger)value
+{
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:value];
 }
 
 @end
