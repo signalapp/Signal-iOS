@@ -360,12 +360,12 @@ void setDatabaseInitialized()
 {
     // The old database location was in the Document directory,
     // so protect the database files individually.
-    [OWSFileSystem protectFolderAtPath:[self oldDatabaseFilePath]];
-    [OWSFileSystem protectFolderAtPath:[self oldDatabaseFilePath_SHM]];
-    [OWSFileSystem protectFolderAtPath:[self oldDatabaseFilePath_WAL]];
+    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath];
+    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath_SHM];
+    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath_WAL];
 
     // Protect the entire new database directory.
-    [OWSFileSystem protectFolderAtPath:[self newDatabaseDirPath]];
+    [OWSFileSystem protectFolderAtPath:self.sharedDataDatabaseDirPath];
 }
 
 - (nullable YapDatabaseConnection *)newDatabaseConnection
@@ -377,12 +377,12 @@ void setDatabaseInitialized()
     return FALSE;
 }
 
-+ (NSString *)oldDatabaseDirPath
++ (NSString *)legacyDatabaseDirPath
 {
     return [OWSFileSystem appDocumentDirectoryPath];
 }
 
-+ (NSString *)newDatabaseDirPath
++ (NSString *)sharedDataDatabaseDirPath
 {
     NSString *databaseDirPath = [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"database"];
 
@@ -422,54 +422,54 @@ void setDatabaseInitialized()
     return [self.databaseFilename stringByAppendingString:@"-wal"];
 }
 
-+ (NSString *)oldDatabaseFilePath
++ (NSString *)legacyDatabaseFilePath
 {
-    return [self.oldDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
+    return [self.legacyDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
 }
 
-+ (NSString *)oldDatabaseFilePath_SHM
++ (NSString *)legacyDatabaseFilePath_SHM
 {
-    return [self.oldDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
+    return [self.legacyDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
 }
 
-+ (NSString *)oldDatabaseFilePath_WAL
++ (NSString *)legacyDatabaseFilePath_WAL
 {
-    return [self.oldDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
+    return [self.legacyDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
 }
 
-+ (NSString *)newDatabaseFilePath
++ (NSString *)sharedDataDatabaseFilePath
 {
-    return [self.newDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
+    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
 }
 
-+ (NSString *)newDatabaseFilePath_SHM
++ (NSString *)sharedDataDatabaseFilePath_SHM
 {
-    return [self.newDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
+    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
 }
 
-+ (NSString *)newDatabaseFilePath_WAL
++ (NSString *)sharedDataDatabaseFilePath_WAL
 {
-    return [self.newDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
+    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
 }
 
 + (void)migrateToSharedData
 {
-    [OWSFileSystem moveAppFilePath:self.oldDatabaseFilePath
-                sharedDataFilePath:self.newDatabaseFilePath
+    [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath
+                sharedDataFilePath:self.sharedDataDatabaseFilePath
                      exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
-    [OWSFileSystem moveAppFilePath:self.oldDatabaseFilePath_SHM
-                sharedDataFilePath:self.newDatabaseFilePath_SHM
+    [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_SHM
+                sharedDataFilePath:self.sharedDataDatabaseFilePath_SHM
                      exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
-    [OWSFileSystem moveAppFilePath:self.oldDatabaseFilePath_WAL
-                sharedDataFilePath:self.newDatabaseFilePath_WAL
+    [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_WAL
+                sharedDataFilePath:self.sharedDataDatabaseFilePath_WAL
                      exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
 }
 
 - (NSString *)dbPath
 {
-    DDLogVerbose(@"databasePath: %@", TSStorageManager.newDatabaseFilePath);
+    DDLogVerbose(@"databasePath: %@", TSStorageManager.sharedDataDatabaseFilePath);
 
-    return TSStorageManager.newDatabaseFilePath;
+    return TSStorageManager.sharedDataDatabaseFilePath;
 }
 
 + (BOOL)isDatabasePasswordAccessible

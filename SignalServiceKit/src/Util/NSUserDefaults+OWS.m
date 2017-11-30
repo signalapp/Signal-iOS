@@ -28,9 +28,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)removeAll
 {
-    NSString *appDomain = NSBundle.mainBundle.bundleIdentifier;
-    [NSUserDefaults.standardUserDefaults removePersistentDomainForName:appDomain];
-    // TODO: How to clear the shared user defaults?
+    [NSUserDefaults.standardUserDefaults removeAll];
+    [self.appUserDefaults removeAll];
+}
+
+- (void)removeAll
+{
+    NSDictionary<NSString *, id> *dictionary = self.dictionaryRepresentation;
+    for (NSString *key in dictionary) {
+        [self removeObjectForKey:key];
+    }
+    [self synchronize];
 }
 
 @end
