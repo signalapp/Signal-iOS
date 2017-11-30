@@ -29,9 +29,13 @@ def find_project_root():
 if __name__ == '__main__':
     project_root_path = find_project_root()
     # print 'project_root_path', project_root_path
-    plist_path = os.path.join(project_root_path, 'Signal', 'Signal-Info.plist')
-    if not os.path.exists(plist_path):
-        fail('Could not find .plist')
+    # plist_path
+    main_plist_path = os.path.join(project_root_path, 'Signal', 'Signal-Info.plist')
+    if not os.path.exists(main_plist_path):
+        fail('Could not find main app info .plist')
+    share_ext_plist_path = os.path.join(project_root_path, 'SignalShareExtension', 'Info.plist')
+    if not os.path.exists(share_ext_plist_path):
+        fail('Could not find share extension info .plist')
         
     output = subprocess.check_output(['git', 'status', '--porcelain'])
     if len(output.strip()) > 0:
@@ -43,10 +47,14 @@ if __name__ == '__main__':
         fail('Git repository has untracked files.')
     
     # Ensure .plist is in xml format, not binary.
-    output = subprocess.check_output(['plutil', '-convert', 'xml1', plist_path])
+    output = subprocess.check_output(['plutil', '-convert', 'xml1', main_plist_path])
+    output = subprocess.check_output(['plutil', '-convert', 'xml1', share_ext_plist_path])
     # print 'output', output
     
-    with open(plist_path, 'rt') as f:
+    # ---------------
+    # Main App
+    # ---------------
+    with open(main_plist_path, 'rt') as f:
         text = f.read()
     # print 'text', text
 
@@ -69,12 +77,51 @@ if __name__ == '__main__':
     build_number = build_number_match.group(1)
     build_number = str(1 + int(build_number))
     new_build_number = old_build_number[:build_number_match.start(1)] + build_number
-    print 'new_build_number:', new_build_number
+    print 'new_build_number:', new_build_number 
+    
+    release_number_regex = re.compile(r'^(.+)\.\d+$')
+    release_number_match = release_number_regex.search(old_build_number)
+    if not release_number_match:   
+        fail('Could not parse .plist version')
+    
+    release_number = release_number_match.group(1)
+    print 'release_number:', release_number
     
     text = text[:file_match.start(1)] + new_build_number + text[file_match.end(1):]
-    with open(plist_path, 'wt') as f:
+    with open(main_plist_path, 'wt') as f:
         f.write(text)
-        
+    
+    # ---------------
+    # Share Extension
+    # ---------------
+    with open(share_ext_plist_path, 'rt') as f:
+        text = f.read()
+    # print 'text', text
+
+    # <key>CFBundleVersion</key>
+    # <string>2.13.0.13</string>
+    file_regex = re.compile(r'<key>CFBundleShortVersionString</key>\s*<string>([\d\.]+)</string>', re.MULTILINE)
+    file_match = file_regex.search(text)
+    # print 'match', match
+    if not file_match:   
+        fail('Could not parse .plist')
+    text = text[:file_match.start(1)] + release_number + text[file_match.end(1):]
+
+    # <key>CFBundleVersion</key>
+    # <string>2.13.0.13</string>
+    file_regex = re.compile(r'<key>CFBundleVersion</key>\s*<string>([\d\.]+)</string>', re.MULTILINE)
+    file_match = file_regex.search(text)
+    # print 'match', match
+    if not file_match:   
+        fail('Could not parse .plist')
+    text = text[:file_match.start(1)] + new_build_number + text[file_match.end(1):]
+    
+    with open(share_ext_plist_path, 'wt') as f:
+        f.write(text)
+    
+    # ---------------
+    # Git
+    # ---------------
     output = subprocess.check_output(['git', 'add', '.'])
     output = subprocess.check_output(['git', 'commit', '-m', 'Bump build to %s.\n\n// FREEBIE' % new_build_number])
     
