@@ -8,6 +8,7 @@
 #import "CodeVerificationViewController.h"
 #import "DebugLogger.h"
 #import "Environment.h"
+#import "MainAppContext.h"
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
 #import "OWSContactsSyncing.h"
@@ -89,6 +90,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+    // This should be the first thing we do.
+    SetCurrentAppContext([MainAppContext new]);
+
     BOOL loggingIsEnabled;
 #ifdef DEBUG
     // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
