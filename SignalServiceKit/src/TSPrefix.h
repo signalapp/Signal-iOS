@@ -2,21 +2,25 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
+#import <CocoaLumberjack/CocoaLumberjack.h>
+
+#define LOG_LEVEL_DEF sskLogLevel
+#define LOG_ASYNC_ENABLED YES
+
+#ifdef DEBUG
+static const NSUInteger sskLogLevel = DDLogLevelAll;
+#else
+static const NSUInteger sskLogLevel = DDLogLevelInfo;
+#endif
+
 #import "Asserts.h"
 #import "Constraints.h"
 #import "NSObject+OWS.h"
 #import "OWSAnalytics.h"
 #import "OWSDispatch.h"
 #import "iOSVersions.h"
-#import <Foundation/Foundation.h>
-
-@import CocoaLumberjack;
-
-#ifdef DEBUG
-static const NSUInteger ddLogLevel = DDLogLevelAll;
-#else
-static const NSUInteger ddLogLevel = DDLogLevelInfo;
-#endif
 
 #define BLOCK_SAFE_RUN(block, ...)                                                        \
     block ? dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), \
