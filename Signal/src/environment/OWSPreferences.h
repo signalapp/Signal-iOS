@@ -27,6 +27,9 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 
 #pragma mark - Specific Preferences
 
++ (BOOL)isReadyForAppExtensions;
++ (void)setIsReadyForAppExtensions:(BOOL)value;
+
 - (BOOL)getHasSentAMessage;
 - (void)setHasSentAMessage:(BOOL)enabled;
 

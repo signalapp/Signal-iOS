@@ -24,6 +24,8 @@
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
+#import <SignalMessaging/SignalMessaging.h>
+#import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSFailedAttachmentDownloadsJob.h>
@@ -38,7 +40,6 @@
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSStorageManager+Calling.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
-#import <SignalMessaging/SignalMessaging.h>
 
 @import WebRTC;
 @import Intents;
@@ -102,6 +103,19 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.logTag);
+
+    // We need to do this _after_ we set up logging but _before_ we do
+    // anything else.
+    [self ensureIsReadyForAppExtensions];
+
+#if RELEASE
+    // ensureIsReadyForAppExtensions may have changed the state of the logging
+    // preference (due to [NSUserDefaults migrateToSharedUserDefaults]), so honor
+    // that change if necessary.
+    if (loggingIsEnabled && !OWSPreferences.loggingIsEnabled) {
+        [DebugLogger.sharedLogger disableFileLogging];
+    }
+#endif
 
     [AppVersion instance];
 
@@ -174,6 +188,21 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [OWSAnalytics appLaunchDidBegin];
 
     return YES;
+}
+
+- (void)ensureIsReadyForAppExtensions
+{
+    if ([OWSPreferences isReadyForAppExtensions]) {
+        return;
+    }
+
+    [NSUserDefaults migrateToSharedUserDefaults];
+
+    [TSStorageManager migrateToSharedData];
+    [OWSProfileManager migrateToSharedData];
+    [TSAttachmentStream migrateToSharedData];
+
+    [OWSPreferences setIsReadyForAppExtensions:YES];
 }
 
 - (void)startupLogging

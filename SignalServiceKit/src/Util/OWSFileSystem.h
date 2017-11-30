@@ -10,6 +10,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)protectFolderAtPath:(NSString *)path;
 
++ (NSString *)appDocumentDirectoryPath;
+
++ (NSString *)appSharedDataDirectoryPath;
+
++ (void)moveAppFilePath:(NSString *)oldFilePath
+     sharedDataFilePath:(NSString *)newFilePath
+          exceptionName:(NSString *)exceptionName;
+
 @end
 
 NS_ASSUME_NONNULL_END

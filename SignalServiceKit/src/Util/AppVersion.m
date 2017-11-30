@@ -3,6 +3,7 @@
 //
 
 #import "AppVersion.h"
+#import <SignalServiceKit/NSUserDefaults+OWS.h>
 
 NSString *const kNSUserDefaults_FirstAppVersion = @"kNSUserDefaults_FirstAppVersion";
 NSString *const kNSUserDefaults_LastAppVersion = @"kNSUserDefaults_LastVersion";
@@ -36,24 +37,22 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
     
     // The version of the app when it was first launched.
     // nil if the app has never been launched before.
-    self.firstAppVersion = [[NSUserDefaults standardUserDefaults] objectForKey:kNSUserDefaults_FirstAppVersion];
+    self.firstAppVersion = [[NSUserDefaults appUserDefaults] objectForKey:kNSUserDefaults_FirstAppVersion];
     // The version of the app the last time it was launched.
     // nil if the app has never been launched before.
-    self.lastAppVersion = [[NSUserDefaults standardUserDefaults] objectForKey:kNSUserDefaults_LastAppVersion];
+    self.lastAppVersion = [[NSUserDefaults appUserDefaults] objectForKey:kNSUserDefaults_LastAppVersion];
     self.lastCompletedLaunchAppVersion =
-        [[NSUserDefaults standardUserDefaults] objectForKey:kNSUserDefaults_LastCompletedLaunchAppVersion];
+        [[NSUserDefaults appUserDefaults] objectForKey:kNSUserDefaults_LastCompletedLaunchAppVersion];
 
     // Ensure the value for the "first launched version".
     if (!self.firstAppVersion) {
         self.firstAppVersion = self.currentAppVersion;
-        [[NSUserDefaults standardUserDefaults] setObject:self.currentAppVersion
-                                                  forKey:kNSUserDefaults_FirstAppVersion];
+        [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion forKey:kNSUserDefaults_FirstAppVersion];
     }
     
     // Update the value for the "most recently launched version".
-    [[NSUserDefaults standardUserDefaults] setObject:self.currentAppVersion
-                                              forKey:kNSUserDefaults_LastAppVersion];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion forKey:kNSUserDefaults_LastAppVersion];
+    [[NSUserDefaults appUserDefaults] synchronize];
 
     DDLogInfo(@"%@ firstAppVersion: %@", self.logTag, self.firstAppVersion);
     DDLogInfo(@"%@ lastAppVersion: %@", self.logTag, self.lastAppVersion);
@@ -68,9 +67,9 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
     self.lastCompletedLaunchAppVersion = self.currentAppVersion;
 
     // Update the value for the "most recently launch-completed version".
-    [[NSUserDefaults standardUserDefaults] setObject:self.currentAppVersion
-                                              forKey:kNSUserDefaults_LastCompletedLaunchAppVersion];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion
+                                         forKey:kNSUserDefaults_LastCompletedLaunchAppVersion];
+    [[NSUserDefaults appUserDefaults] synchronize];
 }
 
 - (BOOL)isFirstLaunch
