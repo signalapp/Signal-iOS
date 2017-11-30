@@ -7,7 +7,6 @@
 #import <SignalServiceKit/NSDate+OWS.h>
 
 #pragma mark Logging - Production logging wants us to write some logs to a file in case we need it for debugging.
-
 #import <CocoaLumberjack/DDTTYLogger.h>
 
 @interface DebugLogger ()
@@ -16,17 +15,19 @@
 
 @implementation DebugLogger
 
-+ (instancetype)sharedLogger {
++ (instancetype)sharedLogger
+{
     static DebugLogger *sharedManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      sharedManager = [self new];
+        sharedManager = [self new];
     });
     return sharedManager;
 }
 
 
-- (void)enableFileLogging {
+- (void)enableFileLogging
+{
     // Logging to file, because it's in the Cache folder, they are not uploaded in iTunes/iCloud backups.
     self.fileLogger = [DDFileLogger new];
     // 24 hour rolling.
@@ -40,16 +41,19 @@
     [DDLog addLogger:self.fileLogger];
 }
 
-- (void)disableFileLogging {
+- (void)disableFileLogging
+{
     [DDLog removeLogger:self.fileLogger];
     self.fileLogger = nil;
 }
 
-- (void)enableTTYLogging {
+- (void)enableTTYLogging
+{
     [DDLog addLogger:DDTTYLogger.sharedInstance];
 }
 
-- (void)wipeLogs {
+- (void)wipeLogs
+{
     BOOL reenableLogging = (self.fileLogger ? YES : NO);
     NSError *error;
     NSArray *logsPath = self.fileLogger.logFileManager.unsortedLogFilePaths;
@@ -71,9 +75,10 @@
     }
 }
 
-- (NSString *)logsDirectory {
-    NSArray *paths          = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *baseDir       = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
+- (NSString *)logsDirectory
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *baseDir = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     NSString *logsDirectory = [baseDir stringByAppendingPathComponent:@"Logs"];
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:logsDirectory]) {

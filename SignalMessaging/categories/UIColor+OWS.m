@@ -2,9 +2,9 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "Cryptography.h"
 #import "OWSMath.h"
 #import "UIColor+OWS.h"
+#import <SignalServiceKit/Cryptography.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
