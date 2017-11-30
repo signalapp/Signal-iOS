@@ -4,6 +4,8 @@
 
 #import "AppContext.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 static id<AppContext> currentAppContext = nil;
 
 id<AppContext> CurrentAppContext()
@@ -19,3 +21,5 @@ void SetCurrentAppContext(id<AppContext> appContext)
 
     currentAppContext = appContext;
 }
+
+NS_ASSUME_NONNULL_END

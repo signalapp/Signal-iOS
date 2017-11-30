@@ -4,6 +4,8 @@
 
 #import "MainAppContext.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation MainAppContext
 
 - (BOOL)isMainApp
@@ -23,3 +25,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
