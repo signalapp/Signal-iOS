@@ -3,6 +3,7 @@
 //
 
 #import "NSDate+OWS.h"
+#import <chrono>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -10,9 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (uint64_t)ows_millisecondTimeStamp
 {
-    // FIXME SHARINGEXTENSION revert to using chrono if possible
-    NSDate *now = [self new];
-    return (uint64_t)(now.timeIntervalSince1970 * 1000);
+    uint64_t milliseconds
+        = (uint64_t)(std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1));
+    return milliseconds;
 }
 
 + (NSDate *)ows_dateWithMillisecondsSince1970:(uint64_t)milliseconds
