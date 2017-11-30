@@ -367,6 +367,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (!CurrentAppContext().isMainAppAndActive) {
         // Don't schedule run when inactive or not in main app.
+        OWSFail(@"%@ Disappearing messages job timer fired while main app inactive.", self.logTag);
         return;
     }
 

@@ -533,6 +533,9 @@ void setDatabaseInitialized()
                 // This is a last ditch effort to avoid blowing away the user's database.
                 [self backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:errorDescription];
             }
+        } else {
+            [self backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:
+                      @"Password inaccessible; not main app."];
         }
 
         // At this point, either this is a new install so there's no existing password to retrieve
@@ -545,8 +548,6 @@ void setDatabaseInitialized()
         }
 
         // Try to reset app by deleting database.
-        // FIXME SHARINGEXTENSION
-        OWSFail(@"disabled while Share extension is WIP");
         [self resetSignalStorage];
 
         dbPassword = [self createAndSetNewDatabasePassword];
