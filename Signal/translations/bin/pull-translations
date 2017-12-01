@@ -27,11 +27,7 @@ do
   # Plus we can see the string diffs in GH this way.
   iconv -f utf-16 -t utf-8 Localizable.strings > Localizable.strings.utf8
   mv Localizable.strings.utf8 Localizable.strings
-  
   popd
-  
-  echo "Copying strings from to iOS Share Extension: $dir"
-  cp -r $dir ../../SignalShareExtension/translations/
 
 done
 
