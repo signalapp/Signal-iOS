@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSProfileAvatarUploadFormRequest : TSRequest
 
-- (nullable instancetype)init;
+- (instancetype)init;
 
 @end
 

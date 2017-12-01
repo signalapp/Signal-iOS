@@ -307,7 +307,7 @@ void setDatabaseInitialized()
     };
 }
 
-- (void)setupDatabaseWithSafeBlockingMigrations:(void (^_Nonnull)())safeBlockingMigrationsBlock
+- (void)setupDatabaseWithSafeBlockingMigrations:(void (^_Nonnull)(void))safeBlockingMigrationsBlock
 {
     // Synchronously register extensions which are essential for views.
     [TSDatabaseView registerCrossProcessNotifier];

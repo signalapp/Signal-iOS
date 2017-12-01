@@ -344,7 +344,7 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
     [self clearSignedPreKeyRecordsWithKeyId:currentSignedPrekeyId success:nil];
 }
 
-+ (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId success:(void (^_Nullable)())successHandler
++ (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId success:(void (^_Nullable)(void))successHandler
 {
     if (!keyId) {
         OWSFail(@"%@ Ignoring request to clear signed preKeys since no keyId was specified", self.logTag);

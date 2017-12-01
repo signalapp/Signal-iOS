@@ -44,7 +44,7 @@ typedef NS_ENUM(NSUInteger, OWSAnalyticsSeverity) {
 
 @end
 
-typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)();
+typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)(void);
 
 // These methods should be used to assert errors for which we want to fire analytics events.
 //

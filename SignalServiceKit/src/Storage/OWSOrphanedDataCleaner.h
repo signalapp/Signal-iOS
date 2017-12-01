@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)auditAsync;
 
 // completion, if present, will be invoked on the main thread.
-+ (void)auditAndCleanupAsync:(void (^_Nullable)())completion;
++ (void)auditAndCleanupAsync:(void (^_Nullable)(void))completion;
 
 + (NSSet<NSString *> *)filePathsInAttachmentsFolder;
 

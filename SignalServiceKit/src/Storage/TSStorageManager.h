@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Specifically, these migration should not depend on or affect the data
  * of any database view.
  */
-- (void)setupDatabaseWithSafeBlockingMigrations:(void (^_Nonnull)())safeBlockingMigrationsBlock;
+- (void)setupDatabaseWithSafeBlockingMigrations:(void (^_Nonnull)(void))safeBlockingMigrationsBlock;
 
 - (void)deleteThreadsAndMessages;
 - (void)resetSignalStorage;
