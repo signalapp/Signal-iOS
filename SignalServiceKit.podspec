@@ -27,6 +27,12 @@ An Objective-C library for communicating with the Signal messaging service.
   s.requires_arc = true
   s.source_files = 'SignalServiceKit/src/**/*.{h,m,mm}'
 
+  # We want to use modules to avoid clobbering CocoaLumberjack macros defined
+  # by other OWS modules which *also* import CocoaLumberjack. But because we
+  # also use Objective-C++, modules are disabled unless we explicitly enable
+  # them
+  s.compiler_flags = "-fcxx-modules"
+
   s.prefix_header_file = 'SignalServiceKit/src/TSPrefix.h'
   s.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
 

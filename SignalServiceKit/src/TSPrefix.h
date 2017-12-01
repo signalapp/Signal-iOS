@@ -4,15 +4,12 @@
 
 #import <Foundation/Foundation.h>
 
-#import <CocoaLumberjack/CocoaLumberjack.h>
-
-#define LOG_LEVEL_DEF sskLogLevel
-#define LOG_ASYNC_ENABLED YES
+@import CocoaLumberjack;
 
 #ifdef DEBUG
-static const NSUInteger sskLogLevel = DDLogLevelAll;
+static const NSUInteger ddLogLevel = DDLogLevelAll;
 #else
-static const NSUInteger sskLogLevel = DDLogLevelInfo;
+static const NSUInteger ddLogLevel = DDLogLevelInfo;
 #endif
 
 #import "Asserts.h"
