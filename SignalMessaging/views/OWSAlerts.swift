@@ -15,11 +15,11 @@ import Foundation
         let dismissAction = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel)
         let settingsString = NSLocalizedString("OPEN_SETTINGS_BUTTON", comment: "Button text which opens the settings app")
         let settingsAction = UIAlertAction(title: settingsString, style: .default) { _ in
-            UIApplication.shared.openSystemSettings()
+            CurrentAppContext().openSystemSettings()
         }
         alertController.addAction(dismissAction)
         alertController.addAction(settingsAction)
-        UIApplication.shared.frontmostViewController?.present(alertController, animated: true, completion: nil)
+        CurrentAppContext().frontmostViewController()?.present(alertController, animated: true, completion: nil)
     }
 
     public class func showAlert(withTitle title: String) {
@@ -37,7 +37,7 @@ import Foundation
 
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: actionTitle, style: .default, handler: nil))
-        UIApplication.shared.frontmostViewController?.present(alert, animated: true, completion: nil)
+        CurrentAppContext().frontmostViewController()?.present(alert, animated: true, completion: nil)
     }
 
     public class func showConfirmationAlert(withTitle title: String, message: String? = nil, proceedTitle: String? = nil, proceedAction: @escaping (UIAlertAction) -> Void) {
@@ -49,7 +49,7 @@ import Foundation
         let actionTitle = proceedTitle ?? NSLocalizedString("OK", comment: "")
         alert.addAction(UIAlertAction(title: actionTitle, style: .default, handler: proceedAction))
 
-        UIApplication.shared.frontmostViewController?.present(alert, animated: true, completion: nil)
+        CurrentAppContext().frontmostViewController()?.present(alert, animated: true, completion: nil)
     }
 
     public class var cancelAction: UIAlertAction {

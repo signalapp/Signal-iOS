@@ -9,6 +9,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation UIViewController (OWS)
 
+- (UIViewController *)findFrontmostViewController:(BOOL)ignoringAlerts
+{
+    UIViewController *viewController = self;
+    while (YES) {
+        UIViewController *_Nullable nextViewController = viewController.presentedViewController;
+        if (nextViewController) {
+            if (ignoringAlerts) {
+                if ([nextViewController isKindOfClass:[UIAlertController class]]) {
+                    break;
+                }
+            }
+            viewController = nextViewController;
+        } else if ([viewController isKindOfClass:[UINavigationController class]]) {
+            UINavigationController *navigationController = (UINavigationController *)viewController;
+            if (navigationController.topViewController) {
+                viewController = navigationController.topViewController;
+            } else {
+                break;
+            }
+        } else {
+            break;
+        }
+    }
+
+    return viewController;
+}
+
 - (UIBarButtonItem *)createOWSBackButton
 {
     return [self createOWSBackButtonWithTarget:self selector:@selector(backButtonPressed:)];
@@ -77,7 +104,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Event Handling
 
-- (void)backButtonPressed:(id)sender {
+- (void)backButtonPressed:(id)sender
+{
     [self.navigationController popViewControllerAnimated:YES];
 }
 

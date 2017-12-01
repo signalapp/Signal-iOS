@@ -33,7 +33,10 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 - (NSArray<OWSDatabaseMigration *> *)allMigrations;
 
 // Returns the VC that should be used to present alerts, modals, etc.
-- (UIViewController *)frontmostViewController;
+- (nullable UIViewController *)frontmostViewController;
+
+// Should only be called if isMainApp is YES.
+- (void)openSystemSettings;
 
 @end
 

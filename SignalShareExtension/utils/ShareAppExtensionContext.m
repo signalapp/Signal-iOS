@@ -3,6 +3,7 @@
 //
 
 #import "ShareAppExtensionContext.h"
+#import <SignalMessaging/UIViewController+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -79,19 +80,16 @@ NS_ASSUME_NONNULL_BEGIN
     return @[];
 }
 
-- (UIViewController *)frontmostViewController
+- (nullable UIViewController *)frontmostViewController
 {
     OWSAssert(self.rootViewController);
 
-    return self.rootViewController;
+    return [self.rootViewController findFrontmostViewController:YES];
 }
 
-- (void)setRootViewController:(UIViewController *)viewController
+- (void)openSystemSettings
 {
-    OWSAssert(!self.rootViewController);
-    OWSAssert(viewController);
-
-    self.rootViewController = viewController;
+    OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
 }
 
 @end

@@ -8,6 +8,7 @@
 #import "OWS103EnableVideoCalling.h"
 #import "OWS104CreateRecipientIdentities.h"
 #import "OWS105AttachmentFilePaths.h"
+#import "Signal-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -62,9 +63,14 @@ NS_ASSUME_NONNULL_BEGIN
     ];
 }
 
-- (UIViewController *)frontmostViewController
+- (nullable UIViewController *)frontmostViewController
 {
-    return UIApplication.sharedApplication.frontmostViewController;
+    return UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
+}
+
+- (void)openSystemSettings
+{
+    [UIApplication.sharedApplication openSystemSettings];
 }
 
 @end
