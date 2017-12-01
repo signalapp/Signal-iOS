@@ -6,8 +6,6 @@
 
 @interface DebugLogger : NSObject
 
-@property (nonatomic) DDFileLogger *fileLogger;
-
 + (instancetype)sharedLogger;
 
 - (void)enableFileLogging;
