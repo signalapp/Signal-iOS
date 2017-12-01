@@ -6,6 +6,8 @@
 
 @interface DebugLogger : NSObject
 
+@property (nonatomic) DDFileLogger *fileLogger;
+
 + (instancetype)sharedLogger;
 
 - (void)enableFileLogging;
@@ -16,8 +18,6 @@
 
 - (void)wipeLogs;
 
-- (NSString *)logsDirectory;
-
-@property (nonatomic) DDFileLogger *fileLogger;
+- (NSArray<NSString *> *)allLogFilePaths;
 
 @end

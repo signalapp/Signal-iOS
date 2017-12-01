@@ -1408,22 +1408,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     dispatch_once(&onceToken, ^{
         profileAvatarsDirPath = OWSProfileManager.sharedDataProfileAvatarsDirPath;
 
-        BOOL isDirectory;
-        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:profileAvatarsDirPath isDirectory:&isDirectory];
-        if (exists) {
-            OWSAssert(isDirectory);
-
-            DDLogInfo(@"Profile avatars directory already exists");
-        } else {
-            NSError *error = nil;
-            [[NSFileManager defaultManager] createDirectoryAtPath:profileAvatarsDirPath
-                                      withIntermediateDirectories:YES
-                                                       attributes:nil
-                                                            error:&error];
-            if (error) {
-                DDLogError(@"Failed to create profile avatars directory: %@", error);
-            }
-        }
+        [OWSFileSystem ensureDirectoryExists:profileAvatarsDirPath];
 
         [OWSFileSystem protectFolderAtPath:profileAvatarsDirPath];
     });

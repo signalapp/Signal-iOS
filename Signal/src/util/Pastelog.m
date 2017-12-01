@@ -3,7 +3,8 @@
 //
 
 #import "Pastelog.h"
-#include <sys/sysctl.h>
+#import "DebugLogger.h"
+#import <sys/sysctl.h>
 
 @interface Pastelog ()
 
@@ -59,18 +60,21 @@
                                                                otherButtonTitles:nil];
     [[self sharedManager].loadingAlertView show];
 
-    NSArray *fileNames = fileLogger.logFileManager.sortedLogFileNames;
-    NSArray *filePaths = fileLogger.logFileManager.sortedLogFilePaths;
+    NSArray<NSString *> *logFilePaths = DebugLogger.sharedLogger.allLogFilePaths;
 
-    NSMutableDictionary *gistFiles = [@{} mutableCopy];
+    NSMutableDictionary *gistFiles = [NSMutableDictionary new];
 
-    NSError *error;
-
-    for (unsigned int i = 0; i < [filePaths count]; i++) {
-        [gistFiles setObject:@{@"content":[NSString stringWithContentsOfFile:[filePaths objectAtIndex:i] encoding:NSUTF8StringEncoding error:&error]} forKey:[fileNames objectAtIndex:i]];
-    }
-
-    if (error) {
+    for (NSString *logFilePath in logFilePaths) {
+        NSError *error;
+        NSString *logContents =
+            [NSString stringWithContentsOfFile:logFilePath encoding:NSUTF8StringEncoding error:&error];
+        if (error) {
+            OWSFail(@"%@ Error loading log file contents: %@", self.logTag, error);
+            continue;
+        }
+        gistFiles[logFilePath.lastPathComponent] = @{
+            @"content" : logContents,
+        };
     }
 
     NSDictionary *gistDict = @{@"description":[self gistDescription], @"files":gistFiles};

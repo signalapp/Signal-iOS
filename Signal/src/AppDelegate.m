@@ -94,16 +94,16 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // This should be the first thing we do.
     SetCurrentAppContext([MainAppContext new]);
 
-    BOOL loggingIsEnabled;
+    BOOL isLoggingEnabled;
 #ifdef DEBUG
     // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
     // the phone directory being looked up during tests.
-    loggingIsEnabled = TRUE;
+    isLoggingEnabled = TRUE;
     [DebugLogger.sharedLogger enableTTYLogging];
 #elif RELEASE
-    loggingIsEnabled = OWSPreferences.loggingIsEnabled;
+    isLoggingEnabled = OWSPreferences.isLoggingEnabled;
 #endif
-    if (loggingIsEnabled) {
+    if (isLoggingEnabled) {
         [DebugLogger.sharedLogger enableFileLogging];
     }
 
@@ -117,7 +117,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // ensureIsReadyForAppExtensions may have changed the state of the logging
     // preference (due to [NSUserDefaults migrateToSharedUserDefaults]), so honor
     // that change if necessary.
-    if (loggingIsEnabled && !OWSPreferences.loggingIsEnabled) {
+    if (isLoggingEnabled && !OWSPreferences.isLoggingEnabled) {
         [DebugLogger.sharedLogger disableFileLogging];
     }
 #endif

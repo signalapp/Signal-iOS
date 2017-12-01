@@ -3,6 +3,7 @@
 //
 
 #import "MIMETypeUtil.h"
+#import "OWSFileSystem.h"
 
 #if TARGET_OS_IPHONE
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -321,15 +322,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             NSString *attachmentFolderPath = [folder stringByAppendingPathComponent:uniqueId];
             NSError *error = nil;
             BOOL attachmentFolderPathExists = [[NSFileManager defaultManager] fileExistsAtPath:attachmentFolderPath];
-            if (!attachmentFolderPathExists) {
-                [[NSFileManager defaultManager] createDirectoryAtPath:attachmentFolderPath
-                                          withIntermediateDirectories:YES
-                                                           attributes:nil
-                                                                error:&error];
-                if (error) {
-                    OWSFail(@"Failed to create attachment directory: %@", error);
-                    return nil;
-                }
+            if (![OWSFileSystem ensureDirectoryExists:attachmentFolderPath]) {
+                return nil;
             }
             return [attachmentFolderPath
                 stringByAppendingPathComponent:[NSString

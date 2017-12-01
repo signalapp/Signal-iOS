@@ -14,9 +14,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)appSharedDataDirectoryPath;
 
++ (NSString *)cachesDirectoryPath;
+
 + (void)moveAppFilePath:(NSString *)oldFilePath
      sharedDataFilePath:(NSString *)newFilePath
           exceptionName:(NSString *)exceptionName;
+
+// Returns NO IFF the directory does not exist and could not be created.
++ (BOOL)ensureDirectoryExists:(NSString *)dirPath;
 
 @end
 
