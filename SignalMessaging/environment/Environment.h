@@ -13,21 +13,13 @@
  *
  **/
 
+@class ContactsUpdater;
+@class OWSContactsManager;
+@class OWSMessageSender;
+@class TSGroupThread;
+@class TSNetworkManager;
 @class TSThread;
 @class UINavigationController;
-@class OWSContactsManager;
-@class OutboundCallInitiator;
-@class HomeViewController;
-@class TSGroupThread;
-@class ContactsUpdater;
-@class TSNetworkManager;
-@class AccountManager;
-@class OWSWebRTCCallMessageHandler;
-@class CallUIAdapter;
-@class CallService;
-@class OWSMessageSender;
-@class NotificationsManager;
-@class OWSMessageFetcherJob;
 
 @interface Environment : NSObject
 
@@ -36,20 +28,12 @@
                          networkManager:(TSNetworkManager *)networkManager
                           messageSender:(OWSMessageSender *)messageSender;
 
-@property (nonatomic, readonly) AccountManager *accountManager;
-@property (nonatomic, readonly) OWSWebRTCCallMessageHandler *callMessageHandler;
-@property (nonatomic, readonly) CallUIAdapter *callUIAdapter;
-@property (nonatomic, readonly) CallService *callService;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
-@property (nonatomic, readonly) NotificationsManager *notificationsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSPreferences *preferences;
-@property (nonatomic, readonly) OWSMessageFetcherJob *messageFetcherJob;
 
-@property (nonatomic, readonly) HomeViewController *homeViewController;
 @property (nonatomic, readonly, weak) UINavigationController *signUpFlowNavigationController;
 
 + (Environment *)getCurrent;
@@ -57,16 +41,6 @@
 
 + (OWSPreferences *)preferences;
 
-+ (void)resetAppData;
-
-- (void)setHomeViewController:(HomeViewController *)homeViewController;
 - (void)setSignUpFlowNavigationController:(UINavigationController *)signUpFlowNavigationController;
-
-+ (void)presentConversationForRecipientId:(NSString *)recipientId;
-+ (void)presentConversationForRecipientId:(NSString *)recipientId withCompose:(BOOL)compose;
-+ (void)callRecipientId:(NSString *)recipientId;
-+ (void)presentConversationForThreadId:(NSString *)threadId;
-+ (void)presentConversationForThread:(TSThread *)thread;
-+ (void)presentConversationForThread:(TSThread *)thread withCompose:(BOOL)compose;
 
 @end

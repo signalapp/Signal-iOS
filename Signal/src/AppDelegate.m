@@ -25,6 +25,7 @@
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
+#import <SignalMessaging/OWSMath.h>
 #import <SignalMessaging/SignalMessaging.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
@@ -126,15 +127,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [self startupLogging];
 
-    // Set the seed the generator for rand().
-    //
-    // We should always use arc4random() instead of rand(), but we
-    // still want to ensure that any third-party code that uses rand()
-    // gets random values.
-    srand((unsigned int)time(NULL));
+    SetRandFunctionSeed();
 
     // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
-    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
+    [TSStorageManager verifyDBKeysAvailableBeforeBackgroundLaunch];
 
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).
@@ -856,23 +852,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                         forLocalNotification:notification
                             withResponseInfo:responseInfo
                            completionHandler:completionHandler];
-}
-
-/**
- *  The user must unlock the device once after reboot before the database encryption key can be accessed.
- */
-- (void)verifyDBKeysAvailableBeforeBackgroundLaunch
-{
-    if (UIApplication.sharedApplication.applicationState != UIApplicationStateBackground) {
-        return;
-    }
-
-    if (![TSStorageManager isDatabasePasswordAccessible]) {
-        DDLogInfo(
-            @"%@ exiting because we are in the background and the database password is not accessible.", self.logTag);
-        [DDLog flushLog];
-        exit(0);
-    }
 }
 
 - (void)databaseViewRegistrationComplete

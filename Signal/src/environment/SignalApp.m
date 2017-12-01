@@ -2,79 +2,59 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "Environment.h"
+#import "SignalApp.h"
 #import "ConversationViewController.h"
-#import "DebugLogger.h"
 #import "HomeViewController.h"
 #import "Signal-Swift.h"
-#import "SignalKeyingStorage.h"
-#import "TSContactThread.h"
-#import "TSGroupThread.h"
-#import <SignalServiceKit/ContactsUpdater.h>
-#import <SignalServiceKit/OWSMessageReceiver.h>
-#import <SignalServiceKit/OWSSignalService.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSGroupThread.h>
+#import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/Threading.h>
 
-static Environment *environment = nil;
+@interface SignalApp ()
 
-@implementation Environment
+@property (nonatomic) OWSWebRTCCallMessageHandler *callMessageHandler;
+@property (nonatomic) CallService *callService;
+@property (nonatomic) OutboundCallInitiator *outboundCallInitiator;
+@property (nonatomic) OWSMessageFetcherJob *messageFetcherJob;
+@property (nonatomic) NotificationsManager *notificationsManager;
+@property (nonatomic) AccountManager *accountManager;
 
-@synthesize accountManager = _accountManager,
-            callMessageHandler = _callMessageHandler,
-            callService = _callService,
-            contactsManager = _contactsManager,
-            contactsUpdater = _contactsUpdater,
-            messageFetcherJob = _messageFetcherJob,
-            messageSender = _messageSender,
-            networkManager = _networkManager,
-            notificationsManager = _notificationsManager,
-            preferences = _preferences,
-            outboundCallInitiator = _outboundCallInitiator;
+@end
 
-+ (Environment *)getCurrent {
-    NSAssert((environment != nil), @"Environment is not defined.");
-    return environment;
+#pragma mark -
+
+@implementation SignalApp
+
++ (instancetype)sharedApp
+{
+    static SignalApp *sharedApp = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedApp = [[self alloc] initDefault];
+    });
+    return sharedApp;
 }
 
-+ (void)setCurrent:(Environment *)curEnvironment {
-    environment = curEnvironment;
-}
-
-- (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
-                        contactsUpdater:(ContactsUpdater *)contactsUpdater
-                         networkManager:(TSNetworkManager *)networkManager
-                          messageSender:(OWSMessageSender *)messageSender
+- (instancetype)initDefault
 {
     self = [super init];
+
     if (!self) {
         return self;
     }
-
-    _contactsManager = contactsManager;
-    _contactsUpdater = contactsUpdater;
-    _networkManager = networkManager;
-    _messageSender = messageSender;
 
     OWSSingletonAssert();
 
     return self;
 }
 
-- (AccountManager *)accountManager
-{
-    @synchronized (self) {
-        if (!_accountManager) {
-            _accountManager = [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                                                           preferences:self.preferences];
-        }
-    }
-
-    return _accountManager;
-}
+#pragma mark - Singletons
 
 - (OWSWebRTCCallMessageHandler *)callMessageHandler
 {
-    @synchronized (self) {
+    @synchronized(self)
+    {
         if (!_callMessageHandler) {
             _callMessageHandler = [[OWSWebRTCCallMessageHandler alloc] initWithAccountManager:self.accountManager
                                                                                   callService:self.callService
@@ -87,7 +67,8 @@ static Environment *environment = nil;
 
 - (CallService *)callService
 {
-    @synchronized (self) {
+    @synchronized(self)
+    {
         if (!_callService) {
             OWSAssert(self.accountManager);
             OWSAssert(self.contactsManager);
@@ -109,7 +90,8 @@ static Environment *environment = nil;
 
 - (OutboundCallInitiator *)outboundCallInitiator
 {
-    @synchronized (self) {
+    @synchronized(self)
+    {
         if (!_outboundCallInitiator) {
             OWSAssert(self.contactsManager);
             OWSAssert(self.contactsUpdater);
@@ -119,24 +101,6 @@ static Environment *environment = nil;
     }
 
     return _outboundCallInitiator;
-}
-
-- (OWSContactsManager *)contactsManager
-{
-    OWSAssert(_contactsManager != nil);
-    return _contactsManager;
-}
-
-- (ContactsUpdater *)contactsUpdater
-{
-    OWSAssert(_contactsUpdater != nil);
-    return _contactsUpdater;
-}
-
-- (TSNetworkManager *)networkManager
-{
-    OWSAssert(_networkManager != nil);
-    return _networkManager;
 }
 
 - (OWSMessageFetcherJob *)messageFetcherJob
@@ -153,15 +117,10 @@ static Environment *environment = nil;
     return _messageFetcherJob;
 }
 
-- (OWSMessageSender *)messageSender
-{
-    OWSAssert(_messageSender != nil);
-    return _messageSender;
-}
-
 - (NotificationsManager *)notificationsManager
 {
-    @synchronized (self) {
+    @synchronized(self)
+    {
         if (!_notificationsManager) {
             _notificationsManager = [NotificationsManager new];
         }
@@ -170,49 +129,37 @@ static Environment *environment = nil;
     return _notificationsManager;
 }
 
-+ (OWSPreferences *)preferences
+- (AccountManager *)accountManager
 {
-    OWSAssert([Environment getCurrent] != nil);
-    OWSAssert([Environment getCurrent].preferences != nil);
-    return [Environment getCurrent].preferences;
-}
-
-- (OWSPreferences *)preferences
-{
-    @synchronized (self) {
-        if (!_preferences) {
-            _preferences = [OWSPreferences new];
+    @synchronized(self)
+    {
+        if (!_accountManager) {
+            _accountManager = [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
+                                                                           preferences:self.preferences];
         }
     }
 
-    return _preferences;
+    return _accountManager;
 }
 
-- (void)setHomeViewController:(HomeViewController *)homeViewController
-{
-    _homeViewController = homeViewController;
-}
+#pragma mark - View Convenience Methods
 
-- (void)setSignUpFlowNavigationController:(UINavigationController *)navigationController {
-    _signUpFlowNavigationController = navigationController;
-}
-
-+ (void)presentConversationForRecipientId:(NSString *)recipientId
+- (void)presentConversationForRecipientId:(NSString *)recipientId
 {
     [self presentConversationForRecipientId:recipientId keyboardOnViewAppearing:YES callOnViewAppearing:NO];
 }
 
-+ (void)presentConversationForRecipientId:(NSString *)recipientId withCompose:(BOOL)compose
+- (void)presentConversationForRecipientId:(NSString *)recipientId withCompose:(BOOL)compose
 {
     [self presentConversationForRecipientId:recipientId keyboardOnViewAppearing:compose callOnViewAppearing:NO];
 }
 
-+ (void)callRecipientId:(NSString *)recipientId
+- (void)callRecipientId:(NSString *)recipientId
 {
     [self presentConversationForRecipientId:recipientId keyboardOnViewAppearing:NO callOnViewAppearing:YES];
 }
 
-+ (void)presentConversationForRecipientId:(NSString *)recipientId
+- (void)presentConversationForRecipientId:(NSString *)recipientId
                   keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
                       callOnViewAppearing:(BOOL)callOnViewAppearing
 {
@@ -231,7 +178,7 @@ static Environment *environment = nil;
     });
 }
 
-+ (void)presentConversationForThreadId:(NSString *)threadId
+- (void)presentConversationForThreadId:(NSString *)threadId
 {
     OWSAssert(threadId.length > 0);
 
@@ -244,17 +191,17 @@ static Environment *environment = nil;
     [self presentConversationForThread:thread];
 }
 
-+ (void)presentConversationForThread:(TSThread *)thread
+- (void)presentConversationForThread:(TSThread *)thread
 {
     [self presentConversationForThread:thread withCompose:YES];
 }
 
-+ (void)presentConversationForThread:(TSThread *)thread withCompose:(BOOL)compose
+- (void)presentConversationForThread:(TSThread *)thread withCompose:(BOOL)compose
 {
     [self presentConversationForThread:thread keyboardOnViewAppearing:compose callOnViewAppearing:NO];
 }
 
-+ (void)presentConversationForThread:(TSThread *)thread
+- (void)presentConversationForThread:(TSThread *)thread
              keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
                  callOnViewAppearing:(BOOL)callOnViewAppearing
 {
@@ -277,14 +224,16 @@ static Environment *environment = nil;
             }
         }
 
-        Environment *env = [self getCurrent];
-        [env.homeViewController presentThread:thread
-                      keyboardOnViewAppearing:keyboardOnViewAppearing
-                          callOnViewAppearing:callOnViewAppearing];
+        [self.homeViewController presentThread:thread
+                       keyboardOnViewAppearing:keyboardOnViewAppearing
+                           callOnViewAppearing:callOnViewAppearing];
     });
 }
 
-+ (void)resetAppData {
+#pragma mark - Methods
+
++ (void)resetAppData
+{
     // This _should_ be wiped out below.
     DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];

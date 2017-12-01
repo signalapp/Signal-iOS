@@ -6,6 +6,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^BackgroundTaskExpirationHandler)(void);
 
+@class OWSDatabaseMigration;
+
 @protocol AppContext <NSObject>
 
 - (BOOL)isMainApp;
@@ -27,6 +29,8 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 - (void)setMainAppBadgeNumber:(NSInteger)value;
 
 - (BOOL)isRTL;
+
+- (NSArray<OWSDatabaseMigration *> *)allMigrations;
 
 @end
 

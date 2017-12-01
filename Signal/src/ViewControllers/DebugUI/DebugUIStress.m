@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import "OWSMessageSender.h"
 #import "OWSTableViewController.h"
+#import "SignalApp.h"
 #import "ThreadUtil.h"
 #import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSDate+OWS.h>
@@ -484,8 +485,8 @@ NS_ASSUME_NONNULL_BEGIN
          thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
      }];
     OWSAssert(thread);
-    
-    [Environment presentConversationForThread:thread];
+
+    [SignalApp.sharedApp presentConversationForThread:thread];
 }
 
 @end

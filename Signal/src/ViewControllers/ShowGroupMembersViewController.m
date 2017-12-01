@@ -10,6 +10,7 @@
 #import "HomeViewController.h"
 #import "OWSContactsManager.h"
 #import "Signal-Swift.h"
+#import "SignalApp.h"
 #import "UIUtil.h"
 #import "ViewControllerUtils.h"
 #import <AddressBookUI/AddressBookUI.h>
@@ -408,12 +409,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(recipientId.length > 0);
 
-    [Environment presentConversationForRecipientId:recipientId withCompose:YES];
+    [SignalApp.sharedApp presentConversationForRecipientId:recipientId withCompose:YES];
 }
 
 - (void)callMember:(NSString *)recipientId
 {
-    [Environment callRecipientId:recipientId];
+    [SignalApp.sharedApp callRecipientId:recipientId];
 }
 
 - (void)showSafetyNumberView:(NSString *)recipientId

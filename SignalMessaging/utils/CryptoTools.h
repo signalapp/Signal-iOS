@@ -8,6 +8,8 @@
 @interface CryptoTools : NSObject
 
 /// Returns data composed of 'length' cryptographically unpredictable bytes sampled uniformly from [0, 256).
+//
+// TODO: Is this redundant with: [SecurityUtils generateRandomBytes]?
 + (NSData *)generateSecureRandomData:(NSUInteger)length;
 
 @end

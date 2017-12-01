@@ -6,9 +6,10 @@
 
 @implementation CryptoTools
 
-+ (NSData *)generateSecureRandomData:(NSUInteger)length {
++ (NSData *)generateSecureRandomData:(NSUInteger)length
+{
     NSMutableData *d = [NSMutableData dataWithLength:length];
-    OSStatus status  = SecRandomCopyBytes(kSecRandomDefault, length, [d mutableBytes]);
+    OSStatus status = SecRandomCopyBytes(kSecRandomDefault, length, [d mutableBytes]);
     if (status != noErr) {
         [SecurityFailure raise:@"SecRandomCopyBytes failed"];
     }

@@ -7,6 +7,7 @@
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
 #import "Signal-Swift.h"
+#import "SignalApp.h"
 #import "ThreadUtil.h"
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSDevice.h>
@@ -141,7 +142,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     NSString *_Nullable threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
 
     if (threadId) {
-        [Environment presentConversationForThreadId:threadId];
+        [SignalApp.sharedApp presentConversationForThreadId:threadId];
     } else {
         OWSFail(@"%@ threadId was unexpectedly nil in %s", self.logTag, __PRETTY_FUNCTION__);
     }
@@ -246,7 +247,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
 
         if (threadId) {
-            [Environment presentConversationForThreadId:threadId];
+            [SignalApp.sharedApp presentConversationForThreadId:threadId];
         } else {
             OWSFail(@"%@ threadId was unexpectedly nil in action with identifier: %@", self.logTag, identifier);
         }
@@ -255,7 +256,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
         OWSFail(@"%@ Unhandled action with identifier: %@", self.logTag, identifier);
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
         if (threadId) {
-            [Environment presentConversationForThreadId:threadId];
+            [SignalApp.sharedApp presentConversationForThreadId:threadId];
         } else {
             OWSFail(@"%@ threadId was unexpectedly nil in action with identifier: %@", self.logTag, identifier);
         }

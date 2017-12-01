@@ -45,7 +45,8 @@
 }
 
 // TODELETE
-+ (Environment *)unitTestEnvironment:(NSArray *)testingAndLegacyOptions {
++ (Environment *)unitTestEnvironment:(NSArray *)testingAndLegacyOptions
+{
     TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
     OWSContactsManager *contactsManager = [OWSContactsManager new];
     ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];

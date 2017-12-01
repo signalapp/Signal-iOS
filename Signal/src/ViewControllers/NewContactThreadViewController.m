@@ -10,6 +10,7 @@
 #import "NewNonContactConversationViewController.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
+#import "SignalApp.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
@@ -813,7 +814,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread != nil);
     [self dismissViewControllerAnimated:YES
                              completion:^() {
-                                 [Environment presentConversationForThread:thread withCompose:YES];
+                                 [SignalApp.sharedApp presentConversationForThread:thread withCompose:YES];
                              }];
 }
 
