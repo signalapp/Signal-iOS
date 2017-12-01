@@ -28,7 +28,7 @@ class ExperienceUpgrade: TSYapDatabaseObject {
         super.init(uniqueId: uniqueId)
     }
 
-    required init!(coder: NSCoder!) {
+    required init!(coder: NSCoder) {
         // This is the unfortunate seam between strict swift and fast-and-loose objc
         // we can't leave these properties nil, since we really "don't know" that the superclass
         // will assign them.
