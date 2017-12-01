@@ -7,7 +7,7 @@ import Foundation
 /**
  * We synchronize access to state in this class using this queue.
  */
-func assertOnQueue(_ queue: DispatchQueue) {
+public func assertOnQueue(_ queue: DispatchQueue) {
     if #available(iOS 10.0, *) {
         dispatchPrecondition(condition: .onQueue(queue))
     } else {
@@ -15,7 +15,7 @@ func assertOnQueue(_ queue: DispatchQueue) {
     }
 }
 
-func owsFail(_ message: String) {
+public func owsFail(_ message: String) {
     Logger.error(message)
     Logger.flush()
     assertionFailure(message)

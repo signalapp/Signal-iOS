@@ -5,6 +5,7 @@
 import Foundation
 import ObjectiveC
 import SignalServiceKit
+import SignalMessaging
 
 // Stills should be loaded before full GIFs.
 enum GiphyRequestPriority {

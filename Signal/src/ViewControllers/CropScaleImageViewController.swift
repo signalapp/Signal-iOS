@@ -4,6 +4,7 @@
 
 import Foundation
 import MediaPlayer
+import SignalMessaging
 
 class OWSLayerView: UIView {
     let layoutCallback : (() -> Void)

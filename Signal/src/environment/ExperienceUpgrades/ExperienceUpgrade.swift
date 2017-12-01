@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalServiceKit
+import SignalMessaging
 
 class ExperienceUpgrade: TSYapDatabaseObject {
     let title: String

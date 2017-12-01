@@ -5,6 +5,7 @@
 import Foundation
 import JSQMessagesViewController
 import SignalServiceKit
+import SignalMessaging
 
 @objc
 class OWSMessagesBubbleImageFactory: NSObject {
