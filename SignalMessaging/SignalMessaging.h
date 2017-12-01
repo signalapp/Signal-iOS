@@ -10,4 +10,5 @@ FOUNDATION_EXPORT double SignalMessagingVersionNumber;
 //! Project version string for SignalMessaging.
 FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import <SignalMessaging/PublicHeader.h>
+// The public headers of the framework
+#import <SignalMessaging/OWSLogger.h>

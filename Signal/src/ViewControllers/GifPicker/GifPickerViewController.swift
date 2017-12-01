@@ -5,6 +5,7 @@
 import Foundation
 import SignalServiceKit
 import Reachability
+import SignalMessaging
 
 @objc
 protocol GifPickerViewControllerDelegate: class {

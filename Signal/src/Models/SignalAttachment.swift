@@ -5,6 +5,7 @@
 import Foundation
 import MobileCoreServices
 import SignalServiceKit
+import SignalMessaging
 
 enum SignalAttachmentError: Error {
     case missingData

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 private class IntroductingReadReceiptsExperienceUpgradeViewController: ExperienceUpgradeViewController {
 

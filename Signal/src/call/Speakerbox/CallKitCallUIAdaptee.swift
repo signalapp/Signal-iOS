@@ -7,6 +7,7 @@ import UIKit
 import CallKit
 import AVFoundation
 import SignalServiceKit
+import SignalMessaging
 
 /**
  * Connects user interface to the CallService using CallKit.

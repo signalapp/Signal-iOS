@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import SignalMessaging
 
 @objc
 class SlideOffAnimatedTransition: NSObject, UIViewControllerAnimatedTransitioning {

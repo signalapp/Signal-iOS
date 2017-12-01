@@ -26,7 +26,7 @@
 		343D3D9B1E9283F100165CA4 /* BlockListUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */; };
 		34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */; };
 		34480B491FD0A60200BC14EF /* OWSMath.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B481FD0A60200BC14EF /* OWSMath.h */; };
-		34480B521FD0A7A400BC14EF /* OWSLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4A1FD0A7A200BC14EF /* OWSLogger.h */; };
+		34480B521FD0A7A400BC14EF /* OWSLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4A1FD0A7A200BC14EF /* OWSLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34480B531FD0A7A400BC14EF /* OWSLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B4B1FD0A7A300BC14EF /* OWSLogger.m */; };
 		34480B551FD0A7A400BC14EF /* DebugLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4D1FD0A7A300BC14EF /* DebugLogger.h */; };
 		34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B4E1FD0A7A300BC14EF /* DebugLogger.m */; };
@@ -43,7 +43,9 @@
 		34533F181EA8D2070006114F /* OWSAudioAttachmentPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */; };
 		3453D8EA1EC0D4ED003F9E6F /* OWSAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453D8E91EC0D4ED003F9E6F /* OWSAlerts.swift */; };
 		345671011E89A5F1006EE662 /* ThreadUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 345671001E89A5F1006EE662 /* ThreadUtil.m */; };
+		3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461284A1FD0B93F00532771 /* SAELoadViewController.swift */; };
 		346129321FD1A26100532771 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 346129051FD1A25B00532771 /* Localizable.strings */; };
+		346129341FD1A88700532771 /* OWSSwiftUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129331FD1A88700532771 /* OWSSwiftUtils.swift */; };
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
 		3471B1DA1EB7C63600F6AEC8 /* NewNonContactConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */; };
 		3472229F1EB22FFE00E53955 /* AddToGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3472229E1EB22FFE00E53955 /* AddToGroupViewController.m */; };
@@ -130,7 +132,6 @@
 		34D9134D1F66DB7C00722898 /* ModalActivityIndicatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D9134C1F66DB7C00722898 /* ModalActivityIndicatorViewController.swift */; };
 		34D99C8C1F27B13B00D284D6 /* OWSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C8B1F27B13B00D284D6 /* OWSViewController.m */; };
 		34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */; };
-		34D99C941F2937CC00D284D6 /* OWSSwiftUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C921F2937CC00D284D6 /* OWSSwiftUtils.swift */; };
 		34DFCB851E8E04B500053165 /* AddToBlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DFCB841E8E04B500053165 /* AddToBlockListViewController.m */; };
 		34E3E5681EC4B19400495BAC /* AudioProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E3E5671EC4B19400495BAC /* AudioProgressView.swift */; };
 		34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0C1EFC235B007F6822 /* DebugUIDiskUsage.m */; };
@@ -197,7 +198,6 @@
 		4542F0961EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542F0951EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift */; };
 		4542F0971EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542F0951EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift */; };
 		45464DBC1DFA041F001D3FD6 /* DataChannelMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */; };
-		454EBAB31F2BC08800ACE0BB /* OWSSwiftUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C921F2937CC00D284D6 /* OWSSwiftUtils.swift */; };
 		454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */; };
 		4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4556FA671F54AA9500AF40DD /* DebugUIProfile.swift */; };
 		4556FA691F54AA9500AF40DD /* DebugUIProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4556FA671F54AA9500AF40DD /* DebugUIProfile.swift */; };
@@ -527,6 +527,7 @@
 		3453D8E91EC0D4ED003F9E6F /* OWSAlerts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAlerts.swift; sourceTree = "<group>"; };
 		345670FF1E89A5F1006EE662 /* ThreadUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadUtil.h; sourceTree = "<group>"; };
 		345671001E89A5F1006EE662 /* ThreadUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadUtil.m; sourceTree = "<group>"; };
+		3461284A1FD0B93F00532771 /* SAELoadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAELoadViewController.swift; sourceTree = "<group>"; };
 		346129061FD1A25B00532771 /* bs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bs; path = Signal/translations/bs.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		346129071FD1A25B00532771 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = Signal/translations/he.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		346129081FD1A25B00532771 /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = Signal/translations/hu.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
@@ -571,6 +572,7 @@
 		3461292F1FD1A26000532771 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Signal/translations/en.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		346129301FD1A26000532771 /* tr_TR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr_TR; path = Signal/translations/tr_TR.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		346129311FD1A26100532771 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = Signal/translations/es.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
+		346129331FD1A88700532771 /* OWSSwiftUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSwiftUtils.swift; sourceTree = "<group>"; };
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		3471B1D81EB7C63600F6AEC8 /* NewNonContactConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewNonContactConversationViewController.h; sourceTree = "<group>"; };
 		3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewNonContactConversationViewController.m; sourceTree = "<group>"; };
@@ -724,7 +726,6 @@
 		34D99C8A1F27B13B00D284D6 /* OWSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSViewController.h; sourceTree = "<group>"; };
 		34D99C8B1F27B13B00D284D6 /* OWSViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSViewController.m; sourceTree = "<group>"; };
 		34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAnalytics.swift; sourceTree = "<group>"; };
-		34D99C921F2937CC00D284D6 /* OWSSwiftUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSwiftUtils.swift; sourceTree = "<group>"; };
 		34DFCB831E8E04B400053165 /* AddToBlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddToBlockListViewController.h; sourceTree = "<group>"; };
 		34DFCB841E8E04B500053165 /* AddToBlockListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddToBlockListViewController.m; sourceTree = "<group>"; };
 		34E3E5671EC4B19400495BAC /* AudioProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioProgressView.swift; sourceTree = "<group>"; };
@@ -1146,6 +1147,7 @@
 				34480B481FD0A60200BC14EF /* OWSMath.h */,
 				34480B4F1FD0A7A300BC14EF /* OWSScrubbingLogFormatter.h */,
 				34480B511FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m */,
+				346129331FD1A88700532771 /* OWSSwiftUtils.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -1437,6 +1439,7 @@
 				4535186F1FC635DD00210559 /* Info.plist */,
 				346129051FD1A25B00532771 /* Localizable.strings */,
 				4535186C1FC635DD00210559 /* MainInterface.storyboard */,
+				3461284A1FD0B93F00532771 /* SAELoadViewController.swift */,
 				4535186A1FC635DD00210559 /* ShareViewController.swift */,
 				34480B371FD092A900BC14EF /* SignalShareExtension-Bridging-Header.h */,
 				34480B381FD092E300BC14EF /* SignalShareExtension-Prefix.pch */,
@@ -1449,9 +1452,9 @@
 		453518931FC63DBF00210559 /* SignalMessaging */ = {
 			isa = PBXGroup;
 			children = (
+				34480B5C1FD0A98800BC14EF /* categories */,
 				453518951FC63DBF00210559 /* Info.plist */,
 				34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */,
-				34480B5C1FD0A98800BC14EF /* categories */,
 				453518941FC63DBF00210559 /* SignalMessaging.h */,
 				453518A01FC63DD500210559 /* StorageCoordinator.swift */,
 				34480B471FD0A60200BC14EF /* utils */,
@@ -1704,7 +1707,6 @@
 				34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */,
 				34D5CC941EA6AFAD005515DB /* OWSContactsSyncing.h */,
 				34D5CC951EA6AFAD005515DB /* OWSContactsSyncing.m */,
-				34D99C921F2937CC00D284D6 /* OWSSwiftUtils.swift */,
 				4579431C1E7C8CE9008ED0C0 /* Pastelog.h */,
 				4579431D1E7C8CE9008ED0C0 /* Pastelog.m */,
 				450DF2041E0D74AC003D14BE /* Platform.swift */,
@@ -2670,6 +2672,7 @@
 			files = (
 				4535186B1FC635DD00210559 /* ShareViewController.swift in Sources */,
 				34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */,
+				3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2682,6 +2685,7 @@
 				34480B531FD0A7A400BC14EF /* OWSLogger.m in Sources */,
 				34480B641FD0A98800BC14EF /* UIView+OWS.m in Sources */,
 				34480B671FD0AA9400BC14EF /* UIFont+OWS.m in Sources */,
+				346129341FD1A88700532771 /* OWSSwiftUtils.swift in Sources */,
 				34480B591FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m in Sources */,
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
 			);
@@ -2874,7 +2878,6 @@
 				34B3F88B1E8DF1700035BE1A /* OWSLinkedDevicesTableViewController.m in Sources */,
 				45666F7E1D9C0814008FE134 /* OWSDatabaseMigrationRunner.m in Sources */,
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,
-				34D99C941F2937CC00D284D6 /* OWSSwiftUtils.swift in Sources */,
 				34C42D661F4734ED0072EC04 /* OWSContactOffersInteraction.m in Sources */,
 				34B3F8941E8DF1710035BE1A /* HomeViewController.m in Sources */,
 				34E8BF381EE9E2FD00F5F4CA /* FingerprintViewScanController.m in Sources */,
@@ -2936,7 +2939,6 @@
 				45360B911F952AA900FA666C /* MarqueeLabel.swift in Sources */,
 				45FBC5D21DF8592E00E9B410 /* SignalCall.swift in Sources */,
 				451A13B21E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */,
-				454EBAB31F2BC08800ACE0BB /* OWSSwiftUtils.swift in Sources */,
 				4542F0971EBB9E9A00C7EE92 /* Promise+retainUntilComplete.swift in Sources */,
 				451DA3C91F1489BE008E2423 /* OWSAlerts.swift in Sources */,
 				45855F381D9498A40084F340 /* OWSContactAvatarBuilder.m in Sources */,
@@ -3530,6 +3532,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3600,6 +3603,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3671,6 +3675,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

@@ -5,6 +5,7 @@
 import Foundation
 import AVFoundation
 import SignalServiceKit
+import SignalMessaging
 
 public let CallAudioServiceSessionChanged = Notification.Name("CallAudioServiceSessionChanged")
 

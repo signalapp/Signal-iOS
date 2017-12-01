@@ -6,6 +6,7 @@ import Foundation
 import Contacts
 import ContactsUI
 import SignalServiceKit
+import SignalMessaging
 
 enum Result<T, ErrorType> {
     case success(T)
