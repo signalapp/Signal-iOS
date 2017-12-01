@@ -11,7 +11,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 void AssertIsOnSessionStoreQueue()
 {
 #ifdef DEBUG
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
+    if (@available(iOS 10.0, *)) {
         dispatch_assert_queue([OWSDispatch sessionStoreQueue]);
     } // else, skip assert as it's a development convenience.
 #endif
