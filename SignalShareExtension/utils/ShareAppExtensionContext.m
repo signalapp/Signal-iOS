@@ -18,6 +18,15 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (BOOL)isRTL
+{
+    // Borrowed from PureLayout's AppExtension compatible RTL support.
+    // App Extensions may not access -[UIApplication sharedApplication]; fall back to checking the bundle's preferred
+    // localization character direction
+    return [NSLocale characterDirectionForLanguage:[[NSBundle mainBundle] preferredLocalizations][0]]
+        == NSLocaleLanguageDirectionRightToLeft;
+}
+
 - (UIApplicationState)mainApplicationState
 {
     OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);

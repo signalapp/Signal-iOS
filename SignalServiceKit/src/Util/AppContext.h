@@ -26,6 +26,8 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 // Should only be called if isMainApp is YES.
 - (void)setMainAppBadgeNumber:(NSInteger)value;
 
+- (BOOL)isRTL;
+
 @end
 
 id<AppContext> CurrentAppContext(void);

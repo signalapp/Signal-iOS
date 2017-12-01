@@ -4,6 +4,7 @@
 
 #import "OWSMath.h"
 #import "UIView+OWS.h"
+#import <SignalServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -256,8 +257,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
         return ([UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute]
             == UIUserInterfaceLayoutDirectionRightToLeft);
     } else {
-        return
-            [UIApplication sharedApplication].userInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft;
+        return [CurrentAppContext() isRTL];
     }
 }
 
