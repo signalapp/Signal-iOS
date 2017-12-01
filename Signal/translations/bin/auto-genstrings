@@ -12,8 +12,7 @@ SM_DIR="./SignalMessaging"
 
 TARGETS="Signal/src ${SSK_DIR} ${SAE_DIR} ${SM_DIR}"
 TMP="$(mktemp -d)"
-MAIN_STRINGFILE="Signal/translations/en.lproj/Localizable.strings"
-SAE_STRINGFILE="SignalShareExtension/translations/en.lproj/Localizable.strings"
+STRINGFILE="Signal/translations/en.lproj/Localizable.strings"
 
 # Assert preconditions before we do any work
 # We're more likely to notice errors this way
@@ -40,8 +39,8 @@ fi
 find $TARGETS -name "*.m" -print0 -o -name "*.h" -print0 -o -name "*.swift" -print0 | xargs -0 genstrings -o $TMP
 
 # We have to convert the new .strings files to UTF-8 in order to deal with them
-# MAIN_STRINGFILE is already UTF-8.
-OLDUTF8=$(cat $MAIN_STRINGFILE)
+# STRINGFILE is already UTF-8.
+OLDUTF8=$(cat $STRINGFILE)
 NEWUTF8=$(iconv -f UTF-16 -t UTF-8 $TMP/Localizable.strings)
 
 # Let's merge the old with the new .strings file:
@@ -57,7 +56,7 @@ echo "$OLDUTF8" | grep -Eo '^".*"' | \
 		{$2 = ($1 in a ? a[$1] : $2); \
 		if($2 ~ /"[;]*$/){$2 = " = "$2}; \
 		if($2 ~ /"$/){$2 = $2";"}; \
-		print}' - <(echo "$NEWUTF8") > $MAIN_STRINGFILE
+		print}' - <(echo "$NEWUTF8") > $STRINGFILE
 
 # Copy in strings from JSQMessagesViewController
 #
@@ -67,8 +66,6 @@ echo "$OLDUTF8" | grep -Eo '^".*"' | \
 
 echo "Copying strings from JSQMessagesViewController"
 echo "
-// Strings Copied in from JSQMessagesViewController" >> $MAIN_STRINGFILE
-cat $JSQ_STRINGS_PATH  | grep -v "^//" >> $MAIN_STRINGFILE
+// Strings Copied in from JSQMessagesViewController" >> $STRINGFILE
+cat $JSQ_STRINGS_PATH  | grep -v "^//" >> $STRINGFILE
 
-echo "Copying strings from to iOS Share Extension"
-cp $MAIN_STRINGFILE $SAE_STRINGFILE
