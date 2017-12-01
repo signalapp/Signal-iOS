@@ -7,8 +7,10 @@ REPO_ROOT=$BIN_DIR/../../..
 cd $REPO_ROOT
 
 SSK_DIR="./SignalServiceKit/src"
+SAE_DIR="./SignalShareExtension"
+SM_DIR="./SignalMessaging"
 
-TARGETS="Signal/src ${SSK_DIR}"
+TARGETS="Signal/src ${SSK_DIR} ${SAE_DIR} ${SM_DIR}"
 TMP="$(mktemp -d)"
 STRINGFILE="Signal/translations/en.lproj/Localizable.strings"
 

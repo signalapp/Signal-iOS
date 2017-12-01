@@ -6,7 +6,8 @@
 
 @implementation UIFont (OWS)
 
-+ (UIFont *)ows_thinFontWithSize:(CGFloat)size {
++ (UIFont *)ows_thinFontWithSize:(CGFloat)size
+{
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(8, 2)) {
         return [UIFont systemFontOfSize:size weight:UIFontWeightThin];
     } else {
@@ -14,7 +15,8 @@
     }
 }
 
-+ (UIFont *)ows_lightFontWithSize:(CGFloat)size {
++ (UIFont *)ows_lightFontWithSize:(CGFloat)size
+{
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(8, 2)) {
         return [UIFont systemFontOfSize:size weight:UIFontWeightLight];
     } else {
@@ -22,7 +24,8 @@
     }
 }
 
-+ (UIFont *)ows_regularFontWithSize:(CGFloat)size {
++ (UIFont *)ows_regularFontWithSize:(CGFloat)size
+{
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(8, 2)) {
         return [UIFont systemFontOfSize:size weight:UIFontWeightRegular];
     } else {
@@ -30,7 +33,8 @@
     }
 }
 
-+ (UIFont *)ows_mediumFontWithSize:(CGFloat)size {
++ (UIFont *)ows_mediumFontWithSize:(CGFloat)size
+{
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(8, 2)) {
         return [UIFont systemFontOfSize:size weight:UIFontWeightMedium];
     } else {
@@ -38,7 +42,8 @@
     }
 }
 
-+ (UIFont *)ows_boldFontWithSize:(CGFloat)size {
++ (UIFont *)ows_boldFontWithSize:(CGFloat)size
+{
     return [UIFont boldSystemFontOfSize:size];
 }
 
@@ -61,7 +66,8 @@
 
 #pragma mark - Dynamic Type
 
-+ (UIFont *)ows_dynamicTypeBodyFont {
++ (UIFont *)ows_dynamicTypeBodyFont
+{
     return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
@@ -75,7 +81,8 @@
     return [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
 }
 
-+ (UIFont *)ows_dynamicTypeTitle2Font {
++ (UIFont *)ows_dynamicTypeTitle2Font
+{
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
         return [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
     } else {

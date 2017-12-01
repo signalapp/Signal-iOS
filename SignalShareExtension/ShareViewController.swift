@@ -3,26 +3,56 @@
 //
 
 import UIKit
-import Social
 
 import SignalMessaging
 import PureLayout
 import SignalServiceKit
 
-class ShareViewController: SLComposeServiceViewController {
+class ShareViewController: UIViewController {
+
+    override func loadView() {
+        super.loadView()
+
+        // This should be the first thing we do.
+        SetCurrentAppContext(ShareAppExtensionContext())
+
+//        DebugLogger.shared().enableTTYLogging()
+//        if _isDebugAssertConfiguration() {
+//            DebugLogger.shared().enableFileLogging()
+//        } else {
+//            // TODO: Consult OWSPreferences.loggingIsEnabled.
+//            DebugLogger.shared().enableFileLogging()
+//        }
+
+        _ = AppVersion()
+
+//DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.logTag);
+//
+//// We need to do this _after_ we set up logging but _before_ we do
+//// anything else.
+//[self ensureIsReadyForAppExtensions];
+//
+//#if RELEASE
+//    // ensureIsReadyForAppExtensions may have changed the state of the logging
+//    // preference (due to [NSUserDefaults migrateToSharedUserDefaults]), so honor
+//    // that change if necessary.
+//if (loggingIsEnabled && !OWSPreferences.loggingIsEnabled) {
+//    [DebugLogger.sharedLogger disableFileLogging];
+//}
+//#endif
+//
+//[AppVersion instance];
+//
+//[self startupLogging];
+
+        Logger.debug("\(self.logTag()) \(#function)")
+        print("\(self.logTag()) \(#function) \(self.view.frame)")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // None of the following code is intended to be used, it only serves to prove
-        // the project has been configured correctly
-
-        // Proof of cocoapods, utilizes PureLayout
-        let someView = UIView()
-        someView.backgroundColor = UIColor.green
-        view.addSubview(someView)
-        someView.autoPinEdgesToSuperviewEdges()
-        someView.alpha = 0.2
+        showLoadingAnimation()
 
         let proofOfSharedFramework = StorageCoordinator.shared.path
         let proofOfSSK = textSecureServerURL
@@ -31,24 +61,51 @@ class ShareViewController: SLComposeServiceViewController {
         //let proofOfSharedStorage = TSAccountManager.localNumber()
         let proofOfSharedStorage = "TODO"
 
-        self.placeholder = "shared framework: \(proofOfSharedFramework) \n sharedStorage: \(proofOfSharedStorage) \n proof of ssk: \(proofOfSSK)"
+        print("shared framework: \(proofOfSharedFramework) \n sharedStorage: \(proofOfSharedStorage) \n proof of ssk: \(proofOfSSK)")
+
+        Logger.debug("\(self.logTag()) \(#function)")
+        print("\(self.logTag()) \(#function) \(self.view.frame)")
     }
 
-    override func isContentValid() -> Bool {
-        // Do validation of contentText and/or NSExtensionContext attachments here
-        return true
+    private func showLoadingAnimation() {
+        Logger.debug("\(self.logTag()) \(#function)")
+        print("\(self.logTag()) \(#function) \(self.view.frame)")
+
+        // Proof of cocoapods, utilizes PureLayout
+        let rootView = UIView()
+        rootView.backgroundColor = UIColor.ows_signalBrandBlue()
+        view.addSubview(rootView)
+        rootView.autoCenterInSuperview()
+        rootView.autoSetDimension(.width, toSize: 200)
+        rootView.autoSetDimension(.height, toSize: 300)
+        rootView.layer.cornerRadius = 3
+
+        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle:.whiteLarge)
+        rootView.addSubview(activityIndicator)
+        activityIndicator.autoCenterInSuperview()
+        activityIndicator.startAnimating()
+
+        let label = UILabel()
+        label.textColor = UIColor.white
+        label.font = UIFont.ows_mediumFont(withSize: 14)
+        label.text = NSLocalizedString("SHARE_EXTENSION_LOADING",
+                                       comment: "Indicates that the share extension is still loading.")
+        rootView.addSubview(label)
+        label.autoHCenterInSuperview()
+        label.autoPinEdge(.top, to: .bottom, of: activityIndicator, withOffset: 10)
     }
 
-    override func didSelectPost() {
-        // This is called after the user selects Post. Do the upload of contentText and/or NSExtensionContext attachments.
+    override func viewWillAppear(_ animated: Bool) {
+        Logger.debug("\(self.logTag()) \(#function)")
+        print("\(self.logTag()) \(#function) \(self.view.frame)")
 
-        // Inform the host that we're done, so it un-blocks its UI. Note: Alternatively you could call super's -didSelectPost, which will similarly complete the extension context.
-        self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+        super.viewWillAppear(animated)
     }
 
-    override func configurationItems() -> [Any]! {
-        // To add configuration options via table cells at the bottom of the sheet, return an array of SLComposeSheetConfigurationItem here.
-        return []
-    }
+    override func viewDidAppear(_ animated: Bool) {
+        Logger.debug("\(self.logTag()) \(#function)")
+        print("\(self.logTag()) \(#function) \(self.view.frame)")
 
+        super.viewDidAppear(animated)
+    }
 }

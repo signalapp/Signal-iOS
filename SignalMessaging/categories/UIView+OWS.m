@@ -2,8 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "UIView+OWS.h"
 #import "OWSMath.h"
+#import "UIView+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,8 +36,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSArray<NSLayoutConstraint *> *)autoPinWidthToSuperviewWithMargin:(CGFloat)margin
 {
     NSArray<NSLayoutConstraint *> *result = @[
-                                              [self autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:margin],
-                                              [self autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:margin],
+        [self autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:margin],
+        [self autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:margin],
     ];
     return result;
 }
@@ -45,8 +45,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSArray<NSLayoutConstraint *> *)autoPinWidthToSuperview
 {
     NSArray<NSLayoutConstraint *> *result = @[
-                                              [self autoPinEdgeToSuperviewEdge:ALEdgeLeft],
-                                              [self autoPinEdgeToSuperviewEdge:ALEdgeRight],
+        [self autoPinEdgeToSuperviewEdge:ALEdgeLeft],
+        [self autoPinEdgeToSuperviewEdge:ALEdgeRight],
     ];
     return result;
 }
@@ -63,8 +63,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSArray<NSLayoutConstraint *> *)autoPinHeightToSuperviewWithMargin:(CGFloat)margin
 {
     NSArray<NSLayoutConstraint *> *result = @[
-                                              [self autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:margin],
-                                              [self autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:margin],
+        [self autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:margin],
+        [self autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:margin],
     ];
     return result;
 }
@@ -72,8 +72,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSArray<NSLayoutConstraint *> *)autoPinHeightToSuperview
 {
     NSArray<NSLayoutConstraint *> *result = @[
-                                              [self autoPinEdgeToSuperviewEdge:ALEdgeTop],
-                                              [self autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+        [self autoPinEdgeToSuperviewEdge:ALEdgeTop],
+        [self autoPinEdgeToSuperviewEdge:ALEdgeBottom],
     ];
     return result;
 }
@@ -81,10 +81,10 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSArray<NSLayoutConstraint *> *)autoPinToSuperviewEdges
 {
     NSArray<NSLayoutConstraint *> *result = @[
-                                              [self autoPinEdgeToSuperviewEdge:ALEdgeLeft ],
-                                              [self autoPinEdgeToSuperviewEdge:ALEdgeRight ],
-                                              [self autoPinEdgeToSuperviewEdge:ALEdgeTop ],
-                                              [self autoPinEdgeToSuperviewEdge:ALEdgeBottom ],
+        [self autoPinEdgeToSuperviewEdge:ALEdgeLeft],
+        [self autoPinEdgeToSuperviewEdge:ALEdgeRight],
+        [self autoPinEdgeToSuperviewEdge:ALEdgeTop],
+        [self autoPinEdgeToSuperviewEdge:ALEdgeBottom],
     ];
     return result;
 }
@@ -302,17 +302,17 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view
 {
     OWSAssert(view);
-    
+
     return [self autoPinLeadingToTrailingOfView:view margin:0];
 }
 
 - (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin
 {
     OWSAssert(view);
-    
+
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
         NSLayoutConstraint *constraint =
-        [self.leadingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
+            [self.leadingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
         constraint.active = YES;
         return constraint;
     } else {
@@ -323,17 +323,17 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSLayoutConstraint *)autoPinTrailingToLeadingOfView:(UIView *)view
 {
     OWSAssert(view);
-    
+
     return [self autoPinTrailingToLeadingOfView:view margin:0];
 }
 
 - (NSLayoutConstraint *)autoPinTrailingToLeadingOfView:(UIView *)view margin:(CGFloat)margin
 {
     OWSAssert(view);
-    
+
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
         NSLayoutConstraint *constraint =
-        [self.trailingAnchor constraintEqualToAnchor:view.leadingAnchor constant:-margin];
+            [self.trailingAnchor constraintEqualToAnchor:view.leadingAnchor constant:-margin];
         constraint.active = YES;
         return constraint;
     } else {

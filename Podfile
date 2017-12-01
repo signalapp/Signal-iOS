@@ -39,6 +39,10 @@ target 'SignalShareExtension' do
   shared_pods
 end
 
+target 'SignalMessaging' do
+  shared_pods
+end
+
 post_install do |installer|
   # Disable some asserts when building for tests
   set_building_for_tests_config(installer, 'SignalServiceKit')
