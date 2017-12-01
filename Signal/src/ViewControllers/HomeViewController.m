@@ -21,6 +21,7 @@
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
+#import <SignalMessaging/OWSFormat.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
@@ -754,8 +755,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     NSString *unreadString = NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil);
 
     if (numberOfItems > 0) {
-        unreadString =
-            [unreadString stringByAppendingFormat:@" (%@)", [ViewControllerUtils formatInt:(int)numberOfItems]];
+        unreadString = [unreadString stringByAppendingFormat:@" (%@)", [OWSFormat formatInt:(int)numberOfItems]];
     }
 
     [_segmentedControl setTitle:unreadString forSegmentAtIndex:0];

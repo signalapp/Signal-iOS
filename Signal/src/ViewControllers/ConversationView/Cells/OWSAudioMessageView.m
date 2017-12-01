@@ -8,6 +8,7 @@
 #import "UIColor+JSQMessages.h"
 #import "UIColor+OWS.h"
 #import "ViewControllerUtils.h"
+#import <SignalMessaging/OWSFormat.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -82,11 +83,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isAudioPlaying && self.audioProgressSeconds > 0 && self.audioDurationSeconds > 0) {
         self.audioBottomLabel.text =
             [NSString stringWithFormat:@"%@ / %@",
-                      [ViewControllerUtils formatDurationSeconds:(long)round(self.audioProgressSeconds)],
-                      [ViewControllerUtils formatDurationSeconds:(long)round(self.audioDurationSeconds)]];
+                      [OWSFormat formatDurationSeconds:(long)round(self.audioProgressSeconds)],
+                      [OWSFormat formatDurationSeconds:(long)round(self.audioDurationSeconds)]];
     } else {
-        self.audioBottomLabel.text = [NSString
-            stringWithFormat:@"%@", [ViewControllerUtils formatDurationSeconds:(long)round(self.audioDurationSeconds)]];
+        self.audioBottomLabel.text =
+            [NSString stringWithFormat:@"%@", [OWSFormat formatDurationSeconds:(long)round(self.audioDurationSeconds)]];
     }
 }
 

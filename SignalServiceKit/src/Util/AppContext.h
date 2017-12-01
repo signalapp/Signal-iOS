@@ -32,6 +32,9 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 
 - (NSArray<OWSDatabaseMigration *> *)allMigrations;
 
+// Returns the VC that should be used to present alerts, modals, etc.
+- (UIViewController *)frontmostViewController;
+
 @end
 
 id<AppContext> CurrentAppContext(void);

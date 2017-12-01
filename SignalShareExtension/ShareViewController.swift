@@ -14,7 +14,7 @@ class ShareViewController: UINavigationController, SAELoadViewDelegate {
         super.loadView()
 
         // This should be the first thing we do.
-        SetCurrentAppContext(ShareAppExtensionContext())
+        SetCurrentAppContext(ShareAppExtensionContext(with:self))
 
         DebugLogger.shared().enableTTYLogging()
         if _isDebugAssertConfiguration() {

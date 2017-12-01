@@ -7,7 +7,7 @@ import PromiseKit
 import SignalServiceKit
 
 @objc
-class ProfileFetcherJob: NSObject {
+public class ProfileFetcherJob: NSObject {
 
     let TAG = "[ProfileFetcherJob]"
 
@@ -132,7 +132,9 @@ class ProfileFetcherJob: NSObject {
     }
 }
 
-struct SignalServiceProfile {
+// TODO: This was a struct.
+@objc
+public class SignalServiceProfile: NSObject {
     let TAG = "[SignalServiceProfile]"
 
     enum ValidationError: Error {

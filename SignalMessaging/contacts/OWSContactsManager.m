@@ -4,13 +4,15 @@
 
 #import "OWSContactsManager.h"
 #import "Environment.h"
+#import "OWSFormat.h"
 #import "OWSProfileManager.h"
-#import "Signal-Swift.h"
 #import "Util.h"
 #import "ViewControllerUtils.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSError.h>
+#import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSStorageManager.h>
 
@@ -45,7 +47,8 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
 
 @implementation OWSContactsManager
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (!self) {
         return self;
@@ -434,7 +437,7 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
     if (phoneNumbersWithTheSameName.count > 1) {
         NSUInteger index =
             [[phoneNumbersWithTheSameName sortedArrayUsingSelector:@selector(compare:)] indexOfObject:recipientId];
-        NSString *indexText = [ViewControllerUtils formatInt:(int)index + 1];
+        NSString *indexText = [OWSFormat formatInt:(int)index + 1];
         phoneNumberLabel =
             [NSString stringWithFormat:NSLocalizedString(@"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",
                                            @"Format for phone number label with an index. Embeds {{Phone number label "
@@ -446,7 +449,8 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
     return phoneNumberLabel;
 }
 
-- (BOOL)phoneNumber:(PhoneNumber *)phoneNumber1 matchesNumber:(PhoneNumber *)phoneNumber2 {
+- (BOOL)phoneNumber:(PhoneNumber *)phoneNumber1 matchesNumber:(PhoneNumber *)phoneNumber2
+{
     return [phoneNumber1.toE164 isEqualToString:phoneNumber2.toE164];
 }
 
@@ -459,8 +463,8 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
 
 - (NSString *)unknownContactName
 {
-    return NSLocalizedString(@"UNKNOWN_CONTACT_NAME",
-                             @"Displayed if for some reason we can't determine a contacts phone number *or* name");
+    return NSLocalizedString(
+        @"UNKNOWN_CONTACT_NAME", @"Displayed if for some reason we can't determine a contacts phone number *or* name");
 }
 
 - (nullable NSString *)formattedProfileNameForRecipientId:(NSString *)recipientId
@@ -699,7 +703,8 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
     }
 }
 
-- (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)identifier {
+- (UIImage *_Nullable)imageForPhoneIdentifier:(NSString *_Nullable)identifier
+{
     Contact *contact = self.allContactsMap[identifier];
 
     // Prefer the contact image from the local address book if available
@@ -723,11 +728,11 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
             name = signalAccount.contact.comparableNameLastFirst;
         }
     }
-    
+
     if (name.length < 1) {
         name = signalAccount.recipientId;
     }
-    
+
     return name;
 }
 

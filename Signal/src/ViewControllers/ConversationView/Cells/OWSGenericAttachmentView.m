@@ -10,6 +10,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
+#import <SignalMessaging/OWSFormat.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 
@@ -194,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
     unsigned long long fileSize =
         [[NSFileManager defaultManager] attributesOfItemAtPath:[self.attachmentStream filePath] error:&error].fileSize;
     OWSAssert(!error);
-    NSString *bottomText = [ViewControllerUtils formatFileSize:fileSize];
+    NSString *bottomText = [OWSFormat formatFileSize:fileSize];
     UILabel *bottomLabel = [UILabel new];
     bottomLabel.text = bottomText;
     bottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];

@@ -6,7 +6,32 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface ShareAppExtensionContext ()
+
+@property (nonatomic) UIViewController *rootViewController;
+
+@end
+
+#pragma mark -
+
 @implementation ShareAppExtensionContext
+
+- (instancetype)initWithRootViewController:(UIViewController *)rootViewController
+{
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    OWSAssert(rootViewController);
+
+    _rootViewController = rootViewController;
+
+    OWSSingletonAssert();
+
+    return self;
+}
 
 - (BOOL)isMainApp
 {
@@ -52,6 +77,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<OWSDatabaseMigration *> *)allMigrations
 {
     return @[];
+}
+
+- (UIViewController *)frontmostViewController
+{
+    OWSAssert(self.rootViewController);
+
+    return self.rootViewController;
+}
+
+- (void)setRootViewController:(UIViewController *)viewController
+{
+    OWSAssert(!self.rootViewController);
+    OWSAssert(viewController);
+
+    self.rootViewController = viewController;
 }
 
 @end

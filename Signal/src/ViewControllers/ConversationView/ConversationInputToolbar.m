@@ -10,6 +10,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
+#import <SignalMessaging/OWSFormat.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -612,7 +613,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     OWSAssert([NSThread isMainThread]);
 
     NSTimeInterval durationSeconds = fabs([self.voiceMemoStartTime timeIntervalSinceNow]);
-    self.recordingLabel.text = [ViewControllerUtils formatDurationSeconds:(long)round(durationSeconds)];
+    self.recordingLabel.text = [OWSFormat formatDurationSeconds:(long)round(durationSeconds)];
     [self.recordingLabel sizeToFit];
 }
 
