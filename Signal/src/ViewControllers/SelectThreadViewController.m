@@ -131,11 +131,13 @@ NS_ASSUME_NONNULL_BEGIN
     __weak SelectThreadViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
     OWSTableContents *contents = [OWSTableContents new];
-    OWSTableSection *section = [OWSTableSection new];
 
-    // Threads
+    // Threads are listed, most recent first.
+    OWSTableSection *recentChatsSection = [OWSTableSection new];
+    recentChatsSection.headerTitle = NSLocalizedString(
+        @"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE", @"Table section header for recently active conversations");
     for (TSThread *thread in [self filteredThreadsWithSearchText]) {
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        [recentChatsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
             SelectThreadViewController *strongSelf = weakSelf;
             OWSCAssert(strongSelf);
 
@@ -145,16 +147,23 @@ NS_ASSUME_NONNULL_BEGIN
             [cell configureWithThread:thread contactsManager:helper.contactsManager];
             return cell;
         }
-                             customRowHeight:[ContactTableViewCell rowHeight]
-                             actionBlock:^{
-                                 [weakSelf.delegate threadWasSelected:thread];
-                             }]];
+                                        customRowHeight:[ContactTableViewCell rowHeight]
+                                        actionBlock:^{
+                                            [weakSelf.delegate threadWasSelected:thread];
+                                        }]];
     }
 
-    // Contacts
+    if (recentChatsSection.itemCount > 0) {
+        [contents addSection:recentChatsSection];
+    }
+
+    // Contacts who don't yet have a thread are listed last
+    OWSTableSection *otherContactsSection = [OWSTableSection new];
+    otherContactsSection.headerTitle = NSLocalizedString(
+        @"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE", @"Table section header for conversations you haven't recently used.");
     NSArray<SignalAccount *> *filteredSignalAccounts = [self filteredSignalAccountsWithSearchText];
     for (SignalAccount *signalAccount in filteredSignalAccounts) {
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        [otherContactsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
             SelectThreadViewController *strongSelf = weakSelf;
             OWSCAssert(strongSelf);
 
@@ -169,19 +178,24 @@ NS_ASSUME_NONNULL_BEGIN
             [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
             return cell;
         }
-                             customRowHeight:[ContactTableViewCell rowHeight]
-                             actionBlock:^{
-                                 [weakSelf signalAccountWasSelected:signalAccount];
-                             }]];
+                                          customRowHeight:[ContactTableViewCell rowHeight]
+                                          actionBlock:^{
+                                              [weakSelf signalAccountWasSelected:signalAccount];
+                                          }]];
     }
 
-    if (section.itemCount < 1) {
-        [section
+    if (otherContactsSection.itemCount > 0) {
+        [contents addSection:otherContactsSection];
+    }
+
+    if (recentChatsSection.itemCount + otherContactsSection.itemCount < 1) {
+        OWSTableSection *emptySection = [OWSTableSection new];
+        [emptySection
             addItem:[OWSTableItem
                         softCenterLabelItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
                                                         @"A label that indicates the user has no Signal contacts.")]];
+        [contents addSection:emptySection];
     }
-    [contents addSection:section];
 
     self.tableViewController.contents = contents;
 }
