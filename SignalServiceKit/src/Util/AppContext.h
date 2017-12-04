@@ -28,8 +28,22 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 // Should only be called if isMainApp is YES.
 - (void)setMainAppBadgeNumber:(NSInteger)value;
 
+<<<<<<< HEAD
 - (BOOL)isRTL;
 
+||||||| parent of d1a8c9aa... Respond to CR.
+// This should all migrations which do NOT qualify as safeBlockingMigrations:
+- (NSArray<OWSDatabaseMigration *> *)allMigrations;
+
+// This should only include migrations which:
+//
+// a) Do read/write database transactions and therefore would block on the async database
+//    view registration.
+// b) Will not affect any of the data used by the async database views.
+- (NSArray<OWSDatabaseMigration *> *)safeBlockingMigrations;
+
+=======
+>>>>>>> d1a8c9aa... Respond to CR.
 // Returns the VC that should be used to present alerts, modals, etc.
 - (nullable UIViewController *)frontmostViewController;
 
