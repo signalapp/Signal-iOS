@@ -19,6 +19,7 @@ import Foundation
     }
 }
 
+// A generic searching class, configurable with an indexing block
 class Searcher<T> {
 
     private let indexer: (T) -> String
@@ -36,7 +37,16 @@ class Searcher<T> {
     }
 
     private func stem(string: String) -> [String] {
-        return normalize(string: string).components(separatedBy: .whitespaces)
+        var normalized = normalize(string: string)
+
+        // Remove any phone number formatting from the search terms
+        let nonformattingScalars = normalized.unicodeScalars.lazy.filter {
+            !CharacterSet.punctuationCharacters.contains($0)
+        }
+
+        normalized = String(String.UnicodeScalarView(nonformattingScalars))
+
+        return normalized.components(separatedBy: .whitespacesAndNewlines)
     }
 
     private func normalize(string: String) -> String {

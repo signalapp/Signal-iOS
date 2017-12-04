@@ -8,6 +8,7 @@
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <XCTest/XCTest.h>
+#import <YapDatabase/YapDatabaseConnection.h>
 
 @interface ConversationViewItem (Testing)
 
@@ -64,8 +65,10 @@
 
     OWSAssert([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
 
-    TSAttachmentStream *attachment = [[TSAttachmentStream alloc] initWithContentType:mimeType sourceFilename:nil];
     DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
+    TSAttachmentStream *attachment = [[TSAttachmentStream alloc] initWithContentType:mimeType
+                                                                           byteCount:(UInt32)dataSource.dataLength
+                                                                      sourceFilename:nil];
     BOOL success = [attachment writeDataSource:dataSource];
     OWSAssert(success);
     [attachment save];
@@ -75,7 +78,12 @@
     TSOutgoingMessage *message =
         [[TSOutgoingMessage alloc] initWithTimestamp:1 inThread:nil messageBody:nil attachmentIds:attachmentIds];
     [message save];
-    ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:message isGroupThread:NO];
+
+    __block ConversationViewItem *viewItem = nil;
+    [TSYapDatabaseObject.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        viewItem = [[ConversationViewItem alloc] initWithInteraction:message isGroupThread:NO transaction:transaction];
+    }];
+
     return viewItem;
 }
 

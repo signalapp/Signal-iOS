@@ -320,8 +320,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
             // Store the file in a subdirectory whose name is the uniqueId of this attachment,
             // to avoid collisions between multiple attachments with the same name.
             NSString *attachmentFolderPath = [folder stringByAppendingPathComponent:uniqueId];
-            NSError *error = nil;
-            BOOL attachmentFolderPathExists = [[NSFileManager defaultManager] fileExistsAtPath:attachmentFolderPath];
             if (![OWSFileSystem ensureDirectoryExists:attachmentFolderPath]) {
                 return nil;
             }

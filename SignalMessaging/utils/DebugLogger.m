@@ -106,7 +106,7 @@
     // This should be redundant with the logic above.
     [logPathSet addObjectsFromArray:self.fileLogger.logFileManager.unsortedLogFilePaths];
     NSArray<NSString *> *logPaths = logPathSet.allObjects;
-    return [logPaths sortedArrayUsingSelector:@selector(compare:)];
+    return [logPaths sortedArrayUsingSelector:@selector((compare:))];
 }
 
 - (void)wipeLogs

@@ -170,6 +170,8 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
     self.nameLabel.attributedText = attributedText;
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
+        self.recipientId = thread.contactIdentifier;
+
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(otherUsersProfileDidChange:)
                                                      name:kNSNotificationName_OtherUsersProfileDidChange
@@ -220,6 +222,7 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
                                                                       diameter:kContactTableViewCellAvatarSize
                                                                contactsManager:contactsManager] build];
 }
+
 - (void)updateProfileName
 {
     OWSContactsManager *contactsManager = self.contactsManager;

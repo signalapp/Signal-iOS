@@ -8,7 +8,6 @@
 #import "Environment.h"
 #import "NewGroupViewController.h"
 #import "NewNonContactConversationViewController.h"
-#import "OWSContactsSearcher.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
@@ -45,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
     MFMessageComposeViewControllerDelegate>
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
+@property (nonatomic, readonly) ConversationSearcher *conversationSearcher;
 
 @property (nonatomic, readonly) UIView *noSignalContactsView;
 
@@ -77,6 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.view.backgroundColor = UIColor.whiteColor;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+    _conversationSearcher = [ConversationSearcher shared];
     _nonContactAccountSet = [NSMutableSet set];
     _collation = [UILocalizedIndexedCollation currentCollation];
 
@@ -630,35 +631,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<TSGroupThread *> *)filteredGroupThreads
 {
-    AnySearcher *searcher = [[AnySearcher alloc] initWithIndexer:^NSString * _Nonnull(id _Nonnull obj) {
-        if (![obj isKindOfClass:[TSGroupThread class]]) {
-            OWSFail(@"unexpected item in searcher");
-            return @"";
-        }
-        TSGroupThread *groupThread = (TSGroupThread *)obj;
-        NSString *groupName = groupThread.groupModel.groupName;
-        NSMutableString *groupMemberNames = [NSMutableString new];
-        for (NSString *recipientId in groupThread.groupModel.groupMemberIds) {
-            NSString *contactName = [self.contactsViewHelper.contactsManager displayNameForPhoneIdentifier:recipientId];
-            [groupMemberNames appendFormat:@" %@", contactName];
-        }
-        
-        return [NSString stringWithFormat:@"%@ %@", groupName, groupMemberNames];
-    }];
-    
-    NSMutableArray<TSGroupThread *> *matchingThreads = [NSMutableArray new];
+    NSMutableArray<TSGroupThread *> *groupThreads = [NSMutableArray new];
     [TSGroupThread enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
         if (![obj isKindOfClass:[TSGroupThread class]]) {
             // group and contact threads are in the same collection.
             return;
         }
         TSGroupThread *groupThread = (TSGroupThread *)obj;
-        if ([searcher item:groupThread doesMatchQuery:self.searchBar.text]) {
-            [matchingThreads addObject:groupThread];
-        }
+        [groupThreads addObject:groupThread];
     }];
 
-    return [matchingThreads copy];
+    return [self.conversationSearcher filterGroupThreads:groupThreads withSearchText:self.searchBar.text];
 }
 
 #pragma mark - No Contacts Mode
