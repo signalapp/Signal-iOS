@@ -4,8 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class AnySearcher;
-
 @protocol ThreadViewHelperDelegate <NSObject>
 
 - (void)threadListDidChange;
@@ -25,10 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<ThreadViewHelperDelegate> delegate;
 @property (nonatomic, readonly) NSMutableArray<TSThread *> *threads;
-@property (nonatomic, readonly) AnySearcher *groupThreadSearcher;
-@property (nonatomic, readonly) AnySearcher *contactThreadSearcher;
-
-- (NSArray<TSThread *> *)threadsMatchingSearchString:(NSString *)searchString;
 
 @end
 

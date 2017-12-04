@@ -9,8 +9,8 @@
 #import "Environment.h"
 #import "NSString+OWS.h"
 #import "OWSContactsManager.h"
-#import "OWSContactsSearcher.h"
 #import "OWSTableViewController.h"
+#import "Signal-Swift.h"
 #import "ThreadViewHelper.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
     UISearchBarDelegate>
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
-
+@property (nonatomic, readonly) ConversationSearcher *conversationSearcher;
 @property (nonatomic, readonly) ThreadViewHelper *threadViewHelper;
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
@@ -54,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.view.backgroundColor = [UIColor whiteColor];
 
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+    _conversationSearcher = ConversationSearcher.shared;
     _threadViewHelper = [ThreadViewHelper new];
     _threadViewHelper.delegate = self;
 
@@ -132,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
     ContactsViewHelper *helper = self.contactsViewHelper;
     OWSTableContents *contents = [OWSTableContents new];
 
-    // Threads are listed, most recent first.
+    // Existing threads are listed first, ordered by most recently active
     OWSTableSection *recentChatsSection = [OWSTableSection new];
     recentChatsSection.headerTitle = NSLocalizedString(
         @"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE", @"Table section header for recently active conversations");
@@ -237,7 +238,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<TSThread *> *)filteredThreadsWithSearchText
 {
     NSString *searchTerm = [[self.searchBar text] ows_stripped];
-    return [self.threadViewHelper threadsMatchingSearchString:searchTerm];
+
+    return [self.conversationSearcher filterThreads:self.threadViewHelper.threads withSearchText:searchTerm];
 }
 
 - (NSArray<SignalAccount *> *)filteredSignalAccountsWithSearchText

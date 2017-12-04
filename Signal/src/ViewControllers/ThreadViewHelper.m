@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic) YapDatabaseViewMappings *threadMappings;
+@property (nonatomic) ConversationSearcher *conversationSearcher;
 
 @end
 
@@ -30,8 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self initializeMapping];
-    _groupThreadSearcher = [self buildGroupThreadSearcher];
-    _contactThreadSearcher = [self buildContactThreadSearcher];
+    _conversationSearcher = ConversationSearcher.shared;
 
     return self;
 }
@@ -125,76 +125,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     _threads = [threads copy];
 }
-
-#pragma mark - Searching
-
-- (OWSContactsManager *)contactsManager
-{
-    return [Environment getCurrent].contactsManager;
-}
-
-- (NSString *)searchIndexStringForRecipientId:(NSString *)recipientId
-{
-    NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:recipientId];
-    NSString *profileName = [self.contactsManager profileNameForRecipientId:recipientId];
-
-    return [NSString stringWithFormat:@"%@ %@ %@", recipientId, contactName, profileName];
-}
-
-- (AnySearcher *)buildContactThreadSearcher
-{
-    AnySearcher *searcher = [[AnySearcher alloc] initWithIndexer:^NSString *_Nonnull(id _Nonnull obj) {
-        if (![obj isKindOfClass:[TSContactThread class]]) {
-            OWSFail(@"unexpected item in searcher");
-            return @"";
-        }
-        TSContactThread *contactThread = (TSContactThread *)obj;
-
-        NSString *recipientId = contactThread.contactIdentifier;
-        return [self searchIndexStringForRecipientId:recipientId];
-    }];
-
-    return searcher;
-}
-
-- (AnySearcher *)buildGroupThreadSearcher
-{
-    AnySearcher *searcher = [[AnySearcher alloc] initWithIndexer:^NSString *_Nonnull(id _Nonnull obj) {
-        if (![obj isKindOfClass:[TSGroupThread class]]) {
-            OWSFail(@"unexpected item in searcher");
-            return @"";
-        }
-        TSGroupThread *groupThread = (TSGroupThread *)obj;
-        NSString *groupName = groupThread.groupModel.groupName;
-        NSMutableString *groupMemberStrings = [NSMutableString new];
-        for (NSString *recipientId in groupThread.groupModel.groupMemberIds) {
-            NSString *recipientString = [self searchIndexStringForRecipientId:recipientId];
-            [groupMemberStrings appendFormat:@" %@", recipientString];
-        }
-
-        return [NSString stringWithFormat:@"%@ %@", groupName, groupMemberStrings];
-    }];
-
-    return searcher;
-}
-
-- (NSArray<TSThread *> *)threadsMatchingSearchString:(NSString *)searchString
-{
-    if (searchString.length == 0) {
-        return self.threads;
-    }
-
-    NSMutableArray *result = [NSMutableArray new];
-    for (TSThread *thread in self.threads) {
-        AnySearcher *searcher =
-            [thread isKindOfClass:[TSContactThread class]] ? self.contactThreadSearcher : self.groupThreadSearcher;
-        if ([searcher item:thread doesMatchQuery:searchString]) {
-            [result addObject:thread];
-        }
-    }
-    return result;
-}
-
 
 @end
 

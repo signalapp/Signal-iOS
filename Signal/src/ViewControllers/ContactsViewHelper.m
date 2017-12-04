@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL shouldNotifyDelegateOfUpdatedContacts;
 @property (nonatomic) BOOL hasUpdatedContactsAtLeastOnce;
 @property (nonatomic) OWSProfileManager *profileManager;
-@property (nonatomic, readonly) AnySearcher *signalAccountSearcher;
+@property (nonatomic, readonly) ConversationSearcher *conversationSearcher;
 
 @end
 
@@ -51,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
+    _conversationSearcher = ConversationSearcher.shared;
 
     _contactsManager = [Environment getCurrent].contactsManager;
     _profileManager = [OWSProfileManager sharedManager];
@@ -59,8 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.shouldNotifyDelegateOfUpdatedContacts = YES;
     [self updateContacts];
     self.shouldNotifyDelegateOfUpdatedContacts = NO;
-
-    _signalAccountSearcher = [self buildSignalAccountSearcher];
 
     [self observeNotifications];
 
@@ -101,24 +100,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Contacts
-
-- (AnySearcher *)buildSignalAccountSearcher
-{
-    return [[AnySearcher alloc] initWithIndexer:^NSString *_Nonnull(id _Nonnull obj) {
-        if (![obj isKindOfClass:[SignalAccount class]]) {
-            OWSFail(@"unexpected item in searcher");
-            return @"";
-        }
-
-        SignalAccount *signalAccount = (SignalAccount *)obj;
-
-        NSString *recipientId = signalAccount.recipientId;
-        NSString *contactName = [self.contactsManager displayNameForPhoneIdentifier:recipientId];
-        NSString *profileName = [self.contactsManager profileNameForRecipientId:recipientId];
-
-        return [NSString stringWithFormat:@"%@ %@ %@", recipientId, contactName, profileName];
-    }];
-}
 
 - (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId
 {
@@ -206,17 +187,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
 {
-    NSArray<NSString *> *searchTerms = [self searchTermsForSearchString:searchText];
-
-    if (searchTerms.count < 1) {
-        return self.signalAccounts;
-    }
-
-    return [self.signalAccounts
-        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
-                                        NSDictionary<NSString *, id> *_Nullable bindings) {
-            return [self.signalAccountSearcher item:signalAccount doesMatchQuery:searchText];
-        }]];
+    return [self.conversationSearcher filterSignalAccounts:self.signalAccounts withSearchText:searchText];
 }
 
 - (BOOL)doesContact:(Contact *)contact matchSearchTerm:(NSString *)searchTerm
