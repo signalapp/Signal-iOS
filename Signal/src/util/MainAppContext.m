@@ -74,6 +74,11 @@ NS_ASSUME_NONNULL_BEGIN
     return getenv("runningTests_dontStartApp");
 }
 
+- (void)setNetworkActivityIndicatorVisible:(BOOL)value
+{
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:value];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

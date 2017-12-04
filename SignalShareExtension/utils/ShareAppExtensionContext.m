@@ -98,6 +98,11 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (void)setNetworkActivityIndicatorVisible:(BOOL)value
+{
+    OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -22,6 +22,7 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 // Should just return UIBackgroundTaskInvalid if isMainApp is NO.
 - (UIBackgroundTaskIdentifier)beginBackgroundTaskWithExpirationHandler:
     (BackgroundTaskExpirationHandler)expirationHandler;
+
 // Should be a NOOP if isMainApp is NO.
 - (void)endBackgroundTask:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier;
 
@@ -41,6 +42,9 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 - (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey;
 
 - (BOOL)isRunningTests;
+
+// Should be a NOOP if isMainApp is NO.
+- (void)setNetworkActivityIndicatorVisible:(BOOL)value;
 
 @end
 

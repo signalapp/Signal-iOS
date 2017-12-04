@@ -232,7 +232,8 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
 
         for (Contact *contact in contacts) {
             NSArray<SignalRecipient *> *signalRecipients = contactIdToSignalRecipientsMap[contact.uniqueId];
-            for (SignalRecipient *signalRecipient in [signalRecipients sortedArrayUsingSelector:@selector(compare:)]) {
+            for (SignalRecipient *signalRecipient in
+                [signalRecipients sortedArrayUsingSelector:@selector((compare:))]) {
                 SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient];
                 signalAccount.contact = contact;
                 if (signalRecipients.count > 1) {
@@ -437,7 +438,7 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
     OWSAssert([phoneNumbersWithTheSameName containsObject:recipientId]);
     if (phoneNumbersWithTheSameName.count > 1) {
         NSUInteger index =
-            [[phoneNumbersWithTheSameName sortedArrayUsingSelector:@selector(compare:)] indexOfObject:recipientId];
+            [[phoneNumbersWithTheSameName sortedArrayUsingSelector:@selector((compare:))] indexOfObject:recipientId];
         NSString *indexText = [OWSFormat formatInt:(int)index + 1];
         phoneNumberLabel =
             [NSString stringWithFormat:NSLocalizedString(@"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",

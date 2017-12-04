@@ -3,10 +3,15 @@
 //
 
 #import "LockInteractionController.h"
+#import <SignalServiceKit/AppContext.h>
 
 @interface LockInteractionController ()
-@property UIAlertController *alertController;
+
+@property (nonatomic) UIAlertController *alertController;
+
 @end
+
+#pragma mark -
 
 @implementation LockInteractionController
 
@@ -27,7 +32,7 @@
 
 {
     if (networkFlag) {
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:networkFlag];
+        [CurrentAppContext() setNetworkActivityIndicatorVisible:networkFlag];
     }
 
     LockInteractionController *sharedController = [LockInteractionController sharedController];
@@ -36,10 +41,9 @@
                                             message:nil
                                      preferredStyle:UIAlertControllerStyleAlert];
 
-    [[UIApplication sharedApplication].keyWindow.rootViewController
-        presentViewController:sharedController.alertController
-                     animated:YES
-                   completion:nil];
+    [CurrentAppContext().frontmostViewController presentViewController:sharedController.alertController
+                                                              animated:YES
+                                                            completion:nil];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         BOOL success = blockingOperation();
@@ -49,7 +53,7 @@
                 dismissViewControllerAnimated:YES
                                    completion:^{
                                        if (networkFlag) {
-                                           [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+                                           [CurrentAppContext() setNetworkActivityIndicatorVisible:NO];
                                        }
 
                                        if (!success) {
@@ -84,9 +88,7 @@
                                                          usesNetwork:YES];
                                              }]];
 
-        [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:retryController
-                                                                                     animated:YES
-                                                                                   completion:nil];
+        [CurrentAppContext().frontmostViewController presentViewController:retryController animated:YES completion:nil];
     };
 
     return retryBlock;
