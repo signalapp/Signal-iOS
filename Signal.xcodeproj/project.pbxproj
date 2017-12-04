@@ -255,6 +255,8 @@
 		45A6DAD71EBBF85500893231 /* ReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A6DAD51EBBF85500893231 /* ReminderView.swift */; };
 		45AE48511E0732D6004D96C2 /* TurnServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */; };
 		45AE48521E0732D6004D96C2 /* TurnServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */; };
+		45B72DDA1FD5E70600151AF6 /* ConversationSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B72DD91FD5E70600151AF6 /* ConversationSearcher.swift */; };
+		45B72DDB1FD5E70600151AF6 /* ConversationSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B72DD91FD5E70600151AF6 /* ConversationSearcher.swift */; };
 		45BB93381E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */; };
 		45BB93391E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */; };
 		45BD60821DE9547E00A8F436 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45BD60811DE9547E00A8F436 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -844,6 +846,7 @@
 		45A6DAD51EBBF85500893231 /* ReminderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReminderView.swift; sourceTree = "<group>"; };
 		45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TurnServerInfo.swift; sourceTree = "<group>"; };
 		45B201741DAECBFD00C461E0 /* Signal-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Signal-Bridging-Header.h"; sourceTree = "<group>"; };
+		45B72DD91FD5E70600151AF6 /* ConversationSearcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSearcher.swift; sourceTree = "<group>"; };
 		45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIDevice+featureSupport.swift"; sourceTree = "<group>"; };
 		45BD60811DE9547E00A8F436 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		45C0DC1A1E68FE9000E04C47 /* UIApplication+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+OWS.swift"; sourceTree = "<group>"; };
@@ -1717,6 +1720,7 @@
 				76EB04FB18170B33006006FC /* Util.h */,
 				45F170D51E315310003FC1F2 /* Weak.swift */,
 				45F170CB1E310E22003FC1F2 /* WeakTimer.swift */,
+				45B72DD91FD5E70600151AF6 /* ConversationSearcher.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -2710,6 +2714,7 @@
 				450DF2091E0DD2C6003D14BE /* UserNotificationsAdaptee.swift in Sources */,
 				34D1F0821F8678AA0066283D /* ConversationHeaderView.m in Sources */,
 				340CB2241EAC155C0001CAA1 /* ContactsViewHelper.m in Sources */,
+				45B72DDA1FD5E70600151AF6 /* ConversationSearcher.swift in Sources */,
 				34D1F0AB1F867BFC0066283D /* OWSContactOffersCell.m in Sources */,
 				34CE88EC1F3237260098030F /* OWSProfileManager.m in Sources */,
 				4542F0941EB9372700C7EE92 /* SystemContactsFetcher.swift in Sources */,
@@ -2966,6 +2971,7 @@
 				45A6DAD71EBBF85500893231 /* ReminderView.swift in Sources */,
 				B660F6D21C29868000687D6E /* PushManagerTest.m in Sources */,
 				45C0DC1F1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
+				45B72DDB1FD5E70600151AF6 /* ConversationSearcher.swift in Sources */,
 				4505C2C01E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */,
 				455AC69E1F4F8B0300134004 /* ImageCacheTest.swift in Sources */,
 			);
