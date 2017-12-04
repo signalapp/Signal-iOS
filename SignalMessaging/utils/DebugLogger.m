@@ -4,14 +4,20 @@
 
 #import "DebugLogger.h"
 #import "OWSScrubbingLogFormatter.h"
+#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/NSDate+OWS.h>
+#import <SignalServiceKit/OWSFileSystem.h>
 
 #pragma mark Logging - Production logging wants us to write some logs to a file in case we need it for debugging.
 #import <CocoaLumberjack/DDTTYLogger.h>
 
 @interface DebugLogger ()
 
+@property (nonatomic) DDFileLogger *fileLogger;
+
 @end
+
+#pragma mark -
 
 @implementation DebugLogger
 
@@ -25,11 +31,38 @@
     return sharedManager;
 }
 
++ (NSString *)mainAppLogsDirPath
+{
+    NSString *dirPath = [[OWSFileSystem cachesDirectoryPath] stringByAppendingPathComponent:@"Logs"];
+    [OWSFileSystem ensureDirectoryExists:dirPath];
+    [OWSFileSystem protectFolderAtPath:dirPath];
+    return dirPath;
+}
+
++ (NSString *)shareExtensionLogsDirPath
+{
+    NSString *dirPath =
+        [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"ShareExtensionLogs"];
+    [OWSFileSystem ensureDirectoryExists:dirPath];
+    [OWSFileSystem protectFolderAtPath:dirPath];
+    return dirPath;
+}
+
+- (NSString *)logsDirPath
+{
+    // This assumes that the only app extension is the share app extension.
+    return (CurrentAppContext().isMainApp ? DebugLogger.mainAppLogsDirPath : DebugLogger.shareExtensionLogsDirPath);
+}
 
 - (void)enableFileLogging
 {
+    NSString *logsDirPath = [self logsDirPath];
+
     // Logging to file, because it's in the Cache folder, they are not uploaded in iTunes/iCloud backups.
-    self.fileLogger = [DDFileLogger new];
+    id<DDLogFileManager> logFileManager =
+        [[DDLogFileManagerDefault alloc] initWithLogsDirectory:logsDirPath defaultFileProtectionLevel:@""];
+    self.fileLogger = [[DDFileLogger alloc] initWithLogFileManager:logFileManager];
+
     // 24 hour rolling.
     self.fileLogger.rollingFrequency = kDayInterval;
     // Keep last 3 days of logs - or last 3 logs (if logs rollover due to max file size).
@@ -52,49 +85,51 @@
     [DDLog addLogger:DDTTYLogger.sharedInstance];
 }
 
+- (NSArray<NSString *> *)allLogFilePaths
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSMutableSet<NSString *> *logPathSet = [NSMutableSet new];
+    for (NSString *logDirPath in @[
+             DebugLogger.mainAppLogsDirPath,
+             DebugLogger.shareExtensionLogsDirPath,
+         ]) {
+        NSError *error;
+        for (NSString *filename in [fileManager contentsOfDirectoryAtPath:logDirPath error:&error]) {
+            NSString *logPath = [logDirPath stringByAppendingPathComponent:filename];
+            [logPathSet addObject:logPath];
+        }
+        if (error) {
+            OWSFail(@"%@ Failed to find log files: %@", self.logTag, error);
+        }
+    }
+    // To be extra conservative, also add all logs from log file manager.
+    // This should be redundant with the logic above.
+    [logPathSet addObjectsFromArray:self.fileLogger.logFileManager.unsortedLogFilePaths];
+    NSArray<NSString *> *logPaths = logPathSet.allObjects;
+    return [logPaths sortedArrayUsingSelector:@selector(compare:)];
+}
+
 - (void)wipeLogs
 {
-    BOOL reenableLogging = (self.fileLogger ? YES : NO);
-    NSError *error;
-    NSArray *logsPath = self.fileLogger.logFileManager.unsortedLogFilePaths;
+    NSArray<NSString *> *logFilePaths = self.allLogFilePaths;
 
+    BOOL reenableLogging = (self.fileLogger ? YES : NO);
     if (reenableLogging) {
         [self disableFileLogging];
     }
 
-    for (NSUInteger i = 0; i < logsPath.count; i++) {
-        [[NSFileManager defaultManager] removeItemAtPath:[logsPath objectAtIndex:i] error:&error];
-    }
-
-    if (error) {
-        DDLogError(@"Logs couldn't be removed. %@", error.description);
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error;
+    for (NSString *logFilePath in logFilePaths) {
+        BOOL success = [fileManager removeItemAtPath:logFilePath error:&error];
+        if (!success || error) {
+            OWSFail(@"%@ Failed to delete log file: %@", self.logTag, error);
+        }
     }
 
     if (reenableLogging) {
         [self enableFileLogging];
     }
-}
-
-- (NSString *)logsDirectory
-{
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *baseDir = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-    NSString *logsDirectory = [baseDir stringByAppendingPathComponent:@"Logs"];
-
-    if (![[NSFileManager defaultManager] fileExistsAtPath:logsDirectory]) {
-        NSError *error;
-
-        [[NSFileManager defaultManager] createDirectoryAtPath:logsDirectory
-                                  withIntermediateDirectories:YES
-                                                   attributes:nil
-                                                        error:nil];
-
-        if (error) {
-            DDLogError(@"Log folder couldn't be created. %@", error.description);
-        }
-    }
-
-    return logsDirectory;
 }
 
 @end

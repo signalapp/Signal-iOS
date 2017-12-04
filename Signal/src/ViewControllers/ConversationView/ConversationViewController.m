@@ -2700,12 +2700,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     NSString *temporaryDirectory = NSTemporaryDirectory();
     NSString *videoDirPath = [temporaryDirectory stringByAppendingPathComponent:@"videos"];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:videoDirPath]) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:videoDirPath
-                                  withIntermediateDirectories:YES
-                                                   attributes:nil
-                                                        error:nil];
-    }
+    [OWSFileSystem ensureDirectoryExists:videoDirPath];
     return [NSURL fileURLWithPath:videoDirPath];
 }
 

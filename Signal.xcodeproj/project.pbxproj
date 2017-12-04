@@ -46,6 +46,8 @@
 		3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461284A1FD0B93F00532771 /* SAELoadViewController.swift */; };
 		346129321FD1A26100532771 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 346129051FD1A25B00532771 /* Localizable.strings */; };
 		346129341FD1A88700532771 /* OWSSwiftUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129331FD1A88700532771 /* OWSSwiftUtils.swift */; };
+		346129391FD1B47300532771 /* OWSPreferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129371FD1B47200532771 /* OWSPreferences.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129381FD1B47200532771 /* OWSPreferences.m */; };
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
 		3471B1DA1EB7C63600F6AEC8 /* NewNonContactConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */; };
 		3472229F1EB22FFE00E53955 /* AddToGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3472229E1EB22FFE00E53955 /* AddToGroupViewController.m */; };
@@ -299,7 +301,6 @@
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		76EB057A18170B33006006FC /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040918170B33006006FC /* OWSContactsManager.m */; };
 		76EB058218170B33006006FC /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041318170B33006006FC /* Environment.m */; };
-		76EB058818170B33006006FC /* OWSPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041918170B33006006FC /* OWSPreferences.m */; };
 		76EB058A18170B33006006FC /* Release.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041B18170B33006006FC /* Release.m */; };
 		76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EB18170B33006006FC /* FunctionalUtil.m */; };
 		76EB063C18170B33006006FC /* NumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04ED18170B33006006FC /* NumberUtil.m */; };
@@ -354,7 +355,6 @@
 		B660F7171C29988E00687D6E /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB040918170B33006006FC /* OWSContactsManager.m */; };
 		B660F7181C29988E00687D6E /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7038632418F70C0700D4A43F /* CryptoTools.m */; };
 		B660F71B1C29988E00687D6E /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041318170B33006006FC /* Environment.m */; };
-		B660F71F1C29988E00687D6E /* OWSPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041918170B33006006FC /* OWSPreferences.m */; };
 		B660F7201C29988E00687D6E /* Release.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB041B18170B33006006FC /* Release.m */; };
 		B660F7211C29988E00687D6E /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1013B196D213F007E3930 /* SignalKeyingStorage.m */; };
 		B660F7221C29988E00687D6E /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = B60C16641988999D00E97A6C /* VersionMigrations.m */; };
@@ -573,6 +573,8 @@
 		346129301FD1A26000532771 /* tr_TR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr_TR; path = Signal/translations/tr_TR.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		346129311FD1A26100532771 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = Signal/translations/es.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		346129331FD1A88700532771 /* OWSSwiftUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSwiftUtils.swift; sourceTree = "<group>"; };
+		346129371FD1B47200532771 /* OWSPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSPreferences.h; sourceTree = "<group>"; };
+		346129381FD1B47200532771 /* OWSPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSPreferences.m; sourceTree = "<group>"; };
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		3471B1D81EB7C63600F6AEC8 /* NewNonContactConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewNonContactConversationViewController.h; sourceTree = "<group>"; };
 		3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewNonContactConversationViewController.m; sourceTree = "<group>"; };
@@ -887,8 +889,6 @@
 		76EB040918170B33006006FC /* OWSContactsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsManager.m; sourceTree = "<group>"; };
 		76EB041218170B33006006FC /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
 		76EB041318170B33006006FC /* Environment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Environment.m; sourceTree = "<group>"; };
-		76EB041818170B33006006FC /* OWSPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSPreferences.h; sourceTree = "<group>"; };
-		76EB041918170B33006006FC /* OWSPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSPreferences.m; sourceTree = "<group>"; };
 		76EB041A18170B33006006FC /* Release.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Release.h; sourceTree = "<group>"; };
 		76EB041B18170B33006006FC /* Release.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Release.m; sourceTree = "<group>"; };
 		76EB04EA18170B33006006FC /* FunctionalUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionalUtil.h; sourceTree = "<group>"; };
@@ -1145,6 +1145,8 @@
 				34480B4A1FD0A7A200BC14EF /* OWSLogger.h */,
 				34480B4B1FD0A7A300BC14EF /* OWSLogger.m */,
 				34480B481FD0A60200BC14EF /* OWSMath.h */,
+				346129371FD1B47200532771 /* OWSPreferences.h */,
+				346129381FD1B47200532771 /* OWSPreferences.m */,
 				34480B4F1FD0A7A300BC14EF /* OWSScrubbingLogFormatter.h */,
 				34480B511FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m */,
 				346129331FD1A88700532771 /* OWSSwiftUtils.swift */,
@@ -1658,8 +1660,6 @@
 				45666F731D9BFDB9008FE134 /* Migrations */,
 				B6258B311C29E2E60014138E /* NotificationsManager.h */,
 				B6258B321C29E2E60014138E /* NotificationsManager.m */,
-				76EB041818170B33006006FC /* OWSPreferences.h */,
-				76EB041918170B33006006FC /* OWSPreferences.m */,
 				76EB041A18170B33006006FC /* Release.h */,
 				76EB041B18170B33006006FC /* Release.m */,
 				B6B1013A196D213F007E3930 /* SignalKeyingStorage.h */,
@@ -2052,6 +2052,7 @@
 				34480B611FD0A98800BC14EF /* UIColor+OWS.h in Headers */,
 				453518961FC63DBF00210559 /* SignalMessaging.h in Headers */,
 				34480B631FD0A98800BC14EF /* UIView+OWS.h in Headers */,
+				346129391FD1B47300532771 /* OWSPreferences.h in Headers */,
 				34480B5B1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch in Headers */,
 				34480B681FD0AA9400BC14EF /* UIFont+OWS.h in Headers */,
 			);
@@ -2684,6 +2685,7 @@
 				34480B621FD0A98800BC14EF /* UIColor+OWS.m in Sources */,
 				34480B531FD0A7A400BC14EF /* OWSLogger.m in Sources */,
 				34480B641FD0A98800BC14EF /* UIView+OWS.m in Sources */,
+				3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */,
 				34480B671FD0AA9400BC14EF /* UIFont+OWS.m in Sources */,
 				346129341FD1A88700532771 /* OWSSwiftUtils.swift in Sources */,
 				34480B591FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m in Sources */,
@@ -2882,7 +2884,6 @@
 				34B3F8941E8DF1710035BE1A /* HomeViewController.m in Sources */,
 				34E8BF381EE9E2FD00F5F4CA /* FingerprintViewScanController.m in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
-				76EB058818170B33006006FC /* OWSPreferences.m in Sources */,
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
 				34D1F0B01F867BFC0066283D /* OWSSystemMessageCell.m in Sources */,
 				45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */,
@@ -2913,7 +2914,6 @@
 				B660F7171C29988E00687D6E /* OWSContactsManager.m in Sources */,
 				B660F7181C29988E00687D6E /* CryptoTools.m in Sources */,
 				B660F71B1C29988E00687D6E /* Environment.m in Sources */,
-				B660F71F1C29988E00687D6E /* OWSPreferences.m in Sources */,
 				451DA3CA1F148A9F008E2423 /* DeviceSleepManager.swift in Sources */,
 				B660F7201C29988E00687D6E /* Release.m in Sources */,
 				45BB93391E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */,

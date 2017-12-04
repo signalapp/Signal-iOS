@@ -388,23 +388,9 @@ void setDatabaseInitialized()
 {
     NSString *databaseDirPath = [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"database"];
 
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:databaseDirPath]) {
-        NSError *_Nullable error;
-        BOOL success = [fileManager createDirectoryAtPath:databaseDirPath
-                              withIntermediateDirectories:NO
-                                               attributes:nil
-                                                    error:&error];
-        if (!success || error) {
-            NSString *errorDescription =
-                [NSString stringWithFormat:@"%@ Could not create new database directory: %@, error: %@",
-                          self.logTag,
-                          databaseDirPath,
-                          error];
-            OWSFail(@"%@", errorDescription);
-            [NSException raise:TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
-                        format:@"%@", errorDescription];
-        }
+    if (![OWSFileSystem ensureDirectoryExists:databaseDirPath]) {
+        [NSException raise:TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
+                    format:@"Could not create new database directory"];
     }
     return databaseDirPath;
 }

@@ -36,8 +36,8 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 - (BOOL)getHasArchivedAMessage;
 - (void)setHasArchivedAMessage:(BOOL)enabled;
 
-+ (BOOL)loggingIsEnabled;
-+ (void)setLoggingEnabled:(BOOL)flag;
++ (BOOL)isLoggingEnabled;
++ (void)setIsLoggingEnabled:(BOOL)flag;
 
 - (BOOL)screenSecurityIsEnabled;
 - (void)setScreenSecurity:(BOOL)flag;

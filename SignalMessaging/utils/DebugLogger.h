@@ -16,8 +16,6 @@
 
 - (void)wipeLogs;
 
-- (NSString *)logsDirectory;
-
-@property (nonatomic) DDFileLogger *fileLogger;
+- (NSArray<NSString *> *)allLogFilePaths;
 
 @end

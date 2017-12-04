@@ -90,12 +90,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *loggingSection = [OWSTableSection new];
     loggingSection.headerTitle = NSLocalizedString(@"LOGGING_SECTION", nil);
     [loggingSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_DEBUGLOG", @"")
-                                                        isOn:[OWSPreferences loggingIsEnabled]
+                                                        isOn:[OWSPreferences isLoggingEnabled]
                                                       target:weakSelf
                                                     selector:@selector(didToggleEnableLogSwitch:)]];
 
 
-    if ([OWSPreferences loggingIsEnabled]) {
+    if ([OWSPreferences isLoggingEnabled]) {
         [loggingSection
             addItem:[OWSTableItem actionItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", @"")
                                          actionBlock:^{
@@ -263,7 +263,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[DebugLogger sharedLogger] enableFileLogging];
     }
 
-    [OWSPreferences setLoggingEnabled:sender.isOn];
+    [OWSPreferences setIsLoggingEnabled:sender.isOn];
 
     [self updateTableContents];
 }

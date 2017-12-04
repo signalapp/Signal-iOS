@@ -204,22 +204,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&onceToken, ^{
         attachmentsFolder = TSAttachmentStream.sharedDataAttachmentsDirPath;
 
-        BOOL isDirectory;
-        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:attachmentsFolder isDirectory:&isDirectory];
-        if (exists) {
-            OWSAssert(isDirectory);
-
-            DDLogInfo(@"Attachments directory already exists");
-        } else {
-            NSError *error = nil;
-            [[NSFileManager defaultManager] createDirectoryAtPath:attachmentsFolder
-                                      withIntermediateDirectories:YES
-                                                       attributes:nil
-                                                            error:&error];
-            if (error) {
-                DDLogError(@"Failed to create attachments directory: %@", error);
-            }
-        }
+        [OWSFileSystem ensureDirectoryExists:attachmentsFolder];
 
         [OWSFileSystem protectFolderAtPath:attachmentsFolder];
     });

@@ -3,8 +3,8 @@
 //
 
 #import "OWSPreferences.h"
-#import "TSStorageHeaders.h"
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
+#import <SignalServiceKit/TSStorageHeaders.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -41,7 +41,8 @@ NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExten
 
 #pragma mark - Helpers
 
-- (void)clear {
+- (void)clear
+{
     [NSUserDefaults removeAll];
 }
 
@@ -108,7 +109,7 @@ NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExten
     }
 }
 
-+ (BOOL)loggingIsEnabled
++ (BOOL)isLoggingEnabled
 {
     NSNumber *preference = [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKeyEnableDebugLog];
 
@@ -119,7 +120,7 @@ NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExten
     }
 }
 
-+ (void)setLoggingEnabled:(BOOL)flag
++ (void)setIsLoggingEnabled:(BOOL)flag
 {
     // Logging preferences are stored in UserDefaults instead of the database, so that we can (optionally) start
     // logging before the database is initialized. This is important because sometimes there are problems *with* the

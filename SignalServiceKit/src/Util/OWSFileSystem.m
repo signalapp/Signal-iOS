@@ -44,6 +44,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [groupContainerDirectoryURL path];
 }
 
++ (NSString *)cachesDirectoryPath
+{
+    NSArray<NSString *> *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    OWSAssert(paths.count >= 1);
+    return paths[0];
+}
+
 + (void)moveAppFilePath:(NSString *)oldFilePath
      sharedDataFilePath:(NSString *)newFilePath
           exceptionName:(NSString *)exceptionName
@@ -80,6 +87,28 @@ NS_ASSUME_NONNULL_BEGIN
               oldFilePath,
               newFilePath,
               fabs([startDate timeIntervalSinceNow]));
+}
+
++ (BOOL)ensureDirectoryExists:(NSString *)dirPath
+{
+    BOOL isDirectory;
+    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:dirPath isDirectory:&isDirectory];
+    if (exists) {
+        OWSAssert(isDirectory);
+
+        return YES;
+    } else {
+        NSError *error = nil;
+        [[NSFileManager defaultManager] createDirectoryAtPath:dirPath
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:&error];
+        if (error) {
+            OWSFail(@"%@ Failed to create directory: %@, error: %@", self.logTag, dirPath, error);
+            return NO;
+        }
+        return YES;
+    }
 }
 
 @end

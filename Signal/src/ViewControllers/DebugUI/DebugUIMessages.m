@@ -8,9 +8,9 @@
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
-#import <Curve25519Kit/Randomness.h>
 #import <AFNetworking/AFNetworking.h>
 #import <AxolotlKit/PreKeyBundle.h>
+#import <Curve25519Kit/Randomness.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -337,19 +337,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
     NSString *randomFilesDirectoryPath =
         [[documentDirectoryURL path] stringByAppendingPathComponent:@"cached_random_files"];
-    NSError *error;
-    if (![fileManager fileExistsAtPath:randomFilesDirectoryPath]) {
-        [fileManager createDirectoryAtPath:randomFilesDirectoryPath
-               withIntermediateDirectories:YES
-                                attributes:nil
-                                     error:&error];
-        OWSAssert(!error);
-        if (error) {
-            DDLogError(@"Error creating directory: %@", error);
-            failure();
-            return;
-        }
-    }
+    [OWSFileSystem ensureDirectoryExists:randomFilesDirectoryPath];
     NSString *filePath = [randomFilesDirectoryPath stringByAppendingPathComponent:filename];
     if ([fileManager fileExistsAtPath:filePath]) {
         success(filePath);
