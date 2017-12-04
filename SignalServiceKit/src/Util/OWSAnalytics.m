@@ -222,8 +222,8 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 
 - (void)submitEvent:(NSDictionary *)eventDictionary
            eventKey:(NSString *)eventKey
-            success:(void (^_Nonnull)())successBlock
-            failure:(void (^_Nonnull)())failureBlock
+            success:(void (^_Nonnull)(void))successBlock
+            failure:(void (^_Nonnull)(void))failureBlock
 {
     OWSAssert(eventDictionary);
     OWSAssert(eventKey);
@@ -311,7 +311,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
         return;
     }
 
-    void (^addEvent)() = ^{
+    void (^addEvent)(void) = ^{
         // Add super properties.
         NSMutableDictionary *eventProperties = (properties ? [properties mutableCopy] : [NSMutableDictionary new]);
         [eventProperties addEntriesFromDictionary:self.eventSuperProperties];

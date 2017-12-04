@@ -20,7 +20,7 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 
 @property (atomic, readonly) BOOL isCensorshipCircumventionActive;
 
-@property (nonatomic, readonly) BOOL hasCensoredPhoneNumber;
+@property (atomic, readonly) BOOL hasCensoredPhoneNumber;
 
 + (instancetype)sharedInstance;
 

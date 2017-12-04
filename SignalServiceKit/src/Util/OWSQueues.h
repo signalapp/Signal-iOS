@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define AssertOnDispatchQueue(queue)                                                                                   \
     {                                                                                                                  \
-        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {                                                          \
+        if (@available(iOS 10.0, *)) {                                                                                 \
             dispatch_assert_queue(queue);                                                                              \
         } else {                                                                                                       \
             _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"")         \

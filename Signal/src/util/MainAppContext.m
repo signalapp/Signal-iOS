@@ -18,6 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
 }
 
+- (BOOL)isRTL
+{
+    return
+        [[UIApplication sharedApplication] userInterfaceLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft;
+}
+
 - (UIApplicationState)mainApplicationState
 {
     return [UIApplication sharedApplication].applicationState;

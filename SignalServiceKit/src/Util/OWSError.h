@@ -30,12 +30,12 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
 };
 
 extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);
-extern NSError *OWSErrorMakeUnableToProcessServerResponseError();
-extern NSError *OWSErrorMakeFailedToSendOutgoingMessageError();
-extern NSError *OWSErrorMakeNoSuchSignalRecipientError();
-extern NSError *OWSErrorMakeAssertionError();
-extern NSError *OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError();
-extern NSError *OWSErrorMakeMessageSendFailedToBlockListError();
-extern NSError *OWSErrorMakeWriteAttachmentDataError();
+extern NSError *OWSErrorMakeUnableToProcessServerResponseError(void);
+extern NSError *OWSErrorMakeFailedToSendOutgoingMessageError(void);
+extern NSError *OWSErrorMakeNoSuchSignalRecipientError(void);
+extern NSError *OWSErrorMakeAssertionError(void);
+extern NSError *OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError(void);
+extern NSError *OWSErrorMakeMessageSendFailedToBlockListError(void);
+extern NSError *OWSErrorMakeWriteAttachmentDataError(void);
 
 NS_ASSUME_NONNULL_END

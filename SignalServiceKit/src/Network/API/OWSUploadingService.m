@@ -47,7 +47,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                        success:(void (^)(void))successHandler
                        failure:(RetryableFailureHandler)failureHandler
 {
-    void (^successHandlerWrapper)() = ^{
+    void (^successHandlerWrapper)(void) = ^{
         [self fireProgressNotification:1 attachmentId:attachmentStream.uniqueId];
 
         successHandler();
@@ -61,7 +61,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 
     if (attachmentStream.serverId) {
         DDLogDebug(@"%@ Attachment previously uploaded.", self.logTag);
-        successHandlerWrapper(outgoingMessage);
+        successHandlerWrapper();
         return;
     }
 

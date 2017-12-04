@@ -802,7 +802,7 @@ extension URLSessionTask {
             return
         }
         guard let httpResponse = task.response as? HTTPURLResponse else {
-            Logger.error("\(TAG) missing or unexpected response: \(task.response)")
+            Logger.error("\(TAG) missing or unexpected response: \(String(describing: task.response))")
             segmentRequestDidFail(assetRequest:assetRequest, assetSegment:assetSegment)
             return
         }

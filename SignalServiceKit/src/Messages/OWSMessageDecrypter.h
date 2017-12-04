@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSSignalServiceProtosEnvelope;
 
 typedef void (^DecryptSuccessBlock)(NSData *_Nullable plaintextData);
-typedef void (^DecryptFailureBlock)();
+typedef void (^DecryptFailureBlock)(void);
 
 @interface OWSMessageDecrypter : OWSMessageHandler
 

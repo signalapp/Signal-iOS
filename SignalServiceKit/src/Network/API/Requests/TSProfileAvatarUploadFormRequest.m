@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSProfileAvatarUploadFormRequest
 
-- (nullable instancetype)init
+- (instancetype)init
 {
     self = [super initWithURL:[NSURL URLWithString:textSecureProfileAvatarFormAPI]];
 

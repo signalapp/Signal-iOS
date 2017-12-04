@@ -305,7 +305,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                 return;
             }
 
-            void (^abortDownload)() = ^{
+            void (^abortDownload)(void) = ^{
                 OWSFail(@"%@ Download aborted.", self.logTag);
                 [task cancel];
             };

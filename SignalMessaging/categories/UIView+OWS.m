@@ -4,6 +4,7 @@
 
 #import "OWSMath.h"
 #import "UIView+OWS.h"
+#import <SignalServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -252,12 +253,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (BOOL)isRTL
 {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+    if (@available(iOS 9.0, *)) {
         return ([UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute]
             == UIUserInterfaceLayoutDirectionRightToLeft);
     } else {
-        return
-            [UIApplication sharedApplication].userInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft;
+        return [CurrentAppContext() isRTL];
     }
 }
 
@@ -268,7 +268,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinLeadingToSuperviewWithMargin:(CGFloat)margin
 {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+    if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.leadingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.leadingAnchor
                                                constant:margin];
@@ -287,7 +287,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinTrailingToSuperviewWithMargin:(CGFloat)margin
 {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+    if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.trailingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.trailingAnchor
                                                 constant:-margin];
@@ -310,7 +310,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(view);
 
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+    if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.leadingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
         constraint.active = YES;
@@ -331,7 +331,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(view);
 
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+    if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.trailingAnchor constraintEqualToAnchor:view.leadingAnchor constant:-margin];
         constraint.active = YES;
@@ -352,7 +352,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(view);
 
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+    if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:margin];
         constraint.active = YES;
@@ -373,7 +373,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(view);
 
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
+    if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.trailingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
         constraint.active = YES;

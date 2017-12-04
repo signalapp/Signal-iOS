@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-+ (void)auditAndCleanupAsync:(void (^_Nullable)())completion
++ (void)auditAndCleanupAsync:(void (^_Nullable)(void))completion
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [OWSOrphanedDataCleaner auditAndCleanup:YES completion:completion];
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 //   They can't be cleaned up - we don't want to delete the TSAttachmentStream or
 //   its corresponding message.  Better that the broken message shows up in the
 //   conversation view.
-+ (void)auditAndCleanup:(BOOL)shouldCleanup completion:(void (^_Nullable)())completion
++ (void)auditAndCleanup:(BOOL)shouldCleanup completion:(void (^_Nullable)(void))completion
 {
     NSSet<NSString *> *diskFilePaths = [self filePathsInAttachmentsFolder];
     long long totalFileSize = [self fileSizeOfFilePaths:diskFilePaths.allObjects];
