@@ -4,7 +4,7 @@
 
 #import <YapDatabase/YapDatabaseViewTransaction.h>
 
-extern NSString *const kNSNotificationName_DatabaseViewRegistrationComplete;
+extern NSString *const DatabaseViewRegistrationCompleteNotification;
 
 extern NSString *const TSInboxGroup;
 extern NSString *const TSArchiveGroup;

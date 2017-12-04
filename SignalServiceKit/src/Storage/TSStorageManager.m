@@ -353,7 +353,7 @@ void setDatabaseInitialized()
     [failedAttachmentDownloadsMessagesJob asyncRegisterDatabaseExtensions];
 
     // NOTE: [TSDatabaseView asyncRegistrationCompletion] ensures that
-    // kNSNotificationName_DatabaseViewRegistrationComplete is not fired until all
+    // DatabaseViewRegistrationCompleteNotification is not fired until all
     // of the async registrations are complete.
     [TSDatabaseView asyncRegistrationCompletion];
 }

@@ -240,7 +240,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(databaseViewRegistrationComplete)
-                                                 name:kNSNotificationName_DatabaseViewRegistrationComplete
+                                                 name:DatabaseViewRegistrationCompleteNotification
                                                object:nil];
 
     return self;

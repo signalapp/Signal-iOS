@@ -9,8 +9,6 @@ import SignalServiceKit
 @objc(OWSMessageFetcherJob)
 class MessageFetcherJob: NSObject {
 
-    private let TAG = "[MessageFetcherJob]"
-
     private var timer: Timer?
 
     // MARK: injected dependencies
@@ -25,25 +23,25 @@ class MessageFetcherJob: NSObject {
     }
 
     public func run() -> Promise<Void> {
-        Logger.debug("\(TAG) in \(#function)")
+        Logger.debug("\(self.logTag) in \(#function)")
 
         guard signalService.isCensorshipCircumventionActive else {
-            Logger.debug("\(self.TAG) delegating message fetching to SocketManager since we're using normal transport.")
+            Logger.debug("\(self.logTag) delegating message fetching to SocketManager since we're using normal transport.")
             TSSocketManager.requestSocketOpen()
             return Promise(value: ())
         }
 
-        Logger.info("\(TAG) fetching messages via REST.")
+        Logger.info("\(self.logTag) fetching messages via REST.")
 
         let promise = self.fetchUndeliveredMessages().then { (envelopes: [OWSSignalServiceProtosEnvelope], more: Bool) -> Promise<Void> in
             for envelope in envelopes {
-                Logger.info("\(self.TAG) received envelope.")
+                Logger.info("\(self.logTag) received envelope.")
                 self.messageReceiver.handleReceivedEnvelope(envelope)
                 self.acknowledgeDelivery(envelope: envelope)
             }
 
             if more {
-                Logger.info("\(self.TAG) fetching more messages.")
+                Logger.info("\(self.logTag) fetching more messages.")
                 return self.run()
             } else {
                 // All finished
@@ -63,7 +61,7 @@ class MessageFetcherJob: NSObject {
     // use in DEBUG or wherever you can't receive push notifications to poll for messages.
     // Do not use in production.
     public func startRunLoop(timeInterval: Double) {
-        Logger.error("\(TAG) Starting message fetch polling. This should not be used in production.")
+        Logger.error("\(self.logTag) Starting message fetch polling. This should not be used in production.")
         timer = WeakTimer.scheduledTimer(timeInterval: timeInterval, target: self, userInfo: nil, repeats: true) {[weak self] _ in
             let _: Promise<Void>? = self?.run()
             return
@@ -77,17 +75,17 @@ class MessageFetcherJob: NSObject {
 
     private func parseMessagesResponse(responseObject: Any?) -> (envelopes: [OWSSignalServiceProtosEnvelope], more: Bool)? {
         guard let responseObject = responseObject else {
-            Logger.error("\(self.TAG) response object was surpringly nil")
+            Logger.error("\(self.logTag) response object was surpringly nil")
             return nil
         }
 
         guard let responseDict = responseObject as? [String: Any] else {
-            Logger.error("\(self.TAG) response object was not a dictionary")
+            Logger.error("\(self.logTag) response object was not a dictionary")
             return nil
         }
 
         guard let messageDicts = responseDict["messages"] as? [[String: Any]] else {
-            Logger.error("\(self.TAG) messages object was not a list of dictionaries")
+            Logger.error("\(self.logTag) messages object was not a list of dictionaries")
             return nil
         }
 
@@ -95,7 +93,7 @@ class MessageFetcherJob: NSObject {
             if let responseMore = responseDict["more"] as? Bool {
                 return responseMore
             } else {
-                Logger.warn("\(self.TAG) more object was not a bool. Assuming no more")
+                Logger.warn("\(self.logTag) more object was not a bool. Assuming no more")
                 return false
             }
         }()
@@ -112,12 +110,12 @@ class MessageFetcherJob: NSObject {
         let builder = OWSSignalServiceProtosEnvelopeBuilder()
 
         guard let typeInt = messageDict["type"] as? Int32 else {
-            Logger.error("\(TAG) message body didn't have type")
+            Logger.error("\(self.logTag) message body didn't have type")
             return nil
         }
 
         guard let type = OWSSignalServiceProtosEnvelopeType(rawValue:typeInt) else {
-            Logger.error("\(TAG) message body type was invalid")
+            Logger.error("\(self.logTag) message body type was invalid")
             return nil
         }
         builder.setType(type)
@@ -127,32 +125,32 @@ class MessageFetcherJob: NSObject {
         }
 
         guard let timestamp = messageDict["timestamp"] as? UInt64 else {
-            Logger.error("\(TAG) message body didn't have timestamp")
+            Logger.error("\(self.logTag) message body didn't have timestamp")
             return nil
         }
         builder.setTimestamp(timestamp)
 
         guard let source = messageDict["source"] as? String else {
-            Logger.error("\(TAG) message body didn't have source")
+            Logger.error("\(self.logTag) message body didn't have source")
             return nil
         }
         builder.setSource(source)
 
         guard let sourceDevice = messageDict["sourceDevice"] as? UInt32 else {
-            Logger.error("\(TAG) message body didn't have sourceDevice")
+            Logger.error("\(self.logTag) message body didn't have sourceDevice")
             return nil
         }
         builder.setSourceDevice(sourceDevice)
 
         if let encodedLegacyMessage = messageDict["message"] as? String {
-            Logger.debug("\(TAG) message body had legacyMessage")
+            Logger.debug("\(self.logTag) message body had legacyMessage")
             if let legacyMessage = Data(base64Encoded: encodedLegacyMessage) {
                 builder.setLegacyMessage(legacyMessage)
             }
         }
 
         if let encodedContent = messageDict["content"] as? String {
-            Logger.debug("\(TAG) message body had content")
+            Logger.debug("\(self.logTag) message body had content")
             if let content = Data(base64Encoded: encodedContent) {
                 builder.setContent(content)
             }
@@ -169,7 +167,7 @@ class MessageFetcherJob: NSObject {
                 messagesRequest,
                 success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
                     guard let (envelopes, more) = self.parseMessagesResponse(responseObject: responseObject) else {
-                        Logger.error("\(self.TAG) response object had unexpected content")
+                        Logger.error("\(self.logTag) response object had unexpected content")
                         return reject(OWSErrorMakeUnableToProcessServerResponseError())
                     }
 
@@ -177,7 +175,7 @@ class MessageFetcherJob: NSObject {
                 },
                 failure: { (_: URLSessionDataTask?, error: Error?) in
                     guard let error = error else {
-                        Logger.error("\(self.TAG) error was surpringly nil. sheesh rough day.")
+                        Logger.error("\(self.logTag) error was surpringly nil. sheesh rough day.")
                         return reject(OWSErrorMakeUnableToProcessServerResponseError())
                     }
 
@@ -190,10 +188,10 @@ class MessageFetcherJob: NSObject {
         let request = OWSAcknowledgeMessageDeliveryRequest(source: envelope.source, timestamp: envelope.timestamp)
         self.networkManager.makeRequest(request,
                                         success: { (_: URLSessionDataTask?, _: Any?) -> Void in
-                                            Logger.debug("\(self.TAG) acknowledged delivery for message at timestamp: \(envelope.timestamp)")
+                                            Logger.debug("\(self.logTag) acknowledged delivery for message at timestamp: \(envelope.timestamp)")
         },
                                         failure: { (_: URLSessionDataTask?, error: Error?) in
-                                            Logger.debug("\(self.TAG) acknowledging delivery for message at timestamp: \(envelope.timestamp) failed with error: \(String(describing: error))")
+                                            Logger.debug("\(self.logTag) acknowledging delivery for message at timestamp: \(envelope.timestamp) failed with error: \(String(describing: error))")
         })
     }
 }

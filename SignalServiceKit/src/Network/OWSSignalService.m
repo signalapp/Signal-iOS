@@ -74,7 +74,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
-                                                 name:kNSNotificationName_RegistrationStateDidChange
+                                                 name:RegistrationStateDidChangeNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(localNumberDidChange:)

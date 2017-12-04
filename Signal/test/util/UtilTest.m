@@ -3,7 +3,6 @@
 //
 
 #import "UtilTest.h"
-#import "Util.h"
 #import "TestUtil.h"
 
 @implementation UtilTest

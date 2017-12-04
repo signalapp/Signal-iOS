@@ -2,8 +2,6 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "StringUtil.h"
-
 @interface NumberUtil : NSObject
 
 + (int16_t)congruentDifferenceMod2ToThe16From:(uint16_t)s1 to:(uint16_t)s2;

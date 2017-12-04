@@ -5,9 +5,9 @@
 import Foundation
 import PromiseKit
 import SignalServiceKit
-import SignalMessaging
 
-class OWS106EnsureProfileComplete: OWSDatabaseMigration {
+@objc
+public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
 
     let TAG = "[OWS106EnsureProfileComplete]"
 
@@ -20,7 +20,7 @@ class OWS106EnsureProfileComplete: OWSDatabaseMigration {
 
     // Overriding runUp since we have some specific completion criteria which
     // is more likely to fail since it involves network requests.
-    override func runUp() {
+    override public func runUp() {
         guard type(of: self).sharedCompleteRegistrationFixerJob == nil else {
             owsFail("\(self.TAG) should only be called once.")
             return

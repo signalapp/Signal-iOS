@@ -19,7 +19,6 @@
 #import "TSGroupThread.h"
 #import "TSStorageManager.h"
 #import "UIUtil.h"
-#import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/OWSFormat.h>

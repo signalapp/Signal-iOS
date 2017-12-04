@@ -8,10 +8,13 @@ import SignalMessaging
 import PureLayout
 import SignalServiceKit
 
-class ShareViewController: UINavigationController, SAELoadViewDelegate {
+@objc
+public class ShareViewController: UINavigationController, SAELoadViewDelegate {
 
-    override func loadView() {
+    override open func loadView() {
         super.loadView()
+
+        Logger.debug("\(self.logTag()) \(#function)")
 
         // This should be the first thing we do.
         SetCurrentAppContext(ShareAppExtensionContext(rootViewController:self))
@@ -33,6 +36,7 @@ class ShareViewController: UINavigationController, SAELoadViewDelegate {
         // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
         TSStorageManager.verifyDBKeysAvailableBeforeBackgroundLaunch()
 
+        // TODO:
 //        // Prevent the device from sleeping during database view async registration
 //        // (e.g. long database upgrades).
 //        //
@@ -41,57 +45,65 @@ class ShareViewController: UINavigationController, SAELoadViewDelegate {
 
         setupEnvironment()
 
+        // TODO:
 //        [UIUtil applySignalAppearence];
-//
-//        if (getenv("runningTests_dontStartApp")) {
-//            return YES;
-//        }
-//
-//        self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-//
-//        // Show the launch screen until the async database view registrations are complete.
-//        self.window.rootViewController = [self loadingRootViewController];
-//
-//        [self.window makeKeyAndVisible];
-//
-//        // performUpdateCheck must be invoked after Environment has been initialized because
-//        // upgrade process may depend on Environment.
-//        [VersionMigrations performUpdateCheck];
-//
-//        // Accept push notification when app is not open
-//        NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
-//        if (remoteNotif) {
-//            DDLogInfo(@"Application was launched by tapping a push notification.");
-//            [self application:application didReceiveRemoteNotification:remoteNotif];
-//        }
-//
-//        [self prepareScreenProtection];
-//
-//        self.contactsSyncing = [[OWSContactsSyncing alloc] initWithContactsManager:[Environment current].contactsManager
-//            identityManager:[OWSIdentityManager sharedManager]
-//            messageSender:[Environment current].messageSender
-//            profileManager:[OWSProfileManager sharedManager]];
-//
-//        [[NSNotificationCenter defaultCenter] addObserver:self
-//            selector:@selector(databaseViewRegistrationComplete)
-//            name:kNSNotificationName_DatabaseViewRegistrationComplete
-//            object:nil];
-//        [[NSNotificationCenter defaultCenter] addObserver:self
-//            selector:@selector(registrationStateDidChange)
-//            name:kNSNotificationName_RegistrationStateDidChange
-//            object:nil];
-//
-//        DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.logTag);
-//
-//        [OWSAnalytics appLaunchDidBegin];
-//
-//        return YES;
 
-        Logger.debug("\(self.logTag()) \(#function)")
+        if CurrentAppContext().isRunningTests() {
+            // TODO: Do we need to implement isRunningTests in the SAE context?
+            return
+        }
+
+        // performUpdateCheck must be invoked after Environment has been initialized because
+        // upgrade process may depend on Environment.
+        VersionMigrations.performUpdateCheck()
 
         let loadViewController = SAELoadViewController(delegate:self)
         self.pushViewController(loadViewController, animated: false)
         self.isNavigationBarHidden = false
+
+        // TODO:
+//        [self prepareScreenProtection];
+
+        // TODO:
+//        self.contactsSyncing = [[OWSContactsSyncing alloc] initWithContactsManager:[Environment current].contactsManager
+//            identityManager:[OWSIdentityManager sharedManager]
+//            messageSender:[Environment current].messageSender
+//            profileManager:[OWSProfileManager sharedManager]];
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(databaseViewRegistrationComplete),
+                                               name: .DatabaseViewRegistrationComplete,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(registrationStateDidChange),
+                                               name: .RegistrationStateDidChange,
+                                               object: nil)
+
+        Logger.info("\(self.logTag) application: didFinishLaunchingWithOptions completed.")
+
+        OWSAnalytics.appLaunchDidBegin()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    @objc
+    func databaseViewRegistrationComplete() {
+        AssertIsOnMainThread()
+
+        Logger.debug("\(self.logTag()) \(#function)")
+
+        // TODO:
+    }
+
+    @objc
+    func registrationStateDidChange() {
+        AssertIsOnMainThread()
+
+        Logger.debug("\(self.logTag()) \(#function)")
+
+        // TODO:
     }
 
     func startupLogging() {
@@ -119,29 +131,29 @@ class ShareViewController: UINavigationController, SAELoadViewDelegate {
     }
 
     func setupEnvironment() {
-        Environment.setCurrent(Release.releaseEnvironment())
+        let environment = Release.releaseEnvironment()
+        Environment.setCurrent(environment)
 
-        // TODO:
-//        // Encryption/Descryption mutates session state and must be synchronized on a serial queue.
-//        [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionStoreQueue]];
-//
-//        TextSecureKitEnv *sharedEnv =
-//            [[TextSecureKitEnv alloc] initWithCallMessageHandler:SignalApp.sharedApp.callMessageHandler
-//                contactsManager:[Environment current].contactsManager
-//                messageSender:[Environment current].messageSender
-//                notificationsManager:SignalApp.sharedApp.notificationsManager
-//                profileManager:OWSProfileManager.sharedManager];
-//        [TextSecureKitEnv setSharedEnv:sharedEnv];
-//
-//        [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{
-//            [VersionMigrations runSafeBlockingMigrations];
-//            }];
-//        [[Environment current].contactsManager startObserving];
+        // Encryption/Decryption mutates session state and must be synchronized on a serial queue.
+        SessionCipher.setSessionCipherDispatchQueue(OWSDispatch.sessionStoreQueue())
+
+        let sharedEnv = TextSecureKitEnv(callMessageHandler:SAECallMessageHandler(),
+                contactsManager:Environment.current().contactsManager,
+                messageSender:Environment.current().messageSender,
+                notificationsManager:SAENotificationsManager(),
+                profileManager:OWSProfileManager.shared())
+        TextSecureKitEnv.setShared(sharedEnv)
+
+        TSStorageManager.shared().setupDatabase(safeBlockingMigrations: {
+            VersionMigrations.runSafeBlockingMigrations()
+        })
+
+        Environment.current().contactsManager.startObserving()
     }
 
     // MARK: View Lifecycle
 
-    override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
 
         let proofOfSharedFramework = StorageCoordinator.shared.path
@@ -156,13 +168,13 @@ class ShareViewController: UINavigationController, SAELoadViewDelegate {
         Logger.debug("\(self.logTag()) \(#function)")
     }
 
-    override func viewWillAppear(_ animated: Bool) {
+    override open func viewWillAppear(_ animated: Bool) {
         Logger.debug("\(self.logTag()) \(#function)")
 
         super.viewWillAppear(animated)
     }
 
-    override func viewDidAppear(_ animated: Bool) {
+    override open func viewDidAppear(_ animated: Bool) {
         Logger.debug("\(self.logTag()) \(#function)")
 
         super.viewDidAppear(animated)

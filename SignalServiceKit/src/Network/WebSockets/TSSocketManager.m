@@ -133,7 +133,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
-                                                 name:kNSNotificationName_RegistrationStateDidChange
+                                                 name:RegistrationStateDidChangeNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(isCensorshipCircumventionActiveDidChange:)
