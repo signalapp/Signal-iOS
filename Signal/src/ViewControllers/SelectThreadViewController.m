@@ -236,28 +236,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<TSThread *> *)filteredThreadsWithSearchText
 {
-    NSArray<TSThread *> *threads = self.threadViewHelper.threads;
-
     NSString *searchTerm = [[self.searchBar text] ows_stripped];
-
-    if ([searchTerm isEqualToString:@""]) {
-        return threads;
-    }
-
-    NSString *formattedNumber = [PhoneNumber removeFormattingCharacters:searchTerm];
-
-    NSMutableArray *result = [NSMutableArray new];
-    for (TSThread *thread in threads) {
-        if ([thread.name containsString:searchTerm]) {
-            [result addObject:thread];
-        } else if ([thread isKindOfClass:[TSContactThread class]]) {
-            TSContactThread *contactThread = (TSContactThread *)thread;
-            if (formattedNumber.length > 0 && [contactThread.contactIdentifier containsString:formattedNumber]) {
-                [result addObject:thread];
-            }
-        }
-    }
-    return result;
+    return [self.threadViewHelper threadsMatchingSearchString:searchTerm];
 }
 
 - (NSArray<SignalAccount *> *)filteredSignalAccountsWithSearchText
@@ -273,10 +253,11 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    NSString *searchString = [self.searchBar text];
+    NSString *searchString = self.searchBar.text;
+    NSArray<SignalAccount *> *matchingAccounts =
+        [self.contactsViewHelper signalAccountsMatchingSearchString:searchString];
 
-    ContactsViewHelper *helper = self.contactsViewHelper;
-    return [[helper signalAccountsMatchingSearchString:searchString]
+    return [matchingAccounts
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
             return ![contactIdsToIgnore containsObject:signalAccount.recipientId];

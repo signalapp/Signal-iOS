@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateContacts];
     self.shouldNotifyDelegateOfUpdatedContacts = NO;
 
-    _signalAccountSearcher = [self buildAccountSearcher];
+    _signalAccountSearcher = [self buildSignalAccountSearcher];
 
     [self observeNotifications];
 
@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Contacts
 
-- (AnySearcher *)buildAccountSearcher
+- (AnySearcher *)buildSignalAccountSearcher
 {
     return [[AnySearcher alloc] initWithIndexer:^NSString *_Nonnull(id _Nonnull obj) {
         if (![obj isKindOfClass:[SignalAccount class]]) {
