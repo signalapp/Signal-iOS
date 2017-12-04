@@ -53,6 +53,11 @@ NS_ASSUME_NONNULL_BEGIN
         == NSLocaleLanguageDirectionRightToLeft;
 }
 
+- (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle
+{
+    DDLogInfo(@"Ignoring request to set status bar style since we're in an app extension");
+}
+
 - (UIApplicationState)mainApplicationState
 {
     OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);

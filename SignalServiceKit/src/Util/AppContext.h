@@ -30,6 +30,7 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 - (void)setMainAppBadgeNumber:(NSInteger)value;
 
 - (BOOL)isRTL;
+- (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle;
 
 // Returns the VC that should be used to present alerts, modals, etc.
 - (nullable UIViewController *)frontmostViewController;

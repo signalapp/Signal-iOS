@@ -6,11 +6,12 @@
 #import "Environment.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
-#import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
 
@@ -117,12 +118,10 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
 
 - (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager
 {
-    [self configureWithRecipientId:signalAccount.recipientId
-                   contactsManager:contactsManager];
+    [self configureWithRecipientId:signalAccount.recipientId contactsManager:contactsManager];
 }
 
-- (void)configureWithRecipientId:(NSString *)recipientId
-                 contactsManager:(OWSContactsManager *)contactsManager
+- (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager
 {
     self.recipientId = recipientId;
     self.contactsManager = contactsManager;
@@ -162,11 +161,11 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
         threadName = [MessageStrings newGroupDefaultTitle];
     }
 
-    NSAttributedString *attributedText = [[NSAttributedString alloc]
-                                          initWithString:threadName
-                                          attributes:@{
-                                                       NSForegroundColorAttributeName : [UIColor blackColor],
-                                                       }];
+    NSAttributedString *attributedText =
+        [[NSAttributedString alloc] initWithString:threadName
+                                        attributes:@{
+                                            NSForegroundColorAttributeName : [UIColor blackColor],
+                                        }];
     self.nameLabel.attributedText = attributedText;
 
     if ([thread isKindOfClass:[TSContactThread class]]) {

@@ -14,10 +14,17 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/NSString+OWS.h>
+#import <SignalMessaging/OWSAudioAttachmentPlayer.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/OWSLogger.h>
 #import <SignalMessaging/OWSMath.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/Release.h>
+#import <SignalMessaging/SendExternalFileViewController.h>
+#import <SignalMessaging/UIColor+OWS.h>
+#import <SignalMessaging/UIFont+OWS.h>
+#import <SignalMessaging/UIImage+OWS.h>
+#import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/UIViewController+OWS.h>

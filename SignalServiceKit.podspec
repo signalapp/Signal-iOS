@@ -36,6 +36,8 @@ An Objective-C library for communicating with the Signal messaging service.
   s.prefix_header_file = 'SignalServiceKit/src/TSPrefix.h'
   s.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
 
+  s.resources = ["SignalServiceKit/Resources/Certificates/*"]
+
   s.dependency 'Curve25519Kit'
   s.dependency 'CocoaLumberjack'
   s.dependency 'AFNetworking'

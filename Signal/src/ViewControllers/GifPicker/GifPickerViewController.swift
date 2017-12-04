@@ -372,7 +372,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                 owsFail("\(strongSelf.TAG) couldn't load asset.")
                 return
             }
-            let attachment = SignalAttachment(dataSource: dataSource, dataUTI: asset.rendition.utiType)
+            let attachment = SignalAttachment.imageAttachment(dataSource: dataSource, dataUTI: asset.rendition.utiType)
 
             strongSelf.delegate?.gifPickerDidSelect(attachment: attachment)
 

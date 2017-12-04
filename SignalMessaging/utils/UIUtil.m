@@ -3,6 +3,7 @@
 //
 
 #import "UIUtil.h"
+#import <SignalServiceKit/AppContext.h>
 
 #define CONTACT_PICTURE_VIEW_BORDER_WIDTH 0.5f
 
@@ -16,14 +17,16 @@
     imageView.layer.masksToBounds = YES;
 }
 
-+ (void)removeRoundedBorderToImageView:(UIImageView *__strong *)imageView {
++ (void)removeRoundedBorderToImageView:(UIImageView *__strong *)imageView
+{
     [[*imageView layer] setBorderWidth:0];
     [[*imageView layer] setCornerRadius:0];
 }
 
-+ (completionBlock)modalCompletionBlock {
++ (completionBlock)modalCompletionBlock
+{
     completionBlock block = ^void() {
-      [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        [CurrentAppContext() setStatusBarStyle:UIStatusBarStyleLightContent];
     };
 
     return block;
@@ -31,18 +34,18 @@
 
 + (void)applyDefaultSystemAppearence
 {
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    [CurrentAppContext() setStatusBarStyle:UIStatusBarStyleDefault];
     [[UINavigationBar appearance] setBarStyle:UIBarStyleDefault];
     [[UINavigationBar appearance] setTintColor:[UIColor blackColor]];
     [[UIBarButtonItem appearance] setTintColor:[UIColor blackColor]];
     [[UINavigationBar appearance] setTitleTextAttributes:@{
-                                                           NSForegroundColorAttributeName : [UIColor blackColor],
-                                                           }];
+        NSForegroundColorAttributeName : [UIColor blackColor],
+    }];
 }
 
 + (void)applySignalAppearence
 {
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    [CurrentAppContext() setStatusBarStyle:UIStatusBarStyleLightContent];
     [[UINavigationBar appearance] setBarTintColor:[UIColor ows_materialBlueColor]];
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
 
@@ -54,8 +57,8 @@
 
     // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
     [[UINavigationBar appearance] setTitleTextAttributes:@{
-                                                           NSForegroundColorAttributeName : [UIColor whiteColor],
-                                                           }];
+        NSForegroundColorAttributeName : [UIColor whiteColor],
+    }];
 }
 
 @end

@@ -4,9 +4,10 @@
 
 import UIKit
 
-class AvatarImageView: UIImageView {
+@objc
+public class AvatarImageView: UIImageView {
 
-    init() {
+    public init() {
         super.init(frame: CGRect.zero)
         self.configureView()
     }
@@ -16,7 +17,7 @@ class AvatarImageView: UIImageView {
         self.configureView()
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         self.configureView()
     }
@@ -34,7 +35,7 @@ class AvatarImageView: UIImageView {
         self.contentMode = .scaleToFill
     }
 
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         self.layer.borderColor = UIColor.black.cgColor.copy(alpha: 0.15)
         self.layer.cornerRadius = self.frame.size.width / 2
     }

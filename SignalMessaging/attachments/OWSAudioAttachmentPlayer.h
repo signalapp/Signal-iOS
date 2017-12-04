@@ -25,6 +25,8 @@ typedef NS_ENUM(NSInteger, AudioPlaybackState) {
 
 @interface OWSAudioAttachmentPlayer : NSObject
 
++ (void)setAudioIgnoresHardwareMuteSwitch:(BOOL)shouldIgnore;
+
 @property (nonatomic, readonly, weak) id<OWSAudioAttachmentPlayerDelegate> delegate;
 
 // This property can be used to associate instances of the player with view

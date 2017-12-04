@@ -7,6 +7,7 @@ import UIKit
 import SignalMessaging
 import PureLayout
 import SignalServiceKit
+import PromiseKit
 
 @objc
 public class ShareViewController: UINavigationController, SAELoadViewDelegate, SAEFailedViewDelegate {
@@ -346,5 +347,71 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
 
     public func shareExtensionWasCancelled() {
         self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+    }
+
+    public func shareExtensionIsReady() {
+       self.presentConversationPicker()
+    }
+
+    // MARK: Helpers
+
+    private func presentConversationPicker() {
+        let conversationPicker = SendExternalFileViewController()
+        buildAttachment().then { attachment -> Void in
+            conversationPicker.attachment = attachment
+            self.pushViewController(conversationPicker, animated: false)
+            Logger.info("presented conversation picker with attachment")
+        }.catch { error in
+            owsFail("\(self.logTag) building attachment failed with error: \(error)")
+        }.retainUntilComplete()
+    }
+
+    enum ShareViewControllerError: Error {
+        case assertionError(description: String)
+    }
+
+    private func buildAttachment() -> Promise<SignalAttachment> {
+        guard let inputItem: NSExtensionItem = self.extensionContext?.inputItems.first as? NSExtensionItem else {
+            let error = ShareViewControllerError.assertionError(description: "no input item")
+            return Promise(error: error)
+        }
+
+        // TODO Multiple attachments. In that case I'm unclear if we'll
+        // be given multile inputItems or a signle inputItem with multiple attachments.
+        guard let itemProvider: NSItemProvider = inputItem.attachments?.first as? NSItemProvider else {
+            let error = ShareViewControllerError.assertionError(description: "No item provider in input item attachments")
+            return Promise(error: error)
+        }
+        Logger.info("\(self.logTag) attachment: \(itemProvider)")
+
+        guard itemProvider.hasItemConformingToTypeIdentifier(kUTTypeJPEG as String) else {
+            let error = ShareViewControllerError.assertionError(description: "only supporting jpegs for now")
+            return Promise(error: error)
+        }
+
+        let (promise, fulfill, reject) = Promise<UIImage>.pending()
+
+        // TODO accept other data types
+        // TODO whitelist attachment types
+        // TODO coerce when necessary and possible
+        itemProvider.loadPreviewImage(options: nil,
+                                      completionHandler: { (previewImage, error) in
+                                        guard error == nil else {
+                                            reject(error!)
+                                            return
+                                        }
+
+                                        guard let image = previewImage as? UIImage else {
+                                            let unexpectedTypeError = ShareViewControllerError.assertionError(description: "unexpected item type: \(String(describing: previewImage))")
+                                            reject(unexpectedTypeError)
+                                            return
+                                        }
+
+                                        fulfill(image)
+        })
+
+        return promise.then { (image: UIImage) in
+            return SignalAttachment.imageAttachment(image: image, dataUTI: kUTTypeJPEG as String, filename: "from-share-extension-2345")
+        }
     }
 }

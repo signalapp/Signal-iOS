@@ -17,6 +17,9 @@ def shared_pods
 
   # third party pods
   pod 'AFNetworking', inhibit_warnings: true
+  pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'mkirk/share-compatible', :inhibit_warnings => true
+  #pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'signal-master', :inhibit_warnings => true
+  #pod 'JSQMessagesViewController',   path: '../JSQMessagesViewController'
   pod 'Mantle', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', '~> 2.9.3', :inhibit_warnings => true
   pod 'PureLayout', :inhibit_warnings => true
@@ -28,8 +31,6 @@ end
 target 'Signal' do
   shared_pods
   pod 'ATAppUpdater', :inhibit_warnings => true
-  pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'signal-master', :inhibit_warnings => true
-  #pod 'JSQMessagesViewController',   path: '../JSQMessagesViewController'
 
   target 'SignalTests' do
     inherit! :search_paths

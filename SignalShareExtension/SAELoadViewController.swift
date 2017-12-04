@@ -9,6 +9,7 @@ import PureLayout
 // All Observer methods will be invoked from the main thread.
 protocol SAELoadViewDelegate: class {
     func shareExtensionWasCancelled()
+    func shareExtensionIsReady()
 }
 
 class SAELoadViewController: UIViewController {
@@ -63,6 +64,14 @@ class SAELoadViewController: UIViewController {
             return
         }
         activityIndicator.startAnimating()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        // FIXME not until ready, and ideally before view appears to avoid any "loading flicker"
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+            Logger.error("Simulating readiness...")
+            self.delegate?.shareExtensionIsReady()
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
