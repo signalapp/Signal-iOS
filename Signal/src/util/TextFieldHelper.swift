@@ -29,7 +29,7 @@ import UIKit
         }
 
         // Don't allow any change if inserting a single char is already over the limit (typically this means typing)
-        if (replacementString.characters.count < 2) {
+        if (replacementString.count < 2) {
             return false
         }
 

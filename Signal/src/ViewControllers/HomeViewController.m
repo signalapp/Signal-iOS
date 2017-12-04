@@ -13,6 +13,7 @@
 #import "ProfileViewController.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
+#import "SignalApp.h"
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
 #import "TSGroupThread.h"
@@ -104,10 +105,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)commonInit
 {
-    _accountManager = [Environment getCurrent].accountManager;
-    _contactsManager = [Environment getCurrent].contactsManager;
+    _accountManager = SignalApp.sharedApp.accountManager;
+    _contactsManager = [Environment current].contactsManager;
     _messagesManager = [OWSMessageManager sharedManager];
-    _messageSender = [Environment getCurrent].messageSender;
+    _messageSender = [Environment current].messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
 
@@ -175,7 +176,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.view.backgroundColor = [UIColor whiteColor];
 
     // TODO: Remove this.
-    [[Environment getCurrent] setHomeViewController:self];
+    [SignalApp.sharedApp setHomeViewController:self];
 
     self.navigationItem.rightBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
@@ -628,7 +629,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 {
     OWSAssert([NSThread isMainThread]);
     DDLogInfo(@"%@ beggining refreshing.", self.logTag);
-    [[Environment getCurrent].messageFetcherJob run].always(^{
+    [SignalApp.sharedApp.messageFetcherJob run].always(^{
         DDLogInfo(@"%@ ending refreshing.", self.logTag);
         [refreshControl endRefreshing];
     });

@@ -19,15 +19,17 @@ public class ProfileFetcherJob: NSObject {
 
     let ignoreThrottling: Bool
 
+    @objc
     public class func run(thread: TSThread, networkManager: TSNetworkManager) {
         ProfileFetcherJob(networkManager: networkManager).run(recipientIds: thread.recipientIdentifiers)
     }
 
+    @objc
     public class func run(recipientId: String, networkManager: TSNetworkManager, ignoreThrottling: Bool) {
         ProfileFetcherJob(networkManager: networkManager, ignoreThrottling:ignoreThrottling).run(recipientIds: [recipientId])
     }
 
-    init(networkManager: TSNetworkManager, ignoreThrottling: Bool = false) {
+    public init(networkManager: TSNetworkManager, ignoreThrottling: Bool = false) {
         self.networkManager = networkManager
         self.storageManager = TSStorageManager.shared()
         self.ignoreThrottling = ignoreThrottling
@@ -137,7 +139,7 @@ public class ProfileFetcherJob: NSObject {
 public class SignalServiceProfile: NSObject {
     let TAG = "[SignalServiceProfile]"
 
-    enum ValidationError: Error {
+    public enum ValidationError: Error {
         case invalid(description: String)
         case invalidIdentityKey(description: String)
         case invalidProfileName(description: String)

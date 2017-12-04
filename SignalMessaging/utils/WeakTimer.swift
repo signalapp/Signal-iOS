@@ -9,7 +9,7 @@
  * Solution modified from
  * http://stackoverflow.com/questions/16821736/weak-reference-to-nstimer-target-to-prevent-retain-cycle/41003985#41003985
  */
-final class WeakTimer {
+public final class WeakTimer {
 
     fileprivate weak var timer: Timer?
     fileprivate weak var target: AnyObject?
@@ -25,7 +25,7 @@ final class WeakTimer {
                                           repeats: repeats)
     }
 
-    class func scheduledTimer(timeInterval: TimeInterval, target: AnyObject, userInfo: Any?, repeats: Bool, action: @escaping (Timer) -> Void) -> Timer {
+    public class func scheduledTimer(timeInterval: TimeInterval, target: AnyObject, userInfo: Any?, repeats: Bool, action: @escaping (Timer) -> Void) -> Timer {
         return WeakTimer(timeInterval: timeInterval,
                          target: target,
                          userInfo: userInfo,

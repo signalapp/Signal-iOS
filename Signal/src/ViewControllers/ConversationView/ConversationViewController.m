@@ -263,10 +263,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)commonInit
 {
-    _contactsManager = [Environment getCurrent].contactsManager;
-    _contactsUpdater = [Environment getCurrent].contactsUpdater;
-    _messageSender = [Environment getCurrent].messageSender;
-    _outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
+    _contactsManager = [Environment current].contactsManager;
+    _contactsUpdater = [Environment current].contactsUpdater;
+    _messageSender = [Environment current].messageSender;
+    _outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
     _storageManager = [TSStorageManager sharedManager];
     _messagesManager = [OWSMessageManager sharedManager];
     _networkManager = [TSNetworkManager sharedManager];

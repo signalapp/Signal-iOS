@@ -92,6 +92,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
 }
 
+- (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey
+{
+    OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

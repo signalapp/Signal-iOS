@@ -74,10 +74,9 @@ NS_ASSUME_NONNULL_BEGIN
                                        }],
                        [OWSTableItem itemWithTitle:@"Send session reset"
                                        actionBlock:^{
-                                           [OWSSessionResetJob
-                                               runWithContactThread:thread
-                                                      messageSender:[Environment getCurrent].messageSender
-                                                     storageManager:[TSStorageManager sharedManager]];
+                                           [OWSSessionResetJob runWithContactThread:thread
+                                                                      messageSender:[Environment current].messageSender
+                                                                     storageManager:[TSStorageManager sharedManager]];
                                        }]
                    ]];
 }

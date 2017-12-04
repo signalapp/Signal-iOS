@@ -6,6 +6,8 @@
 #import "ConversationViewController.h"
 #import "HomeViewController.h"
 #import "Signal-Swift.h"
+#import <SignalMessaging/DebugLogger.h>
+#import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSStorageManager.h>
@@ -56,9 +58,10 @@
     @synchronized(self)
     {
         if (!_callMessageHandler) {
-            _callMessageHandler = [[OWSWebRTCCallMessageHandler alloc] initWithAccountManager:self.accountManager
-                                                                                  callService:self.callService
-                                                                                messageSender:self.messageSender];
+            _callMessageHandler =
+                [[OWSWebRTCCallMessageHandler alloc] initWithAccountManager:self.accountManager
+                                                                callService:self.callService
+                                                              messageSender:Environment.current.messageSender];
         }
     }
 
@@ -71,11 +74,11 @@
     {
         if (!_callService) {
             OWSAssert(self.accountManager);
-            OWSAssert(self.contactsManager);
-            OWSAssert(self.messageSender);
+            OWSAssert(Environment.current.contactsManager);
+            OWSAssert(Environment.current.messageSender);
             _callService = [[CallService alloc] initWithAccountManager:self.accountManager
-                                                       contactsManager:self.contactsManager
-                                                         messageSender:self.messageSender
+                                                       contactsManager:Environment.current.contactsManager
+                                                         messageSender:Environment.current.messageSender
                                                   notificationsAdapter:[OWSCallNotificationsAdapter new]];
         }
     }
@@ -93,10 +96,11 @@
     @synchronized(self)
     {
         if (!_outboundCallInitiator) {
-            OWSAssert(self.contactsManager);
-            OWSAssert(self.contactsUpdater);
-            _outboundCallInitiator = [[OutboundCallInitiator alloc] initWithContactsManager:self.contactsManager
-                                                                            contactsUpdater:self.contactsUpdater];
+            OWSAssert(Environment.current.contactsManager);
+            OWSAssert(Environment.current.contactsUpdater);
+            _outboundCallInitiator =
+                [[OutboundCallInitiator alloc] initWithContactsManager:Environment.current.contactsManager
+                                                       contactsUpdater:Environment.current.contactsUpdater];
         }
     }
 
@@ -110,7 +114,7 @@
         if (!_messageFetcherJob) {
             _messageFetcherJob =
                 [[OWSMessageFetcherJob alloc] initWithMessageReceiver:[OWSMessageReceiver sharedInstance]
-                                                       networkManager:self.networkManager
+                                                       networkManager:Environment.current.networkManager
                                                         signalService:[OWSSignalService sharedInstance]];
         }
     }
@@ -135,7 +139,7 @@
     {
         if (!_accountManager) {
             _accountManager = [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                                                           preferences:self.preferences];
+                                                                           preferences:Environment.current.preferences];
         }
     }
 

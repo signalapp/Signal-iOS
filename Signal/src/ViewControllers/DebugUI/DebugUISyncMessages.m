@@ -8,9 +8,9 @@
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
-#import <Curve25519Kit/Randomness.h>
 #import <AFNetworking/AFNetworking.h>
 #import <AxolotlKit/PreKeyBundle.h>
+#import <Curve25519Kit/Randomness.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
@@ -66,12 +66,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSMessageSender *)messageSender
 {
-    return [Environment getCurrent].messageSender;
+    return [Environment current].messageSender;
 }
 
 + (OWSContactsManager *)contactsManager
 {
-    return [Environment getCurrent].contactsManager;
+    return [Environment current].contactsManager;
 }
 
 + (OWSIdentityManager *)identityManager

@@ -12,7 +12,7 @@
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/Threading.h>
 
-static Environment *environment = nil;
+static Environment *sharedEnvironment = nil;
 
 @interface Environment ()
 
@@ -22,6 +22,7 @@ static Environment *environment = nil;
 @property (nonatomic) OWSMessageSender *messageSender;
 @property (nonatomic) OWSPreferences *preferences;
 
+// TODO: Move to SignalApp.
 @property (nonatomic, weak) UINavigationController *signUpFlowNavigationController;
 
 @end
@@ -30,15 +31,19 @@ static Environment *environment = nil;
 
 @implementation Environment
 
-+ (Environment *)getCurrent
++ (Environment *)current
 {
-    NSAssert((environment != nil), @"Environment is not defined.");
-    return environment;
+    OWSAssert(sharedEnvironment);
+
+    return sharedEnvironment;
 }
 
-+ (void)setCurrent:(Environment *)curEnvironment
++ (void)setCurrent:(Environment *)environment
 {
-    environment = curEnvironment;
+    OWSAssert(!sharedEnvironment);
+    OWSAssert(environment);
+
+    sharedEnvironment = environment;
 }
 
 - (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
@@ -91,12 +96,12 @@ static Environment *environment = nil;
 
 + (OWSPreferences *)preferences
 {
-    OWSAssert([Environment getCurrent]);
-    OWSAssert([Environment getCurrent].preferences);
+    OWSAssert([Environment current].preferences);
 
-    return [Environment getCurrent].preferences;
+    return [Environment current].preferences;
 }
 
+// TODO: Convert to singleton?
 - (OWSPreferences *)preferences
 {
     @synchronized(self)

@@ -13,7 +13,7 @@ class DebugUIProfile: DebugUIPage {
     // MARK: Dependencies
 
     var messageSender: MessageSender {
-        return Environment.getCurrent().messageSender
+        return Environment.current().messageSender
     }
     var profileManager: OWSProfileManager {
         return OWSProfileManager.shared()

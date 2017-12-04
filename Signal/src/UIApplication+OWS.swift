@@ -16,8 +16,11 @@ extension UIApplication {
 
     internal func findFrontmostViewController(ignoringAlerts: Bool) -> UIViewController? {
         let window = UIApplication.shared.keyWindow
-        var viewController = window!.rootViewController
-        return viewController.findFrontmostViewController(ignoringAlerts:ignoringAlerts)
+        guard let viewController = window!.rootViewController else {
+            owsFail("\(self.logTag) in \(#function) Missing root view controller.")
+            return nil
+        }
+        return viewController.findFrontmostViewController(ignoringAlerts)
     }
 
     func openSystemSettings() {

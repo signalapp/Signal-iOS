@@ -2,13 +2,16 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
+// Separate iOS Frameworks from other imports.
 #import "AppSettingsViewController.h"
 #import "AttachmentSharing.h"
 #import "ContactTableViewCell.h"
 #import "ConversationViewItem.h"
 #import "DateUtil.h"
 #import "DebugUIPage.h"
-#import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
 #import "HomeViewController.h"
@@ -24,15 +27,14 @@
 #import "OWSLogger.h"
 #import "OWSNavigationController.h"
 #import "OWSPreferences.h"
-#import "OWSProfileManager.h"
 #import "OWSProgressView.h"
 #import "OWSViewController.h"
 #import "OWSWebRTCDataProtos.pb.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
 #import "PushManager.h"
-#import "Release.h"
 #import "RemoteVideoView.h"
+#import "SignalApp.h"
 #import "ThreadUtil.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
@@ -42,7 +44,6 @@
 #import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
-#import <Foundation/Foundation.h>
 #import <JSQMessagesViewController/JSQMediaItem.h>
 #import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
 #import <JSQMessagesViewController/JSQMessagesBubbleImageFactory.h>
@@ -51,6 +52,11 @@
 #import <JSQSystemSoundPlayer/JSQSystemSoundPlayer.h>
 #import <PureLayout/PureLayout.h>
 #import <Reachability/Reachability.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/Release.h>
+#import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/Asserts.h>
 #import <SignalServiceKit/Contact.h>

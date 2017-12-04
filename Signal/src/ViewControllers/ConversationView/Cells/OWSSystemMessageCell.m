@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSVerificationStateChangeMessage *message = (OWSVerificationStateChangeMessage *)interaction;
             BOOL isVerified = message.verificationState == OWSVerificationStateVerified;
             NSString *displayName =
-                [[Environment getCurrent].contactsManager displayNameForPhoneIdentifier:message.recipientId];
+                [[Environment current].contactsManager displayNameForPhoneIdentifier:message.recipientId];
             NSString *titleFormat = (isVerified
                     ? (message.isLocalChange
                               ? NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",

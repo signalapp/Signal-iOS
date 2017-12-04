@@ -90,7 +90,7 @@ class OWS106EnsureProfileComplete: OWSDatabaseMigration {
 
             let (promise, fulfill, reject) = Promise<Void>.pending()
 
-            guard let networkManager = Environment.getCurrent().networkManager else {
+            guard let networkManager = Environment.current().networkManager else {
                 owsFail("\(TAG) network manager was unexpectedly not set")
                 return Promise(error: OWSErrorMakeAssertionError())
             }

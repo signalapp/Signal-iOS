@@ -103,7 +103,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
-        if Environment.getCurrent().preferences.isCallKitPrivacyEnabled() {
+        if Environment.current().preferences.isCallKitPrivacyEnabled() {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             update.remoteHandle = CXHandle(type: .generic, value: callKitId)
             TSStorageManager.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId:callKitId)
@@ -245,7 +245,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         action.fulfill()
         self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
 
-        if Environment.getCurrent().preferences.isCallKitPrivacyEnabled() {
+        if Environment.current().preferences.isCallKitPrivacyEnabled() {
             // Update the name used in the CallKit UI for outgoing calls.
             let update = CXCallUpdate()
             update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME",

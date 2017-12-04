@@ -436,8 +436,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendStressMessage:(TSOutgoingMessage *)message
 {
     OWSAssert(message);
-    
-    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+
+    OWSMessageSender *messageSender = [Environment current].messageSender;
     [messageSender enqueueMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully sent message.", self.logTag);

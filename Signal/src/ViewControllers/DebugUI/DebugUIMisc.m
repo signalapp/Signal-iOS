@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DDLogInfo(@"%@ re-registering.", self.logTag);
     [[TSAccountManager sharedInstance] resetForRegistration];
-    [[Environment getCurrent].preferences unsetRecordedAPNSTokens];
+    [[Environment current].preferences unsetRecordedAPNSTokens];
 
     RegistrationViewController *viewController = [RegistrationViewController new];
     OWSNavigationController *navigationController =

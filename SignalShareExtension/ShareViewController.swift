@@ -14,7 +14,7 @@ class ShareViewController: UINavigationController, SAELoadViewDelegate {
         super.loadView()
 
         // This should be the first thing we do.
-        SetCurrentAppContext(ShareAppExtensionContext(with:self))
+        SetCurrentAppContext(ShareAppExtensionContext(rootViewController:self))
 
         DebugLogger.shared().enableTTYLogging()
         if _isDebugAssertConfiguration() {
@@ -38,9 +38,9 @@ class ShareViewController: UINavigationController, SAELoadViewDelegate {
 //        //
 //        // This block will be cleared in databaseViewRegistrationComplete.
 //        [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
-//
-//        [self setupEnvironment];
-//
+
+        setupEnvironment()
+
 //        [UIUtil applySignalAppearence];
 //
 //        if (getenv("runningTests_dontStartApp")) {
@@ -67,9 +67,9 @@ class ShareViewController: UINavigationController, SAELoadViewDelegate {
 //
 //        [self prepareScreenProtection];
 //
-//        self.contactsSyncing = [[OWSContactsSyncing alloc] initWithContactsManager:[Environment getCurrent].contactsManager
+//        self.contactsSyncing = [[OWSContactsSyncing alloc] initWithContactsManager:[Environment current].contactsManager
 //            identityManager:[OWSIdentityManager sharedManager]
-//            messageSender:[Environment getCurrent].messageSender
+//            messageSender:[Environment current].messageSender
 //            profileManager:[OWSProfileManager sharedManager]];
 //
 //        [[NSNotificationCenter defaultCenter] addObserver:self
@@ -119,23 +119,24 @@ class ShareViewController: UINavigationController, SAELoadViewDelegate {
     }
 
     func setupEnvironment() {
-        [Environment setCurrent:[Release releaseEnvironment]]
+        Environment.setCurrent(Release.releaseEnvironment())
 
+        // TODO:
 //        // Encryption/Descryption mutates session state and must be synchronized on a serial queue.
 //        [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionStoreQueue]];
 //
 //        TextSecureKitEnv *sharedEnv =
-//            [[TextSecureKitEnv alloc] initWithCallMessageHandler:[Environment getCurrent].callMessageHandler
-//                contactsManager:[Environment getCurrent].contactsManager
-//                messageSender:[Environment getCurrent].messageSender
-//                notificationsManager:[Environment getCurrent].notificationsManager
+//            [[TextSecureKitEnv alloc] initWithCallMessageHandler:SignalApp.sharedApp.callMessageHandler
+//                contactsManager:[Environment current].contactsManager
+//                messageSender:[Environment current].messageSender
+//                notificationsManager:SignalApp.sharedApp.notificationsManager
 //                profileManager:OWSProfileManager.sharedManager];
 //        [TextSecureKitEnv setSharedEnv:sharedEnv];
 //
 //        [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{
 //            [VersionMigrations runSafeBlockingMigrations];
 //            }];
-//        [[Environment getCurrent].contactsManager startObserving];
+//        [[Environment current].contactsManager startObserving];
     }
 
     // MARK: View Lifecycle

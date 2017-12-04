@@ -54,11 +54,11 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 - (instancetype)initDefault
 {
-    return [self initWithMessageFetcherJob:[Environment getCurrent].messageFetcherJob
+    return [self initWithMessageFetcherJob:SignalApp.sharedApp.messageFetcherJob
                             storageManager:[TSStorageManager sharedManager]
-                             callUIAdapter:[Environment getCurrent].callService.callUIAdapter
-                             messageSender:[Environment getCurrent].messageSender
-                      notificationsManager:[Environment getCurrent].notificationsManager];
+                             callUIAdapter:SignalApp.sharedApp.callService.callUIAdapter
+                             messageSender:[Environment current].messageSender
+                      notificationsManager:SignalApp.sharedApp.notificationsManager];
 }
 
 - (instancetype)initWithMessageFetcherJob:(OWSMessageFetcherJob *)messageFetcherJob
@@ -276,7 +276,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
             [thread markAllAsReadWithTransaction:transaction];
         }
         completionBlock:^{
-            [[[Environment getCurrent] homeViewController] updateInboxCountLabel];
+            [SignalApp.sharedApp.homeViewController updateInboxCountLabel];
             [self cancelNotificationsWithThreadId:threadId];
 
             completionHandler();

@@ -3,6 +3,7 @@
 //
 
 #import "OWSDatabaseMigrationRunner.h"
+#import "OWS104CreateRecipientIdentities.h"
 #import "OWSDatabaseMigration.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/AppContext.h>

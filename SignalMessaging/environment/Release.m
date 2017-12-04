@@ -3,6 +3,7 @@
 //
 
 #import "Release.h"
+#import "Environment.h"
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
 #import <SignalServiceKit/ContactsUpdater.h>

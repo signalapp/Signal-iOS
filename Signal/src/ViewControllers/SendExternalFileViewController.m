@@ -38,8 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    _contactsManager = [Environment getCurrent].contactsManager;
-    _messageSender = [Environment getCurrent].messageSender;
+    _contactsManager = [Environment current].contactsManager;
+    _messageSender = [Environment current].messageSender;
 
     self.title = NSLocalizedString(@"SEND_EXTERNAL_FILE_VIEW_TITLE", @"Title for the 'send external file' view.");
 }

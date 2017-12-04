@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commonInit
 {
-    _contactsManager = [Environment getCurrent].contactsManager;
+    _contactsManager = [Environment current].contactsManager;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 }
 

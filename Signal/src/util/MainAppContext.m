@@ -6,9 +6,11 @@
 #import "OWS100RemoveTSRecipientsMigration.h"
 #import "OWS102MoveLoggingPreferenceToUserDefaults.h"
 #import "OWS103EnableVideoCalling.h"
-#import "OWS104CreateRecipientIdentities.h"
 #import "OWS105AttachmentFilePaths.h"
 #import "Signal-Swift.h"
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSProfileManager.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -53,13 +55,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<OWSDatabaseMigration *> *)allMigrations
 {
+    TSStorageManager *storageManager = TSStorageManager.sharedManager;
     return @[
-        [[OWS100RemoveTSRecipientsMigration alloc] initWithStorageManager:self.storageManager],
-        [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithStorageManager:self.storageManager],
-        [[OWS103EnableVideoCalling alloc] initWithStorageManager:self.storageManager],
+        [[OWS100RemoveTSRecipientsMigration alloc] initWithStorageManager:storageManager],
+        [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithStorageManager:storageManager],
+        [[OWS103EnableVideoCalling alloc] initWithStorageManager:storageManager],
         // OWS104CreateRecipientIdentities is run separately. See runSafeBlockingMigrations.
-        [[OWS105AttachmentFilePaths alloc] initWithStorageManager:self.storageManager],
-        [[OWS106EnsureProfileComplete alloc] initWithStorageManager:self.storageManager]
+        [[OWS105AttachmentFilePaths alloc] initWithStorageManager:storageManager],
+        [[OWS106EnsureProfileComplete alloc] initWithStorageManager:storageManager]
     ];
 }
 
@@ -71,6 +74,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)openSystemSettings
 {
     [UIApplication.sharedApplication openSystemSettings];
+}
+
+- (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey
+{
+    OWSAssert(profileKey);
+
+    [MultiDeviceProfileKeyUpdateJob runWithProfileKey:profileKey
+                                      identityManager:OWSIdentityManager.sharedManager
+                                        messageSender:Environment.current.messageSender
+                                       profileManager:OWSProfileManager.sharedManager];
 }
 
 @end

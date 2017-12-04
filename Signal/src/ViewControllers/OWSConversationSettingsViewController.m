@@ -11,7 +11,6 @@
 #import "OWSAvatarBuilder.h"
 #import "OWSBlockingManager.h"
 #import "OWSContactsManager.h"
-#import "OWSProfileManager.h"
 #import "PhoneNumber.h"
 #import "ShowGroupMembersViewController.h"
 #import "Signal-Swift.h"
@@ -20,6 +19,7 @@
 #import "UIView+OWS.h"
 #import "UpdateGroupViewController.h"
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalMessaging/OWSProfileManager.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -94,8 +94,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)commonInit
 {
     _accountManager = [TSAccountManager sharedInstance];
-    _contactsManager = [Environment getCurrent].contactsManager;
-    _messageSender = [Environment getCurrent].messageSender;
+    _contactsManager = [Environment current].contactsManager;
+    _messageSender = [Environment current].messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 

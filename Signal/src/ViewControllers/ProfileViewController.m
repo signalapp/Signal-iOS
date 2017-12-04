@@ -8,13 +8,13 @@
 #import "HomeViewController.h"
 #import "NSString+OWS.h"
 #import "OWSNavigationController.h"
-#import "OWSProfileManager.h"
 #import "Signal-Swift.h"
 #import "SignalsNavigationController.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
+#import <SignalMessaging/OWSProfileManager.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/TSStorageManager.h>
 

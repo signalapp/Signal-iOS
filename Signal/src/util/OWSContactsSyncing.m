@@ -4,8 +4,8 @@
 
 #import "OWSContactsSyncing.h"
 #import "OWSContactsManager.h"
-#import "OWSProfileManager.h"
 #import "TSAccountManager.h"
+#import <SignalMessaging/OWSProfileManager.h>
 #import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>

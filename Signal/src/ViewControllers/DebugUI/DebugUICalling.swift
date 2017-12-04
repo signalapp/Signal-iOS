@@ -13,10 +13,10 @@ class DebugUICalling: DebugUIPage {
     // MARK: Dependencies
 
     var notificationsAdapter: CallNotificationsAdapter {
-        return Environment.getCurrent().callService.notificationsAdapter
+        return SignalApp.shared().callService.notificationsAdapter
     }
     var messageSender: MessageSender {
-        return Environment.getCurrent().messageSender
+        return Environment.current().messageSender
     }
 
     // MARK: Overrides 

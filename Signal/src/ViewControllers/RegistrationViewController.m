@@ -50,7 +50,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
     // Do any additional setup after loading the view.
     [self populateDefaultCountryNameAndCode];
-    [[Environment getCurrent] setSignUpFlowNavigationController:self.navigationController];
+    [[Environment current] setSignUpFlowNavigationController:self.navigationController];
 }
 
 - (void)viewDidLoad {

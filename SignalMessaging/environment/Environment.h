@@ -36,8 +36,8 @@
 
 @property (nonatomic, readonly, weak) UINavigationController *signUpFlowNavigationController;
 
-+ (Environment *)getCurrent;
-+ (void)setCurrent:(Environment *)curEnvironment;
++ (Environment *)current;
++ (void)setCurrent:(Environment *)environment;
 
 + (OWSPreferences *)preferences;
 

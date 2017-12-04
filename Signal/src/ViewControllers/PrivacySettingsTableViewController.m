@@ -164,15 +164,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didToggleEnableCallKitSwitch:(UISwitch *)sender {
     DDLogInfo(@"%@ user toggled call kit preference: %@", self.logTag, (sender.isOn ? @"ON" : @"OFF"));
-    [[Environment getCurrent].preferences setIsCallKitEnabled:sender.isOn];
+    [[Environment current].preferences setIsCallKitEnabled:sender.isOn];
     // rebuild callUIAdapter since CallKit vs not changed.
-    [[Environment getCurrent].callService createCallUIAdapter];
+    [SignalApp.sharedApp.callService createCallUIAdapter];
     [self updateTableContents];
 }
 
 - (void)didToggleEnableCallKitPrivacySwitch:(UISwitch *)sender {
     DDLogInfo(@"%@ user toggled call kit privacy preference: %@", self.logTag, (sender.isOn ? @"ON" : @"OFF"));
-    [[Environment getCurrent].preferences setIsCallKitPrivacyEnabled:!sender.isOn];
+    [[Environment current].preferences setIsCallKitPrivacyEnabled:!sender.isOn];
 }
 
 #pragma mark - Log util

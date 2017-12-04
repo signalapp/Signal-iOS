@@ -5,8 +5,8 @@
 #import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "NSString+OWS.h"
-#import "OWSProfileManager.h"
 #import "Signal-Swift.h"
+#import <SignalMessaging/OWSProfileManager.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/PhoneNumber.h>
@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
     _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
     _conversationSearcher = ConversationSearcher.shared;
 
-    _contactsManager = [Environment getCurrent].contactsManager;
+    _contactsManager = [Environment current].contactsManager;
     _profileManager = [OWSProfileManager sharedManager];
 
     // We don't want to notify the delegate in the `updateContacts`.

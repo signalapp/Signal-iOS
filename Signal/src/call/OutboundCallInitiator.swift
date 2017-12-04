@@ -42,7 +42,7 @@ import SignalMessaging
     public func initiateCall(recipientId: String) -> Bool {
         // Rather than an init-assigned dependency property, we access `callUIAdapter` via Environment
         // because it can change after app launch due to user settings
-        guard let callUIAdapter = Environment.getCurrent().callUIAdapter else {
+        guard let callUIAdapter = SignalApp.shared().callUIAdapter else {
             owsFail("\(TAG) can't initiate call because callUIAdapter is nil")
             return false
         }

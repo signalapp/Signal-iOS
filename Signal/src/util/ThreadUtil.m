@@ -5,9 +5,9 @@
 #import "ThreadUtil.h"
 #import "OWSContactOffersInteraction.h"
 #import "OWSContactsManager.h"
-#import "OWSProfileManager.h"
 #import "Signal-Swift.h"
 #import "TSUnreadIndicatorInteraction.h"
+#import <SignalMessaging/OWSProfileManager.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>

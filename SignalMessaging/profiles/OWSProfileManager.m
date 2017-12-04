@@ -8,7 +8,9 @@
 #import "UIImage+OWS.h"
 #import <AFNetworking/AFNetworking.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/Cryptography.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSData+hexString.h>
 #import <SignalServiceKit/NSDate+OWS.h>
@@ -21,6 +23,7 @@
 #import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
+#import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSProfileAvatarUploadFormRequest.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
@@ -154,8 +157,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 - (instancetype)initDefault
 {
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
-    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
-    TSNetworkManager *networkManager = [Environment getCurrent].networkManager;
+    OWSMessageSender *messageSender = [Environment current].messageSender;
+    TSNetworkManager *networkManager = [Environment current].networkManager;
 
     return [self initWithStorageManager:storageManager messageSender:messageSender networkManager:networkManager];
 }
@@ -262,10 +265,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 // we have a registered account, syncing will fail (and there could not be any
                 // linked device to sync to at this point anyway).
                 if ([TSAccountManager isRegistered]) {
-                    [MultiDeviceProfileKeyUpdateJob runWithProfileKey:userProfile.profileKey
-                                                      identityManager:self.identityManager
-                                                        messageSender:self.messageSender
-                                                       profileManager:self];
+                    [CurrentAppContext() doMultiDeviceUpdateWithProfileKey:userProfile.profileKey];
                 }
 
                 [[NSNotificationCenter defaultCenter]

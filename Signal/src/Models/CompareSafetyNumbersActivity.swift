@@ -60,7 +60,7 @@ class CompareSafetyNumbersActivity: UIActivity {
         defer { activityDidFinish(true) }
 
         let pasteboardString = numericOnly(string: UIPasteboard.general.string)
-        guard (pasteboardString != nil && pasteboardString!.characters.count == 60) else {
+        guard (pasteboardString != nil && pasteboardString!.count == 60) else {
             Logger.warn("\(TAG) no valid safety numbers found in pasteboard: \(String(describing: pasteboardString))")
             let error = OWSErrorWithCodeDescription(OWSErrorCode.userError,
                                                     NSLocalizedString("PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD", comment: "Alert body for user error"))
@@ -91,7 +91,7 @@ class CompareSafetyNumbersActivity: UIActivity {
 
         var numericOnly: String?
         if let regex = try? NSRegularExpression(pattern: "\\D", options: .caseInsensitive) {
-            numericOnly = regex.stringByReplacingMatches(in: string!, options: .withTransparentBounds, range: NSMakeRange(0, string!.characters.count), withTemplate: "")
+            numericOnly = regex.stringByReplacingMatches(in: string!, options: .withTransparentBounds, range: NSMakeRange(0, string!.count), withTemplate: "")
         }
 
         return numericOnly

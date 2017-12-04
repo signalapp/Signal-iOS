@@ -56,7 +56,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
     }
 
     required init(viewItem: ConversationViewItem, message: TSMessage, mode: MessageMetadataViewMode) {
-        self.contactsManager = Environment.getCurrent().contactsManager
+        self.contactsManager = Environment.current().contactsManager
         self.viewItem = viewItem
         self.message = message
         self.mode = mode
@@ -182,7 +182,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         }
 
         var rows = [UIView]()
-        let contactsManager = Environment.getCurrent().contactsManager!
+        let contactsManager = Environment.current().contactsManager!
         let thread = message.thread
 
         // Content
@@ -314,7 +314,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
                 return nil
         }
         let messageBody = displayableText.fullText
-        guard messageBody.characters.count > 0  else {
+        guard messageBody.count > 0  else {
             return nil
         }
         return messageBody
@@ -466,7 +466,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
             let fileSize = dataSource.dataLength()
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
                                                          comment: "Label for file size of attachments in the 'message metadata' view."),
-                                 value: ViewControllerUtils.formatFileSize(UInt(fileSize))))
+                                 value: OWSFormat.formatFileSize(UInt(fileSize))))
         }
 
         return rows
@@ -502,7 +502,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         nameLabel.autoPinEdge(toSuperviewEdge: .top)
         valueLabel.autoPinEdge(toSuperviewEdge: .top)
 
-        if subtitle.characters.count > 0 {
+        if subtitle.count > 0 {
             let subtitleLabel = self.valueLabel(text: subtitle)
             subtitleLabel.textColor = UIColor.ows_darkGray()
             row.addSubview(subtitleLabel)
@@ -510,7 +510,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
             subtitleLabel.autoPinLeading(toTrailingOf: nameLabel, margin: 10)
             subtitleLabel.autoPinEdge(.top, to: .bottom, of: valueLabel, withOffset: 1)
             subtitleLabel.autoPinEdge(toSuperviewEdge: .bottom)
-        } else if value.characters.count > 0 {
+        } else if value.count > 0 {
             valueLabel.autoPinEdge(toSuperviewEdge: .bottom)
         } else {
             nameLabel.autoPinEdge(toSuperviewEdge: .bottom)
