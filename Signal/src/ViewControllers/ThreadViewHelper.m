@@ -3,7 +3,6 @@
 //
 
 #import "ThreadViewHelper.h"
-#import "Signal-Swift.h"
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
@@ -17,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic) YapDatabaseViewMappings *threadMappings;
-@property (nonatomic) ConversationSearcher *conversationSearcher;
 
 @end
 
@@ -31,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self initializeMapping];
-    _conversationSearcher = ConversationSearcher.shared;
 
     return self;
 }

@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ThreadViewHelper : NSObject
 
 @property (nonatomic, weak) id<ThreadViewHelperDelegate> delegate;
+
 @property (nonatomic, readonly) NSMutableArray<TSThread *> *threads;
 
 @end

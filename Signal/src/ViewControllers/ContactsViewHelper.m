@@ -3,7 +3,6 @@
 //
 
 #import "ContactsViewHelper.h"
-//#import "ContactTableViewCell.h"
 #import "Environment.h"
 #import "NSString+OWS.h"
 #import "OWSProfileManager.h"
