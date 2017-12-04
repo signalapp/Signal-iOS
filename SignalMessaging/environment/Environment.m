@@ -22,9 +22,6 @@ static Environment *sharedEnvironment = nil;
 @property (nonatomic) OWSMessageSender *messageSender;
 @property (nonatomic) OWSPreferences *preferences;
 
-// TODO: Move to SignalApp.
-@property (nonatomic, weak) UINavigationController *signUpFlowNavigationController;
-
 @end
 
 #pragma mark -
@@ -112,11 +109,6 @@ static Environment *sharedEnvironment = nil;
     }
 
     return _preferences;
-}
-
-- (void)setSignUpFlowNavigationController:(UINavigationController *)navigationController
-{
-    _signUpFlowNavigationController = navigationController;
 }
 
 @end

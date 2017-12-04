@@ -337,7 +337,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
          annotation:(id)annotation {
     if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![TSAccountManager isRegistered]) {
-            id signupController = [Environment current].signUpFlowNavigationController;
+            id signupController = SignalApp.sharedApp.signUpFlowNavigationController;
             if ([signupController isKindOfClass:[UINavigationController class]]) {
                 UINavigationController *navController = (UINavigationController *)signupController;
                 UIViewController *controller          = [navController.childViewControllers lastObject];

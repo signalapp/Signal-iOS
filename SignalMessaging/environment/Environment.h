@@ -34,13 +34,9 @@
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSPreferences *preferences;
 
-@property (nonatomic, readonly, weak) UINavigationController *signUpFlowNavigationController;
-
 + (Environment *)current;
 + (void)setCurrent:(Environment *)environment;
 
 + (OWSPreferences *)preferences;
-
-- (void)setSignUpFlowNavigationController:(UINavigationController *)signUpFlowNavigationController;
 
 @end

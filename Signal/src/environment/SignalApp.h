@@ -15,6 +15,7 @@
 @interface SignalApp : NSObject
 
 @property (nonatomic, weak) HomeViewController *homeViewController;
+@property (nonatomic, weak) UINavigationController *signUpFlowNavigationController;
 
 // TODO: Convert to singletons?
 @property (nonatomic, readonly) OWSWebRTCCallMessageHandler *callMessageHandler;
