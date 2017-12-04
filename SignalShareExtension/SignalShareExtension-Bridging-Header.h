@@ -16,9 +16,6 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-
-//#import <SignalMessaging/OWSMath.h>
-//#import <SignalMessaging/OWSPreferences.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/Asserts.h>
