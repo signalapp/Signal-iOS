@@ -3,7 +3,7 @@
 //
 
 #import "SignalKeyingStorage.h"
-#import "CryptoTools.h"
+#import "SecurityUtils.h"
 #import "TSStorageManager.h"
 #import "Util.h"
 
@@ -17,9 +17,9 @@
 
 + (void)generateSignaling
 {
-    [self storeData:[CryptoTools generateSecureRandomData:SIGNALING_MAC_KEY_LENGTH] forKey:SIGNALING_MAC_KEY];
-    [self storeData:[CryptoTools generateSecureRandomData:SIGNALING_CIPHER_KEY_LENGTH] forKey:SIGNALING_CIPHER_KEY];
-    [self storeData:[CryptoTools generateSecureRandomData:SIGNALING_EXTRA_KEY_LENGTH] forKey:SIGNALING_EXTRA_KEY];
+    [self storeData:[SecurityUtils generateRandomBytes:SIGNALING_MAC_KEY_LENGTH] forKey:SIGNALING_MAC_KEY];
+    [self storeData:[SecurityUtils generateRandomBytes:SIGNALING_CIPHER_KEY_LENGTH] forKey:SIGNALING_CIPHER_KEY];
+    [self storeData:[SecurityUtils generateRandomBytes:SIGNALING_EXTRA_KEY_LENGTH] forKey:SIGNALING_EXTRA_KEY];
 }
 
 + (int64_t)getAndIncrementOneTimeCounter

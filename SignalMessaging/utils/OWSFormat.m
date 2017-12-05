@@ -4,14 +4,6 @@
 
 #import "OWSFormat.h"
 
-//#import "Environment.h"
-//#import "HomeViewController.h"
-//#import "PhoneNumber.h"
-//#import "Signal-Swift.h"
-//#import "StringUtil.h"
-//#import <AVFoundation/AVFoundation.h>
-//#import <SignalServiceKit/PhoneNumberUtil.h>
-
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFormat
@@ -29,17 +21,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)formatFileSize:(unsigned long)fileSize
 {
+    static NSNumberFormatter *formatter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSNumberFormatter new];
+        formatter.numberStyle = NSNumberFormatterDecimalStyle;
+    });
+
     const unsigned long kOneKilobyte = 1024;
     const unsigned long kOneMegabyte = kOneKilobyte * kOneKilobyte;
 
-    NSNumberFormatter *numberFormatter = [NSNumberFormatter new];
-    numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
-
     if (fileSize > kOneMegabyte * 10) {
-        return [[numberFormatter stringFromNumber:@((int)round(fileSize / (CGFloat)kOneMegabyte))]
+        return [[formatter stringFromNumber:@((int)round(fileSize / (CGFloat)kOneMegabyte))]
             stringByAppendingString:@" MB"];
     } else if (fileSize > kOneKilobyte * 10) {
-        return [[numberFormatter stringFromNumber:@((int)round(fileSize / (CGFloat)kOneKilobyte))]
+        return [[formatter stringFromNumber:@((int)round(fileSize / (CGFloat)kOneKilobyte))]
             stringByAppendingString:@" KB"];
     } else {
         return [NSString stringWithFormat:@"%lu Bytes", fileSize];

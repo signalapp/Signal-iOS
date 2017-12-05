@@ -397,10 +397,12 @@ public class SystemContactsFetcher: NSObject {
 
         switch authorizationStatus {
         case .notDetermined:
-            if UIApplication.shared.applicationState == .background {
-                Logger.error("\(self.TAG) do not request contacts permission when app is in background")
-                completion(nil)
-                return
+            if CurrentAppContext().isMainApp() {
+               if CurrentAppContext().mainApplicationState() == .background {
+                    Logger.error("\(self.TAG) do not request contacts permission when app is in background")
+                    completion(nil)
+                    return
+                }
             }
             self.contactStoreAdapter.requestAccess { (granted, error) in
                 if let error = error {

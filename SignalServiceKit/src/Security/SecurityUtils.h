@@ -4,6 +4,6 @@
 
 @interface SecurityUtils : NSObject
 
-+ (NSData *)generateRandomBytes:(int)numberBytes;
++ (NSData *)generateRandomBytes:(NSUInteger)length;
 
 @end
