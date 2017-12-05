@@ -75,11 +75,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
 }
 
-- (NSArray<OWSDatabaseMigration *> *)allMigrations
-{
-    return @[];
-}
-
 - (nullable UIViewController *)frontmostViewController
 {
     OWSAssert(self.rootViewController);
@@ -93,6 +88,17 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey
+{
+    OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
+}
+
+- (BOOL)isRunningTests
+{
+    // TODO: I don't think we'll need to distinguish this in the SAE.
+    return NO;
+}
+
+- (void)setNetworkActivityIndicatorVisible:(BOOL)value
 {
     OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
 }

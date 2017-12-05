@@ -113,6 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
     _blockingManager = [OWSBlockingManager sharedManager];
 
     OWSSingletonAssert();
+    OWSAssert(CurrentAppContext().isMainApp);
 
     [self startObserving];
 

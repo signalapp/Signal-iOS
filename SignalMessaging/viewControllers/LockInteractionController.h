@@ -6,8 +6,8 @@
 
 typedef void (^LIControllerCompletionBlock)(void);
 typedef BOOL (^LIControllerBlockingOperation)(void);
-typedef void (^LIControllerRetryBlock)(LIControllerBlockingOperation operationBlock,
-                                       LIControllerCompletionBlock completionBlock);
+typedef void (^LIControllerRetryBlock)(
+    LIControllerBlockingOperation operationBlock, LIControllerCompletionBlock completionBlock);
 
 + (void)performBlock:(LIControllerBlockingOperation)blockingOperation
      completionBlock:(LIControllerCompletionBlock)completionBlock

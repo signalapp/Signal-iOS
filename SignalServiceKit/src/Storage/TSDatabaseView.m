@@ -14,8 +14,7 @@
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
 #import <YapDatabase/YapDatabaseView.h>
 
-NSString *const kNSNotificationName_DatabaseViewRegistrationComplete =
-    @"kNSNotificationName_DatabaseViewRegistrationComplete";
+NSString *const DatabaseViewRegistrationCompleteNotification = @"DatabaseViewRegistrationCompleteNotification";
 
 NSString *const TSInboxGroup = @"TSInboxGroup";
 NSString *const TSArchiveGroup = @"TSArchiveGroup";
@@ -452,10 +451,9 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [TSDatabaseView.sharedInstance setAreAllAsyncRegistrationsComplete];
 
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationName_DatabaseViewRegistrationComplete
-                                   object:nil
-                                 userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:DatabaseViewRegistrationCompleteNotification
+                                                                     object:nil
+                                                                   userInfo:nil];
         }];
 }
 

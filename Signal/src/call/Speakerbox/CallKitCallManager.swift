@@ -17,7 +17,6 @@ import SignalServiceKit
 @available(iOS 10.0, *)
 final class CallKitCallManager: NSObject {
 
-    let TAG = "[CallKitCallManager]"
     let callController = CXCallController()
     static let kAnonymousCallHandlePrefix = "Signal:"
 
@@ -78,9 +77,9 @@ final class CallKitCallManager: NSObject {
     private func requestTransaction(_ transaction: CXTransaction) {
         callController.request(transaction) { error in
             if let error = error {
-                Logger.error("\(self.TAG) Error requesting transaction: \(error)")
+                Logger.error("\(self.logTag) Error requesting transaction: \(error)")
             } else {
-                Logger.debug("\(self.TAG) Requested transaction successfully")
+                Logger.debug("\(self.logTag) Requested transaction successfully")
             }
         }
     }

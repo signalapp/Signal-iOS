@@ -11,7 +11,6 @@
 #import "OWSTableViewController.h"
 #import "PhoneNumber.h"
 #import "Signal-Swift.h"
-#import "StringUtil.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"

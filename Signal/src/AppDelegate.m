@@ -131,7 +131,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     SetRandFunctionSeed();
 
     // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
-    [TSStorageManager verifyDBKeysAvailableBeforeBackgroundLaunch];
+    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).
@@ -147,7 +147,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [UIUtil applySignalAppearence];
 
-    if (getenv("runningTests_dontStartApp")) {
+    if (CurrentAppContext().isRunningTests) {
         return YES;
     }
 
@@ -178,11 +178,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(databaseViewRegistrationComplete)
-                                                 name:kNSNotificationName_DatabaseViewRegistrationComplete
+                                                 name:DatabaseViewRegistrationCompleteNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange)
-                                                 name:kNSNotificationName_RegistrationStateDidChange
+                                                 name:RegistrationStateDidChangeNotification
                                                object:nil];
 
     DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.logTag);
@@ -190,6 +190,24 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [OWSAnalytics appLaunchDidBegin];
 
     return YES;
+}
+
+
+/**
+ *  The user must unlock the device once after reboot before the database encryption key can be accessed.
+ */
+- (void)verifyDBKeysAvailableBeforeBackgroundLaunch
+{
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
+        return;
+    }
+
+    if (![TSStorageManager isDatabasePasswordAccessible]) {
+        DDLogInfo(
+            @"%@ exiting because we are in the background and the database password is not accessible.", self.logTag);
+        [DDLog flushLog];
+        exit(0);
+    }
 }
 
 - (void)ensureIsReadyForAppExtensions
@@ -288,7 +306,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 {
     [Environment setCurrent:[Release releaseEnvironment]];
 
-    // Encryption/Descryption mutates session state and must be synchronized on a serial queue.
+    // Encryption/Decryption mutates session state and must be synchronized on a serial queue.
     [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionStoreQueue]];
 
     TextSecureKitEnv *sharedEnv =
@@ -503,7 +521,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     DDLogWarn(@"%@ applicationDidBecomeActive.", self.logTag);
 
-    if (getenv("runningTests_dontStartApp")) {
+    if (CurrentAppContext().isRunningTests) {
         return;
     }
     

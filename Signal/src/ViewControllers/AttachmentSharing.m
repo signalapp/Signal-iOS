@@ -5,6 +5,7 @@
 #import "AttachmentSharing.h"
 #import "TSAttachmentStream.h"
 #import "UIUtil.h"
+#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/Threading.h>
 
 @implementation AttachmentSharing
@@ -55,10 +56,7 @@
             }
         }];
 
-        // Find the frontmost presented UIViewController from which to present the
-        // share view.
-        UIWindow *window = [UIApplication sharedApplication].keyWindow;
-        UIViewController *fromViewController = window.rootViewController;
+        UIViewController *fromViewController = CurrentAppContext().frontmostViewController;
         while (fromViewController.presentedViewController) {
             fromViewController = fromViewController.presentedViewController;
         }

@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const TSRegistrationErrorDomain = @"TSRegistrationErrorDomain";
 NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
-NSString *const kNSNotificationName_RegistrationStateDidChange = @"kNSNotificationName_RegistrationStateDidChange";
+NSString *const RegistrationStateDidChangeNotification = @"RegistrationStateDidChangeNotification";
 NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName_LocalNumberDidChange";
 
 NSString *const TSAccountManager_RegisteredNumberKey = @"TSStorageRegisteredNumberKey";
@@ -124,7 +124,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 
     [self storeLocalNumber:phoneNumber];
 
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_RegistrationStateDidChange
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:RegistrationStateDidChangeNotification
                                                              object:nil
                                                            userInfo:nil];
 
@@ -435,13 +435,12 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
             // This is called from `[AppSettingsViewController proceedToUnregistration]` whose
             // success handler calls `[Environment resetAppData]`.
             // This method, after calling that success handler, fires
-            // `kNSNotificationName_RegistrationStateDidChange` which is only safe to fire after
+            // `RegistrationStateDidChangeNotification` which is only safe to fire after
             // the data store is reset.
 
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationName_RegistrationStateDidChange
-                                   object:nil
-                                 userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:RegistrationStateDidChangeNotification
+                                                                     object:nil
+                                                                   userInfo:nil];
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {

@@ -403,26 +403,13 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         guard let fromView = sender.view else {
             return
         }
-        guard let fromViewController = fromViewController() else {
+        guard let fromViewController = CurrentAppContext().frontmostViewController() else {
             return
         }
         let window = UIApplication.shared.keyWindow
         let convertedRect = fromView.convert(fromView.bounds, to:window)
         let viewController = FullImageViewController(attachment:attachment, from:convertedRect)
         viewController.present(from:fromViewController)
-    }
-
-    private func fromViewController() -> UIViewController? {
-        var responder: UIResponder? = self
-        while true {
-            if responder == nil {
-                return nil
-            }
-            if let viewController = responder as? UIViewController {
-                return viewController
-            }
-            responder = responder?.next
-        }
     }
 
     // MARK: - Video Playback

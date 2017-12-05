@@ -353,7 +353,7 @@ void setDatabaseInitialized()
     [failedAttachmentDownloadsMessagesJob asyncRegisterDatabaseExtensions];
 
     // NOTE: [TSDatabaseView asyncRegistrationCompletion] ensures that
-    // kNSNotificationName_DatabaseViewRegistrationComplete is not fired until all
+    // DatabaseViewRegistrationCompleteNotification is not fired until all
     // of the async registrations are complete.
     [TSDatabaseView asyncRegistrationCompletion];
 }
@@ -716,23 +716,6 @@ void setDatabaseInitialized()
     [self deleteDatabaseFile];
 
     [TSAttachmentStream deleteAttachments];
-}
-
-/**
- *  The user must unlock the device once after reboot before the database encryption key can be accessed.
- */
-+ (void)verifyDBKeysAvailableBeforeBackgroundLaunch
-{
-    if (CurrentAppContext().isMainApp && CurrentAppContext().mainApplicationState != UIApplicationStateBackground) {
-        return;
-    }
-
-    if (![TSStorageManager isDatabasePasswordAccessible]) {
-        DDLogInfo(
-            @"%@ exiting because we are in the background and the database password is not accessible.", self.logTag);
-        [DDLog flushLog];
-        exit(0);
-    }
 }
 
 @end

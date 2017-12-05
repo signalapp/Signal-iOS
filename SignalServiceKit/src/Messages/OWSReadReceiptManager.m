@@ -175,7 +175,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(databaseViewRegistrationComplete)
-                                                 name:kNSNotificationName_DatabaseViewRegistrationComplete
+                                                 name:DatabaseViewRegistrationCompleteNotification
                                                object:nil];
 
     // Try to start processing.

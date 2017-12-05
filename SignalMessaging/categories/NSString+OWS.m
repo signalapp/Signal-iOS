@@ -26,6 +26,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (NSString *)removeAllCharactersIn:(NSCharacterSet *)characterSet
+{
+    ows_require(characterSet != nil);
+    return [[self componentsSeparatedByCharactersInSet:characterSet] componentsJoinedByString:@""];
+}
+
+- (NSString *)digitsOnly
+{
+    return [self removeAllCharactersIn:[NSCharacterSet.decimalDigitCharacterSet invertedSet]];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

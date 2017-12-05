@@ -6,8 +6,8 @@
 #import "Environment.h"
 #import "LockInteractionController.h"
 #import "OWSDatabaseMigrationRunner.h"
-#import "PushManager.h"
 #import "SignalKeyingStorage.h"
+#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -66,9 +66,7 @@
                                                            }];
         [alertController addAction:quitAction];
 
-        [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alertController
-                                                                                     animated:YES
-                                                                                   completion:nil];
+        [CurrentAppContext().frontmostViewController presentViewController:alertController animated:YES completion:nil];
     }
 
     if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] && [TSAccountManager isRegistered]) {
@@ -91,25 +89,29 @@
 
 + (BOOL)isVersion:(NSString *)thisVersionString
           atLeast:(NSString *)openLowerBoundVersionString
-      andLessThan:(NSString *)closedUpperBoundVersionString {
+      andLessThan:(NSString *)closedUpperBoundVersionString
+{
     return [self isVersion:thisVersionString atLeast:openLowerBoundVersionString] &&
-           [self isVersion:thisVersionString lessThan:closedUpperBoundVersionString];
+        [self isVersion:thisVersionString lessThan:closedUpperBoundVersionString];
 }
 
-+ (BOOL)isVersion:(NSString *)thisVersionString atLeast:(NSString *)thatVersionString {
++ (BOOL)isVersion:(NSString *)thisVersionString atLeast:(NSString *)thatVersionString
+{
     return [thisVersionString compare:thatVersionString options:NSNumericSearch] != NSOrderedAscending;
 }
 
-+ (BOOL)isVersion:(NSString *)thisVersionString lessThan:(NSString *)thatVersionString {
++ (BOOL)isVersion:(NSString *)thisVersionString lessThan:(NSString *)thatVersionString
+{
     return [thisVersionString compare:thatVersionString options:NSNumericSearch] == NSOrderedAscending;
 }
 
 #pragma mark Upgrading to 2.1 - Removing video cache folder
 
-+ (void)clearVideoCache {
-    NSArray *paths     = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
++ (void)clearVideoCache
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-    basePath           = [basePath stringByAppendingPathComponent:@"videos"];
+    basePath = [basePath stringByAppendingPathComponent:@"videos"];
 
     NSError *error;
     if ([[NSFileManager defaultManager] fileExistsAtPath:basePath]) {
@@ -117,14 +119,15 @@
     }
 
     if (error) {
-        DDLogError(@"An error occured while removing the videos cache folder from old location: %@",
-                   error.debugDescription);
+        DDLogError(
+            @"An error occured while removing the videos cache folder from old location: %@", error.debugDescription);
     }
 }
 
 #pragma mark Upgrading to 2.1.3 - Adding VOIP flag on TS Server
 
-+ (void)blockingAttributesUpdate {
++ (void)blockingAttributesUpdate
+{
     LIControllerBlockingOperation blockingOperation = ^BOOL(void) {
         [[NSUserDefaults appUserDefaults] setObject:@YES forKey:NEEDS_TO_REGISTER_ATTRIBUTES];
 
@@ -167,9 +170,10 @@
 #pragma mark Upgrading to 2.3.0
 
 // We removed bloom filter contact discovery. Clean up any local bloom filter data.
-+ (void)clearBloomFilterCache {
-    NSFileManager *fm         = [NSFileManager defaultManager];
-    NSArray *cachesDir        = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
++ (void)clearBloomFilterCache
+{
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSArray *cachesDir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *bloomFilterPath = [[cachesDir objectAtIndex:0] stringByAppendingPathComponent:@"bloomfilter"];
 
     if ([fm fileExistsAtPath:bloomFilterPath]) {

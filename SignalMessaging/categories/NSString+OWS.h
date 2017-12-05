@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)rtlSafeAppend:(NSString *)string referenceView:(UIView *)referenceView;
 
+- (NSString *)digitsOnly;
+
 @end
 
 NS_ASSUME_NONNULL_END
