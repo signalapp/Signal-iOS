@@ -16,6 +16,7 @@ def shared_pods
   #pod 'GRKOpenSSLFramework', path: '../GRKOpenSSLFramework'
 
   # third party pods
+  pod 'AFNetworking', inhibit_warnings: true
   pod 'Mantle', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', '~> 2.9.3', :inhibit_warnings => true
   pod 'PureLayout', :inhibit_warnings => true
