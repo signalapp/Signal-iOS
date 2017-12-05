@@ -124,8 +124,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        contactsManager = Environment.getCurrent().contactsManager
-        callUIAdapter = Environment.getCurrent().callUIAdapter
+        contactsManager = Environment.current().contactsManager
+        callUIAdapter = SignalApp.shared().callUIAdapter
         allAudioSources = Set(callUIAdapter.audioService.availableInputs)
         self.call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: "+1234567890")
         self.thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
@@ -134,8 +134,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
     }
 
     required init(call: SignalCall) {
-        contactsManager = Environment.getCurrent().contactsManager
-        callUIAdapter = Environment.getCurrent().callUIAdapter
+        contactsManager = Environment.current().contactsManager
+        callUIAdapter = SignalApp.shared().callUIAdapter
         allAudioSources = Set(callUIAdapter.audioService.availableInputs)
         self.call = call
         self.thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
@@ -200,7 +200,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
         // Subscribe for future call updates
         call.addObserverAndSyncState(observer: self)
 
-        Environment.getCurrent().callService.addObserverAndSyncState(observer: self)
+        SignalApp.shared().callService.addObserverAndSyncState(observer: self)
     }
 
     // MARK: - Create Views
@@ -927,7 +927,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
     private func markSettingsNagAsComplete() {
         Logger.info("\(TAG) called \(#function)")
 
-        let preferences = Environment.getCurrent().preferences!
+        let preferences = Environment.current().preferences!
 
         preferences.setIsCallKitEnabled(preferences.isCallKitEnabled())
         preferences.setIsCallKitPrivacyEnabled(preferences.isCallKitPrivacyEnabled())
@@ -1008,13 +1008,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
         } else if !ignoreNag &&
             call.direction == .incoming &&
             UIDevice.current.supportsCallKit &&
-            (!Environment.getCurrent().preferences.isCallKitEnabled() ||
-                Environment.getCurrent().preferences.isCallKitPrivacyEnabled()) {
+            (!Environment.current().preferences.isCallKitEnabled() ||
+                Environment.current().preferences.isCallKitPrivacyEnabled()) {
 
             isShowingSettingsNag = true
 
             // Update the nag view's copy to reflect the settings state.
-            if Environment.getCurrent().preferences.isCallKitEnabled() {
+            if Environment.current().preferences.isCallKitEnabled() {
                 settingsNagDescriptionLabel.text = NSLocalizedString("CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY",
                                                                      comment: "Reminder to the user of the benefits of disabling CallKit privacy.")
             } else {
@@ -1023,8 +1023,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
             }
             settingsNagDescriptionLabel.superview?.setNeedsLayout()
 
-            if Environment.getCurrent().preferences.isCallKitEnabledSet() ||
-                Environment.getCurrent().preferences.isCallKitPrivacySet() {
+            if Environment.current().preferences.isCallKitEnabledSet() ||
+                Environment.current().preferences.isCallKitPrivacySet() {
                 // User has already touched these preferences, only show
                 // the "fleeting" nag, not the "blocking" nag.
 

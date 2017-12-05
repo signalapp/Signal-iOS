@@ -14,6 +14,7 @@
 #import "OWSNavigationController.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
+#import "SignalApp.h"
 #import "SignalKeyingStorage.h"
 #import "TSOutgoingMessage.h"
 #import "UIUtil.h"
@@ -85,7 +86,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (void)commonInit
 {
-    _messageSender = [Environment getCurrent].messageSender;
+    _messageSender = [Environment current].messageSender;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _avatarViewHelper = [AvatarViewHelper new];
     _avatarViewHelper.delegate = self;
@@ -460,7 +461,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
             [self dismissViewControllerAnimated:YES
                                      completion:^{
                                          // Pop to new group thread.
-                                         [Environment presentConversationForThread:thread];
+                                         [SignalApp.sharedApp presentConversationForThread:thread];
                                      }];
 
         });
@@ -479,7 +480,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                                                                   failedMessageType:TSErrorMessageGroupCreationFailed]
                                              save];
 
-                                         [Environment presentConversationForThread:thread];
+                                         [SignalApp.sharedApp presentConversationForThread:thread];
                                      }];
         });
     };

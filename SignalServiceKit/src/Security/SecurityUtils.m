@@ -1,23 +1,19 @@
 //
-//  SecurityUtils.m
-//  TextSecureKit
-//
-//  Created by Frederic Jacobs on 28/10/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "SecurityUtils.h"
 
 @implementation SecurityUtils
 
-+ (NSData *)generateRandomBytes:(int)numberBytes {
-    NSMutableData *randomBytes = [NSMutableData dataWithLength:(NSUInteger)numberBytes];
-    int err                    = 0;
-    err                        = SecRandomCopyBytes(kSecRandomDefault, (size_t)numberBytes, [randomBytes mutableBytes]);
-    if (err != noErr) {
-        @throw [NSException exceptionWithName:@"random problem" reason:@"problem generating the random " userInfo:nil];
++ (NSData *)generateRandomBytes:(NSUInteger)length
+{
+    NSMutableData *d = [NSMutableData dataWithLength:length];
+    OSStatus status = SecRandomCopyBytes(kSecRandomDefault, length, [d mutableBytes]);
+    if (status != noErr) {
+        [SecurityFailure raise:@"SecRandomCopyBytes failed"];
     }
-    return randomBytes;
+    return [d copy];
 }
 
 @end

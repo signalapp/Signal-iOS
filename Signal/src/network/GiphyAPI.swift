@@ -375,7 +375,7 @@ extension GiphyError: LocalizedError {
             Logger.warn("\(TAG) Image dict missing id.")
             return nil
         }
-        guard giphyId.characters.count > 0 else {
+        guard giphyId.count > 0 else {
             Logger.warn("\(TAG) Image dict has invalid id.")
             return nil
         }
@@ -433,7 +433,7 @@ extension GiphyError: LocalizedError {
         guard let urlString = renditionDict["url"] as? String else {
             return nil
         }
-        guard urlString.characters.count > 0 else {
+        guard urlString.count > 0 else {
             Logger.warn("\(TAG) Rendition has invalid url.")
             return nil
         }

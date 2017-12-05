@@ -244,7 +244,7 @@ NS_ASSUME_NONNULL_BEGIN
                   OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
                       [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread
                                                                   groupId:[Randomness generateRandomBytes:16]];
-                  [[Environment getCurrent].messageSender enqueueMessage:syncGroupsRequestMessage
+                  [[Environment current].messageSender enqueueMessage:syncGroupsRequestMessage
                       success:^{
                           DDLogWarn(@"%@ Successfully sent Request Group Info message.", self.logTag);
                       }
@@ -292,7 +292,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *randomText = [self randomText];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
-    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+    OWSMessageSender *messageSender = [Environment current].messageSender;
     TSOutgoingMessage *message = [ThreadUtil sendMessageWithText:text inThread:thread messageSender:messageSender];
     DDLogError(@"%@ sendTextMessageInThread timestamp: %llu.", self.logTag, message.timestamp);
 }
@@ -312,7 +312,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *randomText = [[self randomText] substringToIndex:arc4random_uniform(4)];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
-    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+    OWSMessageSender *messageSender = [Environment current].messageSender;
     [ThreadUtil sendMessageWithText:text inThread:thread messageSender:messageSender];
 }
 
@@ -373,7 +373,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(filePath);
     OWSAssert(thread);
 
-    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+    OWSMessageSender *messageSender = [Environment current].messageSender;
     NSString *filename = [filePath lastPathComponent];
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
     DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
@@ -624,7 +624,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendOversizeTextMessage:(TSThread *)thread
 {
-    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+    OWSMessageSender *messageSender = [Environment current].messageSender;
     NSMutableString *message = [NSMutableString new];
     for (int i = 0; i < 32; i++) {
         [message appendString:@"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse rutrum, nulla "
@@ -665,7 +665,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti length:(NSUInteger)length
 {
-    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+    OWSMessageSender *messageSender = [Environment current].messageSender;
     DataSource *_Nullable dataSource =
         [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length] utiType:uti];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti];
@@ -1125,7 +1125,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                              groupMetaMessage:TSGroupMessageNew];
     [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 
-    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+    OWSMessageSender *messageSender = [Environment current].messageSender;
     void (^completion)(void) = ^{
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             [ThreadUtil sendMessageWithText:[@(counter) description] inThread:thread messageSender:messageSender];

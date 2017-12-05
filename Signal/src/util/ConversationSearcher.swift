@@ -78,7 +78,7 @@ class ConversationSearcher: NSObject {
     }
 
     private var contactsManager: OWSContactsManager {
-        return Environment.getCurrent().contactsManager
+        return Environment.current().contactsManager
     }
 
     private func indexingString(recipientId: String) -> String {

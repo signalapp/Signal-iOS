@@ -27,4 +27,6 @@ static inline CGFloat CGFloatInverseLerp(CGFloat value, CGFloat minValue, CGFloa
     return (value - minValue) / (maxValue - minValue);
 }
 
+void SetRandFunctionSeed(void);
+
 NS_ASSUME_NONNULL_END

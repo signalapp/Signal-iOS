@@ -3,6 +3,7 @@
 //
 
 #import "Release.h"
+#import "Environment.h"
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
 #import <SignalServiceKit/ContactsUpdater.h>
@@ -45,7 +46,8 @@
 }
 
 // TODELETE
-+ (Environment *)unitTestEnvironment:(NSArray *)testingAndLegacyOptions {
++ (Environment *)unitTestEnvironment:(NSArray *)testingAndLegacyOptions
+{
     TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
     OWSContactsManager *contactsManager = [OWSContactsManager new];
     ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];

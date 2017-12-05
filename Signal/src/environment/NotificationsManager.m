@@ -116,9 +116,9 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
         case NotificationNameNoPreview:
         case NotificationNamePreview: {
             alertMessage = (([UIDevice currentDevice].supportsCallKit &&
-                             [[Environment getCurrent].preferences isCallKitPrivacyEnabled])
-                            ? [CallStrings missedCallNotificationBodyWithoutCallerName]
-                            : [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], callerName]);
+                                [[Environment current].preferences isCallKitPrivacyEnabled])
+                    ? [CallStrings missedCallNotificationBodyWithoutCallerName]
+                    : [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], callerName]);
             break;
         }
     }
@@ -155,7 +155,7 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
         case NotificationNameNoPreview:
         case NotificationNamePreview: {
             alertMessage = (([UIDevice currentDevice].supportsCallKit &&
-                                [[Environment getCurrent].preferences isCallKitPrivacyEnabled])
+                                [[Environment current].preferences isCallKitPrivacyEnabled])
                     ? [CallStrings missedCallWithIdentityChangeNotificationBodyWithoutCallerName]
                     : [NSString
                           stringWithFormat:[CallStrings missedCallWithIdentityChangeNotificationBodyWithCallerName],
@@ -195,7 +195,7 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
         case NotificationNameNoPreview:
         case NotificationNamePreview: {
             alertMessage = (([UIDevice currentDevice].supportsCallKit &&
-                                [[Environment getCurrent].preferences isCallKitPrivacyEnabled])
+                                [[Environment current].preferences isCallKitPrivacyEnabled])
                     ? [CallStrings missedCallWithIdentityChangeNotificationBodyWithoutCallerName]
                     : [NSString
                           stringWithFormat:[CallStrings missedCallWithIdentityChangeNotificationBodyWithCallerName],
@@ -387,7 +387,7 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
 
 - (NotificationType)notificationPreviewType
 {
-    OWSPreferences *prefs = [Environment getCurrent].preferences;
+    OWSPreferences *prefs = [Environment current].preferences;
     return prefs.notificationPreviewType;
 }
 

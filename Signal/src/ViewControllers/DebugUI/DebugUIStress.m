@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import "OWSMessageSender.h"
 #import "OWSTableViewController.h"
+#import "SignalApp.h"
 #import "ThreadUtil.h"
 #import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSDate+OWS.h>
@@ -435,8 +436,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendStressMessage:(TSOutgoingMessage *)message
 {
     OWSAssert(message);
-    
-    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
+
+    OWSMessageSender *messageSender = [Environment current].messageSender;
     [messageSender enqueueMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully sent message.", self.logTag);
@@ -484,8 +485,8 @@ NS_ASSUME_NONNULL_BEGIN
          thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
      }];
     OWSAssert(thread);
-    
-    [Environment presentConversationForThread:thread];
+
+    [SignalApp.sharedApp presentConversationForThread:thread];
 }
 
 @end

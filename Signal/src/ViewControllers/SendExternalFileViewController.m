@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import "NSString+OWS.h"
 #import "Signal-Swift.h"
+#import "SignalApp.h"
 #import "ThreadUtil.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
@@ -37,8 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    _contactsManager = [Environment getCurrent].contactsManager;
-    _messageSender = [Environment getCurrent].messageSender;
+    _contactsManager = [Environment current].contactsManager;
+    _messageSender = [Environment current].messageSender;
 
     self.title = NSLocalizedString(@"SEND_EXTERNAL_FILE_VIEW_TITLE", @"Title for the 'send external file' view.");
 }
@@ -67,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:thread];
     [ThreadUtil sendMessageWithAttachment:self.attachment inThread:thread messageSender:self.messageSender];
-    [Environment presentConversationForThread:thread];
+    [SignalApp.sharedApp presentConversationForThread:thread];
 }
 
 - (BOOL)canSelectBlockedContact

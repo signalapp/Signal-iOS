@@ -6,6 +6,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^BackgroundTaskExpirationHandler)(void);
 
+@class OWSAES256Key;
+@class OWSDatabaseMigration;
+
 @protocol AppContext <NSObject>
 
 - (BOOL)isMainApp;
@@ -27,6 +30,18 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 - (void)setMainAppBadgeNumber:(NSInteger)value;
 
 - (BOOL)isRTL;
+
+- (NSArray<OWSDatabaseMigration *> *)allMigrations;
+
+// Returns the VC that should be used to present alerts, modals, etc.
+- (nullable UIViewController *)frontmostViewController;
+
+// Should only be called if isMainApp is YES.
+- (void)openSystemSettings;
+
+// Should only be called if isMainApp is YES,
+// but should only be necessary to call if isMainApp is YES.
+- (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey;
 
 @end
 

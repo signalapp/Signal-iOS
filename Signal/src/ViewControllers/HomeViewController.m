@@ -13,6 +13,7 @@
 #import "ProfileViewController.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
+#import "SignalApp.h"
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
 #import "TSGroupThread.h"
@@ -21,6 +22,7 @@
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
+#import <SignalMessaging/OWSFormat.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
@@ -103,10 +105,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)commonInit
 {
-    _accountManager = [Environment getCurrent].accountManager;
-    _contactsManager = [Environment getCurrent].contactsManager;
+    _accountManager = SignalApp.sharedApp.accountManager;
+    _contactsManager = [Environment current].contactsManager;
     _messagesManager = [OWSMessageManager sharedManager];
-    _messageSender = [Environment getCurrent].messageSender;
+    _messageSender = [Environment current].messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
 
@@ -174,7 +176,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.view.backgroundColor = [UIColor whiteColor];
 
     // TODO: Remove this.
-    [[Environment getCurrent] setHomeViewController:self];
+    [SignalApp.sharedApp setHomeViewController:self];
 
     self.navigationItem.rightBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
@@ -627,7 +629,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 {
     OWSAssert([NSThread isMainThread]);
     DDLogInfo(@"%@ beggining refreshing.", self.logTag);
-    [[Environment getCurrent].messageFetcherJob run].always(^{
+    [SignalApp.sharedApp.messageFetcherJob run].always(^{
         DDLogInfo(@"%@ ending refreshing.", self.logTag);
         [refreshControl endRefreshing];
     });
@@ -754,8 +756,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     NSString *unreadString = NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil);
 
     if (numberOfItems > 0) {
-        unreadString =
-            [unreadString stringByAppendingFormat:@" (%@)", [ViewControllerUtils formatInt:(int)numberOfItems]];
+        unreadString = [unreadString stringByAppendingFormat:@" (%@)", [OWSFormat formatInt:(int)numberOfItems]];
     }
 
     [_segmentedControl setTitle:unreadString forSegmentAtIndex:0];

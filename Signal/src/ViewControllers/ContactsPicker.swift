@@ -109,12 +109,12 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
     // MARK: - Initializers
 
     init() {
-        contactsManager = Environment.getCurrent().contactsManager
+        contactsManager = Environment.current().contactsManager
         super.init(nibName: nil, bundle: nil)
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        contactsManager = Environment.getCurrent().contactsManager
+        contactsManager = Environment.current().contactsManager
         super.init(coder: aDecoder)
     }
 
@@ -321,7 +321,7 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
 
     open func updateSearchResults(searchText: String) {
         let predicate: NSPredicate
-        if searchText.characters.count == 0 {
+        if searchText.count == 0 {
             filteredSections = sections
         } else {
             do {

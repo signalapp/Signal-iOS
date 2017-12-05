@@ -3,12 +3,10 @@
 //
 
 #import "OWSDatabaseMigrationRunner.h"
-#import "OWS100RemoveTSRecipientsMigration.h"
-#import "OWS102MoveLoggingPreferenceToUserDefaults.h"
-#import "OWS103EnableVideoCalling.h"
 #import "OWS104CreateRecipientIdentities.h"
-#import "OWS105AttachmentFilePaths.h"
+#import "OWSDatabaseMigration.h"
 #import "Signal-Swift.h"
+#import <SignalServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,14 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<OWSDatabaseMigration *> *)allMigrations
 {
-    return @[
-        [[OWS100RemoveTSRecipientsMigration alloc] initWithStorageManager:self.storageManager],
-        [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithStorageManager:self.storageManager],
-        [[OWS103EnableVideoCalling alloc] initWithStorageManager:self.storageManager],
-        // OWS104CreateRecipientIdentities is run separately. See runSafeBlockingMigrations.
-        [[OWS105AttachmentFilePaths alloc] initWithStorageManager:self.storageManager],
-        [[OWS106EnsureProfileComplete alloc] initWithStorageManager:self.storageManager]
-    ];
+    return CurrentAppContext().allMigrations;
 }
 
 - (void)assumeAllExistingMigrationsRun

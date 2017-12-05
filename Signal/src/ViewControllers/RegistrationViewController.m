@@ -5,7 +5,6 @@
 #import "RegistrationViewController.h"
 #import "CodeVerificationViewController.h"
 #import "CountryCodeViewController.h"
-#import "Environment.h"
 #import "NSString+OWS.h"
 #import "PhoneNumber.h"
 #import "PhoneNumberUtil.h"
@@ -14,6 +13,7 @@
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
 #import <SAMKeychain/SAMKeychain.h>
+#import <SignalMessaging/Environment.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -50,7 +50,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
     // Do any additional setup after loading the view.
     [self populateDefaultCountryNameAndCode];
-    [[Environment getCurrent] setSignUpFlowNavigationController:self.navigationController];
+    [SignalApp.sharedApp setSignUpFlowNavigationController:self.navigationController];
 }
 
 - (void)viewDidLoad {

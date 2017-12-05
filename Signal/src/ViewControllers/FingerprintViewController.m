@@ -144,7 +144,7 @@ typedef void (^CustomLayoutBlock)(void);
 
     self.recipientId = recipientId;
 
-    OWSContactsManager *contactsManager = [Environment getCurrent].contactsManager;
+    OWSContactsManager *contactsManager = [Environment current].contactsManager;
     self.contactName = [contactsManager displayNameForPhoneIdentifier:recipientId];
 
     OWSRecipientIdentity *_Nullable recipientIdentity =

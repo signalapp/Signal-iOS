@@ -304,7 +304,7 @@ protocol CallServiceObserver: class {
                 throw CallError.assertionError(description: errorDescription)
             }
 
-            let useTurnOnly = Environment.getCurrent().preferences.doCallsHideIPAddress()
+            let useTurnOnly = Environment.current().preferences.doCallsHideIPAddress()
 
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .outgoing, useTurnOnly: useTurnOnly)
             Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function) for call: \(call.identifiersForLogs)")
@@ -609,7 +609,7 @@ protocol CallServiceObserver: class {
             // a TURN connection, so as not to reveal any connectivity information (IP/port) to the caller.
             let unknownCaller = self.contactsManager.signalAccount(forRecipientId: thread.contactIdentifier()) == nil
 
-            let useTurnOnly = unknownCaller || Environment.getCurrent().preferences.doCallsHideIPAddress()
+            let useTurnOnly = unknownCaller || Environment.current().preferences.doCallsHideIPAddress()
 
             Logger.debug("\(self.TAG) setting peerConnectionClient in \(#function) for: \(newCall.identifiersForLogs)")
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .incoming, useTurnOnly: useTurnOnly)

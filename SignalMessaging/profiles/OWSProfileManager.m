@@ -5,18 +5,25 @@
 #import "OWSProfileManager.h"
 #import "Environment.h"
 #import "NSString+OWS.h"
-#import "Signal-Swift.h"
+#import "UIImage+OWS.h"
+#import <AFNetworking/AFNetworking.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/Cryptography.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSData+hexString.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSRequestBuilder.h>
+#import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
+#import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSProfileAvatarUploadFormRequest.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
@@ -150,8 +157,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 - (instancetype)initDefault
 {
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
-    OWSMessageSender *messageSender = [Environment getCurrent].messageSender;
-    TSNetworkManager *networkManager = [Environment getCurrent].networkManager;
+    OWSMessageSender *messageSender = [Environment current].messageSender;
+    TSNetworkManager *networkManager = [Environment current].networkManager;
 
     return [self initWithStorageManager:storageManager messageSender:messageSender networkManager:networkManager];
 }
@@ -243,43 +250,41 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         // Other threads may modify this profile's properties
         OWSAssert([userProfile isEqual:userProfileCopy]);
     }
- 
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // Make sure to save on the local db connection for consistency.
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [userProfileCopy saveWithTransaction:transaction];
         }];
-        
+
         BOOL isLocalUserProfile = userProfile == self.localUserProfile;
-        
+
         dispatch_async(dispatch_get_main_queue(), ^{
             if (isLocalUserProfile) {
                 // We populate an initial (empty) profile on launch of a new install, but until
                 // we have a registered account, syncing will fail (and there could not be any
                 // linked device to sync to at this point anyway).
                 if ([TSAccountManager isRegistered]) {
-                    [MultiDeviceProfileKeyUpdateJob runWithProfileKey:userProfile.profileKey
-                                                      identityManager:self.identityManager
-                                                        messageSender:self.messageSender
-                                                       profileManager:self];
+                    [CurrentAppContext() doMultiDeviceUpdateWithProfileKey:userProfile.profileKey];
                 }
-                
-                [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
-                                                                         object:nil
-                                                                       userInfo:nil];
+
+                [[NSNotificationCenter defaultCenter]
+                    postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
+                                       object:nil
+                                     userInfo:nil];
             } else {
                 [[NSNotificationCenter defaultCenter]
-                 postNotificationNameAsync:kNSNotificationName_OtherUsersProfileWillChange
-                 object:nil
-                 userInfo:@{
-                            kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
-                            }];
+                    postNotificationNameAsync:kNSNotificationName_OtherUsersProfileWillChange
+                                       object:nil
+                                     userInfo:@{
+                                         kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
+                                     }];
                 [[NSNotificationCenter defaultCenter]
-                 postNotificationNameAsync:kNSNotificationName_OtherUsersProfileDidChange
-                 object:nil
-                 userInfo:@{
-                            kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
-                            }];
+                    postNotificationNameAsync:kNSNotificationName_OtherUsersProfileDidChange
+                                       object:nil
+                                     userInfo:@{
+                                         kNSNotificationKey_ProfileRecipientId : userProfile.recipientId,
+                                     }];
             }
         });
     });
@@ -683,7 +688,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSData *_Nullable encryptedPaddedName = [self encryptProfileNameWithUnpaddedName:localProfileName];
-        
+
         TSRequest *request = [OWSRequestBuilder profileNameSetRequestWithEncryptedPaddedName:encryptedPaddedName];
         [self.networkManager makeRequest:request
             success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -1298,7 +1303,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     if (!encryptedData) {
         return nil;
     }
-    
+
     return [Cryptography decryptAESGCMWithData:encryptedData key:profileKey];
 }
 

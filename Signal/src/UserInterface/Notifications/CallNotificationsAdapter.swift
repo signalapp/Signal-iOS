@@ -22,7 +22,7 @@ class CallNotificationsAdapter: NSObject {
 //        if #available(iOS 10.0, *) {
 //            adaptee = UserNotificationsAdaptee()
 //        } else {
-            adaptee = Environment.getCurrent().notificationsManager
+            adaptee = SignalApp.shared().notificationsManager
 //        }
     }
 

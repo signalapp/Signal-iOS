@@ -39,7 +39,7 @@ extension CallUIAdaptee {
         let callViewController = CallViewController(call: call)
         callViewController.modalTransitionStyle = .crossDissolve
 
-        guard let presentingViewController = Environment.getCurrent().homeViewController else {
+        guard let presentingViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts else {
             owsFail("in \(#function) view controller unexpectedly nil")
             return
         }
@@ -91,7 +91,7 @@ extension CallUIAdaptee {
             // So we use the non-CallKit call UI.
             Logger.info("\(TAG) choosing non-callkit adaptee for simulator.")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
-        } else if #available(iOS 10.0, *), Environment.getCurrent().preferences.isCallKitEnabled() {
+        } else if #available(iOS 10.0, *), Environment.current().preferences.isCallKitEnabled() {
             Logger.info("\(TAG) choosing callkit adaptee for iOS10+")
             adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationsAdapter: notificationsAdapter)
         } else {

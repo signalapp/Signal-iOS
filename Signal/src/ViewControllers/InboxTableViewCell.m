@@ -7,6 +7,7 @@
 #import "Signal-Swift.h"
 #import "Util.h"
 #import "ViewControllerUtils.h"
+#import <SignalMessaging/OWSFormat.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
@@ -224,7 +225,7 @@ const NSUInteger kAvatarViewDiameter = 52;
     if (unreadCount > 0) {
         self.unreadBadge.hidden = NO;
         self.unreadLabel.hidden = NO;
-        self.unreadLabel.text = [ViewControllerUtils formatInt:MIN(99, (int)unreadCount)];
+        self.unreadLabel.text = [OWSFormat formatInt:MIN(99, (int)unreadCount)];
     } else {
         self.unreadBadge.hidden = YES;
         self.unreadLabel.hidden = YES;

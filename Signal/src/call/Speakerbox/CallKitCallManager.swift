@@ -25,7 +25,7 @@ final class CallKitCallManager: NSObject {
 
     func startCall(_ call: SignalCall) {
         var handle: CXHandle
-        if Environment.getCurrent().preferences.isCallKitPrivacyEnabled() {
+        if Environment.current().preferences.isCallKitPrivacyEnabled() {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             handle = CXHandle(type: .generic, value: callKitId)
             TSStorageManager.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId:callKitId)

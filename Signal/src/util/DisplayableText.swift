@@ -185,7 +185,7 @@ extension String {
         if string == "" {
             return 0
         }
-        if string.characters.count > Int(kMaxJumbomojiCount * kMaxCharactersPerEmojiCount) {
+        if string.count > Int(kMaxJumbomojiCount * kMaxCharactersPerEmojiCount) {
             return 0
         }
         guard string.containsOnlyEmoji else {

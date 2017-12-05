@@ -48,7 +48,7 @@
         return self;
     }
 
-    _contactsManager = [Environment getCurrent].contactsManager;
+    _contactsManager = [Environment current].contactsManager;
 
     return self;
 }
@@ -60,7 +60,7 @@
         return self;
     }
 
-    _contactsManager = [Environment getCurrent].contactsManager;
+    _contactsManager = [Environment current].contactsManager;
 
     return self;
 }
@@ -381,7 +381,7 @@
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                       [TSAccountManager unregisterTextSecureWithSuccess:^{
-                          [Environment resetAppData];
+                          [SignalApp resetAppData];
                       }
                           failure:^(NSError *error) {
                               dispatch_async(dispatch_get_main_queue(), ^{

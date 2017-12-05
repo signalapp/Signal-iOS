@@ -66,6 +66,7 @@
 #import <JSQSystemSoundPlayer/JSQSystemSoundPlayer.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <SignalMessaging/OWSFormat.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
@@ -262,10 +263,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)commonInit
 {
-    _contactsManager = [Environment getCurrent].contactsManager;
-    _contactsUpdater = [Environment getCurrent].contactsUpdater;
-    _messageSender = [Environment getCurrent].messageSender;
-    _outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
+    _contactsManager = [Environment current].contactsManager;
+    _contactsUpdater = [Environment current].contactsUpdater;
+    _messageSender = [Environment current].messageSender;
+    _outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
     _storageManager = [TSStorageManager sharedManager];
     _messagesManager = [OWSMessageManager sharedManager];
     _networkManager = [TSNetworkManager sharedManager];
@@ -742,7 +743,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 [NSString stringWithFormat:NSLocalizedString(@"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT",
                                                @"Indicates that some members of this group has been blocked. Embeds "
                                                @"{{the number of blocked users in this group}}."),
-                          [ViewControllerUtils formatInt:blockedGroupMemberCount]];
+                          [OWSFormat formatInt:blockedGroupMemberCount]];
         }
     }
 
@@ -3568,7 +3569,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     // Max out the unread count at 99+.
     const NSUInteger kMaxUnreadCount = 99;
-    _backButtonUnreadCountLabel.text = [ViewControllerUtils formatInt:(int)MIN(kMaxUnreadCount, unreadCount)];
+    _backButtonUnreadCountLabel.text = [OWSFormat formatInt:(int)MIN(kMaxUnreadCount, unreadCount)];
 }
 
 #pragma mark 3D Touch Preview Actions

@@ -14,17 +14,19 @@
 #import "OWSContactsSyncing.h"
 #import "OWSNavigationController.h"
 #import "OWSPreferences.h"
-#import "OWSProfileManager.h"
 #import "Pastelog.h"
 #import "PushManager.h"
 #import "RegistrationViewController.h"
 #import "Release.h"
 #import "SendExternalFileViewController.h"
 #import "Signal-Swift.h"
+#import "SignalApp.h"
 #import "SignalsNavigationController.h"
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
+#import <SignalMessaging/OWSMath.h>
+#import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
@@ -126,15 +128,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [self startupLogging];
 
-    // Set the seed the generator for rand().
-    //
-    // We should always use arc4random() instead of rand(), but we
-    // still want to ensure that any third-party code that uses rand()
-    // gets random values.
-    srand((unsigned int)time(NULL));
+    SetRandFunctionSeed();
 
     // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
-    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
+    [TSStorageManager verifyDBKeysAvailableBeforeBackgroundLaunch];
 
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).
@@ -174,9 +171,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [self prepareScreenProtection];
 
-    self.contactsSyncing = [[OWSContactsSyncing alloc] initWithContactsManager:[Environment getCurrent].contactsManager
+    self.contactsSyncing = [[OWSContactsSyncing alloc] initWithContactsManager:[Environment current].contactsManager
                                                                identityManager:[OWSIdentityManager sharedManager]
-                                                                 messageSender:[Environment getCurrent].messageSender
+                                                                 messageSender:[Environment current].messageSender
                                                                 profileManager:[OWSProfileManager sharedManager]];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -295,17 +292,17 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionStoreQueue]];
 
     TextSecureKitEnv *sharedEnv =
-        [[TextSecureKitEnv alloc] initWithCallMessageHandler:[Environment getCurrent].callMessageHandler
-                                             contactsManager:[Environment getCurrent].contactsManager
-                                               messageSender:[Environment getCurrent].messageSender
-                                        notificationsManager:[Environment getCurrent].notificationsManager
+        [[TextSecureKitEnv alloc] initWithCallMessageHandler:SignalApp.sharedApp.callMessageHandler
+                                             contactsManager:[Environment current].contactsManager
+                                               messageSender:[Environment current].messageSender
+                                        notificationsManager:SignalApp.sharedApp.notificationsManager
                                               profileManager:OWSProfileManager.sharedManager];
     [TextSecureKitEnv setSharedEnv:sharedEnv];
 
     [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{
         [VersionMigrations runSafeBlockingMigrations];
     }];
-    [[Environment getCurrent].contactsManager startObserving];
+    [[Environment current].contactsManager startObserving];
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -340,7 +337,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
          annotation:(id)annotation {
     if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![TSAccountManager isRegistered]) {
-            id signupController = [Environment getCurrent].signUpFlowNavigationController;
+            id signupController = SignalApp.sharedApp.signUpFlowNavigationController;
             if ([signupController isKindOfClass:[UINavigationController class]]) {
                 UINavigationController *navController = (UINavigationController *)signupController;
                 UIViewController *controller          = [navController.childViewControllers lastObject];
@@ -358,7 +355,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         }
     } else if ([url.scheme.lowercaseString isEqualToString:@"file"]) {
 
-        if ([Environment getCurrent].callService.call != nil) {
+        if (SignalApp.sharedApp.callService.call != nil) {
             DDLogWarn(@"%@ ignoring 'open with Signal' due to ongoing WebRTC call.", self.logTag);
             return NO;
         }
@@ -498,9 +495,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     viewController.attachment = attachment;
     UINavigationController *navigationController =
         [[UINavigationController alloc] initWithRootViewController:viewController];
-    [[[Environment getCurrent] homeViewController] presentTopLevelModalViewController:navigationController
-                                                                     animateDismissal:NO
-                                                                  animatePresentation:YES];
+    [SignalApp.sharedApp.homeViewController presentTopLevelModalViewController:navigationController
+                                                              animateDismissal:NO
+                                                           animatePresentation:YES];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -567,7 +564,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         // Avoid blocking app launch by putting all further possible DB access in async block
         dispatch_async(dispatch_get_main_queue(), ^{
             [TSSocketManager requestSocketOpen];
-            [[Environment getCurrent].contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
+            [[Environment current].contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
             // This will fetch new messages, if we're using domain fronting.
             [[PushManager sharedManager] applicationDidBecomeActive];
 
@@ -579,7 +576,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 // "Background App Refresh" will not be able to obtain an APN token. Enabling those settings does not
                 // restart the app, so we check every activation for users who haven't yet registered.
                 __unused AnyPromise *promise =
-                    [OWSSyncPushTokensJob runWithAccountManager:[Environment getCurrent].accountManager
+                    [OWSSyncPushTokensJob runWithAccountManager:SignalApp.sharedApp.accountManager
                                                     preferences:[Environment preferences]];
             }
         });
@@ -600,7 +597,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                     // If app has not re-entered active, show screen protection if necessary.
                     [self showScreenProtection];
                 }
-                [[[Environment getCurrent] homeViewController] updateInboxCountLabel];
+                [SignalApp.sharedApp.homeViewController updateInboxCountLabel];
                 [application endBackgroundTask:bgTask];
             });
         }
@@ -613,7 +610,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler {
     if ([TSAccountManager isRegistered]) {
-        [[Environment getCurrent].homeViewController showNewConversationView];
+        [SignalApp.sharedApp.homeViewController showNewConversationView];
         completionHandler(YES);
     } else {
         UIAlertController *controller =
@@ -679,10 +676,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         // * It can be received if the user taps the "video" button for a contact in the
         //   contacts app.  If so, the correct response is to try to initiate a new call
         //   to that user - unless there already is another call in progress.
-        if ([Environment getCurrent].callService.call != nil) {
-            if ([phoneNumber isEqualToString:[Environment getCurrent].callService.call.remotePhoneNumber]) {
+        if (SignalApp.sharedApp.callService.call != nil) {
+            if ([phoneNumber isEqualToString:SignalApp.sharedApp.callService.call.remotePhoneNumber]) {
                 DDLogWarn(@"%@ trying to upgrade ongoing call to video.", self.logTag);
-                [[Environment getCurrent].callService handleCallKitStartVideo];
+                [SignalApp.sharedApp.callService handleCallKitStartVideo];
                 return YES;
             } else {
                 DDLogWarn(
@@ -691,7 +688,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             }
         }
 
-        OutboundCallInitiator *outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
+        OutboundCallInitiator *outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
         OWSAssert(outboundCallInitiator);
         return [outboundCallInitiator initiateCallWithHandle:phoneNumber];
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
@@ -726,12 +723,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             }
         }
 
-        if ([Environment getCurrent].callService.call != nil) {
+        if (SignalApp.sharedApp.callService.call != nil) {
             DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing WebRTC call.", self.logTag);
             return NO;
         }
 
-        OutboundCallInitiator *outboundCallInitiator = [Environment getCurrent].outboundCallInitiator;
+        OutboundCallInitiator *outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
         OWSAssert(outboundCallInitiator);
         return [outboundCallInitiator initiateCallWithHandle:phoneNumber];
     } else {
@@ -858,23 +855,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                            completionHandler:completionHandler];
 }
 
-/**
- *  The user must unlock the device once after reboot before the database encryption key can be accessed.
- */
-- (void)verifyDBKeysAvailableBeforeBackgroundLaunch
-{
-    if (UIApplication.sharedApplication.applicationState != UIApplicationStateBackground) {
-        return;
-    }
-
-    if (![TSStorageManager isDatabasePasswordAccessible]) {
-        DDLogInfo(
-            @"%@ exiting because we are in the background and the database password is not accessible.", self.logTag);
-        [DDLog flushLog];
-        exit(0);
-    }
-}
-
 - (void)databaseViewRegistrationComplete
 {
     DDLogInfo(@"%@ databaseViewRegistrationComplete", self.logTag);
@@ -885,11 +865,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
         // seconds before receiving an actionable push notification.
-        __unused AnyPromise *messagePromise = [[Environment getCurrent].messageFetcherJob run];
+        __unused AnyPromise *messagePromise = [SignalApp.sharedApp.messageFetcherJob run];
 
         // This should happen at any launch, background or foreground.
         __unused AnyPromise *pushTokenpromise =
-            [OWSSyncPushTokensJob runWithAccountManager:[Environment getCurrent].accountManager
+            [OWSSyncPushTokensJob runWithAccountManager:SignalApp.sharedApp.accountManager
                                             preferences:[Environment preferences]];
     }
 
@@ -920,7 +900,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [OWSProfileManager.sharedManager fetchLocalUsersProfile];
     [[OWSReadReceiptManager sharedManager] prepareCachedValues];
-    [[Environment getCurrent].contactsManager loadLastKnownContactRecipientIds];
+    [[Environment current].contactsManager loadLastKnownContactRecipientIds];
 }
 
 - (void)registrationStateDidChange

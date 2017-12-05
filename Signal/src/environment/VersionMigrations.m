@@ -31,7 +31,7 @@
 {
     // performUpdateCheck must be invoked after Environment has been initialized because
     // upgrade process may depend on Environment.
-    OWSAssert([Environment getCurrent]);
+    OWSAssert([Environment current]);
 
     NSString *previousVersion = AppVersion.instance.lastAppVersion;
     NSString *currentVersion = AppVersion.instance.currentAppVersion;

@@ -240,9 +240,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)syncPushTokens
 {
-    OWSSyncPushTokensJob *job =
-        [[OWSSyncPushTokensJob alloc] initWithAccountManager:[Environment getCurrent].accountManager
-                                                 preferences:[Environment preferences]];
+    OWSSyncPushTokensJob *job = [[OWSSyncPushTokensJob alloc] initWithAccountManager:SignalApp.sharedApp.accountManager
+                                                                         preferences:[Environment preferences]];
     job.uploadOnlyIfStale = NO;
     [job run]
         .then(^{

@@ -6,7 +6,6 @@ import Foundation
 import Contacts
 import ContactsUI
 import SignalServiceKit
-import SignalMessaging
 
 enum Result<T, ErrorType> {
     case success(T)
@@ -277,7 +276,7 @@ struct OWSABRecord {
     }
 }
 
-enum ContactStoreAuthorizationStatus {
+public enum ContactStoreAuthorizationStatus {
     case notDetermined,
          restricted,
          denied,
@@ -317,24 +316,26 @@ class ContactStoreAdapter: ContactStoreAdaptee {
     }
 }
 
-@objc protocol SystemContactsFetcherDelegate: class {
+@objc public protocol SystemContactsFetcherDelegate: class {
     func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, updatedContacts contacts: [Contact])
 }
 
 @objc
-class SystemContactsFetcher: NSObject {
+public class SystemContactsFetcher: NSObject {
 
     private let TAG = "[SystemContactsFetcher]"
     var lastContactUpdateHash: Int?
     var lastDelegateNotificationDate: Date?
     let contactStoreAdapter: ContactStoreAdapter
 
+    @objc
     public weak var delegate: SystemContactsFetcherDelegate?
 
     public var authorizationStatus: ContactStoreAuthorizationStatus {
         return contactStoreAdapter.authorizationStatus
     }
 
+    @objc
     public var isAuthorized: Bool {
         guard self.authorizationStatus != .notDetermined else {
             owsFail("should have called `requestOnce` before checking authorization status.")
@@ -344,14 +345,16 @@ class SystemContactsFetcher: NSObject {
         return self.authorizationStatus == .authorized
     }
 
-    private(set) var systemContactsHaveBeenRequestedAtLeastOnce = false
+    @objc
+    public private(set) var systemContactsHaveBeenRequestedAtLeastOnce = false
     private var hasSetupObservation = false
 
     override init() {
         self.contactStoreAdapter = ContactStoreAdapter()
     }
 
-    var supportsContactEditing: Bool {
+    @objc
+    public var supportsContactEditing: Bool {
         return self.contactStoreAdapter.supportsContactEditing
     }
 
@@ -375,6 +378,7 @@ class SystemContactsFetcher: NSObject {
      *
      * @param   completion  completion handler is called on main thread.
      */
+    @objc
     public func requestOnce(completion completionParam: ((Error?) -> Void)?) {
         AssertIsOnMainThread()
 
@@ -393,10 +397,12 @@ class SystemContactsFetcher: NSObject {
 
         switch authorizationStatus {
         case .notDetermined:
-            if UIApplication.shared.applicationState == .background {
-                Logger.error("\(self.TAG) do not request contacts permission when app is in background")
-                completion(nil)
-                return
+            if CurrentAppContext().isMainApp() {
+               if CurrentAppContext().mainApplicationState() == .background {
+                    Logger.error("\(self.TAG) do not request contacts permission when app is in background")
+                    completion(nil)
+                    return
+                }
             }
             self.contactStoreAdapter.requestAccess { (granted, error) in
                 if let error = error {
@@ -424,6 +430,7 @@ class SystemContactsFetcher: NSObject {
         }
     }
 
+    @objc
     public func fetchOnceIfAlreadyAuthorized() {
         AssertIsOnMainThread()
         guard authorizationStatus == .authorized else {
@@ -436,6 +443,7 @@ class SystemContactsFetcher: NSObject {
         updateContacts(completion: nil, alwaysNotify: false)
     }
 
+    @objc
     public func fetchIfAlreadyAuthorizedAndAlwaysNotify() {
         AssertIsOnMainThread()
         guard authorizationStatus == .authorized else {
