@@ -14,6 +14,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
     private var contactsSyncing: OWSContactsSyncing?
 
     private var hasInitialRootViewController = false
+    private var isReadyForAppExtensions = false
 
     override open func loadView() {
         super.loadView()
@@ -49,6 +50,12 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
             return
         }
 
+        isReadyForAppExtensions = OWSPreferences.isReadyForAppExtensions()
+        if !isReadyForAppExtensions {
+            // TODO: Show the "You need to launch main app" view.
+            return
+        }
+
         // performUpdateCheck must be invoked after Environment has been initialized because
         // upgrade process may depend on Environment.
         VersionMigrations.performUpdateCheck()
@@ -75,11 +82,6 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
 
         Logger.info("\(self.logTag) application: didFinishLaunchingWithOptions completed.")
 
-        DispatchQueue.main.async { [weak self] in
-            guard let strongSelf = self else { return }
-            strongSelf.activate()
-        }
-
         OWSAnalytics.appLaunchDidBegin()
     }
 
@@ -97,7 +99,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
         // Always check prekeys after app launches, and sometimes check on app activation.
         TSPreKeyManager.checkPreKeysIfNecessary()
 
-        // We don't call RTCInitializeSSL() since we don't do calling in the SAE.
+        // We don't need to use RTCInitializeSSL() in the SAE.
 
         if TSAccountManager.isRegistered() {
             // At this point, potentially lengthy DB locking migrations could be running.
@@ -106,8 +108,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
                 guard let strongSelf = self else { return }
                 Logger.info("\(strongSelf.logTag) running post launch block for registered user: \(TSAccountManager.localNumber)")
 
-                // We don't need to start OWSDisappearingMessagesJob since we
-                // don't display messages in the SAE.
+                // We don't need to use OWSDisappearingMessagesJob in the SAE.
 
                 // TODO remove this once we're sure our app boot process is coherent.
                 // Currently this happens *before* db registration is complete when
@@ -115,20 +116,17 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
                 // the app is launched in the background, e.g. from a voip notification.
                 OWSProfileManager.shared().ensureLocalProfileCached()
 
-                // We don't need to start OWSFailedMessagesJob since we
-                // don't display messages in the SAE.
+                // We don't need to use OWSFailedMessagesJob in the SAE.
 
-                // We don't need to start OWSFailedAttachmentDownloadsJob since we
-                // don't display messages in the SAE.
+                // We don't need to use OWSFailedAttachmentDownloadsJob in the SAE.
             }
         } else {
             Logger.info("\(self.logTag) running post launch block for unregistered user.")
 
-            // We don't need to update the app icon badge number.
+            // We don't need to update the app icon badge number in the SAE.
 
-            // We don't need to prod the TSSocketManager.
+            // We don't need to prod the TSSocketManager in the SAE.
         }
-        // end dispatchOnce for first time we become active
 
         // TODO: Move this logic into the notification handler for "SAE will appear".
         if TSAccountManager.isRegistered() {
@@ -136,7 +134,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
                 guard let strongSelf = self else { return }
                 Logger.info("\(strongSelf.logTag) running post launch block for registered user: \(TSAccountManager.localNumber)")
 
-                // We don't need to prod the TSSocketManager.
+                // We don't need to use the TSSocketManager in the SAE.
 
                 Environment.current().contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
@@ -146,26 +144,6 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
             }
         }
     }
-
-    //    - (void)applicationWillResignActive:(UIApplication *)application {
-    //    DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
-    //
-    //    UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:nil];
-    //    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    //    if ([TSAccountManager isRegistered]) {
-    //    dispatch_async(dispatch_get_main_queue(), ^{
-    //    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-    //    // If app has not re-entered active, show screen protection if necessary.
-    //    [self showScreenProtection];
-    //    }
-    //    [SignalApp.sharedApp.homeViewController updateInboxCountLabel];
-    //    [application endBackgroundTask:bgTask];
-    //    });
-    //    }
-    //    });
-    //
-    //    [DDLog flushLog];
-    //    }
 
     @objc
     func databaseViewRegistrationComplete() {
@@ -300,6 +278,10 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
         super.viewDidLoad()
 
         Logger.debug("\(self.logTag()) \(#function)")
+
+        if isReadyForAppExtensions {
+            activate()
+        }
     }
 
     override open func viewWillAppear(_ animated: Bool) {
@@ -312,6 +294,22 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
         Logger.debug("\(self.logTag()) \(#function)")
 
         super.viewDidAppear(animated)
+    }
+
+    override open func viewWillDisappear(_ animated: Bool) {
+        Logger.debug("\(self.logTag()) \(#function)")
+
+        super.viewWillDisappear(animated)
+
+        Logger.flush()
+    }
+
+    override open func viewDidDisappear(_ animated: Bool) {
+        Logger.debug("\(self.logTag()) \(#function)")
+
+        super.viewDidDisappear(animated)
+
+        Logger.flush()
     }
 
     // MARK: SAELoadViewDelegate
