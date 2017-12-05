@@ -14,11 +14,13 @@
 
 + (Environment *)releaseEnvironment
 {
+    // Order matters here.
+    TSStorageManager *storageManager = [TSStorageManager sharedManager];
     TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
     OWSContactsManager *contactsManager = [OWSContactsManager new];
     ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
     OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithNetworkManager:networkManager
-                                                                        storageManager:[TSStorageManager sharedManager]
+                                                                        storageManager:storageManager
                                                                        contactsManager:contactsManager
                                                                        contactsUpdater:contactsUpdater];
 
@@ -31,11 +33,13 @@
 // TODELETE
 + (Environment *)stagingEnvironment
 {
+    // Order matters here.
+    TSStorageManager *storageManager = [TSStorageManager sharedManager];
     TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
     OWSContactsManager *contactsManager = [OWSContactsManager new];
     ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
     OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithNetworkManager:networkManager
-                                                                        storageManager:[TSStorageManager sharedManager]
+                                                                        storageManager:storageManager
                                                                        contactsManager:contactsManager
                                                                        contactsUpdater:contactsUpdater];
 
