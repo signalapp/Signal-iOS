@@ -35,7 +35,7 @@
 	               <key>NSExtensionActivationSupportsImageWithMaxCount</key>
 	               <integer>1</integer>
 	               <key>NSExtensionActivationSupportsText</key>
-	               <integer>1</integer>
+	               <true/>
 	               <key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
 	               <integer>1</integer>
 	           </dict>
