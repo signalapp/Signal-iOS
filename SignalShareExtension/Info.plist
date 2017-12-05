@@ -19,32 +19,9 @@
 	<key>CFBundleShortVersionString</key>
 	<string>2.20.0</string>
 	<key>CFBundleVersion</key>
-	<string>2.20.0.0</string>
-	<key>NSExtension</key>
-	<dict>
-		<key>NSExtensionAttributes</key>
-		<dict>
-	        <key>NSExtensionActivationRule</key>
-	           <dict>
-	               <key>NSExtensionActivationSupportsFileWithMaxCount</key>
-	               <integer>1</integer>
-	               <key>NSExtensionActivationSupportsMovieWithMaxCount</key>
-	               <integer>1</integer>
-	               <key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
-	               <integer>1</integer>
-	               <key>NSExtensionActivationSupportsImageWithMaxCount</key>
-	               <integer>1</integer>
-	               <key>NSExtensionActivationSupportsText</key>
-	               <true/>
-	               <key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
-	               <integer>1</integer>
-	           </dict>
-		</dict>
-		<key>NSExtensionMainStoryboard</key>
-		<string>MainInterface</string>
-		<key>NSExtensionPointIdentifier</key>
-		<string>com.apple.share-services</string>
-	</dict>
+	<string>2.20.0.1</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
@@ -72,6 +49,31 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSExtension</key>
+	<dict>
+		<key>NSExtensionAttributes</key>
+		<dict>
+			<key>NSExtensionActivationRule</key>
+			<dict>
+				<key>NSExtensionActivationSupportsFileWithMaxCount</key>
+				<integer>1</integer>
+				<key>NSExtensionActivationSupportsImageWithMaxCount</key>
+				<integer>1</integer>
+				<key>NSExtensionActivationSupportsMovieWithMaxCount</key>
+				<integer>1</integer>
+				<key>NSExtensionActivationSupportsText</key>
+				<true/>
+				<key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
+				<integer>1</integer>
+				<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
+				<integer>1</integer>
+			</dict>
+		</dict>
+		<key>NSExtensionMainStoryboard</key>
+		<string>MainInterface</string>
+		<key>NSExtensionPointIdentifier</key>
+		<string>com.apple.share-services</string>
+	</dict>
 	<key>UIAppFonts</key>
 	<array>
 		<string>dripicons-v2.ttf</string>
@@ -85,8 +87,6 @@
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 </dict>
 </plist>
