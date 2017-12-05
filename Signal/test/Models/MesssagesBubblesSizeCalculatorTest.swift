@@ -4,6 +4,7 @@
 
 import XCTest
 import SignalServiceKit
+@testable import Signal
 
 /**
  * This is a brittle test, which will break if our layout changes.

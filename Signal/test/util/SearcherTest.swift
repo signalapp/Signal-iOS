@@ -3,6 +3,7 @@
 //
 
 import XCTest
+@testable import Signal
 
 class SearcherTest: XCTestCase {
 

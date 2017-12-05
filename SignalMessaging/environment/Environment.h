@@ -36,6 +36,8 @@
 
 + (Environment *)current;
 + (void)setCurrent:(Environment *)environment;
+// Should only be called by tests.
++ (void)clearCurrentForTests;
 
 + (OWSPreferences *)preferences;
 
