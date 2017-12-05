@@ -294,6 +294,7 @@
 		45CD81EF1DC030E7004C9430 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45CD81EE1DC030E7004C9430 /* AccountManager.swift */; };
 		45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D231761DC7E8F10034FA89 /* SessionResetJob.swift */; };
 		45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */; };
+		45E547201FD755E700DFC09E /* AttachmentApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E5471F1FD755E700DFC09E /* AttachmentApprovalViewController.swift */; };
 		45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */; };
 		45E615161E8C590B0018AD52 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E615151E8C590B0018AD52 /* DisplayableText.swift */; };
 		45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */; };
@@ -820,6 +821,7 @@
 		45E282DE1D08E67800ADD4C8 /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = translations/gl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		45E282DF1D08E6CC00ADD4C8 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = translations/id.lproj/Localizable.strings; sourceTree = "<group>"; };
 		45E2E91E1E13EE3500457AA0 /* OWSCallNotificationsAdaptee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = OWSCallNotificationsAdaptee.h; path = UserInterface/OWSCallNotificationsAdaptee.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		45E5471F1FD755E700DFC09E /* AttachmentApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalViewController.swift; sourceTree = "<group>"; };
 		45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarqueeLabel.swift; sourceTree = "<group>"; };
 		45E615151E8C590B0018AD52 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableText.swift; sourceTree = "<group>"; };
 		45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableTextFilterTest.swift; sourceTree = "<group>"; };
@@ -1542,6 +1544,7 @@
 		454A96571FD600B4008D2A0E /* attachments */ = {
 			isa = PBXGroup;
 			children = (
+				45E5471F1FD755E700DFC09E /* AttachmentApprovalViewController.swift */,
 				3400C7901EAF89CD008A8584 /* SendExternalFileViewController.h */,
 				3400C7911EAF89CD008A8584 /* SendExternalFileViewController.m */,
 				34533F161EA8D2070006114F /* OWSAudioAttachmentPlayer.h */,
@@ -2693,6 +2696,7 @@
 				45194F931FD7215C00333B2C /* OWSContactOffersInteraction.m in Sources */,
 				346129761FD1E0B500532771 /* WeakTimer.swift in Sources */,
 				346129F81FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.m in Sources */,
+				45E547201FD755E700DFC09E /* AttachmentApprovalViewController.swift in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				346129701FD1D74C00532771 /* Release.m in Sources */,
 				34480B621FD0A98800BC14EF /* UIColor+OWS.m in Sources */,

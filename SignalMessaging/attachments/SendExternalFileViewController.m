@@ -16,10 +16,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SendExternalFileViewController () <SelectThreadViewControllerDelegate>
+@interface SendExternalFileViewController () <SelectThreadViewControllerDelegate,
+    AttachmentApprovalViewControllerDelegate>
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic) TSThread *thread;
 
 @end
 
@@ -43,45 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
     _messageSender = [Environment current].messageSender;
 
     self.title = NSLocalizedString(@"SEND_EXTERNAL_FILE_VIEW_TITLE", @"Title for the 'send external file' view.");
-}
-
-#pragma mark - SelectThreadViewControllerDelegate
-
-- (void)threadWasSelected:(TSThread *)thread
-{
-    OWSAssert(self.attachment);
-    OWSAssert(thread);
-
-    __weak typeof(self) weakSelf = self;
-
-    // FIXME SHARINGEXTENSION
-    // Handling safety number changes brings in a lot of machinery.
-    // How do we want to handle this?
-    // e.g. fingerprint scanning, etc. in the SAE or just redirect the user to the main app?
-    //    BOOL didShowSNAlert =
-    //        [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:thread.recipientIdentifiers
-    //                                                              confirmationText:[SafetyNumberStrings
-    //                                                              confirmSendButton]
-    //                                                               contactsManager:self.contactsManager
-    //                                                                    completion:^(BOOL didConfirm) {
-    //                                                                        if (didConfirm) {
-    //                                                                            [weakSelf threadWasSelected:thread];
-    //                                                                        }
-    //                                                                    }];
-    //    if (didShowSNAlert) {
-    //        return;
-    //    }
-
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:thread];
-    [ThreadUtil sendMessageWithAttachment:self.attachment inThread:thread messageSender:self.messageSender];
-
-    // FIXME SHARINGEXTENSION
-    // Show loading screen and dismiss when complete
-
-    // TODO Show share annotation UI (add caption, preview, cancel)
-    //
-    // This implemenation was for the "import with signal" functionality:
-    // [SignalApp.sharedApp presentConversationForThread:thread];
 }
 
 - (BOOL)canSelectBlockedContact
@@ -189,6 +152,61 @@ NS_ASSUME_NONNULL_BEGIN
     label.textColor = [UIColor blackColor];
     label.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(18.f, 20.f)];
     return label;
+}
+
+#pragma mark - SelectThreadViewControllerDelegate
+
+- (void)threadWasSelected:(TSThread *)thread
+{
+    OWSAssert(self.attachment);
+    OWSAssert(thread);
+    self.thread = thread;
+
+    __weak typeof(self) weakSelf = self;
+
+    // FIXME SHARINGEXTENSION
+    // Handling safety number changes brings in a lot of machinery.
+    // How do we want to handle this?
+    // e.g. fingerprint scanning, etc. in the SAE or just redirect the user to the main app?
+    //    BOOL didShowSNAlert =
+    //        [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:thread.recipientIdentifiers
+    //                                                              confirmationText:[SafetyNumberStrings
+    //                                                              confirmSendButton]
+    //                                                               contactsManager:self.contactsManager
+    //                                                                    completion:^(BOOL didConfirm) {
+    //                                                                        if (didConfirm) {
+    //                                                                            [weakSelf threadWasSelected:thread];
+    //                                                                        }
+    //                                                                    }];
+    //    if (didShowSNAlert) {
+    //        return;
+    //    }
+
+    AttachmentApprovalViewController *approvalVC =
+        [[AttachmentApprovalViewController alloc] initWithAttachment:self.attachment delegate:self];
+
+    [self.navigationController pushViewController:approvalVC animated:YES];
+
+    // FIXME This implemenation was for the "import with signal" functionality,
+    // and is now broken. We need to be sure to remove the "import with signal" functionality.
+    // [SignalApp.sharedApp presentConversationForThread:thread];
+}
+
+#pragma mark - AttachmentApprovalViewControllerDelegate
+
+- (void)didApproveAttachment
+{
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    [ThreadUtil sendMessageWithAttachment:self.attachment inThread:self.thread messageSender:self.messageSender];
+
+    // FIXME SHARINGEXTENSION
+    // Show loading screen and dismiss entire share extnesion once entirely complete
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)didCancelAttachment
+{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end

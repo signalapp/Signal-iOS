@@ -152,7 +152,7 @@ public class SignalAttachment: NSObject {
     // This method should not be called directly; use the factory
     // methods instead.
     @objc
-    internal init(dataSource: DataSource, dataUTI: String) {
+    private init(dataSource: DataSource, dataUTI: String) {
         self.dataSource = dataSource
         self.dataUTI = dataUTI
         super.init()

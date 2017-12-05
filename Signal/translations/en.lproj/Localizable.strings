@@ -76,11 +76,17 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Attachment";
 
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Size: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Attachment";

@@ -426,6 +426,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             return
         }
 
+        // FIXME SHARINGEXTENSION
 //        let window = UIApplication.shared.keyWindow
 //        let convertedRect = fromView.convert(fromView.bounds, to:window)
 //        let viewController = FullImageViewController(attachment:attachment, from:convertedRect)
