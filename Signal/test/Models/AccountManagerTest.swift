@@ -110,7 +110,7 @@ class AccountManagerTest: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
 
-        self.waitForExpectations(timeout: 10.0, handler: nil)
+        self.waitForExpectations(timeout: 1.0, handler: nil)
     }
 
     func testUpdatePushTokens() {
