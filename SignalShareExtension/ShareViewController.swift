@@ -33,9 +33,6 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
 
         SetRandFunctionSeed()
 
-        // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
-        TSStorageManager.verifyDBKeysAvailableBeforeBackgroundLaunch()
-
         // TODO:
 //        // Prevent the device from sleeping during database view async registration
 //        // (e.g. long database upgrades).
