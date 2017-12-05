@@ -198,7 +198,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
  */
 - (void)verifyDBKeysAvailableBeforeBackgroundLaunch
 {
-    if (CurrentAppContext().isMainApp && CurrentAppContext().mainApplicationState != UIApplicationStateBackground) {
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
         return;
     }
 
