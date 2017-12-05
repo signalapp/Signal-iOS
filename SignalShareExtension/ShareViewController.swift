@@ -28,7 +28,6 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
         if _isDebugAssertConfiguration() {
             DebugLogger.shared().enableFileLogging()
         } else if (OWSPreferences.isLoggingEnabled()) {
-            // TODO: Consult OWSPreferences.isLoggingEnabled.
             DebugLogger.shared().enableFileLogging()
         }
 
@@ -128,7 +127,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
             // We don't need to prod the TSSocketManager in the SAE.
         }
 
-        // TODO: Move this logic into the notification handler for "SAE will appear".
+        // TODO: Do we want to move this logic into the notification handler for "SAE will appear".
         if TSAccountManager.isRegistered() {
             DispatchQueue.main.async { [weak self] in
                 guard let strongSelf = self else { return }
@@ -171,14 +170,13 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
 
         OWSProfileManager.shared().ensureLocalProfileCached()
 
-        // TODO:
-        //    self.isEnvironmentSetup = YES;
-
         // We don't need to use OWSOrphanedDataCleaner in the SAE.
 
-        //[OWSProfileManager.sharedManager fetchLocalUsersProfile];
-        //[[OWSReadReceiptManager sharedManager] prepareCachedValues];
-        //[[Environment current].contactsManager loadLastKnownContactRecipientIds];
+        OWSProfileManager.shared().fetchLocalUsersProfile()
+
+        OWSReadReceiptManager.shared().prepareCachedValues()
+
+        Environment.current().contactsManager.loadLastKnownContactRecipientIds()
     }
 
     @objc
