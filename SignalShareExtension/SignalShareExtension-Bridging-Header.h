@@ -9,6 +9,7 @@
 #import "DebugLogger.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
+#import "OWSContactsSyncing.h"
 #import "OWSLogger.h"
 #import "OWSMath.h"
 #import "OWSPreferences.h"

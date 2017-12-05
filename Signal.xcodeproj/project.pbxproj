@@ -40,7 +40,6 @@
 		34480B681FD0AA9400BC14EF /* UIFont+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B661FD0AA9400BC14EF /* UIFont+OWS.h */; };
 		34533F181EA8D2070006114F /* OWSAudioAttachmentPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */; };
 		3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461284A1FD0B93F00532771 /* SAELoadViewController.swift */; };
-		346129321FD1A26100532771 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 346129051FD1A25B00532771 /* Localizable.strings */; };
 		346129341FD1A88700532771 /* OWSSwiftUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129331FD1A88700532771 /* OWSSwiftUtils.swift */; };
 		346129391FD1B47300532771 /* OWSPreferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129371FD1B47200532771 /* OWSPreferences.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129381FD1B47200532771 /* OWSPreferences.m */; };
@@ -101,9 +100,24 @@
 		346129FF1FD5F31400532771 /* OWS103EnableVideoCalling.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129F21FD5F31400532771 /* OWS103EnableVideoCalling.m */; };
 		34612A001FD5F31400532771 /* OWS105AttachmentFilePaths.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129F31FD5F31400532771 /* OWS105AttachmentFilePaths.h */; };
 		34612A011FD5F31400532771 /* OWS104CreateRecipientIdentities.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129F41FD5F31400532771 /* OWS104CreateRecipientIdentities.h */; };
+		34612A061FD7238600532771 /* OWSContactsSyncing.h in Headers */ = {isa = PBXBuildFile; fileRef = 34612A041FD7238500532771 /* OWSContactsSyncing.h */; };
+		34612A071FD7238600532771 /* OWSContactsSyncing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34612A051FD7238500532771 /* OWSContactsSyncing.m */; };
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
 		3471B1DA1EB7C63600F6AEC8 /* NewNonContactConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */; };
 		3472229F1EB22FFE00E53955 /* AddToGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3472229E1EB22FFE00E53955 /* AddToGroupViewController.m */; };
+		347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
+		347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
+		347850331FD7494A007B8332 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
+		3478504C1FD7496D007B8332 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
+		3478504D1FD74984007B8332 /* GIAG2.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51421FCCD82400B5BC53 /* GIAG2.crt */; };
+		3478504E1FD74984007B8332 /* GSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51431FCCD82500B5BC53 /* GSR2.crt */; };
+		3478504F1FD74984007B8332 /* GSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51401FCCD82400B5BC53 /* GSR4.crt */; };
+		347850501FD74984007B8332 /* GTSR1.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51441FCCD82500B5BC53 /* GTSR1.crt */; };
+		347850511FD74984007B8332 /* GTSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51461FCCD82500B5BC53 /* GTSR2.crt */; };
+		347850521FD74984007B8332 /* GTSR3.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51411FCCD82400B5BC53 /* GTSR3.crt */; };
+		347850531FD74984007B8332 /* GTSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51471FCCD82500B5BC53 /* GTSR4.crt */; };
+		347850541FD74984007B8332 /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = 458D51451FCCD82500B5BC53 /* textsecure.cer */; };
+		347850551FD749C0007B8332 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		348F2EAE1F0D21BC00D4ECE0 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
 		3497DBEC1ECE257500DB2605 /* OWSCountryMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 3497DBEB1ECE257500DB2605 /* OWSCountryMetadata.m */; };
 		3497DBEF1ECE2E4700DB2605 /* DomainFrontingCountryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3497DBEE1ECE2E4700DB2605 /* DomainFrontingCountryViewController.m */; };
@@ -173,7 +187,6 @@
 		34D1F0BA1F8800D90066283D /* OWSAudioMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0B91F8800D90066283D /* OWSAudioMessageView.m */; };
 		34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */; };
 		34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */; };
-		34D5CC961EA6AFAD005515DB /* OWSContactsSyncing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CC951EA6AFAD005515DB /* OWSContactsSyncing.m */; };
 		34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */; };
 		34D5CCB11EAE7E7F005515DB /* SelectRecipientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCB01EAE7E7F005515DB /* SelectRecipientViewController.m */; };
 		34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0241ED3673300188D7C /* DebugUIMessages.m */; };
@@ -216,7 +229,6 @@
 		453518961FC63DBF00210559 /* SignalMessaging.h in Headers */ = {isa = PBXBuildFile; fileRef = 453518941FC63DBF00210559 /* SignalMessaging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		453518991FC63DBF00210559 /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
 		4535189A1FC63DBF00210559 /* SignalMessaging.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		453518A11FC63DD500210559 /* StorageCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453518A01FC63DD500210559 /* StorageCoordinator.swift */; };
 		453518A21FC63E2900210559 /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
 		45360B8D1F9521F800FA666C /* Searcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45360B8C1F9521F800FA666C /* Searcher.swift */; };
 		45360B901F9527DA00FA666C /* SearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45360B8F1F9527DA00FA666C /* SearcherTest.swift */; };
@@ -479,50 +491,6 @@
 		34533F161EA8D2070006114F /* OWSAudioAttachmentPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioAttachmentPlayer.h; sourceTree = "<group>"; };
 		34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAudioAttachmentPlayer.m; sourceTree = "<group>"; };
 		3461284A1FD0B93F00532771 /* SAELoadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAELoadViewController.swift; sourceTree = "<group>"; };
-		346129061FD1A25B00532771 /* bs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bs; path = Signal/translations/bs.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129071FD1A25B00532771 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = Signal/translations/he.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129081FD1A25B00532771 /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = Signal/translations/hu.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129091FD1A25B00532771 /* pt_PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt_PT; path = Signal/translations/pt_PT.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461290A1FD1A25B00532771 /* el_GR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el_GR; path = Signal/translations/el_GR.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461290B1FD1A25C00532771 /* sn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sn; path = Signal/translations/sn.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461290C1FD1A25C00532771 /* az_AZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = az_AZ; path = Signal/translations/az_AZ.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461290D1FD1A25C00532771 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = Signal/translations/mk.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461290E1FD1A25C00532771 /* fil */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fil; path = Signal/translations/fil.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461290F1FD1A25C00532771 /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sq; path = Signal/translations/sq.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129101FD1A25C00532771 /* th_TH */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th_TH; path = Signal/translations/th_TH.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129111FD1A25C00532771 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = Signal/translations/hr.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129121FD1A25C00532771 /* km */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = km; path = Signal/translations/km.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129131FD1A25C00532771 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = Signal/translations/ru.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129141FD1A25C00532771 /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = Signal/translations/gl.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129151FD1A25C00532771 /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = Signal/translations/sl.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129161FD1A25C00532771 /* pt_BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt_BR; path = Signal/translations/pt_BR.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129171FD1A25D00532771 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Signal/translations/fr.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129181FD1A25E00532771 /* my */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = my; path = Signal/translations/my.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129191FD1A25E00532771 /* it_IT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it_IT; path = Signal/translations/it_IT.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461291A1FD1A25E00532771 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = Signal/translations/ca.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461291B1FD1A25F00532771 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = Signal/translations/fa.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461291C1FD1A25F00532771 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = Signal/translations/fi.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461291D1FD1A25F00532771 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Signal/translations/de.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461291E1FD1A25F00532771 /* ko_KR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko_KR; path = Signal/translations/ko_KR.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461291F1FD1A25F00532771 /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = Signal/translations/da.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129201FD1A25F00532771 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = Signal/translations/zh_CN.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129211FD1A25F00532771 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = Signal/translations/cs.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129221FD1A25F00532771 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = Signal/translations/ar.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129231FD1A25F00532771 /* ja_JP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja_JP; path = Signal/translations/ja_JP.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129241FD1A25F00532771 /* et */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = et; path = Signal/translations/et.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129251FD1A25F00532771 /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = Signal/translations/bg.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129261FD1A25F00532771 /* nb_NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb_NO; path = Signal/translations/nb_NO.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129271FD1A26000532771 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = Signal/translations/pl.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129281FD1A26000532771 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = Signal/translations/ro.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129291FD1A26000532771 /* sv_SE */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv_SE; path = Signal/translations/sv_SE.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461292A1FD1A26000532771 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = Signal/translations/id.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461292B1FD1A26000532771 /* lt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lt; path = Signal/translations/lt.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461292C1FD1A26000532771 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = Signal/translations/nl.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461292D1FD1A26000532771 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = Signal/translations/zh_TW.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461292E1FD1A26000532771 /* lv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lv; path = Signal/translations/lv.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		3461292F1FD1A26000532771 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Signal/translations/en.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129301FD1A26000532771 /* tr_TR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr_TR; path = Signal/translations/tr_TR.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
-		346129311FD1A26100532771 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = Signal/translations/es.lproj/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		346129331FD1A88700532771 /* OWSSwiftUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSwiftUtils.swift; sourceTree = "<group>"; };
 		346129371FD1B47200532771 /* OWSPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSPreferences.h; sourceTree = "<group>"; };
 		346129381FD1B47200532771 /* OWSPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSPreferences.m; sourceTree = "<group>"; };
@@ -584,6 +552,8 @@
 		346129F21FD5F31400532771 /* OWS103EnableVideoCalling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS103EnableVideoCalling.m; sourceTree = "<group>"; };
 		346129F31FD5F31400532771 /* OWS105AttachmentFilePaths.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS105AttachmentFilePaths.h; sourceTree = "<group>"; };
 		346129F41FD5F31400532771 /* OWS104CreateRecipientIdentities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS104CreateRecipientIdentities.h; sourceTree = "<group>"; };
+		34612A041FD7238500532771 /* OWSContactsSyncing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsSyncing.h; sourceTree = "<group>"; };
+		34612A051FD7238500532771 /* OWSContactsSyncing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSyncing.m; sourceTree = "<group>"; };
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		3471B1D81EB7C63600F6AEC8 /* NewNonContactConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewNonContactConversationViewController.h; sourceTree = "<group>"; };
 		3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewNonContactConversationViewController.m; sourceTree = "<group>"; };
@@ -712,8 +682,6 @@
 		34D1F0BB1F8D108C0066283D /* AttachmentUploadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttachmentUploadView.h; sourceTree = "<group>"; };
 		34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentUploadView.m; sourceTree = "<group>"; };
 		34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRecipientStatusUtils.swift; sourceTree = "<group>"; };
-		34D5CC941EA6AFAD005515DB /* OWSContactsSyncing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsSyncing.h; sourceTree = "<group>"; };
-		34D5CC951EA6AFAD005515DB /* OWSContactsSyncing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSyncing.m; sourceTree = "<group>"; };
 		34D5CCA71EAE3D30005515DB /* AvatarViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvatarViewHelper.h; sourceTree = "<group>"; };
 		34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvatarViewHelper.m; sourceTree = "<group>"; };
 		34D5CCAB1EAE7136005515DB /* OWSConversationSettingsViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSConversationSettingsViewDelegate.h; sourceTree = "<group>"; };
@@ -774,7 +742,6 @@
 		453518921FC63DBF00210559 /* SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		453518941FC63DBF00210559 /* SignalMessaging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SignalMessaging.h; sourceTree = "<group>"; };
 		453518951FC63DBF00210559 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		453518A01FC63DD500210559 /* StorageCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageCoordinator.swift; sourceTree = "<group>"; };
 		45360B8C1F9521F800FA666C /* Searcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Searcher.swift; sourceTree = "<group>"; };
 		45360B8F1F9527DA00FA666C /* SearcherTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearcherTest.swift; sourceTree = "<group>"; };
 		4539B5851F79348F007141FF /* PushRegistrationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushRegistrationManager.swift; sourceTree = "<group>"; };
@@ -922,7 +889,6 @@
 		B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtilTest.m; sourceTree = "<group>"; };
 		B660F6B31C29868000687D6E /* UtilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UtilTest.h; sourceTree = "<group>"; };
 		B660F6B41C29868000687D6E /* UtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UtilTest.m; sourceTree = "<group>"; };
-		B661C211198EE2EA00548CA1 /* iOSVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iOSVersions.h; path = src/environment/iOSVersions.h; sourceTree = "<group>"; };
 		B66DBF4919D5BBC8006EA940 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B676BCEF1AA544E7009637B8 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = translations/de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B676BCF01AA544F5009637B8 /* el_GR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el_GR; path = translations/el_GR.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1206,6 +1172,8 @@
 			children = (
 				346129A21FD1F09100532771 /* OWSContactsManager.h */,
 				346129A31FD1F09100532771 /* OWSContactsManager.m */,
+				34612A041FD7238500532771 /* OWSContactsSyncing.h */,
+				34612A051FD7238500532771 /* OWSContactsSyncing.m */,
 				346129AE1FD1F5D900532771 /* SystemContactsFetcher.swift */,
 			);
 			path = contacts;
@@ -1474,7 +1442,6 @@
 			isa = PBXGroup;
 			children = (
 				4535186F1FC635DD00210559 /* Info.plist */,
-				346129051FD1A25B00532771 /* Localizable.strings */,
 				346129D71FD5B84800532771 /* SAECallMessageHandler.swift */,
 				346129D81FD5B84900532771 /* SAENotificationsManager.swift */,
 				4535186C1FC635DD00210559 /* MainInterface.storyboard */,
@@ -1498,7 +1465,6 @@
 				346129B01FD1F7E800532771 /* profiles */,
 				34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */,
 				453518941FC63DBF00210559 /* SignalMessaging.h */,
-				453518A01FC63DD500210559 /* StorageCoordinator.swift */,
 				34480B471FD0A60200BC14EF /* utils */,
 				346129DB1FD5C02900532771 /* viewControllers */,
 				346129CE1FD207F200532771 /* views */,
@@ -1686,8 +1652,6 @@
 				76EB04EC18170B33006006FC /* NumberUtil.h */,
 				76EB04ED18170B33006006FC /* NumberUtil.m */,
 				34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */,
-				34D5CC941EA6AFAD005515DB /* OWSContactsSyncing.h */,
-				34D5CC951EA6AFAD005515DB /* OWSContactsSyncing.m */,
 				4579431C1E7C8CE9008ED0C0 /* Pastelog.h */,
 				4579431D1E7C8CE9008ED0C0 /* Pastelog.m */,
 				450DF2041E0D74AC003D14BE /* Platform.swift */,
@@ -1974,7 +1938,6 @@
 				D221A099169C9E5E00537ABF /* main.m */,
 				D221A095169C9E5E00537ABF /* Signal-Info.plist */,
 				D221A09B169C9E5E00537ABF /* Signal-Prefix.pch */,
-				B661C211198EE2EA00548CA1 /* iOSVersions.h */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -2026,6 +1989,7 @@
 				346129C71FD2072E00532771 /* NSString+OWS.h in Headers */,
 				346129D61FD20ADC00532771 /* UIViewController+OWS.h in Headers */,
 				3461296F1FD1D74C00532771 /* Release.h in Headers */,
+				34612A061FD7238600532771 /* OWSContactsSyncing.h in Headers */,
 				34480B571FD0A7A400BC14EF /* OWSScrubbingLogFormatter.h in Headers */,
 				346129FC1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.h in Headers */,
 				346129951FD1E30000532771 /* OWSDatabaseMigration.h in Headers */,
@@ -2286,8 +2250,20 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */,
+				347850531FD74984007B8332 /* GTSR4.crt in Resources */,
 				4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */,
-				346129321FD1A26100532771 /* Localizable.strings in Resources */,
+				347850551FD749C0007B8332 /* Localizable.strings in Resources */,
+				347850331FD7494A007B8332 /* fontawesome-webfont.ttf in Resources */,
+				3478504C1FD7496D007B8332 /* Images.xcassets in Resources */,
+				3478504E1FD74984007B8332 /* GSR2.crt in Resources */,
+				347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */,
+				347850541FD74984007B8332 /* textsecure.cer in Resources */,
+				3478504F1FD74984007B8332 /* GSR4.crt in Resources */,
+				347850511FD74984007B8332 /* GTSR2.crt in Resources */,
+				3478504D1FD74984007B8332 /* GIAG2.crt in Resources */,
+				347850501FD74984007B8332 /* GTSR1.crt in Resources */,
+				347850521FD74984007B8332 /* GTSR3.crt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2672,7 +2648,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				346129F71FD5F31400532771 /* OWS105AttachmentFilePaths.m in Sources */,
-				453518A11FC63DD500210559 /* StorageCoordinator.swift in Sources */,
 				346129761FD1E0B500532771 /* WeakTimer.swift in Sources */,
 				346129F81FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.m in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
@@ -2702,6 +2677,7 @@
 				346129E31FD5C0BE00532771 /* VersionMigrations.m in Sources */,
 				346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */,
 				346129D21FD2085A00532771 /* CommonStrings.swift in Sources */,
+				34612A071FD7238600532771 /* OWSContactsSyncing.m in Sources */,
 				346129DF1FD5C02A00532771 /* LockInteractionController.m in Sources */,
 				34480B591FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m in Sources */,
 				346129721FD1D74C00532771 /* SignalKeyingStorage.m in Sources */,
@@ -2868,7 +2844,6 @@
 				34B3F8891E8DF1700035BE1A /* OWSConversationSettingsViewController.m in Sources */,
 				34C42D671F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m in Sources */,
 				34B3F87E1E8DF1700035BE1A /* InboxTableViewCell.m in Sources */,
-				34D5CC961EA6AFAD005515DB /* OWSContactsSyncing.m in Sources */,
 				34B3F88B1E8DF1700035BE1A /* OWSLinkedDevicesTableViewController.m in Sources */,
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,
 				34C42D661F4734ED0072EC04 /* OWSContactOffersInteraction.m in Sources */,
@@ -2933,57 +2908,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		346129051FD1A25B00532771 /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				346129061FD1A25B00532771 /* bs */,
-				346129071FD1A25B00532771 /* he */,
-				346129081FD1A25B00532771 /* hu */,
-				346129091FD1A25B00532771 /* pt_PT */,
-				3461290A1FD1A25B00532771 /* el_GR */,
-				3461290B1FD1A25C00532771 /* sn */,
-				3461290C1FD1A25C00532771 /* az_AZ */,
-				3461290D1FD1A25C00532771 /* mk */,
-				3461290E1FD1A25C00532771 /* fil */,
-				3461290F1FD1A25C00532771 /* sq */,
-				346129101FD1A25C00532771 /* th_TH */,
-				346129111FD1A25C00532771 /* hr */,
-				346129121FD1A25C00532771 /* km */,
-				346129131FD1A25C00532771 /* ru */,
-				346129141FD1A25C00532771 /* gl */,
-				346129151FD1A25C00532771 /* sl */,
-				346129161FD1A25C00532771 /* pt_BR */,
-				346129171FD1A25D00532771 /* fr */,
-				346129181FD1A25E00532771 /* my */,
-				346129191FD1A25E00532771 /* it_IT */,
-				3461291A1FD1A25E00532771 /* ca */,
-				3461291B1FD1A25F00532771 /* fa */,
-				3461291C1FD1A25F00532771 /* fi */,
-				3461291D1FD1A25F00532771 /* de */,
-				3461291E1FD1A25F00532771 /* ko_KR */,
-				3461291F1FD1A25F00532771 /* da */,
-				346129201FD1A25F00532771 /* zh_CN */,
-				346129211FD1A25F00532771 /* cs */,
-				346129221FD1A25F00532771 /* ar */,
-				346129231FD1A25F00532771 /* ja_JP */,
-				346129241FD1A25F00532771 /* et */,
-				346129251FD1A25F00532771 /* bg */,
-				346129261FD1A25F00532771 /* nb_NO */,
-				346129271FD1A26000532771 /* pl */,
-				346129281FD1A26000532771 /* ro */,
-				346129291FD1A26000532771 /* sv_SE */,
-				3461292A1FD1A26000532771 /* id */,
-				3461292B1FD1A26000532771 /* lt */,
-				3461292C1FD1A26000532771 /* nl */,
-				3461292D1FD1A26000532771 /* zh_TW */,
-				3461292E1FD1A26000532771 /* lv */,
-				3461292F1FD1A26000532771 /* en */,
-				346129301FD1A26000532771 /* tr_TR */,
-				346129311FD1A26100532771 /* es */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
 		4535186C1FC635DD00210559 /* MainInterface.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
