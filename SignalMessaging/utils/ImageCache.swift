@@ -22,7 +22,7 @@ public class ImageCache: NSObject {
 
     let backingCache: NSCache<AnyObject, ImageCacheRecord>
 
-    override init() {
+    public override init() {
         self.backingCache = NSCache()
     }
 
