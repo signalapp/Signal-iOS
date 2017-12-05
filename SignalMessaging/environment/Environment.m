@@ -43,6 +43,11 @@ static Environment *sharedEnvironment = nil;
     sharedEnvironment = environment;
 }
 
++ (void)clearCurrentForTests
+{
+    sharedEnvironment = nil;
+}
+
 - (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
                         contactsUpdater:(ContactsUpdater *)contactsUpdater
                          networkManager:(TSNetworkManager *)networkManager

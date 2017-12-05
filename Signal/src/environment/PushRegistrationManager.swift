@@ -17,7 +17,7 @@ public enum PushRegistrationError: Error {
 /**
  * Singleton used to integrate with push notification services - registration and routing received remote notifications.
  */
-@objc class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
+@objc public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     // MARK - Dependencies
     private var pushManager: PushManager {
@@ -27,7 +27,8 @@ public enum PushRegistrationError: Error {
     // MARK - Singleton class
 
     @objc(sharedManager)
-    static let shared = PushRegistrationManager()
+    public static let shared = PushRegistrationManager()
+
     private override init() {
         super.init()
     }
