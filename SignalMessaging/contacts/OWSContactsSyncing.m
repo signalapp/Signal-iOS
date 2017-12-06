@@ -3,6 +3,7 @@
 //
 
 #import "OWSContactsSyncing.h"
+#import "Environment.h"
 #import "OWSContactsManager.h"
 #import "OWSProfileManager.h"
 #import <SignalServiceKit/DataSource.h>
@@ -32,6 +33,24 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey
 @end
 
 @implementation OWSContactsSyncing
+
++ (instancetype)sharedManager
+{
+    static OWSContactsSyncing *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [[self alloc] initDefault];
+    });
+    return instance;
+}
+
+- (instancetype)initDefault
+{
+    return [self initWithContactsManager:Environment.current.contactsManager
+                         identityManager:OWSIdentityManager.sharedManager
+                           messageSender:Environment.current.messageSender
+                          profileManager:OWSProfileManager.sharedManager];
+}
 
 - (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
                         identityManager:(OWSIdentityManager *)identityManager

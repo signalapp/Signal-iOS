@@ -3,7 +3,15 @@
 //
 
 #import "ShareAppExtensionContext.h"
+#import "SignalShareExtension-Swift.h"
+#import <AxolotlKit/SessionCipher.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSContactsManager.h>
+#import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/Release.h>
 #import <SignalMessaging/UIViewController+OWS.h>
+#import <SignalMessaging/VersionMigrations.h>
+#import <SignalServiceKit/TextSecureKitEnv.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,8 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(rootViewController);
 
     _rootViewController = rootViewController;
-
-    OWSSingletonAssert();
 
     return self;
 }
@@ -116,6 +122,30 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value
 {
     OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
+}
+
+- (void)setupEnvironment
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [Environment setCurrent:[Release releaseEnvironment]];
+
+        // Encryption/Decryption mutates session state and must be synchronized on a serial queue.
+        [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionStoreQueue]];
+
+        TextSecureKitEnv *sharedEnv =
+            [[TextSecureKitEnv alloc] initWithCallMessageHandler:[SAECallMessageHandler new]
+                                                 contactsManager:[Environment current].contactsManager
+                                                   messageSender:[Environment current].messageSender
+                                            notificationsManager:[SAENotificationsManager new]
+                                                  profileManager:OWSProfileManager.sharedManager];
+        [TextSecureKitEnv setSharedEnv:sharedEnv];
+
+        [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{
+            [VersionMigrations runSafeBlockingMigrations];
+        }];
+        [[Environment current].contactsManager startObserving];
+    });
 }
 
 @end

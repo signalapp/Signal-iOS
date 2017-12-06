@@ -56,7 +56,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 @interface AppDelegate ()
 
 @property (nonatomic) UIWindow *screenProtectionWindow;
-@property (nonatomic) OWSContactsSyncing *contactsSyncing;
 @property (nonatomic) BOOL hasInitialRootViewController;
 
 @end
@@ -167,10 +166,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [self prepareScreenProtection];
 
-    self.contactsSyncing = [[OWSContactsSyncing alloc] initWithContactsManager:[Environment current].contactsManager
-                                                               identityManager:[OWSIdentityManager sharedManager]
-                                                                 messageSender:[Environment current].messageSender
-                                                                profileManager:[OWSProfileManager sharedManager]];
+    [OWSContactsSyncing sharedManager];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(databaseViewRegistrationComplete)

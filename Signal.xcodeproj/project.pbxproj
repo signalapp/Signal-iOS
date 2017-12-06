@@ -76,7 +76,7 @@
 		346129DA1FD5B84900532771 /* SAENotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129D81FD5B84900532771 /* SAENotificationsManager.swift */; };
 		346129DE1FD5C02A00532771 /* LockInteractionController.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129DC1FD5C02900532771 /* LockInteractionController.h */; };
 		346129DF1FD5C02A00532771 /* LockInteractionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129DD1FD5C02900532771 /* LockInteractionController.m */; };
-		346129E21FD5C0BE00532771 /* VersionMigrations.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129E01FD5C0BE00532771 /* VersionMigrations.h */; };
+		346129E21FD5C0BE00532771 /* VersionMigrations.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129E01FD5C0BE00532771 /* VersionMigrations.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129E31FD5C0BE00532771 /* VersionMigrations.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129E11FD5C0BE00532771 /* VersionMigrations.m */; };
 		346129E61FD5C0C600532771 /* OWSDatabaseMigrationRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129E41FD5C0C600532771 /* OWSDatabaseMigrationRunner.m */; };
 		346129E71FD5C0C600532771 /* OWSDatabaseMigrationRunner.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129E51FD5C0C600532771 /* OWSDatabaseMigrationRunner.h */; };

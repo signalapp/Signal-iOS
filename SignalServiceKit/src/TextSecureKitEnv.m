@@ -3,16 +3,25 @@
 //
 
 #import "TextSecureKitEnv.h"
+#import "AppContext.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-static TextSecureKitEnv *TextSecureKitEnvSharedInstance;
+static TextSecureKitEnv *sharedTextSecureKitEnv;
+
+@interface TextSecureKitEnv ()
+
+@property (nonatomic) id<OWSCallMessageHandler> callMessageHandler;
+@property (nonatomic) id<ContactsManagerProtocol> contactsManager;
+@property (nonatomic) OWSMessageSender *messageSender;
+@property (nonatomic) id<NotificationsProtocol> notificationsManager;
+@property (nonatomic) id<ProfileManagerProtocol> profileManager;
+
+@end
+
+#pragma mark -
 
 @implementation TextSecureKitEnv
-
-@synthesize callMessageHandler = _callMessageHandler, contactsManager = _contactsManager,
-            messageSender = _messageSender, notificationsManager = _notificationsManager,
-            profileManager = _profileManager;
 
 - (instancetype)initWithCallMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
                            contactsManager:(id<ContactsManagerProtocol>)contactsManager
@@ -25,6 +34,12 @@ static TextSecureKitEnv *TextSecureKitEnvSharedInstance;
         return self;
     }
 
+    OWSAssert(callMessageHandler);
+    OWSAssert(contactsManager);
+    OWSAssert(messageSender);
+    OWSAssert(notificationsManager);
+    OWSAssert(profileManager);
+
     _callMessageHandler = callMessageHandler;
     _contactsManager = contactsManager;
     _messageSender = messageSender;
@@ -36,48 +51,17 @@ static TextSecureKitEnv *TextSecureKitEnvSharedInstance;
 
 + (instancetype)sharedEnv
 {
-    NSAssert(TextSecureKitEnvSharedInstance, @"Trying to access shared TextSecureKitEnv before it's been set");
-    return TextSecureKitEnvSharedInstance;
+    OWSAssert(sharedTextSecureKitEnv);
+
+    return sharedTextSecureKitEnv;
 }
 
 + (void)setSharedEnv:(TextSecureKitEnv *)env
 {
-    @synchronized (self) {
-        NSAssert(TextSecureKitEnvSharedInstance == nil, @"Trying to set shared TextSecureKitEnv which has already been set");
-        TextSecureKitEnvSharedInstance = env;
-    }
-}
+    OWSAssert(env);
+    OWSAssert(!sharedTextSecureKitEnv || !CurrentAppContext().isMainApp);
 
-#pragma mark - getters
-
-- (id<OWSCallMessageHandler>)callMessageHandler
-{
-    NSAssert(_callMessageHandler, @"Trying to access the callMessageHandler before it's set.");
-    return _callMessageHandler;
-}
-
-- (id<ContactsManagerProtocol>)contactsManager
-{
-    NSAssert(_contactsManager, @"Trying to access the contactsManager before it's set.");
-    return _contactsManager;
-}
-
-- (OWSMessageSender *)messageSender
-{
-    NSAssert(_messageSender, @"Trying to access the messageSender before it's set.");
-    return _messageSender;
-}
-
-- (id<NotificationsProtocol>)notificationsManager
-{
-    NSAssert(_notificationsManager, @"Trying to access the notificationsManager before it's set.");
-    return _notificationsManager;
-}
-
-- (id<ProfileManagerProtocol>)profileManager
-{
-    NSAssert(_profileManager, @"Trying to access the profileManager before it's set.");
-    return _profileManager;
+    sharedTextSecureKitEnv = env;
 }
 
 @end

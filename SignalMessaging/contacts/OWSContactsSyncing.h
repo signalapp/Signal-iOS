@@ -11,10 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSContactsSyncing : NSObject
 
-- (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
-                        identityManager:(OWSIdentityManager *)identityManager
-                          messageSender:(OWSMessageSender *)messageSender
-                         profileManager:(OWSProfileManager *)profileManager;
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)sharedManager;
 
 @end
 
