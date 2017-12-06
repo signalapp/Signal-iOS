@@ -873,6 +873,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 {
     DDLogInfo(@"%@ databaseViewRegistrationComplete", self.logTag);
 
+    [OWSPreferences setIsRegistered:[TSAccountManager isRegistered]];
+
     if ([TSAccountManager isRegistered]) {
         DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
 
@@ -922,6 +924,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssert([NSThread isMainThread]);
 
     DDLogInfo(@"registrationStateDidChange");
+
+    [OWSPreferences setIsRegistered:[TSAccountManager isRegistered]];
 
     if ([TSAccountManager isRegistered]) {
         DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
