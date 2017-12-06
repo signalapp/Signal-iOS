@@ -200,7 +200,7 @@ NS_ASSUME_NONNULL_BEGIN
     [ThreadUtil sendMessageWithAttachment:self.attachment inThread:self.thread messageSender:self.messageSender];
 
     // FIXME SHARINGEXTENSION
-    // Show loading screen and dismiss entire share extnesion once entirely complete
+    // Show loading screen and dismiss entire share extension once entirely complete
     [self.navigationController popViewControllerAnimated:YES];
 }
 

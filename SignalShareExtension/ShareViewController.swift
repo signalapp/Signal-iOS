@@ -362,6 +362,11 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
             self.pushViewController(conversationPicker, animated: false)
             Logger.info("presented conversation picker with attachment")
         }.catch { error in
+            OWSAlerts.showAlert(withTitle: NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE", comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details."),
+                                message: error.localizedDescription,
+                                buttonTitle: CommonStrings.cancelButton) { _ in
+                                    self.shareExtensionWasCancelled()
+            }
             owsFail("\(self.logTag) building attachment failed with error: \(error)")
         }.retainUntilComplete()
     }
