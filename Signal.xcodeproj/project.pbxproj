@@ -102,14 +102,6 @@
 		347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
 		347850331FD7494A007B8332 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		3478504C1FD7496D007B8332 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
-		3478504D1FD74984007B8332 /* GIAG2.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51421FCCD82400B5BC53 /* GIAG2.crt */; };
-		3478504E1FD74984007B8332 /* GSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51431FCCD82500B5BC53 /* GSR2.crt */; };
-		3478504F1FD74984007B8332 /* GSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51401FCCD82400B5BC53 /* GSR4.crt */; };
-		347850501FD74984007B8332 /* GTSR1.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51441FCCD82500B5BC53 /* GTSR1.crt */; };
-		347850511FD74984007B8332 /* GTSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51461FCCD82500B5BC53 /* GTSR2.crt */; };
-		347850521FD74984007B8332 /* GTSR3.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51411FCCD82400B5BC53 /* GTSR3.crt */; };
-		347850531FD74984007B8332 /* GTSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51471FCCD82500B5BC53 /* GTSR4.crt */; };
-		347850541FD74984007B8332 /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = 458D51451FCCD82500B5BC53 /* textsecure.cer */; };
 		347850551FD749C0007B8332 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850561FD86544007B8332 /* SAEFailedViewController.swift */; };
 		348F2EAE1F0D21BC00D4ECE0 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
@@ -2296,19 +2288,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */,
-				347850531FD74984007B8332 /* GTSR4.crt in Resources */,
 				4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */,
 				347850551FD749C0007B8332 /* Localizable.strings in Resources */,
 				347850331FD7494A007B8332 /* fontawesome-webfont.ttf in Resources */,
 				3478504C1FD7496D007B8332 /* Images.xcassets in Resources */,
-				3478504E1FD74984007B8332 /* GSR2.crt in Resources */,
 				347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */,
-				347850541FD74984007B8332 /* textsecure.cer in Resources */,
-				3478504F1FD74984007B8332 /* GSR4.crt in Resources */,
-				347850511FD74984007B8332 /* GTSR2.crt in Resources */,
-				3478504D1FD74984007B8332 /* GIAG2.crt in Resources */,
-				347850501FD74984007B8332 /* GTSR1.crt in Resources */,
-				347850521FD74984007B8332 /* GTSR3.crt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
