@@ -183,6 +183,7 @@
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
 		4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */; };
+		450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
 		4509E79A1DD653700025A59F /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4509E7991DD653700025A59F /* WebRTC.framework */; };
 		450D19131F85236600970622 /* RemoteVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 450D19121F85236600970622 /* RemoteVideoView.m */; };
 		450DF2051E0D74AC003D14BE /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450DF2041E0D74AC003D14BE /* Platform.swift */; };
@@ -1069,6 +1070,7 @@
 				451777C71FD61554001225FF /* ConversationSearcher.swift */,
 				34480B4D1FD0A7A300BC14EF /* DebugLogger.h */,
 				34480B4E1FD0A7A300BC14EF /* DebugLogger.m */,
+				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
 				346129AC1FD1F34E00532771 /* ImageCache.swift */,
 				45666EC41D99483D008FE134 /* OWSAvatarBuilder.h */,
 				45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */,
@@ -1690,7 +1692,6 @@
 				34CCAF371F0C0599004084F4 /* AppUpdateNag.m */,
 				B90418E4183E9DD40038554A /* DateUtil.h */,
 				B90418E5183E9DD40038554A /* DateUtil.m */,
-				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
 				45E615151E8C590B0018AD52 /* DisplayableText.swift */,
 				76EB04EA18170B33006006FC /* FunctionalUtil.h */,
 				76EB04EB18170B33006006FC /* FunctionalUtil.m */,
@@ -2689,6 +2690,7 @@
 				346129961FD1E30000532771 /* OWSDatabaseMigration.m in Sources */,
 				346129CD1FD2072E00532771 /* UIImage+OWS.m in Sources */,
 				346129FB1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
+				450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */,
 				451F8A3D1FD713CA005CB9DA /* ThreadViewHelper.m in Sources */,
 				346129AD1FD1F34E00532771 /* ImageCache.swift in Sources */,
 				451F8A341FD710C3005CB9DA /* ConversationSearcher.swift in Sources */,
@@ -2781,7 +2783,6 @@
 				76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */,
 				34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */,
 				34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */,
-				348F2EAE1F0D21BC00D4ECE0 /* DeviceSleepManager.swift in Sources */,
 				34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */,
 				34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */,
 				34D1F0AE1F867BFC0066283D /* OWSMessageCell.m in Sources */,

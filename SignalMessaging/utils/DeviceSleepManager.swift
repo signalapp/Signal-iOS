@@ -15,14 +15,19 @@ import SignalServiceKit
 // blocking if the block object is deallocated even if removeBlock() is not
 // called.  On the other hand, we will also get correct behavior to addBlock()
 // being called twice with the same block object.
-@objc class DeviceSleepManager: NSObject {
+@objc
+public class DeviceSleepManager: NSObject {
 
     let TAG = "[DeviceSleepManager]"
 
-    static let sharedInstance = DeviceSleepManager()
+    public static let sharedInstance = DeviceSleepManager()
 
-    private class SleepBlock {
+    private class SleepBlock: CustomDebugStringConvertible {
         weak var blockObject: NSObject?
+
+        var debugDescription: String {
+            return "SleepBlock(\(String(reflecting: blockObject)))"
+        }
 
         init(blockObject: NSObject) {
             self.blockObject = blockObject
@@ -30,7 +35,7 @@ import SignalServiceKit
     }
     private var blocks: [SleepBlock] = []
 
-    override init() {
+    private override init() {
         super.init()
 
         NotificationCenter.default.addObserver(self,
@@ -43,7 +48,8 @@ import SignalServiceKit
         NotificationCenter.default.removeObserver(self)
     }
 
-    func didEnterBackground() {
+    @objc
+    private func didEnterBackground() {
         AssertIsOnMainThread()
 
         ensureSleepBlocking()
@@ -76,17 +82,6 @@ import SignalServiceKit
         }
         let shouldBlock = blocks.count > 0
 
-        if UIApplication.shared.isIdleTimerDisabled != shouldBlock {
-            if shouldBlock {
-                var logString = "\(self.TAG) \(#function): Blocking sleep because of: \(String(describing: blocks.first?.blockObject))"
-                if blocks.count > 1 {
-                    logString += " and \(blocks.count - 1) others."
-                }
-                Logger.info(logString)
-            } else {
-                Logger.info("\(self.TAG) \(#function): Unblocking sleep")
-            }
-        }
-        UIApplication.shared.isIdleTimerDisabled = shouldBlock
+        CurrentAppContext().ensureSleepBlocking(shouldBlock, blockingObjects: blocks)
     }
 }

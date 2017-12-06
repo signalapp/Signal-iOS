@@ -49,6 +49,23 @@ NS_ASSUME_NONNULL_BEGIN
     [UIApplication.sharedApplication endBackgroundTask:backgroundTaskIdentifier];
 }
 
+- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects;
+{
+    if (UIApplication.sharedApplication.isIdleTimerDisabled != shouldBeBlocking) {
+        if (shouldBeBlocking) {
+            NSMutableString *logString = [NSMutableString
+                stringWithFormat:@"%@ Blocking sleep because of: %@", self.logTag, blockingObjects.firstObject];
+            if (blockingObjects.count > 1) {
+                [logString appendString:[NSString stringWithFormat:@"(and %lu others)", blockingObjects.count - 1]];
+            }
+            DDLogInfo(@"%@", logString);
+        } else {
+            DDLogInfo(@"%@ Unblocking Sleep.", self.logTag);
+        }
+    }
+    UIApplication.sharedApplication.idleTimerDisabled = shouldBeBlocking;
+}
+
 - (void)setMainAppBadgeNumber:(NSInteger)value
 {
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:value];

@@ -75,6 +75,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(backgroundTaskIdentifier == UIBackgroundTaskInvalid);
 }
 
+- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects
+{
+    DDLogDebug(@"%@ Ignoring request to block sleep.", self.logTag);
+}
+
 - (void)setMainAppBadgeNumber:(NSInteger)value
 {
     OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);

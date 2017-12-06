@@ -58,8 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    // FIXME SHARINGEXTENSION
-    //  [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
+    [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 
     [self stop];
 }
@@ -112,8 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  repeats:YES];
 
     // Prevent device from sleeping while playing audio.
-    // FIXME SHARINGEXTENSION
-    // [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
+    [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 }
 
 - (void)pause
@@ -125,8 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioPlayerPoller invalidate];
     [self.delegate setAudioProgress:[self.audioPlayer currentTime] duration:[self.audioPlayer duration]];
 
-    // FIXME SHARINGEXTENSION
-    //  [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
+    [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 }
 
 - (void)stop
@@ -138,8 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioPlayerPoller invalidate];
     [self.delegate setAudioProgress:0 duration:0];
 
-    // FIXME SHARINGEXTENSION
-    //  [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
+    [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 }
 
 - (void)togglePlayState
