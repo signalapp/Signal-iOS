@@ -382,41 +382,62 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
         }
 
         // TODO Multiple attachments. In that case I'm unclear if we'll
-        // be given multile inputItems or a signle inputItem with multiple attachments.
+        // be given multiple inputItems or a single inputItem with multiple attachments.
         guard let itemProvider: NSItemProvider = inputItem.attachments?.first as? NSItemProvider else {
             let error = ShareViewControllerError.assertionError(description: "No item provider in input item attachments")
             return Promise(error: error)
         }
         Logger.info("\(self.logTag) attachment: \(itemProvider)")
 
-        guard itemProvider.hasItemConformingToTypeIdentifier(kUTTypeJPEG as String) else {
-            let error = ShareViewControllerError.assertionError(description: "only supporting jpegs for now")
+        // TODO support other utiTypes
+        let utiType = kUTTypeImage as String
+
+        guard itemProvider.hasItemConformingToTypeIdentifier(utiType) else {
+            let error = ShareViewControllerError.assertionError(description: "only supporting images for now")
             return Promise(error: error)
         }
 
-        let (promise, fulfill, reject) = Promise<UIImage>.pending()
+        let (promise, fulfill, reject) = Promise<URL>.pending()
+
+        itemProvider.loadItem(forTypeIdentifier: utiType, options: nil, completionHandler: {
+            (provider, error) in
+
+            guard error == nil else {
+                reject(error!)
+                return
+            }
+
+            guard let url = provider as? URL else {
+                let unexpectedTypeError = ShareViewControllerError.assertionError(description: "unexpected item type: \(String(describing: provider))")
+                reject(unexpectedTypeError)
+                return
+            }
+
+            fulfill(url)
+        })
 
         // TODO accept other data types
         // TODO whitelist attachment types
         // TODO coerce when necessary and possible
-        itemProvider.loadPreviewImage(options: nil,
-                                      completionHandler: { (previewImage, error) in
-                                        guard error == nil else {
-                                            reject(error!)
-                                            return
-                                        }
+        return promise.then { (url: URL) -> SignalAttachment in
+            // TODO use lazy DataProvider?
+            guard let dataSource = DataSourcePath.dataSource(with: url) else {
+                throw ShareViewControllerError.assertionError(description: "Unable to read attachment data")
+            }
+            dataSource.sourceFilename = url.lastPathComponent
 
-                                        guard let image = previewImage as? UIImage else {
-                                            let unexpectedTypeError = ShareViewControllerError.assertionError(description: "unexpected item type: \(String(describing: previewImage))")
-                                            reject(unexpectedTypeError)
-                                            return
-                                        }
+            // start with base utiType, but it might be something generic like "image"
+            var specificUTIType = utiType
+            if url.pathExtension.count > 0 {
+                // Determine a more specific utiType based on file extension
+                if let typeExtension = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) {
+                    specificUTIType = typeExtension
+                }
+            }
 
-                                        fulfill(image)
-        })
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType)
 
-        return promise.then { (image: UIImage) in
-            return SignalAttachment.imageAttachment(image: image, dataUTI: kUTTypeJPEG as String, filename: "from-share-extension-2345")
+            return attachment
         }
     }
 }
