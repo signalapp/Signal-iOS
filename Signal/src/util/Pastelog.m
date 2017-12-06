@@ -30,37 +30,54 @@
     [self submitLogsWithCompletion:^(NSError *error, NSString *urlString) {
         if (!error) {
             UIAlertController *alert = [UIAlertController
-                alertControllerWithTitle:@"One More Step"
-                                 message:@"What would you like to do with the link to your debug log?"
+                alertControllerWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_TITLE", @"Title of the debug log alert.")
+                                 message:NSLocalizedString(
+                                             @"DEBUG_LOG_ALERT_MESSAGE", @"Message of the debug log alert.")
                           preferredStyle:UIAlertControllerStyleAlert];
-            [alert addAction:[UIAlertAction actionWithTitle:@"Email Support"
-                                                      style:UIAlertActionStyleDefault
-                                                    handler:^(UIAlertAction *_Nonnull action) {
-                                                        [Pastelog.sharedManager submitEmail:urlString];
-                                                    }]];
-            [alert addAction:[UIAlertAction actionWithTitle:@"Copy Link"
-                                                      style:UIAlertActionStyleDefault
-                                                    handler:^(UIAlertAction *_Nonnull action) {
-                                                        UIPasteboard *pb = [UIPasteboard generalPasteboard];
-                                                        [pb setString:urlString];
-                                                    }]];
+            [alert
+                addAction:[UIAlertAction
+                              actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EMAIL",
+                                                  @"Label for the 'email debug log' option of the the debug log alert.")
+                                        style:UIAlertActionStyleDefault
+                                      handler:^(UIAlertAction *_Nonnull action) {
+                                          [Pastelog.sharedManager submitEmail:urlString];
+                                      }]];
+            [alert addAction:[UIAlertAction
+                                 actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_COPY_LINK",
+                                                     @"Label for the 'copy link' option of the the debug log alert.")
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction *_Nonnull action) {
+                                             UIPasteboard *pb = [UIPasteboard generalPasteboard];
+                                             [pb setString:urlString];
+                                         }]];
 #ifdef DEBUG
-            [alert addAction:[UIAlertAction actionWithTitle:@"Send to Self"
-                                                      style:UIAlertActionStyleDefault
-                                                    handler:^(UIAlertAction *_Nonnull action) {
-                                                        [Pastelog.sharedManager sendToSelf:urlString];
-                                                    }]];
+            [alert addAction:[UIAlertAction
+                                 actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF",
+                                                     @"Label for the 'send to self' option of the the debug log alert.")
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction *_Nonnull action) {
+                                             [Pastelog.sharedManager sendToSelf:urlString];
+                                         }]];
 #endif
-            [alert addAction:[UIAlertAction actionWithTitle:@"Open a Bug Report"
-                                                      style:UIAlertActionStyleCancel
-                                                    handler:^(UIAlertAction *_Nonnull action) {
-                                                        [Pastelog.sharedManager prepareRedirection:urlString];
-                                                    }]];
+            [alert addAction:
+                       [UIAlertAction
+                           actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_BUG_REPORT",
+                                               @"Label for the 'Open a Bug Report' option of the the debug log alert.")
+                                     style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *_Nonnull action) {
+                                       [Pastelog.sharedManager prepareRedirection:urlString];
+                                   }]];
             UIViewController *presentingViewController
                 = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
             [presentingViewController presentViewController:alert animated:NO completion:nil];
         } else{
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Failed to submit debug log" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+            UIAlertView *alertView =
+                [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"DEBUG_LOG_FAILURE_ALERT_TITLE",
+                                                       @"Title of the alert indicating the debug log upload failed.")
+                                           message:error.localizedDescription
+                                          delegate:nil
+                                 cancelButtonTitle:@"OK"
+                                 otherButtonTitles:nil, nil];
             [alertView show];
         }
     }];
@@ -74,9 +91,11 @@
 
     [self sharedManager].block = block;
 
-    [self sharedManager].loadingAlert = [UIAlertController alertControllerWithTitle:@"Sending debug log..."
-                                                                            message:nil
-                                                                     preferredStyle:UIAlertControllerStyleAlert];
+    [self sharedManager].loadingAlert =
+        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"DEBUG_LOG_ACTIVITY_INDICATOR",
+                                                        @"Message indicating that the debug log is being uploaded.")
+                                            message:nil
+                                     preferredStyle:UIAlertControllerStyleAlert];
     UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
     [presentingViewController presentViewController:[self sharedManager].loadingAlert animated:NO completion:nil];
 
@@ -209,12 +228,13 @@
     [pb setString:url];
 
     UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:@"GitHub redirection"
-                                            message:@"The gist link was copied in your clipboard. You are about to be "
-                                                    @"redirected to the GitHub issue list."
+        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE",
+                                                        @"Title of the alert before redirecting to Github Issues.")
+                                            message:NSLocalizedString(@"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE",
+                                                        @"Message of the alert before redirecting to Github Issues.")
                                      preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction
-                         actionWithTitle:@"OK"
+                         actionWithTitle:NSLocalizedString(@"OK", @"")
                                    style:UIAlertActionStyleDefault
                                  handler:^(UIAlertAction *_Nonnull action) {
                                      [UIApplication.sharedApplication
