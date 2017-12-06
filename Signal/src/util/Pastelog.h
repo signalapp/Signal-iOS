@@ -2,12 +2,9 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-@interface Pastelog : NSObject <NSURLConnectionDelegate, NSURLConnectionDataDelegate, UIAlertViewDelegate>
+@interface Pastelog : NSObject
 
 typedef void (^successBlock)(NSError *error, NSString *urlString);
-
-+(void)reportErrorAndSubmitLogsWithAlertTitle:(NSString*)alertTitle alertBody:(NSString*)alertBody;
-+(void)reportErrorAndSubmitLogsWithAlertTitle:(NSString*)alertTitle alertBody:(NSString*)alertBody completionBlock:(successBlock)block;
 
 +(void)submitLogs;
 +(void)submitLogsWithCompletion:(successBlock)block;
