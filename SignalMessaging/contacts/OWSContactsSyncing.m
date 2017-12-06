@@ -4,8 +4,7 @@
 
 #import "OWSContactsSyncing.h"
 #import "OWSContactsManager.h"
-#import "TSAccountManager.h"
-#import <SignalMessaging/OWSProfileManager.h>
+#import "OWSProfileManager.h"
 #import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>
@@ -16,8 +15,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kTSStorageManagerOWSContactsSyncingCollection = @"kTSStorageManagerOWSContactsSyncingCollection";
-NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey =
-    @"kTSStorageManagerOWSContactsSyncingLastMessageKey";
+NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey
+    = @"kTSStorageManagerOWSContactsSyncingLastMessageKey";
 
 @interface OWSContactsSyncing ()
 
