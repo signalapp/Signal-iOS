@@ -5,6 +5,7 @@
 import XCTest
 import PromiseKit
 import SignalServiceKit
+@testable import Signal
 
 struct VerificationFailedError: Error { }
 struct FailedToGetRPRegistrationTokenError: Error { }
@@ -35,6 +36,10 @@ class FailingTSAccountManager: TSAccountManager {
 class VerifyingTSAccountManager: FailingTSAccountManager {
     override func verifyAccount(withCode: String, success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
         success()
+    }
+
+    override func registerForManualMessageFetching(success successBlock: @escaping () -> Swift.Void, failure failureBlock: @escaping (Error) -> Swift.Void) {
+        successBlock()
     }
 }
 
@@ -88,6 +93,7 @@ class AccountManagerTest: XCTestCase {
     }
 
     func testSuccessfulRegistration() {
+        Environment.clearCurrentForTests()
         Environment.setCurrent(Release.releaseEnvironment())
 
         let tsAccountManager = TokenObtainingTSAccountManager(networkManager: TSNetworkManager.shared(), storageManager: TSStorageManager.shared())

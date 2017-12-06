@@ -3,6 +3,7 @@
 //
 
 import XCTest
+@testable import Signal
 
 class DisplayableTextTest: XCTestCase {
 
@@ -82,7 +83,7 @@ class DisplayableTextTest: XCTestCase {
         XCTAssertTrue("❤️💔💌💕💞💓💗💖💘💝💟💜💛💚💙".containsOnlyEmoji)
         XCTAssertTrue("✋🏿💪🏿👐🏿🙌🏿👏🏿🙏🏿".containsOnlyEmoji)
         XCTAssertTrue("🚾🆒🆓🆕🆖🆗🆙🏧".containsOnlyEmoji)
-        XCTAssertTrue("0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣🔟".containsOnlyEmoji)
+        XCTAssertFalse("0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣🔟".containsOnlyEmoji)
         XCTAssertTrue("🇺🇸🇷🇺🇦🇫🇦🇲".containsOnlyEmoji)
         XCTAssertFalse("🇺🇸🇷🇺🇸 🇦🇫🇦🇲🇸".containsOnlyEmoji)
         XCTAssertTrue("🇺🇸🇷🇺🇸🇦🇫🇦🇲".containsOnlyEmoji)

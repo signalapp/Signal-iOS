@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
                              serverAuthToken:(NSString *)authToken
                        manualMessageFetching:(BOOL)isEnabled
 {
+    OWSAssert(signalingKey.length > 0);
+    OWSAssert(authToken.length > 0);
+
     return @{
         @"signalingKey" : signalingKey,
         @"AuthKey" : authToken,

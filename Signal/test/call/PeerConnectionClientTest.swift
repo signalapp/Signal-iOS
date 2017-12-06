@@ -4,6 +4,7 @@
 
 import XCTest
 import WebRTC
+@testable import Signal
 
 /**
  * Playing the role of the call service.
