@@ -292,7 +292,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     private func createHeroImageView(imageName: String) -> UIView {
         let imageSize = createHeroViewSize()
 
-        let image = UIImage(named: imageName, inBundleForClass: type(of:self))
+        let image = UIImage(named: imageName)
         assert(image != nil)
         let imageView = UIImageView(image: image)
         imageView.layer.minificationFilter = kCAFilterTrilinear
@@ -480,13 +480,5 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         videoPlayer?.view.removeFromSuperview()
         videoPlayer = nil
         OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(false)
-    }
-}
-
-extension UIImage {
-    public convenience init?(named: String, inBundleForClass someClass: AnyClass) {
-        //    let image = UIImage(named: imageName, inBundleForClass: type(of:self))
-        let bundle = Bundle(for: someClass)
-        self.init(named: named, in: bundle, compatibleWith: nil)
     }
 }
