@@ -14,15 +14,18 @@ public class SwiftSingletons: NSObject {
     }
 
     public func register(_ singleton: AnyObject) {
+        guard !CurrentAppContext().isRunningTests else {
+            return
+        }
         guard _isDebugAssertConfiguration() else {
             return
         }
         let singletonClassName = String(describing:type(of:singleton))
         guard !classSet.contains(singletonClassName) else {
-            owsFail("\(self.logTag()) in \(#function) Duplicate singleton: \(singletonClassName).")
+            owsFail("\(self.logTag) in \(#function) Duplicate singleton: \(singletonClassName).")
             return
         }
-        Logger.verbose("\(self.logTag()) in \(#function) Registering singleton: \(singletonClassName).")
+        Logger.verbose("\(self.logTag) in \(#function) Registering singleton: \(singletonClassName).")
         classSet.insert(singletonClassName)
     }
 

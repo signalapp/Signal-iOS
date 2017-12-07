@@ -18,7 +18,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
     override open func loadView() {
         super.loadView()
 
-        Logger.debug("\(self.logTag()) \(#function)")
+        Logger.debug("\(self.logTag) \(#function)")
 
         // This should be the first thing we do.
         let appContext = ShareAppExtensionContext(rootViewController:self)
@@ -103,7 +103,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
     }
 
     private func activate() {
-        Logger.debug("\(self.logTag()) \(#function)")
+        Logger.debug("\(self.logTag) \(#function)")
 
         // We don't need to use "screen protection" in the SAE.
 
@@ -162,7 +162,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
     func databaseViewRegistrationComplete() {
         AssertIsOnMainThread()
 
-        Logger.debug("\(self.logTag()) \(#function)")
+        Logger.debug("\(self.logTag) \(#function)")
 
         if TSAccountManager.isRegistered() {
             Logger.info("\(self.logTag) localNumber: \(TSAccountManager.localNumber)")
@@ -197,7 +197,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
     func registrationStateDidChange() {
         AssertIsOnMainThread()
 
-        Logger.debug("\(self.logTag()) \(#function)")
+        Logger.debug("\(self.logTag) \(#function)")
 
         if TSAccountManager.isRegistered() {
             Logger.info("\(self.logTag) localNumber: \(TSAccountManager.localNumber)")
@@ -211,7 +211,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
     }
 
     private func ensureRootViewController() {
-        Logger.debug("\(self.logTag()) \(#function)")
+        Logger.debug("\(self.logTag) \(#function)")
 
         guard !TSDatabaseView.hasPendingViewRegistrations() else {
             return
@@ -285,7 +285,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
     override open func viewDidLoad() {
         super.viewDidLoad()
 
-        Logger.debug("\(self.logTag()) \(#function)")
+        Logger.debug("\(self.logTag) \(#function)")
 
         if isReadyForAppExtensions {
             activate()
@@ -293,19 +293,19 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
     }
 
     override open func viewWillAppear(_ animated: Bool) {
-        Logger.debug("\(self.logTag()) \(#function)")
+        Logger.debug("\(self.logTag) \(#function)")
 
         super.viewWillAppear(animated)
     }
 
     override open func viewDidAppear(_ animated: Bool) {
-        Logger.debug("\(self.logTag()) \(#function)")
+        Logger.debug("\(self.logTag) \(#function)")
 
         super.viewDidAppear(animated)
     }
 
     override open func viewWillDisappear(_ animated: Bool) {
-        Logger.debug("\(self.logTag()) \(#function)")
+        Logger.debug("\(self.logTag) \(#function)")
 
         super.viewWillDisappear(animated)
 
@@ -313,7 +313,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
     }
 
     override open func viewDidDisappear(_ animated: Bool) {
-        Logger.debug("\(self.logTag()) \(#function)")
+        Logger.debug("\(self.logTag) \(#function)")
 
         super.viewDidDisappear(animated)
 

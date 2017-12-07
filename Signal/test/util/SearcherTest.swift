@@ -4,6 +4,7 @@
 
 import XCTest
 @testable import Signal
+@testable import SignalMessaging
 
 class SearcherTest: XCTestCase {
 
