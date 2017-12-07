@@ -54,7 +54,7 @@ extension SignalAttachmentError: LocalizedError {
 }
 
 @objc
-public enum TSImageQuality: UInt {
+public enum TSImageQualityTier: UInt {
     case original
     case high
     case mediumHigh
@@ -64,12 +64,12 @@ public enum TSImageQuality: UInt {
 }
 
 @objc
-public enum TSAttachmentQuality: UInt {
+public enum TSImageQuality: UInt {
     case original
     case medium
     case compact
 
-    func imageQuality() -> TSImageQuality {
+    func imageQualityTier() -> TSImageQualityTier {
         switch self {
         case .original:
             return .original
@@ -470,7 +470,7 @@ public class SignalAttachment: NSObject {
                 }
                 let dataSource = DataSourceValue.dataSource(with:data, utiType: dataUTI)
                 // Pasted images _SHOULD _NOT_ be resized, if possible.
-                return imageAttachment(dataSource : dataSource, dataUTI : dataUTI, attachmentQuality:.original)
+                return attachment(dataSource : dataSource, dataUTI : dataUTI, imageQuality:.original)
             }
         }
         for dataUTI in videoUTISet {
@@ -529,7 +529,7 @@ public class SignalAttachment: NSObject {
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
     @objc
-    public class func imageAttachment(dataSource: DataSource?, dataUTI: String, attachmentQuality: TSAttachmentQuality) -> SignalAttachment {
+    private class func imageAttachment(dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality) -> SignalAttachment {
         assert(dataUTI.count > 0)
 
         assert(dataSource != nil)
@@ -568,7 +568,7 @@ public class SignalAttachment: NSObject {
             }
             attachment.cachedImage = image
 
-            if isInputImageValidOutputImage(image: image, dataSource: dataSource, dataUTI: dataUTI, attachmentQuality:attachmentQuality) {
+            if isInputImageValidOutputImage(image: image, dataSource: dataSource, dataUTI: dataUTI, imageQuality:imageQuality) {
                 if let sourceFilename = dataSource.sourceFilename,
                    let sourceFileExtension = sourceFilename.fileExtension,
                    ["heic", "heif"].contains(sourceFileExtension.lowercased()) {
@@ -593,13 +593,13 @@ public class SignalAttachment: NSObject {
             }
 
             Logger.verbose("\(TAG) Compressing attachment as image/jpeg, \(dataSource.dataLength()) bytes")
-            return compressImageAsJPEG(image : image, attachment : attachment, filename:dataSource.sourceFilename, attachmentQuality:attachmentQuality)
+            return compressImageAsJPEG(image : image, attachment : attachment, filename:dataSource.sourceFilename, imageQuality:imageQuality)
         }
     }
 
     // If the proposed attachment already conforms to the
     // file size and content size limits, don't recompress it.
-    private class func isInputImageValidOutputImage(image: UIImage?, dataSource: DataSource?, dataUTI: String, attachmentQuality: TSAttachmentQuality) -> Bool {
+    private class func isInputImageValidOutputImage(image: UIImage?, dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality) -> Bool {
         guard let image = image else {
             return false
         }
@@ -610,9 +610,9 @@ public class SignalAttachment: NSObject {
             return false
         }
 
-        let imageQuality = attachmentQuality.imageQuality()
+        let imageQualityTier = imageQuality.imageQualityTier()
         let maxSize = maxSizeForImage(image: image,
-                                      imageUploadQuality:imageQuality)
+                                      imageUploadQuality:imageQualityTier)
         if image.size.width <= maxSize &&
             image.size.height <= maxSize &&
             dataSource.dataLength() <= kMaxFileSizeImage {
@@ -626,7 +626,7 @@ public class SignalAttachment: NSObject {
     // NOTE: The attachment returned by this method may nil or not be valid.
     //       Check the attachment's error property.
     @objc
-    public class func imageAttachment(image: UIImage?, dataUTI: String, filename: String?, attachmentQuality: TSAttachmentQuality) -> SignalAttachment {
+    public class func imageAttachment(image: UIImage?, dataUTI: String, filename: String?, imageQuality: TSImageQuality) -> SignalAttachment {
         assert(dataUTI.count > 0)
 
         guard let image = image else {
@@ -644,13 +644,13 @@ public class SignalAttachment: NSObject {
         attachment.cachedImage = image
 
         Logger.verbose("\(TAG) Writing \(attachment.mimeType) as image/jpeg")
-        return compressImageAsJPEG(image : image, attachment : attachment, filename:filename, attachmentQuality:attachmentQuality)
+        return compressImageAsJPEG(image : image, attachment : attachment, filename:filename, imageQuality:imageQuality)
     }
 
-    private class func compressImageAsJPEG(image: UIImage, attachment: SignalAttachment, filename: String?, attachmentQuality: TSAttachmentQuality) -> SignalAttachment {
+    private class func compressImageAsJPEG(image: UIImage, attachment: SignalAttachment, filename: String?, imageQuality: TSImageQuality) -> SignalAttachment {
         assert(attachment.error == nil)
 
-        var imageUploadQuality = attachmentQuality.imageQuality()
+        var imageUploadQuality = imageQuality.imageQualityTier()
 
         while true {
             let maxSize = maxSizeForImage(image: image, imageUploadQuality:imageUploadQuality)
@@ -718,7 +718,7 @@ public class SignalAttachment: NSObject {
         return updatedImage!
     }
 
-    private class func maxSizeForImage(image: UIImage, imageUploadQuality: TSImageQuality) -> CGFloat {
+    private class func maxSizeForImage(image: UIImage, imageUploadQuality: TSImageQualityTier) -> CGFloat {
         switch imageUploadQuality {
         case .original:
             return max(image.size.width, image.size.height)
@@ -735,7 +735,7 @@ public class SignalAttachment: NSObject {
         }
     }
 
-    private class func jpegCompressionQuality(imageUploadQuality: TSImageQuality) -> CGFloat {
+    private class func jpegCompressionQuality(imageUploadQuality: TSImageQualityTier) -> CGFloat {
         switch imageUploadQuality {
         case .original:
             return 1
@@ -821,9 +821,9 @@ public class SignalAttachment: NSObject {
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
     @objc
-    public class func attachment(dataSource: DataSource?, dataUTI: String, attachmentQuality: TSAttachmentQuality) -> SignalAttachment {
+    public class func attachment(dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality = .original) -> SignalAttachment {
         if inputImageUTISet.contains(dataUTI) {
-            return imageAttachment(dataSource : dataSource, dataUTI : dataUTI, attachmentQuality:attachmentQuality)
+            return imageAttachment(dataSource : dataSource, dataUTI : dataUTI, imageQuality:imageQuality)
         } else if videoUTISet.contains(dataUTI) {
             return videoAttachment(dataSource : dataSource, dataUTI : dataUTI)
         } else if audioUTISet.contains(dataUTI) {
@@ -837,7 +837,7 @@ public class SignalAttachment: NSObject {
     public class func empty() -> SignalAttachment {
         return SignalAttachment.attachment(dataSource : DataSourceValue.emptyDataSource(),
                                            dataUTI: kUTTypeContent as String,
-                                           attachmentQuality:.original)
+                                           imageQuality:.original)
     }
 
     // MARK: Helper Methods
