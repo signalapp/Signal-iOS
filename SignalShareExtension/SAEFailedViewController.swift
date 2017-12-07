@@ -8,7 +8,7 @@ import PureLayout
 
 // All Observer methods will be invoked from the main thread.
 protocol SAEFailedViewDelegate: class {
-    func shareExtensionWasCancelled()
+    func shareViewWasCancelled()
 }
 
 class SAEFailedViewController: UIViewController {
@@ -92,6 +92,6 @@ class SAEFailedViewController: UIViewController {
             owsFail("\(self.logTag) missing delegate")
             return
         }
-        delegate.shareExtensionWasCancelled()
+        delegate.shareViewWasCancelled()
     }
 }

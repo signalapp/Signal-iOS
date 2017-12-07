@@ -24,7 +24,7 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSMath.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/Release.h>
-#import <SignalMessaging/SendExternalFileViewController.h>
+#import <SignalMessaging/SharingThreadPickerViewController.h>
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIImage+OWS.h>
