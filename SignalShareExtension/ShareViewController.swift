@@ -22,9 +22,12 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
 
         // We can't show the conversation picker until the DB is set up.
         // Normally this will only take a moment, so rather than flickering and then hiding the loading screen
-        // We start with as invisible, and only fade it in if it's going to take a while
+        // We start as invisible, and only fade it in if it's going to take a while
         self.view.isHidden = true
         self.view.alpha = 0
+        UIView.animate(withDuration: 0.1, delay: 0.5, options: [.curveEaseInOut], animations: {
+            self.view.alpha = 1
+        }, completion: nil)
 
         // This should be the first thing we do.
         let appContext = ShareAppExtensionContext(rootViewController:self)
@@ -282,6 +285,13 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
     }
 
     private func showErrorView(title: String, message: String) {
+        // ensure view is visible.
+        self.view.layer.removeAllAnimations()
+        UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseInOut], animations: {
+            self.view.isHidden = false
+            self.view.alpha = 1
+        }, completion: nil)
+
         let viewController = SAEFailedViewController(delegate:self, title:title, message:message)
         self.setViewControllers([viewController], animated: false)
     }
@@ -308,14 +318,6 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
         Logger.debug("\(self.logTag) \(#function)")
 
         super.viewDidAppear(animated)
-
-        // We can't show the conversation picker until the DB is set up.
-        // Normally this will only take a moment, so rather than flickering and then hiding the loading screen
-        // We start with as invisible, and only fade it in if it's going to take a while
-        self.view.isHidden = false
-        UIView.animate(withDuration: 0.1, delay: 0.5, options: [.curveEaseInOut], animations: {
-            self.view.alpha = 1
-        }, completion: nil)
     }
 
     override open func viewWillDisappear(_ animated: Bool) {
@@ -343,6 +345,8 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
     // MARK: Helpers
 
     private func presentConversationPicker() {
+        // pause any animation revealing the "loading" screen
+        self.view.layer.removeAllAnimations()
         self.buildAttachment().then { attachment -> Void in
             let conversationPicker = SendExternalFileViewController()
             let navigationController = UINavigationController(rootViewController: conversationPicker)
