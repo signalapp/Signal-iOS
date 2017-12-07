@@ -383,7 +383,7 @@ NS_ASSUME_NONNULL_BEGIN
         presentViewController:self
                      animated:NO
                    completion:^{
-                       UIView *window = CurrentAppContext().keyWindow;
+                       UIView *window = CurrentAppContext().rootReferenceView;
                        // During the presentation animation, we want to seamlessly animate the image
                        // from its location in the conversation view.  To do so, we need a
                        // consistent coordinate system, so we pass the `originRect` in the

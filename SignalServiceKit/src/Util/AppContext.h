@@ -19,7 +19,7 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 @property (nonatomic, readonly) BOOL isRunningTests;
 
 // Useful for translating coordinates to the "entire screen"
-@property (nonatomic, readonly) UIView *keyWindow;
+@property (nonatomic, readonly, nullable) UIView *rootReferenceView;
 
 // Should only be called if isMainApp is YES.
 //

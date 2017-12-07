@@ -426,7 +426,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             return
         }
 
-        let window = CurrentAppContext().keyWindow
+        let window = CurrentAppContext().rootReferenceView
         let convertedRect = fromView.convert(fromView.bounds, to:window)
         let viewController = FullImageViewController(attachment:attachment, from:convertedRect)
         viewController.present(from:fromViewController)

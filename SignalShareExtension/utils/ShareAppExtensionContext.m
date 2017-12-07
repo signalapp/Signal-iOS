@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.rootViewController findFrontmostViewController:YES];
 }
 
-- (UIView *)keyWindow
+- (nullable UIView *)rootReferenceView
 {
     return self.rootViewController.view;
 }

@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     return UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
 }
 
-- (UIView *)keyWindow
+- (nullable UIView *)rootReferenceView
 {
     return UIApplication.sharedApplication.keyWindow;
 }
