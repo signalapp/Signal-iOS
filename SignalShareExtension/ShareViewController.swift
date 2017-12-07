@@ -435,7 +435,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                 }
             }
 
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, attachmentQuality:.compact)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, attachmentQuality:.medium)
 
             return attachment
         }
