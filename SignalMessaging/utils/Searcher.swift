@@ -20,7 +20,7 @@ import Foundation
 }
 
 // A generic searching class, configurable with an indexing block
-class Searcher<T> {
+public class Searcher<T> {
 
     private let indexer: (T) -> String
 

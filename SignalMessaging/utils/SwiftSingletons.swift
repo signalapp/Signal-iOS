@@ -14,6 +14,9 @@ public class SwiftSingletons: NSObject {
     }
 
     public func register(_ singleton: AnyObject) {
+        guard !CurrentAppContext().isRunningTests else {
+            return
+        }
         guard _isDebugAssertConfiguration() else {
             return
         }
