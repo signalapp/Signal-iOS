@@ -418,7 +418,6 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
         // TODO whitelist attachment types
         // TODO coerce when necessary and possible
         return promise.then { (url: URL) -> SignalAttachment in
-            // TODO use lazy DataProvider?
             guard let dataSource = DataSourcePath.dataSource(with: url) else {
                 throw ShareViewControllerError.assertionError(description: "Unable to read attachment data")
             }
