@@ -4,7 +4,8 @@
 
 import SignalServiceKit
 
-class SAECallMessageHandler: NSObject, OWSCallMessageHandler {
+@objc
+public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
 
     public func receivedOffer(_ offer: OWSSignalServiceProtosCallMessageOffer, from callerId: String) {
         owsFail("\(self.logTag) in \(#function).")

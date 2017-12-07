@@ -29,8 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     _rootViewController = rootViewController;
 
-    OWSSingletonAssert();
-
     return self;
 }
 

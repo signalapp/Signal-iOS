@@ -10,7 +10,5 @@
 #define test(expressionExpectedToBeTrue) XCTAssert(expressionExpectedToBeTrue, @"")
 #define testThrows(expressionExpectedToThrow) XCTAssertThrows(expressionExpectedToThrow, @"")
 #define testDoesNotThrow(expressionExpectedToNotThrow) expressionExpectedToNotThrow
-#define testEnv [Release unitTestEnvironment:@[]]
-#define testEnvWith(options) [Release unitTestEnvironment:(@[options])]
 #define testChurnUntil(condition, timeout) test(_testChurnHelper(^int{ return condition; }, timeout))
 #define testChurnAndConditionMustStayTrue(condition, timeout) test(!_testChurnHelper(^int{ return !(condition); }, timeout))

@@ -9,9 +9,4 @@
 /// Connects to actual production infrastructure
 + (Environment *)releaseEnvironment;
 
-+ (Environment *)stagingEnvironment;
-
-/// Fake environment with no logging
-+ (Environment *)unitTestEnvironment:(NSArray *)testingAndLegacyOptions;
-
 @end

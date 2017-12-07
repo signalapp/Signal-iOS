@@ -6,7 +6,7 @@ import Foundation
 import SignalServiceKit
 
 @objc
-class ConversationSearcher: NSObject {
+public class ConversationSearcher: NSObject {
 
     @objc
     public static let shared: ConversationSearcher = ConversationSearcher()

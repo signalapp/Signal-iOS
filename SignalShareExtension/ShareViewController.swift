@@ -12,8 +12,6 @@ import PromiseKit
 @objc
 public class ShareViewController: UINavigationController, SAELoadViewDelegate, SAEFailedViewDelegate {
 
-    private var contactsSyncing: OWSContactsSyncing?
-
     private var hasInitialRootViewController = false
     private var isReadyForAppExtensions = false
 
@@ -23,12 +21,13 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
         Logger.debug("\(self.logTag()) \(#function)")
 
         // This should be the first thing we do.
-        SetCurrentAppContext(ShareAppExtensionContext(rootViewController:self))
+        let appContext = ShareAppExtensionContext(rootViewController:self)
+        SetCurrentAppContext(appContext)
 
         DebugLogger.shared().enableTTYLogging()
         if _isDebugAssertConfiguration() {
             DebugLogger.shared().enableFileLogging()
-        } else if (OWSPreferences.isLoggingEnabled()) {
+        } else if OWSPreferences.isLoggingEnabled() {
             DebugLogger.shared().enableFileLogging()
         }
 
@@ -40,7 +39,11 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
 
         // We don't need to use DeviceSleepManager in the SAE.
 
-        setupEnvironment()
+        AppSetup.setupEnvironment({
+            return NoopCallMessageHandler()
+        }) {
+            return NoopNotificationsManager()
+        }
 
         // TODO:
         //        [UIUtil applySignalAppearence];
@@ -60,7 +63,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
             // If we don't have TSSStorageManager, we can't consult TSAccountManager
             // for isRegistered, so we use OWSPreferences which is usually-accurate
             // copy of that state.
-            if (OWSPreferences.isRegistered()) {
+            if OWSPreferences.isRegistered() {
                 showNotReadyView()
             } else {
                 showNotRegisteredView()
@@ -78,10 +81,8 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
 
         // We don't need to use "screen protection" in the SAE.
 
-        contactsSyncing = OWSContactsSyncing(contactsManager:Environment.current().contactsManager,
-                                             identityManager:OWSIdentityManager.shared(),
-                                             messageSender:Environment.current().messageSender,
-                                             profileManager:OWSProfileManager.shared())
+        // Ensure OWSContactsSyncing is instantiated.
+        OWSContactsSyncing.sharedManager()
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(databaseViewRegistrationComplete),
@@ -253,27 +254,6 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
         } else {
             owsFail("Language Code: Unknown")
         }
-    }
-
-    func setupEnvironment() {
-        let environment = Release.releaseEnvironment()
-        Environment.setCurrent(environment)
-
-        // Encryption/Decryption mutates session state and must be synchronized on a serial queue.
-        SessionCipher.setSessionCipherDispatchQueue(OWSDispatch.sessionStoreQueue())
-
-        let sharedEnv = TextSecureKitEnv(callMessageHandler:SAECallMessageHandler(),
-                                         contactsManager:Environment.current().contactsManager,
-                                         messageSender:Environment.current().messageSender,
-                                         notificationsManager:SAENotificationsManager(),
-                                         profileManager:OWSProfileManager.shared())
-        TextSecureKitEnv.setShared(sharedEnv)
-
-        TSStorageManager.shared().setupDatabase(safeBlockingMigrations: {
-            VersionMigrations.runSafeBlockingMigrations()
-        })
-
-        Environment.current().contactsManager.startObserving()
     }
 
     // MARK: Error Views
