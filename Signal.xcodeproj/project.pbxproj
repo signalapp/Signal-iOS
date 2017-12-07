@@ -581,6 +581,8 @@
 		347850661FD9B789007B8332 /* AppSetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppSetup.h; sourceTree = "<group>"; };
 		347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopCallMessageHandler.swift; sourceTree = "<group>"; };
 		347850681FD9B78A007B8332 /* NoopNotificationsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopNotificationsManager.swift; sourceTree = "<group>"; };
+		3478505A1FD999D5007B8332 /* et */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = et; path = translations/et.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3478505C1FD99A1F007B8332 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = translations/zh_TW.lproj/Localizable.strings; sourceTree = "<group>"; };
 		348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSleepManager.swift; sourceTree = "<group>"; };
 		3495BC911F1426B800B478F5 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3497DBEA1ECE257500DB2605 /* OWSCountryMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCountryMetadata.h; sourceTree = "<group>"; };
@@ -3006,6 +3008,8 @@
 				340B02B61F9FD31800F9CFEC /* he */,
 				34491FC11FB0F78500B3E5A3 /* my */,
 				341458471FBE11C4005ABCF9 /* fa */,
+				3478505A1FD999D5007B8332 /* et */,
+				3478505C1FD99A1F007B8332 /* zh_TW */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
