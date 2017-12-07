@@ -20,6 +20,10 @@ class MessageFetcherJob: NSObject {
         self.messageReceiver = messageReceiver
         self.networkManager = networkManager
         self.signalService = signalService
+
+        super.init()
+
+        SwiftSingletons.register(self)
     }
 
     public func run() -> Promise<Void> {

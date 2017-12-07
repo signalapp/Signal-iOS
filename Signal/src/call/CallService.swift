@@ -224,6 +224,8 @@ protocol CallServiceObserver: class {
 
         super.init()
 
+        SwiftSingletons.register(self)
+
         self.createCallUIAdapter()
 
         NotificationCenter.default.addObserver(self,

@@ -63,6 +63,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         super.init()
 
+        SwiftSingletons.register(self)
+
         self.provider.setDelegate(self, queue: nil)
     }
 

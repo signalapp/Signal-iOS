@@ -450,6 +450,8 @@ extension URLSessionTask {
 
         super.init()
 
+        SwiftSingletons.register(self)
+
         ensureGifFolder()
     }
 

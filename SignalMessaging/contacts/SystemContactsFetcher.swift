@@ -351,6 +351,10 @@ public class SystemContactsFetcher: NSObject {
 
     override init() {
         self.contactStoreAdapter = ContactStoreAdapter()
+
+        super.init()
+
+        SwiftSingletons.register(self)
     }
 
     @objc

@@ -20,6 +20,14 @@ final class CallKitCallManager: NSObject {
     let callController = CXCallController()
     static let kAnonymousCallHandlePrefix = "Signal:"
 
+    override required init() {
+        AssertIsOnMainThread()
+
+        super.init()
+
+        SwiftSingletons.register(self)
+    }
+
     // MARK: Actions
 
     func startCall(_ call: SignalCall) {
