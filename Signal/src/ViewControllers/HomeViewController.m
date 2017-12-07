@@ -110,6 +110,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
 
+    // Ensure ExperienceUpgradeFinder has been initialized.
     ExperienceUpgradeFinder.sharedManager;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
