@@ -223,12 +223,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
         Logger.info("Presenting initial root view controller")
 
         if TSAccountManager.isRegistered() {
-            //                HomeViewController *homeView = [HomeViewController new];
-            //                SignalsNavigationController *navigationController =
-            //                    [[SignalsNavigationController alloc] initWithRootViewController:homeView];
-            //                self.window.rootViewController = navigationController;
-
-            presentConversationPicker()
+            showConversationPicker()
         } else {
             showNotRegisteredView()
         }
@@ -353,12 +348,12 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
 
     // MARK: Helpers
 
-    private func presentConversationPicker() {
+    private func showConversationPicker() {
         let conversationPicker = SendExternalFileViewController()
         buildAttachment().then { attachment -> Void in
             conversationPicker.attachment = attachment
-            self.pushViewController(conversationPicker, animated: true)
-            Logger.info("presented conversation picker with attachment: \(attachment)")
+            self.setViewControllers([conversationPicker], animated: true)
+            Logger.info("showing picker with attachment: \(attachment)")
         }.catch { error in
             OWSAlerts.showAlert(withTitle: NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE", comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details."),
                                 message: error.localizedDescription,
