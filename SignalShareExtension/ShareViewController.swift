@@ -39,12 +39,6 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
 
         // We don't need to use DeviceSleepManager in the SAE.
 
-        AppSetup.setupEnvironment({
-            return NoopCallMessageHandler()
-        }) {
-            return NoopNotificationsManager()
-        }
-
         // TODO:
         //        [UIUtil applySignalAppearence];
 
@@ -69,6 +63,12 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
                 showNotRegisteredView()
             }
             return
+        }
+
+        AppSetup.setupEnvironment({
+            return NoopCallMessageHandler()
+        }) {
+            return NoopNotificationsManager()
         }
 
         // performUpdateCheck must be invoked after Environment has been initialized because
