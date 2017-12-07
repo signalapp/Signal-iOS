@@ -5,12 +5,13 @@
 #import "FullImageViewController.h"
 #import "AttachmentSharing.h"
 #import "ConversationViewItem.h"
-#import "Signal-Swift.h"
 #import "TSAttachmentStream.h"
 #import "TSInteraction.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <YYImage/YYImage.h>
 
@@ -31,7 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation AttachmentMenuView
 
-- (BOOL)canBecomeFirstResponder {
+- (BOOL)canBecomeFirstResponder
+{
     return YES;
 }
 
@@ -76,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self) {
         self.attachmentStream = attachmentStream;
-        self.originRect  = rect;
+        self.originRect = rect;
         self.viewItem = viewItem;
     }
 
@@ -118,7 +120,8 @@ NS_ASSUME_NONNULL_BEGIN
     return _fileData;
 }
 
-- (UIImage *)image {
+- (UIImage *)image
+{
     if (self.attachmentStream) {
         return self.attachmentStream.image;
     } else if (self.attachment) {
@@ -139,15 +142,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)loadView {
+- (void)loadView
+{
     self.view = [AttachmentMenuView new];
     self.view.backgroundColor = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    
+
     [self initializeBackground];
     [self initializeContentViewAndFooterBar];
     [self initializeScrollView];
@@ -157,64 +162,76 @@ NS_ASSUME_NONNULL_BEGIN
     [self populateImageView:self.image];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)viewWillDisappear:(BOOL)animated
+{
     [super viewWillDisappear:animated];
-    
+
     if ([UIMenuController sharedMenuController].isMenuVisible) {
-        [[UIMenuController sharedMenuController] setMenuVisible:NO
-                                                       animated:NO];
+        [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
     }
 }
 
 #pragma mark - Initializers
 
-- (void)initializeBackground {
-    self.imageView.backgroundColor      = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
-    
-    self.backgroundView                 = [UIView new];
+- (void)initializeBackground
+{
+    self.imageView.backgroundColor = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
+
+    self.backgroundView = [UIView new];
     self.backgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:kBackgroundAlpha];
     [self.view addSubview:self.backgroundView];
     [self.backgroundView autoPinEdgesToSuperviewEdges];
 }
 
-- (void)initializeContentViewAndFooterBar {
+- (void)initializeContentViewAndFooterBar
+{
     self.contentView = [UIView new];
     [self.backgroundView addSubview:self.contentView];
     [self.contentView autoPinWidthToSuperview];
     [self.contentView autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    
+
     self.footerBar = [UIToolbar new];
     _footerBar.barTintColor = [UIColor ows_signalBrandBlueColor];
-    [self.footerBar setItems:@[
-                               [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-                               [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
-                                                                             target:self
-                                                                             action:@selector(shareWasPressed:)],
-                               [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-                               ]
-                    animated:NO];
+    if (CurrentAppContext().isMainApp) {
+        [self.footerBar setItems:@[
+            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                          target:nil
+                                                          action:nil],
+            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                          target:self
+                                                          action:@selector(shareWasPressed:)],
+            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                          target:nil
+                                                          action:nil],
+        ]
+                        animated:NO];
+    }
     [self.backgroundView addSubview:self.footerBar];
     [self.footerBar autoPinWidthToSuperview];
     [self.footerBar autoPinToBottomLayoutGuideOfViewController:self withInset:0];
     [self.footerBar autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.contentView];
 }
 
-- (void)shareWasPressed:(id)sender {
+- (void)shareWasPressed:(id)sender
+{
     DDLogInfo(@"%@: sharing image.", self.logTag);
+    OWSAssert(CurrentAppContext().isMainApp);
 
     [AttachmentSharing showShareUIForURL:self.attachmentUrl];
 }
 
-- (void)initializeScrollView {
-    self.scrollView                  = [[UIScrollView alloc] initWithFrame:self.view.bounds];
-    self.scrollView.delegate         = self;
-    self.scrollView.zoomScale        = 1.0f;
+- (void)initializeScrollView
+{
+    self.scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
+    self.scrollView.delegate = self;
+    self.scrollView.zoomScale = 1.0f;
     self.scrollView.maximumZoomScale = kMaxZoomScale;
-    self.scrollView.scrollEnabled    = NO;
+    self.scrollView.scrollEnabled = NO;
     [self.contentView addSubview:self.scrollView];
 }
 
-- (void)initializeImageView {
+- (void)initializeImageView
+{
     if (self.isAnimated) {
         if ([self.fileData ows_isValidImage]) {
             YYImage *animatedGif = [YYImage imageWithData:self.fileData];
@@ -229,10 +246,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else {
         // Present the static image using standard UIImageView
-        self.imageView                              = [[UIImageView alloc] initWithFrame:self.originRect];
-        self.imageView.contentMode                  = UIViewContentModeScaleAspectFill;
-        self.imageView.userInteractionEnabled       = YES;
-        self.imageView.clipsToBounds                = YES;
+        self.imageView = [[UIImageView alloc] initWithFrame:self.originRect];
+        self.imageView.contentMode = UIViewContentModeScaleAspectFill;
+        self.imageView.userInteractionEnabled = YES;
+        self.imageView.clipsToBounds = YES;
         self.imageView.layer.allowsEdgeAntialiasing = YES;
         // Use trilinear filters for better scaling quality at
         // some performance cost.
@@ -243,55 +260,59 @@ NS_ASSUME_NONNULL_BEGIN
     [self.scrollView addSubview:self.imageView];
 }
 
-- (void)populateImageView:(UIImage *)image {
+- (void)populateImageView:(UIImage *)image
+{
     if (image && !self.isAnimated) {
         self.imageView.image = image;
     }
 }
 
-- (void)initializeGestureRecognizers {
-    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                action:@selector(imageDismissGesture:)];
+- (void)initializeGestureRecognizers
+{
+    UITapGestureRecognizer *singleTap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageDismissGesture:)];
     singleTap.delegate = self;
     [self.view addGestureRecognizer:singleTap];
-    
-    UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                action:@selector(imageDismissGesture:)];
+
+    UITapGestureRecognizer *doubleTap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageDismissGesture:)];
     doubleTap.numberOfTapsRequired = 2;
     doubleTap.delegate = self;
     [self.view addGestureRecognizer:doubleTap];
-    
+
     // UISwipeGestureRecognizer supposedly supports multiple directions,
     // but in practice it works better if you use a separate GR for each
     // direction.
     for (NSNumber *direction in @[
-                                  @(UISwipeGestureRecognizerDirectionRight),
-                                  @(UISwipeGestureRecognizerDirectionLeft),
-                                  @(UISwipeGestureRecognizerDirectionUp),
-                                  @(UISwipeGestureRecognizerDirectionDown),
-                                  ]) {
-        UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self
-                                                                                    action:@selector(imageDismissGesture:)];
-        swipe.direction = (UISwipeGestureRecognizerDirection) direction.integerValue;
+             @(UISwipeGestureRecognizerDirectionRight),
+             @(UISwipeGestureRecognizerDirectionLeft),
+             @(UISwipeGestureRecognizerDirectionUp),
+             @(UISwipeGestureRecognizerDirectionDown),
+         ]) {
+        UISwipeGestureRecognizer *swipe =
+            [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(imageDismissGesture:)];
+        swipe.direction = (UISwipeGestureRecognizerDirection)direction.integerValue;
         swipe.delegate = self;
         [self.view addGestureRecognizer:swipe];
     }
 
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self
-                                                                                            action:@selector(longPressGesture:)];
+    UILongPressGestureRecognizer *longPress =
+        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressGesture:)];
     longPress.delegate = self;
     [self.view addGestureRecognizer:longPress];
 }
 
 #pragma mark - Gesture Recognizers
 
-- (void)imageDismissGesture:(UIGestureRecognizer *)sender {
-  if (sender.state == UIGestureRecognizerStateRecognized) {
-    [self dismiss];
-  }
+- (void)imageDismissGesture:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self dismiss];
+    }
 }
 
-- (void)longPressGesture:(UIGestureRecognizer *)sender {
+- (void)longPressGesture:(UIGestureRecognizer *)sender
+{
     // We "eagerly" respond when the long press begins, not when it ends.
     if (sender.state == UIGestureRecognizerStateBegan) {
         if (!self.viewItem) {
@@ -299,22 +320,17 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         [self.view becomeFirstResponder];
-        
+
         if ([UIMenuController sharedMenuController].isMenuVisible) {
-            [[UIMenuController sharedMenuController] setMenuVisible:NO
-                                                           animated:NO];
+            [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
         }
 
         NSArray *menuItems = self.viewItem.menuControllerItems;
         [UIMenuController sharedMenuController].menuItems = menuItems;
         CGPoint location = [sender locationInView:self.view];
-        CGRect targetRect = CGRectMake(location.x,
-                                       location.y,
-                                       1, 1);
-        [[UIMenuController sharedMenuController] setTargetRect:targetRect
-                                                        inView:self.view];
-        [[UIMenuController sharedMenuController] setMenuVisible:YES
-                                                       animated:YES];
+        CGRect targetRect = CGRectMake(location.x, location.y, 1, 1);
+        [[UIMenuController sharedMenuController] setTargetRect:targetRect inView:self.view];
+        [[UIMenuController sharedMenuController] setMenuVisible:YES animated:YES];
     }
 }
 
@@ -355,89 +371,93 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Presentation
 
-- (void)presentFromViewController:(UIViewController *)viewController {
-    _isPresenting                    = YES;
+- (void)presentFromViewController:(UIViewController *)viewController
+{
+    _isPresenting = YES;
     self.view.userInteractionEnabled = NO;
     [self.view addSubview:self.imageView];
     self.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-    self.view.alpha             = 0;
+    self.view.alpha = 0;
 
     [viewController
         presentViewController:self
                      animated:NO
                    completion:^{
-                       UIWindow *window = [UIApplication sharedApplication].keyWindow;
+                       UIView *window = CurrentAppContext().keyWindow;
                        // During the presentation animation, we want to seamlessly animate the image
                        // from its location in the conversation view.  To do so, we need a
                        // consistent coordinate system, so we pass the `originRect` in the
                        // coordinate system of the window.
-                       self.imageView.frame = [self.view convertRect:self.originRect
-                                                            fromView:window];
-                       
-                     [UIView animateWithDuration:0.25f
-                         delay:0
-                         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseOut
-                         animations:^() {
-                             self.view.alpha      = 1.0f;
-                             // During the presentation animation, we want to seamlessly animate the image
-                             // to its resting location in this view.  We use `resizedFrameForImageView`
-                             // to determine its size "at rest" in the content view, and then convert
-                             // from the content view's coordinate system to the root view coordinate
-                             // system because the image view is temporarily hosted by the root view during
-                             // the presentation animation.
-                             self.imageView.frame = [self resizedFrameForImageView:self.image.size];
-                             self.imageView.center = [self.contentView convertPoint:self.contentView.center
-                                                                           fromView:self.contentView];
-                         }
-                         completion:^(BOOL completed) {
-                           self.scrollView.frame = self.contentView.bounds;
-                           [self.scrollView addSubview:self.imageView];
-                           [self updateLayouts];
-                           self.view.userInteractionEnabled = YES;
-                           _isPresenting                    = NO;
-                         }];
-                     [UIUtil modalCompletionBlock]();
+                       self.imageView.frame = [self.view convertRect:self.originRect fromView:window];
+
+                       [UIView animateWithDuration:0.25f
+                           delay:0
+                           options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseOut
+                           animations:^() {
+                               self.view.alpha = 1.0f;
+                               // During the presentation animation, we want to seamlessly animate the image
+                               // to its resting location in this view.  We use `resizedFrameForImageView`
+                               // to determine its size "at rest" in the content view, and then convert
+                               // from the content view's coordinate system to the root view coordinate
+                               // system because the image view is temporarily hosted by the root view during
+                               // the presentation animation.
+                               self.imageView.frame = [self resizedFrameForImageView:self.image.size];
+                               self.imageView.center =
+                                   [self.contentView convertPoint:self.contentView.center fromView:self.contentView];
+                           }
+                           completion:^(BOOL completed) {
+                               self.scrollView.frame = self.contentView.bounds;
+                               [self.scrollView addSubview:self.imageView];
+                               [self updateLayouts];
+                               self.view.userInteractionEnabled = YES;
+                               _isPresenting = NO;
+                           }];
+                       [UIUtil modalCompletionBlock]();
                    }];
 }
 
-- (void)dismiss {
+- (void)dismiss
+{
     self.view.userInteractionEnabled = NO;
     [UIView animateWithDuration:0.25f
         delay:0
         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveLinear
         animations:^() {
-          self.backgroundView.backgroundColor = [UIColor clearColor];
-          self.scrollView.alpha               = 0;
-          self.view.alpha                     = 0;
+            self.backgroundView.backgroundColor = [UIColor clearColor];
+            self.scrollView.alpha = 0;
+            self.view.alpha = 0;
         }
         completion:^(BOOL completed) {
-          [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
+            [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
         }];
 }
 
 #pragma mark - Update Layout
 
-- (void)viewDidLayoutSubviews {
+- (void)viewDidLayoutSubviews
+{
     [self updateLayouts];
 }
 
-- (void)updateLayouts {
+- (void)updateLayouts
+{
     if (_isPresenting) {
         return;
     }
 
-    self.scrollView.frame        = self.contentView.bounds;
-    self.imageView.frame         = [self resizedFrameForImageView:self.image.size];
-    self.scrollView.contentSize  = self.imageView.frame.size;
+    self.scrollView.frame = self.contentView.bounds;
+    self.imageView.frame = [self resizedFrameForImageView:self.image.size];
+    self.scrollView.contentSize = self.imageView.frame.size;
     self.scrollView.contentInset = [self contentInsetForScrollView:self.scrollView.zoomScale];
 }
 
 #pragma mark - Resizing
 
-- (CGRect)resizedFrameForImageView:(CGSize)imageSize {
+- (CGRect)resizedFrameForImageView:(CGSize)imageSize
+{
     CGRect frame = self.contentView.bounds;
-    CGSize screenSize =
-        CGSizeMake(frame.size.width * self.scrollView.zoomScale, frame.size.height * self.scrollView.zoomScale);
+    CGSize screenSize
+        = CGSizeMake(frame.size.width * self.scrollView.zoomScale, frame.size.height * self.scrollView.zoomScale);
     CGSize targetSize = screenSize;
 
     if ([self isImagePortrait]) {
@@ -454,33 +474,34 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    frame.size   = targetSize;
+    frame.size = targetSize;
     frame.origin = CGPointMake(0, 0);
     return frame;
 }
 
-- (UIEdgeInsets)contentInsetForScrollView:(CGFloat)targetZoomScale {
+- (UIEdgeInsets)contentInsetForScrollView:(CGFloat)targetZoomScale
+{
     UIEdgeInsets inset = UIEdgeInsetsZero;
 
-    CGSize boundsSize  = self.scrollView.bounds.size;
+    CGSize boundsSize = self.scrollView.bounds.size;
     CGSize contentSize = self.image.size;
     CGSize minSize;
 
     if ([self isImagePortrait]) {
         if ([self getAspectRatioForCGSize:boundsSize] < [self getAspectRatioForCGSize:contentSize]) {
             minSize.height = boundsSize.height;
-            minSize.width  = minSize.height / [self getAspectRatioForCGSize:contentSize];
+            minSize.width = minSize.height / [self getAspectRatioForCGSize:contentSize];
         } else {
-            minSize.width  = boundsSize.width;
+            minSize.width = boundsSize.width;
             minSize.height = minSize.width * [self getAspectRatioForCGSize:contentSize];
         }
     } else {
         if ([self getAspectRatioForCGSize:boundsSize] > [self getAspectRatioForCGSize:contentSize]) {
-            minSize.width  = boundsSize.width;
+            minSize.width = boundsSize.width;
             minSize.height = minSize.width * [self getAspectRatioForCGSize:contentSize];
         } else {
             minSize.height = boundsSize.height;
-            minSize.width  = minSize.height / [self getAspectRatioForCGSize:contentSize];
+            minSize.width = minSize.height / [self getAspectRatioForCGSize:contentSize];
         }
     }
 
@@ -498,10 +519,10 @@ NS_ASSUME_NONNULL_BEGIN
         dy = (dy > 0) ? dy : 0;
         dx = (dx > 0) ? dx : 0;
 
-        inset.top    = dy / 2.0f;
+        inset.top = dy / 2.0f;
         inset.bottom = dy / 2.0f;
-        inset.left   = dx / 2.0f;
-        inset.right  = dx / 2.0f;
+        inset.left = dx / 2.0f;
+        inset.right = dx / 2.0f;
     }
     return inset;
 }
@@ -513,7 +534,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self.imageView;
 }
 
-- (void)scrollViewDidZoom:(UIScrollView *)scrollView {
+- (void)scrollViewDidZoom:(UIScrollView *)scrollView
+{
     scrollView.contentInset = [self contentInsetForScrollView:scrollView.zoomScale];
 
     if (self.scrollView.scrollEnabled == NO) {
@@ -524,27 +546,30 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view atScale:(CGFloat)scale
 {
     self.scrollView.scrollEnabled = (scale > 1);
-    self.scrollView.contentInset  = [self contentInsetForScrollView:scale];
+    self.scrollView.contentInset = [self contentInsetForScrollView:scale];
 }
 
 #pragma mark - Utility
 
-- (BOOL)isImagePortrait {
+- (BOOL)isImagePortrait
+{
     return ([self getAspectRatioForCGSize:self.image.size] > 1.0f);
 }
 
-- (CGFloat)getAspectRatioForCGSize:(CGSize)size {
+- (CGFloat)getAspectRatioForCGSize:(CGSize)size
+{
     return size.height / size.width;
 }
 
 
 #pragma mark - Saving images to Camera Roll
 
-- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
+- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
+{
     if (error) {
         DDLogWarn(@"There was a problem saving <%@> to camera roll from %s ",
-                  error.localizedDescription,
-                  __PRETTY_FUNCTION__);
+            error.localizedDescription,
+            __PRETTY_FUNCTION__);
     }
 }
 

@@ -110,7 +110,6 @@
 		34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B0796B1FCF46B000E248C2 /* MainAppContext.m */; };
 		34B3F8711E8DF1700035BE1A /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8351E8DF1700035BE1A /* AboutTableViewController.m */; };
 		34B3F8721E8DF1700035BE1A /* AdvancedSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8371E8DF1700035BE1A /* AdvancedSettingsTableViewController.m */; };
-		34B3F8741E8DF1700035BE1A /* AttachmentSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83A1E8DF1700035BE1A /* AttachmentSharing.m */; };
 		34B3F8751E8DF1700035BE1A /* CallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83B1E8DF1700035BE1A /* CallViewController.swift */; };
 		34B3F8761E8DF1700035BE1A /* CodeVerificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83D1E8DF1700035BE1A /* CodeVerificationViewController.m */; };
 		34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
@@ -118,7 +117,6 @@
 		34B3F8791E8DF1700035BE1A /* CountryCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8411E8DF1700035BE1A /* CountryCodeViewController.m */; };
 		34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */; };
 		34B3F87C1E8DF1700035BE1A /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8461E8DF1700035BE1A /* FingerprintViewController.m */; };
-		34B3F87D1E8DF1700035BE1A /* FullImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8481E8DF1700035BE1A /* FullImageViewController.m */; };
 		34B3F87E1E8DF1700035BE1A /* InboxTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84A1E8DF1700035BE1A /* InboxTableViewCell.m */; };
 		34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
 		34B3F8821E8DF1700035BE1A /* NewContactThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */; };
@@ -184,6 +182,10 @@
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
 		4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */; };
 		450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
+		450998661FD8BD9C00D89EB3 /* FullImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8481E8DF1700035BE1A /* FullImageViewController.m */; };
+		450998671FD8BDA600D89EB3 /* FullImageViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34B3F8471E8DF1700035BE1A /* FullImageViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		450998681FD8C0FF00D89EB3 /* AttachmentSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83A1E8DF1700035BE1A /* AttachmentSharing.m */; };
+		450998691FD8C10200D89EB3 /* AttachmentSharing.h in Headers */ = {isa = PBXBuildFile; fileRef = 34B3F8391E8DF1700035BE1A /* AttachmentSharing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4509E79A1DD653700025A59F /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4509E7991DD653700025A59F /* WebRTC.framework */; };
 		450D19131F85236600970622 /* RemoteVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 450D19121F85236600970622 /* RemoteVideoView.m */; };
 		450DF2051E0D74AC003D14BE /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450DF2041E0D74AC003D14BE /* Platform.swift */; };
@@ -1248,8 +1250,6 @@
 				34B3F8371E8DF1700035BE1A /* AdvancedSettingsTableViewController.m */,
 				34B3F8681E8DF1700035BE1A /* AppSettingsViewController.h */,
 				34B3F8691E8DF1700035BE1A /* AppSettingsViewController.m */,
-				34B3F8391E8DF1700035BE1A /* AttachmentSharing.h */,
-				34B3F83A1E8DF1700035BE1A /* AttachmentSharing.m */,
 				34D5CCA71EAE3D30005515DB /* AvatarViewHelper.h */,
 				34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */,
 				34B3F89A1E8DF3270035BE1A /* BlockListViewController.h */,
@@ -1271,8 +1271,6 @@
 				34B3F8461E8DF1700035BE1A /* FingerprintViewController.m */,
 				34E8BF361EE9E2FD00F5F4CA /* FingerprintViewScanController.h */,
 				34E8BF371EE9E2FD00F5F4CA /* FingerprintViewScanController.m */,
-				34B3F8471E8DF1700035BE1A /* FullImageViewController.h */,
-				34B3F8481E8DF1700035BE1A /* FullImageViewController.m */,
 				34BECE2C1F7ABCE000D7438D /* GifPicker */,
 				34B3F86F1E8DF1700035BE1A /* HomeViewController.h */,
 				34B3F8701E8DF1700035BE1A /* HomeViewController.m */,
@@ -1533,6 +1531,10 @@
 		454A96571FD600B4008D2A0E /* attachments */ = {
 			isa = PBXGroup;
 			children = (
+				34B3F8391E8DF1700035BE1A /* AttachmentSharing.h */,
+				34B3F83A1E8DF1700035BE1A /* AttachmentSharing.m */,
+				34B3F8471E8DF1700035BE1A /* FullImageViewController.h */,
+				34B3F8481E8DF1700035BE1A /* FullImageViewController.m */,
 				45E5471F1FD755E700DFC09E /* AttachmentApprovalViewController.swift */,
 				3400C7901EAF89CD008A8584 /* SendExternalFileViewController.h */,
 				3400C7911EAF89CD008A8584 /* SendExternalFileViewController.m */,
@@ -2009,6 +2011,7 @@
 				346129CA1FD2072E00532771 /* UIImage+OWS.h in Headers */,
 				346129711FD1D74C00532771 /* SignalKeyingStorage.h in Headers */,
 				34612A011FD5F31400532771 /* OWS104CreateRecipientIdentities.h in Headers */,
+				450998691FD8C10200D89EB3 /* AttachmentSharing.h in Headers */,
 				346129C71FD2072E00532771 /* NSString+OWS.h in Headers */,
 				451F8A3C1FD71392005CB9DA /* UIUtil.h in Headers */,
 				346129D61FD20ADC00532771 /* UIViewController+OWS.h in Headers */,
@@ -2034,6 +2037,7 @@
 				451F8A3E1FD713D2005CB9DA /* ThreadViewHelper.h in Headers */,
 				346129391FD1B47300532771 /* OWSPreferences.h in Headers */,
 				346129DE1FD5C02A00532771 /* LockInteractionController.h in Headers */,
+				450998671FD8BDA600D89EB3 /* FullImageViewController.h in Headers */,
 				451F8A451FD71570005CB9DA /* BlockListUIUtils.h in Headers */,
 				451F8A4A1FD715D9005CB9DA /* OWSContactAvatarBuilder.h in Headers */,
 				34480B5B1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch in Headers */,
@@ -2674,6 +2678,7 @@
 				45194F951FD7216600333B2C /* TSUnreadIndicatorInteraction.m in Sources */,
 				346129F71FD5F31400532771 /* OWS105AttachmentFilePaths.m in Sources */,
 				45194F931FD7215C00333B2C /* OWSContactOffersInteraction.m in Sources */,
+				450998681FD8C0FF00D89EB3 /* AttachmentSharing.m in Sources */,
 				346129761FD1E0B500532771 /* WeakTimer.swift in Sources */,
 				346129F81FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.m in Sources */,
 				45E547201FD755E700DFC09E /* AttachmentApprovalViewController.swift in Sources */,
@@ -2689,6 +2694,7 @@
 				451F8A461FD715BA005CB9DA /* OWSGroupAvatarBuilder.m in Sources */,
 				346129961FD1E30000532771 /* OWSDatabaseMigration.m in Sources */,
 				346129CD1FD2072E00532771 /* UIImage+OWS.m in Sources */,
+				450998661FD8BD9C00D89EB3 /* FullImageViewController.m in Sources */,
 				346129FB1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
 				450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */,
 				451F8A3D1FD713CA005CB9DA /* ThreadViewHelper.m in Sources */,
@@ -2744,7 +2750,6 @@
 				3461293E1FD1D72B00532771 /* ExperienceUpgradeFinder.swift in Sources */,
 				34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */,
 				34D1F0BA1F8800D90066283D /* OWSAudioMessageView.m in Sources */,
-				34B3F8741E8DF1700035BE1A /* AttachmentSharing.m in Sources */,
 				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,
 				45C9DEB81DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift in Sources */,
 				34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */,
@@ -2878,7 +2883,6 @@
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
 				34D1F0B01F867BFC0066283D /* OWSSystemMessageCell.m in Sources */,
 				45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */,
-				34B3F87D1E8DF1700035BE1A /* FullImageViewController.m in Sources */,
 				34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
 				459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */,

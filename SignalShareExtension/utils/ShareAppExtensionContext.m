@@ -92,6 +92,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.rootViewController findFrontmostViewController:YES];
 }
 
+- (UIView *)keyWindow
+{
+    return self.rootViewController.view;
+}
+
 - (void)openSystemSettings
 {
     OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);

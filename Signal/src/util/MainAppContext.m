@@ -76,6 +76,11 @@ NS_ASSUME_NONNULL_BEGIN
     return UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
 }
 
+- (UIView *)keyWindow
+{
+    return UIApplication.sharedApplication.keyWindow;
+}
+
 - (void)openSystemSettings
 {
     [UIApplication.sharedApplication openSystemSettings];

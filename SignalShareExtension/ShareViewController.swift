@@ -45,7 +45,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
         // TODO:
         //        [UIUtil applySignalAppearence];
 
-        if CurrentAppContext().isRunningTests() {
+        if CurrentAppContext().isRunningTests {
             // TODO: Do we need to implement isRunningTests in the SAE context?
             return
         }
