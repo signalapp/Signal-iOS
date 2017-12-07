@@ -65,6 +65,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
             return
         }
 
+        // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         AppSetup.setupEnvironment({
             return NoopCallMessageHandler()
         }) {
