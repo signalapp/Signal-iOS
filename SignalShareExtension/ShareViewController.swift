@@ -20,6 +20,14 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
 
         Logger.debug("\(self.logTag) \(#function)")
 
+        // We can't show the conversation picker until the DB is set up.
+        // Normally this will only take a moment, so rather than flickering and then hiding the loading screen
+        // We start as invisible, and only fade it in if it's going to take a while
+        self.view.alpha = 0
+        UIView.animate(withDuration: 0.1, delay: 0.5, options: [.curveEaseInOut], animations: {
+            self.view.alpha = 1
+        }, completion: nil)
+
         // This should be the first thing we do.
         let appContext = ShareAppExtensionContext(rootViewController:self)
         SetCurrentAppContext(appContext)
@@ -78,7 +86,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
 
         let loadViewController = SAELoadViewController(delegate:self)
         self.pushViewController(loadViewController, animated: false)
-        self.isNavigationBarHidden = false
+        self.isNavigationBarHidden = true
 
         // We don't need to use "screen protection" in the SAE.
 
@@ -225,7 +233,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
         Logger.info("Presenting initial root view controller")
 
         if TSAccountManager.isRegistered() {
-            showConversationPicker()
+            presentConversationPicker()
         } else {
             showNotRegisteredView()
         }
@@ -276,9 +284,15 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
     }
 
     private func showErrorView(title: String, message: String) {
+        // ensure view is visible.
+        self.view.layer.removeAllAnimations()
+        UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseInOut], animations: {
+
+            self.view.alpha = 1
+        }, completion: nil)
+
         let viewController = SAEFailedViewController(delegate:self, title:title, message:message)
         self.setViewControllers([viewController], animated: false)
-        self.isNavigationBarHidden = false
     }
 
     // MARK: View Lifecycle
@@ -329,11 +343,15 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
 
     // MARK: Helpers
 
-    private func showConversationPicker() {
-        let conversationPicker = SendExternalFileViewController()
-        buildAttachment().then { attachment -> Void in
+    private func presentConversationPicker() {
+        // pause any animation revealing the "loading" screen
+        self.view.layer.removeAllAnimations()
+        self.buildAttachment().then { attachment -> Void in
+            let conversationPicker = SendExternalFileViewController()
+            let navigationController = UINavigationController(rootViewController: conversationPicker)
+            navigationController.isNavigationBarHidden = true
             conversationPicker.attachment = attachment
-            self.setViewControllers([conversationPicker], animated: true)
+            self.present(navigationController, animated: true, completion: nil)
             Logger.info("showing picker with attachment: \(attachment)")
         }.catch { error in
             let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE", comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
