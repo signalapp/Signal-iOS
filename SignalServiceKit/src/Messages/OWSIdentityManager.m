@@ -409,7 +409,10 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     TSErrorMessage *errorMessage =
         [TSErrorMessage nonblockingIdentityChangeInThread:contactThread recipientId:recipientId];
     [messages addObject:errorMessage];
-    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage inThread:contactThread];
+    if (CurrentAppContext().isMainApp) {
+        [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage
+                                                                            inThread:contactThread];
+    }
 
     for (TSGroupThread *groupThread in [TSGroupThread groupThreadsWithRecipientId:recipientId]) {
         [messages addObject:[TSErrorMessage nonblockingIdentityChangeInThread:groupThread recipientId:recipientId]];
