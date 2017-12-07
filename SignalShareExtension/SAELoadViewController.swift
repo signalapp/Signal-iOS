@@ -24,8 +24,9 @@ class SAELoadViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        fatalError("\(#function) is unimplemented.")
     }
 
     override func loadView() {
