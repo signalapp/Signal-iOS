@@ -76,9 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     [fileView autoHCenterInSuperview];
     [fileView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel withOffset:titleVSpacing];
 
-    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-    UIImage *image =
-        [UIImage imageNamed:@"file-thin-black-filled-large" inBundle:bundle compatibleWithTraitCollection:nil];
+    UIImage *image = [UIImage imageNamed:@"file-thin-black-filled-large"];
     OWSAssert(image);
     UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
     imageView.layer.minificationFilter = kCAFilterTrilinear;

@@ -201,7 +201,6 @@
 		45194F941FD7216000333B2C /* TSUnreadIndicatorInteraction.h in Headers */ = {isa = PBXBuildFile; fileRef = 34C42D641F4734ED0072EC04 /* TSUnreadIndicatorInteraction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		45194F951FD7216600333B2C /* TSUnreadIndicatorInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D651F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m */; };
 		45194F961FD7226300333B2C /* SelectThreadViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 3400C7941EAF99F4008A8584 /* SelectThreadViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		45194F9B1FD7327600333B2C /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45194F9A1FD7327600333B2C /* Media.xcassets */; };
 		451A13B11E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451A13B01E13DED2000A50FD /* CallNotificationsAdapter.swift */; };
 		451F8A311FD70DE9005CB9DA /* SendExternalFileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3400C7911EAF89CD008A8584 /* SendExternalFileViewController.m */; };
 		451F8A321FD70DFA005CB9DA /* SendExternalFileViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 3400C7901EAF89CD008A8584 /* SendExternalFileViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -733,7 +732,6 @@
 		451764281DE939FD00EDB8B9 /* ContactCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactCell.xib; sourceTree = "<group>"; };
 		451764291DE939FD00EDB8B9 /* ContactCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
 		451777C71FD61554001225FF /* ConversationSearcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationSearcher.swift; sourceTree = "<group>"; };
-		45194F9A1FD7327600333B2C /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		451A13B01E13DED2000A50FD /* CallNotificationsAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = CallNotificationsAdapter.swift; path = ../UserInterface/Notifications/CallNotificationsAdapter.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		451DE9F11DC1585F00810E42 /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/iOS/PromiseKit.framework; sourceTree = "<group>"; };
 		452037CF1EE84975004E4CDF /* DebugUISessionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUISessionState.h; sourceTree = "<group>"; };
@@ -1458,14 +1456,6 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		45194F9C1FD7368D00333B2C /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				45194F9A1FD7327600333B2C /* Media.xcassets */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
 		451F8A361FD7115D005CB9DA /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1498,7 +1488,6 @@
 		453518931FC63DBF00210559 /* SignalMessaging */ = {
 			isa = PBXGroup;
 			children = (
-				45194F9C1FD7368D00333B2C /* Resources */,
 				45194F911FD7214600333B2C /* Models */,
 				451F8A361FD7115D005CB9DA /* ViewControllers */,
 				454A96571FD600B4008D2A0E /* attachments */,
@@ -2305,7 +2294,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				45194F9B1FD7327600333B2C /* Media.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
