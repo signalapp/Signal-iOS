@@ -23,7 +23,6 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
         // We can't show the conversation picker until the DB is set up.
         // Normally this will only take a moment, so rather than flickering and then hiding the loading screen
         // We start as invisible, and only fade it in if it's going to take a while
-        self.view.isHidden = true
         self.view.alpha = 0
         UIView.animate(withDuration: 0.1, delay: 0.5, options: [.curveEaseInOut], animations: {
             self.view.alpha = 1
@@ -288,7 +287,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
         // ensure view is visible.
         self.view.layer.removeAllAnimations()
         UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseInOut], animations: {
-            self.view.isHidden = false
+
             self.view.alpha = 1
         }, completion: nil)
 
