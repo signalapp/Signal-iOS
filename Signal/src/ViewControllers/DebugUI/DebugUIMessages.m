@@ -378,8 +378,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
     DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
     [dataSource setSourceFilename:filename];
-    SignalAttachment *attachment =
-        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     OWSAssert(attachment);
     if ([attachment hasError]) {
         DDLogError(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
@@ -642,9 +641,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];
-    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
-                                                                      dataUTI:kOversizeTextAttachmentUTI
-                                                                 imageQuality:TSImageQualityOriginal];
+    SignalAttachment *attachment =
+        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender];
 }
 
@@ -670,8 +668,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = [Environment current].messageSender;
     DataSource *_Nullable dataSource =
         [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length] utiType:uti];
-    SignalAttachment *attachment =
-        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti imageQuality:TSImageQualityOriginal];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti];
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender ignoreErrors:YES];
 }
 + (OWSSignalServiceProtosEnvelope *)createEnvelopeForThread:(TSThread *)thread

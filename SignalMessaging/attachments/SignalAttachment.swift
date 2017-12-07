@@ -821,6 +821,15 @@ public class SignalAttachment: NSObject {
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
     @objc
+    public class func attachment(dataSource: DataSource?, dataUTI: String) -> SignalAttachment {
+        return attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
+    }
+
+    // Factory method for attachments of any kind.
+    //
+    // NOTE: The attachment returned by this method may not be valid.
+    //       Check the attachment's error property.
+    @objc
     public class func attachment(dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality = .original) -> SignalAttachment {
         if inputImageUTISet.contains(dataUTI) {
             return imageAttachment(dataSource : dataSource, dataUTI : dataUTI, imageQuality:imageQuality)

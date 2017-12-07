@@ -2492,7 +2492,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 /*
  *  Presenting UIImagePickerController
  */
-
 - (void)takePictureOrVideo
 {
     [self ows_askForCameraPermissions:^(BOOL granted) {
@@ -2752,8 +2751,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                   [dataSource setShouldDeleteOnDeallocation];
                                   SignalAttachment *attachment =
                                       [SignalAttachment attachmentWithDataSource:dataSource
-                                                                         dataUTI:(NSString *)kUTTypeMPEG4
-                                                                    imageQuality:TSImageQualityOriginal];
+                                                                         dataUTI:(NSString *)kUTTypeMPEG4];
                                   if (!attachment || [attachment hasError]) {
                                       DDLogError(@"%@ %s Invalid attachment: %@.",
                                           self.logTag,
@@ -3855,9 +3853,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     TSOutgoingMessage *message;
     if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
-        SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
-                                                                          dataUTI:kOversizeTextAttachmentUTI
-                                                                     imageQuality:TSImageQualityOriginal];
+        SignalAttachment *attachment =
+            [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
         message =
             [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
     } else {
