@@ -8,9 +8,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Logging
 
-+ (NSString *)logTag;
+@property (nonatomic) NSString *logTag;
 
-- (NSString *)logTag;
++ (NSString *)logTag;
 
 @end
 
