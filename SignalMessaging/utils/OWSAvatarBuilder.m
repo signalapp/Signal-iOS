@@ -3,12 +3,14 @@
 //
 
 #import "OWSAvatarBuilder.h"
-#import "JSQMessagesAvatarImageFactory.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSGroupAvatarBuilder.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "UIColor+OWS.h"
+// SHARINGEXTENSION FIXME
+// intern or reimplement this so that SignalMessaging doesn't depend on JSQ
+#import <JSQMessagesViewController/JSQMessagesAvatarImageFactory.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,7 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAvatarBuilder *avatarBuilder;
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:contactThread.contactIdentifier diameter:diameter contactsManager:contactsManager];
+        avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:contactThread.contactIdentifier
+                                                                 diameter:diameter
+                                                          contactsManager:contactsManager];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread];
     } else {

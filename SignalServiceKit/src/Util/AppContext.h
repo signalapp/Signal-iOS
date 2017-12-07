@@ -10,8 +10,16 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 
 @protocol AppContext <NSObject>
 
-- (BOOL)isMainApp;
-- (BOOL)isMainAppAndActive;
+@property (nonatomic, readonly) BOOL isMainApp;
+@property (nonatomic, readonly) BOOL isMainAppAndActive;
+
+// Whether the user is using a right-to-left language like Arabic
+@property (nonatomic, readonly) BOOL isRTL;
+
+@property (nonatomic, readonly) BOOL isRunningTests;
+
+// Useful for translating coordinates to the "entire screen"
+@property (nonatomic, readonly, nullable) UIView *rootReferenceView;
 
 // Should only be called if isMainApp is YES.
 //
@@ -26,10 +34,14 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 // Should be a NOOP if isMainApp is NO.
 - (void)endBackgroundTask:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier;
 
+// Should be a NOOP if isMainApp is NO.
+- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects;
+
 // Should only be called if isMainApp is YES.
 - (void)setMainAppBadgeNumber:(NSInteger)value;
 
-- (BOOL)isRTL;
+
+- (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle;
 
 // Returns the VC that should be used to present alerts, modals, etc.
 - (nullable UIViewController *)frontmostViewController;
@@ -40,8 +52,6 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 // Should only be called if isMainApp is YES,
 // but should only be necessary to call if isMainApp is YES.
 - (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey;
-
-- (BOOL)isRunningTests;
 
 // Should be a NOOP if isMainApp is NO.
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value;

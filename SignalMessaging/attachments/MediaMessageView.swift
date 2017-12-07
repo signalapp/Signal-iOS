@@ -8,26 +8,35 @@ import YYImage
 import SignalServiceKit
 
 @objc
-enum MediaMessageViewMode: UInt {
+public enum MediaMessageViewMode: UInt {
     case large
     case small
 }
 
-class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
+@objc
+public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     let TAG = "[MediaMessageView]"
 
     // MARK: Properties
 
-    let mode: MediaMessageViewMode
+    @objc
+    public let mode: MediaMessageViewMode
 
-    let attachment: SignalAttachment
+    @objc
+    public let attachment: SignalAttachment
 
-    var videoPlayer: MPMoviePlayerController?
+    @objc
+    public var videoPlayer: MPMoviePlayerController?
 
-    var audioPlayer: OWSAudioAttachmentPlayer?
-    var audioPlayButton: UIButton?
-    var playbackState = AudioPlaybackState.stopped {
+    @objc
+    public var audioPlayer: OWSAudioAttachmentPlayer?
+
+    @objc
+    public var audioPlayButton: UIButton?
+
+    @objc
+    public var playbackState = AudioPlaybackState.stopped {
         didSet {
             AssertIsOnMainThread()
 
@@ -35,19 +44,24 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         }
     }
 
-    var audioProgressSeconds: CGFloat = 0
-    var audioDurationSeconds: CGFloat = 0
+    @objc
+    public var audioProgressSeconds: CGFloat = 0
 
-    var contentView: UIView?
+    @objc
+    public var audioDurationSeconds: CGFloat = 0
+
+    @objc
+    public var contentView: UIView?
 
     // MARK: Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("\(#function) is unimplemented.")
     }
 
-    required init(attachment: SignalAttachment, mode: MediaMessageViewMode) {
+    @objc
+    public required init(attachment: SignalAttachment, mode: MediaMessageViewMode) {
         assert(!attachment.hasError)
         self.mode = mode
         self.attachment = attachment
@@ -62,12 +76,14 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     // MARK: View Lifecycle
 
-    func viewWillAppear(_ animated: Bool) {
-        ViewControllerUtils.setAudioIgnoresHardwareMuteSwitch(true)
+    @objc
+    public func viewWillAppear(_ animated: Bool) {
+        OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(true)
     }
 
-    func viewWillDisappear(_ animated: Bool) {
-        ViewControllerUtils.setAudioIgnoresHardwareMuteSwitch(false)
+    @objc
+    public func viewWillDisappear(_ animated: Bool) {
+        OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(false)
     }
 
     // MARK: - Create Views
@@ -275,6 +291,7 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     private func createHeroImageView(imageName: String) -> UIView {
         let imageSize = createHeroViewSize()
+
         let image = UIImage(named: imageName)
         assert(image != nil)
         let imageView = UIImageView(image: image)
@@ -353,6 +370,7 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     // MARK: - Event Handlers
 
+    @objc
     func audioPlayButtonPressed(sender: UIButton) {
         audioPlayer?.togglePlayState()
     }
@@ -396,6 +414,7 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     // MARK: - Full Screen Image
 
+    @objc
     func imageTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
@@ -406,14 +425,17 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         guard let fromViewController = CurrentAppContext().frontmostViewController() else {
             return
         }
-        let window = UIApplication.shared.keyWindow
+
+        let window = CurrentAppContext().rootReferenceView
         let convertedRect = fromView.convert(fromView.bounds, to:window)
         let viewController = FullImageViewController(attachment:attachment, from:convertedRect)
         viewController.present(from:fromViewController)
+        Logger.error("\(TAG) FIXME. image tapped.")
     }
 
     // MARK: - Video Playback
 
+    @objc
     func videoTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
@@ -440,7 +462,7 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         videoPlayer.view.frame = self.bounds
         self.videoPlayer = videoPlayer
         videoPlayer.view.autoPinToSuperviewEdges()
-        ViewControllerUtils.setAudioIgnoresHardwareMuteSwitch(true)
+        OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(true)
         videoPlayer.setFullscreen(true, animated:false)
     }
 
@@ -456,6 +478,6 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         videoPlayer?.stop()
         videoPlayer?.view.removeFromSuperview()
         videoPlayer = nil
-        ViewControllerUtils.setAudioIgnoresHardwareMuteSwitch(false)
+        OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(false)
     }
 }

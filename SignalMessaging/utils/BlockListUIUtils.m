@@ -5,7 +5,7 @@
 #import "BlockListUIUtils.h"
 #import "OWSContactsManager.h"
 #import "PhoneNumber.h"
-#import "Signal-Swift.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/SignalAccount.h>
@@ -86,7 +86,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     UIAlertController *actionSheetController =
         [UIAlertController alertControllerWithTitle:title
                                             message:NSLocalizedString(@"BLOCK_BEHAVIOR_EXPLANATION",
-                                                                      @"An explanation of the consequences of blocking another user.")
+                                                        @"An explanation of the consequences of blocking another user.")
                                      preferredStyle:UIAlertControllerStyleActionSheet];
 
     UIAlertAction *unblockAction = [UIAlertAction

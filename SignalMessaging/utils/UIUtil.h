@@ -2,10 +2,10 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/MIMETypeUtil.h>
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIImage+OWS.h"
+#import <SignalServiceKit/MIMETypeUtil.h>
 
 typedef void (^completionBlock)(void);
 

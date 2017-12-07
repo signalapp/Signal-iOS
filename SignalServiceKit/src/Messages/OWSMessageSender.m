@@ -242,8 +242,8 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     AssertIsOnMainThread();
 
     // Should only be sent once per operation
-    OWSAssert(_backgroundTaskIdentifier == UIBackgroundTaskInvalid);
-    OWSAssert(backgroundTaskIdentifier != UIBackgroundTaskInvalid);
+    OWSAssert(!CurrentAppContext().isMainApp || _backgroundTaskIdentifier == UIBackgroundTaskInvalid);
+    OWSAssert(!CurrentAppContext().isMainApp || backgroundTaskIdentifier != UIBackgroundTaskInvalid);
 
     _backgroundTaskIdentifier = backgroundTaskIdentifier;
 }

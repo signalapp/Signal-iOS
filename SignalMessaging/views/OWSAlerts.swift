@@ -34,13 +34,13 @@ import Foundation
     }
 
     @objc
-    public class func showAlert(withTitle title: String, message: String? = nil, buttonTitle: String? = nil) {
+    public class func showAlert(withTitle title: String, message: String? = nil, buttonTitle: String? = nil, buttonAction: ((UIAlertAction) -> Void)? = nil) {
         assert(title.count > 0)
 
         let actionTitle = buttonTitle ?? NSLocalizedString("OK", comment: "")
 
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: actionTitle, style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: actionTitle, style: .default, handler: buttonAction))
         CurrentAppContext().frontmostViewController()?.present(alert, animated: true, completion: nil)
     }
 

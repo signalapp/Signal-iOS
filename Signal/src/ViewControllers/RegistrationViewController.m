@@ -359,12 +359,6 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [self presentViewController:navigationController animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
-- (void)presentInvalidCountryCodeError {
-    [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_TITLE", @"")
-                          message:NSLocalizedString(@"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE", @"")
-                      buttonTitle:CommonStrings.dismissButton];
-}
-
 - (void)backgroundTapped:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {

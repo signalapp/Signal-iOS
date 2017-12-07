@@ -31,7 +31,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 - (void)addSection:(OWSTableSection *)section
 {
     OWSAssert(section);
-    
+
     [_sections addObject:section];
 }
 
@@ -100,7 +100,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 + (OWSTableItem *)itemWithTitle:(NSString *)title actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
     OWSAssert(title.length > 0);
-    
+
     OWSTableItem *item = [OWSTableItem new];
     item.itemType = OWSTableItemTypeAction;
     item.actionBlock = actionBlock;
@@ -330,7 +330,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 #pragma mark -
 
-NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
+NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 @implementation OWSTableViewController
 
@@ -379,7 +379,7 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 - (void)loadView
 {
     [super loadView];
-    
+
     OWSAssert(self.contents);
 
     if (self.contents.title.length > 0) {
@@ -422,21 +422,21 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 - (OWSTableSection *)sectionForIndex:(NSInteger)sectionIndex
 {
     OWSAssert(self.contents);
-    OWSAssert(sectionIndex >= 0 && sectionIndex < (NSInteger) self.contents.sections.count);
-    
-    OWSTableSection *section = self.contents.sections[(NSUInteger) sectionIndex];
+    OWSAssert(sectionIndex >= 0 && sectionIndex < (NSInteger)self.contents.sections.count);
+
+    OWSTableSection *section = self.contents.sections[(NSUInteger)sectionIndex];
     return section;
 }
 
 - (OWSTableItem *)itemForIndexPath:(NSIndexPath *)indexPath
 {
     OWSAssert(self.contents);
-    OWSAssert(indexPath.section >= 0 && indexPath.section < (NSInteger) self.contents.sections.count);
-    
-    OWSTableSection *section = self.contents.sections[(NSUInteger) indexPath.section];
-    OWSAssert(indexPath.item >= 0 && indexPath.item < (NSInteger) section.items.count);
-    OWSTableItem *item = section.items[(NSUInteger) indexPath.item];
-    
+    OWSAssert(indexPath.section >= 0 && indexPath.section < (NSInteger)self.contents.sections.count);
+
+    OWSTableSection *section = self.contents.sections[(NSUInteger)indexPath.section];
+    OWSAssert(indexPath.item >= 0 && indexPath.item < (NSInteger)section.items.count);
+    OWSTableItem *item = section.items[(NSUInteger)indexPath.item];
+
     return item;
 }
 
@@ -455,14 +455,14 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     OWSAssert(self.contents);
-    return (NSInteger) self.contents.sections.count;
+    return (NSInteger)self.contents.sections.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)sectionIndex
 {
     OWSTableSection *section = [self sectionForIndex:sectionIndex];
     OWSAssert(section.items);
-    return (NSInteger) section.items.count;
+    return (NSInteger)section.items.count;
 }
 
 - (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)sectionIndex
@@ -488,9 +488,9 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kOWSTableCellIdentifier];
     OWSAssert(cell);
-    
+
     cell.textLabel.text = item.title;
-    
+
     return cell;
 }
 
@@ -598,15 +598,14 @@ NSString * const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 - (void)presentFromViewController:(UIViewController *)fromViewController
 {
     OWSAssert(fromViewController);
-    
+
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
-                                                                                          target:self
-                                                                                          action:@selector(donePressed:)];
-    
-    [fromViewController presentViewController:navigationController
-                                     animated:YES
-                                   completion:nil];
+    self.navigationItem.leftBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+                                                      target:self
+                                                      action:@selector(donePressed:)];
+
+    [fromViewController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)donePressed:(id)sender

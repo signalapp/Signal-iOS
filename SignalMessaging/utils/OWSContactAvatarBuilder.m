@@ -4,12 +4,14 @@
 
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
-#import "Signal-Swift.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSThread.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
+// SHARINGEXTENSION FIXME
+// intern or reimplement this so that SignalMessaging doesn't depend on JSQ
 #import <JSQMessagesViewController/JSQMessagesAvatarImageFactory.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -36,12 +38,12 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
-    
+
     _signalId = contactId;
     _contactName = name;
     _diameter = diameter;
     _contactsManager = contactsManager;
-    
+
     return self;
 }
 
@@ -99,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [initials appendString:[firstLetter uppercaseString]];
             }
         }
-        
+
         NSRange stringRange = { 0, MIN([initials length], (NSUInteger)3) }; // Rendering max 3 letters.
         initials = [[initials substringWithRange:stringRange] mutableCopy];
     }
@@ -108,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
         // We don't have a name for this contact, so we can't make an "initials" image
         [initials appendString:@"#"];
     }
-    
+
     CGFloat fontSize = (CGFloat)self.diameter / 2.8;
     UIColor *backgroundColor = [UIColor backgroundColorForContact:self.signalId];
     UIImage *image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials

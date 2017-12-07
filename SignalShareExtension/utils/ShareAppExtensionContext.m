@@ -53,6 +53,11 @@ NS_ASSUME_NONNULL_BEGIN
         == NSLocaleLanguageDirectionRightToLeft;
 }
 
+- (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle
+{
+    DDLogInfo(@"Ignoring request to set status bar style since we're in an app extension");
+}
+
 - (UIApplicationState)mainApplicationState
 {
     OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
@@ -70,6 +75,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(backgroundTaskIdentifier == UIBackgroundTaskInvalid);
 }
 
+- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects
+{
+    DDLogDebug(@"%@ Ignoring request to block sleep.", self.logTag);
+}
+
 - (void)setMainAppBadgeNumber:(NSInteger)value
 {
     OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
@@ -80,6 +90,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.rootViewController);
 
     return [self.rootViewController findFrontmostViewController:YES];
+}
+
+- (nullable UIView *)rootReferenceView
+{
+    return self.rootViewController.view;
 }
 
 - (void)openSystemSettings

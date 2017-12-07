@@ -3,10 +3,9 @@
 //
 
 #import "OWSAudioAttachmentPlayer.h"
-#import "Signal-Swift.h"
 #import "TSAttachmentStream.h"
-#import "ViewControllerUtils.h"
 #import <AVFoundation/AVFoundation.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,6 +21,17 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation OWSAudioAttachmentPlayer
+
++ (void)setAudioIgnoresHardwareMuteSwitch:(BOOL)shouldIgnore
+{
+    NSError *error = nil;
+    BOOL success = [[AVAudioSession sharedInstance]
+        setCategory:(shouldIgnore ? AVAudioSessionCategoryPlayback : AVAudioSessionCategoryPlayAndRecord)error:&error];
+    OWSAssert(!error);
+    if (!success || error) {
+        DDLogError(@"%@ Error in setAudioIgnoresHardwareMuteSwitch: %d", self.logTag, shouldIgnore);
+    }
+}
 
 - (instancetype)initWithMediaUrl:(NSURL *)mediaUrl delegate:(id<OWSAudioAttachmentPlayerDelegate>)delegate
 {
@@ -66,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.mediaUrl);
     OWSAssert([self.delegate audioPlaybackState] != AudioPlaybackState_Playing);
 
-    [ViewControllerUtils setAudioIgnoresHardwareMuteSwitch:YES];
+    [[self class] setAudioIgnoresHardwareMuteSwitch:YES];
 
     [self.audioPlayerPoller invalidate];
 

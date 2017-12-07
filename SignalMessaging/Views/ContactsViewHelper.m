@@ -5,8 +5,10 @@
 #import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "NSString+OWS.h"
-#import "Signal-Swift.h"
+#import "UIUtil.h"
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/PhoneNumber.h>
@@ -284,7 +286,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   @"Button text which opens the settings app")
                                                         style:UIAlertActionStyleDefault
                                                       handler:^(UIAlertAction *_Nonnull action) {
-                                                          [[UIApplication sharedApplication] openSystemSettings];
+                                                          [CurrentAppContext() openSystemSettings];
                                                       }]];
 
     [viewController presentViewController:alertController animated:YES completion:nil];

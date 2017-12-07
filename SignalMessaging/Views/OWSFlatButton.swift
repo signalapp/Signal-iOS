@@ -4,9 +4,9 @@
 
 import Foundation
 import SignalServiceKit
-import SignalMessaging
 
-@objc class OWSFlatButton: UIView {
+@objc
+public class OWSFlatButton: UIView {
     let TAG = "[OWSFlatButton]"
 
     private let button: UIButton
@@ -16,13 +16,14 @@ import SignalMessaging
     private var upColor: UIColor?
     private var downColor: UIColor?
 
-    override var backgroundColor: UIColor? {
+    override public var backgroundColor: UIColor? {
         willSet {
             owsFail("Use setBackgroundColors(upColor:) instead.")
         }
     }
 
-    init() {
+    @objc
+    public init() {
         AssertIsOnMainThread()
 
         button = UIButton(type:.custom)
@@ -33,7 +34,7 @@ import SignalMessaging
     }
 
     @available(*, unavailable, message:"use other constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("\(#function) is unimplemented.")
     }
 
@@ -43,6 +44,7 @@ import SignalMessaging
         button.autoPinToSuperviewEdges()
     }
 
+    @objc
     public class func button(title: String,
                              font: UIFont,
                              titleColor: UIColor,
@@ -62,6 +64,7 @@ import SignalMessaging
         return button
     }
 
+    @objc
     public class func button(title: String,
                              titleColor: UIColor,
                              backgroundColor: UIColor,
@@ -79,6 +82,7 @@ import SignalMessaging
                                     selector:selector)
     }
 
+    @objc
     public class func button(title: String,
                              font: UIFont,
                              titleColor: UIColor,
@@ -95,6 +99,7 @@ import SignalMessaging
         return button
     }
 
+    @objc
     public class func fontForHeight(_ height: CGFloat) -> UIFont {
         // Cap the "button height" at 40pt or button text can look
         // excessively large.
@@ -104,6 +109,7 @@ import SignalMessaging
 
     // MARK: Methods
 
+    @objc
     public func setTitle(title: String, font: UIFont,
                          titleColor: UIColor ) {
         button.setTitle(title, for: .normal)
@@ -111,22 +117,26 @@ import SignalMessaging
         button.titleLabel!.font = font
     }
 
+    @objc
     public func setBackgroundColors(upColor: UIColor,
                                     downColor: UIColor ) {
         button.setBackgroundImage(UIImage(color:upColor), for: .normal)
         button.setBackgroundImage(UIImage(color:downColor), for: .highlighted)
     }
 
+    @objc
     public func setBackgroundColors(upColor: UIColor ) {
         setBackgroundColors(upColor: upColor,
                             downColor: upColor.withAlphaComponent(0.7) )
     }
 
+    @objc
     public func setSize(width: CGFloat, height: CGFloat) {
         button.autoSetDimension(.width, toSize:width)
         button.autoSetDimension(.height, toSize:height)
     }
 
+    @objc
     public func useDefaultCornerRadius() {
         // To my eye, this radius tends to look right regardless of button size
         // (within reason) or device size. 
@@ -134,15 +144,18 @@ import SignalMessaging
         button.clipsToBounds = true
     }
 
+    @objc
     public func setEnabled(_ isEnabled: Bool) {
         button.isEnabled = isEnabled
     }
 
+    @objc
     public func addTarget(target:Any,
                           selector: Selector) {
         button.addTarget(target, action:selector, for:.touchUpInside)
     }
 
+    @objc
     public func setPressedBlock(_ pressedBlock: @escaping () -> Void) {
         guard self.pressedBlock == nil else {
             owsFail("Button already has pressed block.")
@@ -151,6 +164,7 @@ import SignalMessaging
         self.pressedBlock = pressedBlock
     }
 
+    @objc
     internal func buttonPressed() {
         pressedBlock?()
     }

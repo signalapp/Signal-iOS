@@ -7,6 +7,7 @@ import UIKit
 import SignalMessaging
 import PureLayout
 import SignalServiceKit
+import PromiseKit
 
 @objc
 public class ShareViewController: UINavigationController, SAELoadViewDelegate, SAEFailedViewDelegate {
@@ -44,7 +45,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
         // TODO:
         //        [UIUtil applySignalAppearence];
 
-        if CurrentAppContext().isRunningTests() {
+        if CurrentAppContext().isRunningTests {
             // TODO: Do we need to implement isRunningTests in the SAE context?
             return
         }
@@ -222,10 +223,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
         Logger.info("Presenting initial root view controller")
 
         if TSAccountManager.isRegistered() {
-            //                HomeViewController *homeView = [HomeViewController new];
-            //                SignalsNavigationController *navigationController =
-            //                    [[SignalsNavigationController alloc] initWithRootViewController:homeView];
-            //                self.window.rootViewController = navigationController;
+            showConversationPicker()
         } else {
             showNotRegisteredView()
         }
@@ -346,5 +344,93 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
 
     public func shareExtensionWasCancelled() {
         self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+    }
+
+    // MARK: Helpers
+
+    private func showConversationPicker() {
+        let conversationPicker = SendExternalFileViewController()
+        buildAttachment().then { attachment -> Void in
+            conversationPicker.attachment = attachment
+            self.setViewControllers([conversationPicker], animated: true)
+            Logger.info("showing picker with attachment: \(attachment)")
+        }.catch { error in
+            let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE", comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
+            OWSAlerts.showAlert(withTitle: alertTitle,
+                                message: error.localizedDescription,
+                                buttonTitle: CommonStrings.cancelButton) { _ in
+                                    self.shareExtensionWasCancelled()
+            }
+            owsFail("\(self.logTag) building attachment failed with error: \(error)")
+        }.retainUntilComplete()
+    }
+
+    enum ShareViewControllerError: Error {
+        case assertionError(description: String)
+    }
+
+    private func buildAttachment() -> Promise<SignalAttachment> {
+        guard let inputItem: NSExtensionItem = self.extensionContext?.inputItems.first as? NSExtensionItem else {
+            let error = ShareViewControllerError.assertionError(description: "no input item")
+            return Promise(error: error)
+        }
+
+        // TODO Multiple attachments. In that case I'm unclear if we'll
+        // be given multiple inputItems or a single inputItem with multiple attachments.
+        guard let itemProvider: NSItemProvider = inputItem.attachments?.first as? NSItemProvider else {
+            let error = ShareViewControllerError.assertionError(description: "No item provider in input item attachments")
+            return Promise(error: error)
+        }
+        Logger.info("\(self.logTag) attachment: \(itemProvider)")
+
+        // TODO support other utiTypes
+        let utiType = kUTTypeImage as String
+
+        guard itemProvider.hasItemConformingToTypeIdentifier(utiType) else {
+            let error = ShareViewControllerError.assertionError(description: "only supporting images for now")
+            return Promise(error: error)
+        }
+
+        let (promise, fulfill, reject) = Promise<URL>.pending()
+
+        itemProvider.loadItem(forTypeIdentifier: utiType, options: nil, completionHandler: {
+            (provider, error) in
+
+            guard error == nil else {
+                reject(error!)
+                return
+            }
+
+            guard let url = provider as? URL else {
+                let unexpectedTypeError = ShareViewControllerError.assertionError(description: "unexpected item type: \(String(describing: provider))")
+                reject(unexpectedTypeError)
+                return
+            }
+
+            fulfill(url)
+        })
+
+        // TODO accept other data types
+        // TODO whitelist attachment types
+        // TODO coerce when necessary and possible
+        return promise.then { (url: URL) -> SignalAttachment in
+            guard let dataSource = DataSourcePath.dataSource(with: url) else {
+                throw ShareViewControllerError.assertionError(description: "Unable to read attachment data")
+            }
+            dataSource.sourceFilename = url.lastPathComponent
+
+            // start with base utiType, but it might be something generic like "image"
+            var specificUTIType = utiType
+            if url.pathExtension.count > 0 {
+                // Determine a more specific utiType based on file extension
+                if let typeExtension = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) {
+                    specificUTIType = typeExtension
+                }
+            }
+
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType)
+
+            return attachment
+        }
     }
 }

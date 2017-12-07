@@ -265,7 +265,8 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
         return nil;
     }
 
-    NSString *path = [NSBundle.mainBundle pathForResource:name ofType:@"crt"];
+    NSBundle *bundle = [NSBundle bundleForClass:self.class];
+    NSString *path = [bundle pathForResource:name ofType:@"crt"];
     if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
         OWSFail(@"%@ Missing certificate for name: %@", self.logTag, name);
         *error = OWSErrorMakeAssertionError();

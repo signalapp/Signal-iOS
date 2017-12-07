@@ -26,5 +26,6 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
+Index/
 
 Pods/

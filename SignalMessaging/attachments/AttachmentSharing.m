@@ -10,13 +10,15 @@
 
 @implementation AttachmentSharing
 
-+ (void)showShareUIForAttachment:(TSAttachmentStream *)stream {
++ (void)showShareUIForAttachment:(TSAttachmentStream *)stream
+{
     OWSAssert(stream);
 
     [self showShareUIForURL:stream.mediaURL];
 }
 
-+ (void)showShareUIForURL:(NSURL *)url {
++ (void)showShareUIForURL:(NSURL *)url
+{
     OWSAssert(url);
 
     [AttachmentSharing showShareUIForActivityItems:@[
@@ -27,10 +29,10 @@
 + (void)showShareUIForText:(NSString *)text
 {
     OWSAssert(text);
-    
+
     [AttachmentSharing showShareUIForActivityItems:@[
-                                                     text,
-                                                     ]];
+        text,
+    ]];
 }
 
 + (void)showShareUIForActivityItems:(NSArray *)activityItems

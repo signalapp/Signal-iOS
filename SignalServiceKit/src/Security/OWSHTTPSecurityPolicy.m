@@ -1,6 +1,5 @@
 //
-//  Created by Fred on 01/09/15.
-//  Copyright © 2015 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSHTTPSecurityPolicy.h"
@@ -40,7 +39,9 @@
 }
 
 - (SecCertificateRef)certificateForService:(NSString *)service {
-    NSString *path = [NSBundle.mainBundle pathForResource:service ofType:@"cer"];
+    
+    NSBundle *bundle = [NSBundle bundleForClass:self.class];
+    NSString *path = [bundle pathForResource:service ofType:@"cer"];
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
         @throw [NSException
