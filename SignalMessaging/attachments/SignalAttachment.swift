@@ -610,11 +610,7 @@ public class SignalAttachment: NSObject {
             return false
         }
 
-        let imageQualityTier = imageQuality.imageQualityTier()
-        let maxSize = maxSizeForImage(image: image,
-                                      imageUploadQuality:imageQualityTier)
-        if image.size.width <= maxSize &&
-            image.size.height <= maxSize &&
+        if doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) &&
             dataSource.dataLength() <= kMaxFileSizeImage {
             return true
         }
@@ -674,7 +670,8 @@ public class SignalAttachment: NSObject {
             let jpgFilename = baseFilename?.appendingFileExtension("jpg")
             dataSource.sourceFilename = jpgFilename
 
-            if UInt(jpgImageData.count) <= kMaxFileSizeImage {
+            if doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) &&
+                dataSource.dataLength() <= kMaxFileSizeImage {
                 let recompressedAttachment = SignalAttachment(dataSource : dataSource, dataUTI: kUTTypeJPEG as String)
                 recompressedAttachment.cachedImage = dstImage
                 Logger.verbose("\(TAG) Converted \(attachment.mimeType) to image/jpeg, \(jpgImageData.count) bytes")
@@ -718,6 +715,17 @@ public class SignalAttachment: NSObject {
         return updatedImage!
     }
 
+    private class func doesImageHaveAcceptableFileSize(dataSource: DataSource, imageQuality: TSImageQuality) -> Bool {
+        switch imageQuality {
+        case .original:
+            return true
+        case .medium:
+            return dataSource.dataLength() < UInt(1024 * 1024)
+        case .compact:
+            return dataSource.dataLength() < UInt(400 * 1024)
+        }
+    }
+
     private class func maxSizeForImage(image: UIImage, imageUploadQuality: TSImageQualityTier) -> CGFloat {
         switch imageUploadQuality {
         case .original:
@@ -742,13 +750,13 @@ public class SignalAttachment: NSObject {
         case .high:
             return 0.9
         case .mediumHigh:
-            return 0.7
+            return 0.8
         case .medium:
-            return 0.5
+            return 0.7
         case .mediumLow:
-            return 0.4
+            return 0.6
         case .low:
-            return 0.3
+            return 0.5
         }
     }
 
