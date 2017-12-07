@@ -15,12 +15,6 @@
 			<string>Signal</string>
 			<key>LSHandlerRank</key>
 			<string>Alternate</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>public.archive</string>
-				<string>public.content</string>
-				<string>public.data</string>
-			</array>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>

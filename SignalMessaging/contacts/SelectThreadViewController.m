@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createViews
 {
-    OWSAssert(self.delegate);
+    OWSAssert(self.selectThreadViewDelegate);
 
     // Search
     UISearchBar *searchBar = [UISearchBar new];
@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
     searchBar.backgroundColor = [UIColor whiteColor];
     [searchBar sizeToFit];
 
-    UIView *header = [self.delegate createHeaderWithSearchBar:searchBar];
+    UIView *header = [self.selectThreadViewDelegate createHeaderWithSearchBar:searchBar];
 
     // Table
     _tableViewController = [OWSTableViewController new];
@@ -150,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
                                         customRowHeight:[ContactTableViewCell rowHeight]
                                         actionBlock:^{
-                                            [weakSelf.delegate threadWasSelected:thread];
+                                            [weakSelf.selectThreadViewDelegate threadWasSelected:thread];
                                         }]];
     }
 
@@ -204,11 +204,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount
 {
     OWSAssert(signalAccount);
-    OWSAssert(self.delegate);
+    OWSAssert(self.selectThreadViewDelegate);
 
     ContactsViewHelper *helper = self.contactsViewHelper;
 
-    if ([helper isRecipientIdBlocked:signalAccount.recipientId] && ![self.delegate canSelectBlockedContact]) {
+    if ([helper isRecipientIdBlocked:signalAccount.recipientId]
+        && ![self.selectThreadViewDelegate canSelectBlockedContact]) {
 
         __weak SelectThreadViewController *weakSelf = self;
         [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
@@ -230,7 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
     OWSAssert(thread);
 
-    [self.delegate threadWasSelected:thread];
+    [self.selectThreadViewDelegate threadWasSelected:thread];
 }
 
 #pragma mark - Filter

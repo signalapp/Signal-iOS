@@ -204,8 +204,8 @@
 		45194F951FD7216600333B2C /* TSUnreadIndicatorInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D651F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m */; };
 		45194F961FD7226300333B2C /* SelectThreadViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 3400C7941EAF99F4008A8584 /* SelectThreadViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		451A13B11E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451A13B01E13DED2000A50FD /* CallNotificationsAdapter.swift */; };
-		451F8A311FD70DE9005CB9DA /* SendExternalFileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3400C7911EAF89CD008A8584 /* SendExternalFileViewController.m */; };
-		451F8A321FD70DFA005CB9DA /* SendExternalFileViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 3400C7901EAF89CD008A8584 /* SendExternalFileViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		451F8A311FD70DE9005CB9DA /* SharingThreadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3400C7911EAF89CD008A8584 /* SharingThreadPickerViewController.m */; };
+		451F8A321FD70DFA005CB9DA /* SharingThreadPickerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 3400C7901EAF89CD008A8584 /* SharingThreadPickerViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		451F8A331FD71083005CB9DA /* SelectThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3400C7951EAF99F4008A8584 /* SelectThreadViewController.m */; };
 		451F8A341FD710C3005CB9DA /* ConversationSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451777C71FD61554001225FF /* ConversationSearcher.swift */; };
 		451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45360B8C1F9521F800FA666C /* Searcher.swift */; };
@@ -281,6 +281,7 @@
 		45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A6DAD51EBBF85500893231 /* ReminderView.swift */; };
 		45AE48511E0732D6004D96C2 /* TurnServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */; };
 		45BB93381E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */; };
+		45BC829D1FD9C4B400011CF3 /* ShareViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BC829C1FD9C4B400011CF3 /* ShareViewDelegate.swift */; };
 		45BD60821DE9547E00A8F436 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45BD60811DE9547E00A8F436 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		45C0DC1B1E68FE9000E04C47 /* UIApplication+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0DC1A1E68FE9000E04C47 /* UIApplication+OWS.swift */; };
 		45C0DC1E1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0DC1D1E69011F00E04C47 /* UIStoryboard+OWS.swift */; };
@@ -460,8 +461,8 @@
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		3400C7901EAF89CD008A8584 /* SendExternalFileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendExternalFileViewController.h; sourceTree = "<group>"; };
-		3400C7911EAF89CD008A8584 /* SendExternalFileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SendExternalFileViewController.m; sourceTree = "<group>"; };
+		3400C7901EAF89CD008A8584 /* SharingThreadPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharingThreadPickerViewController.h; sourceTree = "<group>"; };
+		3400C7911EAF89CD008A8584 /* SharingThreadPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SharingThreadPickerViewController.m; sourceTree = "<group>"; };
 		3400C7941EAF99F4008A8584 /* SelectThreadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectThreadViewController.h; sourceTree = "<group>"; };
 		3400C7951EAF99F4008A8584 /* SelectThreadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectThreadViewController.m; sourceTree = "<group>"; };
 		3400C7971EAFB772008A8584 /* ThreadViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadViewHelper.h; sourceTree = "<group>"; };
@@ -812,6 +813,7 @@
 		45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TurnServerInfo.swift; sourceTree = "<group>"; };
 		45B201741DAECBFD00C461E0 /* Signal-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Signal-Bridging-Header.h"; sourceTree = "<group>"; };
 		45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIDevice+featureSupport.swift"; sourceTree = "<group>"; };
+		45BC829C1FD9C4B400011CF3 /* ShareViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewDelegate.swift; sourceTree = "<group>"; };
 		45BD60811DE9547E00A8F436 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		45C0DC1A1E68FE9000E04C47 /* UIApplication+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+OWS.swift"; sourceTree = "<group>"; };
 		45C0DC1D1E69011F00E04C47 /* UIStoryboard+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+OWS.swift"; sourceTree = "<group>"; };
@@ -1542,12 +1544,13 @@
 				34B3F8471E8DF1700035BE1A /* FullImageViewController.h */,
 				34B3F8481E8DF1700035BE1A /* FullImageViewController.m */,
 				45E5471F1FD755E700DFC09E /* AttachmentApprovalViewController.swift */,
-				3400C7901EAF89CD008A8584 /* SendExternalFileViewController.h */,
-				3400C7911EAF89CD008A8584 /* SendExternalFileViewController.m */,
+				3400C7901EAF89CD008A8584 /* SharingThreadPickerViewController.h */,
+				3400C7911EAF89CD008A8584 /* SharingThreadPickerViewController.m */,
 				34533F161EA8D2070006114F /* OWSAudioAttachmentPlayer.h */,
 				34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */,
 				34D913491F62D4A500722898 /* SignalAttachment.swift */,
 				34CA1C281F7164F700E51C51 /* MediaMessageView.swift */,
+				45BC829C1FD9C4B400011CF3 /* ShareViewDelegate.swift */,
 			);
 			path = attachments;
 			sourceTree = "<group>";
@@ -2022,7 +2025,7 @@
 				451F8A3C1FD71392005CB9DA /* UIUtil.h in Headers */,
 				346129D61FD20ADC00532771 /* UIViewController+OWS.h in Headers */,
 				451F8A401FD7145D005CB9DA /* OWSTableViewController.h in Headers */,
-				451F8A321FD70DFA005CB9DA /* SendExternalFileViewController.h in Headers */,
+				451F8A321FD70DFA005CB9DA /* SharingThreadPickerViewController.h in Headers */,
 				3461296F1FD1D74C00532771 /* Release.h in Headers */,
 				34612A061FD7238600532771 /* OWSContactsSyncing.h in Headers */,
 				34480B571FD0A7A400BC14EF /* OWSScrubbingLogFormatter.h in Headers */,
@@ -2720,6 +2723,7 @@
 				451F8A331FD71083005CB9DA /* SelectThreadViewController.m in Sources */,
 				454A965A1FD6017E008D2A0E /* SignalAttachment.swift in Sources */,
 				454A965B1FD601BF008D2A0E /* MediaMessageView.swift in Sources */,
+				45BC829D1FD9C4B400011CF3 /* ShareViewDelegate.swift in Sources */,
 				3461295B1FD1D74C00532771 /* Environment.m in Sources */,
 				346129D51FD20ADC00532771 /* UIViewController+OWS.m in Sources */,
 				451F8A431FD714FE005CB9DA /* AvatarImageView.swift in Sources */,
@@ -2745,7 +2749,7 @@
 				3461293C1FD1D46A00532771 /* OWSMath.m in Sources */,
 				451F8A391FD711D6005CB9DA /* ContactsViewHelper.m in Sources */,
 				346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */,
-				451F8A311FD70DE9005CB9DA /* SendExternalFileViewController.m in Sources */,
+				451F8A311FD70DE9005CB9DA /* SharingThreadPickerViewController.m in Sources */,
 				451F8A411FD714B8005CB9DA /* ContactTableViewCell.m in Sources */,
 				346129C81FD2072E00532771 /* NSAttributedString+OWS.m in Sources */,
 			);

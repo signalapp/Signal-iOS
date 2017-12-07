@@ -7,10 +7,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SignalAttachment;
+@protocol ShareViewDelegate;
 
-@interface SendExternalFileViewController : SelectThreadViewController
+@interface SharingThreadPickerViewController : SelectThreadViewController
 
 @property (nonatomic) SignalAttachment *attachment;
+
+- (instancetype)initWithShareViewDelegate:(id<ShareViewDelegate>)shareViewDelegate;
 
 @end
 

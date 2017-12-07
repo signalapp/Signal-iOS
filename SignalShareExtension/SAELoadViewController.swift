@@ -6,20 +6,15 @@ import UIKit
 import SignalMessaging
 import PureLayout
 
-// All Observer methods will be invoked from the main thread.
-protocol SAELoadViewDelegate: class {
-    func shareExtensionWasCancelled()
-}
-
 class SAELoadViewController: UIViewController {
 
-    weak var delegate: SAELoadViewDelegate?
+    weak var delegate: ShareViewDelegate?
 
     var activityIndicator: UIActivityIndicatorView?
 
     // MARK: Initializers and Factory Methods
 
-    init(delegate: SAELoadViewDelegate) {
+    init(delegate: ShareViewDelegate) {
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
@@ -81,6 +76,6 @@ class SAELoadViewController: UIViewController {
             owsFail("\(self.logTag) missing delegate")
             return
         }
-        delegate.shareExtensionWasCancelled()
+        delegate.shareViewWasCancelled()
     }
 }

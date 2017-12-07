@@ -10,7 +10,7 @@ import SignalServiceKit
 import PromiseKit
 
 @objc
-public class ShareViewController: UINavigationController, SAELoadViewDelegate, SAEFailedViewDelegate {
+public class ShareViewController: UINavigationController, ShareViewDelegate, SAEFailedViewDelegate {
 
     private var hasInitialRootViewController = false
     private var isReadyForAppExtensions = false
@@ -335,10 +335,18 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
         Logger.flush()
     }
 
-    // MARK: SAELoadViewDelegate, SAEFailedViewDelegate
+    // MARK: ShareViewDelegate, SAEFailedViewDelegate
 
-    public func shareExtensionWasCancelled() {
+    public func shareViewWasCompleted() {
         self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+    }
+
+    public func shareViewWasCancelled() {
+        self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+    }
+
+    public func shareViewFailed(error: Error) {
+        self.extensionContext!.cancelRequest(withError: error)
     }
 
     // MARK: Helpers
@@ -347,7 +355,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
         // pause any animation revealing the "loading" screen
         self.view.layer.removeAllAnimations()
         self.buildAttachment().then { attachment -> Void in
-            let conversationPicker = SendExternalFileViewController()
+            let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: self)
             let navigationController = UINavigationController(rootViewController: conversationPicker)
             navigationController.isNavigationBarHidden = true
             conversationPicker.attachment = attachment
@@ -358,7 +366,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
             OWSAlerts.showAlert(withTitle: alertTitle,
                                 message: error.localizedDescription,
                                 buttonTitle: CommonStrings.cancelButton) { _ in
-                                    self.shareExtensionWasCancelled()
+                                    self.shareViewWasCancelled()
             }
             owsFail("\(self.logTag) building attachment failed with error: \(error)")
         }.retainUntilComplete()

@@ -166,6 +166,15 @@ public class AttachmentApprovalViewController: OWSViewController {
     }
 
     func sendPressed(sender: UIButton) {
+
+        // FIXME
+        // this is just a temporary hack to provide some UI
+        // until we have a proper progress indicator
+        let activityIndicatorView = UIActivityIndicatorView()
+        view.addSubview(activityIndicatorView)
+        activityIndicatorView.autoCenterInSuperview()
+        activityIndicatorView.startAnimating()
+
         self.delegate?.didApproveAttachment()
     }
 }

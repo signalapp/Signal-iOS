@@ -18,7 +18,6 @@
 #import "PushManager.h"
 #import "RegistrationViewController.h"
 #import "Release.h"
-#import "SendExternalFileViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "SignalsNavigationController.h"
@@ -328,9 +327,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation {
+              openURL:(NSURL *)url
+    sourceApplication:(NSString *)sourceApplication
+           annotation:(id)annotation
+{
     if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![TSAccountManager isRegistered]) {
             id signupController = SignalApp.sharedApp.signUpFlowNavigationController;
@@ -341,160 +341,21 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                     CodeVerificationViewController *cvvc = (CodeVerificationViewController *)controller;
                     NSString *verificationCode           = [url.path substringFromIndex:1];
                     [cvvc setVerificationCodeAndTryToVerify:verificationCode];
+                    return YES;
                 } else {
                     DDLogWarn(@"Not the verification view controller we expected. Got %@ instead",
                               NSStringFromClass(controller.class));
                 }
             }
         } else {
-            DDLogWarn(@"Application opened with an unknown URL action: %@", url.host);
+            OWSFail(@"Application opened with an unknown URL action: %@", url.host);
         }
-    } else if ([url.scheme.lowercaseString isEqualToString:@"file"]) {
-
-        if (SignalApp.sharedApp.callService.call != nil) {
-            DDLogWarn(@"%@ ignoring 'open with Signal' due to ongoing WebRTC call.", self.logTag);
-            return NO;
-        }
-
-        NSString *filename = url.lastPathComponent;
-        if ([filename stringByDeletingPathExtension].length < 1) {
-            DDLogError(@"Application opened with URL invalid filename: %@", url);
-            [OWSAlerts showAlertWithTitle:
-                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME",
-                                              @"Message for the alert indicating the 'export with signal' file had an "
-                                              @"invalid filename.")];
-            return NO;
-        }
-        NSString *fileExtension = [filename pathExtension];
-        if (fileExtension.length < 1) {
-            DDLogError(@"Application opened with URL missing file extension: %@", url);
-            [OWSAlerts showAlertWithTitle:
-                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE",
-                                              @"Message for the alert indicating the 'export with signal' file had "
-                                              @"unknown type.")];
-            return NO;
-        }
-        
-        
-        NSString *utiType;
-        NSError *typeError;
-        [url getResourceValue:&utiType forKey:NSURLTypeIdentifierKey error:&typeError];
-        if (typeError) {
-            OWSFail(@"%@ Determining type of picked document at url: %@ failed with error: %@",
-                self.logTag,
-                url,
-                typeError);
-            return NO;
-        }
-        if (!utiType) {
-            OWSFail(@"%@ falling back to default filetype for picked document at url: %@", self.logTag, url);
-            utiType = (__bridge NSString *)kUTTypeData;
-            return NO;
-        }
-        
-        NSNumber *isDirectory;
-        NSError *isDirectoryError;
-        [url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:&isDirectoryError];
-        if (isDirectoryError) {
-            OWSFail(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
-                self.logTag,
-                url,
-                isDirectoryError);
-            return NO;
-        } else if ([isDirectory boolValue]) {
-            DDLogInfo(@"%@ User picked directory at url: %@", self.logTag, url);
-            DDLogError(@"Application opened with URL of unknown UTI type: %@", url);
-            [OWSAlerts
-                showAlertWithTitle:
-                    NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
-                        @"Alert title when picking a document fails because user picked a directory/bundle")
-                           message:
-                               NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
-                                   @"Alert body when picking a document fails because user picked a directory/bundle")];
-            return NO;
-        }
-
-        DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
-        if (!dataSource) {
-            DDLogError(@"Application opened with URL with unloadable content: %@", url);
-            [OWSAlerts showAlertWithTitle:
-                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA",
-                                              @"Message for the alert indicating the 'export with signal' data "
-                                              @"couldn't be loaded.")];
-            return NO;
-        }
-        [dataSource setSourceFilename:filename];
-
-        SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
-        if (!attachment) {
-            DDLogError(@"Application opened with URL with invalid content: %@", url);
-            [OWSAlerts showAlertWithTitle:
-                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT",
-                                              @"Message for the alert indicating the 'export with signal' attachment "
-                                              @"couldn't be loaded.")];
-            return NO;
-        }
-        if ([attachment hasError]) {
-            DDLogError(@"Application opened with URL with content error: %@ %@", url, [attachment errorName]);
-            [OWSAlerts showAlertWithTitle:
-                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:[attachment errorName]];
-            return NO;
-        }
-        DDLogInfo(@"Application opened with URL: %@", url);
-
-        if ([TSAccountManager isRegistered]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // Wait up to N seconds for database view registrations to
-                // complete.
-                [self showImportUIForAttachment:attachment remainingRetries:5];
-            });
-        }
-
-        return YES;
     } else {
-        DDLogWarn(@"Application opened with an unknown URL scheme: %@", url.scheme);
+        OWSFail(@"Application opened with an unknown URL scheme: %@", url.scheme);
     }
     return NO;
 }
 
-- (void)showImportUIForAttachment:(SignalAttachment *)attachment remainingRetries:(int)remainingRetries
-{
-    OWSAssert([NSThread isMainThread]);
-    OWSAssert(attachment);
-    OWSAssert(remainingRetries > 0);
-
-    if ([TSDatabaseView hasPendingViewRegistrations]) {
-        if (remainingRetries < 1) {
-            DDLogInfo(@"Ignoring 'Import with Signal...' due to pending view registrations.");
-        } else {
-            DDLogInfo(@"Delaying 'Import with Signal...' due to pending view registrations.");
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                if (![TSDatabaseView hasPendingViewRegistrations]) {
-                    [self showImportUIForAttachment:attachment remainingRetries:remainingRetries - 1];
-                }
-            });
-        }
-        return;
-    }
-
-    SendExternalFileViewController *viewController = [SendExternalFileViewController new];
-    viewController.attachment = attachment;
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:viewController];
-    [SignalApp.sharedApp.homeViewController presentTopLevelModalViewController:navigationController
-                                                              animateDismissal:NO
-                                                           animatePresentation:YES];
-}
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     DDLogWarn(@"%@ applicationDidBecomeActive.", self.logTag);
