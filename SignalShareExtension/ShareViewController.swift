@@ -39,7 +39,11 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
 
         // We don't need to use DeviceSleepManager in the SAE.
 
-        appContext.setupEnvironment()
+        AppSetup.setupEnvironment({
+            return NoopCallMessageHandler()
+        }) {
+            return NoopNotificationsManager()
+        }
 
         // TODO:
         //        [UIUtil applySignalAppearence];
@@ -77,6 +81,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate, S
 
         // We don't need to use "screen protection" in the SAE.
 
+        // Ensure OWSContactsSyncing is instantiated.
         OWSContactsSyncing.sharedManager()
 
         NotificationCenter.default.addObserver(self,

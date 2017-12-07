@@ -11,6 +11,7 @@ FOUNDATION_EXPORT double SignalMessagingVersionNumber;
 FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 
 // The public headers of the framework
+#import <SignalMessaging/AppSetup.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/FullImageViewController.h>

@@ -38,6 +38,10 @@ static Environment *sharedEnvironment = nil;
 
 + (void)setCurrent:(Environment *)environment
 {
+    // The main app environment should only be set once.
+    //
+    // App extensions may be opened multiple times in the same process,
+    // so statics will persist.
     OWSAssert(!sharedEnvironment || !CurrentAppContext().isMainApp);
     OWSAssert(environment);
 

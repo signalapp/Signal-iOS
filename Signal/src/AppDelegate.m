@@ -25,6 +25,7 @@
 #import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
+#import <SignalMessaging/AppSetup.h>
 #import <SignalMessaging/OWSMath.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging.h>
@@ -138,7 +139,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // This block will be cleared in databaseViewRegistrationComplete.
     [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 
-    [self setupEnvironment];
+    [AppSetup setupEnvironment:^{
+        return SignalApp.sharedApp.callMessageHandler;
+    }
+        notificationsProtocolBlock:^{
+            return SignalApp.sharedApp.notificationsManager;
+        }];
 
     [UIUtil applySignalAppearence];
 
@@ -166,6 +172,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [self prepareScreenProtection];
 
+    // Ensure OWSContactsSyncing is instantiated.
     [OWSContactsSyncing sharedManager];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -292,27 +299,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     return viewController;
-}
-
-- (void)setupEnvironment
-{
-    [Environment setCurrent:[Release releaseEnvironment]];
-
-    // Encryption/Decryption mutates session state and must be synchronized on a serial queue.
-    [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionStoreQueue]];
-
-    TextSecureKitEnv *sharedEnv =
-        [[TextSecureKitEnv alloc] initWithCallMessageHandler:SignalApp.sharedApp.callMessageHandler
-                                             contactsManager:[Environment current].contactsManager
-                                               messageSender:[Environment current].messageSender
-                                        notificationsManager:SignalApp.sharedApp.notificationsManager
-                                              profileManager:OWSProfileManager.sharedManager];
-    [TextSecureKitEnv setSharedEnv:sharedEnv];
-
-    [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{
-        [VersionMigrations runSafeBlockingMigrations];
-    }];
-    [[Environment current].contactsManager startObserving];
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken

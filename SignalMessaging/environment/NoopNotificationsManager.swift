@@ -5,7 +5,7 @@
 import SignalServiceKit
 
 @objc
-public class SAENotificationsManager: NSObject, NotificationsProtocol {
+public class NoopNotificationsManager: NSObject, NotificationsProtocol {
 
     public func notifyUser(for incomingMessage: TSIncomingMessage!, in thread: TSThread!, contactsManager: ContactsManagerProtocol!, transaction: YapDatabaseReadTransaction!) {
         owsFail("\(self.logTag) in \(#function).")

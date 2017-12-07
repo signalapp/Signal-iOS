@@ -13,8 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithRootViewController:(UIViewController *)rootViewController;
 
-- (void)setupEnvironment;
-
 @end
 
 NS_ASSUME_NONNULL_END
