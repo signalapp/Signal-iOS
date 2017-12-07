@@ -428,7 +428,7 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Updating Database";
 
 /* Message indicating that the debug log is being uploaded. */
-"DEBUG_LOG_ACTIVITY_INDICATOR" = "Sending debug log...";
+"DEBUG_LOG_ACTIVITY_INDICATOR" = "Sending Debug Log...";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "What would you like to do with the link to your debug log?";
@@ -449,13 +449,13 @@
 "DEBUG_LOG_ALERT_TITLE" = "One More Step";
 
 /* Title of the alert indicating the debug log upload failed. */
-"DEBUG_LOG_FAILURE_ALERT_TITLE" = "Failed to submit debug log";
+"DEBUG_LOG_FAILURE_ALERT_TITLE" = "Failed to Submit Debug Log";
 
 /* Message of the alert before redirecting to Github Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "The gist link was copied in your clipboard. You are about to be redirected to the GitHub issue list.";
 
 /* Title of the alert before redirecting to Github Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub redirection";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Redirection";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active: %@";

@@ -914,7 +914,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
         [[TSStorageManager sharedManager].newDatabaseConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                [[ExperienceUpgradeFinder new] markAllAsSeenWithTransaction:transaction];
+                [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
             }];
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature

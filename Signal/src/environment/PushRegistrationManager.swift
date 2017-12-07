@@ -31,6 +31,8 @@ public enum PushRegistrationError: Error {
 
     private override init() {
         super.init()
+
+        SwiftSingletons.register(self)
     }
 
     private var userNotificationSettingsPromise: Promise<Void>?

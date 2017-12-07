@@ -56,7 +56,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 @property (nonatomic, readonly) AccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) ExperienceUpgradeFinder *experienceUpgradeFinder;
 @property (nonatomic, readonly) OWSMessageManager *messagesManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
@@ -111,7 +110,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
 
-    _experienceUpgradeFinder = [ExperienceUpgradeFinder new];
+    // Ensure ExperienceUpgradeFinder has been initialized.
+    ExperienceUpgradeFinder.sharedManager;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockedPhoneNumbersDidChange:)
@@ -530,7 +530,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     __block NSArray<ExperienceUpgrade *> *unseenUpgrades;
     [self.editingDbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        unseenUpgrades = [self.experienceUpgradeFinder allUnseenWithTransaction:transaction];
+        unseenUpgrades = [ExperienceUpgradeFinder.sharedManager allUnseenWithTransaction:transaction];
     }];
     return unseenUpgrades;
 }
@@ -540,7 +540,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     AssertIsOnMainThread();
 
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
+        [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
     }];
 }
 

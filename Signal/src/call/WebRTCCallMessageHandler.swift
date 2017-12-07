@@ -25,6 +25,10 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         self.accountManager = accountManager
         self.callService = callService
         self.messageSender = messageSender
+
+        super.init()
+
+        SwiftSingletons.register(self)
     }
 
     // MARK: - Call Handlers

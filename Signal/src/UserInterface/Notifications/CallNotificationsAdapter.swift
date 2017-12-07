@@ -24,6 +24,10 @@ class CallNotificationsAdapter: NSObject {
 //        } else {
             adaptee = SignalApp.shared().notificationsManager
 //        }
+
+        super.init()
+
+        SwiftSingletons.register(self)
     }
 
     func presentIncomingCall(_ call: SignalCall, callerName: String) {

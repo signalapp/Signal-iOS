@@ -26,6 +26,10 @@ class AccountManager: NSObject {
         self.networkManager = textSecureAccountManager.networkManager
         self.textSecureAccountManager = textSecureAccountManager
         self.preferences = preferences
+
+        super.init()
+
+        SwiftSingletons.register(self)
     }
 
     // MARK: registration

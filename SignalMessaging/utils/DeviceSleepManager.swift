@@ -38,6 +38,8 @@ public class DeviceSleepManager: NSObject {
     private override init() {
         super.init()
 
+        SwiftSingletons.register(self)
+
         NotificationCenter.default.addObserver(self,
                                                selector:#selector(didEnterBackground),
                                                name:NSNotification.Name.UIApplicationDidEnterBackground,
