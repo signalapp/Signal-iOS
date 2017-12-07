@@ -55,12 +55,14 @@ NS_ASSUME_NONNULL_BEGIN
      sharedDataFilePath:(NSString *)newFilePath
           exceptionName:(NSString *)exceptionName
 {
+    DDLogInfo(@"%@ Moving file or directory from: %@ to: %@", self.logTag, oldFilePath, newFilePath);
+
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:oldFilePath]) {
         return;
     }
     if ([fileManager fileExistsAtPath:newFilePath]) {
-        OWSFail(@"%@ Can't move file or directory from %@ to %@; destination already exists.",
+        OWSFail(@"%@ Can't move file or directory from: %@ to: %@; destination already exists.",
             self.logTag,
             oldFilePath,
             newFilePath);
@@ -73,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
     if (!success || error) {
         NSString *errorDescription =
-            [NSString stringWithFormat:@"%@ Could not move file or directory from %@ to %@, error: %@",
+            [NSString stringWithFormat:@"%@ Could not move file or directory from: %@ to: %@, error: %@",
                       self.logTag,
                       oldFilePath,
                       newFilePath,
@@ -81,12 +83,12 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"%@", errorDescription);
         [NSException raise:exceptionName format:@"%@", errorDescription];
     }
-    
-    DDLogInfo(@"%@ Moving file or directory from %@ to %@ in: %f",
-              self.logTag,
-              oldFilePath,
-              newFilePath,
-              fabs([startDate timeIntervalSinceNow]));
+
+    DDLogInfo(@"%@ Moved file or directory from: %@ to: %@ in: %f",
+        self.logTag,
+        oldFilePath,
+        newFilePath,
+        fabs([startDate timeIntervalSinceNow]));
 }
 
 + (BOOL)ensureDirectoryExists:(NSString *)dirPath
@@ -98,6 +100,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         return YES;
     } else {
+        DDLogInfo(@"%@ Creating directory at: %@", self.logTag, dirPath);
+
         NSError *error = nil;
         [[NSFileManager defaultManager] createDirectoryAtPath:dirPath
                                   withIntermediateDirectories:YES
