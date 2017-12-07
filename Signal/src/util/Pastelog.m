@@ -3,44 +3,81 @@
 //
 
 #import "Pastelog.h"
-#import "DebugLogger.h"
+#import "Signal-Swift.h"
+#import "ThreadUtil.h"
+#import <SignalMessaging/DebugLogger.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSStorageManager.h>
+#import <SignalServiceKit/Threading.h>
 #import <sys/sysctl.h>
 
-@interface Pastelog ()
+@interface Pastelog () <NSURLConnectionDelegate, NSURLConnectionDataDelegate, UIAlertViewDelegate>
 
-@property (nonatomic)UIAlertView *reportAlertView;
-@property (nonatomic)UIAlertView *loadingAlertView;
-@property (nonatomic)UIAlertView *submitAlertView;
-@property (nonatomic)UIAlertView *infoAlertView;
-@property (nonatomic)NSMutableData *responseData;
-@property (nonatomic, copy)successBlock block;
-@property (nonatomic, copy)NSString *gistURL;
-
+@property (nonatomic) UIAlertController *loadingAlert;
+@property (nonatomic) NSMutableData *responseData;
+@property (nonatomic) successBlock block;
 
 @end
 
+#pragma mark -
+
 @implementation Pastelog
 
-+(void)reportErrorAndSubmitLogsWithAlertTitle:(NSString*)alertTitle alertBody:(NSString*)alertBody {
-    [self reportErrorAndSubmitLogsWithAlertTitle:alertTitle alertBody:alertBody completionBlock:nil];
-}
-
-+(void)reportErrorAndSubmitLogsWithAlertTitle:(NSString*)alertTitle alertBody:(NSString*)alertBody completionBlock:(successBlock)block {
-    Pastelog *sharedManager = [self sharedManager];
-    sharedManager.block = block;
-    sharedManager.reportAlertView = [[UIAlertView alloc] initWithTitle:alertTitle message:alertBody delegate:[self sharedManager] cancelButtonTitle:@"Yes" otherButtonTitles:@"No", nil];
-    [sharedManager.reportAlertView show];
-}
-
 +(void)submitLogs {
-    Pastelog *sharedManager = [self sharedManager];
     [self submitLogsWithCompletion:^(NSError *error, NSString *urlString) {
         if (!error) {
-            sharedManager.gistURL = urlString;
-            sharedManager.submitAlertView = [[UIAlertView alloc] initWithTitle:@"One More Step" message:@"What would you like to do with the link to your debug log?" delegate:[self sharedManager] cancelButtonTitle:@"Open a Bug Report" otherButtonTitles:@"Email Support", @"Copy Link", nil];
-            [sharedManager.submitAlertView show];
+            UIAlertController *alert = [UIAlertController
+                alertControllerWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_TITLE", @"Title of the debug log alert.")
+                                 message:NSLocalizedString(
+                                             @"DEBUG_LOG_ALERT_MESSAGE", @"Message of the debug log alert.")
+                          preferredStyle:UIAlertControllerStyleAlert];
+            [alert
+                addAction:[UIAlertAction
+                              actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EMAIL",
+                                                  @"Label for the 'email debug log' option of the the debug log alert.")
+                                        style:UIAlertActionStyleDefault
+                                      handler:^(UIAlertAction *_Nonnull action) {
+                                          [Pastelog.sharedManager submitEmail:urlString];
+                                      }]];
+            [alert addAction:[UIAlertAction
+                                 actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_COPY_LINK",
+                                                     @"Label for the 'copy link' option of the the debug log alert.")
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction *_Nonnull action) {
+                                             UIPasteboard *pb = [UIPasteboard generalPasteboard];
+                                             [pb setString:urlString];
+                                         }]];
+#ifdef DEBUG
+            [alert addAction:[UIAlertAction
+                                 actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF",
+                                                     @"Label for the 'send to self' option of the the debug log alert.")
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction *_Nonnull action) {
+                                             [Pastelog.sharedManager sendToSelf:urlString];
+                                         }]];
+#endif
+            [alert addAction:
+                       [UIAlertAction
+                           actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_BUG_REPORT",
+                                               @"Label for the 'Open a Bug Report' option of the the debug log alert.")
+                                     style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *_Nonnull action) {
+                                       [Pastelog.sharedManager prepareRedirection:urlString];
+                                   }]];
+            UIViewController *presentingViewController
+                = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
+            [presentingViewController presentViewController:alert animated:NO completion:nil];
         } else{
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Failed to submit debug log" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+            UIAlertView *alertView =
+                [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"DEBUG_LOG_FAILURE_ALERT_TITLE",
+                                                       @"Title of the alert indicating the debug log upload failed.")
+                                           message:error.localizedDescription
+                                          delegate:nil
+                                 cancelButtonTitle:@"OK"
+                                 otherButtonTitles:nil, nil];
             [alertView show];
         }
     }];
@@ -54,11 +91,13 @@
 
     [self sharedManager].block = block;
 
-    [self sharedManager].loadingAlertView =  [[UIAlertView alloc] initWithTitle:@"Sending debug log..."
-                                                                         message:nil delegate:self
-                                                               cancelButtonTitle:nil
-                                                               otherButtonTitles:nil];
-    [[self sharedManager].loadingAlertView show];
+    [self sharedManager].loadingAlert =
+        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"DEBUG_LOG_ACTIVITY_INDICATOR",
+                                                        @"Message indicating that the debug log is being uploaded.")
+                                            message:nil
+                                     preferredStyle:UIAlertControllerStyleAlert];
+    UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
+    [presentingViewController presentViewController:[self sharedManager].loadingAlert animated:NO completion:nil];
 
     NSArray<NSString *> *logFilePaths = DebugLogger.sharedLogger.allLogFilePaths;
 
@@ -133,16 +172,20 @@
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    [self.loadingAlertView dismissWithClickedButtonIndex:0 animated:YES];
-
-    NSError *error;
-    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:self.responseData options:0 error:&error];
-    if (!error) {
-        self.block(nil, [dict objectForKey:@"html_url"]);
-    } else{
-        DDLogError(@"Error on debug response: %@", error);
-        self.block(error, nil);
-    }
+    [self.loadingAlert
+        dismissViewControllerAnimated:NO
+                           completion:^{
+                               NSError *error;
+                               NSDictionary *dict =
+                                   [NSJSONSerialization JSONObjectWithData:self.responseData options:0 error:&error];
+                               if (!error) {
+                                   self.block(nil, [dict objectForKey:@"html_url"]);
+                               } else {
+                                   DDLogError(@"Error on debug response: %@", error);
+                                   self.block(error, nil);
+                               }
+                           }];
+    self.loadingAlert = nil;
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
@@ -151,44 +194,23 @@
 
     if ( [httpResponse statusCode] != 201) {
         DDLogError(@"Failed to submit debug log: %@", httpResponse.debugDescription);
-        [self.loadingAlertView dismissWithClickedButtonIndex:0 animated:YES];
-        [connection cancel];
-        self.block([NSError errorWithDomain:@"PastelogKit" code:10001 userInfo:@{}],nil);
+        [self.loadingAlert
+            dismissViewControllerAnimated:NO
+                               completion:^{
+                                   [connection cancel];
+                                   self.block([NSError errorWithDomain:@"PastelogKit" code:10001 userInfo:@{}], nil);
+                               }];
+        self.loadingAlert = nil;
     }
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-    [self.loadingAlertView dismissWithClickedButtonIndex:0 animated:YES];
-    DDLogError(@"Uploading logs failed with error: %@", error);
-    self.block(error,nil);
-}
-
-#pragma mark Alert View Delegates
-
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (alertView == self.reportAlertView) {
-        if (buttonIndex == 0) {
-            if (self.block) {
-                [[self class] submitLogsWithCompletion:self.block];
-            } else{
-                [[self class] submitLogs];
-            }
-
-        } else{
-            // User declined, nevermind.
-        }
-    } else if (alertView == self.submitAlertView) {
-        if (buttonIndex == 0) {
-            [self prepareRedirection:self.gistURL];
-        } else if (buttonIndex == 1) {
-            [self submitEmail:self.gistURL];
-        } else {
-            UIPasteboard *pb = [UIPasteboard generalPasteboard];
-            [pb setString:self.gistURL];
-        }
-    } else if (alertView == self.infoAlertView) {
-        [UIApplication.sharedApplication openURL:[NSURL URLWithString:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"LOGS_URL"]]];
-    }
+    [self.loadingAlert dismissViewControllerAnimated:NO
+                                          completion:^{
+                                              DDLogError(@"Uploading logs failed with error: %@", error);
+                                              self.block(error, nil);
+                                          }];
+    self.loadingAlert = nil;
 }
 
 #pragma mark Logs submission
@@ -204,8 +226,41 @@
 - (void)prepareRedirection:(NSString*)url {
     UIPasteboard *pb = [UIPasteboard generalPasteboard];
     [pb setString:url];
-    self.infoAlertView = [[UIAlertView alloc]initWithTitle:@"GitHub redirection" message:@"The gist link was copied in your clipboard. You are about to be redirected to the GitHub issue list." delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-    [self.infoAlertView show];
+
+    UIAlertController *alert =
+        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE",
+                                                        @"Title of the alert before redirecting to Github Issues.")
+                                            message:NSLocalizedString(@"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE",
+                                                        @"Message of the alert before redirecting to Github Issues.")
+                                     preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction
+                         actionWithTitle:NSLocalizedString(@"OK", @"")
+                                   style:UIAlertActionStyleDefault
+                                 handler:^(UIAlertAction *_Nonnull action) {
+                                     [UIApplication.sharedApplication
+                                         openURL:[NSURL URLWithString:[[NSBundle mainBundle]
+                                                                          objectForInfoDictionaryKey:@"LOGS_URL"]]];
+                                 }]];
+    UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
+    [presentingViewController presentViewController:alert animated:NO completion:nil];
+}
+
+- (void)sendToSelf:(NSString *)url
+{
+    if (![TSAccountManager isRegistered]) {
+        return;
+    }
+    NSString *recipientId = [TSAccountManager localNumber];
+    OWSMessageSender *messageSender = Environment.current.messageSender;
+
+    DispatchMainThreadSafe(^{
+        __block TSThread *thread = nil;
+        [[TSStorageManager sharedManager].dbReadWriteConnection
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+            }];
+        [ThreadUtil sendMessageWithText:url inThread:thread messageSender:messageSender];
+    });
 }
 
 @end
