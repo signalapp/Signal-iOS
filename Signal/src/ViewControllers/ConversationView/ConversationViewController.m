@@ -2481,7 +2481,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 
     [dataSource setSourceFilename:filename];
-    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:type];
+    // "Document picker" attachments _SHOULD NOT_ be resized, if possible.
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
+                                                                      dataUTI:type
+                                                            attachmentQuality:TSAttachmentQualityOriginal];
     [self tryToSendAttachmentIfApproved:attachment];
 }
 
@@ -2605,10 +2608,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                      OWSAssert([NSThread isMainThread]);
 
                                      if (imageFromCamera) {
+                                         // "Camera" attachments _SHOULD_ be resized, if possible.
                                          SignalAttachment *attachment =
                                              [SignalAttachment imageAttachmentWithImage:imageFromCamera
                                                                                 dataUTI:(NSString *)kUTTypeJPEG
-                                                                               filename:filename];
+                                                                               filename:filename
+                                                                      attachmentQuality:TSAttachmentQualityCompact];
                                          if (!attachment || [attachment hasError]) {
                                              DDLogWarn(@"%@ %s Invalid attachment: %@.",
                                                  self.logTag,
@@ -2655,8 +2660,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                            DataSource *_Nullable dataSource =
                                [DataSourceValue dataSourceWithData:imageData utiType:dataUTI];
                            [dataSource setSourceFilename:filename];
+                           // "Camera Roll" attachments _SHOULD_ be resized, if possible.
                            SignalAttachment *attachment =
-                               [SignalAttachment attachmentWithDataSource:dataSource dataUTI:dataUTI];
+                               [SignalAttachment attachmentWithDataSource:dataSource
+                                                                  dataUTI:dataUTI
+                                                        attachmentQuality:TSAttachmentQualityCompact];
                            [self dismissViewControllerAnimated:YES
                                                     completion:^{
                                                         OWSAssert([NSThread isMainThread]);
@@ -2745,7 +2753,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                   [dataSource setShouldDeleteOnDeallocation];
                                   SignalAttachment *attachment =
                                       [SignalAttachment attachmentWithDataSource:dataSource
-                                                                         dataUTI:(NSString *)kUTTypeMPEG4];
+                                                                         dataUTI:(NSString *)kUTTypeMPEG4
+                                                               attachmentQuality:TSAttachmentQualityOriginal];
                                   if (!attachment || [attachment hasError]) {
                                       DDLogError(@"%@ %s Invalid attachment: %@.",
                                           self.logTag,
@@ -3847,8 +3856,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     TSOutgoingMessage *message;
     if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
-        SignalAttachment *attachment =
-            [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
+        SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
+                                                                          dataUTI:kOversizeTextAttachmentUTI
+                                                                attachmentQuality:TSAttachmentQualityOriginal];
         message =
             [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
     } else {
