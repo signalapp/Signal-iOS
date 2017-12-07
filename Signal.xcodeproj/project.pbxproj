@@ -118,6 +118,7 @@
 		347850531FD74984007B8332 /* GTSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = 458D51471FCCD82500B5BC53 /* GTSR4.crt */; };
 		347850541FD74984007B8332 /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = 458D51451FCCD82500B5BC53 /* textsecure.cer */; };
 		347850551FD749C0007B8332 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
+		347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850561FD86544007B8332 /* SAEFailedViewController.swift */; };
 		348F2EAE1F0D21BC00D4ECE0 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
 		3497DBEC1ECE257500DB2605 /* OWSCountryMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 3497DBEB1ECE257500DB2605 /* OWSCountryMetadata.m */; };
 		3497DBEF1ECE2E4700DB2605 /* DomainFrontingCountryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3497DBEE1ECE2E4700DB2605 /* DomainFrontingCountryViewController.m */; };
@@ -559,6 +560,7 @@
 		3471B1D91EB7C63600F6AEC8 /* NewNonContactConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewNonContactConversationViewController.m; sourceTree = "<group>"; };
 		3472229D1EB22FFE00E53955 /* AddToGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddToGroupViewController.h; sourceTree = "<group>"; };
 		3472229E1EB22FFE00E53955 /* AddToGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddToGroupViewController.m; sourceTree = "<group>"; };
+		347850561FD86544007B8332 /* SAEFailedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAEFailedViewController.swift; sourceTree = "<group>"; };
 		348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSleepManager.swift; sourceTree = "<group>"; };
 		3495BC911F1426B800B478F5 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3497DBEA1ECE257500DB2605 /* OWSCountryMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCountryMetadata.h; sourceTree = "<group>"; };
@@ -1442,10 +1444,11 @@
 			isa = PBXGroup;
 			children = (
 				4535186F1FC635DD00210559 /* Info.plist */,
-				346129D71FD5B84800532771 /* SAECallMessageHandler.swift */,
-				346129D81FD5B84900532771 /* SAENotificationsManager.swift */,
 				4535186C1FC635DD00210559 /* MainInterface.storyboard */,
+				346129D71FD5B84800532771 /* SAECallMessageHandler.swift */,
+				347850561FD86544007B8332 /* SAEFailedViewController.swift */,
 				3461284A1FD0B93F00532771 /* SAELoadViewController.swift */,
+				346129D81FD5B84900532771 /* SAENotificationsManager.swift */,
 				4535186A1FC635DD00210559 /* ShareViewController.swift */,
 				34480B371FD092A900BC14EF /* SignalShareExtension-Bridging-Header.h */,
 				34480B381FD092E300BC14EF /* SignalShareExtension-Prefix.pch */,
@@ -2640,6 +2643,7 @@
 				34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */,
 				346129D91FD5B84900532771 /* SAECallMessageHandler.swift in Sources */,
 				3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */,
+				347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

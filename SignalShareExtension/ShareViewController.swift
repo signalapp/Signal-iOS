@@ -9,7 +9,7 @@ import PureLayout
 import SignalServiceKit
 
 @objc
-public class ShareViewController: UINavigationController, SAELoadViewDelegate {
+public class ShareViewController: UINavigationController, SAELoadViewDelegate, SAEFailedViewDelegate {
 
     private var contactsSyncing: OWSContactsSyncing?
 
@@ -49,9 +49,21 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
             return
         }
 
+        // If we haven't migrated the database file to the shared data
+        // directory we can't load it, and therefore can't init TSSStorageManager,
+        // and therefore don't want to setup most of our machinery (Environment,
+        // most of the singletons, etc.).  We just want to show an error view and
+        // abort.
         isReadyForAppExtensions = OWSPreferences.isReadyForAppExtensions()
         if !isReadyForAppExtensions {
-            // TODO: Show the "You need to launch main app" view.
+            // If we don't have TSSStorageManager, we can't consult TSAccountManager
+            // for isRegistered, so we use OWSPreferences which is usually-accurate
+            // copy of that state.
+            if (OWSPreferences.isRegistered()) {
+                showNotReadyView()
+            } else {
+                showNotRegisteredView()
+            }
             return
         }
 
@@ -215,11 +227,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
             //                    [[SignalsNavigationController alloc] initWithRootViewController:homeView];
             //                self.window.rootViewController = navigationController;
         } else {
-            //                RegistrationViewController *viewController = [RegistrationViewController new];
-            //                OWSNavigationController *navigationController =
-            //                    [[OWSNavigationController alloc] initWithRootViewController:viewController];
-            //                navigationController.navigationBarHidden = YES;
-            //                self.window.rootViewController = navigationController;
+            showNotRegisteredView()
         }
 
         // We don't use the AppUpdateNag in the SAE.
@@ -270,6 +278,30 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
         Environment.current().contactsManager.startObserving()
     }
 
+    // MARK: Error Views
+
+    private func showNotReadyView() {
+        let failureTitle = NSLocalizedString("SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE",
+                                             comment: "Title indicating that the share extension cannot be used until the main app has been launched at least once.")
+        let failureMessage = NSLocalizedString("SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE",
+                                               comment: "Message indicating that the share extension cannot be used until the main app has been launched at least once.")
+        showErrorView(title:failureTitle, message:failureMessage)
+    }
+
+    private func showNotRegisteredView() {
+        let failureTitle = NSLocalizedString("SHARE_EXTENSION_NOT_REGISTERED_TITLE",
+                                             comment: "Title indicating that the share extension cannot be used until the user has registered in the main app.")
+        let failureMessage = NSLocalizedString("SHARE_EXTENSION_NOT_REGISTERED_MESSAGE",
+                                               comment: "Message indicating that the share extension cannot be used until the user has registered in the main app.")
+        showErrorView(title:failureTitle, message:failureMessage)
+    }
+
+    private func showErrorView(title: String, message: String) {
+        let viewController = SAEFailedViewController(delegate:self, title:title, message:message)
+        self.setViewControllers([viewController], animated: false)
+        self.isNavigationBarHidden = false
+    }
+
     // MARK: View Lifecycle
 
     override open func viewDidLoad() {
@@ -310,7 +342,7 @@ public class ShareViewController: UINavigationController, SAELoadViewDelegate {
         Logger.flush()
     }
 
-    // MARK: SAELoadViewDelegate
+    // MARK: SAELoadViewDelegate, SAEFailedViewDelegate
 
     public func shareExtensionWasCancelled() {
         self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
