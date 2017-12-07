@@ -2664,7 +2664,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                            SignalAttachment *attachment =
                                [SignalAttachment attachmentWithDataSource:dataSource
                                                                   dataUTI:dataUTI
-                                                        attachmentQuality:TSAttachmentQualityCompact];
+                                                        attachmentQuality:TSAttachmentQualityMedium];
                            [self dismissViewControllerAnimated:YES
                                                     completion:^{
                                                         OWSAssert([NSThread isMainThread]);

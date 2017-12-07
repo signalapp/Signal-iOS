@@ -66,14 +66,17 @@ public enum TSImageQuality: UInt {
 @objc
 public enum TSAttachmentQuality: UInt {
     case original
+    case medium
     case compact
 
     func imageQuality() -> TSImageQuality {
         switch self {
         case .original:
             return .original
-        case .compact:
+        case .medium:
             return .mediumHigh
+        case .compact:
+            return .medium
         }
     }
 }
