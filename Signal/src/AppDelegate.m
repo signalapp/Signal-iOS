@@ -356,7 +356,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     return NO;
 }
 
-
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     DDLogWarn(@"%@ applicationDidBecomeActive.", self.logTag);
 
