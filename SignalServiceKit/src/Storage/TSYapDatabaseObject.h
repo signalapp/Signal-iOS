@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSYapDatabaseObject : MTLModel
 
+@property (atomic, readonly) BOOL hasEverBeenSaved;
+
 /**
  *  Initializes a new database object with a unique identifier
  *

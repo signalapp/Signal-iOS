@@ -496,6 +496,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)avatarDidChange:(UIImage *)image
 {
+    OWSAssert([NSThread isMainThread]);
     OWSAssert(image);
 
     self.groupAvatar = image;

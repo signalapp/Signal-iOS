@@ -54,7 +54,7 @@ class ExperienceUpgrade: TSYapDatabaseObject {
         // these models in a "change log" archive.
         if propertyKey == "title" || propertyKey == "body" || propertyKey == "image" {
             return MTLPropertyStorageNone
-        } else if propertyKey == "uniqueId" || propertyKey == "seenAt" {
+        } else if propertyKey == "uniqueId" || propertyKey == "seenAt" || propertyKey == "hasEverBeenSaved" {
             return super.storageBehaviorForProperty(withKey: propertyKey)
         } else {
             // Being conservative here in case we rename a property.
