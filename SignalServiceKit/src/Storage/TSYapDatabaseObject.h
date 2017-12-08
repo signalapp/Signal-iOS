@@ -151,6 +151,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
                            changeBlock:(void (^)(id))changeBlock;
 
+- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
+                           changeBlock:(void (^)(id))changeBlock
+                         saveIfMissing:(BOOL)saveIfMissing;
+
 @end
 
 NS_ASSUME_NONNULL_END

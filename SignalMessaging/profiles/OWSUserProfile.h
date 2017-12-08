@@ -40,6 +40,8 @@ extern NSString *const kLocalProfileUniqueId;
 + (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId
                                            dbConnection:(YapDatabaseConnection *)dbConnection;
 
++ (BOOL)localUserProfileExists:(YapDatabaseConnection *)dbConnection;
+
 #pragma mark - Update With... Methods
 
 - (void)updateWithProfileName:(nullable NSString *)profileName

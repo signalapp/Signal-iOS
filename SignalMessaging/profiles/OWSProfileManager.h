@@ -30,6 +30,9 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 // These two methods should only be called from the main thread.
 - (OWSAES256Key *)localProfileKey;
+// localUserProfileExists is true if there is _ANY_ local profile.
+- (BOOL)localProfileExists;
+// localUserProfileExists is true if there is a local profile with a name or avatar.
 - (BOOL)hasLocalProfile;
 - (nullable NSString *)localProfileName;
 - (nullable UIImage *)localProfileAvatarImage;

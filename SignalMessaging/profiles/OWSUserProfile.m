@@ -6,6 +6,7 @@
 #import "NSString+OWS.h"
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/Cryptography.h>
+#import <SignalServiceKit/NSData+hexString.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
@@ -58,6 +59,16 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     OWSAssert(userProfile);
 
     return userProfile;
+}
+
++ (BOOL)localUserProfileExists:(YapDatabaseConnection *)dbConnection
+{
+    __block BOOL result = NO;
+    [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        result = [OWSUserProfile fetchObjectWithUniqueID:kLocalProfileUniqueId transaction:transaction] != nil;
+    }];
+
+    return result;
 }
 
 - (instancetype)initWithRecipientId:(NSString *)recipientId
@@ -125,7 +136,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setProfileName:[profileName ows_stripped]];
                                      [userProfile setAvatarUrlPath:avatarUrlPath];
                                      [userProfile setAvatarFileName:avatarFileName];
-                                 }];
+                                 }
+                               saveIfMissing:YES];
     }];
     [self finalizeWithCompletion:completion];
 }
@@ -144,7 +156,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setAvatarUrlPath:avatarUrlPath];
                                      [userProfile setAvatarFileName:avatarFileName];
                                      [userProfile setLastUpdateDate:lastUpdateDate];
-                                 }];
+                                 }
+                               saveIfMissing:YES];
     }];
     [self finalizeWithCompletion:completion];
 }
@@ -161,7 +174,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setProfileName:[profileName ows_stripped]];
                                      [userProfile setAvatarUrlPath:avatarUrlPath];
                                      [userProfile setLastUpdateDate:lastUpdateDate];
-                                 }];
+                                 }
+                               saveIfMissing:YES];
     }];
     [self finalizeWithCompletion:completion];
 }
@@ -180,7 +194,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setProfileKey:profileKey];
                                      [userProfile setAvatarUrlPath:avatarUrlPath];
                                      [userProfile setAvatarFileName:avatarFileName];
-                                 }];
+                                 }
+                               saveIfMissing:YES];
     }];
     [self finalizeWithCompletion:completion];
 }
@@ -195,7 +210,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                  changeBlock:^(OWSUserProfile *userProfile) {
                                      [userProfile setAvatarUrlPath:avatarUrlPath];
                                      [userProfile setAvatarFileName:avatarFileName];
-                                 }];
+                                 }
+                               saveIfMissing:YES];
     }];
     [self finalizeWithCompletion:completion];
 }
@@ -208,7 +224,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(OWSUserProfile *userProfile) {
                                      [userProfile setAvatarFileName:avatarFileName];
-                                 }];
+                                 }
+                               saveIfMissing:YES];
     }];
     [self finalizeWithCompletion:completion];
 }
@@ -221,7 +238,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(OWSUserProfile *userProfile) {
                                      [userProfile setLastUpdateDate:lastUpdateDate];
-                                 }];
+                                 }
+                               saveIfMissing:YES];
     }];
     [self finalizeWithCompletion:completion];
 }
@@ -240,7 +258,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setAvatarUrlPath:nil];
                                      [userProfile setAvatarFileName:nil];
                                      [userProfile setLastUpdateDate:nil];
-                                 }];
+                                 }
+                               saveIfMissing:YES];
     }];
     [self finalizeWithCompletion:completion];
 }
@@ -257,7 +276,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(OWSUserProfile *userProfile) {
                                      [userProfile setProfileKey:profileKey];
-                                 }];
+                                 }
+                               saveIfMissing:YES];
     }];
     [self finalizeWithCompletion:completion];
 }

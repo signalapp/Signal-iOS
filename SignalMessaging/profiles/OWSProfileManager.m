@@ -165,6 +165,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return _localUserProfile;
 }
 
+- (BOOL)localProfileExists
+{
+    return [OWSUserProfile localUserProfileExists:self.dbConnection];
+}
+
 - (OWSAES256Key *)localProfileKey
 {
     OWSAssert(self.localUserProfile.profileKey.keyData.length == kAES256_KeyByteLength);
