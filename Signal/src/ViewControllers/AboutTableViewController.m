@@ -6,8 +6,8 @@
 #import "Environment.h"
 #import "OWSPreferences.h"
 #import "Signal-Swift.h"
-#import "UIUtil.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSStorageManager.h>
 

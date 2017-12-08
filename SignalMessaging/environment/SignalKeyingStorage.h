@@ -2,8 +2,6 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "PhoneNumber.h"
-
 #define LOCAL_NUMBER_KEY @"Number"
 #define PASSWORD_COUNTER_KEY @"PasswordCounter"
 #define SIGNALING_MAC_KEY @"Signaling Mac Key"

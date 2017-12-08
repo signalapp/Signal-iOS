@@ -25,7 +25,6 @@
 #import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSContactOffersCell.h"
-#import "OWSContactOffersInteraction.h"
 #import "OWSContactsManager.h"
 #import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
@@ -45,10 +44,7 @@
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
-#import "TSUnreadIndicatorInteraction.h"
-#import "ThreadUtil.h"
 #import "UIFont+OWS.h"
-#import "UIUtil.h"
 #import "UIViewController+OWS.h"
 #import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"
@@ -66,7 +62,11 @@
 #import <JSQSystemSoundPlayer/JSQSystemSoundPlayer.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/TSUnreadIndicatorInteraction.h>
+#import <SignalMessaging/ThreadUtil.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
