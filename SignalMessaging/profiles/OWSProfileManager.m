@@ -845,7 +845,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
         NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:fileName];
 
-        @synchronized(self)
+        @synchronized(self.currentAvatarDownloads)
         {
             if ([self.currentAvatarDownloads containsObject:userProfile.recipientId]) {
                 // Download already in flight; ignore.
@@ -871,7 +871,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                     }
                 }
 
-                @synchronized(self)
+                @synchronized(self.currentAvatarDownloads)
                 {
                     [self.currentAvatarDownloads removeObject:userProfile.recipientId];
                 }
@@ -1153,7 +1153,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     }
 
     UIImage *_Nullable image = nil;
-    @synchronized(self)
+    @synchronized(self.profileAvatarImageCache)
     {
         image = [self.profileAvatarImageCache objectForKey:filename];
     }
@@ -1175,7 +1175,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSAssert(filename.length > 0);
     OWSAssert(image);
 
-    @synchronized(self)
+    @synchronized(self.profileAvatarImageCache)
     {
         if (image) {
             [self.profileAvatarImageCache setObject:image forKey:filename];
