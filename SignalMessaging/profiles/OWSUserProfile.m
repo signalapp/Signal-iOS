@@ -10,6 +10,7 @@
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -87,12 +88,48 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 #pragma mark - Update With... Methods
 
-- (void)finalizeWithCompletion:(nullable OWSUserProfileCompletion)externalCompletion
+// Similar in spirit to [TSYapDatabaseObject applyChangeToSelfAndLatestCopy],
+// but with significant differences.
+//
+// * We save if this entity is not in the database.
+// * We skip redundant saves by diffing.
+// * We kick off multi-device synchronization.
+// * We fire "did change" notifications.
+- (void)applyChanges:(void (^)(id))changeBlock
+        functionName:(const char *)functionName
+        dbConnection:(YapDatabaseConnection *)dbConnection
+          completion:(nullable OWSUserProfileCompletion)completion
 {
-    DDLogVerbose(@"%@, after: %@", self.logTag, self.debugDescription);
+    id beforeSnapshot = self.dictionaryValue;
 
-    if (externalCompletion) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), externalCompletion);
+    changeBlock(self);
+
+    __block BOOL didChange = YES;
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        NSString *collection = [[self class] collection];
+        OWSUserProfile *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
+        if (latestInstance) {
+            changeBlock(latestInstance);
+
+            id afterSnapshot = latestInstance.dictionaryValue;
+            if ([beforeSnapshot isEqual:afterSnapshot]) {
+                DDLogVerbose(
+                    @"%@ Ignoring redundant update in %s: %@", self.logTag, functionName, self.debugDescription);
+                didChange = NO;
+            } else {
+                [latestInstance saveWithTransaction:transaction];
+            }
+        } else {
+            [self saveWithTransaction:transaction];
+        }
+    }];
+
+    if (completion) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
+    }
+
+    if (!didChange) {
+        return;
     }
 
     BOOL isLocalUserProfile = [self.recipientId isEqualToString:kLocalProfileUniqueId];
@@ -132,32 +169,14 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
-    if (self.hasEverBeenSaved) {
-        BOOL didChange = NO;
-
-        didChange |= [self didStringChange:self.profileName newValue:[profileName ows_stripped]];
-        didChange |= [self didStringChange:self.avatarUrlPath newValue:avatarUrlPath];
-        didChange |= [self didStringChange:self.avatarFileName newValue:avatarFileName];
-
-        if (!didChange) {
-            DDLogVerbose(@"%@ Ignoring update in %s: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-            if (completion) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
-            }
-            return;
-        }
+    [self applyChanges:^(OWSUserProfile *userProfile) {
+        [userProfile setProfileName:[profileName ows_stripped]];
+        [userProfile setAvatarUrlPath:avatarUrlPath];
+        [userProfile setAvatarFileName:avatarFileName];
     }
-
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestCopy:transaction
-                                 changeBlock:^(OWSUserProfile *userProfile) {
-                                     [userProfile setProfileName:[profileName ows_stripped]];
-                                     [userProfile setAvatarUrlPath:avatarUrlPath];
-                                     [userProfile setAvatarFileName:avatarFileName];
-                                 }
-                               saveIfMissing:YES];
-    }];
-    [self finalizeWithCompletion:completion];
+          functionName:__PRETTY_FUNCTION__
+          dbConnection:dbConnection
+            completion:completion];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
@@ -167,35 +186,15 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
-    if (self.hasEverBeenSaved) {
-        BOOL didChange = NO;
-
-        didChange |= [self didStringChange:self.profileName newValue:[profileName ows_stripped]];
-        didChange |= [self didStringChange:self.avatarUrlPath newValue:avatarUrlPath];
-        didChange |= [self didStringChange:self.avatarFileName newValue:avatarFileName];
-        didChange |= [self didDateChange:self.lastUpdateDate newValue:lastUpdateDate];
-
-        if (!didChange) {
-            DDLogVerbose(@"%@ Ignoring update in %s: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-            if (completion) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
-            }
-            return;
-        }
+    [self applyChanges:^(OWSUserProfile *userProfile) {
+        [userProfile setProfileName:[profileName ows_stripped]];
+        [userProfile setAvatarUrlPath:avatarUrlPath];
+        [userProfile setAvatarFileName:avatarFileName];
+        [userProfile setLastUpdateDate:lastUpdateDate];
     }
-
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self
-            applyChangeToSelfAndLatestCopy:transaction
-                               changeBlock:^(OWSUserProfile *userProfile) {
-                                   [userProfile setProfileName:[profileName ows_stripped]];
-                                   [userProfile setAvatarUrlPath:avatarUrlPath];
-                                   [userProfile setAvatarFileName:avatarFileName];
-                                   [userProfile setLastUpdateDate:lastUpdateDate];
-                               }
-                             saveIfMissing:YES];
-    }];
-    [self finalizeWithCompletion:completion];
+          functionName:__PRETTY_FUNCTION__
+          dbConnection:dbConnection
+            completion:completion];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
@@ -204,33 +203,14 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
-    if (self.hasEverBeenSaved) {
-        BOOL didChange = NO;
-
-        didChange |= [self didStringChange:self.profileName newValue:[profileName ows_stripped]];
-        didChange |= [self didStringChange:self.avatarUrlPath newValue:avatarUrlPath];
-        didChange |= [self didDateChange:self.lastUpdateDate newValue:lastUpdateDate];
-
-        if (!didChange) {
-            DDLogVerbose(@"%@ Ignoring update in %s: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-            if (completion) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
-            }
-            return;
-        }
+    [self applyChanges:^(OWSUserProfile *userProfile) {
+        [userProfile setProfileName:[profileName ows_stripped]];
+        [userProfile setAvatarUrlPath:avatarUrlPath];
+        [userProfile setLastUpdateDate:lastUpdateDate];
     }
-
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self
-            applyChangeToSelfAndLatestCopy:transaction
-                               changeBlock:^(OWSUserProfile *userProfile) {
-                                   [userProfile setProfileName:[profileName ows_stripped]];
-                                   [userProfile setAvatarUrlPath:avatarUrlPath];
-                                   [userProfile setLastUpdateDate:lastUpdateDate];
-                               }
-                             saveIfMissing:YES];
-    }];
-    [self finalizeWithCompletion:completion];
+          functionName:__PRETTY_FUNCTION__
+          dbConnection:dbConnection
+            completion:completion];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
@@ -240,34 +220,15 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
-    if (self.hasEverBeenSaved) {
-        BOOL didChange = NO;
-
-        didChange |= [self didStringChange:self.profileName newValue:[profileName ows_stripped]];
-        didChange |= [self didKeyChange:self.profileKey newValue:profileKey];
-        didChange |= [self didStringChange:self.avatarUrlPath newValue:avatarUrlPath];
-        didChange |= [self didStringChange:self.avatarFileName newValue:avatarFileName];
-
-        if (!didChange) {
-            DDLogVerbose(@"%@ Ignoring update in %s: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-            if (completion) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
-            }
-            return;
-        }
+    [self applyChanges:^(OWSUserProfile *userProfile) {
+        [userProfile setProfileName:[profileName ows_stripped]];
+        [userProfile setProfileKey:profileKey];
+        [userProfile setAvatarUrlPath:avatarUrlPath];
+        [userProfile setAvatarFileName:avatarFileName];
     }
-
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestCopy:transaction
-                                 changeBlock:^(OWSUserProfile *userProfile) {
-                                     [userProfile setProfileName:[profileName ows_stripped]];
-                                     [userProfile setProfileKey:profileKey];
-                                     [userProfile setAvatarUrlPath:avatarUrlPath];
-                                     [userProfile setAvatarFileName:avatarFileName];
-                                 }
-                               saveIfMissing:YES];
-    }];
-    [self finalizeWithCompletion:completion];
+          functionName:__PRETTY_FUNCTION__
+          dbConnection:dbConnection
+            completion:completion];
 }
 
 - (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
@@ -275,125 +236,53 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                    dbConnection:(YapDatabaseConnection *)dbConnection
                      completion:(nullable OWSUserProfileCompletion)completion
 {
-    if (self.hasEverBeenSaved) {
-        BOOL didChange = NO;
-
-        didChange |= [self didStringChange:self.avatarUrlPath newValue:avatarUrlPath];
-        didChange |= [self didStringChange:self.avatarFileName newValue:avatarFileName];
-
-        if (!didChange) {
-            DDLogVerbose(@"%@ Ignoring update in %s: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-            if (completion) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
-            }
-            return;
-        }
+    [self applyChanges:^(OWSUserProfile *userProfile) {
+        [userProfile setAvatarUrlPath:avatarUrlPath];
+        [userProfile setAvatarFileName:avatarFileName];
     }
-
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestCopy:transaction
-                                 changeBlock:^(OWSUserProfile *userProfile) {
-
-                                     [userProfile setAvatarUrlPath:avatarUrlPath];
-                                     [userProfile setAvatarFileName:avatarFileName];
-                                 }
-                               saveIfMissing:YES];
-    }];
-    [self finalizeWithCompletion:completion];
+          functionName:__PRETTY_FUNCTION__
+          dbConnection:dbConnection
+            completion:completion];
 }
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
                     dbConnection:(YapDatabaseConnection *)dbConnection
                       completion:(nullable OWSUserProfileCompletion)completion
 {
-    if (self.hasEverBeenSaved) {
-        BOOL didChange = NO;
-
-        didChange |= [self didStringChange:self.avatarFileName newValue:avatarFileName];
-
-        if (!didChange) {
-            DDLogVerbose(@"%@ Ignoring update in %s: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-            if (completion) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
-            }
-            return;
-        }
+    [self applyChanges:^(OWSUserProfile *userProfile) {
+        [userProfile setAvatarFileName:avatarFileName];
     }
-
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestCopy:transaction
-                                 changeBlock:^(OWSUserProfile *userProfile) {
-                                     [userProfile setAvatarFileName:avatarFileName];
-                                 }
-                               saveIfMissing:YES];
-    }];
-    [self finalizeWithCompletion:completion];
+          functionName:__PRETTY_FUNCTION__
+          dbConnection:dbConnection
+            completion:completion];
 }
 
 - (void)updateWithLastUpdateDate:(nullable NSDate *)lastUpdateDate
                     dbConnection:(YapDatabaseConnection *)dbConnection
                       completion:(nullable OWSUserProfileCompletion)completion
 {
-    if (self.hasEverBeenSaved) {
-        BOOL didChange = NO;
-
-        didChange |= [self didDateChange:self.lastUpdateDate newValue:lastUpdateDate];
-
-        if (!didChange) {
-            DDLogVerbose(@"%@ Ignoring update in %s: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-            if (completion) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
-            }
-            return;
-        }
+    [self applyChanges:^(OWSUserProfile *userProfile) {
+        [userProfile setLastUpdateDate:lastUpdateDate];
     }
-
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestCopy:transaction
-                                 changeBlock:^(OWSUserProfile *userProfile) {
-                                     [userProfile setLastUpdateDate:lastUpdateDate];
-                                 }
-                               saveIfMissing:YES];
-    }];
-    [self finalizeWithCompletion:completion];
+          functionName:__PRETTY_FUNCTION__
+          dbConnection:dbConnection
+            completion:completion];
 }
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
                dbConnection:(YapDatabaseConnection *)dbConnection
                  completion:(nullable OWSUserProfileCompletion)completion;
 {
-    OWSAssert(profileKey);
-
-    if (self.hasEverBeenSaved) {
-        BOOL didChange = NO;
-
-        didChange |= [self didKeyChange:self.profileKey newValue:profileKey];
-        didChange |= [self didStringChange:self.profileName newValue:nil];
-        didChange |= [self didStringChange:self.avatarUrlPath newValue:nil];
-        didChange |= [self didStringChange:self.avatarFileName newValue:nil];
-        didChange |= [self didDateChange:self.lastUpdateDate newValue:nil];
-
-        if (!didChange) {
-            DDLogVerbose(@"%@ Ignoring update in %s: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-            if (completion) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
-            }
-            return;
-        }
+    [self applyChanges:^(OWSUserProfile *userProfile) {
+        [userProfile setProfileKey:profileKey];
+        [userProfile setProfileName:nil];
+        [userProfile setAvatarUrlPath:nil];
+        [userProfile setAvatarFileName:nil];
+        [userProfile setLastUpdateDate:nil];
     }
-
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestCopy:transaction
-                                 changeBlock:^(OWSUserProfile *userProfile) {
-                                     [userProfile setProfileKey:profileKey];
-                                     [userProfile setProfileName:nil];
-                                     [userProfile setAvatarUrlPath:nil];
-                                     [userProfile setAvatarFileName:nil];
-                                     [userProfile setLastUpdateDate:nil];
-                                 }
-                               saveIfMissing:YES];
-    }];
-    [self finalizeWithCompletion:completion];
+          functionName:__PRETTY_FUNCTION__
+          dbConnection:dbConnection
+            completion:completion];
 }
 
 - (void)updateWithProfileKey:(OWSAES256Key *)profileKey
@@ -402,61 +291,12 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 {
     OWSAssert(profileKey);
 
-    if (self.hasEverBeenSaved) {
-        BOOL didChange = NO;
-
-        didChange |= [self didKeyChange:self.profileKey newValue:profileKey];
-
-        if (!didChange) {
-            DDLogVerbose(@"%@ Ignoring update in %s: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-            if (completion) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
-            }
-            return;
-        }
+    [self applyChanges:^(OWSUserProfile *userProfile) {
+        [userProfile setProfileKey:profileKey];
     }
-
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestCopy:transaction
-                                 changeBlock:^(OWSUserProfile *userProfile) {
-                                     [userProfile setProfileKey:profileKey];
-                                 }
-                               saveIfMissing:YES];
-    }];
-    [self finalizeWithCompletion:completion];
-}
-
-- (BOOL)didStringChange:(NSString *_Nullable)oldValue newValue:(NSString *_Nullable)newValue
-{
-    if (!oldValue && !newValue) {
-        return NO;
-    } else if (!oldValue || !newValue) {
-        return YES;
-    } else {
-        return ![oldValue isEqualToString:newValue];
-    }
-}
-
-- (BOOL)didDateChange:(NSDate *_Nullable)oldValue newValue:(NSDate *_Nullable)newValue
-{
-    if (!oldValue && !newValue) {
-        return NO;
-    } else if (!oldValue || !newValue) {
-        return YES;
-    } else {
-        return ![oldValue isEqualToDate:newValue];
-    }
-}
-
-- (BOOL)didKeyChange:(OWSAES256Key *_Nullable)oldValue newValue:(OWSAES256Key *_Nullable)newValue
-{
-    if (!oldValue && !newValue) {
-        return NO;
-    } else if (!oldValue || !newValue) {
-        return YES;
-    } else {
-        return ![oldValue.keyData isEqualToData:newValue.keyData];
-    }
+          functionName:__PRETTY_FUNCTION__
+          dbConnection:dbConnection
+            completion:completion];
 }
 
 #pragma mark - Database Connection Accessors

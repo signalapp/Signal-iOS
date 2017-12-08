@@ -8,14 +8,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSYapDatabaseObject ()
-
-@property (atomic) BOOL hasEverBeenSaved;
-
-@end
-
-#pragma mark -
-
 @implementation TSYapDatabaseObject
 
 - (instancetype)init
@@ -42,16 +34,12 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    self.hasEverBeenSaved = YES;
-
     return self;
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [transaction setObject:self forKey:self.uniqueId inCollection:[[self class] collection]];
-
-    self.hasEverBeenSaved = YES;
 }
 
 - (void)save
