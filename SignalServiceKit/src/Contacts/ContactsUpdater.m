@@ -76,7 +76,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self contactIntersectionWithSet:[NSSet setWithObject:identifier]
                              success:^(NSSet<NSString *> *_Nonnull matchedIds) {
                                  if (matchedIds.count == 1) {
-                                     success([SignalRecipient recipientWithTextSecureIdentifier:identifier]);
+                                     dispatch_async(dispatch_get_main_queue(), ^{
+                                         success([SignalRecipient recipientWithTextSecureIdentifier:identifier]);
+                                     });
                                  } else {
                                      failure(OWSErrorMakeNoSuchSignalRecipientError());
                                  }
@@ -101,7 +103,9 @@ NS_ASSUME_NONNULL_BEGIN
                                      for (NSString *identifier in matchedIds) {
                                          [recipients addObject:[SignalRecipient recipientWithTextSecureIdentifier:identifier]];
                                      }
-                                     success([recipients copy]);
+                                     dispatch_async(dispatch_get_main_queue(), ^{
+                                         success([recipients copy]);
+                                     });
                                  } else {
                                      failure(OWSErrorMakeNoSuchSignalRecipientError());
                                  }
@@ -147,7 +151,9 @@ NS_ASSUME_NONNULL_BEGIN
                                      }];
 
                                  DDLogInfo(@"%@ successfully intersected contacts.", self.logTag);
-                                 success();
+                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                     success();
+                                 });
                              }
                              failure:failure];
 }
@@ -166,27 +172,28 @@ NS_ASSUME_NONNULL_BEGIN
       TSRequest *request = [[TSContactsIntersectionRequest alloc] initWithHashesArray:hashes];
       [[TSNetworkManager sharedManager] makeRequest:request
           success:^(NSURLSessionDataTask *tsTask, id responseDict) {
-              NSMutableDictionary *attributesForIdentifier = [NSMutableDictionary dictionary];
-              NSArray *contactsArray = [(NSDictionary *)responseDict objectForKey:@"contacts"];
+              dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                  NSMutableDictionary *attributesForIdentifier = [NSMutableDictionary dictionary];
+                  NSArray *contactsArray = [(NSDictionary *)responseDict objectForKey:@"contacts"];
 
-              // Map attributes to phone numbers
-              if (contactsArray) {
-                  for (NSDictionary *dict in contactsArray) {
-                      NSString *hash = [dict objectForKey:@"token"];
-                      NSString *identifier = [phoneNumbersByHashes objectForKey:hash];
+                  // Map attributes to phone numbers
+                  if (contactsArray) {
+                      for (NSDictionary *dict in contactsArray) {
+                          NSString *hash = [dict objectForKey:@"token"];
+                          NSString *identifier = [phoneNumbersByHashes objectForKey:hash];
 
-                      if (!identifier) {
-                          DDLogWarn(@"%@ An interesecting hash wasn't found in the mapping.", self.logTag);
-                          break;
+                          if (!identifier) {
+                              DDLogWarn(@"%@ An interesecting hash wasn't found in the mapping.", self.logTag);
+                              break;
+                          }
+
+                          [attributesForIdentifier setObject:dict forKey:identifier];
                       }
-
-                      [attributesForIdentifier setObject:dict forKey:identifier];
                   }
-              }
 
-              // Insert or update contact attributes
-              [[TSStorageManager sharedManager].dbReadWriteConnection
-                  readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                  // Insert or update contact attributes
+                  [[TSStorageManager sharedManager].dbReadWriteConnection readWriteWithBlock:^(
+                      YapDatabaseReadWriteTransaction *transaction) {
                       for (NSString *identifier in attributesForIdentifier) {
                           SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:identifier
                                                                                           withTransaction:transaction];
@@ -202,7 +209,8 @@ NS_ASSUME_NONNULL_BEGIN
                       }
                   }];
 
-              success([NSSet setWithArray:attributesForIdentifier.allKeys]);
+                  success([NSSet setWithArray:attributesForIdentifier.allKeys]);
+              });
           }
           failure:^(NSURLSessionDataTask *task, NSError *error) {
               if (!IsNSErrorNetworkFailure(error)) {
