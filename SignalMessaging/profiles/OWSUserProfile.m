@@ -4,10 +4,20 @@
 
 #import "OWSUserProfile.h"
 #import "NSString+OWS.h"
+#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/Cryptography.h>
+#import <SignalServiceKit/NSNotificationCenter+OWS.h>
+#import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *const kNSNotificationName_LocalProfileDidChange = @"kNSNotificationName_LocalProfileDidChange";
+NSString *const kNSNotificationName_OtherUsersProfileWillChange = @"kNSNotificationName_OtherUsersProfileWillChange";
+NSString *const kNSNotificationName_OtherUsersProfileDidChange = @"kNSNotificationName_OtherUsersProfileDidChange";
+
+NSString *const kNSNotificationKey_ProfileRecipientId = @"kNSNotificationKey_ProfileRecipientId";
+NSString *const kNSNotificationKey_ProfileGroupId = @"kNSNotificationKey_ProfileGroupId";
 
 NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
@@ -66,6 +76,46 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 #pragma mark - Update With... Methods
 
+- (OWSUserProfileCompletion)updateWithCompletion:(nullable OWSUserProfileCompletion)externalCompletion
+{
+    return ^{
+        if (externalCompletion) {
+            externalCompletion();
+        }
+
+        BOOL isLocalUserProfile = [self.recipientId isEqualToString:kLocalProfileUniqueId];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (isLocalUserProfile) {
+                // We populate an initial (empty) profile on launch of a new install, but until
+                // we have a registered account, syncing will fail (and there could not be any
+                // linked device to sync to at this point anyway).
+                if ([TSAccountManager isRegistered]) {
+                    [CurrentAppContext() doMultiDeviceUpdateWithProfileKey:self.profileKey];
+                }
+
+                [[NSNotificationCenter defaultCenter]
+                    postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
+                                       object:nil
+                                     userInfo:nil];
+            } else {
+                [[NSNotificationCenter defaultCenter]
+                    postNotificationNameAsync:kNSNotificationName_OtherUsersProfileWillChange
+                                       object:nil
+                                     userInfo:@{
+                                         kNSNotificationKey_ProfileRecipientId : self.recipientId,
+                                     }];
+                [[NSNotificationCenter defaultCenter]
+                    postNotificationNameAsync:kNSNotificationName_OtherUsersProfileDidChange
+                                       object:nil
+                                     userInfo:@{
+                                         kNSNotificationKey_ProfileRecipientId : self.recipientId,
+                                     }];
+            }
+        });
+    };
+}
+
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                avatarFileName:(nullable NSString *)avatarFileName
@@ -80,7 +130,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setAvatarFileName:avatarFileName];
                                  }];
     }
-                          completionBlock:completion];
+                          completionBlock:[self updateWithCompletion:completion]];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
@@ -99,7 +149,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setLastUpdateDate:lastUpdateDate];
                                  }];
     }
-                          completionBlock:completion];
+                          completionBlock:[self updateWithCompletion:completion]];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
@@ -116,7 +166,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setLastUpdateDate:lastUpdateDate];
                                  }];
     }
-                          completionBlock:completion];
+                          completionBlock:[self updateWithCompletion:completion]];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
@@ -135,7 +185,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setAvatarFileName:avatarFileName];
                                  }];
     }
-                          completionBlock:completion];
+                          completionBlock:[self updateWithCompletion:completion]];
 }
 
 - (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
@@ -150,7 +200,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setAvatarFileName:avatarFileName];
                                  }];
     }
-                          completionBlock:completion];
+                          completionBlock:[self updateWithCompletion:completion]];
 }
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
@@ -163,7 +213,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setAvatarFileName:avatarFileName];
                                  }];
     }
-                          completionBlock:completion];
+                          completionBlock:[self updateWithCompletion:completion]];
 }
 
 - (void)updateWithLastUpdateDate:(nullable NSDate *)lastUpdateDate
@@ -176,7 +226,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setLastUpdateDate:lastUpdateDate];
                                  }];
     }
-                          completionBlock:completion];
+                          completionBlock:[self updateWithCompletion:completion]];
 }
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
@@ -195,7 +245,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setLastUpdateDate:nil];
                                  }];
     }
-                          completionBlock:completion];
+                          completionBlock:[self updateWithCompletion:completion]];
 }
 
 - (void)updateImmediatelyWithProfileKey:(OWSAES256Key *)profileKey
@@ -212,7 +262,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setProfileKey:profileKey];
                                  }];
     }
-                          completionBlock:completion];
+                          completionBlock:[self updateWithCompletion:completion]];
 }
 
 #pragma mark - Database Connection Accessors

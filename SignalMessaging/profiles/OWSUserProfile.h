@@ -10,6 +10,13 @@ typedef void (^OWSUserProfileCompletion)(void);
 
 @class OWSAES256Key;
 
+extern NSString *const kNSNotificationName_LocalProfileDidChange;
+extern NSString *const kNSNotificationName_OtherUsersProfileWillChange;
+extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
+
+extern NSString *const kNSNotificationKey_ProfileRecipientId;
+extern NSString *const kNSNotificationKey_ProfileGroupId;
+
 extern NSString *const kLocalProfileUniqueId;
 
 // This class should be completely thread-safe.

@@ -64,6 +64,7 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/TSUnreadIndicatorInteraction.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/UIUtil.h>

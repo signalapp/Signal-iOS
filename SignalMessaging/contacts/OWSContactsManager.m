@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import "OWSFormat.h"
 #import "OWSProfileManager.h"
+#import "OWSUserProfile.h"
 #import "ViewControllerUtils.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIColor+OWS.h>

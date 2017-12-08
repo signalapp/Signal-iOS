@@ -19,6 +19,7 @@
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalMessaging/OWSAvatarBuilder.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
