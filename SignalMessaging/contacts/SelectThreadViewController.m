@@ -83,18 +83,22 @@ NS_ASSUME_NONNULL_BEGIN
     [searchBar sizeToFit];
 
     UIView *header = [self.selectThreadViewDelegate createHeaderWithSearchBar:searchBar];
+    if (!header) {
+        header = searchBar;
+    }
+    [self.view addSubview:header];
+    [header autoPinWidthToSuperview];
+    [header autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [header setCompressionResistanceVerticalHigh];
+    [header setContentHuggingVerticalHigh];
 
     // Table
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;
     [self.view addSubview:self.tableViewController.view];
     [_tableViewController.view autoPinWidthToSuperview];
-    [_tableViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    if (header) {
-        _tableViewController.tableView.tableHeaderView = header;
-    } else {
-        _tableViewController.tableView.tableHeaderView = searchBar;
-    }
+    [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:header];
+
     [self autoPinViewToBottomGuideOrKeyboard:self.tableViewController.view];
 }
 
