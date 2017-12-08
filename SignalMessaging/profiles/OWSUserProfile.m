@@ -76,44 +76,41 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 #pragma mark - Update With... Methods
 
-- (OWSUserProfileCompletion)updateWithCompletion:(nullable OWSUserProfileCompletion)externalCompletion
+- (void)finalizeWithCompletion:(nullable OWSUserProfileCompletion)externalCompletion
 {
-    return ^{
-        if (externalCompletion) {
-            externalCompletion();
-        }
+    if (externalCompletion) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), externalCompletion);
+    }
 
-        BOOL isLocalUserProfile = [self.recipientId isEqualToString:kLocalProfileUniqueId];
+    BOOL isLocalUserProfile = [self.recipientId isEqualToString:kLocalProfileUniqueId];
 
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (isLocalUserProfile) {
-                // We populate an initial (empty) profile on launch of a new install, but until
-                // we have a registered account, syncing will fail (and there could not be any
-                // linked device to sync to at this point anyway).
-                if ([TSAccountManager isRegistered]) {
-                    [CurrentAppContext() doMultiDeviceUpdateWithProfileKey:self.profileKey];
-                }
-
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
-                                       object:nil
-                                     userInfo:nil];
-            } else {
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_OtherUsersProfileWillChange
-                                       object:nil
-                                     userInfo:@{
-                                         kNSNotificationKey_ProfileRecipientId : self.recipientId,
-                                     }];
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_OtherUsersProfileDidChange
-                                       object:nil
-                                     userInfo:@{
-                                         kNSNotificationKey_ProfileRecipientId : self.recipientId,
-                                     }];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (isLocalUserProfile) {
+            // We populate an initial (empty) profile on launch of a new install, but until
+            // we have a registered account, syncing will fail (and there could not be any
+            // linked device to sync to at this point anyway).
+            if ([TSAccountManager isRegistered]) {
+                [CurrentAppContext() doMultiDeviceUpdateWithProfileKey:self.profileKey];
             }
-        });
-    };
+
+            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
+                                                                     object:nil
+                                                                   userInfo:nil];
+        } else {
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_OtherUsersProfileWillChange
+                                   object:nil
+                                 userInfo:@{
+                                     kNSNotificationKey_ProfileRecipientId : self.recipientId,
+                                 }];
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_OtherUsersProfileDidChange
+                                   object:nil
+                                 userInfo:@{
+                                     kNSNotificationKey_ProfileRecipientId : self.recipientId,
+                                 }];
+        }
+    });
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
@@ -122,15 +119,15 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(OWSUserProfile *userProfile) {
                                      [userProfile setProfileName:[profileName ows_stripped]];
                                      [userProfile setAvatarUrlPath:avatarUrlPath];
                                      [userProfile setAvatarFileName:avatarFileName];
                                  }];
-    }
-                          completionBlock:[self updateWithCompletion:completion]];
+    }];
+    [self finalizeWithCompletion:completion];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
@@ -140,7 +137,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(OWSUserProfile *userProfile) {
                                      [userProfile setProfileName:[profileName ows_stripped]];
@@ -148,8 +145,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setAvatarFileName:avatarFileName];
                                      [userProfile setLastUpdateDate:lastUpdateDate];
                                  }];
-    }
-                          completionBlock:[self updateWithCompletion:completion]];
+    }];
+    [self finalizeWithCompletion:completion];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
@@ -158,15 +155,15 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(OWSUserProfile *userProfile) {
                                      [userProfile setProfileName:[profileName ows_stripped]];
                                      [userProfile setAvatarUrlPath:avatarUrlPath];
                                      [userProfile setLastUpdateDate:lastUpdateDate];
                                  }];
-    }
-                          completionBlock:[self updateWithCompletion:completion]];
+    }];
+    [self finalizeWithCompletion:completion];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
@@ -176,7 +173,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(OWSUserProfile *userProfile) {
                                      [userProfile setProfileName:[profileName ows_stripped]];
@@ -184,8 +181,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setAvatarUrlPath:avatarUrlPath];
                                      [userProfile setAvatarFileName:avatarFileName];
                                  }];
-    }
-                          completionBlock:[self updateWithCompletion:completion]];
+    }];
+    [self finalizeWithCompletion:completion];
 }
 
 - (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
@@ -193,40 +190,40 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                    dbConnection:(YapDatabaseConnection *)dbConnection
                      completion:(nullable OWSUserProfileCompletion)completion
 {
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(OWSUserProfile *userProfile) {
                                      [userProfile setAvatarUrlPath:avatarUrlPath];
                                      [userProfile setAvatarFileName:avatarFileName];
                                  }];
-    }
-                          completionBlock:[self updateWithCompletion:completion]];
+    }];
+    [self finalizeWithCompletion:completion];
 }
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
                     dbConnection:(YapDatabaseConnection *)dbConnection
                       completion:(nullable OWSUserProfileCompletion)completion
 {
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(OWSUserProfile *userProfile) {
                                      [userProfile setAvatarFileName:avatarFileName];
                                  }];
-    }
-                          completionBlock:[self updateWithCompletion:completion]];
+    }];
+    [self finalizeWithCompletion:completion];
 }
 
 - (void)updateWithLastUpdateDate:(nullable NSDate *)lastUpdateDate
                     dbConnection:(YapDatabaseConnection *)dbConnection
                       completion:(nullable OWSUserProfileCompletion)completion
 {
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(OWSUserProfile *userProfile) {
                                      [userProfile setLastUpdateDate:lastUpdateDate];
                                  }];
-    }
-                          completionBlock:[self updateWithCompletion:completion]];
+    }];
+    [self finalizeWithCompletion:completion];
 }
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
@@ -235,7 +232,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 {
     OWSAssert(profileKey);
 
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(OWSUserProfile *userProfile) {
                                      [userProfile setProfileKey:profileKey];
@@ -244,8 +241,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                      [userProfile setAvatarFileName:nil];
                                      [userProfile setLastUpdateDate:nil];
                                  }];
-    }
-                          completionBlock:[self updateWithCompletion:completion]];
+    }];
+    [self finalizeWithCompletion:completion];
 }
 
 - (void)updateImmediatelyWithProfileKey:(OWSAES256Key *)profileKey
@@ -256,13 +253,13 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
     self.profileKey = profileKey;
 
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(OWSUserProfile *userProfile) {
                                      [userProfile setProfileKey:profileKey];
                                  }];
-    }
-                          completionBlock:[self updateWithCompletion:completion]];
+    }];
+    [self finalizeWithCompletion:completion];
 }
 
 #pragma mark - Database Connection Accessors
