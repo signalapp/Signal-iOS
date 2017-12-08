@@ -3,9 +3,9 @@
 //
 
 #import "Signal-Swift.h"
-#import "UIUtil.h"
 #import "UIViewController+Permissions.h"
 #import <AVFoundation/AVFoundation.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN

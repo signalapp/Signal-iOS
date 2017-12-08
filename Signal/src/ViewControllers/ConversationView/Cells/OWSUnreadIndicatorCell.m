@@ -5,11 +5,11 @@
 #import "OWSUnreadIndicatorCell.h"
 #import "ConversationViewItem.h"
 #import "NSBundle+JSQMessages.h"
-#import "TSUnreadIndicatorInteraction.h"
-#import "UIColor+OWS.h"
-#import "UIFont+OWS.h"
-#import "UIView+OWS.h"
 #import <JSQMessagesViewController/UIView+JSQMessages.h>
+#import <SignalMessaging/TSUnreadIndicatorInteraction.h>
+#import <SignalMessaging/UIColor+OWS.h>
+#import <SignalMessaging/UIFont+OWS.h>
+#import <SignalMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

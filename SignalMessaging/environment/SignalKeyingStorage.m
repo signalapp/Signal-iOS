@@ -3,8 +3,8 @@
 //
 
 #import "SignalKeyingStorage.h"
-#import "SecurityUtils.h"
-#import "TSStorageManager.h"
+#import <SignalServiceKit/SecurityUtils.h>
+#import <SignalServiceKit/TSStorageManager.h>
 
 #define SignalKeyingCollection @"SignalKeyingCollection"
 

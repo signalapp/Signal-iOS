@@ -3,18 +3,18 @@
 //
 
 #import "SelectRecipientViewController.h"
-#import "ContactTableViewCell.h"
-#import "ContactsViewHelper.h"
 #import "CountryCodeViewController.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
-#import "OWSTableViewController.h"
 #import "PhoneNumber.h"
 #import "Signal-Swift.h"
-#import "UIFont+OWS.h"
-#import "UIUtil.h"
-#import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
+#import <SignalMessaging/ContactTableViewCell.h>
+#import <SignalMessaging/ContactsViewHelper.h>
+#import <SignalMessaging/OWSTableViewController.h>
+#import <SignalMessaging/UIFont+OWS.h>
+#import <SignalMessaging/UIUtil.h>
+#import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>

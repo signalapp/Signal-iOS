@@ -7,8 +7,6 @@
 
 // Separate iOS Frameworks from other imports.
 #import "AppSettingsViewController.h"
-#import "AttachmentSharing.h"
-#import "ContactTableViewCell.h"
 #import "ConversationViewItem.h"
 #import "DateUtil.h"
 #import "DebugUIPage.h"
@@ -21,8 +19,6 @@
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSBezierPathView.h"
 #import "OWSCallNotificationsAdaptee.h"
-#import "OWSContactAvatarBuilder.h"
-#import "OWSContactsManager.h"
 #import "OWSDatabaseMigration.h"
 #import "OWSLogger.h"
 #import "OWSNavigationController.h"
@@ -35,12 +31,6 @@
 #import "PushManager.h"
 #import "RemoteVideoView.h"
 #import "SignalApp.h"
-#import "ThreadUtil.h"
-#import "UIColor+OWS.h"
-#import "UIFont+OWS.h"
-#import "UIImage+OWS.h"
-#import "UIUtil.h"
-#import "UIView+OWS.h"
 #import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
@@ -52,10 +42,20 @@
 #import <JSQSystemSoundPlayer/JSQSystemSoundPlayer.h>
 #import <PureLayout/PureLayout.h>
 #import <Reachability/Reachability.h>
+#import <SignalMessaging/AttachmentSharing.h>
+#import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSContactAvatarBuilder.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/Release.h>
+#import <SignalMessaging/ThreadUtil.h>
+#import <SignalMessaging/UIColor+OWS.h>
+#import <SignalMessaging/UIFont+OWS.h>
+#import <SignalMessaging/UIImage+OWS.h>
+#import <SignalMessaging/UIUtil.h>
+#import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/Asserts.h>

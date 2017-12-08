@@ -15,7 +15,7 @@
 #import "ProfileViewController.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
-#import "UIUtil.h"
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
 

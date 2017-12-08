@@ -12,9 +12,9 @@
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "UIColor+OWS.h"
-#import "UIUtil.h"
 #import "UIView+OWS.h"
 #import <MessageUI/MessageUI.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalServiceKit/SignalAccount.h>

@@ -18,10 +18,10 @@
 #import "TSDatabaseView.h"
 #import "TSGroupThread.h"
 #import "TSStorageManager.h"
-#import "UIUtil.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
