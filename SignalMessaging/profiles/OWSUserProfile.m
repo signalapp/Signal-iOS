@@ -97,11 +97,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
     BOOL isLocalUserProfile = [self.recipientId isEqualToString:kLocalProfileUniqueId];
 
-    //    if (isLocalUserProfile) {
-    //        [DDLog flushLog];
-    //        DDLogError(@"%@", self.logTag);
-    //    }
-
     dispatch_async(dispatch_get_main_queue(), ^{
         if (isLocalUserProfile) {
             // We populate an initial (empty) profile on launch of a new install, but until
@@ -137,8 +132,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
-    DDLogVerbose(@"%@ %s, before: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-
     if (self.hasEverBeenSaved) {
         BOOL didChange = NO;
 
@@ -174,8 +167,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
-    DDLogVerbose(@"%@ %s, before: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-
     if (self.hasEverBeenSaved) {
         BOOL didChange = NO;
 
@@ -213,8 +204,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
-    DDLogVerbose(@"%@ %s, before: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-
     if (self.hasEverBeenSaved) {
         BOOL didChange = NO;
 
@@ -251,8 +240,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
-    DDLogVerbose(@"%@ %s, before: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-
     if (self.hasEverBeenSaved) {
         BOOL didChange = NO;
 
@@ -288,8 +275,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                    dbConnection:(YapDatabaseConnection *)dbConnection
                      completion:(nullable OWSUserProfileCompletion)completion
 {
-    DDLogVerbose(@"%@ %s, before: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-
     if (self.hasEverBeenSaved) {
         BOOL didChange = NO;
 
@@ -321,8 +306,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                     dbConnection:(YapDatabaseConnection *)dbConnection
                       completion:(nullable OWSUserProfileCompletion)completion
 {
-    DDLogVerbose(@"%@ %s, before: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-
     if (self.hasEverBeenSaved) {
         BOOL didChange = NO;
 
@@ -351,8 +334,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                     dbConnection:(YapDatabaseConnection *)dbConnection
                       completion:(nullable OWSUserProfileCompletion)completion
 {
-    DDLogVerbose(@"%@ %s, before: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-
     if (self.hasEverBeenSaved) {
         BOOL didChange = NO;
 
@@ -381,8 +362,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                dbConnection:(YapDatabaseConnection *)dbConnection
                  completion:(nullable OWSUserProfileCompletion)completion;
 {
-    DDLogVerbose(@"%@ %s, before: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-
     OWSAssert(profileKey);
 
     if (self.hasEverBeenSaved) {
@@ -421,8 +400,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                 dbConnection:(YapDatabaseConnection *)dbConnection
                   completion:(nullable OWSUserProfileCompletion)completion;
 {
-    DDLogVerbose(@"%@ %s, before: %@", self.logTag, __PRETTY_FUNCTION__, self.debugDescription);
-
     OWSAssert(profileKey);
 
     if (self.hasEverBeenSaved) {
