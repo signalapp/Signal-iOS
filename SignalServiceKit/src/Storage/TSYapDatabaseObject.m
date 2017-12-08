@@ -208,13 +208,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
                            changeBlock:(void (^)(id))changeBlock
 {
-    [self applyChangeToSelfAndLatestCopy:transaction changeBlock:changeBlock saveIfMissing:NO];
-}
-
-- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
-                           changeBlock:(void (^)(id))changeBlock
-                         saveIfMissing:(BOOL)saveIfMissing
-{
     OWSAssert(transaction);
 
     changeBlock(self);
@@ -224,8 +217,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (latestInstance) {
         changeBlock(latestInstance);
         [latestInstance saveWithTransaction:transaction];
-    } else if (saveIfMissing) {
-        [self saveWithTransaction:transaction];
     }
 }
 
