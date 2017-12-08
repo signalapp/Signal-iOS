@@ -15,6 +15,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     private var hasInitialRootViewController = false
     private var isReadyForAppExtensions = false
 
+    var loadViewController: SAELoadViewController!
+
     override open func loadView() {
         super.loadView()
 
@@ -84,7 +86,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         // upgrade process may depend on Environment.
         VersionMigrations.performUpdateCheck()
 
-        let loadViewController = SAELoadViewController(delegate:self)
+        self.loadViewController = SAELoadViewController(delegate:self)
         self.pushViewController(loadViewController, animated: false)
         self.isNavigationBarHidden = true
 
@@ -342,15 +344,21 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     // MARK: ShareViewDelegate, SAEFailedViewDelegate
 
     public func shareViewWasCompleted() {
-        self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+        self.dismiss(animated: true) {
+            self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+        }
     }
 
     public func shareViewWasCancelled() {
-        self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+        self.dismiss(animated: true) {
+            self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+        }
     }
 
     public func shareViewFailed(error: Error) {
-        self.extensionContext!.cancelRequest(withError: error)
+        self.dismiss(animated: true) {
+            self.extensionContext!.cancelRequest(withError: error)
+        }
     }
 
     // MARK: Helpers
@@ -358,6 +366,11 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     private func presentConversationPicker() {
         // pause any animation revealing the "loading" screen
         self.view.layer.removeAllAnimations()
+
+        // Once we've presented the conversation picker, we hide the loading VC
+        // so that it's not revealed when we eventually dismiss the share extension.
+        loadViewController.view.isHidden = true
+
         self.buildAttachment().then { attachment -> Void in
             let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: self)
             let navigationController = UINavigationController(rootViewController: conversationPicker)
@@ -378,6 +391,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
     enum ShareViewControllerError: Error {
         case assertionError(description: String)
+        case unsupportedMedia
+
     }
 
     private func buildAttachment() -> Promise<SignalAttachment> {
@@ -394,13 +409,22 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         }
         Logger.info("\(self.logTag) attachment: \(itemProvider)")
 
-        // TODO support other utiTypes
-        let utiType = kUTTypeImage as String
+        // Order matters if we want to take advantage of share conversion in loadItem,
+        // Though currently we just use "data" for most things and rely on our SignalAttachment
+        // class to convert types for us.
+        let utiTypes: [String] = [kUTTypeImage as String,
+                                  kUTTypeURL as String,
+                                  kUTTypeData as String]
 
-        guard itemProvider.hasItemConformingToTypeIdentifier(utiType) else {
-            let error = ShareViewControllerError.assertionError(description: "only supporting images for now")
+        let matchingUtiType = utiTypes.first { (utiType: String) -> Bool in
+            itemProvider.hasItemConformingToTypeIdentifier(utiType)
+        }
+
+        guard let utiType = matchingUtiType else {
+            let error = ShareViewControllerError.unsupportedMedia
             return Promise(error: error)
         }
+        Logger.debug("\(logTag) matched utiType: \(utiType)")
 
         let (promise, fulfill, reject) = Promise<URL>.pending()
 

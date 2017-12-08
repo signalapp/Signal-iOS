@@ -150,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - AttachmentApprovalViewControllerDelegate
 
-- (void)didApproveAttachment
+- (void)didApproveAttachmentWithAttachment:(SignalAttachment *)attachment
 {
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     [ThreadUtil sendMessageWithAttachment:self.attachment inThread:self.thread messageSender:self.messageSender];
@@ -163,7 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-- (void)didCancelAttachment
+- (void)didCancelAttachmentWithAttachment:(SignalAttachment *)attachment
 {
     [self cancelShareExperience];
 }

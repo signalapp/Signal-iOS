@@ -11,6 +11,7 @@ import SignalServiceKit
 public enum MediaMessageViewMode: UInt {
     case large
     case small
+    case attachmentApproval
 }
 
 @objc
@@ -34,6 +35,9 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     @objc
     public var audioPlayButton: UIButton?
+
+    @objc
+    public var videoPlayButton: UIImageView?
 
     @objc
     public var playbackState = AudioPlaybackState.stopped {
@@ -129,7 +133,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     private func stackSpacing() -> CGFloat {
         switch mode {
-        case .large:
+        case .large, .attachmentApproval:
             return CGFloat(10)
         case .small:
             return CGFloat(5)
@@ -250,13 +254,19 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         addSubviewWithScaleAspectFitLayout(view:imageView, aspectRatio:aspectRatio)
         contentView = imageView
 
-        let videoPlayIcon = UIImage(named:"play_button")
-        let videoPlayButton = UIImageView(image:videoPlayIcon)
-        imageView.addSubview(videoPlayButton)
-        videoPlayButton.autoCenterInSuperview()
+        // attachment approval provides it's own play button to keep it
+        // at the proper zoom scale.
+        if mode != .attachmentApproval {
+            let videoPlayIcon = UIImage(named:"play_button")!
+            let videoPlayButton = UIImageView(image: videoPlayIcon)
+            self.videoPlayButton = videoPlayButton
+            videoPlayButton.contentMode = .scaleAspectFit
+            self.addSubview(videoPlayButton)
+            videoPlayButton.autoCenterInSuperview()
 
-        imageView.isUserInteractionEnabled = true
-        imageView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(videoTapped)))
+            imageView.isUserInteractionEnabled = true
+            imageView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(videoTapped)))
+        }
     }
 
     private func createGenericPreview() {
@@ -282,7 +292,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     private func createHeroViewSize() -> CGFloat {
         switch mode {
-        case .large:
+        case .large, .attachmentApproval:
             return ScaleFromIPhone5To7Plus(175, 225)
         case .small:
             return ScaleFromIPhone5To7Plus(80, 80)
@@ -310,7 +320,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     private func labelFont() -> UIFont {
         switch mode {
-        case .large:
+        case .large, .attachmentApproval:
             return UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(18, 24))
         case .small:
             return UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(14, 14))
@@ -416,6 +426,10 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     @objc
     func imageTapped(sender: UIGestureRecognizer) {
+        // Approval view handles it's own zooming gesture
+        guard mode != .attachmentApproval else {
+            return
+        }
         guard sender.state == .recognized else {
             return
         }
@@ -430,16 +444,25 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         let convertedRect = fromView.convert(fromView.bounds, to:window)
         let viewController = FullImageViewController(attachment:attachment, from:convertedRect)
         viewController.present(from:fromViewController)
-        Logger.error("\(TAG) FIXME. image tapped.")
     }
 
     // MARK: - Video Playback
 
     @objc
     func videoTapped(sender: UIGestureRecognizer) {
+        // Approval view handles it's own play gesture
+        guard mode != .attachmentApproval else {
+            return
+        }
         guard sender.state == .recognized else {
             return
         }
+
+        playVideo()
+    }
+
+    @objc
+    public func playVideo() {
         guard let dataUrl = attachment.dataUrl else {
             return
         }
