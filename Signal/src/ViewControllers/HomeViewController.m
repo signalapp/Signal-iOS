@@ -287,6 +287,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }
 
     [self updateBarButtonItems];
+
+    [self registerDynamicTypeObserver];
 }
 
 - (void)updateBarButtonItems
@@ -598,6 +600,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     InboxTableViewCell *cell =
         [self.tableView dequeueReusableCellWithIdentifier:InboxTableViewCell.cellReuseIdentifier];
     OWSAssert(cell);
+
+    [cell updateFonts];
 
     TSThread *thread = [self threadForIndexPath:indexPath];
 
@@ -1087,6 +1091,18 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                             value:[UIColor ows_darkGrayColor]
                             range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     _emptyBoxLabel.attributedText = fullLabelString;
+}
+
+#pragma mark - Dynamic type
+- (void)registerDynamicTypeObserver
+{
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    [center addObserver:self selector:@selector(dynamicTypeSizeDidChange:) name:UIContentSizeCategoryDidChangeNotification object:nil];
+}
+
+- (void)dynamicTypeSizeDidChange:(NSNotification *)notification
+{
+    [[self tableView] reloadData];
 }
 
 @end

@@ -15,25 +15,46 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define ARCHIVE_IMAGE_VIEW_WIDTH 22.0f
-#define DELETE_IMAGE_VIEW_WIDTH 19.0f
-#define TIME_LABEL_SIZE 11
-#define DATE_LABEL_SIZE 13
-#define SWIPE_ARCHIVE_OFFSET -50
-
-const NSUInteger kAvatarViewDiameter = 52;
+const NSUInteger kAvatarViewDiameter = 44;
 
 @interface InboxTableViewCell ()
 
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
+@property (nonatomic) UILabel *dummyLabel;
 @property (nonatomic) UILabel *timeLabel;
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) OWSContactsManager *contactsManager;
+
+@property NSLayoutConstraint *nAvatarWidth;
+@property NSLayoutConstraint *nNameLeading;
+@property NSLayoutConstraint *nNameTop;
+@property NSLayoutConstraint *nTimeLeading;
+@property NSLayoutConstraint *nTimeTrailing;
+@property NSLayoutConstraint *nTimeTop;
+@property NSLayoutConstraint *nTimeBottom;
+@property NSLayoutConstraint *nTimeCenter;
+@property NSLayoutConstraint *nSnippetBottom;
+@property NSLayoutConstraint *nDummyLeading;
+@property NSLayoutConstraint *nDummyTrailing;
+@property NSLayoutConstraint *nDummyTop;
+@property NSLayoutConstraint *nDummyBottom;
+
+@property NSLayoutConstraint *aAvatarWidth;
+@property NSLayoutConstraint *aNameLeading;
+@property NSLayoutConstraint *aNameTop;
+@property NSLayoutConstraint *aNameTrailing;
+@property NSLayoutConstraint *aTimeLeading;
+@property NSLayoutConstraint *aTimeTrailing;
+@property NSLayoutConstraint *aTimeTop;
+@property NSLayoutConstraint *aTimeBottom;
+@property NSLayoutConstraint *aSnippetBottom;
+
+@property bool accessibilityMode;
 
 @end
 
@@ -67,70 +88,47 @@ const NSUInteger kAvatarViewDiameter = 52;
     self.preservesSuperviewLayoutMargins = YES;
     self.contentView.preservesSuperviewLayoutMargins = YES;
 
-    UILayoutGuide *margins = self.contentView.layoutMarginsGuide;
-
     self.backgroundColor = [UIColor whiteColor];
 
     self.avatarView = [[AvatarImageView alloc] init];
     [self.contentView addSubview:self.avatarView];
     [self.avatarView setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [self.avatarView.widthAnchor constraintEqualToConstant:kAvatarViewDiameter].active = YES;
-    [self.avatarView.heightAnchor constraintEqualToConstant:kAvatarViewDiameter].active = YES;
-    [self.avatarView.leadingAnchor constraintEqualToAnchor:margins.leadingAnchor].active = YES;
-    [self.avatarView.centerYAnchor constraintEqualToAnchor:margins.centerYAnchor].active = YES;
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    self.nameLabel.font = [UIFont ows_boldFontWithSize:14.0f];
+    self.nameLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     [self.contentView addSubview:self.nameLabel];
     [self.nameLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [self.nameLabel.leadingAnchor constraintEqualToAnchor:self.avatarView.trailingAnchor constant:16.0].active = YES;
-    [self.nameLabel.topAnchor constraintEqualToAnchor:margins.topAnchor].active = YES;
-    [self.nameLabel setContentHuggingPriority:1000 forAxis:UILayoutConstraintAxisVertical];
-    [self.nameLabel setContentCompressionResistancePriority:1000 forAxis:UILayoutConstraintAxisVertical];
 
     self.snippetLabel = [UILabel new];
-    self.snippetLabel.font = [UIFont ows_regularFontWithSize:14.f];
+    self.snippetLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
     self.snippetLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.snippetLabel.textColor = [UIColor colorWithWhite:2 / 3.f alpha:1.f];
     self.snippetLabel.numberOfLines = 2;
-    self.snippetLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [self.contentView addSubview:self.snippetLabel];
     [self.snippetLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [self.snippetLabel.leadingAnchor constraintEqualToAnchor:self.nameLabel.leadingAnchor].active = YES;
-    [self.snippetLabel.topAnchor constraintEqualToAnchor:self.nameLabel.bottomAnchor constant:2.0].active = YES;
-    [self.snippetLabel.bottomAnchor constraintLessThanOrEqualToAnchor:margins.bottomAnchor].active = YES;
-    [self.snippetLabel setContentHuggingPriority:1000 forAxis:UILayoutConstraintAxisVertical];
+
+    self.dummyLabel = [UILabel new];
+    self.dummyLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+    self.dummyLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.dummyLabel.numberOfLines = 2;
+    self.dummyLabel.text = @"\n";
+    self.dummyLabel.hidden = YES;
+    [self.contentView addSubview:self.dummyLabel];
+    [self.dummyLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
 
     self.timeLabel = [UILabel new];
-    self.timeLabel.font = [UIFont ows_lightFontWithSize:14.f];
+    self.timeLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
     [self.contentView addSubview:self.timeLabel];
     [self.timeLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [self.timeLabel.leadingAnchor constraintEqualToAnchor:self.nameLabel.trailingAnchor constant:4.0].active = YES;
-    [self.timeLabel.trailingAnchor constraintEqualToAnchor:margins.trailingAnchor].active = YES;
-    [self.timeLabel.topAnchor constraintGreaterThanOrEqualToAnchor:margins.topAnchor].active = YES;
-    [self.timeLabel.bottomAnchor constraintLessThanOrEqualToAnchor:self.snippetLabel.topAnchor].active = YES;
-    [self.timeLabel.centerYAnchor constraintEqualToAnchor:self.nameLabel.centerYAnchor].active = YES;
-    [self.timeLabel setContentHuggingPriority:500 forAxis:UILayoutConstraintAxisHorizontal];
-    [self.timeLabel setContentCompressionResistancePriority:1000 forAxis:UILayoutConstraintAxisHorizontal];
 
-    const int kunreadBadgeSize = 24;
-    self.unreadBadge = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kunreadBadgeSize, kunreadBadgeSize)];
-    self.unreadBadge.layer.cornerRadius = kunreadBadgeSize / 2;
+    self.unreadBadge = [UIView new];
     [self.unreadBadge setBackgroundColor:[UIColor ows_materialBlueColor]];
     [self.contentView addSubview:self.unreadBadge];
     [self.unreadBadge setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [self.unreadBadge.widthAnchor constraintEqualToConstant:kunreadBadgeSize].active = YES;
-    [self.unreadBadge.heightAnchor constraintEqualToConstant:kunreadBadgeSize].active = YES;
-    [self.unreadBadge.leadingAnchor constraintEqualToAnchor:self.snippetLabel.trailingAnchor constant:4.0].active = YES;
-    [self.unreadBadge.trailingAnchor constraintEqualToAnchor:margins.trailingAnchor].active = YES;
-    [self.unreadBadge.topAnchor constraintEqualToAnchor:self.nameLabel.bottomAnchor constant:2.0].active = YES;
-    [self.unreadBadge.bottomAnchor constraintLessThanOrEqualToAnchor:margins.bottomAnchor].active = YES;
-    [self.unreadBadge setContentHuggingPriority:500 forAxis:UILayoutConstraintAxisHorizontal];
-    [self.unreadBadge setContentCompressionResistancePriority:1000 forAxis:UILayoutConstraintAxisHorizontal];
 
     self.unreadLabel = [UILabel new];
-    self.unreadLabel.font = [UIFont ows_regularFontWithSize:12.f];
+    self.unreadLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
     self.unreadLabel.textColor = [UIColor whiteColor];
     self.unreadLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.unreadLabel.textAlignment = NSTextAlignmentCenter;
@@ -138,7 +136,136 @@ const NSUInteger kAvatarViewDiameter = 52;
     self.unreadLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.unreadLabel autoVCenterInSuperview];
     [self.unreadLabel autoPinWidthToSuperview];
+
+    [self addSharedConstraints];
+    [self addNormalConstraints];
+    [self addAccessibilityConstraints];
 }
+
+#pragma mark - Dynamic layout
+
+- (void)addSharedConstraints
+{
+    UILayoutGuide *margins = self.contentView.layoutMarginsGuide;
+
+    [self.avatarView.heightAnchor constraintEqualToConstant:kAvatarViewDiameter].active = YES;
+    [self.avatarView.leadingAnchor constraintEqualToAnchor:margins.leadingAnchor].active = YES;
+    [self.avatarView.centerYAnchor constraintEqualToAnchor:margins.centerYAnchor].active = YES;
+
+    [self.nameLabel setContentHuggingPriority:1000 forAxis:UILayoutConstraintAxisVertical];
+    [self.nameLabel setContentCompressionResistancePriority:1000 forAxis:UILayoutConstraintAxisVertical];
+
+    [self.snippetLabel.leadingAnchor constraintEqualToAnchor:self.nameLabel.leadingAnchor].active = YES;
+    [self.snippetLabel.topAnchor constraintEqualToAnchor:self.nameLabel.bottomAnchor constant:2.0].active = YES;
+    [self.snippetLabel setContentHuggingPriority:1000 forAxis:UILayoutConstraintAxisVertical];
+
+    [self.dummyLabel setContentHuggingPriority:1000 forAxis:UILayoutConstraintAxisVertical];
+
+    [self.timeLabel setContentHuggingPriority:500 forAxis:UILayoutConstraintAxisHorizontal];
+    [self.timeLabel setContentCompressionResistancePriority:1000 forAxis:UILayoutConstraintAxisHorizontal];
+
+    [self.unreadBadge.widthAnchor constraintEqualToAnchor:self.unreadLabel.heightAnchor constant:6.0].active = YES;
+    [self.unreadBadge.heightAnchor constraintEqualToAnchor:self.unreadLabel.heightAnchor constant:6.0].active = YES;
+    [self.unreadBadge.leadingAnchor constraintGreaterThanOrEqualToAnchor:self.snippetLabel.trailingAnchor constant:4.0].active = YES;
+    [self.unreadBadge.trailingAnchor constraintEqualToAnchor:margins.trailingAnchor].active = YES;
+    [self.unreadBadge.topAnchor constraintEqualToAnchor:self.nameLabel.bottomAnchor constant:2.0].active = YES;
+    [self.unreadBadge.bottomAnchor constraintLessThanOrEqualToAnchor:margins.bottomAnchor].active = YES;
+    [self.unreadLabel setContentCompressionResistancePriority:1000 forAxis:UILayoutConstraintAxisHorizontal];
+    [self.unreadLabel setContentCompressionResistancePriority:1000 forAxis:UILayoutConstraintAxisVertical];
+}
+
+- (void)addNormalConstraints
+{
+    UILayoutGuide *margins = self.contentView.layoutMarginsGuide;
+
+    self.nAvatarWidth = [self.avatarView.widthAnchor constraintEqualToConstant:kAvatarViewDiameter];
+    self.nNameLeading = [self.nameLabel.leadingAnchor constraintEqualToAnchor:self.avatarView.trailingAnchor constant:16.0];
+    self.nNameTop = [self.nameLabel.topAnchor constraintEqualToAnchor:margins.topAnchor];
+    self.nTimeLeading = [self.timeLabel.leadingAnchor constraintEqualToAnchor:self.nameLabel.trailingAnchor constant:4.0];
+    self.nTimeTrailing = [self.timeLabel.trailingAnchor constraintEqualToAnchor:margins.trailingAnchor];
+    self.nTimeTop = [self.timeLabel.topAnchor constraintGreaterThanOrEqualToAnchor:margins.topAnchor];
+    self.nTimeBottom = [self.timeLabel.bottomAnchor constraintLessThanOrEqualToAnchor:self.snippetLabel.topAnchor];
+    self.nTimeCenter = [self.timeLabel.centerYAnchor constraintEqualToAnchor:self.nameLabel.centerYAnchor];
+    self.nSnippetBottom = [self.snippetLabel.bottomAnchor constraintLessThanOrEqualToAnchor:margins.bottomAnchor];
+    self.nDummyLeading = [self.dummyLabel.leadingAnchor constraintEqualToAnchor:self.nameLabel.leadingAnchor];
+    self.nDummyTrailing = [self.dummyLabel.trailingAnchor constraintLessThanOrEqualToAnchor:margins.trailingAnchor];
+    self.nDummyTop = [self.dummyLabel.topAnchor constraintEqualToAnchor:self.nameLabel.bottomAnchor constant:2.0];
+    self.nDummyBottom = [self.dummyLabel.bottomAnchor constraintEqualToAnchor:margins.bottomAnchor];
+}
+
+- (void)addAccessibilityConstraints
+{
+    UILayoutGuide *margins = self.contentView.layoutMarginsGuide;
+
+    self.aAvatarWidth = [self.avatarView.widthAnchor constraintEqualToConstant:0];
+    self.aNameLeading = [self.nameLabel.leadingAnchor constraintEqualToAnchor:margins.leadingAnchor];
+    self.aNameTop = [self.nameLabel.topAnchor constraintEqualToAnchor:margins.topAnchor constant:-12.0];
+    self.aNameTrailing = [self.nameLabel.trailingAnchor constraintEqualToAnchor:margins.trailingAnchor];
+    self.aTimeLeading = [self.timeLabel.leadingAnchor constraintEqualToAnchor:margins.leadingAnchor];
+    self.aTimeTrailing = [self.timeLabel.trailingAnchor constraintLessThanOrEqualToAnchor:self.unreadBadge.leadingAnchor constant:-4.0];
+    self.aTimeTop = [self.timeLabel.topAnchor constraintEqualToAnchor:self.snippetLabel.bottomAnchor constant:2.0];
+    self.aTimeBottom = [self.timeLabel.bottomAnchor constraintEqualToAnchor:margins.bottomAnchor constant:12.0];
+}
+
+- (void)enableAccessibilityLayout:(bool)accessibility
+{
+    self.accessibilityMode = accessibility;
+
+    self.nAvatarWidth.active = !accessibility;
+    self.nNameLeading.active = !accessibility;
+    self.nNameTop.active = !accessibility;
+    self.nTimeLeading.active = !accessibility;
+    self.nTimeTrailing.active = !accessibility;
+    self.nTimeTop.active = !accessibility;
+    self.nTimeBottom.active = !accessibility;
+    self.nTimeCenter.active = !accessibility;
+    self.nSnippetBottom.active = !accessibility;
+    self.nDummyLeading.active = !accessibility;
+    self.nDummyTrailing.active = !accessibility;
+    self.nDummyTop.active = !accessibility;
+    self.nDummyBottom.active = !accessibility;
+
+    self.aAvatarWidth.active = accessibility;
+    self.aNameLeading.active = accessibility;
+    self.aNameTop.active = accessibility;
+    self.aNameTrailing.active = accessibility;
+    self.aTimeLeading.active = accessibility;
+    self.aTimeTrailing.active = accessibility;
+    self.aTimeTop.active = accessibility;
+    self.aTimeBottom.active = accessibility;
+
+    self.nameLabel.numberOfLines = accessibility ? 2 : 1;
+    self.timeLabel.textColor = accessibility ? [UIColor blackColor] : [UIColor grayColor];
+}
+
+- (void)updateFonts
+{
+    self.nameLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    self.snippetLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+    self.dummyLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+    self.timeLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+    self.unreadLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+
+    NSString *category = [[UIApplication sharedApplication] preferredContentSizeCategory];
+    [self enableAccessibilityLayout:[self isAccessibilityCategory:category]];
+}
+
+- (bool)isAccessibilityCategory:(NSString *)category
+{
+    return [category isEqualToString:UIContentSizeCategoryAccessibilityMedium]
+        || [category isEqualToString:UIContentSizeCategoryAccessibilityLarge]
+        || [category isEqualToString:UIContentSizeCategoryAccessibilityExtraLarge]
+        || [category isEqualToString:UIContentSizeCategoryAccessibilityExtraExtraLarge]
+        || [category isEqualToString:UIContentSizeCategoryAccessibilityExtraExtraExtraLarge];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    self.unreadBadge.layer.cornerRadius = self.unreadBadge.frame.size.width / 2;
+}
+
+#pragma mark -
 
 + (NSString *)cellReuseIdentifier
 {
@@ -178,35 +305,34 @@ const NSUInteger kAvatarViewDiameter = 52;
         [snippetText appendAttributedString:[[NSAttributedString alloc] initWithString:NSLocalizedString(@"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION",
                                                                                                          @"A label for conversations with blocked users.")
                                                                             attributes:@{
-                                                                                         NSFontAttributeName : [UIFont ows_mediumFontWithSize:12],
                                                                                          NSForegroundColorAttributeName : [UIColor ows_blackColor],
                                                                                          }]];
+        UIFont *subheadFont = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+        UIFontDescriptor *boldDescriptor = [[subheadFont fontDescriptor] fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitItalic];
+        UIFont *boldFont = [UIFont fontWithDescriptor:boldDescriptor size:0];
+        self.snippetLabel.font = boldFont;
     } else {
         if ([thread isMuted]) {
+            UIFont *font = [UIFont ows_elegantIconsFont:13];
+            UIFont *dynamicFont;
+            if (@available(iOS 11.0, *)) {
+                UIFontMetrics *metrics = [UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline];
+                dynamicFont = [metrics scaledFontForFont:font];
+            } else {
+                // Fallback on earlier versions
+                dynamicFont = font;
+            }
             [snippetText appendAttributedString:[[NSAttributedString alloc]
                                                  initWithString:@"\ue067  "
                                                  attributes:@{
-                                                              NSFontAttributeName : [UIFont ows_elegantIconsFont:9.f],
-                                                              NSForegroundColorAttributeName : (thread.hasUnreadMessages
-                                                                                                ? [UIColor colorWithWhite:0.1f alpha:1.f]
-                                                                                                : [UIColor lightGrayColor]),
+                                                              NSFontAttributeName:dynamicFont
                                                               }]];
         }
         NSString *displayableText = [DisplayableText displayableText:thread.lastMessageLabel];
         if (displayableText) {
-            [snippetText appendAttributedString:[[NSAttributedString alloc]
-                                                    initWithString:displayableText
-                                                        attributes:@{
-                                                            NSFontAttributeName : (thread.hasUnreadMessages
-                                                                    ? [UIFont ows_mediumFontWithSize:12]
-                                                                    : [UIFont ows_regularFontWithSize:12]),
-                                                            NSForegroundColorAttributeName :
-                                                                (thread.hasUnreadMessages ? [UIColor ows_blackColor]
-                                                                                          : [UIColor lightGrayColor]),
-                                                        }]];
+            [snippetText appendAttributedString:[[NSAttributedString alloc] initWithString:displayableText]];
         }
     }
-    [snippetText appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
 
     NSAttributedString *attributedDate = [self dateAttributedString:thread.lastMessageDate];
     NSUInteger unreadCount = [[OWSMessageManager sharedManager] unreadMessagesInThread:thread];
@@ -222,7 +348,11 @@ const NSUInteger kAvatarViewDiameter = 52;
     self.snippetLabel.attributedText = snippetText;
     self.timeLabel.attributedText = attributedDate;
 
-    self.separatorInset = UIEdgeInsetsMake(0, self.contentView.layoutMargins.left, 0, 0);
+    if (self.accessibilityMode) {
+        self.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
+    } else {
+        self.separatorInset = UIEdgeInsetsMake(0, self.contentView.layoutMargins.left, 0, 0);
+    }
 
     _timeLabel.textColor = thread.hasUnreadMessages ? [UIColor ows_materialBlueColor] : [UIColor ows_darkGrayColor];
 
@@ -272,12 +402,6 @@ const NSUInteger kAvatarViewDiameter = 52;
     [attributedString addAttribute:NSForegroundColorAttributeName
                              value:[UIColor ows_darkGrayColor]
                              range:NSMakeRange(0, timeString.length)];
-
-
-    [attributedString addAttribute:NSFontAttributeName
-                             value:[UIFont ows_regularFontWithSize:TIME_LABEL_SIZE]
-                             range:NSMakeRange(0, timeString.length)];
-
 
     return attributedString;
 }
@@ -340,7 +464,7 @@ const NSUInteger kAvatarViewDiameter = 52;
     } else {
         name = [contactsManager attributedStringForConversationTitleWithPhoneIdentifier:thread.contactIdentifier
                                                                             primaryFont:self.nameLabel.font
-                                                                          secondaryFont:[UIFont ows_footnoteFont]];
+                                                                          secondaryFont:[UIFont preferredFontForTextStyle:UIFontTextStyleCaption1]];
     }
     
     self.nameLabel.attributedText = name;

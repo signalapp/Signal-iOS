@@ -9,6 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface InboxTableViewCell : UITableViewCell
 
+- (void)updateFonts;
+
 + (NSString *)cellReuseIdentifier;
 
 - (void)configureWithThread:(TSThread *)thread
