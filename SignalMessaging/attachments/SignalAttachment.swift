@@ -13,6 +13,7 @@ enum SignalAttachmentError: Error {
     case invalidData
     case couldNotParseImage
     case couldNotConvertToJpeg
+    case couldNotConvertToMpeg4
     case invalidFileFormat
 }
 
@@ -49,6 +50,8 @@ extension SignalAttachmentError: LocalizedError {
             return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG", comment: "Attachment error message for image attachments which could not be converted to JPEG")
         case .invalidFileFormat:
             return NSLocalizedString("ATTACHMENT_ERROR_INVALID_FILE_FORMAT", comment: "Attachment error message for attachments with an invalid file format")
+        case .couldNotConvertToMpeg4:
+            return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4", comment: "Attachment error message for video attachments which could not be converted to MP4")
         }
     }
 }
@@ -351,6 +354,10 @@ public class SignalAttachment: NSObject {
     // for Signal attachments.
     private class var outputImageUTISet: Set<String> {
         return MIMETypeUtil.supportedImageUTITypes().union(animatedImageUTISet)
+    }
+
+    private class var outputVideoUTISet: Set<String> {
+        return Set([kUTTypeMPEG4 as String])
     }
 
     // Returns the set of UTIs that correspond to valid animated image formats
@@ -767,10 +774,91 @@ public class SignalAttachment: NSObject {
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
     private class func videoAttachment(dataSource: DataSource?, dataUTI: String) -> SignalAttachment {
-        return newAttachment(dataSource : dataSource,
-                             dataUTI : dataUTI,
-                             validUTISet : videoUTISet,
-                             maxFileSize : kMaxFileSizeVideo)
+        guard let dataSource = dataSource else {
+            let dataSource = DataSourceValue.emptyDataSource()
+            let attachment = SignalAttachment(dataSource:dataSource, dataUTI: dataUTI)
+            attachment.error = .missingData
+            return attachment
+        }
+
+        if isInputVideoValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) {
+            return newAttachment(dataSource: dataSource,
+                                 dataUTI: dataUTI,
+                                 validUTISet: videoUTISet,
+                                 maxFileSize: kMaxFileSizeVideo)
+        } else {
+            // convert to mp4
+            return compressVideoAsMp4(dataSource: dataSource, dataUTI: dataUTI)
+        }
+    }
+
+    class var videoTempPath: URL {
+        let videoDir = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("video")
+        OWSFileSystem.ensureDirectoryExists(videoDir.path)
+        return videoDir
+    }
+
+    class func compressVideoAsMp4(dataSource: DataSource, dataUTI: String) -> SignalAttachment {
+        Logger.debug("\(self.TAG) in \(#function)")
+
+        guard let url = dataSource.dataUrl() else {
+            let attachment = SignalAttachment(dataSource : DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
+            attachment.error = .missingData
+            return attachment
+        }
+
+        let asset = AVAsset(url: url)
+
+        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetMediumQuality) else {
+            let attachment = SignalAttachment(dataSource : DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
+            attachment.error = .couldNotConvertToMpeg4
+            return attachment
+        }
+
+        exportSession.shouldOptimizeForNetworkUse = true
+        exportSession.outputFileType = AVFileTypeMPEG4
+
+        let exportURL = videoTempPath.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")
+        exportSession.outputURL = exportURL
+
+        Logger.debug("\(self.TAG) starting video export")
+        let semaphore = DispatchSemaphore(value: 0)
+        exportSession.exportAsynchronously {
+            Logger.debug("\(self.TAG) Completed video export")
+            semaphore.signal()
+        }
+
+        // FIXME make the API async, return progress.
+        Logger.debug("\(self.TAG) Waiting for video export")
+        semaphore.wait()
+        Logger.debug("\(self.TAG) Done waiting for video export")
+
+        let baseFilename = dataSource.sourceFilename
+        let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
+
+        guard let dataSource = DataSourcePath.dataSource(with: exportURL) else {
+            owsFail("Failed to build data source for exported video URL")
+            let attachment = SignalAttachment(dataSource : DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
+            attachment.error = .couldNotConvertToMpeg4
+            return attachment
+        }
+        dataSource.sourceFilename = mp4Filename
+        return SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
+    }
+
+    class func isInputVideoValidOutputVideo(dataSource: DataSource?, dataUTI: String) -> Bool {
+        guard let dataSource = dataSource else {
+            return false
+        }
+
+        guard SignalAttachment.outputVideoUTISet.contains(dataUTI) else {
+            return false
+        }
+
+        if dataSource.dataLength() <= kMaxFileSizeVideo {
+            return true
+        }
+        return false
     }
 
     // MARK: Audio Attachments

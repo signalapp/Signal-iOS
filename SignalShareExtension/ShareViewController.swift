@@ -459,6 +459,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             if url.pathExtension.count > 0 {
                 // Determine a more specific utiType based on file extension
                 if let typeExtension = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) {
+                    Logger.debug("\(self.logTag) utiType based on extension: \(typeExtension)")
                     specificUTIType = typeExtension
                 }
             }
