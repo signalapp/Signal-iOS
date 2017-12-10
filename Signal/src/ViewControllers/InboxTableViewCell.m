@@ -103,7 +103,7 @@ const NSUInteger kAvatarViewDiameter = 44;
     self.snippetLabel = [UILabel new];
     self.snippetLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
     self.snippetLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    self.snippetLabel.textColor = [UIColor colorWithWhite:2 / 3.f alpha:1.f];
+    self.snippetLabel.textColor = [UIColor grayColor];
     self.snippetLabel.numberOfLines = 2;
     [self.contentView addSubview:self.snippetLabel];
     [self.snippetLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -305,7 +305,7 @@ const NSUInteger kAvatarViewDiameter = 44;
         [snippetText appendAttributedString:[[NSAttributedString alloc] initWithString:NSLocalizedString(@"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION",
                                                                                                          @"A label for conversations with blocked users.")
                                                                             attributes:@{
-                                                                                         NSForegroundColorAttributeName : [UIColor ows_blackColor],
+                                                                                         NSForegroundColorAttributeName : [UIColor blackColor],
                                                                                          }]];
         UIFont *subheadFont = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
         UIFontDescriptor *boldDescriptor = [[subheadFont fontDescriptor] fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitItalic];
@@ -354,7 +354,13 @@ const NSUInteger kAvatarViewDiameter = 44;
         self.separatorInset = UIEdgeInsetsMake(0, self.contentView.layoutMargins.left, 0, 0);
     }
 
-    _timeLabel.textColor = thread.hasUnreadMessages ? [UIColor ows_materialBlueColor] : [UIColor ows_darkGrayColor];
+    if (thread.hasUnreadMessages) {
+        self.timeLabel.textColor = [UIColor ows_materialBlueColor];
+    } else if (self.accessibilityMode) {
+        self.timeLabel.textColor = [UIColor blackColor];
+    } else {
+        self.timeLabel.textColor = [UIColor grayColor];
+    }
 
     if (unreadCount > 0) {
         self.unreadBadge.hidden = NO;
@@ -397,13 +403,7 @@ const NSUInteger kAvatarViewDiameter = 44;
         timeString = [[DateUtil dateFormatter] stringFromDate:date];
     }
 
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:timeString];
-
-    [attributedString addAttribute:NSForegroundColorAttributeName
-                             value:[UIColor ows_darkGrayColor]
-                             range:NSMakeRange(0, timeString.length)];
-
-    return attributedString;
+    return [[NSMutableAttributedString alloc] initWithString:timeString];
 }
 
 - (void)prepareForReuse
