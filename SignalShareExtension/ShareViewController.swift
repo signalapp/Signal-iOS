@@ -15,6 +15,9 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     private var hasInitialRootViewController = false
     private var isReadyForAppExtensions = false
 
+    var progressPoller: ProgressPoller?
+    var loadViewController: SAELoadViewController?
+
     override open func loadView() {
         super.loadView()
 
@@ -65,6 +68,9 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             return
         }
 
+        let loadViewController = SAELoadViewController(delegate: self)
+        self.loadViewController = loadViewController
+
         // Don't display load screen immediately, in hopes that we can avoid it altogether.
         after(seconds: 2).then { () -> Void in
             guard self.presentedViewController == nil else {
@@ -74,7 +80,6 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
             Logger.debug("\(self.logTag) setup is slow - showing loading screen")
 
-            let loadViewController = SAELoadViewController(delegate: self)
             let navigationController = UINavigationController(rootViewController: loadViewController)
             self.present(navigationController, animated: true)
         }.retainUntilComplete()
@@ -465,15 +470,70 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                 // TODO show progress with exportSession
                 let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
 
-                // TODO use `exportSession.progress` to show a more precise progress indicator in the loadView, maybe sharing the "sending" progress UI.
-                // TODO expose "Cancel"
                 // Can we move this process to the end of the share flow rather than up front?
                 // Currently we aren't able to generate a proper thumbnail or play the video in the app extension without first converting it.
+                if let exportSession = exportSession {
+                    let progressPoller = ProgressPoller(timeInterval: 0.1, ratioCompleteBlock: { return exportSession.progress })
+                    self.progressPoller = progressPoller
+                    progressPoller.startPolling()
+
+                    guard let loadViewController = self.loadViewController else {
+                        owsFail("load view controller was unexpectedly nil")
+                        return promise
+                    }
+
+                    loadViewController.progress = progressPoller.progress
+                }
+
                 return promise
             }
 
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType)
             return Promise(value: attachment)
+        }
+    }
+}
+
+class ProgressPoller {
+
+    let TAG = "[ProgressPoller]"
+
+    let progress: Progress
+    private(set) var timer: Timer?
+
+    // Higher number offers higher ganularity
+    let progressTotalUnitCount: Int64 = 10000
+    private let timeInterval: Double
+    private let ratioCompleteBlock: () -> Float
+
+    init(timeInterval: TimeInterval, ratioCompleteBlock: @escaping () -> Float) {
+        self.timeInterval = timeInterval
+        self.ratioCompleteBlock = ratioCompleteBlock
+
+        self.progress = Progress()
+
+        progress.totalUnitCount = progressTotalUnitCount
+        progress.completedUnitCount = Int64(ratioCompleteBlock() * Float(progressTotalUnitCount))
+    }
+
+    func startPolling() {
+        guard self.timer == nil else {
+            owsFail("already started timer")
+            return
+        }
+
+        self.timer = WeakTimer.scheduledTimer(timeInterval: timeInterval, target: self, userInfo: nil, repeats: true) { [weak self] (timer) in
+            guard let strongSelf = self else {
+                return
+            }
+
+            let completedUnitCount = Int64(strongSelf.ratioCompleteBlock() * Float(strongSelf.progressTotalUnitCount))
+            strongSelf.progress.completedUnitCount = completedUnitCount
+
+            if completedUnitCount == strongSelf.progressTotalUnitCount {
+                Logger.debug("\(strongSelf.TAG) progress complete")
+                timer.invalidate()
+            }
         }
     }
 }
