@@ -448,7 +448,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         // TODO accept other data types
         // TODO whitelist attachment types
         // TODO coerce when necessary and possible
-        return promise.then { (url: URL) -> SignalAttachment in
+        return promise.then { (url: URL) -> Promise<SignalAttachment> in
             guard let dataSource = DataSourcePath.dataSource(with: url) else {
                 throw ShareViewControllerError.assertionError(description: "Unable to read attachment data")
             }
@@ -464,9 +464,14 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                 }
             }
 
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, imageQuality:.medium)
+            guard !SignalAttachment.isInvalidVideo(dataSource: dataSource, dataUTI: specificUTIType) else {
+                let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
+                // TODO show progress with exportSession
+                return promise
+            }
 
-            return attachment
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType)
+            return Promise(value: attachment)
         }
     }
 }
