@@ -15,20 +15,10 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     private var hasInitialRootViewController = false
     private var isReadyForAppExtensions = false
 
-    var loadViewController: SAELoadViewController!
-
     override open func loadView() {
         super.loadView()
 
         Logger.debug("\(self.logTag) \(#function)")
-
-        // We can't show the conversation picker until the DB is set up.
-        // Normally this will only take a moment, so rather than flickering and then hiding the loading screen
-        // We start as invisible, and only fade it in if it's going to take a while
-        self.view.alpha = 0
-        UIView.animate(withDuration: 0.1, delay: 0.5, options: [.curveEaseInOut], animations: {
-            self.view.alpha = 1
-        }, completion: nil)
 
         // This should be the first thing we do.
         let appContext = ShareAppExtensionContext(rootViewController:self)
@@ -75,6 +65,20 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             return
         }
 
+        // Don't display load screen immediately, in hopes that we can avoid it altogether.
+        after(seconds: 2).then { () -> Void in
+            guard self.presentedViewController == nil else {
+                Logger.debug("\(self.logTag) setup completed quickly, no need to present load view controller.")
+                return
+            }
+
+            Logger.debug("\(self.logTag) setup is slow - showing loading screen")
+
+            let loadViewController = SAELoadViewController(delegate: self)
+            let navigationController = UINavigationController(rootViewController: loadViewController)
+            self.present(navigationController, animated: true)
+        }.retainUntilComplete()
+
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         AppSetup.setupEnvironment({
             return NoopCallMessageHandler()
@@ -86,8 +90,6 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         // upgrade process may depend on Environment.
         VersionMigrations.performUpdateCheck()
 
-        self.loadViewController = SAELoadViewController(delegate:self)
-        self.pushViewController(loadViewController, animated: false)
         self.isNavigationBarHidden = true
 
         // We don't need to use "screen protection" in the SAE.
@@ -290,13 +292,6 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     }
 
     private func showErrorView(title: String, message: String) {
-        // ensure view is visible.
-        self.view.layer.removeAllAnimations()
-        UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseInOut], animations: {
-
-            self.view.alpha = 1
-        }, completion: nil)
-
         let viewController = SAEFailedViewController(delegate:self, title:title, message:message)
         self.setViewControllers([viewController], animated: false)
     }
@@ -364,19 +359,21 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     // MARK: Helpers
 
     private func presentConversationPicker() {
-        // pause any animation revealing the "loading" screen
-        self.view.layer.removeAllAnimations()
-
-        // Once we've presented the conversation picker, we hide the loading VC
-        // so that it's not revealed when we eventually dismiss the share extension.
-        loadViewController.view.isHidden = true
-
         self.buildAttachment().then { attachment -> Void in
             let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: self)
             let navigationController = UINavigationController(rootViewController: conversationPicker)
             navigationController.isNavigationBarHidden = true
             conversationPicker.attachment = attachment
-            self.present(navigationController, animated: true, completion: nil)
+            if let presentedViewController = self.presentedViewController {
+                Logger.debug("\(self.logTag) dismissing \(presentedViewController) before presenting conversation picker")
+                self.dismiss(animated: true) {
+                    self.present(navigationController, animated: true)
+                }
+            } else {
+                Logger.debug("\(self.logTag) no other modal, presenting conversation picker immediately")
+                self.present(navigationController, animated: true)
+            }
+
             Logger.info("showing picker with attachment: \(attachment)")
         }.catch { error in
             let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE", comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
@@ -465,8 +462,13 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             }
 
             guard !SignalAttachment.isInvalidVideo(dataSource: dataSource, dataUTI: specificUTIType) else {
-                let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
                 // TODO show progress with exportSession
+                let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
+
+                // TODO use `exportSession.progress` to show a more precise progress indicator in the loadView, maybe sharing the "sending" progress UI.
+                // TODO expose "Cancel"
+                // Can we move this process to the end of the share flow rather than up front?
+                // Currently we aren't able to generate a proper thumbnail or play the video in the app extension without first converting it.
                 return promise
             }
 
