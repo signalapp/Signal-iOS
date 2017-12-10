@@ -9,8 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface InboxTableViewCell : UITableViewCell
 
-+ (CGFloat)rowHeight;
-
 + (NSString *)cellReuseIdentifier;
 
 - (void)configureWithThread:(TSThread *)thread

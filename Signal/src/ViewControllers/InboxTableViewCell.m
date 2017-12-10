@@ -44,7 +44,7 @@ const NSUInteger kAvatarViewDiameter = 52;
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier
 {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
-        [self commontInit];
+        [self commonInit];
     }
     return self;
 }
@@ -53,13 +53,13 @@ const NSUInteger kAvatarViewDiameter = 52;
 - (instancetype)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
-        [self commontInit];
+        [self commonInit];
     }
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     OWSAssert(!self.avatarView);
 
@@ -67,22 +67,27 @@ const NSUInteger kAvatarViewDiameter = 52;
     self.preservesSuperviewLayoutMargins = YES;
     self.contentView.preservesSuperviewLayoutMargins = YES;
 
+    UILayoutGuide *margins = self.contentView.layoutMarginsGuide;
+
     self.backgroundColor = [UIColor whiteColor];
 
     self.avatarView = [[AvatarImageView alloc] init];
     [self.contentView addSubview:self.avatarView];
-    [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
-    [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
-    [self.avatarView autoPinLeadingToSuperview];
-    [self.avatarView autoVCenterInSuperview];
+    [self.avatarView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [self.avatarView.widthAnchor constraintEqualToConstant:kAvatarViewDiameter].active = YES;
+    [self.avatarView.heightAnchor constraintEqualToConstant:kAvatarViewDiameter].active = YES;
+    [self.avatarView.leadingAnchor constraintEqualToAnchor:margins.leadingAnchor].active = YES;
+    [self.avatarView.centerYAnchor constraintEqualToAnchor:margins.centerYAnchor].active = YES;
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.nameLabel.font = [UIFont ows_boldFontWithSize:14.0f];
     [self.contentView addSubview:self.nameLabel];
-    [self.nameLabel autoPinLeadingToTrailingOfView:self.avatarView margin:13.f];
-    [self.nameLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.avatarView];
-    [self.nameLabel setContentHuggingHorizontalLow];
+    [self.nameLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [self.nameLabel.leadingAnchor constraintEqualToAnchor:self.avatarView.trailingAnchor constant:16.0].active = YES;
+    [self.nameLabel.topAnchor constraintEqualToAnchor:margins.topAnchor].active = YES;
+    [self.nameLabel setContentHuggingPriority:1000 forAxis:UILayoutConstraintAxisVertical];
+    [self.nameLabel setContentCompressionResistancePriority:1000 forAxis:UILayoutConstraintAxisVertical];
 
     self.snippetLabel = [UILabel new];
     self.snippetLabel.font = [UIFont ows_regularFontWithSize:14.f];
@@ -91,31 +96,38 @@ const NSUInteger kAvatarViewDiameter = 52;
     self.snippetLabel.numberOfLines = 2;
     self.snippetLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [self.contentView addSubview:self.snippetLabel];
-    [self.snippetLabel autoPinLeadingToTrailingOfView:self.avatarView margin:13.f];
-    [self.snippetLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.nameLabel withOffset:5.f];
-    [self.snippetLabel autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:self.nameLabel];
-    [self.snippetLabel setContentHuggingHorizontalLow];
+    [self.snippetLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [self.snippetLabel.leadingAnchor constraintEqualToAnchor:self.nameLabel.leadingAnchor].active = YES;
+    [self.snippetLabel.topAnchor constraintEqualToAnchor:self.nameLabel.bottomAnchor constant:2.0].active = YES;
+    [self.snippetLabel.bottomAnchor constraintLessThanOrEqualToAnchor:margins.bottomAnchor].active = YES;
+    [self.snippetLabel setContentHuggingPriority:1000 forAxis:UILayoutConstraintAxisVertical];
 
     self.timeLabel = [UILabel new];
     self.timeLabel.font = [UIFont ows_lightFontWithSize:14.f];
     [self.contentView addSubview:self.timeLabel];
-    [self.timeLabel autoPinTrailingToSuperview];
-    [self.timeLabel autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.nameLabel];
-    [self.timeLabel autoPinLeadingToTrailingOfView:self.nameLabel margin:10.f];
-    [self.timeLabel setContentHuggingHorizontalHigh];
-    [self.timeLabel setCompressionResistanceHigh];
+    [self.timeLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [self.timeLabel.leadingAnchor constraintEqualToAnchor:self.nameLabel.trailingAnchor constant:4.0].active = YES;
+    [self.timeLabel.trailingAnchor constraintEqualToAnchor:margins.trailingAnchor].active = YES;
+    [self.timeLabel.topAnchor constraintGreaterThanOrEqualToAnchor:margins.topAnchor].active = YES;
+    [self.timeLabel.bottomAnchor constraintLessThanOrEqualToAnchor:self.snippetLabel.topAnchor].active = YES;
+    [self.timeLabel.centerYAnchor constraintEqualToAnchor:self.nameLabel.centerYAnchor].active = YES;
+    [self.timeLabel setContentHuggingPriority:500 forAxis:UILayoutConstraintAxisHorizontal];
+    [self.timeLabel setContentCompressionResistancePriority:1000 forAxis:UILayoutConstraintAxisHorizontal];
 
     const int kunreadBadgeSize = 24;
     self.unreadBadge = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kunreadBadgeSize, kunreadBadgeSize)];
     self.unreadBadge.layer.cornerRadius = kunreadBadgeSize / 2;
-    self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
+    [self.unreadBadge setBackgroundColor:[UIColor ows_materialBlueColor]];
     [self.contentView addSubview:self.unreadBadge];
-    [self.unreadBadge autoSetDimension:ALDimensionWidth toSize:kunreadBadgeSize];
-    [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:kunreadBadgeSize];
-    [self.unreadBadge autoPinTrailingToSuperview];
-    [self.unreadBadge autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView];
-    [self.unreadBadge setContentHuggingHorizontalHigh];
-    [self.unreadBadge setCompressionResistanceHigh];
+    [self.unreadBadge setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [self.unreadBadge.widthAnchor constraintEqualToConstant:kunreadBadgeSize].active = YES;
+    [self.unreadBadge.heightAnchor constraintEqualToConstant:kunreadBadgeSize].active = YES;
+    [self.unreadBadge.leadingAnchor constraintEqualToAnchor:self.snippetLabel.trailingAnchor constant:4.0].active = YES;
+    [self.unreadBadge.trailingAnchor constraintEqualToAnchor:margins.trailingAnchor].active = YES;
+    [self.unreadBadge.topAnchor constraintEqualToAnchor:self.nameLabel.bottomAnchor constant:2.0].active = YES;
+    [self.unreadBadge.bottomAnchor constraintLessThanOrEqualToAnchor:margins.bottomAnchor].active = YES;
+    [self.unreadBadge setContentHuggingPriority:500 forAxis:UILayoutConstraintAxisHorizontal];
+    [self.unreadBadge setContentCompressionResistancePriority:1000 forAxis:UILayoutConstraintAxisHorizontal];
 
     self.unreadLabel = [UILabel new];
     self.unreadLabel.font = [UIFont ows_regularFontWithSize:12.f];
@@ -123,6 +135,7 @@ const NSUInteger kAvatarViewDiameter = 52;
     self.unreadLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.unreadLabel.textAlignment = NSTextAlignmentCenter;
     [self.unreadBadge addSubview:self.unreadLabel];
+    self.unreadLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.unreadLabel autoVCenterInSuperview];
     [self.unreadLabel autoPinWidthToSuperview];
 }
@@ -130,16 +143,6 @@ const NSUInteger kAvatarViewDiameter = 52;
 + (NSString *)cellReuseIdentifier
 {
     return NSStringFromClass([self class]);
-}
-
-+ (CGFloat)rowHeight
-{
-    return 72.f;
-}
-
-- (CGFloat)avatarSize
-{
-    return 52.f;
 }
 
 - (void)initializeLayout {
@@ -203,6 +206,7 @@ const NSUInteger kAvatarViewDiameter = 52;
                                                         }]];
         }
     }
+    [snippetText appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
 
     NSAttributedString *attributedDate = [self dateAttributedString:thread.lastMessageDate];
     NSUInteger unreadCount = [[OWSMessageManager sharedManager] unreadMessagesInThread:thread];
@@ -218,7 +222,7 @@ const NSUInteger kAvatarViewDiameter = 52;
     self.snippetLabel.attributedText = snippetText;
     self.timeLabel.attributedText = attributedDate;
 
-    self.separatorInset = UIEdgeInsetsMake(0, self.avatarSize * 1.5f, 0, 0);
+    self.separatorInset = UIEdgeInsetsMake(0, self.contentView.layoutMargins.left, 0, 0);
 
     _timeLabel.textColor = thread.hasUnreadMessages ? [UIColor ows_materialBlueColor] : [UIColor ows_darkGrayColor];
 

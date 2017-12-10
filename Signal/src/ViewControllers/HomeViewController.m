@@ -217,6 +217,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [self.tableView autoPinWidthToSuperview];
     [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
     [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:missingContactsPermissionView];
+    self.tableView.estimatedRowHeight = 80;
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
 
     UILabel *emptyBoxLabel = [UILabel new];
     self.emptyBoxLabel = emptyBoxLabel;
@@ -617,11 +619,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }];
 
     return thread;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return InboxTableViewCell.rowHeight;
 }
 
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
