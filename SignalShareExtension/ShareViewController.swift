@@ -488,6 +488,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                 return promise
             }
 
+            // DO NOT COMMIT
+//            specificUTIType = "com.apple.quicktime-movie"
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType)
             return Promise(value: attachment)
         }

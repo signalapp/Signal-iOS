@@ -464,11 +464,21 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     @objc
     public func playVideo() {
         guard let dataUrl = attachment.dataUrl else {
+            owsFail("\(self.logTag) attachment is missing dataUrl")
             return
         }
+
+        let filePath = dataUrl.path
+        guard FileManager.default.fileExists(atPath: filePath) else {
+            owsFail("\(self.logTag) file at \(filePath) doesn't exist")
+            return
+        }
+
         guard let videoPlayer = MPMoviePlayerController(contentURL: dataUrl) else {
+            owsFail("\(self.logTag) unable to build moview player controller")
             return
         }
+
         videoPlayer.prepareToPlay()
 
         NotificationCenter.default.addObserver(forName: .MPMoviePlayerWillExitFullscreen, object: nil, queue: nil) { [weak self] _ in

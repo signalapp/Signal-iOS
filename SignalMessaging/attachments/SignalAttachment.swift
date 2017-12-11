@@ -240,7 +240,13 @@ public class SignalAttachment: NSObject {
         }
 
         do {
-            let asset = AVURLAsset(url:mediaUrl)
+            let filePath = mediaUrl.path
+            guard FileManager.default.fileExists(atPath: filePath) else {
+                owsFail("asset at \(filePath) doesn't exist")
+                return nil
+            }
+
+            let asset = AVURLAsset(url: mediaUrl)
             let generator = AVAssetImageGenerator(asset: asset)
             generator.appliesPreferredTrackTransform = true
             let cgImage = try generator.copyCGImage(at: CMTimeMake(0, 1), actualTime: nil)
@@ -784,9 +790,9 @@ public class SignalAttachment: NSObject {
 
         if !isInputVideoValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) {
             // Most people won't hit this because we convert video when picked from the media picker
-            // But the current API allos sending videos that some Signal clients will not
+            // But the current API allows sending videos that some Signal clients will not
             // be able to view. (e.g. when picked from document picker)
-            owsFail("building video with invalid output, migrate to async API using compressVideoAsMp4")
+//            owsFail("building video with invalid output, migrate to async API using compressVideoAsMp4")
         }
 
         return newAttachment(dataSource: dataSource,
