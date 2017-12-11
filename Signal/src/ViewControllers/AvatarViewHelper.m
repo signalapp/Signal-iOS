@@ -130,7 +130,9 @@ NS_ASSUME_NONNULL_BEGIN
                                    CropScaleImageViewController *vc = [[CropScaleImageViewController alloc]
                                         initWithSrcImage:rawAvatar
                                        successCompletion:^(UIImage *_Nonnull dstImage) {
-                                           [self.delegate avatarDidChange:dstImage];
+                                           dispatch_async(dispatch_get_main_queue(), ^{
+                                               [self.delegate avatarDidChange:dstImage];
+                                           });
                                        }];
                                    [self.delegate.fromViewController
                                        presentViewController:vc

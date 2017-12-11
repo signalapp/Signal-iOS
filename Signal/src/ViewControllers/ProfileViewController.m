@@ -577,6 +577,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)avatarDidChange:(UIImage *)image
 {
+    OWSAssert([NSThread isMainThread]);
     OWSAssert(image);
 
     self.avatar = [image resizedImageToFillPixelSize:CGSizeMake(kOWSProfileManager_MaxAvatarDiameter,

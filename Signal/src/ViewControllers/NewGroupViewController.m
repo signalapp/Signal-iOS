@@ -619,6 +619,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (void)avatarDidChange:(UIImage *)image
 {
+    OWSAssert([NSThread isMainThread]);
     OWSAssert(image);
 
     self.groupAvatar = image;

@@ -7,6 +7,7 @@
 #import "Signal-Swift.h"
 #import "ViewControllerUtils.h"
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/OWSUserProfile.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>

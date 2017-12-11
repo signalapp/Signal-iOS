@@ -232,10 +232,14 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
         Logger.info("Presenting initial root view controller")
 
-        if TSAccountManager.isRegistered() {
-            presentConversationPicker()
-        } else {
+        if !TSAccountManager.isRegistered() {
             showNotRegisteredView()
+        } else if !OWSProfileManager.shared().localProfileExists() {
+            // This is a rare edge case, but we want to ensure that the user
+            // is has already saved their local profile key in the main app.
+            showNotReadyView()
+        } else {
+            presentConversationPicker()
         }
 
         // We don't use the AppUpdateNag in the SAE.
