@@ -37,6 +37,12 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 @implementation OWSUserProfile
 
++ (NSString *)collection
+{
+    // Legacy class name.
+    return @"UserProfile";
+}
+
 + (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId
                                            dbConnection:(YapDatabaseConnection *)dbConnection
 {
@@ -329,13 +335,14 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     return TSYapDatabaseObject.dbReadWriteConnection;
 }
 
+// This should only be used in verbose, developer-only logs.
 - (NSString *)debugDescription
 {
-    return [NSString stringWithFormat:@"%@ %p %@ %@ %@ %@ %@ %f",
+    return [NSString stringWithFormat:@"%@ %p %@ %zd %@ %@ %@ %f",
                      self.logTag,
                      self,
                      self.recipientId,
-                     self.profileKey.keyData.hexadecimalString,
+                     self.profileKey.keyData.length,
                      self.profileName,
                      self.avatarUrlPath,
                      self.avatarFileName,

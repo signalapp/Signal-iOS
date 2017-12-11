@@ -20,6 +20,9 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
 extern NSString *const kLocalProfileUniqueId;
 
 // This class should be completely thread-safe.
+//
+// It is critical for coherency that all DB operations for this
+// class should be done on OWSProfileManager's dbConnection.
 @interface OWSUserProfile : TSYapDatabaseObject
 
 @property (atomic, readonly) NSString *recipientId;

@@ -54,7 +54,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 @property (atomic, readonly) OWSUserProfile *localUserProfile;
 
 // This property can be accessed on any thread, while synchronized on self.
-//@property (atomic, readonly) NSCache<NSString *, UIImage *> *otherUsersProfileAvatarImageCache;
 @property (atomic, readonly) NSCache<NSString *, UIImage *> *profileAvatarImageCache;
 
 // This property can be accessed on any thread, while synchronized on self.
@@ -595,7 +594,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSAssert(recipientId.length > 0);
 
     __block BOOL result = NO;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         NSNumber *_Nullable oldValue =
             [transaction objectForKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
         result = (oldValue && oldValue.boolValue);
@@ -661,7 +660,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     NSString *groupIdKey = [groupId hexadecimalString];
 
     __block BOOL result = NO;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         NSNumber *_Nullable oldValue =
             [transaction objectForKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
         result = (oldValue && oldValue.boolValue);
