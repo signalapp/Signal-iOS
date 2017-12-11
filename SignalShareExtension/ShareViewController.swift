@@ -468,7 +468,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
             guard !SignalAttachment.isInvalidVideo(dataSource: dataSource, dataUTI: specificUTIType) else {
                 // TODO show progress with exportSession
-                let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
+                let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: specificUTIType)
 
                 // Can we move this process to the end of the share flow rather than up front?
                 // Currently we aren't able to generate a proper thumbnail or play the video in the app extension without first converting it.
@@ -490,7 +490,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
             // DO NOT COMMIT
 //            specificUTIType = "com.apple.quicktime-movie"
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
             return Promise(value: attachment)
         }
     }
