@@ -21,7 +21,7 @@ def shared_pods
   #pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'signal-master', :inhibit_warnings => true
   #pod 'JSQMessagesViewController',   path: '../JSQMessagesViewController'
   pod 'Mantle', :inhibit_warnings => true
-  pod 'YapDatabase/SQLCipher', '~> 2.9.3', :inhibit_warnings => true
+  pod 'YapDatabase/SQLCipher', :inhibit_warnings => true
   pod 'PureLayout', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'SocketRocket', :git => 'https://github.com/facebook/SocketRocket.git', :inhibit_warnings => true
