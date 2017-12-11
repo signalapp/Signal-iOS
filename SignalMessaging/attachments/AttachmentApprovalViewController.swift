@@ -7,8 +7,8 @@ import MediaPlayer
 
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: class {
-    func didApproveAttachment()
-    func didCancelAttachment()
+    func didApproveAttachment(attachment: SignalAttachment)
+    func didCancelAttachment(attachment: SignalAttachment)
 }
 
 @objc
@@ -21,7 +21,9 @@ public class AttachmentApprovalViewController: OWSViewController {
 
     let attachment: SignalAttachment
 
-    let mediaMessageView: MediaMessageView
+    private(set) var bottomToolbar: UIToolbar!
+    private(set) var mediaMessageView: MediaMessageView!
+    private(set) var scrollView: UIScrollView!
 
     // MARK: Initializers
 
@@ -30,11 +32,12 @@ public class AttachmentApprovalViewController: OWSViewController {
         fatalError("unimplemented")
     }
 
+    @objc
     required public init(attachment: SignalAttachment, delegate: AttachmentApprovalViewControllerDelegate) {
         assert(!attachment.hasError)
         self.attachment = attachment
         self.delegate = delegate
-        self.mediaMessageView = MediaMessageView(attachment: attachment, mode: .large)
+
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -42,12 +45,15 @@ public class AttachmentApprovalViewController: OWSViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-
-        view.backgroundColor = UIColor.white
-
-        createViews()
-
         self.navigationItem.title = dialogTitle()
+    }
+
+    override public func viewWillLayoutSubviews() {
+        Logger.debug("\(logTag) in \(#function)")
+        super.viewWillLayoutSubviews()
+
+        // e.g. if flipping to/from landscape
+        updateMinZoomScaleForSize(view.bounds.size)
     }
 
     private func dialogTitle() -> String {
@@ -59,12 +65,19 @@ public class AttachmentApprovalViewController: OWSViewController {
     }
 
     override public func viewWillAppear(_ animated: Bool) {
+        Logger.debug("\(logTag) in \(#function)")
         super.viewWillAppear(animated)
 
         mediaMessageView.viewWillAppear(animated)
     }
 
+    override public func viewDidAppear(_ animated: Bool) {
+        Logger.debug("\(logTag) in \(#function)")
+        super.viewDidAppear(animated)
+    }
+
     override public func viewWillDisappear(_ animated: Bool) {
+        Logger.debug("\(logTag) in \(#function)")
         super.viewWillDisappear(animated)
 
         mediaMessageView.viewWillDisappear(animated)
@@ -72,100 +85,140 @@ public class AttachmentApprovalViewController: OWSViewController {
 
     // MARK: - Create Views
 
-    private func createViews() {
-        let previewTopMargin: CGFloat = 30
-        let previewHMargin: CGFloat = 20
+    public override func loadView() {
 
-        self.view.addSubview(mediaMessageView)
-        mediaMessageView.autoPinWidthToSuperview(withMargin:previewHMargin)
-        mediaMessageView.autoPin(toTopLayoutGuideOf: self, withInset:previewTopMargin)
+        self.view = UIView()
 
-        createButtonRow(mediaMessageView:mediaMessageView)
-    }
+        self.mediaMessageView = MediaMessageView(attachment: attachment, mode: .attachmentApproval)
 
-    private func wrapViewsInVerticalStack(subviews: [UIView]) -> UIView {
-        assert(subviews.count > 0)
+        // Scroll View - used to zoom/pan on images and video
+        scrollView = UIScrollView()
+        view.addSubview(scrollView)
 
-        let stackView = UIView()
+        scrollView.delegate = self
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
 
-        var lastView: UIView?
-        for subview in subviews {
+        // Panning should stop pretty soon after the user stops scrolling
+        scrollView.decelerationRate = UIScrollViewDecelerationRateFast
 
-            stackView.addSubview(subview)
-            subview.autoHCenterInSuperview()
+        // We want scroll view content up and behind the system status bar content
+        // but we want other content (e.g. bar buttons) to respect the top layout guide.
+        self.automaticallyAdjustsScrollViewInsets = false
 
-            if lastView == nil {
-                subview.autoPinEdge(toSuperviewEdge:.top)
-            } else {
-                subview.autoPinEdge(.top, to:.bottom, of:lastView!, withOffset:10)
-            }
+        scrollView.autoPinEdgesToSuperviewEdges()
 
-            lastView = subview
+        let backgroundColor = UIColor.black
+        self.view.backgroundColor = backgroundColor
+
+        // Create full screen container view so the scrollView
+        // can compute an appropriate content size in which to center
+        // our media view.
+        let containerView = UIView.container()
+        scrollView.addSubview(containerView)
+        containerView.autoPinEdgesToSuperviewEdges()
+        containerView.autoMatch(.height, to: .height, of: self.view)
+        containerView.autoMatch(.width, to: .width, of: self.view)
+
+        containerView.addSubview(mediaMessageView)
+        mediaMessageView.autoCenterInSuperview()
+        mediaMessageView.setCompressionResistanceHigh()
+
+        // Add top and bottom gradients to ensure toolbar controls are legible
+        // when placed over media with a clashing color
+        let topGradient = GradientView(from: backgroundColor, to: UIColor.clear)
+        self.view.addSubview(topGradient)
+        topGradient.autoPinWidthToSuperview()
+        topGradient.autoPinEdge(toSuperviewEdge: .top)
+        topGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(60))
+
+        let bottomGradient = GradientView(from: UIColor.clear, to: backgroundColor)
+        self.view.addSubview(bottomGradient)
+        bottomGradient.autoPinWidthToSuperview()
+        bottomGradient.autoPinEdge(toSuperviewEdge: .bottom)
+        bottomGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(100))
+
+        // Hide the play button embedded in the MediaView and replace it with our own.
+        // This allows us to zoom in on the media view without zooming in on the button
+        if attachment.isVideo {
+            self.mediaMessageView.videoPlayButton?.isHidden = true
+            let playButton = UIButton()
+            playButton.accessibilityLabel = NSLocalizedString("PLAY_BUTTON_ACCESSABILITY_LABEL", comment: "accessability label for button to start media playback")
+            playButton.setBackgroundImage(#imageLiteral(resourceName: "play_button"), for: .normal)
+            playButton.contentMode = .scaleAspectFit
+
+            let playButtonWidth = ScaleFromIPhone5(70)
+            playButton.autoSetDimensions(to: CGSize(width: playButtonWidth, height: playButtonWidth))
+            self.view.addSubview(playButton)
+
+            playButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
+            playButton.autoCenterInSuperview()
         }
 
-        lastView?.autoPinEdge(toSuperviewEdge:.bottom)
+        // Top Toolbar
+        let topToolbar = makeClearToolbar()
 
-        return stackView
+        self.view.addSubview(topToolbar)
+        topToolbar.autoPinWidthToSuperview()
+        topToolbar.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        topToolbar.setContentHuggingVerticalHigh()
+        topToolbar.setCompressionResistanceVerticalHigh()
+
+        let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelPressed))
+        cancelButton.tintColor = UIColor.white
+        topToolbar.items = [cancelButton]
+
+        // Bottom Toolbar
+        self.bottomToolbar = makeClearToolbar()
+        // Making a toolbar transparent requires setting an empty uiimage
+        bottomToolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
+        bottomToolbar.backgroundColor = UIColor.clear
+
+        let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
+        let sendButton = UIBarButtonItem(title:  sendTitle,
+                                         style: .plain,
+                                         target: self,
+                                         action: #selector(sendPressed))
+        sendButton.tintColor = UIColor.white
+
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        bottomToolbar.items = [flexibleSpace, sendButton]
+
+        self.view.addSubview(bottomToolbar)
+        bottomToolbar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        bottomToolbar.autoPinWidthToSuperview()
+        bottomToolbar.setCompressionResistanceVerticalHigh()
+        bottomToolbar.setContentHuggingVerticalHigh()
     }
 
-    private func createButtonRow(mediaMessageView: UIView) {
-        let buttonTopMargin = ScaleFromIPhone5To7Plus(30, 40)
-        let buttonBottomMargin = ScaleFromIPhone5To7Plus(25, 40)
-        let buttonHSpacing = ScaleFromIPhone5To7Plus(20, 30)
+    private func makeClearToolbar() -> UIToolbar {
+        let toolbar = UIToolbar()
 
-        let buttonRow = UIView()
-        self.view.addSubview(buttonRow)
-        buttonRow.autoPinWidthToSuperview()
-        buttonRow.autoPinEdge(toSuperviewEdge:.bottom, withInset:buttonBottomMargin)
-        buttonRow.autoPinEdge(.top, to:.bottom, of:mediaMessageView, withOffset:buttonTopMargin)
+        toolbar.backgroundColor = UIColor.clear
 
-        // We use this invisible subview to ensure that the buttons are centered
-        // horizontally.
-        let buttonSpacer = UIView()
-        buttonRow.addSubview(buttonSpacer)
-        // Vertical positioning of this view doesn't matter.
-        buttonSpacer.autoPinEdge(toSuperviewEdge:.top)
-        buttonSpacer.autoSetDimension(.width, toSize:buttonHSpacing)
-        buttonSpacer.autoHCenterInSuperview()
+        // Making a toolbar transparent requires setting an empty uiimage
+        toolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
 
-        let cancelButton = createButton(title: CommonStrings.cancelButton,
-                                        color : UIColor.ows_destructiveRed(),
-                                        action: #selector(cancelPressed))
-        buttonRow.addSubview(cancelButton)
-        cancelButton.autoPinEdge(toSuperviewEdge:.top)
-        cancelButton.autoPinEdge(toSuperviewEdge:.bottom)
-        cancelButton.autoPinEdge(.right, to:.left, of:buttonSpacer)
+        // hide 1px top-border
+        toolbar.clipsToBounds = true
 
-        let sendButton = createButton(title: NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON",
-                                                               comment: "Label for 'send' button in the 'attachment approval' dialog."),
-                                      color : UIColor(rgbHex:0x2ecc71),
-                                      action: #selector(sendPressed))
-        buttonRow.addSubview(sendButton)
-        sendButton.autoPinEdge(toSuperviewEdge:.top)
-        sendButton.autoPinEdge(toSuperviewEdge:.bottom)
-        sendButton.autoPinEdge(.left, to:.right, of:buttonSpacer)
-    }
-
-    private func createButton(title: String, color: UIColor, action: Selector) -> UIView {
-        let buttonWidth = ScaleFromIPhone5To7Plus(110, 140)
-        let buttonHeight = ScaleFromIPhone5To7Plus(35, 45)
-
-        return OWSFlatButton.button(title:title,
-                                    titleColor:UIColor.white,
-                                    backgroundColor:color,
-                                    width:buttonWidth,
-                                    height:buttonHeight,
-                                    target:target,
-                                    selector:action)
+        return toolbar
     }
 
     // MARK: - Event Handlers
 
+    @objc
+    public func playButtonTapped() {
+        mediaMessageView.playVideo()
+    }
+
     func cancelPressed(sender: UIButton) {
-        self.delegate?.didCancelAttachment()
+        self.delegate?.didCancelAttachment(attachment: attachment)
     }
 
     func sendPressed(sender: UIButton) {
+        // disable controls after send was tapped.
+        self.bottomToolbar.isUserInteractionEnabled = false
 
         // FIXME
         // this is just a temporary hack to provide some UI
@@ -175,6 +228,90 @@ public class AttachmentApprovalViewController: OWSViewController {
         activityIndicatorView.autoCenterInSuperview()
         activityIndicatorView.startAnimating()
 
-        self.delegate?.didApproveAttachment()
+        self.delegate?.didApproveAttachment(attachment: attachment)
+    }
+}
+
+extension AttachmentApprovalViewController: UIScrollViewDelegate {
+
+    public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return mediaMessageView
+    }
+
+    fileprivate func updateMinZoomScaleForSize(_ size: CGSize) {
+        Logger.debug("\(logTag) in \(#function)")
+
+        // Ensure bounds have been computed
+        mediaMessageView.layoutIfNeeded()
+        guard mediaMessageView.bounds.width > 0, mediaMessageView.bounds.height > 0 else {
+            Logger.warn("\(logTag) bad bounds in \(#function)")
+            return
+        }
+
+        let widthScale = size.width / mediaMessageView.bounds.width
+        let heightScale = size.height / mediaMessageView.bounds.height
+        let minScale = min(widthScale, heightScale)
+        scrollView.maximumZoomScale = minScale * 5.0
+        scrollView.minimumZoomScale = minScale
+        scrollView.zoomScale = minScale
+    }
+
+    // Keep the media view centered within the scroll view as you zoom
+    public func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        // The scroll view has zoomed, so you need to re-center the contents
+        let scrollViewSize = self.scrollViewVisibleSize
+
+        // First assume that mediaMessageView center coincides with the contents center
+        // This is correct when the mediaMessageView is bigger than scrollView due to zoom
+        var contentCenter = CGPoint(x: (scrollView.contentSize.width / 2), y: (scrollView.contentSize.height / 2))
+
+        let scrollViewCenter = self.scrollViewCenter
+
+        // if mediaMessageView is smaller than the scrollView visible size - fix the content center accordingly
+        if self.scrollView.contentSize.width < scrollViewSize.width {
+            contentCenter.x = scrollViewCenter.x
+        }
+
+        if self.scrollView.contentSize.height < scrollViewSize.height {
+            contentCenter.y = scrollViewCenter.y
+        }
+
+        self.mediaMessageView.center = contentCenter
+    }
+
+    // return the scroll view center
+    private var scrollViewCenter: CGPoint {
+        let size = scrollViewVisibleSize
+        return CGPoint(x: (size.width / 2), y: (size.height / 2))
+    }
+
+    // Return scrollview size without the area overlapping with tab and nav bar.
+    private var scrollViewVisibleSize: CGSize {
+        let contentInset = scrollView.contentInset
+        let scrollViewSize = scrollView.bounds.standardized.size
+        let width = scrollViewSize.width - (contentInset.left + contentInset.right)
+        let height = scrollViewSize.height - (contentInset.top + contentInset.bottom)
+        return CGSize(width: width, height: height)
+    }
+}
+
+private class GradientView: UIView {
+
+    let gradientLayer = CAGradientLayer()
+
+    required init(from fromColor: UIColor, to toColor: UIColor) {
+        gradientLayer.colors = [fromColor.cgColor, toColor.cgColor]
+        super.init(frame: CGRect.zero)
+
+        self.layer.addSublayer(gradientLayer)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        gradientLayer.frame = self.bounds
     }
 }
