@@ -190,7 +190,7 @@ public class SignalAttachment: NSObject {
     public var errorName: String? {
         guard let error = error else {
             // This method should only be called if there is an error.
-            owsFail("Missing error")
+            owsFail("\(TAG) Missing error")
             return nil
         }
 
@@ -201,7 +201,7 @@ public class SignalAttachment: NSObject {
     public var localizedErrorDescription: String? {
         guard let error = self.error else {
             // This method should only be called if there is an error.
-            owsFail("Missing error")
+            owsFail("\(TAG) Missing error")
             return nil
         }
 
@@ -470,7 +470,7 @@ public class SignalAttachment: NSObject {
                 }
                 let dataSource = DataSourceValue.dataSource(with:data, utiType: dataUTI)
                 // Pasted images _SHOULD _NOT_ be resized, if possible.
-                return attachment(dataSource : dataSource, dataUTI : dataUTI, imageQuality:.original)
+                return attachment(dataSource : dataSource, dataUTI : dataUTI, imageQuality:.medium)
             }
         }
         for dataUTI in videoUTISet {
@@ -830,6 +830,9 @@ public class SignalAttachment: NSObject {
     //       Check the attachment's error property.
     @objc
     public class func attachment(dataSource: DataSource?, dataUTI: String) -> SignalAttachment {
+        if inputImageUTISet.contains(dataUTI) {
+            owsFail("\(TAG) must specify image quality type")
+        }
         return attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
     }
 
@@ -838,7 +841,7 @@ public class SignalAttachment: NSObject {
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
     @objc
-    public class func attachment(dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality = .original) -> SignalAttachment {
+    public class func attachment(dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality) -> SignalAttachment {
         if inputImageUTISet.contains(dataUTI) {
             return imageAttachment(dataSource : dataSource, dataUTI : dataUTI, imageQuality:imageQuality)
         } else if videoUTISet.contains(dataUTI) {
@@ -882,7 +885,7 @@ public class SignalAttachment: NSObject {
         }
 
         guard dataSource.dataLength() > 0 else {
-            owsFail("Empty attachment")
+            owsFail("\(TAG) Empty attachment")
             assert(dataSource.dataLength() > 0)
             attachment.error = .invalidData
             return attachment
