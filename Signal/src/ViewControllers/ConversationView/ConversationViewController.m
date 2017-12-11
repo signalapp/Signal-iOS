@@ -2481,7 +2481,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 
     [dataSource setSourceFilename:filename];
-    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:type];
+    // "Document picker" attachments _SHOULD NOT_ be resized, if possible.
+    SignalAttachment *attachment =
+        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:type imageQuality:TSImageQualityOriginal];
     [self tryToSendAttachmentIfApproved:attachment];
 }
 
@@ -2490,7 +2492,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 /*
  *  Presenting UIImagePickerController
  */
-
 - (void)takePictureOrVideo
 {
     [self ows_askForCameraPermissions:^(BOOL granted) {
@@ -2605,10 +2606,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                      OWSAssert([NSThread isMainThread]);
 
                                      if (imageFromCamera) {
+                                         // "Camera" attachments _SHOULD_ be resized, if possible.
                                          SignalAttachment *attachment =
                                              [SignalAttachment imageAttachmentWithImage:imageFromCamera
                                                                                 dataUTI:(NSString *)kUTTypeJPEG
-                                                                               filename:filename];
+                                                                               filename:filename
+                                                                           imageQuality:TSImageQualityCompact];
                                          if (!attachment || [attachment hasError]) {
                                              DDLogWarn(@"%@ %s Invalid attachment: %@.",
                                                  self.logTag,
@@ -2655,8 +2658,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                            DataSource *_Nullable dataSource =
                                [DataSourceValue dataSourceWithData:imageData utiType:dataUTI];
                            [dataSource setSourceFilename:filename];
+                           // "Camera Roll" attachments _SHOULD_ be resized, if possible.
                            SignalAttachment *attachment =
-                               [SignalAttachment attachmentWithDataSource:dataSource dataUTI:dataUTI];
+                               [SignalAttachment attachmentWithDataSource:dataSource
+                                                                  dataUTI:dataUTI
+                                                             imageQuality:TSImageQualityMedium];
                            [self dismissViewControllerAnimated:YES
                                                     completion:^{
                                                         OWSAssert([NSThread isMainThread]);
