@@ -62,6 +62,7 @@
 #import <JSQSystemSoundPlayer/JSQSystemSoundPlayer.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/OWSUserProfile.h>
@@ -2722,50 +2723,33 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         presentFromViewController:self
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      AVAsset *video = [AVAsset assetWithURL:movieURL];
-                      AVAssetExportSession *exportSession =
-                          [AVAssetExportSession exportSessionWithAsset:video
-                                                            presetName:AVAssetExportPresetMediumQuality];
-                      exportSession.shouldOptimizeForNetworkUse = YES;
-                      exportSession.outputFileType = AVFileTypeMPEG4;
-                      NSURL *compressedVideoUrl = [[self videoTempFolder]
-                          URLByAppendingPathComponent:[[[NSUUID UUID] UUIDString]
-                                                          stringByAppendingPathExtension:@"mp4"]];
-                      exportSession.outputURL = compressedVideoUrl;
-                      [exportSession exportAsynchronouslyWithCompletionHandler:^{
-                          dispatch_async(dispatch_get_main_queue(), ^{
-                              OWSAssert([NSThread isMainThread]);
+                      DataSource *dataSource = [DataSourcePath dataSourceWithURL:movieURL];
+                      dataSource.sourceFilename = filename;
+                      VideoCompressionResult *compressionResult =
+                          [SignalAttachment compressVideoAsMp4WithDataSource:dataSource
+                                                                     dataUTI:(NSString *)kUTTypeMPEG4];
+                      [compressionResult.attachmentPromise retainUntilComplete];
 
-                              if (modalActivityIndicator.wasCancelled) {
-                                  return;
+                      compressionResult.attachmentPromise.then(^(SignalAttachment *attachment) {
+                          OWSAssert([NSThread isMainThread]);
+                          OWSAssert([attachment isKindOfClass:[SignalAttachment class]]);
+
+                          if (modalActivityIndicator.wasCancelled) {
+                              return;
+                          }
+
+                          [modalActivityIndicator dismissWithCompletion:^{
+                              if (!attachment || [attachment hasError]) {
+                                  DDLogError(@"%@ %s Invalid attachment: %@.",
+                                      self.logTag,
+                                      __PRETTY_FUNCTION__,
+                                      attachment ? [attachment errorName] : @"Missing data");
+                                  [self showErrorAlertForAttachment:attachment];
+                              } else {
+                                  [self tryToSendAttachmentIfApproved:attachment skipApprovalDialog:skipApprovalDialog];
                               }
-
-                              [modalActivityIndicator dismissWithCompletion:^{
-                                  
-                                  NSString *baseFilename = filename.stringByDeletingPathExtension;
-                                  NSString *mp4Filename = [baseFilename stringByAppendingPathExtension:@"mp4"];
-                                  DataSource *_Nullable dataSource =
-                                      [DataSourcePath dataSourceWithURL:compressedVideoUrl];
-                                  [dataSource setSourceFilename:mp4Filename];
-                                  
-                                  // Remove temporary file when complete.
-                                  [dataSource setShouldDeleteOnDeallocation];
-                                  SignalAttachment *attachment =
-                                      [SignalAttachment attachmentWithDataSource:dataSource
-                                                                         dataUTI:(NSString *)kUTTypeMPEG4];
-                                  if (!attachment || [attachment hasError]) {
-                                      DDLogError(@"%@ %s Invalid attachment: %@.",
-                                          self.logTag,
-                                          __PRETTY_FUNCTION__,
-                                          attachment ? [attachment errorName] : @"Missing data");
-                                      [self showErrorAlertForAttachment:attachment];
-                                  } else {
-                                      [self tryToSendAttachmentIfApproved:attachment
-                                                       skipApprovalDialog:skipApprovalDialog];
-                                  }
-                              }];
-                          });
-                      }];
+                          }];
+                      });
                   }];
 }
 
