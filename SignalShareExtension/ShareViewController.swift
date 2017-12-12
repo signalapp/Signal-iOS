@@ -15,7 +15,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     private var hasInitialRootViewController = false
     private var isReadyForAppExtensions = false
 
-    var progressPoller: ProgressPoller?
+    private var progressPoller: ProgressPoller?
     var loadViewController: SAELoadViewController?
 
     override open func loadView() {
@@ -457,7 +457,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                 // NSItemProvider `loadItem` API.
                 // However, for some reason, AVFoundation operations such as generating a preview image and playing
                 // the url in the AVMoviePlayer fail on these converted formats until unless we first copy the media
-                // into our container. (These operations succeed when resending mp4s received and sent in Signal)
+                // into our container. (These operations succeed when sending a non-converted mp4 (e.g. one received,
+                // saved, and resent in Signal)
                 //
                 // I don't understand why this is, and I haven't found any relevant documentation in the NSItemProvider
                 // or AVFoundation docs.
@@ -494,8 +495,9 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
                 let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: specificUTIType)
 
-                // Can we move this process to the end of the share flow rather than up front?
-                // Currently we aren't able to generate a proper thumbnail or play the video in the app extension without first converting it.
+                // TODO: How can we move waiting for this export to the end of the share flow rather than having to do it up front?
+                // Ideally we'd be able to start it here, and not block the UI on conversion unless there's still work to be done
+                // when the user hit's "send".
                 if let exportSession = exportSession {
                     let progressPoller = ProgressPoller(timeInterval: 0.1, ratioCompleteBlock: { return exportSession.progress })
                     self.progressPoller = progressPoller
@@ -518,7 +520,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     }
 }
 
-class ProgressPoller {
+// Exposes a Progress object, whose progress is updated by polling the return of a given block
+private class ProgressPoller {
 
     let TAG = "[ProgressPoller]"
 
