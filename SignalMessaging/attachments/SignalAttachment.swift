@@ -582,7 +582,7 @@ public class SignalAttachment: NSObject {
             }
             attachment.cachedImage = image
 
-            if isInputImageValidOutputImage(image: image, dataSource: dataSource, dataUTI: dataUTI, imageQuality:imageQuality) {
+            if isValidOutputImage(image: image, dataSource: dataSource, dataUTI: dataUTI, imageQuality:imageQuality) {
                 if let sourceFilename = dataSource.sourceFilename,
                    let sourceFileExtension = sourceFilename.fileExtension,
                    ["heic", "heif"].contains(sourceFileExtension.lowercased()) {
@@ -613,7 +613,7 @@ public class SignalAttachment: NSObject {
 
     // If the proposed attachment already conforms to the
     // file size and content size limits, don't recompress it.
-    private class func isInputImageValidOutputImage(image: UIImage?, dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality) -> Bool {
+    private class func isValidOutputImage(image: UIImage?, dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality) -> Bool {
         guard let image = image else {
             return false
         }
@@ -788,7 +788,7 @@ public class SignalAttachment: NSObject {
             return attachment
         }
 
-        if !isInputVideoValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) {
+        if !isValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) {
             owsFail("building video with invalid output, migrate to async API using compressVideoAsMp4")
         }
 
@@ -854,6 +854,7 @@ public class SignalAttachment: NSObject {
                 return
             }
 
+            dataSource.setShouldDeleteOnDeallocation()
             dataSource.sourceFilename = mp4Filename
 
             let attachment = SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
@@ -890,7 +891,7 @@ public class SignalAttachment: NSObject {
             return false
         }
 
-        guard isInputVideoValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) else {
+        guard isValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) else {
             // found a video which needs to be converted
             return true
         }
@@ -899,7 +900,7 @@ public class SignalAttachment: NSObject {
         return false
     }
 
-    private class func isInputVideoValidOutputVideo(dataSource: DataSource?, dataUTI: String) -> Bool {
+    private class func isValidOutputVideo(dataSource: DataSource?, dataUTI: String) -> Bool {
         guard let dataSource = dataSource else {
             return false
         }

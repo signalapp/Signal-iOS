@@ -72,7 +72,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         self.loadViewController = loadViewController
 
         // Don't display load screen immediately, in hopes that we can avoid it altogether.
-        after(seconds: 2).then { () -> Void in
+        after(seconds: 0.5).then { () -> Void in
             guard self.presentedViewController == nil else {
                 Logger.debug("\(self.logTag) setup completed quickly, no need to present load view controller.")
                 return
@@ -453,20 +453,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         return promise.then { (itemUrl: URL) -> Promise<SignalAttachment> in
 
             let url: URL = try {
-                // iOS converts at least some video formats (e.g. com.apple.quicktime-movie) into mp4s as part of the
-                // NSItemProvider `loadItem` API.
-                // However, for some reason, AVFoundation operations such as generating a preview image and playing
-                // the url in the AVMoviePlayer fail on these converted formats until unless we first copy the media
-                // into our container. (These operations succeed when sending a non-converted mp4 (e.g. one received,
-                // saved, and resent in Signal)
-                //
-                // I don't understand why this is, and I haven't found any relevant documentation in the NSItemProvider
-                // or AVFoundation docs.
-                //
-                // I *did* verify that the size and sah256 sum of the original url matches that of the copied url.
-                // Perhaps the AVFoundation API's require some extra file system permssion we don't have in the
-                // passed through URL.
-                if MIMETypeUtil.isSupportedVideoFile(itemUrl.path) {
+                if self.isVideoNeedingRelocation(itemProvider: itemProvider, itemUrl: itemUrl) {
                     return try SignalAttachment.copyToVideoTempDir(url: itemUrl)
                 } else {
                     return itemUrl
@@ -497,7 +484,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
                 // TODO: How can we move waiting for this export to the end of the share flow rather than having to do it up front?
                 // Ideally we'd be able to start it here, and not block the UI on conversion unless there's still work to be done
-                // when the user hit's "send".
+                // when the user hits "send".
                 if let exportSession = exportSession {
                     let progressPoller = ProgressPoller(timeInterval: 0.1, ratioCompleteBlock: { return exportSession.progress })
                     self.progressPoller = progressPoller
@@ -517,6 +504,37 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
             return Promise(value: attachment)
         }
+    }
+
+    // Some host apps (e.g. iOS Photos.app) converts some video formats (e.g. com.apple.quicktime-movie)
+    // into mp4s as part of the NSItemProvider `loadItem` API.
+    //
+    // However, when using this url to the converted item, AVFoundation operations such as generating a
+    // preview image and playing the url in the AVMoviePlayer fails with an unhelpful error: "The operation could not be completed"
+    //
+    // We can work around this by first copying the media into our container.
+    //
+    // I don't understand why this is, and I haven't found any relevant documentation in the NSItemProvider
+    // or AVFoundation docs.
+    //
+    // Notes:
+    //
+    // These operations succeed when sending a video which initially existed on disk as an mp4.
+    // (e.g. Alice sends a video to Bob through the main app, which ensures it's an mp4. Bob saves it, then re-shares it)
+    //
+    // I *did* verify that the size and SHA256 sum of the original url matches that of the copied url. So there
+    // is no difference between the contents of the file, yet one works one doesn't.
+    // Perhaps the AVFoundation APIs require some extra file system permssion we don't have in the
+    // passed through URL.
+    private func isVideoNeedingRelocation(itemProvider: NSItemProvider, itemUrl: URL) -> Bool {
+        guard MIMETypeUtil.isSupportedVideoFile(itemUrl.path) else {
+            // not a video, isn't affected
+            return false
+        }
+
+        // If video file already existed on disk as an mp4, then the host app didn't need to
+        // apply any conversion, so no need to relocate the app.
+        return !itemProvider.registeredTypeIdentifiers.contains(kUTTypeMPEG4 as String)
     }
 }
 
