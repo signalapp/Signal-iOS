@@ -10,7 +10,36 @@ class SAELoadViewController: UIViewController {
 
     weak var delegate: ShareViewDelegate?
 
-    var activityIndicator: UIActivityIndicatorView?
+    var activityIndicator: UIActivityIndicatorView!
+    var progressView: UIProgressView!
+
+    var progress: Progress? {
+        didSet {
+            guard progressView != nil else {
+                return
+            }
+
+            updateProgressViewVisability()
+            progressView.observedProgress = progress
+        }
+    }
+
+    func updateProgressViewVisability() {
+        guard progressView != nil, activityIndicator != nil else {
+            return
+        }
+
+        // Prefer to show progress view when progress is present
+        if self.progress == nil {
+            activityIndicator.startAnimating()
+            self.progressView.isHidden = true
+            self.activityIndicator.isHidden = false
+        } else {
+            activityIndicator.stopAnimating()
+            self.progressView.isHidden = false
+            self.activityIndicator.isHidden = true
+        }
+    }
 
     // MARK: Initializers and Factory Methods
 
@@ -39,6 +68,16 @@ class SAELoadViewController: UIViewController {
         self.view.addSubview(activityIndicator)
         activityIndicator.autoCenterInSuperview()
 
+        progressView = UIProgressView(progressViewStyle: .default)
+        progressView.observedProgress = progress
+
+        self.view.addSubview(progressView)
+        progressView.autoVCenterInSuperview()
+        progressView.autoPinWidthToSuperview(withMargin: ScaleFromIPhone5(30))
+        progressView.progressTintColor = UIColor.white
+
+        updateProgressViewVisability()
+
         let label = UILabel()
         label.textColor = UIColor.white
         label.font = UIFont.ows_mediumFont(withSize: 18)
@@ -53,20 +92,11 @@ class SAELoadViewController: UIViewController {
         super.viewWillAppear(animated)
 
         self.navigationController?.isNavigationBarHidden = false
-
-        guard let activityIndicator = activityIndicator else {
-            return
-        }
-        activityIndicator.startAnimating()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        guard let activityIndicator = activityIndicator else {
-            return
-        }
-        activityIndicator.stopAnimating()
     }
 
     // MARK: - Event Handlers

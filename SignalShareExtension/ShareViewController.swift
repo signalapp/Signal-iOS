@@ -15,20 +15,14 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     private var hasInitialRootViewController = false
     private var isReadyForAppExtensions = false
 
-    var loadViewController: SAELoadViewController!
+    private var progressPoller: ProgressPoller?
+    var loadViewController: SAELoadViewController?
+
+    let shareViewNavigationController: UINavigationController = UINavigationController()
 
     override open func loadView() {
         super.loadView()
-
         Logger.debug("\(self.logTag) \(#function)")
-
-        // We can't show the conversation picker until the DB is set up.
-        // Normally this will only take a moment, so rather than flickering and then hiding the loading screen
-        // We start as invisible, and only fade it in if it's going to take a while
-        self.view.alpha = 0
-        UIView.animate(withDuration: 0.1, delay: 0.5, options: [.curveEaseInOut], animations: {
-            self.view.alpha = 1
-        }, completion: nil)
 
         // This should be the first thing we do.
         let appContext = ShareAppExtensionContext(rootViewController:self)
@@ -63,7 +57,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         // most of the singletons, etc.).  We just want to show an error view and
         // abort.
         isReadyForAppExtensions = OWSPreferences.isReadyForAppExtensions()
-        if !isReadyForAppExtensions {
+        guard isReadyForAppExtensions else {
             // If we don't have TSSStorageManager, we can't consult TSAccountManager
             // for isRegistered, so we use OWSPreferences which is usually-accurate
             // copy of that state.
@@ -74,6 +68,20 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             }
             return
         }
+
+        let loadViewController = SAELoadViewController(delegate: self)
+        self.loadViewController = loadViewController
+
+        // Don't display load screen immediately, in hopes that we can avoid it altogether.
+        after(seconds: 0.5).then { () -> Void in
+            guard self.presentedViewController == nil else {
+                Logger.debug("\(self.logTag) setup completed quickly, no need to present load view controller.")
+                return
+            }
+
+            Logger.debug("\(self.logTag) setup is slow - showing loading screen")
+            self.showPrimaryViewController(loadViewController)
+        }.retainUntilComplete()
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         AppSetup.setupEnvironment({
@@ -86,8 +94,6 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         // upgrade process may depend on Environment.
         VersionMigrations.performUpdateCheck()
 
-        self.loadViewController = SAELoadViewController(delegate:self)
-        self.pushViewController(loadViewController, animated: false)
         self.isNavigationBarHidden = true
 
         // We don't need to use "screen protection" in the SAE.
@@ -110,6 +116,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     }
 
     deinit {
+        Logger.info("\(self.logTag) dealloc")
         NotificationCenter.default.removeObserver(self)
     }
 
@@ -290,15 +297,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     }
 
     private func showErrorView(title: String, message: String) {
-        // ensure view is visible.
-        self.view.layer.removeAllAnimations()
-        UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseInOut], animations: {
-
-            self.view.alpha = 1
-        }, completion: nil)
-
         let viewController = SAEFailedViewController(delegate:self, title:title, message:message)
-        self.setViewControllers([viewController], animated: false)
+        self.showPrimaryViewController(viewController)
     }
 
     // MARK: View Lifecycle
@@ -363,20 +363,32 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
     // MARK: Helpers
 
+    // This view controller is not visible to the user. It exists to intercept touches, set up the
+    // extensions dependencies, and eventually present a visible view to the user.
+    // For speed of presentation, we only present a single modal, and if it's already been presented
+    // we swap out the contents.
+    // e.g. if loading is taking a while, the user will see the load screen presented with a modal
+    // animation. Next, when loading completes, the load view will be switched out for the contact
+    // picker view.
+    private func showPrimaryViewController(_ viewController: UIViewController) {
+        shareViewNavigationController.setViewControllers([viewController], animated: false)
+        if self.presentedViewController == nil {
+            Logger.debug("\(self.logTag) presenting modally: \(viewController)")
+            self.present(shareViewNavigationController, animated: true)
+        } else {
+            Logger.debug("\(self.logTag) modal already presented. swapping modal content for: \(viewController)")
+            assert(self.presentedViewController == shareViewNavigationController)
+        }
+    }
+
     private func presentConversationPicker() {
-        // pause any animation revealing the "loading" screen
-        self.view.layer.removeAllAnimations()
-
-        // Once we've presented the conversation picker, we hide the loading VC
-        // so that it's not revealed when we eventually dismiss the share extension.
-        loadViewController.view.isHidden = true
-
         self.buildAttachment().then { attachment -> Void in
             let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: self)
-            let navigationController = UINavigationController(rootViewController: conversationPicker)
-            navigationController.isNavigationBarHidden = true
             conversationPicker.attachment = attachment
-            self.present(navigationController, animated: true, completion: nil)
+            self.shareViewNavigationController.isNavigationBarHidden = true
+            self.progressPoller = nil
+            self.loadViewController = nil
+            self.showPrimaryViewController(conversationPicker)
             Logger.info("showing picker with attachment: \(attachment)")
         }.catch { error in
             let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE", comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
@@ -448,7 +460,18 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         // TODO accept other data types
         // TODO whitelist attachment types
         // TODO coerce when necessary and possible
-        return promise.then { (url: URL) -> SignalAttachment in
+        return promise.then { (itemUrl: URL) -> Promise<SignalAttachment> in
+
+            let url: URL = try {
+                if self.isVideoNeedingRelocation(itemProvider: itemProvider, itemUrl: itemUrl) {
+                    return try SignalAttachment.copyToVideoTempDir(url: itemUrl)
+                } else {
+                    return itemUrl
+                }
+            }()
+
+            Logger.debug("\(self.logTag) building DataSource with url: \(url)")
+
             guard let dataSource = DataSourcePath.dataSource(with: url) else {
                 throw ShareViewControllerError.assertionError(description: "Unable to read attachment data")
             }
@@ -459,13 +482,114 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             if url.pathExtension.count > 0 {
                 // Determine a more specific utiType based on file extension
                 if let typeExtension = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) {
+                    Logger.debug("\(self.logTag) utiType based on extension: \(typeExtension)")
                     specificUTIType = typeExtension
                 }
             }
 
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, imageQuality:.medium)
+            guard !SignalAttachment.isInvalidVideo(dataSource: dataSource, dataUTI: specificUTIType) else {
+                // This can happen, e.g. when sharing a quicktime-video from iCloud drive.
 
-            return attachment
+                let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: specificUTIType)
+
+                // TODO: How can we move waiting for this export to the end of the share flow rather than having to do it up front?
+                // Ideally we'd be able to start it here, and not block the UI on conversion unless there's still work to be done
+                // when the user hits "send".
+                if let exportSession = exportSession {
+                    let progressPoller = ProgressPoller(timeInterval: 0.1, ratioCompleteBlock: { return exportSession.progress })
+                    self.progressPoller = progressPoller
+                    progressPoller.startPolling()
+
+                    guard let loadViewController = self.loadViewController else {
+                        owsFail("load view controller was unexpectedly nil")
+                        return promise
+                    }
+
+                    loadViewController.progress = progressPoller.progress
+                }
+
+                return promise
+            }
+
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
+            return Promise(value: attachment)
+        }
+    }
+
+    // Some host apps (e.g. iOS Photos.app) sometimes auto-converts some video formats (e.g. com.apple.quicktime-movie)
+    // into mp4s as part of the NSItemProvider `loadItem` API. (Some files the Photo's app doesn't auto-convert)
+    //
+    // However, when using this url to the converted item, AVFoundation operations such as generating a
+    // preview image and playing the url in the AVMoviePlayer fails with an unhelpful error: "The operation could not be completed"
+    //
+    // We can work around this by first copying the media into our container.
+    //
+    // I don't understand why this is, and I haven't found any relevant documentation in the NSItemProvider
+    // or AVFoundation docs.
+    //
+    // Notes:
+    //
+    // These operations succeed when sending a video which initially existed on disk as an mp4.
+    // (e.g. Alice sends a video to Bob through the main app, which ensures it's an mp4. Bob saves it, then re-shares it)
+    //
+    // I *did* verify that the size and SHA256 sum of the original url matches that of the copied url. So there
+    // is no difference between the contents of the file, yet one works one doesn't.
+    // Perhaps the AVFoundation APIs require some extra file system permssion we don't have in the
+    // passed through URL.
+    private func isVideoNeedingRelocation(itemProvider: NSItemProvider, itemUrl: URL) -> Bool {
+        guard MIMETypeUtil.utiType(forFileExtension: itemUrl.pathExtension) == kUTTypeMPEG4 as String else {
+            // Either it's not a video or it was a video which was not auto-converted to mp4.
+            // Not affected by the issue.
+            return false
+        }
+
+        // If video file already existed on disk as an mp4, then the host app didn't need to
+        // apply any conversion, so no need to relocate the app.
+        return !itemProvider.registeredTypeIdentifiers.contains(kUTTypeMPEG4 as String)
+    }
+}
+
+// Exposes a Progress object, whose progress is updated by polling the return of a given block
+private class ProgressPoller {
+
+    let TAG = "[ProgressPoller]"
+
+    let progress: Progress
+    private(set) var timer: Timer?
+
+    // Higher number offers higher ganularity
+    let progressTotalUnitCount: Int64 = 10000
+    private let timeInterval: Double
+    private let ratioCompleteBlock: () -> Float
+
+    init(timeInterval: TimeInterval, ratioCompleteBlock: @escaping () -> Float) {
+        self.timeInterval = timeInterval
+        self.ratioCompleteBlock = ratioCompleteBlock
+
+        self.progress = Progress()
+
+        progress.totalUnitCount = progressTotalUnitCount
+        progress.completedUnitCount = Int64(ratioCompleteBlock() * Float(progressTotalUnitCount))
+    }
+
+    func startPolling() {
+        guard self.timer == nil else {
+            owsFail("already started timer")
+            return
+        }
+
+        self.timer = WeakTimer.scheduledTimer(timeInterval: timeInterval, target: self, userInfo: nil, repeats: true) { [weak self] (timer) in
+            guard let strongSelf = self else {
+                return
+            }
+
+            let completedUnitCount = Int64(strongSelf.ratioCompleteBlock() * Float(strongSelf.progressTotalUnitCount))
+            strongSelf.progress.completedUnitCount = completedUnitCount
+
+            if completedUnitCount == strongSelf.progressTotalUnitCount {
+                Logger.debug("\(strongSelf.TAG) progress complete")
+                timer.invalidate()
+            }
         }
     }
 }

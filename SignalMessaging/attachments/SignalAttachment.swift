@@ -5,6 +5,7 @@
 import Foundation
 import MobileCoreServices
 import SignalServiceKit
+import PromiseKit
 import AVFoundation
 
 enum SignalAttachmentError: Error {
@@ -13,6 +14,7 @@ enum SignalAttachmentError: Error {
     case invalidData
     case couldNotParseImage
     case couldNotConvertToJpeg
+    case couldNotConvertToMpeg4
     case invalidFileFormat
 }
 
@@ -49,6 +51,8 @@ extension SignalAttachmentError: LocalizedError {
             return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG", comment: "Attachment error message for image attachments which could not be converted to JPEG")
         case .invalidFileFormat:
             return NSLocalizedString("ATTACHMENT_ERROR_INVALID_FILE_FORMAT", comment: "Attachment error message for attachments with an invalid file format")
+        case .couldNotConvertToMpeg4:
+            return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4", comment: "Attachment error message for video attachments which could not be converted to MP4")
         }
     }
 }
@@ -236,7 +240,13 @@ public class SignalAttachment: NSObject {
         }
 
         do {
-            let asset = AVURLAsset(url:mediaUrl)
+            let filePath = mediaUrl.path
+            guard FileManager.default.fileExists(atPath: filePath) else {
+                owsFail("asset at \(filePath) doesn't exist")
+                return nil
+            }
+
+            let asset = AVURLAsset(url: mediaUrl)
             let generator = AVAssetImageGenerator(asset: asset)
             generator.appliesPreferredTrackTransform = true
             let cgImage = try generator.copyCGImage(at: CMTimeMake(0, 1), actualTime: nil)
@@ -351,6 +361,10 @@ public class SignalAttachment: NSObject {
     // for Signal attachments.
     private class var outputImageUTISet: Set<String> {
         return MIMETypeUtil.supportedImageUTITypes().union(animatedImageUTISet)
+    }
+
+    private class var outputVideoUTISet: Set<String> {
+        return Set([kUTTypeMPEG4 as String])
     }
 
     // Returns the set of UTIs that correspond to valid animated image formats
@@ -568,7 +582,7 @@ public class SignalAttachment: NSObject {
             }
             attachment.cachedImage = image
 
-            if isInputImageValidOutputImage(image: image, dataSource: dataSource, dataUTI: dataUTI, imageQuality:imageQuality) {
+            if isValidOutputImage(image: image, dataSource: dataSource, dataUTI: dataUTI, imageQuality:imageQuality) {
                 if let sourceFilename = dataSource.sourceFilename,
                    let sourceFileExtension = sourceFilename.fileExtension,
                    ["heic", "heif"].contains(sourceFileExtension.lowercased()) {
@@ -599,7 +613,7 @@ public class SignalAttachment: NSObject {
 
     // If the proposed attachment already conforms to the
     // file size and content size limits, don't recompress it.
-    private class func isInputImageValidOutputImage(image: UIImage?, dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality) -> Bool {
+    private class func isValidOutputImage(image: UIImage?, dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality) -> Bool {
         guard let image = image else {
             return false
         }
@@ -767,10 +781,138 @@ public class SignalAttachment: NSObject {
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
     private class func videoAttachment(dataSource: DataSource?, dataUTI: String) -> SignalAttachment {
-        return newAttachment(dataSource : dataSource,
-                             dataUTI : dataUTI,
-                             validUTISet : videoUTISet,
-                             maxFileSize : kMaxFileSizeVideo)
+        guard let dataSource = dataSource else {
+            let dataSource = DataSourceValue.emptyDataSource()
+            let attachment = SignalAttachment(dataSource:dataSource, dataUTI: dataUTI)
+            attachment.error = .missingData
+            return attachment
+        }
+
+        if !isValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) {
+            owsFail("building video with invalid output, migrate to async API using compressVideoAsMp4")
+        }
+
+        return newAttachment(dataSource: dataSource,
+                             dataUTI: dataUTI,
+                             validUTISet: videoUTISet,
+                             maxFileSize: kMaxFileSizeVideo)
+    }
+
+    public class func copyToVideoTempDir(url fromUrl: URL) throws -> URL {
+        let baseDir = SignalAttachment.videoTempPath.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        OWSFileSystem.ensureDirectoryExists(baseDir.path)
+        let toUrl = baseDir.appendingPathComponent(fromUrl.lastPathComponent)
+
+        Logger.debug("\(self.logTag) moving \(fromUrl) -> \(toUrl)")
+        try FileManager.default.copyItem(at: fromUrl, to: toUrl)
+
+        return toUrl
+    }
+
+    private class var videoTempPath: URL {
+        let videoDir = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("video")
+        OWSFileSystem.ensureDirectoryExists(videoDir.path)
+        return videoDir
+    }
+
+    public class func compressVideoAsMp4(dataSource: DataSource, dataUTI: String) -> (Promise<SignalAttachment>, AVAssetExportSession?) {
+        Logger.debug("\(self.TAG) in \(#function)")
+
+        guard let url = dataSource.dataUrl() else {
+            let attachment = SignalAttachment(dataSource : DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
+            attachment.error = .missingData
+            return (Promise(value: attachment), nil)
+        }
+
+        let asset = AVAsset(url: url)
+
+        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetMediumQuality) else {
+            let attachment = SignalAttachment(dataSource : DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
+            attachment.error = .couldNotConvertToMpeg4
+            return (Promise(value: attachment), nil)
+        }
+
+        exportSession.shouldOptimizeForNetworkUse = true
+        exportSession.outputFileType = AVFileTypeMPEG4
+
+        let exportURL = videoTempPath.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")
+        exportSession.outputURL = exportURL
+
+        let (promise, fulfill, _) = Promise<SignalAttachment>.pending()
+
+        Logger.debug("\(self.TAG) starting video export")
+        exportSession.exportAsynchronously {
+            Logger.debug("\(self.TAG) Completed video export")
+            let baseFilename = dataSource.sourceFilename
+            let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
+
+            guard let dataSource = DataSourcePath.dataSource(with: exportURL) else {
+                owsFail("Failed to build data source for exported video URL")
+                let attachment = SignalAttachment(dataSource : DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
+                attachment.error = .couldNotConvertToMpeg4
+                fulfill(attachment)
+                return
+            }
+
+            dataSource.setShouldDeleteOnDeallocation()
+            dataSource.sourceFilename = mp4Filename
+
+            let attachment = SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
+            fulfill(attachment)
+        }
+
+        return (promise, exportSession)
+    }
+
+    @objc
+    public class VideoCompressionResult: NSObject {
+        @objc
+        public let attachmentPromise: AnyPromise
+
+        @objc
+        public let exportSession: AVAssetExportSession?
+
+        fileprivate init(attachmentPromise: Promise<SignalAttachment>, exportSession: AVAssetExportSession?) {
+            self.attachmentPromise = AnyPromise(attachmentPromise)
+            self.exportSession = exportSession
+            super.init()
+        }
+    }
+
+    @objc
+    public class func compressVideoAsMp4(dataSource: DataSource, dataUTI: String) -> VideoCompressionResult {
+        let (attachmentPromise, exportSession) = compressVideoAsMp4(dataSource: dataSource, dataUTI: dataUTI)
+        return VideoCompressionResult(attachmentPromise: attachmentPromise, exportSession: exportSession)
+    }
+
+    public class func isInvalidVideo(dataSource: DataSource, dataUTI: String) -> Bool {
+        guard videoUTISet.contains(dataUTI) else {
+            // not a video
+            return false
+        }
+
+        guard isValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) else {
+            // found a video which needs to be converted
+            return true
+        }
+
+        // It is a video, but it's not invalid
+        return false
+    }
+
+    private class func isValidOutputVideo(dataSource: DataSource?, dataUTI: String) -> Bool {
+        guard let dataSource = dataSource else {
+            return false
+        }
+
+        guard SignalAttachment.outputVideoUTISet.contains(dataUTI) else {
+            return false
+        }
+
+        if dataSource.dataLength() <= kMaxFileSizeVideo {
+            return true
+        }
+        return false
     }
 
     // MARK: Audio Attachments
