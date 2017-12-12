@@ -789,9 +789,6 @@ public class SignalAttachment: NSObject {
         }
 
         if !isInputVideoValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) {
-            // Most people won't hit this because we convert video when picked from the media picker
-            // But the current API allows sending videos that some Signal clients will not
-            // be able to view. (e.g. when picked from document picker)
             owsFail("building video with invalid output, migrate to async API using compressVideoAsMp4")
         }
 

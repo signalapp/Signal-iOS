@@ -2483,6 +2483,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 
     [dataSource setSourceFilename:filename];
+
+    // Although we want to be able to send higher quality attachments throught the document picker
+    // it's more imporant that we ensure the sent format is one all clients can accept (e.g. *not* quicktime .mov)
+    if ([SignalAttachment isInvalidVideoWithDataSource:dataSource dataUTI:type]) {
+        [self sendQualityAdjustedAttachmentForVideo:url filename:filename skipApprovalDialog:NO];
+        return;
+    }
+
     // "Document picker" attachments _SHOULD NOT_ be resized, if possible.
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:type imageQuality:TSImageQualityOriginal];
