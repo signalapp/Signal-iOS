@@ -21,9 +21,10 @@ public class AttachmentApprovalViewController: OWSViewController {
 
     let attachment: SignalAttachment
 
-    private(set) var bottomToolbar: UIToolbar!
+    private(set) var bottomToolbar: UIView!
     private(set) var mediaMessageView: MediaMessageView!
     private(set) var scrollView: UIScrollView!
+    private var textField: UITextField!
 
     // MARK: Initializers
 
@@ -170,10 +171,12 @@ public class AttachmentApprovalViewController: OWSViewController {
         topToolbar.items = [cancelButton]
 
         // Bottom Toolbar
-        self.bottomToolbar = makeClearToolbar()
-        // Making a toolbar transparent requires setting an empty uiimage
-        bottomToolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
-        bottomToolbar.backgroundColor = UIColor.clear
+        let bottomToolbar: UIToolbar = makeClearToolbar()
+        self.bottomToolbar = bottomToolbar
+        self.textField = UITextField()
+        let textFieldItem = UIBarButtonItem(customView: textField)
+        //        textField.autoresizingMask = [.flexibleWidth, .flexibleHeight];
+        textField.translatesAutoresizingMaskIntoConstraints = false
 
         let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
         let sendButton = UIBarButtonItem(title:  sendTitle,
@@ -183,13 +186,83 @@ public class AttachmentApprovalViewController: OWSViewController {
         sendButton.tintColor = UIColor.white
 
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        bottomToolbar.items = [flexibleSpace, sendButton]
+        bottomToolbar.items = [textFieldItem, sendButton]
+//        bottomToolbar.items = [flexibleSpace, sendButton]
+        bottomToolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
+        bottomToolbar.backgroundColor = UIColor.clear
+        bottomToolbar.autoSetDimension(.height, toSize: 40)
 
-        self.view.addSubview(bottomToolbar)
-        bottomToolbar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-        bottomToolbar.autoPinWidthToSuperview()
-        bottomToolbar.setCompressionResistanceVerticalHigh()
-        bottomToolbar.setContentHuggingVerticalHigh()
+//        self.bottomToolbar = MessagingToolbar()
+        // Making a toolbar transparent requires setting an empty uiimage
+
+//        self.view.addSubview(bottomToolbar)
+//        bottomToolbar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+//        bottomToolbar.autoPinWidthToSuperview()
+//        bottomToolbar.setCompressionResistanceVerticalHigh()
+//        bottomToolbar.setContentHuggingVerticalHigh()
+    }
+
+    override public var inputAccessoryView: UIView? {
+        return self.bottomToolbar
+    }
+
+    override public var canBecomeFirstResponder: Bool {
+        return true
+    }
+
+    class MessagingToolbar: UIToolbar {
+        let sendButton: UIButton
+        let textField: UITextField
+
+        init() {
+            self.sendButton = UIButton(type: .system)
+            self.sendButton.setTitle("Send", for: .normal)
+            self.sendButton.tintColor = UIColor.white
+
+            self.textField = UITextField()
+            textField.backgroundColor = UIColor.white
+            textField.layer.cornerRadius = 2.0
+            super.init(frame: CGRect.zero)
+
+            backgroundColor = UIColor.green
+
+            addSubview(sendButton)
+            addSubview(textField)
+
+//            textField.autoPinEdge(toSuperviewEdge: .leading, withInset: 4.0)
+//            textField.autoPinEdge(.trailing, to: .leading, of: sendButton, withOffset: -4.0)
+//            textField.autoPinHeightToSuperview(withMargin: 2.0)
+//            sendButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 4.0)
+//            sendButton.autoPinHeightToSuperview(withMargin: 2.0)
+//            self.autoSetDimension(.height, toSize: 40, relation: .greaterThanOrEqual)
+        }
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+
+            let kMargin = 4
+            let kTextFieldHeight = 40
+            let kTextFieldWidth = 200
+
+            let kSendButtonHeight = 40
+            let kSendButtonWidth = 100
+
+            self.textField.frame = CGRect(x: kMargin, y: kMargin, width: kTextFieldWidth, height: kTextFieldHeight)
+            self.sendButton.frame = CGRect(x: kMargin * 2 + kTextFieldWidth, y: kMargin, width: kSendButtonWidth, height: kSendButtonHeight)
+            self.frame = CGRect(x: 0, y: 0, width: 320, height: kTextFieldHeight + 2 * kMargin)
+            self.bounds = self.frame
+
+//            self.textField.sizeToFit()
+
+//            let maxHeight = max(self.sendButton.frame.size.height, self.textField.frame.size.height)
+//            let fittedFrame = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: maxHeight)
+//            self.frame = fittedFrame
+//            self.bounds = fittedFrame
+        }
+
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
     }
 
     private func makeClearToolbar() -> UIToolbar {
