@@ -11,8 +11,11 @@ public protocol AttachmentApprovalViewControllerDelegate: class {
     func didCancelAttachment(attachment: SignalAttachment)
 }
 
+// TODO
+let kMinTextViewHeight: CGFloat = 80
+
 @objc
-public class AttachmentApprovalViewController: OWSViewController {
+public class AttachmentApprovalViewController: OWSViewController, UITextViewDelegate {
 
     let TAG = "[AttachmentApprovalViewController]"
     weak var delegate: AttachmentApprovalViewControllerDelegate?
@@ -25,6 +28,7 @@ public class AttachmentApprovalViewController: OWSViewController {
     private(set) var mediaMessageView: MediaMessageView!
     private(set) var scrollView: UIScrollView!
     private var textView: UITextView!
+    private(set) var textViewHeightConstraint: NSLayoutConstraint!
 
     // MARK: Initializers
 
@@ -174,11 +178,10 @@ public class AttachmentApprovalViewController: OWSViewController {
         let bottomToolbar: UIToolbar = makeClearToolbar()
         self.bottomToolbar = bottomToolbar
         self.textView = UITextView()
+        textView.delegate = self
         self.textView.backgroundColor = UIColor.white
         self.textView.layer.cornerRadius = 4.0
-        
-        textView.autoSetDimensions(to: CGSize(width: 200, height: 40))
-        
+
         let textViewItem = UIBarButtonItem(customView: textView)
         //        textView.autoresizingMask = [.flexibleWidth, .flexibleHeight];
         textView.translatesAutoresizingMaskIntoConstraints = false
@@ -196,15 +199,18 @@ public class AttachmentApprovalViewController: OWSViewController {
         bottomToolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
 //        bottomToolbar.backgroundColor = UIColor.clear
         bottomToolbar.backgroundColor = UIColor.yellow
-        bottomToolbar.autoSetDimension(.height, toSize: 40)
-        
+        bottomToolbar.autoSetDimension(.height, toSize: 40, relation: .greaterThanOrEqual)
+
         let kToolbarMargin: CGFloat = 4.0
+        //        textView.autoSetDimensions(to: CGSize(width: 200, height: 40))
         textView.autoPinEdge(toSuperviewEdge: .leading, withInset: kToolbarMargin)
         textView.autoPinEdge(toSuperviewEdge: .top, withInset: kToolbarMargin)
         // TODO get actualy offset based on button size.
         let kTrailingOffset: CGFloat = 80
         textView.autoPinEdge(toSuperviewEdge: .trailing, withInset: kTrailingOffset)
         textView.autoPinEdge(toSuperviewEdge: .bottom, withInset: kToolbarMargin)
+
+        self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
 
 //        self.bottomToolbar = MessagingToolbar()
         // Making a toolbar transparent requires setting an empty uiimage
@@ -292,6 +298,29 @@ public class AttachmentApprovalViewController: OWSViewController {
 
         return toolbar
     }
+
+    // MARK: - UITextViewDelegate
+
+    public func textViewDidChange(_ textView: UITextView) {
+        Logger.debug("\(self.logTag) in \(#function)")
+//        CGFloat fixedWidth = textView.frame.size.width;
+//        CGSize newSize = [textView sizeThatFits:CGSizeMake(fixedWidth, MAXFLOAT)];
+//        CGRect newFrame = textView.frame;
+//        newFrame.size = CGSizeMake(fmaxf(newSize.width, fixedWidth), newSize.height);
+//        textView.frame = newFrame;
+        let fixedWidth = textView.frame.size.width
+        let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+//        let newFrame = CGRect(x: textView.frame.origin.x, y: textView.frame.origin.y, width: fixedWidth, height: newSize.height)
+//        Logger.debug("\(self.logTag) oldFrame: \(textView.frame), newFrame: \(newFrame)")
+
+        Logger.debug("\(self.logTag) oldHeight: \(self.textViewHeightConstraint.constant), newHeight: \(newSize.height)")
+        // TODO clamp to a max.
+        self.textViewHeightConstraint.constant = max(kMinTextViewHeight, newSize.height)
+        self.bottomToolbar.setNeedsLayout()
+        self.bottomToolbar.layoutIfNeeded()
+//        textView.frame = newFrame
+    }
+//    - (void)textViewDidChange:(UITextView *)textView
 
     // MARK: - Event Handlers
 
