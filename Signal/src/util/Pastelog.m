@@ -58,6 +58,14 @@
                                          handler:^(UIAlertAction *_Nonnull action) {
                                              [Pastelog.sharedManager sendToSelf:urlString];
                                          }]];
+            [alert addAction:[UIAlertAction
+                                 actionWithTitle:
+                                     NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD",
+                                         @"Label for the 'send to last thread' option of the the debug log alert.")
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction *_Nonnull action) {
+                                             [Pastelog.sharedManager sendToLastThread:urlString];
+                                         }]];
 #endif
             [alert addAction:
                        [UIAlertAction
@@ -261,6 +269,29 @@
             }];
         [ThreadUtil sendMessageWithText:url inThread:thread messageSender:messageSender];
     });
+
+    // Also copy to pasteboard.
+    [[UIPasteboard generalPasteboard] setString:url];
+}
+
+- (void)sendToLastThread:(NSString *)url
+{
+    if (![TSAccountManager isRegistered]) {
+        return;
+    }
+    OWSMessageSender *messageSender = Environment.current.messageSender;
+
+    DispatchMainThreadSafe(^{
+        __block TSThread *thread = nil;
+        [[TSStorageManager sharedManager].dbReadWriteConnection
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                thread = [[transaction ext:TSThreadDatabaseViewExtensionName] firstObjectInGroup:[TSThread collection]];
+            }];
+        [ThreadUtil sendMessageWithText:url inThread:thread messageSender:messageSender];
+    });
+
+    // Also copy to pasteboard.
+    [[UIPasteboard generalPasteboard] setString:url];
 }
 
 @end
