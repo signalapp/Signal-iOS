@@ -236,7 +236,12 @@ public class AttachmentApprovalViewController: OWSViewController {
 extension AttachmentApprovalViewController: UIScrollViewDelegate {
 
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return mediaMessageView
+        if attachment.isImage || attachment.isVideo {
+            return mediaMessageView
+        } else {
+            // don't zoom for audio or generic attachments.
+            return nil
+        }
     }
 
     fileprivate func updateMinZoomScaleForSize(_ size: CGSize) {
