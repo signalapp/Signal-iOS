@@ -386,6 +386,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: self)
             conversationPicker.attachment = attachment
             self.shareViewNavigationController.isNavigationBarHidden = true
+            self.progressPoller = nil
+            self.loadViewController = nil
             self.showPrimaryViewController(conversationPicker)
             Logger.info("showing picker with attachment: \(attachment)")
         }.catch { error in
