@@ -65,11 +65,11 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
-                                               object:self.dbConnection.database];
+                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
+                                             selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification
-                                               object:self.dbConnection.database];
+                                               object:nil];
 
     self.refreshControl = [UIRefreshControl new];
     [self.refreshControl addTarget:self action:@selector(refreshDevices) forControlEvents:UIControlEventValueChanged];
@@ -200,8 +200,29 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
 #pragma mark - Table view data source
 
+- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    // External database modifications can't be converted into incremental updates,
+    // so rebuild everything.  This is expensive and usually isn't necessary, but
+    // there's no alternative.
+    [self.dbConnection beginLongLivedReadTransaction];
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.deviceMappings updateWithTransaction:transaction];
+    }];
+
+    [self.tableView reloadData];
+}
+
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
     NSArray *notifications = [self.dbConnection beginLongLivedReadTransaction];
     [self setupEditButton];
 

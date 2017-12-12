@@ -295,7 +295,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                  name:YapDatabaseModifiedNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
+                                             selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -2782,6 +2782,15 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     return _editingDatabaseConnection;
 }
 
+- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
+{
+    OWSAssert([NSThread isMainThread]);
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [self resetMappings];
+}
+
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
     OWSAssert([NSThread isMainThread]);
@@ -2793,6 +2802,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (!self.shouldObserveDBModifications) {
         return;
     }
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     // HACK to work around radar #28167779
     // "UICollectionView performBatchUpdates can trigger a crash if the collection view is flagged for layout"
