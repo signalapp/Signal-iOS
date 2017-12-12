@@ -24,7 +24,7 @@ public class AttachmentApprovalViewController: OWSViewController {
     private(set) var bottomToolbar: UIView!
     private(set) var mediaMessageView: MediaMessageView!
     private(set) var scrollView: UIScrollView!
-    private var textField: UITextField!
+    private var textView: UITextView!
 
     // MARK: Initializers
 
@@ -173,10 +173,15 @@ public class AttachmentApprovalViewController: OWSViewController {
         // Bottom Toolbar
         let bottomToolbar: UIToolbar = makeClearToolbar()
         self.bottomToolbar = bottomToolbar
-        self.textField = UITextField()
-        let textFieldItem = UIBarButtonItem(customView: textField)
-        //        textField.autoresizingMask = [.flexibleWidth, .flexibleHeight];
-        textField.translatesAutoresizingMaskIntoConstraints = false
+        self.textView = UITextView()
+        self.textView.backgroundColor = UIColor.white
+        self.textView.layer.cornerRadius = 4.0
+        
+        textView.autoSetDimensions(to: CGSize(width: 200, height: 40))
+        
+        let textViewItem = UIBarButtonItem(customView: textView)
+        //        textView.autoresizingMask = [.flexibleWidth, .flexibleHeight];
+        textView.translatesAutoresizingMaskIntoConstraints = false
 
         let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
         let sendButton = UIBarButtonItem(title:  sendTitle,
@@ -186,11 +191,20 @@ public class AttachmentApprovalViewController: OWSViewController {
         sendButton.tintColor = UIColor.white
 
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        bottomToolbar.items = [textFieldItem, sendButton]
+        bottomToolbar.items = [textViewItem, sendButton]
 //        bottomToolbar.items = [flexibleSpace, sendButton]
         bottomToolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
-        bottomToolbar.backgroundColor = UIColor.clear
+//        bottomToolbar.backgroundColor = UIColor.clear
+        bottomToolbar.backgroundColor = UIColor.yellow
         bottomToolbar.autoSetDimension(.height, toSize: 40)
+        
+        let kToolbarMargin: CGFloat = 4.0
+        textView.autoPinEdge(toSuperviewEdge: .leading, withInset: kToolbarMargin)
+        textView.autoPinEdge(toSuperviewEdge: .top, withInset: kToolbarMargin)
+        // TODO get actualy offset based on button size.
+        let kTrailingOffset: CGFloat = 80
+        textView.autoPinEdge(toSuperviewEdge: .trailing, withInset: kTrailingOffset)
+        textView.autoPinEdge(toSuperviewEdge: .bottom, withInset: kToolbarMargin)
 
 //        self.bottomToolbar = MessagingToolbar()
         // Making a toolbar transparent requires setting an empty uiimage
@@ -212,26 +226,26 @@ public class AttachmentApprovalViewController: OWSViewController {
 
     class MessagingToolbar: UIToolbar {
         let sendButton: UIButton
-        let textField: UITextField
+        let textView: UITextView
 
         init() {
             self.sendButton = UIButton(type: .system)
             self.sendButton.setTitle("Send", for: .normal)
             self.sendButton.tintColor = UIColor.white
 
-            self.textField = UITextField()
-            textField.backgroundColor = UIColor.white
-            textField.layer.cornerRadius = 2.0
+            self.textView = UITextView()
+            textView.backgroundColor = UIColor.white
+            textView.layer.cornerRadius = 2.0
             super.init(frame: CGRect.zero)
 
             backgroundColor = UIColor.green
 
             addSubview(sendButton)
-            addSubview(textField)
+            addSubview(textView)
 
-//            textField.autoPinEdge(toSuperviewEdge: .leading, withInset: 4.0)
-//            textField.autoPinEdge(.trailing, to: .leading, of: sendButton, withOffset: -4.0)
-//            textField.autoPinHeightToSuperview(withMargin: 2.0)
+//            textView.autoPinEdge(toSuperviewEdge: .leading, withInset: 4.0)
+//            textView.autoPinEdge(.trailing, to: .leading, of: sendButton, withOffset: -4.0)
+//            textView.autoPinHeightToSuperview(withMargin: 2.0)
 //            sendButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 4.0)
 //            sendButton.autoPinHeightToSuperview(withMargin: 2.0)
 //            self.autoSetDimension(.height, toSize: 40, relation: .greaterThanOrEqual)
@@ -241,20 +255,20 @@ public class AttachmentApprovalViewController: OWSViewController {
             super.layoutSubviews()
 
             let kMargin = 4
-            let kTextFieldHeight = 40
-            let kTextFieldWidth = 200
+            let kTextViewHeight = 40
+            let kTextViewWidth = 200
 
             let kSendButtonHeight = 40
             let kSendButtonWidth = 100
 
-            self.textField.frame = CGRect(x: kMargin, y: kMargin, width: kTextFieldWidth, height: kTextFieldHeight)
-            self.sendButton.frame = CGRect(x: kMargin * 2 + kTextFieldWidth, y: kMargin, width: kSendButtonWidth, height: kSendButtonHeight)
-            self.frame = CGRect(x: 0, y: 0, width: 320, height: kTextFieldHeight + 2 * kMargin)
+            self.textView.frame = CGRect(x: kMargin, y: kMargin, width: kTextViewWidth, height: kTextViewHeight)
+            self.sendButton.frame = CGRect(x: kMargin * 2 + kTextViewWidth, y: kMargin, width: kSendButtonWidth, height: kSendButtonHeight)
+            self.frame = CGRect(x: 0, y: 0, width: 320, height: kTextViewHeight + 2 * kMargin)
             self.bounds = self.frame
 
-//            self.textField.sizeToFit()
+//            self.textView.sizeToFit()
 
-//            let maxHeight = max(self.sendButton.frame.size.height, self.textField.frame.size.height)
+//            let maxHeight = max(self.sendButton.frame.size.height, self.textView.frame.size.height)
 //            let fittedFrame = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: maxHeight)
 //            self.frame = fittedFrame
 //            self.bounds = fittedFrame
