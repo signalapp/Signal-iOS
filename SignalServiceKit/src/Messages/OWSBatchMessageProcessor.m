@@ -12,9 +12,11 @@
 #import "TSStorageManager.h"
 #import "TSYapDatabaseObject.h"
 #import "Threading.h"
+#import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import <YapDatabase/YapDatabaseView.h>
+#import <YapDatabase/YapDatabaseViewTypes.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -193,7 +195,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     options.allowedCollections =
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[OWSMessageContentJob collection]]];
 
-    return [[YapDatabaseView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"1" options:options];
+    return [[YapDatabaseAutoView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"1" options:options];
 }
 
 
