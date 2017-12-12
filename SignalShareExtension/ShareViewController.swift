@@ -516,8 +516,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         }
     }
 
-    // Some host apps (e.g. iOS Photos.app) converts some video formats (e.g. com.apple.quicktime-movie)
-    // into mp4s as part of the NSItemProvider `loadItem` API.
+    // Some host apps (e.g. iOS Photos.app) sometimes auto-converts some video formats (e.g. com.apple.quicktime-movie)
+    // into mp4s as part of the NSItemProvider `loadItem` API. (Some files the Photo's app doesn't auto-convert)
     //
     // However, when using this url to the converted item, AVFoundation operations such as generating a
     // preview image and playing the url in the AVMoviePlayer fails with an unhelpful error: "The operation could not be completed"
@@ -537,8 +537,9 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     // Perhaps the AVFoundation APIs require some extra file system permssion we don't have in the
     // passed through URL.
     private func isVideoNeedingRelocation(itemProvider: NSItemProvider, itemUrl: URL) -> Bool {
-        guard MIMETypeUtil.isSupportedVideoFile(itemUrl.path) else {
-            // not a video, isn't affected
+        guard MIMETypeUtil.utiType(forFileExtension: itemUrl.pathExtension) == kUTTypeMPEG4 as String else {
+            // Either it's not a video or it was a video which was not auto-converted to mp4.
+            // Not affected by the issue.
             return false
         }
 
