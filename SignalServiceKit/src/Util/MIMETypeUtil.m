@@ -211,19 +211,20 @@ NSString *const kSyncMessageFileExtension = @"bin";
 }
 
 + (BOOL)isSupportedVideoFile:(NSString *)filePath {
-    return [[self supportedVideoExtensionTypesToMIMETypes] objectForKey:[filePath pathExtension]] != nil;
+    return [[self supportedVideoExtensionTypesToMIMETypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
 }
 
 + (BOOL)isSupportedAudioFile:(NSString *)filePath {
-    return [[self supportedAudioExtensionTypesToMIMETypes] objectForKey:[filePath pathExtension]] != nil;
+    return [[self supportedAudioExtensionTypesToMIMETypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
 }
 
 + (BOOL)isSupportedImageFile:(NSString *)filePath {
-    return [[self supportedImageExtensionTypesToMIMETypes] objectForKey:[filePath pathExtension]] != nil;
+    return [[self supportedImageExtensionTypesToMIMETypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
 }
 
 + (BOOL)isSupportedAnimatedFile:(NSString *)filePath {
-    return [[self supportedAnimatedExtensionTypesToMIMETypes] objectForKey:[filePath pathExtension]] != nil;
+    return
+        [[self supportedAnimatedExtensionTypesToMIMETypes] objectForKey:filePath.pathExtension.lowercaseString] != nil;
 }
 
 + (nullable NSString *)getSupportedExtensionFromVideoMIMEType:(NSString *)supportedMIMEType

@@ -450,7 +450,30 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         // TODO accept other data types
         // TODO whitelist attachment types
         // TODO coerce when necessary and possible
-        return promise.then { (url: URL) -> Promise<SignalAttachment> in
+        return promise.then { (itemUrl: URL) -> Promise<SignalAttachment> in
+
+            let url: URL = try {
+                // iOS converts at least some video formats (e.g. com.apple.quicktime-movie) into mp4s as part of the
+                // NSItemProvider `loadItem` API.
+                // However, for some reason, AVFoundation operations such as generating a preview image and playing
+                // the url in the AVMoviePlayer fail on these converted formats until unless we first copy the media
+                // into our container. (These operations succeed when resending mp4s received and sent in Signal)
+                //
+                // I don't understand why this is, and I haven't found any relevant documentation in the NSItemProvider
+                // or AVFoundation docs.
+                //
+                // I *did* verify that the size and sah256 sum of the original url matches that of the copied url.
+                // Perhaps the AVFoundation API's require some extra file system permssion we don't have in the
+                // passed through URL.
+                if MIMETypeUtil.isSupportedVideoFile(itemUrl.path) {
+                    return try SignalAttachment.copyToVideoTempDir(url: itemUrl)
+                } else {
+                    return itemUrl
+                }
+            }()
+
+            Logger.debug("\(self.logTag) building DataSource with url: \(url)")
+
             guard let dataSource = DataSourcePath.dataSource(with: url) else {
                 throw ShareViewControllerError.assertionError(description: "Unable to read attachment data")
             }
@@ -467,7 +490,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             }
 
             guard !SignalAttachment.isInvalidVideo(dataSource: dataSource, dataUTI: specificUTIType) else {
-                // TODO show progress with exportSession
+                // This can happen, e.g. when sharing a quicktime-video from iCloud drive.
+
                 let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: specificUTIType)
 
                 // Can we move this process to the end of the share flow rather than up front?
@@ -488,8 +512,6 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                 return promise
             }
 
-            // DO NOT COMMIT
-//            specificUTIType = "com.apple.quicktime-movie"
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
             return Promise(value: attachment)
         }

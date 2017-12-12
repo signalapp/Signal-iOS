@@ -792,13 +792,24 @@ public class SignalAttachment: NSObject {
             // Most people won't hit this because we convert video when picked from the media picker
             // But the current API allows sending videos that some Signal clients will not
             // be able to view. (e.g. when picked from document picker)
-//            owsFail("building video with invalid output, migrate to async API using compressVideoAsMp4")
+            owsFail("building video with invalid output, migrate to async API using compressVideoAsMp4")
         }
 
         return newAttachment(dataSource: dataSource,
                              dataUTI: dataUTI,
                              validUTISet: videoUTISet,
                              maxFileSize: kMaxFileSizeVideo)
+    }
+
+    public class func copyToVideoTempDir(url fromUrl: URL) throws -> URL {
+        let baseDir = SignalAttachment.videoTempPath.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        OWSFileSystem.ensureDirectoryExists(baseDir.path)
+        let toUrl = baseDir.appendingPathComponent(fromUrl.lastPathComponent)
+
+        Logger.debug("\(self.logTag) moving \(fromUrl) -> \(toUrl)")
+        try FileManager.default.copyItem(at: fromUrl, to: toUrl)
+
+        return toUrl
     }
 
     private class var videoTempPath: URL {
