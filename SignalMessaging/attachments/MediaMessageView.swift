@@ -292,8 +292,10 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     private func createHeroViewSize() -> CGFloat {
         switch mode {
-        case .large, .attachmentApproval:
+        case .large:
             return ScaleFromIPhone5To7Plus(175, 225)
+        case .attachmentApproval:
+            return ScaleFromIPhone5(100)
         case .small:
             return ScaleFromIPhone5To7Plus(80, 80)
         }
@@ -327,6 +329,15 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         }
     }
 
+    private var controlTintColor: UIColor {
+        switch mode {
+        case .small, .large:
+            return UIColor.ows_materialBlue()
+        case .attachmentApproval:
+            return UIColor.white
+        }
+    }
+
     private func formattedFileExtension() -> String? {
         guard let fileExtension = attachment.fileExtension else {
             return nil
@@ -357,7 +368,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
         let label = UILabel()
         label.text = filename
-        label.textColor = UIColor.ows_materialBlue()
+        label.textColor = controlTintColor
         label.font = labelFont()
         label.textAlignment = .center
         label.lineBreakMode = .byTruncatingMiddle
@@ -371,7 +382,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
                                                      comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}."),
                             OWSFormat.formatFileSize(UInt(fileSize)))
 
-        label.textColor = UIColor.ows_materialBlue()
+        label.textColor = controlTintColor
         label.font = labelFont()
         label.textAlignment = .center
 
@@ -412,14 +423,14 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         let image = UIImage(named: "audio_play_black_large")?.withRenderingMode(.alwaysTemplate)
         assert(image != nil)
         audioPlayButton?.setImage(image, for: .normal)
-        audioPlayButton?.imageView?.tintColor = UIColor.ows_materialBlue()
+        audioPlayButton?.imageView?.tintColor = controlTintColor
     }
 
     private func setAudioIconToPause() {
         let image = UIImage(named: "audio_pause_black_large")?.withRenderingMode(.alwaysTemplate)
         assert(image != nil)
         audioPlayButton?.setImage(image, for: .normal)
-        audioPlayButton?.imageView?.tintColor = UIColor.ows_materialBlue()
+        audioPlayButton?.imageView?.tintColor = controlTintColor
     }
 
     // MARK: - Full Screen Image
