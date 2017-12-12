@@ -121,22 +121,23 @@ public class AttachmentApprovalViewController: OWSViewController {
         containerView.autoMatch(.width, to: .width, of: self.view)
 
         containerView.addSubview(mediaMessageView)
-        mediaMessageView.autoCenterInSuperview()
-        mediaMessageView.setCompressionResistanceHigh()
+        mediaMessageView.autoPinEdgesToSuperviewEdges()
 
-        // Add top and bottom gradients to ensure toolbar controls are legible
-        // when placed over media with a clashing color
-        let topGradient = GradientView(from: backgroundColor, to: UIColor.clear)
-        self.view.addSubview(topGradient)
-        topGradient.autoPinWidthToSuperview()
-        topGradient.autoPinEdge(toSuperviewEdge: .top)
-        topGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(60))
+        if attachment.isImage || attachment.isVideo {
+            // Add top and bottom gradients to ensure toolbar controls are legible
+            // when placed over image/video preview which may be a clashing color.
+            let topGradient = GradientView(from: backgroundColor, to: UIColor.clear)
+            self.view.addSubview(topGradient)
+            topGradient.autoPinWidthToSuperview()
+            topGradient.autoPinEdge(toSuperviewEdge: .top)
+            topGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(60))
 
-        let bottomGradient = GradientView(from: UIColor.clear, to: backgroundColor)
-        self.view.addSubview(bottomGradient)
-        bottomGradient.autoPinWidthToSuperview()
-        bottomGradient.autoPinEdge(toSuperviewEdge: .bottom)
-        bottomGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(100))
+            let bottomGradient = GradientView(from: UIColor.clear, to: backgroundColor)
+            self.view.addSubview(bottomGradient)
+            bottomGradient.autoPinWidthToSuperview()
+            bottomGradient.autoPinEdge(toSuperviewEdge: .bottom)
+            bottomGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(100))
+        }
 
         // Hide the play button embedded in the MediaView and replace it with our own.
         // This allows us to zoom in on the media view without zooming in on the button

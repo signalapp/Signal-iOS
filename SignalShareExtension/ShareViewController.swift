@@ -18,9 +18,10 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     private var progressPoller: ProgressPoller?
     var loadViewController: SAELoadViewController?
 
+    let shareViewNavigationController: UINavigationController = UINavigationController()
+
     override open func loadView() {
         super.loadView()
-
         Logger.debug("\(self.logTag) \(#function)")
 
         // This should be the first thing we do.
@@ -56,7 +57,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         // most of the singletons, etc.).  We just want to show an error view and
         // abort.
         isReadyForAppExtensions = OWSPreferences.isReadyForAppExtensions()
-        if !isReadyForAppExtensions {
+        guard isReadyForAppExtensions else {
             // If we don't have TSSStorageManager, we can't consult TSAccountManager
             // for isRegistered, so we use OWSPreferences which is usually-accurate
             // copy of that state.
@@ -79,9 +80,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             }
 
             Logger.debug("\(self.logTag) setup is slow - showing loading screen")
-
-            let navigationController = UINavigationController(rootViewController: loadViewController)
-            self.present(navigationController, animated: true)
+            self.showPrimaryViewController(loadViewController)
         }.retainUntilComplete()
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
@@ -117,6 +116,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     }
 
     deinit {
+        Logger.info("\(self.logTag) dealloc")
         NotificationCenter.default.removeObserver(self)
     }
 
@@ -298,7 +298,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
     private func showErrorView(title: String, message: String) {
         let viewController = SAEFailedViewController(delegate:self, title:title, message:message)
-        self.setViewControllers([viewController], animated: false)
+        self.showPrimaryViewController(viewController)
     }
 
     // MARK: View Lifecycle
@@ -363,22 +363,32 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
     // MARK: Helpers
 
+    // This view controller is not visible to the user. It exists to intercept touches, set up the
+    // extensions dependencies, and eventually present a visible view to the user.
+    // For speed of presentation, we only present a single modal, and if it's already been presented
+    // we swap out the contents.
+    // e.g. if loading is taking a while, the user will see the load screen presented with a modal
+    // animation. Next, when loading completes, the load view will be switched out for the contact
+    // picker view.
+    private func showPrimaryViewController(_ viewController: UIViewController) {
+        shareViewNavigationController.setViewControllers([viewController], animated: false)
+        if self.presentedViewController == nil {
+            Logger.debug("\(self.logTag) presenting modally: \(viewController)")
+            self.present(shareViewNavigationController, animated: true)
+        } else {
+            Logger.debug("\(self.logTag) modal already presented. swapping modal content for: \(viewController)")
+            assert(self.presentedViewController == shareViewNavigationController)
+        }
+    }
+
     private func presentConversationPicker() {
         self.buildAttachment().then { attachment -> Void in
             let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: self)
-            let navigationController = UINavigationController(rootViewController: conversationPicker)
-            navigationController.isNavigationBarHidden = true
             conversationPicker.attachment = attachment
-            if let presentedViewController = self.presentedViewController {
-                Logger.debug("\(self.logTag) dismissing \(presentedViewController) before presenting conversation picker")
-                self.dismiss(animated: true) {
-                    self.present(navigationController, animated: true)
-                }
-            } else {
-                Logger.debug("\(self.logTag) no other modal, presenting conversation picker immediately")
-                self.present(navigationController, animated: true)
-            }
-
+            self.shareViewNavigationController.isNavigationBarHidden = true
+            self.progressPoller = nil
+            self.loadViewController = nil
+            self.showPrimaryViewController(conversationPicker)
             Logger.info("showing picker with attachment: \(attachment)")
         }.catch { error in
             let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE", comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
@@ -506,8 +516,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         }
     }
 
-    // Some host apps (e.g. iOS Photos.app) converts some video formats (e.g. com.apple.quicktime-movie)
-    // into mp4s as part of the NSItemProvider `loadItem` API.
+    // Some host apps (e.g. iOS Photos.app) sometimes auto-converts some video formats (e.g. com.apple.quicktime-movie)
+    // into mp4s as part of the NSItemProvider `loadItem` API. (Some files the Photo's app doesn't auto-convert)
     //
     // However, when using this url to the converted item, AVFoundation operations such as generating a
     // preview image and playing the url in the AVMoviePlayer fails with an unhelpful error: "The operation could not be completed"
@@ -527,8 +537,9 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     // Perhaps the AVFoundation APIs require some extra file system permssion we don't have in the
     // passed through URL.
     private func isVideoNeedingRelocation(itemProvider: NSItemProvider, itemUrl: URL) -> Bool {
-        guard MIMETypeUtil.isSupportedVideoFile(itemUrl.path) else {
-            // not a video, isn't affected
+        guard MIMETypeUtil.utiType(forFileExtension: itemUrl.pathExtension) == kUTTypeMPEG4 as String else {
+            // Either it's not a video or it was a video which was not auto-converted to mp4.
+            // Not affected by the issue.
             return false
         }
 
