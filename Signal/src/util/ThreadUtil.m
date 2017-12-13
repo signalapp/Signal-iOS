@@ -388,7 +388,7 @@ NS_ASSUME_NONNULL_BEGIN
                     shouldHaveAddToProfileWhitelistOffer = NO;
                 }
 
-                BOOL isContact = [contactsManager.lastKnownContactRecipientIds containsObject:recipientId];
+                BOOL isContact = [contactsManager signalAccountForRecipientId:recipientId] != nil;
                 if (isContact) {
                     // Only create "add to contacts" offers for non-contacts.
                     shouldHaveAddToContactsOffer = NO;

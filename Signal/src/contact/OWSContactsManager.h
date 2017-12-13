@@ -30,32 +30,9 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 @property (atomic, readonly) NSDictionary<NSString *, Contact *> *allContactsMap;
 
-// signalAccountMap and signalAccounts hold the same data.
-// signalAccountMap is for lookup. signalAccounts contains the accounts
-// ordered by display order.
-@property (atomic, readonly) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
+// order of the signalAccounts array respects the systems contact sorting preference
 @property (atomic, readonly) NSArray<SignalAccount *> *signalAccounts;
-
-// This value is cached and is available immediately, before system contacts
-// fetch or contacts intersection.
-//
-// In some cases, its better if our UI reflects these values
-// which haven't been updated yet rather than assume that
-// we have no contacts until the first contacts intersection
-// successfully completes.
-//
-// This significantly improves the user experience when:
-//
-// * No contacts intersection has completed because the app has just launched.
-// * Contacts intersection can't complete due to an unreliable connection or
-//   the contacts intersection rate limit.
-@property (atomic, readonly) NSArray<NSString *> *lastKnownContactRecipientIds;
-
 - (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId;
-
-- (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier;
-
-- (void)loadLastKnownContactRecipientIds;
 
 #pragma mark - System Contact Fetching
 

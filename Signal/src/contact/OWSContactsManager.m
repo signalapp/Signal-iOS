@@ -23,7 +23,6 @@ NSString *const kTSStorageManager_AccountDisplayNames = @"kTSStorageManager_Acco
 NSString *const kTSStorageManager_AccountFirstNames = @"kTSStorageManager_AccountFirstNames";
 NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_AccountLastNames";
 NSString *const kTSStorageManager_OWSContactsManager = @"kTSStorageManager_OWSContactsManager";
-NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownContactRecipientIds";
 
 @interface OWSContactsManager () <SystemContactsFetcherDelegate>
 
@@ -34,7 +33,6 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
 @property (atomic) NSDictionary<NSString *, Contact *> *allContactsMap;
 @property (atomic) NSArray<SignalAccount *> *signalAccounts;
 @property (atomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
-@property (atomic) NSArray<NSString *> *lastKnownContactRecipientIds;
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 
 @property (atomic) NSDictionary<NSString *, NSString *> *cachedAccountNameMap;
@@ -57,7 +55,6 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
     _allContactsMap = @{};
     _signalAccountMap = @{};
     _signalAccounts = @[];
-    _lastKnownContactRecipientIds = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
 
@@ -66,18 +63,6 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
     [self loadCachedDisplayNames];
 
     return self;
-}
-
-- (void)loadLastKnownContactRecipientIds
-{
-    [TSStorageManager.sharedManager.newDatabaseConnection readWithBlock:^(
-        YapDatabaseReadTransaction *_Nonnull transaction) {
-        NSArray<NSString *> *_Nullable value = [transaction objectForKey:kTSStorageManager_lastKnownContactRecipientIds
-                                                            inCollection:kTSStorageManager_OWSContactsManager];
-        if (value) {
-            self.lastKnownContactRecipientIds = value;
-        }
-    }];
 }
 
 #pragma mark - System Contact Fetching
@@ -245,16 +230,18 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
             }
         }
 
-        NSArray<NSString *> *lastKnownContactRecipientIds = [signalAccountMap allKeys];
         [TSStorageManager.sharedManager.newDatabaseConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                [transaction setObject:lastKnownContactRecipientIds
-                                forKey:kTSStorageManager_lastKnownContactRecipientIds
-                          inCollection:kTSStorageManager_OWSContactsManager];
+                // TODO we can be more efficient here.
+                // - only save the ones that changed
+                // - only remove the ones which no longer exist
+                [transaction removeAllObjectsInCollection:[SignalAccount collection]];
+                for (SignalAccount *signalAccount in signalAccounts) {
+                    [signalAccount saveWithTransaction:transaction];
+                }
             }];
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.lastKnownContactRecipientIds = lastKnownContactRecipientIds;
             self.signalAccountMap = [signalAccountMap copy];
             self.signalAccounts = [signalAccounts copy];
 
@@ -682,25 +669,22 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
 {
     OWSAssert(recipientId.length > 0);
 
-    return self.signalAccountMap[recipientId];
-}
+    SignalAccount *signalAccount = self.signalAccountMap[recipientId];
 
-- (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier
-{
-    Contact *savedContact = self.allContactsMap[identifier];
-    if (savedContact) {
-        return savedContact;
-    } else {
-        return [[Contact alloc] initWithContactWithFirstName:self.unknownContactName
-                                                 andLastName:nil
-                                     andUserTextPhoneNumbers:@[ identifier ]
-                                                    andImage:nil
-                                                andContactID:0];
+    // If contact intersection hasn't completed, it might exist on disk
+    // even if it doesn't exist in memory yet.
+    if (!signalAccount) {
+        signalAccount = [SignalAccount fetchObjectWithUniqueID:recipientId];
     }
+
+    return signalAccount;
 }
 
 - (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)identifier {
     Contact *contact = self.allContactsMap[identifier];
+    if (!contact) {
+        contact = [self signalAccountForRecipientId:identifier].contact;
+    }
 
     // Prefer the contact image from the local address book if available
     UIImage *_Nullable image = contact.image;

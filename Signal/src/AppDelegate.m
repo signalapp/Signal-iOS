@@ -881,7 +881,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [OWSProfileManager.sharedManager fetchLocalUsersProfile];
     [[OWSReadReceiptManager sharedManager] prepareCachedValues];
-    [[Environment getCurrent].contactsManager loadLastKnownContactRecipientIds];
 }
 
 - (void)registrationStateDidChange

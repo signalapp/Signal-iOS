@@ -46,6 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [SignalRecipient recipientWithTextSecureIdentifier:self.recipientId withTransaction:transaction];
 }
 
+- (nullable NSString *)uniqueId
+{
+    return _recipientId;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
