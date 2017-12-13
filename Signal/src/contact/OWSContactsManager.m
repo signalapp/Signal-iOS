@@ -19,11 +19,6 @@
 NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     = @"OWSContactsManagerSignalAccountsDidChangeNotification";
 
-NSString *const kTSStorageManager_AccountDisplayNames = @"kTSStorageManager_AccountDisplayNames";
-NSString *const kTSStorageManager_AccountFirstNames = @"kTSStorageManager_AccountFirstNames";
-NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_AccountLastNames";
-NSString *const kTSStorageManager_OWSContactsManager = @"kTSStorageManager_OWSContactsManager";
-
 @interface OWSContactsManager () <SystemContactsFetcherDelegate>
 
 @property (nonatomic) BOOL isContactsUpdateInFlight;
@@ -34,10 +29,6 @@ NSString *const kTSStorageManager_OWSContactsManager = @"kTSStorageManager_OWSCo
 @property (atomic) NSArray<SignalAccount *> *signalAccounts;
 @property (atomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
-
-@property (atomic) NSDictionary<NSString *, NSString *> *cachedAccountNameMap;
-@property (atomic) NSDictionary<NSString *, NSString *> *cachedFirstNameMap;
-@property (atomic) NSDictionary<NSString *, NSString *> *cachedLastNameMap;
 
 @end
 
@@ -59,8 +50,6 @@ NSString *const kTSStorageManager_OWSContactsManager = @"kTSStorageManager_OWSCo
     _systemContactsFetcher.delegate = self;
 
     OWSSingletonAssert();
-
-    [self loadCachedDisplayNames];
 
     return self;
 }
@@ -187,8 +176,6 @@ NSString *const kTSStorageManager_OWSContactsManager = @"kTSStorageManager_OWSCo
             [self intersectContacts];
 
             [self updateSignalAccounts];
-
-            [self updateCachedDisplayNames];
         });
     });
 }
@@ -246,8 +233,6 @@ NSString *const kTSStorageManager_OWSContactsManager = @"kTSStorageManager_OWSCo
             self.signalAccounts = [signalAccounts copy];
 
             [self.profileManager setContactRecipientIds:signalAccountMap.allKeys];
-
-            [self updateCachedDisplayNames];
         });
     });
 }
@@ -258,139 +243,28 @@ NSString *const kTSStorageManager_OWSContactsManager = @"kTSStorageManager_OWSCo
     return [OWSProfileManager sharedManager];
 }
 
-- (void)updateCachedDisplayNames
-{
-    OWSAssert([NSThread isMainThread]);
-
-    NSMutableDictionary<NSString *, NSString *> *cachedAccountNameMap = [NSMutableDictionary new];
-    NSMutableDictionary<NSString *, NSString *> *cachedFirstNameMap = [NSMutableDictionary new];
-    NSMutableDictionary<NSString *, NSString *> *cachedLastNameMap = [NSMutableDictionary new];
-
-    for (SignalAccount *signalAccount in self.signalAccounts) {
-        NSString *baseName
-            = (signalAccount.contact.fullName.length > 0 ? signalAccount.contact.fullName : signalAccount.recipientId);
-        OWSAssert(signalAccount.hasMultipleAccountContact == (signalAccount.multipleAccountLabelText != nil));
-        NSString *displayName = (signalAccount.multipleAccountLabelText
-                ? [NSString stringWithFormat:@"%@ (%@)", baseName, signalAccount.multipleAccountLabelText]
-                : baseName);
-        if (![displayName isEqualToString:signalAccount.recipientId]) {
-            cachedAccountNameMap[signalAccount.recipientId] = displayName;
-        }
-
-        if (signalAccount.contact.firstName.length > 0) {
-            cachedFirstNameMap[signalAccount.recipientId] = signalAccount.contact.firstName;
-        }
-        if (signalAccount.contact.lastName.length > 0) {
-            cachedLastNameMap[signalAccount.recipientId] = signalAccount.contact.lastName;
-        }
-    }
-
-    // As a fallback, make sure we can also display names for not-yet-registered
-    // and no-longer-registered users.
-    for (Contact *contact in self.allContacts) {
-        NSString *displayName = contact.fullName;
-        if (displayName.length > 0) {
-            for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-                NSString *e164 = phoneNumber.toE164;
-                if (!cachedAccountNameMap[e164]) {
-                    cachedAccountNameMap[e164] = displayName;
-                }
-            }
-        }
-    }
-
-    self.cachedAccountNameMap = [cachedAccountNameMap copy];
-    self.cachedFirstNameMap = [cachedFirstNameMap copy];
-    self.cachedLastNameMap = [cachedLastNameMap copy];
-
-    // Write to database off the main thread.
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [TSStorageManager.sharedManager.newDatabaseConnection readWriteWithBlock:^(
-            YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            for (NSString *recipientId in cachedAccountNameMap) {
-                NSString *displayName = cachedAccountNameMap[recipientId];
-                [transaction setObject:displayName
-                                forKey:recipientId
-                          inCollection:kTSStorageManager_AccountDisplayNames];
-            }
-            for (NSString *recipientId in cachedFirstNameMap) {
-                NSString *firstName = cachedFirstNameMap[recipientId];
-                [transaction setObject:firstName forKey:recipientId inCollection:kTSStorageManager_AccountFirstNames];
-            }
-            for (NSString *recipientId in cachedLastNameMap) {
-                NSString *lastName = cachedLastNameMap[recipientId];
-                [transaction setObject:lastName forKey:recipientId inCollection:kTSStorageManager_AccountLastNames];
-            }
-        }];
-    });
-
-    [[NSNotificationCenter defaultCenter]
-        postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
-                           object:nil];
-}
-
-- (void)loadCachedDisplayNames
-{
-    // Read from database off the main thread.
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSMutableDictionary<NSString *, NSString *> *cachedAccountNameMap = [NSMutableDictionary new];
-        NSMutableDictionary<NSString *, NSString *> *cachedFirstNameMap = [NSMutableDictionary new];
-        NSMutableDictionary<NSString *, NSString *> *cachedLastNameMap = [NSMutableDictionary new];
-
-        [TSStorageManager.sharedManager.newDatabaseConnection readWithBlock:^(
-            YapDatabaseReadTransaction *_Nonnull transaction) {
-            [transaction
-                enumerateKeysAndObjectsInCollection:kTSStorageManager_AccountDisplayNames
-                                         usingBlock:^(
-                                             NSString *_Nonnull key, NSString *_Nonnull object, BOOL *_Nonnull stop) {
-                                             cachedAccountNameMap[key] = object;
-                                         }];
-            [transaction
-                enumerateKeysAndObjectsInCollection:kTSStorageManager_AccountFirstNames
-                                         usingBlock:^(
-                                             NSString *_Nonnull key, NSString *_Nonnull object, BOOL *_Nonnull stop) {
-                                             cachedFirstNameMap[key] = object;
-                                         }];
-            [transaction
-                enumerateKeysAndObjectsInCollection:kTSStorageManager_AccountLastNames
-                                         usingBlock:^(
-                                             NSString *_Nonnull key, NSString *_Nonnull object, BOOL *_Nonnull stop) {
-                                             cachedLastNameMap[key] = object;
-                                         }];
-        }];
-
-        if (self.cachedAccountNameMap || self.cachedFirstNameMap || self.cachedLastNameMap) {
-            // If these properties have already been populated from system contacts,
-            // don't overwrite.  In practice this should never happen.
-            OWSFail(@"%@ Unexpected cache state", self.logTag);
-            return;
-        }
-
-        self.cachedAccountNameMap = [cachedAccountNameMap copy];
-        self.cachedFirstNameMap = [cachedFirstNameMap copy];
-        self.cachedLastNameMap = [cachedLastNameMap copy];
-    });
-}
-
 - (NSString *_Nullable)cachedDisplayNameForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
-    return self.cachedAccountNameMap[recipientId];
+    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+    return signalAccount.displayName;
 }
 
 - (NSString *_Nullable)cachedFirstNameForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
-    return self.cachedFirstNameMap[recipientId];
+    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+    return signalAccount.contact.firstName;
 }
 
 - (NSString *_Nullable)cachedLastNameForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
-    return self.cachedLastNameMap[recipientId];
+    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+    return signalAccount.contact.lastName;
 }
 
 #pragma mark - View Helpers

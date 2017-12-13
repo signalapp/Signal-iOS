@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 // this is a label for the account.
 @property (nonatomic) NSString *multipleAccountLabelText;
 
+- (NSString *)displayName;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient;
