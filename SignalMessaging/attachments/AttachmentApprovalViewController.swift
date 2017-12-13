@@ -245,7 +245,7 @@ public class AttachmentApprovalViewController: OWSViewController, UITextViewDele
             super.init(frame: CGRect.zero)
 
             let kToolbarMargin: CGFloat = 4
-            let kSendButtonWidth: CGFloat = 40
+            let kSendButtonWidth: CGFloat = 80
             let kMinToolbarHeight: CGFloat = 40
 
             self.backgroundColor = UIColor.ows_inputToolbarBackground()
@@ -256,7 +256,7 @@ public class AttachmentApprovalViewController: OWSViewController, UITextViewDele
 
             let textViewItem = UIBarButtonItem(customView: textView)
             // TODO is this necessary?
-            textView.translatesAutoresizingMaskIntoConstraints = false
+//            textView.translatesAutoresizingMaskIntoConstraints = false
 
             let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
 
@@ -280,7 +280,7 @@ public class AttachmentApprovalViewController: OWSViewController, UITextViewDele
             textView.autoPinEdge(toSuperviewEdge: .leading, withInset: kToolbarMargin)
             textView.autoPinEdge(toSuperviewEdge: .top, withInset: kToolbarMargin)
 
-            let kTrailingOffset: CGFloat = kSendButtonWidth + kToolbarMargin * 2
+            let kTrailingOffset: CGFloat = kSendButtonWidth
             textView.autoPinEdge(toSuperviewEdge: .trailing, withInset: kTrailingOffset)
             textView.autoPinEdge(toSuperviewEdge: .bottom, withInset: kToolbarMargin)
 
@@ -291,22 +291,22 @@ public class AttachmentApprovalViewController: OWSViewController, UITextViewDele
 
         public func textViewDidChange(_ textView: UITextView) {
             Logger.debug("\(self.logTag) in \(#function)")
-            //        CGFloat fixedWidth = textView.frame.size.width;
-            //        CGSize newSize = [textView sizeThatFits:CGSizeMake(fixedWidth, MAXFLOAT)];
-            //        CGRect newFrame = textView.frame;
-            //        newFrame.size = CGSizeMake(fmaxf(newSize.width, fixedWidth), newSize.height);
-            //        textView.frame = newFrame;
+            let kMaxTextViewHeight: CGFloat = 160
+
             let fixedWidth = textView.frame.size.width
             let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-            //        let newFrame = CGRect(x: textView.frame.origin.x, y: textView.frame.origin.y, width: fixedWidth, height: newSize.height)
-            //        Logger.debug("\(self.logTag) oldFrame: \(textView.frame), newFrame: \(newFrame)")
 
-            Logger.debug("\(self.logTag) oldHeight: \(self.textViewHeightConstraint.constant), newHeight: \(newSize.height)")
-            // TODO clamp to a max, only when changed
-            self.textViewHeightConstraint.constant = max(MessagingToolbar.kMinTextViewHeight, newSize.height)
-            setNeedsLayout()
-            layoutIfNeeded()
-            //        textView.frame = newFrame
+            let newHeight = Clamp(newSize.height, MessagingToolbar.kMinTextViewHeight, kMaxTextViewHeight)
+            if newHeight != self.textViewHeightConstraint.constant {
+                Logger.debug("\(self.logTag) oldHeight: \(self.textViewHeightConstraint.constant), newHeight: \(newHeight)")
+                self.textViewHeightConstraint.constant = max(MessagingToolbar.kMinTextViewHeight, newHeight)
+                UIView.animate(withDuration: 0.1) {
+                    self.setNeedsLayout()
+                    self.layoutIfNeeded()
+                }
+            } else {
+                Logger.debug("\(self.logTag) height unchanged: \(self.textViewHeightConstraint.constant)")
+            }
         }
 
 //        override func layoutSubviews() {
