@@ -230,21 +230,37 @@ public class AttachmentApprovalViewController: OWSViewController, UITextViewDele
 //        let toolbar: UIToolbar
 //        let sendButton: UIButton
         let textView: UITextView
+        let kToolbarMargin: CGFloat = 4
 
-        private(set) var textViewHeightConstraint: NSLayoutConstraint!
+//        private(set) var textViewHeightConstraint: NSLayoutConstraint!
+        private(set) var heightConstraint: NSLayoutConstraint!
 
-        private static var kMinTextViewHeight: CGFloat {
-            return UIFont.ows_dynamicTypeBody().lineHeight + 4
+        private var kMinTextViewHeight: CGFloat {
+//            return UIFont.ows_dynamicTypeBody().lineHeight
+            return 38
+        }
+
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        class MessageTextView: UITextView {
+            // When creating new lines, contentOffset is animated, but because because
+            // we are simultaneously resizing the text view, this can cause the
+            // text in the textview to be "too high" in the text view.
+            // Solution is to disable animation for setting content offset.
+            override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
+                super.setContentOffset(contentOffset, animated: false)
+            }
         }
 
         init() {
-            let textView = UITextView()
-            self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: MessagingToolbar.kMinTextViewHeight)
+            let textView = MessageTextView()
+//            self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: MessagingToolbar.kMinTextViewHeight)
             self.textView = textView
 
             super.init(frame: CGRect.zero)
 
-            let kToolbarMargin: CGFloat = 4
             let kSendButtonWidth: CGFloat = 80
             let kMinToolbarHeight: CGFloat = 40
 
@@ -273,7 +289,9 @@ public class AttachmentApprovalViewController: OWSViewController, UITextViewDele
             self.items = [textViewItem, sendButton]
 
             // toolbar doesn't render without some minimum height set.
-            self.autoSetDimension(.height, toSize: kMinToolbarHeight, relation: .greaterThanOrEqual)
+            self.heightConstraint = self.autoSetDimension(.height,
+                                                          toSize: kMinTextViewHeight + kToolbarMargin * 2,
+                                                          relation: .greaterThanOrEqual)
 
             // Adding textView to a toolbar item inserts it into a "hostView"
             // This isn't really documentd, but I've verified it works on iOS10
@@ -296,21 +314,25 @@ public class AttachmentApprovalViewController: OWSViewController, UITextViewDele
             let fixedWidth = textView.frame.size.width
             let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
 
-            let newHeight = Clamp(newSize.height, MessagingToolbar.kMinTextViewHeight, kMaxTextViewHeight)
-            if newHeight != self.textViewHeightConstraint.constant {
-                Logger.debug("\(self.logTag) oldHeight: \(self.textViewHeightConstraint.constant), newHeight: \(newHeight)")
-                self.textViewHeightConstraint.constant = max(MessagingToolbar.kMinTextViewHeight, newHeight)
-                UIView.animate(withDuration: 0.1) {
+            let newToolbarHeight = Clamp(newSize.height, kMinTextViewHeight, kMaxTextViewHeight)
+
+            let newHeight = newToolbarHeight + kToolbarMargin * 2
+            if newHeight != self.heightConstraint.constant {
+                Logger.debug("\(self.logTag) oldHeight: \(self.heightConstraint.constant), newHeight: \(newHeight)")
+                self.heightConstraint.constant = newHeight
+//                UIView.animate(withDuration: 0.1) {
                     self.setNeedsLayout()
                     self.layoutIfNeeded()
-                }
+//                }
             } else {
-                Logger.debug("\(self.logTag) height unchanged: \(self.textViewHeightConstraint.constant)")
+                Logger.debug("\(self.logTag) height unchanged: \(self.heightConstraint.constant)")
             }
         }
 
-//        override func layoutSubviews() {
-//            super.layoutSubviews()
+        override func layoutSubviews() {
+            Logger.info("\(self.logTag) in \(#function)")
+            super.layoutSubviews()
+
 //
 //            let kMargin = 4
 //            let kTextViewHeight = 40
@@ -330,10 +352,6 @@ public class AttachmentApprovalViewController: OWSViewController, UITextViewDele
 ////            let fittedFrame = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: maxHeight)
 ////            self.frame = fittedFrame
 ////            self.bounds = fittedFrame
-//        }
-
-        required init?(coder aDecoder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
         }
     }
 
