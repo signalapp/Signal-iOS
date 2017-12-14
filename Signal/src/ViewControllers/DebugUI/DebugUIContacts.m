@@ -46,6 +46,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                            actionBlock:^{
                                                                [DebugUIContacts deleteAllContacts];
                                                            }],
+                                           [OWSTableItem itemWithTitle:@"Clear SignalAccount Cache"
+                                                           actionBlock:^{
+                                                               [DebugUIContacts clearSignalAccountCache];
+                                                           }],
                                        ]];
 }
 
@@ -1278,6 +1282,12 @@ NS_ASSUME_NONNULL_BEGIN
                             [OWSAlerts showAlertWithTitle:@"Error" message:saveError.localizedDescription];
                         }
                     }];
+}
+
++ (void)clearSignalAccountCache
+{
+    DDLogWarn(@"%@ Deleting all signal accounts.", self.logTag);
+    [SignalAccount removeAllObjectsInCollection];
 }
 
 + (void)deleteAllContacts
