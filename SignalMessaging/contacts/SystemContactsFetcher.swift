@@ -488,6 +488,7 @@ public class SystemContactsFetcher: NSObject {
                 completion(nil)
             }
 
+            Logger.info("\(self.TAG) fetched \(contacts.count) contacts.")
             let contactsHash  = HashableArray(contacts).hashValue
 
             DispatchQueue.main.async {

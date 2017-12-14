@@ -3,6 +3,7 @@
 //
 
 #import <AddressBook/AddressBook.h>
+#import <Mantle/MTLModel.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalRecipient;
 @class YapDatabaseReadTransaction;
 
-@interface Contact : NSObject
+@interface Contact : MTLModel
 
 @property (nullable, readonly, nonatomic) NSString *firstName;
 @property (nullable, readonly, nonatomic) NSString *lastName;
@@ -30,13 +31,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) NSArray<NSString *> *userTextPhoneNumbers;
 @property (readonly, nonatomic) NSArray<NSString *> *emails;
 @property (readonly, nonatomic) NSString *uniqueId;
+@property (nonatomic, readonly) BOOL isSignalContact;
 #if TARGET_OS_IOS
 @property (nullable, readonly, nonatomic) UIImage *image;
 @property (readonly, nonatomic) ABRecordID recordID;
 @property (nullable, nonatomic, readonly) CNContact *cnContact;
 #endif // TARGET_OS_IOS
 
-- (BOOL)isSignalContact;
 - (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 // TODO: Remove this method.
 - (NSArray<NSString *> *)textSecureIdentifiers;

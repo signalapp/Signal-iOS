@@ -23,12 +23,6 @@
 NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     = @"OWSContactsManagerSignalAccountsDidChangeNotification";
 
-NSString *const kTSStorageManager_AccountDisplayNames = @"kTSStorageManager_AccountDisplayNames";
-NSString *const kTSStorageManager_AccountFirstNames = @"kTSStorageManager_AccountFirstNames";
-NSString *const kTSStorageManager_AccountLastNames = @"kTSStorageManager_AccountLastNames";
-NSString *const kTSStorageManager_OWSContactsManager = @"kTSStorageManager_OWSContactsManager";
-NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownContactRecipientIds";
-
 @interface OWSContactsManager () <SystemContactsFetcherDelegate>
 
 @property (nonatomic) BOOL isContactsUpdateInFlight;
@@ -38,12 +32,9 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
 @property (atomic) NSDictionary<NSString *, Contact *> *allContactsMap;
 @property (atomic) NSArray<SignalAccount *> *signalAccounts;
 @property (atomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
-@property (atomic) NSArray<NSString *> *lastKnownContactRecipientIds;
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
-
-@property (atomic) NSDictionary<NSString *, NSString *> *cachedAccountNameMap;
-@property (atomic) NSDictionary<NSString *, NSString *> *cachedFirstNameMap;
-@property (atomic) NSDictionary<NSString *, NSString *> *cachedLastNameMap;
+@property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *dbWriteConnection;
 
 @end
 
@@ -58,31 +49,34 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
 
     // TODO: We need to configure the limits of this cache.
     _avatarCache = [ImageCache new];
+    
+    _dbReadConnection = [TSStorageManager sharedManager].newDatabaseConnection;
+    _dbWriteConnection = [TSStorageManager sharedManager].newDatabaseConnection;
+    
     _allContacts = @[];
     _allContactsMap = @{};
     _signalAccountMap = @{};
     _signalAccounts = @[];
-    _lastKnownContactRecipientIds = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
-
+    
     OWSSingletonAssert();
-
-    [self loadCachedDisplayNames];
 
     return self;
 }
 
-- (void)loadLastKnownContactRecipientIds
+- (void)loadSignalAccountsFromCache
 {
-    [TSStorageManager.sharedManager.newDatabaseConnection readWithBlock:^(
-        YapDatabaseReadTransaction *_Nonnull transaction) {
-        NSArray<NSString *> *_Nullable value = [transaction objectForKey:kTSStorageManager_lastKnownContactRecipientIds
-                                                            inCollection:kTSStorageManager_OWSContactsManager];
-        if (value) {
-            self.lastKnownContactRecipientIds = value;
-        }
+    __block NSMutableArray<SignalAccount *> *signalAccounts;
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        signalAccounts = [[NSMutableArray alloc] initWithCapacity:[SignalAccount numberOfKeysInCollectionWithTransaction:transaction]];
+        
+        [SignalAccount enumerateCollectionObjectsWithTransaction:transaction usingBlock:^(SignalAccount *signalAccount, BOOL * _Nonnull stop) {
+            [signalAccounts addObject:signalAccount];
+        }];
     }];
+    
+    [self updateSignalAccounts:signalAccounts];
 }
 
 #pragma mark - System Contact Fetching
@@ -142,7 +136,7 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
 {
     void (^success)(void) = ^{
         DDLogInfo(@"%@ Successfully intersected contacts.", self.logTag);
-        [self updateSignalAccounts];
+        [self buildSignalAccounts];
     };
     void (^failure)(NSError *error) = ^(NSError *error) {
         if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
@@ -206,14 +200,12 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
 
             [self intersectContacts];
 
-            [self updateSignalAccounts];
-
-            [self updateCachedDisplayNames];
+            [self buildSignalAccounts];
         });
     });
 }
 
-- (void)updateSignalAccounts
+- (void)buildSignalAccounts
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
@@ -224,7 +216,7 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
         // in order to avoid database deadlock.
         NSMutableDictionary<NSString *, NSArray<SignalRecipient *> *> *contactIdToSignalRecipientsMap =
             [NSMutableDictionary new];
-        [[TSStorageManager sharedManager].dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             for (Contact *contact in contacts) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 contactIdToSignalRecipientsMap[contact.uniqueId] = signalRecipients;
@@ -246,29 +238,47 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
                     DDLogDebug(@"Ignoring duplicate contact: %@, %@", signalAccount.recipientId, contact.fullName);
                     continue;
                 }
-                signalAccountMap[signalAccount.recipientId] = signalAccount;
                 [signalAccounts addObject:signalAccount];
             }
         }
 
-        NSArray<NSString *> *lastKnownContactRecipientIds = [signalAccountMap allKeys];
-        [TSStorageManager.sharedManager.newDatabaseConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                [transaction setObject:lastKnownContactRecipientIds
-                                forKey:kTSStorageManager_lastKnownContactRecipientIds
-                          inCollection:kTSStorageManager_OWSContactsManager];
-            }];
+        // Update cached SignalAccounts on disk
+        [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            NSArray<NSString *> *allKeys = [transaction allKeysInCollection:[SignalAccount collection]];
+            NSMutableSet<NSString *> *orphanedKeys = [NSMutableSet setWithArray:allKeys];
 
+            DDLogInfo(@"%@ Saving %lu SignalAccounts", self.logTag, signalAccounts.count);
+            for (SignalAccount *signalAccount in signalAccounts) {
+                // TODO only save the ones that changed
+                [orphanedKeys removeObject:signalAccount.uniqueId];
+                [signalAccount saveWithTransaction:transaction];
+            }
+            
+            if (orphanedKeys.count > 0) {
+                DDLogInfo(@"%@ Removing %lu orphaned SignalAccounts", self.logTag, (unsigned long)orphanedKeys.count);
+                [transaction removeObjectsForKeys:orphanedKeys.allObjects inCollection:[SignalAccount collection]];
+            }
+        }];
+
+        
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.lastKnownContactRecipientIds = lastKnownContactRecipientIds;
-            self.signalAccountMap = [signalAccountMap copy];
-            self.signalAccounts = [signalAccounts copy];
-
-            [self.profileManager setContactRecipientIds:signalAccountMap.allKeys];
-
-            [self updateCachedDisplayNames];
+            [self updateSignalAccounts:signalAccounts];
         });
     });
+}
+
+- (void)updateSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
+{
+    AssertIsOnMainThread();
+    
+    NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
+    for (SignalAccount *signalAccount in signalAccounts) {
+        signalAccountMap[signalAccount.recipientId] = signalAccount;
+    }
+    
+    self.signalAccountMap = [signalAccountMap copy];
+    self.signalAccounts = [signalAccounts copy];
+    [self.profileManager setContactRecipientIds:signalAccountMap.allKeys];
 }
 
 // TODO dependency inject, avoid circular dependencies.
@@ -277,139 +287,28 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
     return [OWSProfileManager sharedManager];
 }
 
-- (void)updateCachedDisplayNames
-{
-    OWSAssert([NSThread isMainThread]);
-
-    NSMutableDictionary<NSString *, NSString *> *cachedAccountNameMap = [NSMutableDictionary new];
-    NSMutableDictionary<NSString *, NSString *> *cachedFirstNameMap = [NSMutableDictionary new];
-    NSMutableDictionary<NSString *, NSString *> *cachedLastNameMap = [NSMutableDictionary new];
-
-    for (SignalAccount *signalAccount in self.signalAccounts) {
-        NSString *baseName
-            = (signalAccount.contact.fullName.length > 0 ? signalAccount.contact.fullName : signalAccount.recipientId);
-        OWSAssert(signalAccount.hasMultipleAccountContact == (signalAccount.multipleAccountLabelText != nil));
-        NSString *displayName = (signalAccount.multipleAccountLabelText
-                ? [NSString stringWithFormat:@"%@ (%@)", baseName, signalAccount.multipleAccountLabelText]
-                : baseName);
-        if (![displayName isEqualToString:signalAccount.recipientId]) {
-            cachedAccountNameMap[signalAccount.recipientId] = displayName;
-        }
-
-        if (signalAccount.contact.firstName.length > 0) {
-            cachedFirstNameMap[signalAccount.recipientId] = signalAccount.contact.firstName;
-        }
-        if (signalAccount.contact.lastName.length > 0) {
-            cachedLastNameMap[signalAccount.recipientId] = signalAccount.contact.lastName;
-        }
-    }
-
-    // As a fallback, make sure we can also display names for not-yet-registered
-    // and no-longer-registered users.
-    for (Contact *contact in self.allContacts) {
-        NSString *displayName = contact.fullName;
-        if (displayName.length > 0) {
-            for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-                NSString *e164 = phoneNumber.toE164;
-                if (!cachedAccountNameMap[e164]) {
-                    cachedAccountNameMap[e164] = displayName;
-                }
-            }
-        }
-    }
-
-    self.cachedAccountNameMap = [cachedAccountNameMap copy];
-    self.cachedFirstNameMap = [cachedFirstNameMap copy];
-    self.cachedLastNameMap = [cachedLastNameMap copy];
-
-    // Write to database off the main thread.
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [TSStorageManager.sharedManager.newDatabaseConnection readWriteWithBlock:^(
-            YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            for (NSString *recipientId in cachedAccountNameMap) {
-                NSString *displayName = cachedAccountNameMap[recipientId];
-                [transaction setObject:displayName
-                                forKey:recipientId
-                          inCollection:kTSStorageManager_AccountDisplayNames];
-            }
-            for (NSString *recipientId in cachedFirstNameMap) {
-                NSString *firstName = cachedFirstNameMap[recipientId];
-                [transaction setObject:firstName forKey:recipientId inCollection:kTSStorageManager_AccountFirstNames];
-            }
-            for (NSString *recipientId in cachedLastNameMap) {
-                NSString *lastName = cachedLastNameMap[recipientId];
-                [transaction setObject:lastName forKey:recipientId inCollection:kTSStorageManager_AccountLastNames];
-            }
-        }];
-    });
-
-    [[NSNotificationCenter defaultCenter]
-        postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
-                           object:nil];
-}
-
-- (void)loadCachedDisplayNames
-{
-    // Read from database off the main thread.
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSMutableDictionary<NSString *, NSString *> *cachedAccountNameMap = [NSMutableDictionary new];
-        NSMutableDictionary<NSString *, NSString *> *cachedFirstNameMap = [NSMutableDictionary new];
-        NSMutableDictionary<NSString *, NSString *> *cachedLastNameMap = [NSMutableDictionary new];
-
-        [TSStorageManager.sharedManager.newDatabaseConnection readWithBlock:^(
-            YapDatabaseReadTransaction *_Nonnull transaction) {
-            [transaction
-                enumerateKeysAndObjectsInCollection:kTSStorageManager_AccountDisplayNames
-                                         usingBlock:^(
-                                             NSString *_Nonnull key, NSString *_Nonnull object, BOOL *_Nonnull stop) {
-                                             cachedAccountNameMap[key] = object;
-                                         }];
-            [transaction
-                enumerateKeysAndObjectsInCollection:kTSStorageManager_AccountFirstNames
-                                         usingBlock:^(
-                                             NSString *_Nonnull key, NSString *_Nonnull object, BOOL *_Nonnull stop) {
-                                             cachedFirstNameMap[key] = object;
-                                         }];
-            [transaction
-                enumerateKeysAndObjectsInCollection:kTSStorageManager_AccountLastNames
-                                         usingBlock:^(
-                                             NSString *_Nonnull key, NSString *_Nonnull object, BOOL *_Nonnull stop) {
-                                             cachedLastNameMap[key] = object;
-                                         }];
-        }];
-
-        if (self.cachedAccountNameMap || self.cachedFirstNameMap || self.cachedLastNameMap) {
-            // If these properties have already been populated from system contacts,
-            // don't overwrite.  In practice this should never happen.
-            OWSFail(@"%@ Unexpected cache state", self.logTag);
-            return;
-        }
-
-        self.cachedAccountNameMap = [cachedAccountNameMap copy];
-        self.cachedFirstNameMap = [cachedFirstNameMap copy];
-        self.cachedLastNameMap = [cachedLastNameMap copy];
-    });
-}
-
 - (NSString *_Nullable)cachedDisplayNameForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
-    return self.cachedAccountNameMap[recipientId];
+    SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
+    return signalAccount.displayName;
 }
 
 - (NSString *_Nullable)cachedFirstNameForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
-    return self.cachedFirstNameMap[recipientId];
+    SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
+    return signalAccount.contact.firstName;
 }
 
 - (NSString *_Nullable)cachedLastNameForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
-    return self.cachedLastNameMap[recipientId];
+    SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
+    return signalAccount.contact.lastName;
 }
 
 #pragma mark - View Helpers
@@ -689,26 +588,30 @@ NSString *const kTSStorageManager_lastKnownContactRecipientIds = @"lastKnownCont
 {
     OWSAssert(recipientId.length > 0);
 
-    return self.signalAccountMap[recipientId];
+    __block SignalAccount *signalAccount = self.signalAccountMap[recipientId];
+
+    // If contact intersection hasn't completed, it might exist on disk
+    // even if it doesn't exist in memory yet.
+    if (!signalAccount) {
+        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+            signalAccount = [SignalAccount fetchObjectWithUniqueID:recipientId transaction: transaction];
+        }];
+    }
+
+    return signalAccount;
 }
 
-- (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier
+- (BOOL)hasSignalAccountForRecipientId:(NSString *)recipientId
 {
-    Contact *savedContact = self.allContactsMap[identifier];
-    if (savedContact) {
-        return savedContact;
-    } else {
-        return [[Contact alloc] initWithContactWithFirstName:self.unknownContactName
-                                                 andLastName:nil
-                                     andUserTextPhoneNumbers:@[ identifier ]
-                                                    andImage:nil
-                                                andContactID:0];
-    }
+    return [self signalAccountForRecipientId:recipientId] != nil;
 }
 
 - (UIImage *_Nullable)imageForPhoneIdentifier:(NSString *_Nullable)identifier
 {
     Contact *contact = self.allContactsMap[identifier];
+    if (!contact) {
+        contact = [self signalAccountForRecipientId:identifier].contact;
+    }
 
     // Prefer the contact image from the local address book if available
     UIImage *_Nullable image = contact.image;
