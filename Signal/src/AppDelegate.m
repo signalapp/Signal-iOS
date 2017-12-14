@@ -858,6 +858,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [AppVersion.instance appLaunchDidComplete];
 
+    [[Environment getCurrent].contactsManager loadSignalAccountsFromCache];
+    
     [self ensureRootViewController];
 
     // If there were any messages in our local queue which we hadn't yet processed.

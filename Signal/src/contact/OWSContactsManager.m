@@ -29,6 +29,8 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 @property (atomic) NSArray<SignalAccount *> *signalAccounts;
 @property (atomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
+@property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *dbWriteConnection;
 
 @end
 
@@ -42,16 +44,34 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
     // TODO: We need to configure the limits of this cache.
     _avatarCache = [ImageCache new];
+    
+    _dbReadConnection = [TSStorageManager sharedManager].newDatabaseConnection;
+    _dbWriteConnection = [TSStorageManager sharedManager].newDatabaseConnection;
+    
     _allContacts = @[];
     _allContactsMap = @{};
     _signalAccountMap = @{};
     _signalAccounts = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
-
+    
     OWSSingletonAssert();
 
     return self;
+}
+
+- (void)loadSignalAccountsFromCache
+{
+    __block NSMutableArray<SignalAccount *> *signalAccounts;
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        signalAccounts = [[NSMutableArray alloc] initWithCapacity:[SignalAccount numberOfKeysInCollectionWithTransaction:transaction]];
+        
+        [SignalAccount enumerateCollectionObjectsWithTransaction:transaction usingBlock:^(SignalAccount *signalAccount, BOOL * _Nonnull stop) {
+            [signalAccounts addObject:signalAccount];
+        }];
+    }];
+    
+    [self updateSignalAccounts:signalAccounts];
 }
 
 #pragma mark - System Contact Fetching
@@ -111,7 +131,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 {
     void (^success)(void) = ^{
         DDLogInfo(@"%@ Successfully intersected contacts.", self.logTag);
-        [self updateSignalAccounts];
+        [self buildSignalAccounts];
     };
     void (^failure)(NSError *error) = ^(NSError *error) {
         if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
@@ -175,12 +195,12 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
             [self intersectContacts];
 
-            [self updateSignalAccounts];
+            [self buildSignalAccounts];
         });
     });
 }
 
-- (void)updateSignalAccounts
+- (void)buildSignalAccounts
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
@@ -191,7 +211,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         // in order to avoid database deadlock.
         NSMutableDictionary<NSString *, NSArray<SignalRecipient *> *> *contactIdToSignalRecipientsMap =
             [NSMutableDictionary new];
-        [[TSStorageManager sharedManager].dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             for (Contact *contact in contacts) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 contactIdToSignalRecipientsMap[contact.uniqueId] = signalRecipients;
@@ -212,29 +232,46 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
                     DDLogDebug(@"Ignoring duplicate contact: %@, %@", signalAccount.recipientId, contact.fullName);
                     continue;
                 }
-                signalAccountMap[signalAccount.recipientId] = signalAccount;
                 [signalAccounts addObject:signalAccount];
             }
         }
 
-        [TSStorageManager.sharedManager.newDatabaseConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                // TODO we can be more efficient here.
-                // - only save the ones that changed
-                // - only remove the ones which no longer exist
-                [transaction removeAllObjectsInCollection:[SignalAccount collection]];
-                for (SignalAccount *signalAccount in signalAccounts) {
-                    [signalAccount saveWithTransaction:transaction];
-                }
-            }];
+        // Update cached SignalAccounts on disk
+        [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            NSArray<NSString *> *allKeys = [transaction allKeysInCollection:[SignalAccount collection]];
+            NSMutableSet<NSString *> *orphanedKeys = [NSMutableSet setWithArray:allKeys];
+            
+            for (SignalAccount *signalAccount in signalAccounts) {
+                // TODO only save the ones that changed
+                [orphanedKeys removeObject:signalAccount.uniqueId];
+                [signalAccount saveWithTransaction:transaction];
+            }
+            
+            if (orphanedKeys.count > 0) {
+                DDLogInfo(@"%@ Removing %lu orphaned SignalAccounts", self.logTag, (unsigned long)orphanedKeys.count);
+                [transaction removeObjectsForKeys:orphanedKeys.allObjects inCollection:[SignalAccount collection]];
+            }
+        }];
 
+        
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.signalAccountMap = [signalAccountMap copy];
-            self.signalAccounts = [signalAccounts copy];
-
-            [self.profileManager setContactRecipientIds:signalAccountMap.allKeys];
+            [self updateSignalAccounts:signalAccounts];
         });
     });
+}
+
+- (void)updateSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
+{
+    AssertIsOnMainThread();
+    
+    NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
+    for (SignalAccount *signalAccount in signalAccounts) {
+        signalAccountMap[signalAccount.recipientId] = signalAccount;
+    }
+    
+    self.signalAccountMap = [signalAccountMap copy];
+    self.signalAccounts = [signalAccounts copy];
+    [self.profileManager setContactRecipientIds:signalAccountMap.allKeys];
 }
 
 // TODO dependency inject, avoid circular dependencies.
@@ -543,12 +580,14 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 {
     OWSAssert(recipientId.length > 0);
 
-    SignalAccount *signalAccount = self.signalAccountMap[recipientId];
+    __block SignalAccount *signalAccount = self.signalAccountMap[recipientId];
 
     // If contact intersection hasn't completed, it might exist on disk
     // even if it doesn't exist in memory yet.
     if (!signalAccount) {
-        signalAccount = [SignalAccount fetchObjectWithUniqueID:recipientId];
+        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+            signalAccount = [SignalAccount fetchObjectWithUniqueID:recipientId transaction: transaction];
+        }];
     }
 
     return signalAccount;

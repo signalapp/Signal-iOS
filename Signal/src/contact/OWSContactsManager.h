@@ -34,6 +34,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @property (atomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 - (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId;
 
+- (void)loadSignalAccountsFromCache;
 #pragma mark - System Contact Fetching
 
 // Must call `requestSystemContactsOnce` before accessing this method
