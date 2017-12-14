@@ -396,14 +396,34 @@ NS_ASSUME_NONNULL_BEGIN
         // No Contacts
         OWSTableSection *contactsSection = [OWSTableSection new];
 
-        if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized
-            && self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
-            
-            [contactsSection
-             addItem:[OWSTableItem
-                      softCenterLabelItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
-                                                                    @"A label that indicates the user has no Signal contacts.")
-                      customRowHeight:self.actionCellHeight]];
+        if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
+            if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
+
+                [contactsSection
+                    addItem:[OWSTableItem softCenterLabelItemWithText:
+                                              NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
+                                                  @"A label that indicates the user has no Signal contacts.")
+                                                      customRowHeight:self.actionCellHeight]];
+            } else {
+                UITableViewCell *loadingCell = [UITableViewCell new];
+                OWSAssert(loadingCell.contentView);
+
+                UIActivityIndicatorView *activityIndiactorView =
+                    [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                [loadingCell.contentView addSubview:activityIndiactorView];
+                [activityIndiactorView startAnimating];
+
+                [activityIndiactorView autoCenterInSuperview];
+                [activityIndiactorView setCompressionResistanceHigh];
+                [activityIndiactorView setContentHuggingHigh];
+
+                // hide separator for loading cell. The loading cell doesn't really feel like a cell
+                loadingCell.backgroundView = [UIView new];
+
+                OWSTableItem *loadingItem =
+                    [OWSTableItem itemWithCustomCell:loadingCell customRowHeight:40 actionBlock:nil];
+                [contactsSection addItem:loadingItem];
+            }
         }
         
         return @[ contactsSection ];
