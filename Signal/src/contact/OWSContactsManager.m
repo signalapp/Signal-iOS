@@ -240,7 +240,8 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             NSArray<NSString *> *allKeys = [transaction allKeysInCollection:[SignalAccount collection]];
             NSMutableSet<NSString *> *orphanedKeys = [NSMutableSet setWithArray:allKeys];
-            
+
+            DDLogInfo(@"%@ Saving %lu SignalAccounts", self.logTag, signalAccounts.count);
             for (SignalAccount *signalAccount in signalAccounts) {
                 // TODO only save the ones that changed
                 [orphanedKeys removeObject:signalAccount.uniqueId];
