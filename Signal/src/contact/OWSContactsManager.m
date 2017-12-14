@@ -273,6 +273,10 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     self.signalAccountMap = [signalAccountMap copy];
     self.signalAccounts = [signalAccounts copy];
     [self.profileManager setContactRecipientIds:signalAccountMap.allKeys];
+
+    [[NSNotificationCenter defaultCenter]
+        postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
+                           object:nil];
 }
 
 // TODO dependency inject, avoid circular dependencies.
