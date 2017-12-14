@@ -33,6 +33,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 // order of the signalAccounts array respects the systems contact sorting preference
 @property (atomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 - (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId;
+- (BOOL)hasSignalAccountForRecipientId:(NSString *)recipientId;
 
 - (void)loadSignalAccountsFromCache;
 #pragma mark - System Contact Fetching

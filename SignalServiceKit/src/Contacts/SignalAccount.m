@@ -21,12 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient
 {
-    if (self = [super init]) {
-        OWSAssert(signalRecipient);
-
-        _recipientId = signalRecipient.uniqueId;
-    }
-    return self;
+    OWSAssert(signalRecipient);
+    return [self initWithRecipientId:signalRecipient.recipientId];
 }
 
 - (instancetype)initWithRecipientId:(NSString *)recipientId
@@ -44,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([NSThread isMainThread]);
     OWSAssert(transaction);
 
+    OWSAssert(self.recipientId.length > 0);
     return [SignalRecipient recipientWithTextSecureIdentifier:self.recipientId withTransaction:transaction];
 }
 

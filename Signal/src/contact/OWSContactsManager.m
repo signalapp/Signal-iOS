@@ -284,7 +284,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 {
     OWSAssert(recipientId.length > 0);
 
-    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
     return signalAccount.displayName;
 }
 
@@ -292,7 +292,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 {
     OWSAssert(recipientId.length > 0);
 
-    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
     return signalAccount.contact.firstName;
 }
 
@@ -300,7 +300,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 {
     OWSAssert(recipientId.length > 0);
 
-    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
     return signalAccount.contact.lastName;
 }
 
@@ -591,6 +591,11 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     }
 
     return signalAccount;
+}
+
+- (BOOL)hasSignalAccountForRecipientId:(NSString *)recipientId
+{
+    return [self signalAccountForRecipientId:recipientId] != nil;
 }
 
 - (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)identifier {
