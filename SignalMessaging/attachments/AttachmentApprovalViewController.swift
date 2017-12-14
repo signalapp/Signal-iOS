@@ -221,7 +221,11 @@ public class AttachmentApprovalViewController: OWSViewController, MessagingToolb
     }
 
     override public var inputAccessoryView: UIView? {
-        return self.bottomToolbar
+        self.bottomToolbar.layoutIfNeeded()
+        return self.bottomToolbarO
+//        let toolbar = UIView(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 50, height: 100)))
+//        toolbar.backgroundColor = UIColor.purple
+//        return toolbar
     }
 
     override public var canBecomeFirstResponder: Bool {
@@ -391,7 +395,7 @@ protocol MessagingToolbarDelegate: class {
     func messagingToolbarDidTapSend(_ messagingToolbar: MessagingToolbar)
 }
 
-class MessagingToolbar: UIToolbar, UITextViewDelegate {
+class MessagingToolbar: UIView, UITextViewDelegate {
     //        let toolbar: UIToolbar
     //        var sendButton: UIBarButtonItem!
     private var sendButton: UIButton!
@@ -459,36 +463,40 @@ class MessagingToolbar: UIToolbar, UITextViewDelegate {
         sendButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: 16)
         sendButton.titleLabel?.textAlignment = .center
         sendButton.tintColor = UIColor.ows_materialBlue()
-
-        let sendButtonItem = UIBarButtonItem(customView: sendButton)
-
-        //            self.items = [textViewItem, sendButton]
-        self.items = [textViewItem, sendButtonItem]
-
-        // toolbar doesn't render without some minimum height set.
-        //            self.heightConstraint = self.autoSetDimension(.height,
+        // Increase hit area of send button
+        sendButton.contentEdgeInsets = UIEdgeInsets(top: 20, left: 8, bottom: 4, right: 8)
+        
+        addSubview(sendButton)
+        addSubview(textView)
+        
+//
+//        let sendButtonItem = UIBarButtonItem(customView: sendButton)
+//
+//        //            self.items = [textViewItem, sendButton]
+//        self.items = [textViewItem, sendButtonItem]
+//
+//        // toolbar doesn't render without some minimum height set.
+//        //            self.heightConstraint = self.autoSetDimension(.height,
         self.autoSetDimension(.height,
                               toSize: kMinTextViewHeight + kToolbarMargin * 2,
                               relation: .greaterThanOrEqual)
-
+//
         // Adding textView to a toolbar item inserts it into a "hostView"
-        // This isn't really documentd, but I've verified it works on iOS10
+        // This isn't really documentd, but I've verified it works on iOS9 and iOS10
         self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
         textView.autoPinEdge(toSuperviewEdge: .leading, withInset: kToolbarMargin)
         textView.autoPinEdge(toSuperviewEdge: .top, withInset: kToolbarMargin)
         textView.autoPinEdge(toSuperviewEdge: .bottom, withInset: kToolbarMargin)
-
-        //            let kTrailingOffset: CGFloat = kSendButtonWidth
-        //            textView.autoPinEdge(toSuperviewEdge: .trailing, withInset: kTrailingOffset)
-
+//
+//        //            let kTrailingOffset: CGFloat = kSendButtonWidth
+//        //            textView.autoPinEdge(toSuperviewEdge: .trailing, withInset: kTrailingOffset)
+//
         textView.autoPinEdge(.trailing, to: .leading, of: sendButton, withOffset: -8)
 
         sendButton.sizeToFit()
         sendButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: kToolbarMargin)
         sendButton.autoPinEdge(toSuperviewEdge: .bottom, withInset: kToolbarMargin)
-        // Increase hit area of send button
-        sendButton.contentEdgeInsets = UIEdgeInsets(top: 20, left: 8, bottom: 4, right: 8)
-
+        
         textView.delegate = self
     }
 
