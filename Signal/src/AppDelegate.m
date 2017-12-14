@@ -858,6 +858,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [AppVersion.instance appLaunchDidComplete];
 
+    [[Environment getCurrent].contactsManager loadSignalAccountsFromCache];
+    
     [self ensureRootViewController];
 
     // If there were any messages in our local queue which we hadn't yet processed.
@@ -881,7 +883,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [OWSProfileManager.sharedManager fetchLocalUsersProfile];
     [[OWSReadReceiptManager sharedManager] prepareCachedValues];
-    [[Environment getCurrent].contactsManager loadLastKnownContactRecipientIds];
 }
 
 - (void)registrationStateDidChange

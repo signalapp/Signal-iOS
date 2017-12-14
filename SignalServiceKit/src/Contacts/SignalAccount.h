@@ -2,6 +2,8 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSYapDatabaseObject.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class Contact;
@@ -14,10 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 //   multiple instances of SignalAccount.
 // * For non-contacts, the contact property will be nil.
 //
-// New instances of SignalAccount for active accounts are
-// created every time we do a contacts intersection (e.g.
-// in response to a change to the device contacts).
-@interface SignalAccount : NSObject
+@interface SignalAccount : TSYapDatabaseObject
 
 // An E164 value identifying the signal account.
 //
@@ -34,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 // For contacts with more than one signal account,
 // this is a label for the account.
 @property (nonatomic) NSString *multipleAccountLabelText;
+
+- (NSString *)displayName;
 
 - (instancetype)init NS_UNAVAILABLE;
 
