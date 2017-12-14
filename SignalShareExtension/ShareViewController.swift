@@ -194,23 +194,22 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
         // TODO: Should we distinguish main app and SAE "completion"?
         AppVersion.instance().appLaunchDidComplete()
-        
+
         Environment.current().contactsManager.loadSignalAccountsFromCache()
-        
+
         ensureRootViewController()
 
         // We don't need to use OWSMessageReceiver in the SAE.
         // We don't need to use OWSBatchMessageProcessor in the SAE.
 
         OWSProfileManager.shared().ensureLocalProfileCached()
-    
+
         // We don't need to use OWSOrphanedDataCleaner in the SAE.
 
         OWSProfileManager.shared().fetchLocalUsersProfile()
 
         OWSReadReceiptManager.shared().prepareCachedValues()
 
-        
     }
 
     @objc
