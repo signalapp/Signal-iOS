@@ -7,6 +7,7 @@
 #import "Cryptography.h"
 #import "MIMETypeUtil.h"
 #import "NSNotificationCenter+OWS.h"
+#import "OWSBackgroundTask.h"
 #import "OWSError.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachmentPointer.h"
@@ -156,26 +157,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 {
     OWSAssert(transaction);
 
-    __block UIBackgroundTaskIdentifier backgroundTaskId =
-        [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
-            OWSAssert([NSThread isMainThread]);
-
-            if (backgroundTaskId == UIBackgroundTaskInvalid) {
-                return;
-            }
-            DDLogInfo(@"%@ %s background task expired", self.logTag, __PRETTY_FUNCTION__);
-            backgroundTaskId = UIBackgroundTaskInvalid;
-        }];
-    void (^clearBackgroundTask)() = ^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (backgroundTaskId == UIBackgroundTaskInvalid) {
-                return;
-            }
-            DDLogInfo(@"%@ %s background task completed", self.logTag, __PRETTY_FUNCTION__);
-            [CurrentAppContext() endBackgroundTask:backgroundTaskId];
-            backgroundTaskId = UIBackgroundTaskInvalid;
-        });
-    };
+    __block OWSBackgroundTask *backgroundTask = [[OWSBackgroundTask alloc] initWithLabelStr:__PRETTY_FUNCTION__];
 
     [self setAttachment:attachment isDownloadingInMessage:message transaction:transaction];
 
@@ -185,7 +167,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
             [self setAttachment:attachment didFailInMessage:message error:error];
             failureHandler(error);
 
-            clearBackgroundTask();
+            backgroundTask = nil;
         });
     };
 
@@ -197,7 +179,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                 [message touch];
             }
 
-            clearBackgroundTask();
+            backgroundTask = nil;
         });
     };
 
