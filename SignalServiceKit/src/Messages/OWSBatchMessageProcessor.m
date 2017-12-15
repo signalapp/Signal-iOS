@@ -336,7 +336,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
         return;
     }
 
-    OWSBackgroundTask *backgroundTask = [[OWSBackgroundTask alloc] initWithLabelStr:__PRETTY_FUNCTION__];
+    OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     [self processJobs:jobs];
 

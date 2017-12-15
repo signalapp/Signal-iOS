@@ -309,7 +309,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         return;
     }
 
-    __block OWSBackgroundTask *backgroundTask = [[OWSBackgroundTask alloc] initWithLabelStr:__PRETTY_FUNCTION__];
+    __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     [self processJob:job
           completion:^(BOOL success) {

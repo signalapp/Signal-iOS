@@ -445,7 +445,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)applicationWillResignActive:(UIApplication *)application {
     DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
 
-    UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:nil];
+    __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if ([TSAccountManager isRegistered]) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -454,8 +455,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                     [self showScreenProtection];
                 }
                 [SignalApp.sharedApp.homeViewController updateInboxCountLabel];
-                [application endBackgroundTask:bgTask];
+
+                backgroundTask = nil;
             });
+        } else {
+            backgroundTask = nil;
         }
     });
 

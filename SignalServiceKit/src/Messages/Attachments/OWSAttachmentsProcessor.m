@@ -157,7 +157,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 {
     OWSAssert(transaction);
 
-    __block OWSBackgroundTask *backgroundTask = [[OWSBackgroundTask alloc] initWithLabelStr:__PRETTY_FUNCTION__];
+    __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     [self setAttachment:attachment isDownloadingInMessage:message transaction:transaction];
 

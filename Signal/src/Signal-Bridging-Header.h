@@ -73,6 +73,7 @@
 #import <SignalServiceKit/OWSAnalytics.h>
 #import <SignalServiceKit/OWSAnalyticsEvents.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
+#import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSCallAnswerMessage.h>
 #import <SignalServiceKit/OWSCallBusyMessage.h>
 #import <SignalServiceKit/OWSCallHangupMessage.h>
