@@ -10,6 +10,17 @@ typedef NS_ENUM(NSUInteger, BackgroundTaskState) {
 
 typedef void (^BackgroundTaskCompletionBlock)(BackgroundTaskState backgroundTaskState);
 
+// This class makes it easier and safer to use background tasks.
+//
+// * Uses RAII (Resource Acquisition Is Initialization) pattern.
+// * Ensures completion block is called exactly once and on main thread,
+//   to facilitate handling "background task timed out" case, for example.
+// * Ensures we properly handle the "background task could not be created"
+//   case.
+//
+// Usage:
+//
+// * Use factory method to start a background task.
 @interface OWSBackgroundTask : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;

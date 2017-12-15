@@ -4,6 +4,7 @@
 
 #import "OWSBackgroundTask.h"
 #import "AppContext.h"
+#import "Threading.h"
 
 @interface OWSBackgroundTask ()
 
@@ -12,6 +13,7 @@
 // This property should only be accessed while synchronized on this instance.
 @property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskId;
 
+// This property should only be accessed while synchronized on this instance.
 @property (nonatomic, nullable) BackgroundTaskCompletionBlock completionBlock;
 
 @end
@@ -74,12 +76,14 @@
 
 - (void)startBackgroundTask
 {
-    __weak typeof(self) weakSelf = self;
     // beginBackgroundTaskWithExpirationHandler must be called on the main thread.
-    dispatch_async(dispatch_get_main_queue(), ^{
+    DispatchMainThreadSafe(^{
+        __weak typeof(self) weakSelf = self;
         self.backgroundTaskId = [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
-            OWSAssert([NSThread isMainThread]);
-            __strong typeof(self) strongSelf = weakSelf;
+            // Note the usage of OWSCAssert() to avoid capturing a reference to self.
+            OWSCAssert([NSThread isMainThread]);
+
+            OWSBackgroundTask *strongSelf = weakSelf;
             if (!strongSelf) {
                 return;
             }
@@ -88,7 +92,7 @@
                 if (strongSelf.backgroundTaskId == UIBackgroundTaskInvalid) {
                     return;
                 }
-                DDLogInfo(@"%@ %@ background task expired", strongSelf.logTag, strongSelf.label);
+                DDLogInfo(@"%@ %@ background task expired.", strongSelf.logTag, strongSelf.label);
                 strongSelf.backgroundTaskId = UIBackgroundTaskInvalid;
 
                 if (strongSelf.completionBlock) {
@@ -100,6 +104,11 @@
 
         // If a background task could not be begun, call the completion block.
         if (self.backgroundTaskId == UIBackgroundTaskInvalid) {
+
+            DDLogInfo(@"%@ %@ background task could not be started.", self.logTag, self.label);
+
+            // Make a local copy of completionBlock to ensure that it is called
+            // exactly once.
             BackgroundTaskCompletionBlock _Nullable completionBlock;
             @synchronized(self)
             {
@@ -107,7 +116,7 @@
                 self.completionBlock = nil;
             }
             if (completionBlock) {
-                dispatch_async(dispatch_get_main_queue(), ^{
+                DispatchMainThreadSafe(^{
                     completionBlock(BackgroundTaskState_CouldNotStart);
                 });
             }
@@ -119,22 +128,24 @@
 {
     // Make a local copy of this state, since this method is called by `dealloc`.
     UIBackgroundTaskIdentifier backgroundTaskId;
+    BackgroundTaskCompletionBlock _Nullable completionBlock;
     NSString *logTag = self.logTag;
     NSString *label = self.label;
-    BackgroundTaskCompletionBlock _Nullable completionBlock = self.completionBlock;
 
     @synchronized(self)
     {
         backgroundTaskId = self.backgroundTaskId;
+        completionBlock = self.completionBlock;
     }
 
     if (backgroundTaskId == UIBackgroundTaskInvalid) {
+        OWSAssert(!completionBlock);
         return;
     }
 
     // endBackgroundTask must be called on the main thread.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        DDLogInfo(@"%@ %@ background task completed", logTag, label);
+    DispatchMainThreadSafe(^{
+        DDLogVerbose(@"%@ %@ background task completed.", logTag, label);
         [CurrentAppContext() endBackgroundTask:backgroundTaskId];
 
         if (completionBlock) {
