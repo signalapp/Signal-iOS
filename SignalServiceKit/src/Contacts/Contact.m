@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Contact ()
 
 @property (readonly, nonatomic) NSMutableDictionary<NSString *, NSString *> *phoneNumberNameMap;
+@property (readonly, nonatomic) NSData *imageData;
 
 @end
 
@@ -133,6 +134,23 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (_imageData) {
+        _image = [UIImage imageWithData:_imageData];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    if (_image) {
+        _imageData = UIImagePNGRepresentation(_image);
+    }
+    [super encodeWithCoder:coder];
+}
+
 - (NSString *)trimName:(NSString *)name
 {
     return [name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -141,6 +159,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)uniqueIdFromABRecordId:(ABRecordID)recordId
 {
     return [NSString stringWithFormat:@"ABRecordId:%d", recordId];
+}
+
++ (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
+{
+    if ([propertyKey isEqualToString:@"cnContact"] || [propertyKey isEqualToString:@"image"]) {
+        return MTLPropertyStorageTransitory;
+    } else {
+        return [super storageBehaviorForPropertyWithKey:propertyKey];
+    }
 }
 
 #endif // TARGET_OS_IOS
