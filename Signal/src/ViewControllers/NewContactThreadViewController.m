@@ -148,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([NSThread isMainThread]);
 
     [self.contactsViewHelper.contactsManager
-        fetchSystemContactsIfAlreadyAuthorizedAndAlwaysNotifyWithCompletion:^(NSError *_Nullable error) {
+        userRequestedSystemContactsRefreshWithCompletion:^(NSError *_Nullable error) {
             if (error) {
                 DDLogError(@"%@ refreshing contacts failed with error: %@", self.logTag, error);
             }

@@ -77,6 +77,17 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     [self updateSignalAccounts:signalAccounts];
 }
 
+- (dispatch_queue_t)serialQueue
+{
+    static dispatch_queue_t _serialQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _serialQueue = dispatch_queue_create("org.whispersystems.contacts.buildSignalAccount", DISPATCH_QUEUE_SERIAL);
+    });
+
+    return _serialQueue;
+}
+
 #pragma mark - System Contact Fetching
 
 // Request contacts access if you haven't asked recently.
@@ -95,10 +106,9 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     [self.systemContactsFetcher fetchOnceIfAlreadyAuthorized];
 }
 
-- (void)fetchSystemContactsIfAlreadyAuthorizedAndAlwaysNotifyWithCompletion:
-    (void (^)(NSError *_Nullable error))completionHandler
+- (void)userRequestedSystemContactsRefreshWithCompletion:(void (^)(NSError *_Nullable error))completionHandler
 {
-    [self.systemContactsFetcher fetchIfAlreadyAuthorizedAndAlwaysNotifyWithCompletion:completionHandler];
+    [self.systemContactsFetcher userRequestedRefreshWithCompletion:completionHandler];
 }
 
 - (BOOL)isSystemContactsAuthorized
@@ -120,8 +130,9 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemsContactsFetcher
               updatedContacts:(NSArray<Contact *> *)contacts
+                userRequested:(BOOL)userRequested
 {
-    [self updateWithContacts:contacts];
+    [self updateWithContacts:contacts clearStaleCache:userRequested];
 }
 
 #pragma mark - Intersection
@@ -179,10 +190,9 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     [self.avatarCache removeAllImagesForKey:recipientId];
 }
 
-- (void)updateWithContacts:(NSArray<Contact *> *)contacts
+- (void)updateWithContacts:(NSArray<Contact *> *)contacts clearStaleCache:(BOOL)clearStaleCache
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
+    dispatch_async(self.serialQueue, ^{
         NSMutableDictionary<NSString *, Contact *> *allContactsMap = [NSMutableDictionary new];
         for (Contact *contact in contacts) {
             for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
@@ -200,22 +210,15 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
             [self.avatarCache removeAllImages];
 
             [self intersectContactsWithCompletion:^(NSError *_Nullable error) {
-                [self buildSignalAccounts];
+                [self buildSignalAccountsAndClearStaleCache:clearStaleCache];
             }];
         });
     });
 }
 
-- (void)buildSignalAccounts
+- (void)buildSignalAccountsAndClearStaleCache:(BOOL)clearStaleCache;
 {
-    // Ensure we're not running concurrently since one invocation could affect the other.
-    static dispatch_queue_t _serialQueue;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _serialQueue = dispatch_queue_create("org.whispersystems.contacts.buildSignalAccount", DISPATCH_QUEUE_SERIAL);
-    });
-
-    dispatch_async(_serialQueue, ^{
+    dispatch_async(self.serialQueue, ^{
         NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
         NSArray<Contact *> *contacts = self.allContacts;
 
@@ -291,16 +294,43 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
         // Update cached SignalAccounts on disk
         [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            DDLogInfo(@"%@ Saving %lu new SignalAccounts", self.logTag, (unsigned long)accountsToSave.count);
+            DDLogInfo(@"%@ Saving %lu SignalAccounts", self.logTag, (unsigned long)accountsToSave.count);
             for (SignalAccount *signalAccount in accountsToSave) {
-                DDLogVerbose(@"%@ Adding new SignalAccount: %@", self.logTag, signalAccount);
+                DDLogVerbose(@"%@ Saving SignalAccount: %@", self.logTag, signalAccount);
                 [signalAccount saveWithTransaction:transaction];
             }
 
-            DDLogInfo(@"%@ Removing %lu old SignalAccounts.", self.logTag, (unsigned long)oldSignalAccounts.count);
-            for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
-                DDLogVerbose(@"%@ Removing old SignalAccount: %@", self.logTag, signalAccount);
-                [signalAccount removeWithTransaction:transaction];
+            if (clearStaleCache) {
+                DDLogInfo(@"%@ Removing %lu old SignalAccounts.", self.logTag, (unsigned long)oldSignalAccounts.count);
+                for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
+                    DDLogVerbose(@"%@ Removing old SignalAccount: %@", self.logTag, signalAccount);
+                    [signalAccount removeWithTransaction:transaction];
+                }
+            } else {
+                // In theory we want to remove SignalAccounts if the user deletes the corresponding system contact.
+                // However, as of iOS11.2 CNContactStore occasionally gives us only a subset of the system contacts.
+                // Because of that, it's not safe to clear orphaned accounts.
+                // Because we still want to give users a way to clear their stale accounts, if they pull-to-refresh
+                // their contacts we'll clear the cached ones.
+                // RADAR: https://bugreport.apple.com/web/?problemID=36082946
+                if (oldSignalAccounts.allValues.count > 0) {
+                    DDLogWarn(@"%@ NOT Removing %lu old SignalAccounts.",
+                        self.logTag,
+                        (unsigned long)oldSignalAccounts.count);
+                    for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
+                        DDLogVerbose(
+                            @"%@ Ensuring old SignalAccount is not inadvertently lost: %@", self.logTag, signalAccount);
+                        [signalAccounts addObject:signalAccount];
+                    }
+
+                    // re-sort signal accounts since we've appended some orphans
+                    [signalAccounts sortUsingComparator:^NSComparisonResult(SignalAccount *left, SignalAccount *right) {
+                        NSString *leftName = [self comparableNameForSignalAccount:left];
+                        NSString *rightName = [self comparableNameForSignalAccount:right];
+
+                        return [leftName compare:rightName];
+                    }];
+                }
             }
         }];
 

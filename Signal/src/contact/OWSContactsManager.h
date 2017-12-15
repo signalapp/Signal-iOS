@@ -54,9 +54,9 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (void)fetchSystemContactsOnceIfAlreadyAuthorized;
 
 // This variant will fetch system contacts if contact access has already been granted,
-// but not prompt for contact access. Also, it will always fire a notification.
-- (void)fetchSystemContactsIfAlreadyAuthorizedAndAlwaysNotifyWithCompletion:
-    (void (^)(NSError *_Nullable error))completionHandler;
+// but not prompt for contact access. Also, it will always notify delegates, even if
+// contacts haven't changed, and will clear out any stale cached SignalAccount's
+- (void)userRequestedSystemContactsRefreshWithCompletion:(void (^)(NSError *_Nullable error))completionHandler;
 
 #pragma mark - Util
 
