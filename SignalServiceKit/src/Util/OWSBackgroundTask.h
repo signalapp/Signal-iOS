@@ -21,6 +21,9 @@ typedef void (^BackgroundTaskCompletionBlock)(BackgroundTaskState backgroundTask
 // Usage:
 //
 // * Use factory method to start a background task.
+// * Retain a strong reference to the OWSBackgroundTask during the "work".
+// * Clear all references to the OWSBackgroundTask when the work is done,
+//   if possible.
 @interface OWSBackgroundTask : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
