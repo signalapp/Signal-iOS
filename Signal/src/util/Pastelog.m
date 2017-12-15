@@ -64,7 +64,7 @@
                                          @"Label for the 'send to last thread' option of the the debug log alert.")
                                            style:UIAlertActionStyleDefault
                                          handler:^(UIAlertAction *_Nonnull action) {
-                                             [Pastelog.sharedManager sendToLastThread:urlString];
+                                             [Pastelog.sharedManager sendToMostRecentThread:urlString];
                                          }]];
 #endif
             [alert addAction:
@@ -274,7 +274,7 @@
     [[UIPasteboard generalPasteboard] setString:url];
 }
 
-- (void)sendToLastThread:(NSString *)url
+- (void)sendToMostRecentThread:(NSString *)url
 {
     if (![TSAccountManager isRegistered]) {
         return;

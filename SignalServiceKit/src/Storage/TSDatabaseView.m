@@ -13,7 +13,6 @@
 #import "TSThread.h"
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
-#import <YapDatabase/YapDatabaseView.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
 
 NSString *const DatabaseViewRegistrationCompleteNotification = @"DatabaseViewRegistrationCompleteNotification";
