@@ -11,8 +11,9 @@
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
+#import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
-#import <YapDatabase/YapDatabaseView.h>
+#import <YapDatabase/YapDatabaseViewTypes.h>
 
 NSString *const DatabaseViewRegistrationCompleteNotification = @"DatabaseViewRegistrationCompleteNotification";
 
@@ -119,8 +120,10 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     options.allowedCollections =
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSInteraction collection]]];
 
-    YapDatabaseView *view =
-        [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:version options:options];
+    YapDatabaseView *view = [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping
+                                                                  sorting:viewSorting
+                                                               versionTag:version
+                                                                  options:options];
 
     if (async) {
         [[TSStorageManager sharedManager].database
@@ -280,7 +283,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSThread collection]]];
 
     YapDatabaseView *databaseView =
-        [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
+        [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
 
     [[TSStorageManager sharedManager].database registerExtension:databaseView
                                                         withName:TSThreadDatabaseViewExtensionName];
@@ -394,7 +397,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     options.allowedCollections = [[YapWhitelistBlacklist alloc] initWithWhitelist:deviceCollection];
 
     YapDatabaseView *view =
-        [[YapDatabaseView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
+        [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
 
     [[TSStorageManager sharedManager].database
         asyncRegisterExtension:view

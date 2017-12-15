@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSScrubbingLogFormatter
 
-- (NSString *)formatLogMessage:(DDLogMessage *)logMessage
+- (NSString *__nullable)formatLogMessage:(DDLogMessage *)logMessage
 {
     NSString *logString = [super formatLogMessage:logMessage];
     NSRegularExpression *phoneRegex =

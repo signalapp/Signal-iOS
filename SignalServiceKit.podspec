@@ -43,7 +43,7 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'AFNetworking'
   s.dependency 'AxolotlKit'
   s.dependency 'Mantle'
-  s.dependency 'YapDatabase/SQLCipher', '~> 2.9.3'
+  s.dependency 'YapDatabase/SQLCipher'
   s.dependency 'SocketRocket'
   s.dependency 'libPhoneNumber-iOS'
   s.dependency 'GRKOpenSSLFramework'

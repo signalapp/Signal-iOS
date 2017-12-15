@@ -56,7 +56,11 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
 
     DDLogInfo(@"%@ firstAppVersion: %@", self.logTag, self.firstAppVersion);
     DDLogInfo(@"%@ lastAppVersion: %@", self.logTag, self.lastAppVersion);
-    DDLogInfo(@"%@ currentAppVersion: %@", self.logTag, self.currentAppVersion);
+    DDLogInfo(@"%@ currentAppVersion: %@ (%@)",
+        self.logTag,
+        self.currentAppVersion,
+        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]);
+
     DDLogInfo(@"%@ lastCompletedLaunchAppVersion: %@", self.logTag, self.lastCompletedLaunchAppVersion);
 }
 
