@@ -234,7 +234,11 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 
 - (void)endBackgroundTask
 {
+    if (self.backgroundTaskIdentifier == UIBackgroundTaskInvalid) {
+        return;
+    }
     [CurrentAppContext() endBackgroundTask:self.backgroundTaskIdentifier];
+    self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
 }
 
 - (void)setBackgroundTaskIdentifier:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier
