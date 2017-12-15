@@ -173,59 +173,11 @@ public class AttachmentApprovalViewController: OWSViewController, MessagingToolb
         let messagingToolbar = MessagingToolbar()
         messagingToolbar.messagingToolbarDelegate = self
         self.bottomToolbar = messagingToolbar
-////        let bottomToolbar: UIToolbar = makeClearToolbar()
-//        self.bottomToolbar = bottomToolbar
-//        self.textView = UITextView()
-//        textView.delegate = self
-//        self.textView.backgroundColor = UIColor.white
-//        self.textView.layer.cornerRadius = 4.0
-//
-//        let textViewItem = UIBarButtonItem(customView: textView)
-//        //        textView.autoresizingMask = [.flexibleWidth, .flexibleHeight];
-//        textView.translatesAutoresizingMaskIntoConstraints = false
-//
-//        let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
-//        let sendButton = UIBarButtonItem(title:  sendTitle,
-//                                         style: .plain,
-//                                         target: self,
-//                                         action: #selector(sendPressed))
-//        sendButton.tintColor = UIColor.white
-//
-//        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-//        bottomToolbar.items = [textViewItem, sendButton]
-////        bottomToolbar.items = [flexibleSpace, sendButton]
-//        bottomToolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
-////        bottomToolbar.backgroundColor = UIColor.clear
-//        bottomToolbar.backgroundColor = UIColor.yellow
-//        bottomToolbar.autoSetDimension(.height, toSize: 40, relation: .greaterThanOrEqual)
-//
-//        let kToolbarMargin: CGFloat = 4.0
-//        //        textView.autoSetDimensions(to: CGSize(width: 200, height: 40))
-//        textView.autoPinEdge(toSuperviewEdge: .leading, withInset: kToolbarMargin)
-//        textView.autoPinEdge(toSuperviewEdge: .top, withInset: kToolbarMargin)
-//        // TODO get actualy offset based on button size.
-//        let kTrailingOffset: CGFloat = 80
-//        textView.autoPinEdge(toSuperviewEdge: .trailing, withInset: kTrailingOffset)
-//        textView.autoPinEdge(toSuperviewEdge: .bottom, withInset: kToolbarMargin)
-//
-//        self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
-
-//        self.bottomToolbar = MessagingToolbar()
-        // Making a toolbar transparent requires setting an empty uiimage
-
-//        self.view.addSubview(bottomToolbar)
-//        bottomToolbar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-//        bottomToolbar.autoPinWidthToSuperview()
-//        bottomToolbar.setCompressionResistanceVerticalHigh()
-//        bottomToolbar.setContentHuggingVerticalHigh()
     }
 
     override public var inputAccessoryView: UIView? {
         self.bottomToolbar.layoutIfNeeded()
         return self.bottomToolbar
-//        let toolbar = UIView(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 50, height: 100)))
-//        toolbar.backgroundColor = UIColor.purple
-//        return toolbar
     }
 
     override public var canBecomeFirstResponder: Bool {
@@ -246,29 +198,6 @@ public class AttachmentApprovalViewController: OWSViewController, MessagingToolb
         return toolbar
     }
 
-//    // MARK: - UITextViewDelegate
-//
-//    public func textViewDidChange(_ textView: UITextView) {
-//        Logger.debug("\(self.logTag) in \(#function)")
-////        CGFloat fixedWidth = textView.frame.size.width;
-////        CGSize newSize = [textView sizeThatFits:CGSizeMake(fixedWidth, MAXFLOAT)];
-////        CGRect newFrame = textView.frame;
-////        newFrame.size = CGSizeMake(fmaxf(newSize.width, fixedWidth), newSize.height);
-////        textView.frame = newFrame;
-//        let fixedWidth = textView.frame.size.width
-//        let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-////        let newFrame = CGRect(x: textView.frame.origin.x, y: textView.frame.origin.y, width: fixedWidth, height: newSize.height)
-////        Logger.debug("\(self.logTag) oldFrame: \(textView.frame), newFrame: \(newFrame)")
-//
-//        Logger.debug("\(self.logTag) oldHeight: \(self.textViewHeightConstraint.constant), newHeight: \(newSize.height)")
-//        // TODO clamp to a max.
-//        self.textViewHeightConstraint.constant = max(kMinTextViewHeight, newSize.height)
-//        self.bottomToolbar.setNeedsLayout()
-//        self.bottomToolbar.layoutIfNeeded()
-////        textView.frame = newFrame
-//    }
-//    - (void)textViewDidChange:(UITextView *)textView
-
     // MARK: - Event Handlers
 
     @objc
@@ -284,6 +213,10 @@ public class AttachmentApprovalViewController: OWSViewController, MessagingToolb
 
     func messagingToolbarDidTapSend(_ messagingToolbar: MessagingToolbar) {
         self.sendAttachment()
+    }
+
+    func messagingToolbar(_ messagingToolbar: MessagingToolbar, didChangeHeight newHeight: CGFloat) {
+        self.scrollView.contentInset.bottom = newHeight
     }
 
     func sendAttachment() {
@@ -393,25 +326,28 @@ private class GradientView: UIView {
 
 protocol MessagingToolbarDelegate: class {
     func messagingToolbarDidTapSend(_ messagingToolbar: MessagingToolbar)
+    func messagingToolbar(_ messagingToolbar: MessagingToolbar, didChangeHeight newHeight: CGFloat)
 }
 
 class MessagingToolbar: UIView, UITextViewDelegate {
-    //        let toolbar: UIToolbar
-    //        var sendButton: UIBarButtonItem!
-    private var sendButton: UIButton!
 
     weak var messagingToolbarDelegate: MessagingToolbarDelegate?
-
+    private let sendButton: UIButton
     private let textView: UITextView
-    private let kToolbarMargin: CGFloat = 4
-    private let kTextViewPadding: CGFloat = 4.0
 
-    private var textViewHeightConstraint: NSLayoutConstraint!
-    //        private(set) var heightConstraint: NSLayoutConstraint!
+    // Layout Constants
+    var maxTextViewHeight: CGFloat {
+        // About ~4 lines in portrait and ~3 lines in landscape.
+        // Otherwise we risk obscuring too much of the content.
+        return UIDevice.current.orientation.isPortrait ? 160 : 100
+    }
+    let kMinTextViewHeight: CGFloat = 38
 
-    private var kMinTextViewHeight: CGFloat {
-        //            return UIFont.ows_dynamicTypeBody().lineHeight
-        return 38
+    var textViewHeight: CGFloat {
+        didSet {
+            // TODO magic numbers
+            self.messagingToolbarDelegate?.messagingToolbar(self, didChangeHeight: textViewHeight + 2 * 4)
+        }
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -429,77 +365,35 @@ class MessagingToolbar: UIView, UITextViewDelegate {
     }
 
     init() {
-        let textView = MessageTextView()
-        self.textView = textView
+        self.textView =  MessageTextView()
+        self.sendButton = UIButton(type: .system)
+        self.textViewHeight = kMinTextViewHeight
 
         super.init(frame: CGRect.zero)
 
-        let kSendButtonWidth: CGFloat = 100
-        let kMinToolbarHeight: CGFloat = 40
-
         self.backgroundColor = UIColor.ows_inputToolbarBackground()
 
+        textView.delegate = self
         textView.backgroundColor = UIColor.white
         textView.layer.cornerRadius = 4.0
         textView.addBorder(with: UIColor.lightGray)
         textView.font = UIFont.ows_dynamicTypeBody()
 
-        let textViewItem = UIBarButtonItem(customView: textView)
         let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
-
-        let sendButton = UIButton(type: .system)
         sendButton.setTitle(sendTitle, for: .normal)
         sendButton.addTarget(self, action: #selector(didTapSend), for: .touchUpInside)
 
-        //            let sendButton = UIBarButtonItem(title: sendTitle,
-        //                                             style: .plain,
-        //                                             target: self,
-        //                                             action: #selector(sendPressed))
-        //                        sendButton.width = kSendButtonWidth
-        self.sendButton = sendButton
-        // TODO
-        // self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:16.f];
-        // center text alignment
         sendButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: 16)
         sendButton.titleLabel?.textAlignment = .center
         sendButton.tintColor = UIColor.ows_materialBlue()
+
         // Increase hit area of send button
         sendButton.contentEdgeInsets = UIEdgeInsets(top: 20, left: 8, bottom: 4, right: 8)
 
         addSubview(sendButton)
         addSubview(textView)
 
-//
-//        let sendButtonItem = UIBarButtonItem(customView: sendButton)
-//
-//        //            self.items = [textViewItem, sendButton]
-//        self.items = [textViewItem, sendButtonItem]
-//
-//        // toolbar doesn't render without some minimum height set.
-//        //            self.heightConstraint = self.autoSetDimension(.height,
-//        self.autoSetDimension(.height,
-//                              toSize: kMinTextViewHeight + kToolbarMargin * 2,
-//                              relation: .greaterThanOrEqual)
-//
-        self.autoMatch(.height, to: .height, of: textView, withMultiplier:1, relation: .greaterThanOrEqual)
-        
-        // Adding textView to a toolbar item inserts it into a "hostView"
-        // This isn't really documentd, but I've verified it works on iOS9 and iOS10
-        self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
-        textView.autoPinEdge(toSuperviewEdge: .leading, withInset: kToolbarMargin)
-        textView.autoPinEdge(toSuperviewEdge: .top, withInset: kToolbarMargin)
-        textView.autoPinEdge(toSuperviewEdge: .bottom, withInset: kToolbarMargin)
-//
-//        //            let kTrailingOffset: CGFloat = kSendButtonWidth
-//        //            textView.autoPinEdge(toSuperviewEdge: .trailing, withInset: kTrailingOffset)
-//
-        textView.autoPinEdge(.trailing, to: .leading, of: sendButton, withOffset: -8)
-
         sendButton.sizeToFit()
-        sendButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: kToolbarMargin)
-        sendButton.autoPinEdge(toSuperviewEdge: .bottom, withInset: kToolbarMargin)
-
-        textView.delegate = self
     }
 
     func didTapSend() {
@@ -511,60 +405,57 @@ class MessagingToolbar: UIView, UITextViewDelegate {
     public func textViewDidChange(_ textView: UITextView) {
         Logger.debug("\(self.logTag) in \(#function)")
 
-        // We don't want the textView to grow indefinitely
-        let kMaxTextViewHeight: CGFloat = 160
+        // compute new height assuming width is unchanged
+        let currentSize = textView.frame.size
+        let newHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
 
-        let fixedWidth = textView.frame.size.width
-        let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-        let newHeight = Clamp(newSize.height, kMinTextViewHeight, kMaxTextViewHeight)
-
-        if newHeight != self.textViewHeightConstraint.constant {
-            Logger.debug("\(self.logTag) oldHeight: \(self.textViewHeightConstraint.constant), newHeight: \(newHeight)")
-            self.textViewHeightConstraint.constant = newHeight
-            self.textView.frame = CGRect(x: 0, y: 0, width: self.textView.frame.size.width, height: newHeight)
-            //                UIView.animate(withDuration: 0.1) {
+        if newHeight != self.textViewHeight {
+            Logger.debug("\(self.logTag) TextView height changed: \(self.textViewHeight) -> \(newHeight)")
+            self.textViewHeight = newHeight
             self.setNeedsLayout()
             self.layoutIfNeeded()
-            self.textView.reloadInputViews()
-        } else {
-            Logger.debug("\(self.logTag) height unchanged: \(self.textViewHeightConstraint.constant)")
         }
     }
 
+    private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {
+        let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        return Clamp(contentSize.height, kMinTextViewHeight, maxTextViewHeight)
+    }
+
+    // We do progammatic layout, explicitly computing and setting frames since autoLayout does
+    // not seem to work with inputAccessory views, even when forcing a layout.
     override func layoutSubviews() {
         super.layoutSubviews()
-        Logger.info("\(self.logTag) in \(#function)")
-        Logger.info("textView: \(self.textView.frame), sendButton:\(sendButton.frame)")
-        
-        // Updating the autoLayout constraints was not sufficient to properly set the frame of the inputAccessoryView,
-        // so we manually update the relevant frames here.
-        let originalTextViewFrame = self.textView.frame
-        let newTextViewFrame = CGRect(x: originalTextViewFrame.origin.x, y: originalTextViewFrame.origin.y, width: originalTextViewFrame.width, height: self.textViewHeightConstraint.constant)
-        self.textView.frame = newTextViewFrame
-        
-        let diffY = newTextViewFrame.height - originalTextViewFrame.height
-        let originalFrame = self.frame
-        let newFrame = CGRect(x: originalFrame.origin.x, y: originalFrame.origin.y - diffY, width: originalFrame.width, height: originalFrame.size.height + diffY)
-        self.frame = newFrame
+        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("Before layout >>> self: \(self.frame) textView: \(self.textView.frame), sendButton:\(sendButton.frame)")
 
-        //
-        //            let kMargin = 4
-        //            let kTextViewHeight = 40
-        //            let kTextViewWidth = 200
-        //
-        //            let kSendButtonHeight = 40
-        //            let kSendButtonWidth = 100
-        //
-        //            self.textView.frame = CGRect(x: kMargin, y: kMargin, width: kTextViewWidth, height: kTextViewHeight)
-        //            self.sendButton.frame = CGRect(x: kMargin * 2 + kTextViewWidth, y: kMargin, width: kSendButtonWidth, height: kSendButtonHeight)
-        //            self.frame = CGRect(x: 0, y: 0, width: 320, height: kTextViewHeight + 2 * kMargin)
-        //            self.bounds = self.frame
-        //
-        ////            self.textView.sizeToFit()
-        //
-        ////            let maxHeight = max(self.sendButton.frame.size.height, self.textView.frame.size.height)
-        ////            let fittedFrame = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: maxHeight)
-        ////            self.frame = fittedFrame
-        ////            self.bounds = fittedFrame
+        let kToolbarMargin: CGFloat = 4
+
+        let sendButtonWidth = sendButton.frame.size.width
+
+        let kOriginalToolbarHeight = kMinTextViewHeight + 2 * kToolbarMargin
+        // Assume send button has proper size.
+        let textViewWidth = frame.size.width - 3 * kToolbarMargin - sendButtonWidth
+
+        // determine height given a fixed width
+        let textViewHeight = clampedTextViewHeight(fixedWidth: textViewWidth)
+        textView.frame = CGRect(x: kToolbarMargin, y: kToolbarMargin, width: textViewWidth, height: textViewHeight)
+        assert(self.textViewHeight == textViewHeight, "textView.height inconsistent with what was computed in textViewDidChange")
+
+        let newToolbarHeight = textViewHeight + 2 * kToolbarMargin
+
+        // frame origin is with respect to the initial height of the toolbar, so we must offset the toolbar frame
+        // by the difference, else the toolbar will extend into and behind the keyboard.
+        let toolbarHeightOffset = kOriginalToolbarHeight - newToolbarHeight
+        self.frame = CGRect(x: 0, y: toolbarHeightOffset, width: frame.size.width, height: newToolbarHeight)
+
+        // Send Button
+
+        // position in bottom right corner
+        let sendButtonX = frame.size.width - kToolbarMargin - sendButton.frame.size.width
+        let sendButtonY = frame.size.height - kToolbarMargin - sendButton.frame.size.height
+        sendButton.frame = CGRect(origin: CGPoint(x: sendButtonX, y: sendButtonY), size: sendButton.frame.size)
+
+        Logger.debug("After layout >>> self: \(self.frame) textView: \(self.textView.frame), sendButton:\(sendButton.frame)")
     }
 }
