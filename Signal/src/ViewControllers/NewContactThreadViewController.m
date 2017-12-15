@@ -147,9 +147,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert([NSThread isMainThread]);
 
-    [self.contactsViewHelper.contactsManager fetchSystemContactsIfAlreadyAuthorizedAndAlwaysNotify];
-
-    [refreshControl endRefreshing];
+    [self.contactsViewHelper.contactsManager
+        fetchSystemContactsIfAlreadyAuthorizedAndAlwaysNotifyWithCompletion:^(NSError *_Nullable error) {
+            if (error) {
+                DDLogError(@"%@ refreshing contacts failed with error: %@", self.logTag, error);
+            }
+            [refreshControl endRefreshing];
+        }];
 }
 
 - (void)showContactsPermissionReminder:(BOOL)isVisible

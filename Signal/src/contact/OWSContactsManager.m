@@ -95,9 +95,10 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     [self.systemContactsFetcher fetchOnceIfAlreadyAuthorized];
 }
 
-- (void)fetchSystemContactsIfAlreadyAuthorizedAndAlwaysNotify
+- (void)fetchSystemContactsIfAlreadyAuthorizedAndAlwaysNotifyWithCompletion:
+    (void (^)(NSError *_Nullable error))completionHandler
 {
-    [self.systemContactsFetcher fetchIfAlreadyAuthorizedAndAlwaysNotify];
+    [self.systemContactsFetcher fetchIfAlreadyAuthorizedAndAlwaysNotifyWithCompletion:completionHandler];
 }
 
 - (BOOL)isSystemContactsAuthorized

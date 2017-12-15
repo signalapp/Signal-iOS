@@ -434,13 +434,13 @@ class SystemContactsFetcher: NSObject {
         updateContacts(completion: nil, alwaysNotify: false)
     }
 
-    public func fetchIfAlreadyAuthorizedAndAlwaysNotify() {
+    public func fetchIfAlreadyAuthorizedAndAlwaysNotify(completion: ((Error?) -> Void)?) {
         AssertIsOnMainThread()
         guard authorizationStatus == .authorized else {
             return
         }
 
-        updateContacts(completion: nil, alwaysNotify: true)
+        updateContacts(completion: completion, alwaysNotify: true)
     }
 
     private func updateContacts(completion completionParam: ((Error?) -> Void)?, alwaysNotify: Bool = false) {
