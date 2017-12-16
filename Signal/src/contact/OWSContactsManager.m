@@ -131,9 +131,9 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemsContactsFetcher
               updatedContacts:(NSArray<Contact *> *)contacts
-                userRequested:(BOOL)userRequested
+                isUserRequested:(BOOL)isUserRequested
 {
-    [self updateWithContacts:contacts clearStaleCache:userRequested];
+    [self updateWithContacts:contacts shouldClearStaleCache:isUserRequested];
 }
 
 #pragma mark - Intersection
@@ -191,7 +191,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     [self.avatarCache removeAllImagesForKey:recipientId];
 }
 
-- (void)updateWithContacts:(NSArray<Contact *> *)contacts clearStaleCache:(BOOL)clearStaleCache
+- (void)updateWithContacts:(NSArray<Contact *> *)contacts shouldClearStaleCache:(BOOL)shouldClearStaleCache
 {
     dispatch_async(self.serialQueue, ^{
         NSMutableDictionary<NSString *, Contact *> *allContactsMap = [NSMutableDictionary new];
@@ -211,13 +211,13 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
             [self.avatarCache removeAllImages];
 
             [self intersectContactsWithCompletion:^(NSError *_Nullable error) {
-                [self buildSignalAccountsAndClearStaleCache:clearStaleCache];
+                [self buildSignalAccountsAndClearStaleCache:shouldClearStaleCache];
             }];
         });
     });
 }
 
-- (void)buildSignalAccountsAndClearStaleCache:(BOOL)clearStaleCache;
+- (void)buildSignalAccountsAndClearStaleCache:(BOOL)shouldClearStaleCache;
 {
     dispatch_async(self.serialQueue, ^{
         NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
@@ -259,12 +259,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
             [SignalAccount
                 enumerateCollectionObjectsWithTransaction:transaction
                                                usingBlock:^(id _Nonnull object, BOOL *_Nonnull stop) {
-                                                   if (![object isKindOfClass:[SignalAccount class]]) {
-                                                       OWSFail(@"%@ Unexpected object in signal account collection: %@",
-                                                           self.logTag,
-                                                           object);
-                                                       return;
-                                                   }
+                                                   OWSAssert([object isKindOfClass:[SignalAccount class]]);
                                                    SignalAccount *oldSignalAccount = (SignalAccount *)object;
 
                                                    oldSignalAccounts[oldSignalAccount.uniqueId] = oldSignalAccount;
@@ -301,7 +296,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
                 [signalAccount saveWithTransaction:transaction];
             }
 
-            if (clearStaleCache) {
+            if (shouldClearStaleCache) {
                 DDLogInfo(@"%@ Removing %lu old SignalAccounts.", self.logTag, (unsigned long)oldSignalAccounts.count);
                 for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
                     DDLogVerbose(@"%@ Removing old SignalAccount: %@", self.logTag, signalAccount);

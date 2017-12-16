@@ -316,7 +316,7 @@ class ContactStoreAdapter: ContactStoreAdaptee {
 }
 
 @objc protocol SystemContactsFetcherDelegate: class {
-    func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, updatedContacts contacts: [Contact], userRequested: Bool)
+    func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, updatedContacts contacts: [Contact], isUserRequested: Bool)
 }
 
 @objc
@@ -361,7 +361,7 @@ class SystemContactsFetcher: NSObject {
         hasSetupObservation = true
         self.contactStoreAdapter.startObservingChanges { [weak self] in
             DispatchQueue.main.async {
-                self?.updateContacts(completion: nil, userRequested: false)
+                self?.updateContacts(completion: nil, isUserRequested: false)
             }
         }
     }
@@ -431,7 +431,7 @@ class SystemContactsFetcher: NSObject {
             return
         }
 
-        updateContacts(completion: nil, userRequested: false)
+        updateContacts(completion: nil, isUserRequested: false)
     }
 
     public func userRequestedRefresh(completion: @escaping (Error?) -> Void) {
@@ -441,10 +441,10 @@ class SystemContactsFetcher: NSObject {
             return
         }
 
-        updateContacts(completion: completion, userRequested: true)
+        updateContacts(completion: completion, isUserRequested: true)
     }
 
-    private func updateContacts(completion completionParam: ((Error?) -> Void)?, userRequested: Bool = false) {
+    private func updateContacts(completion completionParam: ((Error?) -> Void)?, isUserRequested: Bool = false) {
         AssertIsOnMainThread()
 
         // Ensure completion is invoked on main thread.
@@ -484,7 +484,7 @@ class SystemContactsFetcher: NSObject {
                 if self.lastContactUpdateHash != contactsHash {
                     Logger.info("\(self.TAG) contact hash changed. new contactsHash: \(contactsHash)")
                     shouldNotifyDelegate = true
-                } else if userRequested {
+                } else if isUserRequested {
                     Logger.info("\(self.TAG) ignoring debounce due to user request")
                     shouldNotifyDelegate = true
                 } else {
@@ -517,7 +517,7 @@ class SystemContactsFetcher: NSObject {
                 self.lastDelegateNotificationDate = Date()
                 self.lastContactUpdateHash = contactsHash
 
-                self.delegate?.systemContactsFetcher(self, updatedContacts: contacts, userRequested: userRequested)
+                self.delegate?.systemContactsFetcher(self, updatedContacts: contacts, isUserRequested: isUserRequested)
                 completion(nil)
             }
         }
