@@ -74,6 +74,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         }];
     }];
 
+    [signalAccounts sortUsingComparator:self.signalAccountComparator];
     [self updateSignalAccounts:signalAccounts];
 }
 
@@ -324,12 +325,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
                     }
 
                     // re-sort signal accounts since we've appended some orphans
-                    [signalAccounts sortUsingComparator:^NSComparisonResult(SignalAccount *left, SignalAccount *right) {
-                        NSString *leftName = [self comparableNameForSignalAccount:left];
-                        NSString *rightName = [self comparableNameForSignalAccount:right];
-
-                        return [leftName compare:rightName];
-                    }];
+                    [signalAccounts sortUsingComparator:self.signalAccountComparator];
                 }
             }
         }];
@@ -697,6 +693,16 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     }
 
     return image;
+}
+
+- (NSComparisonResult (^)(SignalAccount *left, SignalAccount *right))signalAccountComparator
+{
+    return ^NSComparisonResult(SignalAccount *left, SignalAccount *right) {
+        NSString *leftName = [self comparableNameForSignalAccount:left];
+        NSString *rightName = [self comparableNameForSignalAccount:right];
+
+        return [leftName compare:rightName];
+    };
 }
 
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
