@@ -339,7 +339,11 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 - (void)updateSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
 {
     AssertIsOnMainThread();
-    
+    if ([signalAccounts isEqual:self.signalAccounts]) {
+        DDLogDebug(@"%@ SignalAccounts unchanged.", self.logTag);
+        return;
+    }
+
     NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
     for (SignalAccount *signalAccount in signalAccounts) {
         signalAccountMap[signalAccount.recipientId] = signalAccount;
