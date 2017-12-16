@@ -63,15 +63,30 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 - (void)loadSignalAccountsFromCache
 {
     __block NSMutableArray<SignalAccount *> *signalAccounts;
-    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
-        signalAccounts = [[NSMutableArray alloc] initWithCapacity:[SignalAccount numberOfKeysInCollectionWithTransaction:transaction]];
-        
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        NSUInteger signalAccountCount = [SignalAccount numberOfKeysInCollectionWithTransaction:transaction];
+        DDLogInfo(@"%@ loading %lu signal accounts from cache.", self.logTag, (unsigned long)signalAccountCount);
+
+        signalAccounts = [[NSMutableArray alloc] initWithCapacity:signalAccountCount];
+
         [SignalAccount enumerateCollectionObjectsWithTransaction:transaction usingBlock:^(SignalAccount *signalAccount, BOOL * _Nonnull stop) {
             [signalAccounts addObject:signalAccount];
         }];
     }];
-    
+
+    [signalAccounts sortUsingComparator:self.signalAccountComparator];
     [self updateSignalAccounts:signalAccounts];
+}
+
+- (dispatch_queue_t)serialQueue
+{
+    static dispatch_queue_t _serialQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _serialQueue = dispatch_queue_create("org.whispersystems.contacts.buildSignalAccount", DISPATCH_QUEUE_SERIAL);
+    });
+
+    return _serialQueue;
 }
 
 #pragma mark - System Contact Fetching
@@ -92,9 +107,9 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     [self.systemContactsFetcher fetchOnceIfAlreadyAuthorized];
 }
 
-- (void)fetchSystemContactsIfAlreadyAuthorizedAndAlwaysNotify
+- (void)userRequestedSystemContactsRefreshWithCompletion:(void (^)(NSError *_Nullable error))completionHandler
 {
-    [self.systemContactsFetcher fetchIfAlreadyAuthorizedAndAlwaysNotify];
+    [self.systemContactsFetcher userRequestedRefreshWithCompletion:completionHandler];
 }
 
 - (BOOL)isSystemContactsAuthorized
@@ -116,27 +131,30 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemsContactsFetcher
               updatedContacts:(NSArray<Contact *> *)contacts
+                isUserRequested:(BOOL)isUserRequested
 {
-    [self updateWithContacts:contacts];
+    [self updateWithContacts:contacts shouldClearStaleCache:isUserRequested];
 }
 
 #pragma mark - Intersection
 
-- (void)intersectContacts
+- (void)intersectContactsWithCompletion:(void (^)(NSError *_Nullable error))completionBlock
 {
-    [self intersectContactsWithRetryDelay:1];
+    [self intersectContactsWithRetryDelay:1 completion:completionBlock];
 }
 
 - (void)intersectContactsWithRetryDelay:(double)retryDelaySeconds
+                             completion:(void (^)(NSError *_Nullable error))completionBlock
 {
     void (^success)(void) = ^{
         DDLogInfo(@"%@ Successfully intersected contacts.", self.logTag);
-        [self buildSignalAccounts];
+        completionBlock(nil);
     };
     void (^failure)(NSError *error) = ^(NSError *error) {
         if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
             && error.code == OWSErrorCodeContactsUpdaterRateLimit) {
             DDLogError(@"Contact intersection hit rate limit with error: %@", error);
+            completionBlock(error);
             return;
         }
 
@@ -147,7 +165,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         // TODO: Abort if another contact intersection succeeds in the meantime.
         dispatch_after(
             dispatch_time(DISPATCH_TIME_NOW, (int64_t)(retryDelaySeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self intersectContactsWithRetryDelay:retryDelaySeconds * 2];
+                [self intersectContactsWithRetryDelay:retryDelaySeconds * 2 completion:completionBlock];
             });
     };
     [[ContactsUpdater sharedUpdater] updateSignalContactIntersectionWithABContacts:self.allContacts
@@ -173,10 +191,9 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     [self.avatarCache removeAllImagesForKey:recipientId];
 }
 
-- (void)updateWithContacts:(NSArray<Contact *> *)contacts
+- (void)updateWithContacts:(NSArray<Contact *> *)contacts shouldClearStaleCache:(BOOL)shouldClearStaleCache
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
+    dispatch_async(self.serialQueue, ^{
         NSMutableDictionary<NSString *, Contact *> *allContactsMap = [NSMutableDictionary new];
         for (Contact *contact in contacts) {
             for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
@@ -193,17 +210,16 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
             [self.avatarCache removeAllImages];
 
-            [self intersectContacts];
-
-            [self buildSignalAccounts];
+            [self intersectContactsWithCompletion:^(NSError *_Nullable error) {
+                [self buildSignalAccountsAndClearStaleCache:shouldClearStaleCache];
+            }];
         });
     });
 }
 
-- (void)buildSignalAccounts
+- (void)buildSignalAccountsAndClearStaleCache:(BOOL)shouldClearStaleCache;
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
+    dispatch_async(self.serialQueue, ^{
         NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
         NSArray<Contact *> *contacts = self.allContacts;
 
@@ -218,9 +234,15 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
             }
         }];
 
+        NSMutableSet<NSString *> *seenRecipientIds = [NSMutableSet new];
         for (Contact *contact in contacts) {
             NSArray<SignalRecipient *> *signalRecipients = contactIdToSignalRecipientsMap[contact.uniqueId];
             for (SignalRecipient *signalRecipient in [signalRecipients sortedArrayUsingSelector:@selector(compare:)]) {
+                if ([seenRecipientIds containsObject:signalRecipient.recipientId]) {
+                    DDLogDebug(@"Ignoring duplicate contact: %@, %@", signalRecipient.recipientId, contact.fullName);
+                    continue;
+                }
+                [seenRecipientIds addObject:signalRecipient.recipientId];
                 SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient];
                 signalAccount.contact = contact;
                 if (signalRecipients.count > 1) {
@@ -228,33 +250,81 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
                     signalAccount.multipleAccountLabelText =
                         [[self class] accountLabelForContact:contact recipientId:signalRecipient.recipientId];
                 }
-                if (signalAccountMap[signalAccount.recipientId]) {
-                    DDLogDebug(@"Ignoring duplicate contact: %@, %@", signalAccount.recipientId, contact.fullName);
-                    continue;
-                }
                 [signalAccounts addObject:signalAccount];
             }
         }
 
+        NSMutableDictionary<NSString *, SignalAccount *> *oldSignalAccounts = [NSMutableDictionary new];
+        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+            [SignalAccount
+                enumerateCollectionObjectsWithTransaction:transaction
+                                               usingBlock:^(id _Nonnull object, BOOL *_Nonnull stop) {
+                                                   OWSAssert([object isKindOfClass:[SignalAccount class]]);
+                                                   SignalAccount *oldSignalAccount = (SignalAccount *)object;
+
+                                                   oldSignalAccounts[oldSignalAccount.uniqueId] = oldSignalAccount;
+                                               }];
+        }];
+
+        NSMutableArray *accountsToSave = [NSMutableArray new];
+        for (SignalAccount *signalAccount in signalAccounts) {
+            SignalAccount *_Nullable oldSignalAccount = oldSignalAccounts[signalAccount.uniqueId];
+
+            // keep track of which accounts are still relevant, so we can clean up orphans
+            [oldSignalAccounts removeObjectForKey:signalAccount.uniqueId];
+
+            if (oldSignalAccount == nil) {
+                // new Signal Account
+                [accountsToSave addObject:signalAccount];
+                continue;
+            }
+
+            if ([oldSignalAccount isEqual:signalAccount]) {
+                // Same value, no need to save.
+                continue;
+            }
+
+            // value changed, save account
+            [accountsToSave addObject:signalAccount];
+        }
+
         // Update cached SignalAccounts on disk
         [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            NSArray<NSString *> *allKeys = [transaction allKeysInCollection:[SignalAccount collection]];
-            NSMutableSet<NSString *> *orphanedKeys = [NSMutableSet setWithArray:allKeys];
-
-            DDLogInfo(@"%@ Saving %lu SignalAccounts", self.logTag, signalAccounts.count);
-            for (SignalAccount *signalAccount in signalAccounts) {
-                // TODO only save the ones that changed
-                [orphanedKeys removeObject:signalAccount.uniqueId];
+            DDLogInfo(@"%@ Saving %lu SignalAccounts", self.logTag, (unsigned long)accountsToSave.count);
+            for (SignalAccount *signalAccount in accountsToSave) {
+                DDLogVerbose(@"%@ Saving SignalAccount: %@", self.logTag, signalAccount);
                 [signalAccount saveWithTransaction:transaction];
             }
-            
-            if (orphanedKeys.count > 0) {
-                DDLogInfo(@"%@ Removing %lu orphaned SignalAccounts", self.logTag, (unsigned long)orphanedKeys.count);
-                [transaction removeObjectsForKeys:orphanedKeys.allObjects inCollection:[SignalAccount collection]];
+
+            if (shouldClearStaleCache) {
+                DDLogInfo(@"%@ Removing %lu old SignalAccounts.", self.logTag, (unsigned long)oldSignalAccounts.count);
+                for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
+                    DDLogVerbose(@"%@ Removing old SignalAccount: %@", self.logTag, signalAccount);
+                    [signalAccount removeWithTransaction:transaction];
+                }
+            } else {
+                // In theory we want to remove SignalAccounts if the user deletes the corresponding system contact.
+                // However, as of iOS11.2 CNContactStore occasionally gives us only a subset of the system contacts.
+                // Because of that, it's not safe to clear orphaned accounts.
+                // Because we still want to give users a way to clear their stale accounts, if they pull-to-refresh
+                // their contacts we'll clear the cached ones.
+                // RADAR: https://bugreport.apple.com/web/?problemID=36082946
+                if (oldSignalAccounts.allValues.count > 0) {
+                    DDLogWarn(@"%@ NOT Removing %lu old SignalAccounts.",
+                        self.logTag,
+                        (unsigned long)oldSignalAccounts.count);
+                    for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
+                        DDLogVerbose(
+                            @"%@ Ensuring old SignalAccount is not inadvertently lost: %@", self.logTag, signalAccount);
+                        [signalAccounts addObject:signalAccount];
+                    }
+
+                    // re-sort signal accounts since we've appended some orphans
+                    [signalAccounts sortUsingComparator:self.signalAccountComparator];
+                }
             }
         }];
 
-        
         dispatch_async(dispatch_get_main_queue(), ^{
             [self updateSignalAccounts:signalAccounts];
         });
@@ -264,7 +334,11 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 - (void)updateSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
 {
     AssertIsOnMainThread();
-    
+    if ([signalAccounts isEqual:self.signalAccounts]) {
+        DDLogDebug(@"%@ SignalAccounts unchanged.", self.logTag);
+        return;
+    }
+
     NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
     for (SignalAccount *signalAccount in signalAccounts) {
         signalAccountMap[signalAccount.recipientId] = signalAccount;
@@ -618,6 +692,16 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     }
 
     return image;
+}
+
+- (NSComparisonResult (^)(SignalAccount *left, SignalAccount *right))signalAccountComparator
+{
+    return ^NSComparisonResult(SignalAccount *left, SignalAccount *right) {
+        NSString *leftName = [self comparableNameForSignalAccount:left];
+        NSString *rightName = [self comparableNameForSignalAccount:right];
+
+        return [leftName compare:rightName];
+    };
 }
 
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount

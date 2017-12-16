@@ -44,11 +44,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if TARGET_OS_IOS
 
-- (instancetype)initWithContactWithFirstName:(nullable NSString *)firstName
-                                 andLastName:(nullable NSString *)lastName
-                     andUserTextPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
-                                    andImage:(nullable UIImage *)image
-                                andContactID:(ABRecordID)record;
+- (instancetype)initWithFirstName:(nullable NSString *)firstName
+                         lastName:(nullable NSString *)lastName
+             userTextPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
+                        imageData:(nullable NSData *)imageData
+                        contactID:(ABRecordID)record;
 
 - (instancetype)initWithSystemContact:(CNContact *)contact;
 
