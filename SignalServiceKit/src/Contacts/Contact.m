@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Contact ()
 
 @property (readonly, nonatomic) NSMutableDictionary<NSString *, NSString *> *phoneNumberNameMap;
+@property (readonly, nonatomic) NSData *imageData;
 
 @end
 
@@ -26,13 +27,14 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize fullName = _fullName;
 @synthesize comparableNameFirstLast = _comparableNameFirstLast;
 @synthesize comparableNameLastFirst = _comparableNameLastFirst;
+@synthesize image = _image;
 
 #if TARGET_OS_IOS
-- (instancetype)initWithContactWithFirstName:(nullable NSString *)firstName
-                                 andLastName:(nullable NSString *)lastName
-                     andUserTextPhoneNumbers:(NSArray *)phoneNumbers
-                                    andImage:(nullable UIImage *)image
-                                andContactID:(ABRecordID)record
+- (instancetype)initWithFirstName:(nullable NSString *)firstName
+                         lastName:(nullable NSString *)lastName
+             userTextPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
+                        imageData:(nullable NSData *)imageData
+                        contactID:(ABRecordID)record
 {
     self = [super init];
     if (!self) {
@@ -46,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     _userTextPhoneNumbers = phoneNumbers;
     _phoneNumberNameMap = [NSMutableDictionary new];
     _parsedPhoneNumbers = [self parsedPhoneNumbersFromUserTextPhoneNumbers:phoneNumbers phoneNumberNameMap:@{}];
-    _image = image;
+    _imageData = imageData;
     // Not using emails for old AB style contacts.
     _emails = [NSMutableArray new];
 
@@ -127,10 +129,24 @@ NS_ASSUME_NONNULL_BEGIN
     _emails = [emailAddresses copy];
 
     if (contact.thumbnailImageData) {
-        _image = [UIImage imageWithData:contact.thumbnailImageData];
+        _imageData = contact.thumbnailImageData;
     }
 
     return self;
+}
+
+- (nullable UIImage *)image
+{
+    if (_image) {
+        return _image;
+    }
+
+    if (!self.imageData) {
+        return nil;
+    }
+
+    _image = [UIImage imageWithData:self.imageData];
+    return _image;
 }
 
 - (NSString *)trimName:(NSString *)name
@@ -141,6 +157,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)uniqueIdFromABRecordId:(ABRecordID)recordId
 {
     return [NSString stringWithFormat:@"ABRecordId:%d", recordId];
+}
+
++ (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
+{
+    if ([propertyKey isEqualToString:@"cnContact"] || [propertyKey isEqualToString:@"image"]) {
+        return MTLPropertyStorageTransitory;
+    } else {
+        return [super storageBehaviorForPropertyWithKey:propertyKey];
+    }
 }
 
 #endif // TARGET_OS_IOS
