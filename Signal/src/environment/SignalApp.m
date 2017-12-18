@@ -242,7 +242,7 @@
     DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
 
-    [[TSStorageManager sharedManager] resetSignalStorage];
+    [OWSStorage resetAllStorage];
     [[OWSProfileManager sharedManager] resetProfileStorage];
     [Environment.preferences clear];
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];

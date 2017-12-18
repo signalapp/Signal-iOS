@@ -49,15 +49,17 @@ NSString *const OWSPreferencesKey_IsRegistered = @"OWSPreferencesKey_IsRegistere
 
 - (nullable id)tryGetValueForKey:(NSString *)key
 {
-    ows_require(key != nil);
-    return [TSStorageManager.sharedManager objectForKey:key inCollection:OWSPreferencesSignalDatabaseCollection];
+    OWSAssert(key != nil);
+    return [TSStorageManager.dbReadConnection objectForKey:key inCollection:OWSPreferencesSignalDatabaseCollection];
 }
 
 - (void)setValueForKey:(NSString *)key toValue:(nullable id)value
 {
-    ows_require(key != nil);
+    OWSAssert(key != nil);
 
-    [TSStorageManager.sharedManager setObject:value forKey:key inCollection:OWSPreferencesSignalDatabaseCollection];
+    [TSStorageManager.dbReadWriteConnection setObject:value
+                                               forKey:key
+                                         inCollection:OWSPreferencesSignalDatabaseCollection];
 }
 
 #pragma mark - Specific Preferences

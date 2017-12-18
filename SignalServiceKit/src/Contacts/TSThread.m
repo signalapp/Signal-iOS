@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark To be subclassed.
 
 - (BOOL)isGroupThread {
-    NSAssert(false, @"An abstract method on TSThread was called.");
+    OWSFail(@"An abstract method on TSThread was called.");
     return FALSE;
 }
 
@@ -86,13 +86,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSString *)name {
-    NSAssert(FALSE, @"Should be implemented in subclasses");
+    OWSFail(@"Should be implemented in subclasses");
     return nil;
 }
 
 - (NSArray<NSString *> *)recipientIdentifiers
 {
-    NSAssert(FALSE, @"Should be implemented in subclasses");
+    OWSFail(@"Should be implemented in subclasses");
     return @[];
 }
 

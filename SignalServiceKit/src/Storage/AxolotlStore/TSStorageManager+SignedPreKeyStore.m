@@ -6,10 +6,9 @@
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+SignedPreKeyStore.h"
 #import "TSStorageManager+keyFromIntLong.h"
-
-#import <Curve25519Kit/Ed25519.h>
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/NSData+keyVersionByte.h>
+#import <Curve25519Kit/Ed25519.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,8 +34,9 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
 }
 
 - (SignedPreKeyRecord *)loadSignedPrekey:(int)signedPreKeyId {
-    SignedPreKeyRecord *preKeyRecord = [self signedPreKeyRecordForKey:[self keyFromInt:signedPreKeyId]
-                                                         inCollection:TSStorageManagerSignedPreKeyStoreCollection];
+    SignedPreKeyRecord *preKeyRecord =
+        [self.dbReadConnection signedPreKeyRecordForKey:[self keyFromInt:signedPreKeyId]
+                                           inCollection:TSStorageManagerSignedPreKeyStoreCollection];
 
     if (!preKeyRecord) {
         @throw [NSException exceptionWithName:InvalidKeyIdException
@@ -49,8 +49,8 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
 
 - (nullable SignedPreKeyRecord *)loadSignedPrekeyOrNil:(int)signedPreKeyId
 {
-    return [self signedPreKeyRecordForKey:[self keyFromInt:signedPreKeyId]
-                             inCollection:TSStorageManagerSignedPreKeyStoreCollection];
+    return [self.dbReadConnection signedPreKeyRecordForKey:[self keyFromInt:signedPreKeyId]
+                                              inCollection:TSStorageManagerSignedPreKeyStoreCollection];
 }
 
 - (NSArray *)loadSignedPreKeys {
@@ -69,73 +69,75 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
 }
 
 - (void)storeSignedPreKey:(int)signedPreKeyId signedPreKeyRecord:(SignedPreKeyRecord *)signedPreKeyRecord {
-    [self setObject:signedPreKeyRecord
-              forKey:[self keyFromInt:signedPreKeyId]
-        inCollection:TSStorageManagerSignedPreKeyStoreCollection];
+    [self.dbReadWriteConnection setObject:signedPreKeyRecord
+                                   forKey:[self keyFromInt:signedPreKeyId]
+                             inCollection:TSStorageManagerSignedPreKeyStoreCollection];
 }
 
 - (BOOL)containsSignedPreKey:(int)signedPreKeyId {
-    PreKeyRecord *preKeyRecord = [self signedPreKeyRecordForKey:[self keyFromInt:signedPreKeyId]
-                                                   inCollection:TSStorageManagerSignedPreKeyStoreCollection];
+    PreKeyRecord *preKeyRecord =
+        [self.dbReadConnection signedPreKeyRecordForKey:[self keyFromInt:signedPreKeyId]
+                                           inCollection:TSStorageManagerSignedPreKeyStoreCollection];
     return (preKeyRecord != nil);
 }
 
 - (void)removeSignedPreKey:(int)signedPrekeyId {
-    [self removeObjectForKey:[self keyFromInt:signedPrekeyId] inCollection:TSStorageManagerSignedPreKeyStoreCollection];
+    [self.dbReadWriteConnection removeObjectForKey:[self keyFromInt:signedPrekeyId]
+                                      inCollection:TSStorageManagerSignedPreKeyStoreCollection];
 }
 
 - (nullable NSNumber *)currentSignedPrekeyId
 {
-    return [TSStorageManager.sharedManager objectForKey:TSStorageManagerKeyPrekeyCurrentSignedPrekeyId
-                                           inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    return [self.dbReadConnection objectForKey:TSStorageManagerKeyPrekeyCurrentSignedPrekeyId
+                                  inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
 }
 
 - (void)setCurrentSignedPrekeyId:(int)value
 {
-    [TSStorageManager.sharedManager setObject:@(value)
-                                       forKey:TSStorageManagerKeyPrekeyCurrentSignedPrekeyId
-                                 inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    [self.dbReadWriteConnection setObject:@(value)
+                                   forKey:TSStorageManagerKeyPrekeyCurrentSignedPrekeyId
+                             inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
 }
 
 #pragma mark - Prekey update failures
 
 - (int)prekeyUpdateFailureCount;
 {
-    NSNumber *value = [TSStorageManager.sharedManager objectForKey:TSStorageManagerKeyPrekeyUpdateFailureCount
-                                                      inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    NSNumber *value = [self.dbReadConnection objectForKey:TSStorageManagerKeyPrekeyUpdateFailureCount
+                                             inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
     // Will default to zero.
     return [value intValue];
 }
 
 - (void)clearPrekeyUpdateFailureCount
 {
-    [TSStorageManager.sharedManager removeObjectForKey:TSStorageManagerKeyPrekeyUpdateFailureCount
-                                          inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    [self.dbReadWriteConnection removeObjectForKey:TSStorageManagerKeyPrekeyUpdateFailureCount
+                                      inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
 }
 
 - (int)incrementPrekeyUpdateFailureCount
 {
-    return [TSStorageManager.sharedManager incrementIntForKey:TSStorageManagerKeyPrekeyUpdateFailureCount
-                                                 inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    return [self.dbReadWriteConnection incrementIntForKey:TSStorageManagerKeyPrekeyUpdateFailureCount
+                                             inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
 }
 
 - (nullable NSDate *)firstPrekeyUpdateFailureDate
 {
-    return [TSStorageManager.sharedManager dateForKey:TSStorageManagerKeyFirstPrekeyUpdateFailureDate
-                                         inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    return [self.dbReadConnection dateForKey:TSStorageManagerKeyFirstPrekeyUpdateFailureDate
+                                inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
 }
 
 - (void)setFirstPrekeyUpdateFailureDate:(nonnull NSDate *)value
 {
-    [TSStorageManager.sharedManager setDate:value
-                                     forKey:TSStorageManagerKeyFirstPrekeyUpdateFailureDate
-                               inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    [self.dbReadWriteConnection setDate:value
+                                 forKey:TSStorageManagerKeyFirstPrekeyUpdateFailureDate
+                           inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
 }
 
 - (void)clearFirstPrekeyUpdateFailureDate
 {
-    [TSStorageManager.sharedManager removeObjectForKey:TSStorageManagerKeyFirstPrekeyUpdateFailureDate
-                                          inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    [self.dbReadWriteConnection removeObjectForKey:TSStorageManagerKeyFirstPrekeyUpdateFailureDate
+                                      inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
 }
 
 #pragma mark - Debugging

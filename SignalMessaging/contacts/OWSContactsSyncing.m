@@ -121,8 +121,8 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey
         NSData *messageData = [syncContactsMessage buildPlainTextAttachmentData];
 
         NSData *lastMessageData =
-            [[TSStorageManager sharedManager] objectForKey:kTSStorageManagerOWSContactsSyncingLastMessageKey
-                                              inCollection:kTSStorageManagerOWSContactsSyncingCollection];
+            [TSStorageManager.dbReadConnection objectForKey:kTSStorageManagerOWSContactsSyncingLastMessageKey
+                                               inCollection:kTSStorageManagerOWSContactsSyncingCollection];
 
         if (lastMessageData && [lastMessageData isEqual:messageData]) {
             // Ignore redundant contacts sync message.
@@ -139,9 +139,9 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey
             success:^{
                 DDLogInfo(@"%@ Successfully sent contacts sync message.", self.logTag);
 
-                [[TSStorageManager sharedManager] setObject:messageData
-                                                     forKey:kTSStorageManagerOWSContactsSyncingLastMessageKey
-                                               inCollection:kTSStorageManagerOWSContactsSyncingCollection];
+                [TSStorageManager.dbReadWriteConnection setObject:messageData
+                                                           forKey:kTSStorageManagerOWSContactsSyncingLastMessageKey
+                                                     inCollection:kTSStorageManagerOWSContactsSyncingCollection];
 
                 dispatch_async(self.serialQueue, ^{
                     self.isRequestInFlight = NO;

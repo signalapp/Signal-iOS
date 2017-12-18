@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)removeAllCharactersIn:(NSCharacterSet *)characterSet
 {
-    ows_require(characterSet != nil);
+    OWSAssert(characterSet != nil);
     return [[self componentsSeparatedByCharactersInSet:characterSet] componentsJoinedByString:@""];
 }
 

@@ -516,9 +516,9 @@
                                  from:(NSString *)source
                                    to:(NSString *)target
                     stickingRightward:(bool)preferHigh {
-    ows_require(source != nil);
-    ows_require(target != nil);
-    ows_require(offset <= source.length);
+    OWSAssert(source != nil);
+    OWSAssert(target != nil);
+    OWSAssert(offset <= source.length);
 
     NSUInteger n = source.length;
     NSUInteger m = target.length;
