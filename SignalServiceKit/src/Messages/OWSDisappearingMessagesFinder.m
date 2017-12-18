@@ -191,21 +191,21 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
 // Useful for tests, don't use in app startup path because it's slow.
 + (void)blockingRegisterDatabaseExtensions:(TSStorageManager *)storageManager
 {
-    [storageManager.database registerExtension:[self indexDatabaseExtension]
-                                      withName:OWSDisappearingMessageFinderExpiresAtIndex];
+    [storageManager registerExtension:[self indexDatabaseExtension]
+                             withName:OWSDisappearingMessageFinderExpiresAtIndex];
 }
 
 + (void)asyncRegisterDatabaseExtensions:(TSStorageManager *)storageManager
 {
-    [storageManager.database asyncRegisterExtension:[self indexDatabaseExtension]
-                                           withName:OWSDisappearingMessageFinderExpiresAtIndex
-                                    completionBlock:^(BOOL ready) {
-                                        if (ready) {
-                                            DDLogDebug(@"%@ completed registering extension async.", self.logTag);
-                                        } else {
-                                            DDLogError(@"%@ failed registering extension async.", self.logTag);
-                                        }
-                                    }];
+    [storageManager asyncRegisterExtension:[self indexDatabaseExtension]
+                                  withName:OWSDisappearingMessageFinderExpiresAtIndex
+                           completionBlock:^(BOOL ready) {
+                               if (ready) {
+                                   DDLogDebug(@"%@ completed registering extension async.", self.logTag);
+                               } else {
+                                   DDLogError(@"%@ failed registering extension async.", self.logTag);
+                               }
+                           }];
 }
 
 @end

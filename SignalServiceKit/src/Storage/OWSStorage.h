@@ -4,12 +4,6 @@
 
 #import <YapDatabase/YapDatabaseConnection.h>
 
-// TODO: Remove this import.
-#import "YapDatabaseConnection+OWS.h"
-
-// TODO: Remove this import.
-#import <YapDatabase/YapDatabase.h>
-
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol OWSDatabaseConnectionDelegate <NSObject>
@@ -19,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 #pragma mark -
+
+@class YapDatabaseExtension;
 
 @interface OWSStorage : NSObject
 
@@ -35,6 +31,12 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO: Deprecate.
 @property (nullable, nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nullable, nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
+
+- (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
+               completionBlock:(nullable void (^)(BOOL ready))completionBlock;
+- (nullable id)registeredExtension:(NSString *)extensionName;
 
 #pragma mark - Password
 

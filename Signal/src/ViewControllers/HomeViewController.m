@@ -914,10 +914,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (YapDatabaseConnection *)uiDatabaseConnection
 {
-    NSAssert([NSThread isMainThread], @"Must access uiDatabaseConnection on main thread!");
+    OWSAssert([NSThread isMainThread]);
+
     if (!_uiDatabaseConnection) {
-        YapDatabase *database = TSStorageManager.sharedManager.database;
-        _uiDatabaseConnection = [database newConnection];
+        _uiDatabaseConnection = [TSStorageManager.sharedManager newDatabaseConnection];
         [_uiDatabaseConnection beginLongLivedReadTransaction];
     }
     return _uiDatabaseConnection;

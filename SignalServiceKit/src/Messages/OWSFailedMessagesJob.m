@@ -130,21 +130,21 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 // Useful for tests, don't use in app startup path because it's slow.
 - (void)blockingRegisterDatabaseExtensions
 {
-    [self.storageManager.database registerExtension:[self indexDatabaseExtension]
-                                           withName:OWSFailedMessagesJobMessageStateIndex];
+    [self.storageManager registerExtension:[self indexDatabaseExtension]
+                                  withName:OWSFailedMessagesJobMessageStateIndex];
 }
 
 - (void)asyncRegisterDatabaseExtensions
 {
-    [self.storageManager.database asyncRegisterExtension:[self indexDatabaseExtension]
-                                                withName:OWSFailedMessagesJobMessageStateIndex
-                                         completionBlock:^(BOOL ready) {
-                                             if (ready) {
-                                                 DDLogDebug(@"%@ completed registering extension async.", self.logTag);
-                                             } else {
-                                                 DDLogError(@"%@ failed registering extension async.", self.logTag);
-                                             }
-                                         }];
+    [self.storageManager asyncRegisterExtension:[self indexDatabaseExtension]
+                                       withName:OWSFailedMessagesJobMessageStateIndex
+                                completionBlock:^(BOOL ready) {
+                                    if (ready) {
+                                        DDLogDebug(@"%@ completed registering extension async.", self.logTag);
+                                    } else {
+                                        DDLogError(@"%@ failed registering extension async.", self.logTag);
+                                    }
+                                }];
 }
 
 @end

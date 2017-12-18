@@ -189,17 +189,17 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     });
 }
 
-+ (void)syncRegisterDatabaseExtension:(YapDatabase *)database
++ (void)syncRegisterDatabaseExtension:(TSStorageManager *)storageManager
 {
     [self registerLegacyClasses];
 
-    YapDatabaseView *existingView = [database registeredExtension:OWSMessageDecryptJobFinderExtensionName];
+    YapDatabaseView *existingView = [storageManager registeredExtension:OWSMessageDecryptJobFinderExtensionName];
     if (existingView) {
         OWSFail(@"%@ was already initialized.", OWSMessageDecryptJobFinderExtensionName);
         // already initialized
         return;
     }
-    [database registerExtension:[self databaseExtension] withName:OWSMessageDecryptJobFinderExtensionName];
+    [storageManager registerExtension:[self databaseExtension] withName:OWSMessageDecryptJobFinderExtensionName];
 }
 
 @end
@@ -399,7 +399,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 - (instancetype)initDefault
 {
     // For concurrency coherency we use the same dbConnection to persist and read the unprocessed envelopes
-    YapDatabaseConnection *dbConnection = [[TSStorageManager sharedManager].database newConnection];
+    YapDatabaseConnection *dbConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
     OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter sharedManager];
     OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor sharedInstance];
 
@@ -422,9 +422,9 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 #pragma mark - class methods
 
-+ (void)syncRegisterDatabaseExtension:(YapDatabase *)database
++ (void)syncRegisterDatabaseExtension:(TSStorageManager *)storageManager
 {
-    [OWSMessageDecryptJobFinder syncRegisterDatabaseExtension:database];
+    [OWSMessageDecryptJobFinder syncRegisterDatabaseExtension:storageManager];
 }
 
 #pragma mark - instance methods

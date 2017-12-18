@@ -5,7 +5,6 @@
 #import "OWSStorage.h"
 #import "TSStorageKeys.h"
 #import "YapDatabaseConnection+OWS.h"
-#import <YapDatabase/YapDatabase.h>
 
 @class ECKeyPair;
 @class PreKeyRecord;
@@ -30,8 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setupDatabaseWithSafeBlockingMigrations:(void (^_Nonnull)(void))safeBlockingMigrationsBlock;
 
 - (void)deleteThreadsAndMessages;
-
-- (nullable YapDatabase *)database;
 
 // TODO: Deprecate.
 + (YapDatabaseConnection *)dbReadConnection;

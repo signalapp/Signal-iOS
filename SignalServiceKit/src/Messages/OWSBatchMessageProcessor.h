@@ -5,7 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosEnvelope;
-@class YapDatabase;
+@class TSStorageManager;
 
 // This class is used to write incoming (decrypted, unprocessed)
 // messages to a durable queue and then process them in batches,
@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSBatchMessageProcessor : NSObject
 
 + (instancetype)sharedInstance;
-+ (void)syncRegisterDatabaseExtension:(YapDatabase *)database;
++ (void)syncRegisterDatabaseExtension:(TSStorageManager *)storageManager;
 
 - (void)enqueueEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData;
 - (void)handleAnyUnprocessedEnvelopesAsync;

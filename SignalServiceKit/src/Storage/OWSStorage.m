@@ -5,27 +5,10 @@
 #import "OWSStorage.h"
 #import "AppContext.h"
 #import "NSData+Base64.h"
-
-//#import "OWSAnalytics.h"
-//#import "OWSBatchMessageProcessor.h"
-//#import "OWSDisappearingMessagesFinder.h"
-//#import "OWSFailedAttachmentDownloadsJob.h"
-//#import "OWSFailedMessagesJob.h"
-//#import "OWSFileSystem.h"
-//#import "OWSIncomingMessageFinder.h"
-//#import "OWSMessageReceiver.h"
-//#import "SignalRecipient.h"
 #import "TSAttachmentStream.h"
-
-//#import "TSDatabaseSecondaryIndexes.h"
-//#import "TSDatabaseView.h"
-//#import "TSInteraction.h"
-//#import "TSThread.h"
 #import "TSStorageManager.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
-
-//#import <YapDatabase/YapDatabaseRelationship.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,10 +17,6 @@ NSString *const OWSStorageExceptionName_DatabasePasswordInaccessibleWhileBackgro
 NSString *const OWSStorageExceptionName_DatabasePasswordUnwritable
     = @"OWSStorageExceptionName_DatabasePasswordUnwritable";
 NSString *const OWSStorageExceptionName_NoDatabase = @"OWSStorageExceptionName_NoDatabase";
-// NSString *const OWSStorageExceptionName_CouldNotMoveDatabaseFile
-//    = @"OWSStorageExceptionName_CouldNotMoveDatabaseFile";
-// NSString *const OWSStorageExceptionName_CouldNotCreateDatabaseDirectory
-//    = @"OWSStorageExceptionName_CouldNotCreateDatabaseDirectory";
 
 static NSString *keychainService = @"TSKeyChainService";
 static NSString *keychainDBPassAccount = @"TSDatabasePass";
@@ -145,7 +124,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 
 - (instancetype)init NS_UNAVAILABLE;
 - (id)initWithPath:(NSString *)inPath
-        serializer:(YapDatabaseSerializer)inSerializer
+        serializer:(nullable YapDatabaseSerializer)inSerializer
       deserializer:(YapDatabaseDeserializer)inDeserializer
            options:(YapDatabaseOptions *)inOptions
           delegate:(id<OWSDatabaseConnectionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
@@ -157,7 +136,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 @implementation OWSDatabase
 
 - (id)initWithPath:(NSString *)inPath
-        serializer:(YapDatabaseSerializer)inSerializer
+        serializer:(nullable YapDatabaseSerializer)inSerializer
       deserializer:(YapDatabaseDeserializer)inDeserializer
            options:(YapDatabaseOptions *)inOptions
           delegate:(id<OWSDatabaseConnectionDelegate>)delegate
@@ -304,7 +283,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     options.enableMultiProcessSupport = YES;
 
     OWSDatabase *database = [[OWSDatabase alloc] initWithPath:[self dbPath]
-                                                   serializer:NULL
+                                                   serializer:nil
                                                  deserializer:[[self class] logOnFailureDeserializer]
                                                       options:options
                                                      delegate:self];
@@ -344,21 +323,26 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     };
 }
 
-//+ (void)protectSignalFiles
-//{
-//    // The old database location was in the Document directory,
-//    // so protect the database files individually.
-//    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath];
-//    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath_SHM];
-//    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath_WAL];
-//
-//    // Protect the entire new database directory.
-//    [OWSFileSystem protectFolderAtPath:self.sharedDataDatabaseDirPath];
-//}
-
 - (nullable YapDatabaseConnection *)newDatabaseConnection
 {
     return self.database.newConnection;
+}
+
+- (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName
+{
+    return [self.database registerExtension:extension withName:extensionName];
+}
+
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
+               completionBlock:(nullable void (^)(BOOL ready))completionBlock
+{
+    [self.database asyncRegisterExtension:extension withName:extensionName completionBlock:completionBlock];
+}
+
+- (nullable id)registeredExtension:(NSString *)extensionName
+{
+    return [self.database registeredExtension:extensionName];
 }
 
 #pragma mark - Password

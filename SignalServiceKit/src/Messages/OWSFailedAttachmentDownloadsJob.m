@@ -121,21 +121,21 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 // Useful for tests, don't use in app startup path because it's slow.
 - (void)blockingRegisterDatabaseExtensions
 {
-    [self.storageManager.database registerExtension:[self indexDatabaseExtension]
-                                           withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex];
+    [self.storageManager registerExtension:[self indexDatabaseExtension]
+                                  withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex];
 }
 
 - (void)asyncRegisterDatabaseExtensions
 {
-    [self.storageManager.database asyncRegisterExtension:[self indexDatabaseExtension]
-                                                withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex
-                                         completionBlock:^(BOOL ready) {
-                                             if (ready) {
-                                                 DDLogDebug(@"%@ completed registering extension async.", self.logTag);
-                                             } else {
-                                                 DDLogError(@"%@ failed registering extension async.", self.logTag);
-                                             }
-                                         }];
+    [self.storageManager asyncRegisterExtension:[self indexDatabaseExtension]
+                                       withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex
+                                completionBlock:^(BOOL ready) {
+                                    if (ready) {
+                                        DDLogDebug(@"%@ completed registering extension async.", self.logTag);
+                                    } else {
+                                        DDLogError(@"%@ failed registering extension async.", self.logTag);
+                                    }
+                                }];
 }
 
 @end

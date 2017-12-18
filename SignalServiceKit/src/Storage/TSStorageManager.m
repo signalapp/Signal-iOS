@@ -34,11 +34,11 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     static TSStorageManager *sharedManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-#if TARGET_OS_IPHONE
-        [TSStorageManager protectSignalFiles];
-#endif
-
         sharedManager = [[self alloc] initStorage];
+
+#if TARGET_OS_IPHONE
+        [TSStorageManager protectFiles];
+#endif
     });
     return sharedManager;
 }
@@ -50,9 +50,9 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     [TSDatabaseView registerThreadInteractionsDatabaseView];
     [TSDatabaseView registerThreadDatabaseView];
     [TSDatabaseView registerUnreadDatabaseView];
-    [self.database registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
-    [OWSMessageReceiver syncRegisterDatabaseExtension:self.database];
-    [OWSBatchMessageProcessor syncRegisterDatabaseExtension:self.database];
+    [self registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
+    [OWSMessageReceiver syncRegisterDatabaseExtension:self];
+    [OWSBatchMessageProcessor syncRegisterDatabaseExtension:self];
 
     // See comments on OWSDatabaseConnection.
     //
@@ -94,7 +94,7 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     [TSDatabaseView asyncRegistrationCompletion];
 }
 
-+ (void)protectSignalFiles
++ (void)protectFiles
 {
     // The old database location was in the Document directory,
     // so protect the database files individually.

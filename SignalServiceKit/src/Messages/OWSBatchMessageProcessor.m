@@ -199,15 +199,15 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 }
 
 
-+ (void)syncRegisterDatabaseExtension:(YapDatabase *)database
++ (void)syncRegisterDatabaseExtension:(TSStorageManager *)storageManager
 {
-    YapDatabaseView *existingView = [database registeredExtension:OWSMessageContentJobFinderExtensionName];
+    YapDatabaseView *existingView = [storageManager registeredExtension:OWSMessageContentJobFinderExtensionName];
     if (existingView) {
         OWSFail(@"%@ was already initialized.", OWSMessageContentJobFinderExtensionName);
         // already initialized
         return;
     }
-    [database registerExtension:[self databaseExtension] withName:OWSMessageContentJobFinderExtensionName];
+    [storageManager registerExtension:[self databaseExtension] withName:OWSMessageContentJobFinderExtensionName];
 }
 
 #pragma mark Logging
@@ -422,7 +422,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 - (instancetype)initDefault
 {
     // For concurrency coherency we use the same dbConnection to persist and read the unprocessed envelopes
-    YapDatabaseConnection *dbConnection = [[TSStorageManager sharedManager].database newConnection];
+    YapDatabaseConnection *dbConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
     OWSMessageManager *messagesManager = [OWSMessageManager sharedManager];
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
 
@@ -443,9 +443,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 #pragma mark - class methods
 
-+ (void)syncRegisterDatabaseExtension:(YapDatabase *)database
++ (void)syncRegisterDatabaseExtension:(TSStorageManager *)storageManager
 {
-    [OWSMessageContentJobFinder syncRegisterDatabaseExtension:database];
+    [OWSMessageContentJobFinder syncRegisterDatabaseExtension:storageManager];
 }
 
 #pragma mark - instance methods
