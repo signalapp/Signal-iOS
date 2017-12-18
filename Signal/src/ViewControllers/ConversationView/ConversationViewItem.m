@@ -56,7 +56,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) DisplayableText *displayableText;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
-@property (nonatomic) CGSize contentSize;
+@property (nonatomic) CGSize mediaSize;
+@property (nonatomic) BOOL hasText;
 
 @end
 
@@ -95,7 +96,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.displayableText = nil;
     self.attachmentStream = nil;
     self.attachmentPointer = nil;
-    self.contentSize = CGSizeZero;
+    self.mediaSize = CGSizeZero;
 
     [self clearCachedLayoutState];
 
@@ -374,7 +375,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 self.messageCellType = OWSMessageCellType_OversizeTextMessage;
                 self.displayableText =
                     [self displayableTextForAttachmentStream:self.attachmentStream interactionId:message.uniqueId];
-                return;
             } else if ([self.attachmentStream isAnimated] || [self.attachmentStream isImage] ||
                 [self.attachmentStream isVideo]) {
                 if ([self.attachmentStream isAnimated]) {
@@ -388,11 +388,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                     self.messageCellType = OWSMessageCellType_GenericAttachment;
                     return;
                 }
-                self.contentSize = [self.attachmentStream imageSize];
-                if (self.contentSize.width <= 0 || self.contentSize.height <= 0) {
+                self.mediaSize = [self.attachmentStream imageSize];
+                if (self.mediaSize.width <= 0 || self.mediaSize.height <= 0) {
                     self.messageCellType = OWSMessageCellType_GenericAttachment;
                 }
-                return;
             } else if ([self.attachmentStream isAudio]) {
                 CGFloat audioDurationSeconds = [self.attachmentStream audioDurationSeconds];
                 if (audioDurationSeconds > 0) {
@@ -401,34 +400,37 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 } else {
                     self.messageCellType = OWSMessageCellType_GenericAttachment;
                 }
-                return;
             } else {
                 self.messageCellType = OWSMessageCellType_GenericAttachment;
-                return;
             }
         } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             self.messageCellType = OWSMessageCellType_DownloadingAttachment;
             self.attachmentPointer = (TSAttachmentPointer *)attachment;
-            return;
         } else {
             OWSFail(@"%@ Unknown attachment type", self.logTag);
         }
-    } else if (message.body != nil) {
-        self.messageCellType = OWSMessageCellType_TextMessage;
-        self.displayableText = [self displayableTextForText:message.body interactionId:message.uniqueId];
-            OWSAssert(self.displayableText);
-        return;
-    } else {
-        OWSFail(@"%@ Message has neither attachment nor body", self.logTag);
     }
 
-    DDLogVerbose(@"%@ message: %@", self.logTag, message.description);
-    OWSFail(@"%@ Unknown cell type", self.logTag);
+    if (message.body.length > 0) {
+        self.hasText = YES;
+        // If we haven't already assigned an attachment type at this point, message.body isn't a caption,
+        // it's a stand-alone text message.
+        if (self.messageCellType == OWSMessageCellType_Unknown) {
+            OWSAssert(message.attachmentIds.count == 0);
+            self.messageCellType = OWSMessageCellType_TextMessage;
+        }
+        self.displayableText = [self displayableTextForText:message.body interactionId:message.uniqueId];
+            OWSAssert(self.displayableText);
+    }
 
-    // Messages of unknown type (including messages with missing attachments)
-    // are rendered like empty text messages, but without any interactivity.
-    self.messageCellType = OWSMessageCellType_Unknown;
-    self.displayableText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
+    if (self.messageCellType == OWSMessageCellType_Unknown) {
+        DDLogVerbose(@"%@ message: %@", self.logTag, message.description);
+        OWSFail(@"%@ Unknown cell type", self.logTag);
+        // Messages of unknown type (including messages with missing attachments)
+        // are rendered like empty text messages, but without any interactivity.
+        self.messageCellType = OWSMessageCellType_Unknown;
+        self.displayableText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
+    }
 }
 
 - (OWSMessageCellType)messageCellType
@@ -466,12 +468,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return _attachmentPointer;
 }
 
-- (CGSize)contentSize
+- (CGSize)mediaSize
 {
     OWSAssertIsOnMainThread();
     OWSAssert(self.hasViewState);
 
-    return _contentSize;
+    return _mediaSize;
 }
 
 #pragma mark - UIMenuController

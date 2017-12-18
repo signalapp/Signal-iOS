@@ -138,7 +138,10 @@ NS_ASSUME_NONNULL_BEGIN
 // The nullable properties are created as needed.
 // The non-nullable properties are so frequently used that it's easier
 // to always keep one around.
-@property (nonatomic) BubbleMaskingView *payloadView;
+//@property (nonatomic) BubbleMaskingView *payloadView;
+@property (nonatomic) UIView *myPayloadView;
+@property (nonatomic) BubbleMaskingView *mediaMaskingView;
+@property (nonatomic) BubbleMaskingView *textMaskingView;
 @property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) OWSMessageTextView *textView;
 @property (nonatomic, nullable) UIImageView *failedSendBadgeView;
@@ -181,9 +184,21 @@ NS_ASSUME_NONNULL_BEGIN
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
 
-    self.payloadView = [BubbleMaskingView new];
-    self.payloadView.layoutMargins = UIEdgeInsetsZero;
-    [self.contentView addSubview:self.payloadView];
+    //    self.payloadView = [BubbleMaskingView new];
+    //    self.payloadView.layoutMargins = UIEdgeInsetsZero;
+    //    [self.contentView addSubview:self.payloadView];
+
+    self.myPayloadView = [UIView new];
+    self.myPayloadView.layoutMargins = UIEdgeInsetsZero;
+    [self.contentView addSubview:self.myPayloadView];
+
+    self.mediaMaskingView = [BubbleMaskingView new];
+    self.mediaMaskingView.layoutMargins = UIEdgeInsetsZero;
+    [self.myPayloadView addSubview:self.mediaMaskingView];
+
+    self.textMaskingView = [BubbleMaskingView new];
+    self.textMaskingView.layoutMargins = UIEdgeInsetsZero;
+    [self.myPayloadView addSubview:self.textMaskingView];
 
     self.footerView = [UIView containerView];
     [self.contentView addSubview:self.footerView];
@@ -198,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.bubbleImageView.layoutMargins = UIEdgeInsetsZero;
     // Enable userInteractionEnabled so that links in textView work.
     self.bubbleImageView.userInteractionEnabled = YES;
-    [self.payloadView addSubview:self.bubbleImageView];
+    [self.textMaskingView addSubview:self.bubbleImageView];
     [self.bubbleImageView autoPinToSuperviewEdges];
 
     self.textView = [OWSMessageTextView new];
@@ -223,8 +238,18 @@ NS_ASSUME_NONNULL_BEGIN
     self.dateHeaderLabel.hidden = YES;
     self.footerLabel.hidden = YES;
 
-    [self.payloadView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
-    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.payloadView];
+    //    [self.payloadView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
+    //    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.payloadView];
+
+    [self.mediaMaskingView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
+    [self.mediaMaskingView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [self.mediaMaskingView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+
+    [self.textMaskingView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.mediaMaskingView];
+    [self.textMaskingView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [self.textMaskingView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.textMaskingView];
+
     [self.footerView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.footerView autoPinWidthToSuperview];
 
@@ -333,12 +358,12 @@ NS_ASSUME_NONNULL_BEGIN
     return self.viewItem.attachmentPointer;
 }
 
-- (CGSize)contentSize
+- (CGSize)mediaSize
 {
     // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem.contentSize.width > 0 && self.viewItem.contentSize.height > 0);
+    OWSAssert(self.viewItem.mediaSize.width > 0 && self.viewItem.mediaSize.height > 0);
 
-    return self.viewItem.contentSize;
+    return self.viewItem.mediaSize;
 }
 
 - (TSMessage *)message
@@ -362,15 +387,15 @@ NS_ASSUME_NONNULL_BEGIN
         [self.contentView addSubview:self.failedSendBadgeView];
 
         self.payloadConstraints = @[
-            [self.payloadView autoPinLeadingToSuperview],
-            [self.failedSendBadgeView autoPinLeadingToTrailingOfView:self.payloadView],
+            [self.myPayloadView autoPinLeadingToSuperview],
+            [self.failedSendBadgeView autoPinLeadingToTrailingOfView:self.myPayloadView],
             [self.failedSendBadgeView autoPinTrailingToSuperview],
-            [self.failedSendBadgeView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.payloadView],
+            [self.failedSendBadgeView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.myPayloadView],
             [self.failedSendBadgeView autoSetDimension:ALDimensionWidth toSize:self.failedSendBadgeSize],
             [self.failedSendBadgeView autoSetDimension:ALDimensionHeight toSize:self.failedSendBadgeSize],
         ];
     } else {
-        self.payloadConstraints = [self.payloadView autoPinWidthToSuperview];
+        self.payloadConstraints = [self.myPayloadView autoPinWidthToSuperview];
     }
 
     JSQMessagesBubbleImage *_Nullable bubbleImageData;
@@ -385,12 +410,15 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateFooter];
 
     switch (self.cellType) {
+        case OWSMessageCellType_Unknown:
+            OWSFail(@"Unknown cell type for viewItem: %@", self.viewItem);
+            break;
         case OWSMessageCellType_TextMessage:
-            [self loadForTextDisplay];
+            [self loadForStandaloneTextDisplay];
             break;
         case OWSMessageCellType_OversizeTextMessage:
             OWSAssert(self.viewItem.attachmentStream);
-            [self loadForTextDisplay];
+            [self loadForStandaloneTextDisplay];
             break;
         case OWSMessageCellType_StillImage:
             OWSAssert(self.viewItem.attachmentStream);
@@ -399,6 +427,10 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_AnimatedImage:
             OWSAssert(self.viewItem.attachmentStream);
             [self loadForAnimatedImageDisplay];
+            OWSAssert(self.animatedImageView);
+            if (self.viewItem.hasText) {
+                [self loadCaptionForAttachmentView:self.animatedImageView];
+            }
             break;
         case OWSMessageCellType_Audio:
             OWSAssert(self.viewItem.attachmentStream);
@@ -524,6 +556,7 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_GenericAttachment:
         case OWSMessageCellType_DownloadingAttachment:
         case OWSMessageCellType_Audio:
+        case OWSMessageCellType_Unknown:
             // Inexpensive cell types don't need to lazy-load or eagerly-unload.
             break;
     }
@@ -701,37 +734,31 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont systemFontOfSize:12.0f];
 }
 
-- (void)loadForTextDisplay
+- (void)loadCaptionForAttachmentView:(UIView *)attachmentView
 {
-    self.bubbleImageView.hidden = NO;
-    self.textView.hidden = NO;
-    self.textView.text = self.displayableText.displayText;
-    UIColor *textColor = [self textColor];
-    self.textView.textColor = textColor;
-    // Honor dynamic type in the message bodies.
-    self.textView.font = [self textMessageFont];
-    self.textView.linkTextAttributes = @{
-        NSForegroundColorAttributeName : textColor,
-        NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
-    };
-    self.textView.dataDetectorTypes
-        = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
+    OWSAssert(attachmentView);
+    [self loadForTextDisplay];
 
-    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-        // Ignore taps on links in outgoing messages that haven't been sent yet, as
-        // this interferes with "tap to retry".
-        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        self.textView.shouldIgnoreEvents = outgoingMessage.messageState != TSOutgoingMessageStateSentToService;
-    } else {
-        self.textView.shouldIgnoreEvents = NO;
-    }
+    NSMutableArray *accumulatedConstraints = [self.contentConstraints mutableCopy];
+    [accumulatedConstraints addObjectsFromArray:@[
+        [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
+        [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
+        [self.textView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:attachmentView withOffset:self.textVMargin],
+        [self.textView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
+    ]];
 
+    self.contentConstraints = [accumulatedConstraints copy];
+}
+
+- (void)loadForStandaloneTextDisplay
+{
+    [self loadForTextDisplay];
     if (self.displayableText.isTextTruncated) {
         self.tapForMoreLabel = [UILabel new];
         self.tapForMoreLabel.text = NSLocalizedString(@"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
             @"Indicator on truncated text messages that they can be tapped to see the entire text message.");
         self.tapForMoreLabel.font = [self tapForMoreFont];
-        self.tapForMoreLabel.textColor = [textColor colorWithAlphaComponent:0.85];
+        self.tapForMoreLabel.textColor = [self.textColor colorWithAlphaComponent:0.85];
         self.tapForMoreLabel.textAlignment = [self.tapForMoreLabel textAlignmentUnnatural];
         [self.bubbleImageView addSubview:self.tapForMoreLabel];
 
@@ -753,6 +780,31 @@ NS_ASSUME_NONNULL_BEGIN
             [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
             [self.textView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
         ];
+    }
+}
+
+- (void)loadForTextDisplay
+{
+    self.bubbleImageView.hidden = NO;
+    self.textView.hidden = NO;
+    self.textView.text = self.displayableText.displayText;
+    self.textView.textColor = self.textColor;
+    // Honor dynamic type in the message bodies.
+    self.textView.font = [self textMessageFont];
+    self.textView.linkTextAttributes = @{
+        NSForegroundColorAttributeName : self.textColor,
+        NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
+    };
+    self.textView.dataDetectorTypes
+        = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
+
+    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        // Ignore taps on links in outgoing messages that haven't been sent yet, as
+        // this interferes with "tap to retry".
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
+        self.textView.shouldIgnoreEvents = outgoingMessage.messageState != TSOutgoingMessageStateSentToService;
+    } else {
+        self.textView.shouldIgnoreEvents = NO;
     }
 }
 
@@ -857,9 +909,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(view);
 
     view.userInteractionEnabled = NO;
-    [self.payloadView addSubview:view];
+    [self.mediaMaskingView addSubview:view];
     self.contentConstraints = [view autoPinToSuperviewEdges];
-    [self cropViewToBubbbleShape:view];
+    [self cropMediaViewToBubbbleShape:view];
     if (self.isMediaBeingSent) {
         view.layer.opacity = 0.75f;
     }
@@ -888,14 +940,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)cropViewToBubbbleShape:(UIView *)view
+- (void)cropMediaViewToBubbbleShape:(UIView *)view
 {
     OWSAssert(view);
-    OWSAssert(view.superview == self.payloadView);
+    OWSAssert(view.superview == self.mediaMaskingView);
 
-    self.payloadView.isOutgoing = self.isOutgoing;
-    self.payloadView.maskedSubview = view;
-    [self.payloadView updateMask];
+    self.mediaMaskingView.isOutgoing = self.isOutgoing;
+    self.mediaMaskingView.maskedSubview = view;
+    [self.mediaMaskingView updateMask];
 }
 
 - (void)showAttachmentErrorView
@@ -906,9 +958,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.customView = [UIView new];
     self.customView.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
     self.customView.userInteractionEnabled = NO;
-    [self.payloadView addSubview:self.customView];
+    [self.myPayloadView addSubview:self.customView];
     self.contentConstraints = [self.customView autoPinToSuperviewEdges];
-    [self cropViewToBubbbleShape:self.customView];
+    [self cropMediaViewToBubbbleShape:self.customView];
 }
 
 - (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
@@ -918,36 +970,41 @@ NS_ASSUME_NONNULL_BEGIN
 
     const int maxMessageWidth = (int)floor(contentWidth * 0.8f);
 
-    CGSize cellSize = CGSizeZero;
+    CGSize mediaContentSize = CGSizeZero;
+    CGSize textContentSize = CGSizeZero;
+
+    if (self.viewItem.hasText) {
+        BOOL isRTL = self.isRTL;
+        CGFloat leftMargin = isRTL ? self.textTrailingMargin : self.textLeadingMargin;
+        CGFloat rightMargin = isRTL ? self.textLeadingMargin : self.textTrailingMargin;
+        CGFloat textVMargin = self.textVMargin;
+        const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
+
+        self.textView.text = self.displayableText.displayText;
+        // Honor dynamic type in the message bodies.
+        self.textView.font = [self textMessageFont];
+        CGSize textSize = [self.textView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
+        CGFloat tapForMoreHeight = (self.displayableText.isTextTruncated ? [self tapForMoreHeight] : 0.f);
+        textContentSize = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
+            (CGFloat)ceil(textSize.height + textVMargin * 2 + tapForMoreHeight));
+    }
+
     switch (self.cellType) {
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage: {
-            BOOL isRTL = self.isRTL;
-            CGFloat leftMargin = isRTL ? self.textTrailingMargin : self.textLeadingMargin;
-            CGFloat rightMargin = isRTL ? self.textLeadingMargin : self.textTrailingMargin;
-            CGFloat textVMargin = self.textVMargin;
-            const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
-
-            self.textView.text = self.displayableText.displayText;
-            // Honor dynamic type in the message bodies.
-            self.textView.font = [self textMessageFont];
-            CGSize textSize = [self.textView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
-            CGFloat tapForMoreHeight = (self.displayableText.isTextTruncated ? [self tapForMoreHeight] : 0.f);
-            cellSize = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
-                (CGFloat)ceil(textSize.height + textVMargin * 2 + tapForMoreHeight));
             break;
         }
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
         case OWSMessageCellType_Video: {
-            OWSAssert(self.contentSize.width > 0);
-            OWSAssert(self.contentSize.height > 0);
+            OWSAssert(self.mediaSize.width > 0);
+            OWSAssert(self.mediaSize.height > 0);
 
             // TODO: Adjust this behavior.
             // TODO: This behavior is a bit different than the old behavior defined
             //       in JSQMediaItem+OWS.h.  Let's discuss.
 
-            CGFloat contentAspectRatio = self.contentSize.width / self.contentSize.height;
+            CGFloat contentAspectRatio = self.mediaSize.width / self.mediaSize.height;
             // Clamp the aspect ratio so that very thin/wide content is presented
             // in a reasonable way.
             const CGFloat minAspectRatio = 0.25f;
@@ -962,19 +1019,23 @@ NS_ASSUME_NONNULL_BEGIN
                 mediaWidth = (CGFloat)round(maxMediaWidth);
                 mediaHeight = (CGFloat)round(maxMediaWidth / contentAspectRatio);
             }
-            cellSize = CGSizeMake(mediaWidth, mediaHeight);
+            mediaContentSize = CGSizeMake(mediaWidth, mediaHeight);
             break;
         }
         case OWSMessageCellType_Audio:
-            cellSize = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
+            mediaContentSize = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
             break;
         case OWSMessageCellType_GenericAttachment:
-            cellSize = CGSizeMake(maxMessageWidth, [OWSGenericAttachmentView bubbleHeight]);
+            mediaContentSize = CGSizeMake(maxMessageWidth, [OWSGenericAttachmentView bubbleHeight]);
             break;
         case OWSMessageCellType_DownloadingAttachment:
-            cellSize = CGSizeMake(200, 90);
+            mediaContentSize = CGSizeMake(200, 90);
             break;
     }
+
+    CGFloat cellContentWidth = fmax(mediaContentSize.width, textContentSize.width);
+    CGFloat cellContentHeight = mediaContentSize.height + textContentSize.height;
+    CGSize cellSize = CGSizeMake(cellContentWidth, cellContentHeight);
 
     OWSAssert(cellSize.width > 0 && cellSize.height > 0);
 
@@ -1077,7 +1138,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.footerLabel.hidden = YES;
     self.bubbleImageView.image = nil;
     self.bubbleImageView.hidden = YES;
-    self.payloadView.maskedSubview = nil;
+    //    self.payloadView.maskedSubview = nil;
+    self.mediaMaskingView.maskedSubview = nil;
+    self.textMaskingView.maskedSubview = nil;
 
     [self.stillImageView removeFromSuperview];
     self.stillImageView = nil;

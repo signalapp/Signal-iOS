@@ -804,20 +804,20 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     if ([TSAccountManager isRegistered]) {
         // DO NOT COMMIT
-        SignalAttachment *_Nullable attachment = [SignalAttachment attachmentFromPasteboard];
-        if (!attachment.hasError) {
-            AttachmentApprovalViewController *approvalVC =
-                [[AttachmentApprovalViewController alloc] initWithAttachment:attachment delegate:self];
-            UINavigationController *approvalNavController =
-                [[UINavigationController alloc] initWithRootViewController:approvalVC];
-            approvalNavController.navigationBarHidden = YES;
-            self.window.rootViewController = approvalNavController;
-        } else {
-            HomeViewController *homeView = [HomeViewController new];
-            SignalsNavigationController *navigationController =
-                [[SignalsNavigationController alloc] initWithRootViewController:homeView];
-            self.window.rootViewController = navigationController;
-        }
+        //        SignalAttachment *_Nullable attachment = [SignalAttachment attachmentFromPasteboard];
+        //        if (!attachment.hasError) {
+        //            AttachmentApprovalViewController *approvalVC =
+        //                [[AttachmentApprovalViewController alloc] initWithAttachment:attachment delegate:self];
+        //            UINavigationController *approvalNavController =
+        //                [[UINavigationController alloc] initWithRootViewController:approvalVC];
+        //            approvalNavController.navigationBarHidden = YES;
+        //            self.window.rootViewController = approvalNavController;
+        //        } else {
+        HomeViewController *homeView = [HomeViewController new];
+        SignalsNavigationController *navigationController =
+            [[SignalsNavigationController alloc] initWithRootViewController:homeView];
+        self.window.rootViewController = navigationController;
+        //        }
     } else {
         RegistrationViewController *viewController = [RegistrationViewController new];
         OWSNavigationController *navigationController =
