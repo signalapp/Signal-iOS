@@ -1007,6 +1007,7 @@ NS_ASSUME_NONNULL_BEGIN
                 TSOutgoingMessage *message =
                     [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                         inThread:thread
+                                                     messageBody:nil
                                                   isVoiceMessage:NO
                                                 expiresInSeconds:0];
                 DDLogError(@"%@ sendFakeMessages outgoing attachment timestamp: %llu.", self.logTag, message.timestamp);
@@ -1043,6 +1044,7 @@ NS_ASSUME_NONNULL_BEGIN
     [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                          inThread:thread
+                                                                      messageBody:nil
                                                                    isVoiceMessage:NO
                                                                  expiresInSeconds:0];
         DDLogError(@"%@ sendFakeMessages outgoing attachment timestamp: %llu.", self.logTag, message.timestamp);

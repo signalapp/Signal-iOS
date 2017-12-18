@@ -62,6 +62,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)messageBody
                    isVoiceMessage:(BOOL)isVoiceMessage
                  expiresInSeconds:(uint32_t)expiresInSeconds;
 
