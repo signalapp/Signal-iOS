@@ -108,7 +108,10 @@ public class SignalAttachment: NSObject {
     // MARK: Properties
 
     @objc
-    let dataSource: DataSource
+    public let dataSource: DataSource
+
+    @objc
+    public var captionText: String?
 
     @objc
     public var data: Data {

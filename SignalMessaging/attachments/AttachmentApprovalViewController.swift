@@ -211,15 +211,15 @@ public class AttachmentApprovalViewController: OWSViewController, MessagingToolb
 
     // MARK: MessagingToolbarDelegate
 
-    func messagingToolbarDidTapSend(_ messagingToolbar: MessagingToolbar) {
-        self.sendAttachment()
+    func messagingToolbarDidTapSend(_ messagingToolbar: MessagingToolbar, captionText: String?) {
+        self.sendAttachment(captionText: captionText)
     }
 
     func messagingToolbar(_ messagingToolbar: MessagingToolbar, didChangeHeight newHeight: CGFloat) {
         self.scrollView.contentInset.bottom = newHeight
     }
 
-    func sendAttachment() {
+    func sendAttachment(captionText: String?) {
         // disable controls after send was tapped.
         self.bottomToolbar.isUserInteractionEnabled = false
 
@@ -231,6 +231,7 @@ public class AttachmentApprovalViewController: OWSViewController, MessagingToolb
         activityIndicatorView.autoCenterInSuperview()
         activityIndicatorView.startAnimating()
 
+        attachment.captionText = captionText
         self.delegate?.didApproveAttachment(attachment: attachment)
     }
 }
@@ -325,7 +326,7 @@ private class GradientView: UIView {
 }
 
 protocol MessagingToolbarDelegate: class {
-    func messagingToolbarDidTapSend(_ messagingToolbar: MessagingToolbar)
+    func messagingToolbarDidTapSend(_ messagingToolbar: MessagingToolbar, captionText: String?)
     func messagingToolbar(_ messagingToolbar: MessagingToolbar, didChangeHeight newHeight: CGFloat)
 }
 
@@ -397,7 +398,7 @@ class MessagingToolbar: UIView, UITextViewDelegate {
     }
 
     func didTapSend() {
-        self.messagingToolbarDelegate?.messagingToolbarDidTapSend(self)
+        self.messagingToolbarDelegate?.messagingToolbarDidTapSend(self, captionText: self.textView.text)
     }
 
     // MARK: - UITextViewDelegate

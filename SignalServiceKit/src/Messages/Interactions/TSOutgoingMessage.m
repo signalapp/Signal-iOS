@@ -123,12 +123,13 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)messageBody
                    isVoiceMessage:(BOOL)isVoiceMessage
                  expiresInSeconds:(uint32_t)expiresInSeconds
 {
     self = [self initWithTimestamp:timestamp
                           inThread:thread
-                       messageBody:nil
+                       messageBody:messageBody
                      attachmentIds:[NSMutableArray new]
                   expiresInSeconds:expiresInSeconds
                    expireStartedAt:0];
