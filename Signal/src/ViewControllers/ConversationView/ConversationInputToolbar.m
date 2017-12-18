@@ -697,7 +697,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 {
     if (context == kConversationInputTextViewObservingContext) {
 
-        if (object == self.inputTextView && [keyPath isEqualToString:NSStringFromSelector(@selector(mediaSize))]) {
+        if (object == self.inputTextView && [keyPath isEqualToString:NSStringFromSelector(@selector(contentSize))]) {
             CGSize textContentSize = self.inputTextView.contentSize;
             NSValue *_Nullable lastTextContentSize = self.lastTextContentSize;
             self.lastTextContentSize = [NSValue valueWithCGSize:textContentSize];
