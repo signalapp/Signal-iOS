@@ -434,7 +434,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
 
         let contentType = attachment.contentType
         if let dataUTI = MIMETypeUtil.utiType(forMIMEType: contentType) {
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
             let mediaMessageView = MediaMessageView(attachment: attachment, mode: .small)
             mediaMessageView.backgroundColor = UIColor.white
             self.mediaMessageView = mediaMessageView
