@@ -141,12 +141,12 @@ NS_ASSUME_NONNULL_BEGIN
 //@property (nonatomic) BubbleMaskingView *payloadView;
 @property (nonatomic) UIView *myPayloadView;
 @property (nonatomic) BubbleMaskingView *mediaMaskingView;
-@property (nonatomic) BubbleMaskingView *textMaskingView;
+//@property (nonatomic) BubbleMaskingView *textMaskingView;
 @property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) OWSMessageTextView *textView;
 @property (nonatomic, nullable) UIImageView *failedSendBadgeView;
 @property (nonatomic, nullable) UILabel *tapForMoreLabel;
-@property (nonatomic, nullable) UIImageView *bubbleImageView;
+@property (nonatomic, nullable) UIImageView *myBubbleImageView;
 @property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
 @property (nonatomic, nullable) UIImageView *stillImageView;
 @property (nonatomic, nullable) YYAnimatedImageView *animatedImageView;
@@ -196,9 +196,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.mediaMaskingView.layoutMargins = UIEdgeInsetsZero;
     [self.myPayloadView addSubview:self.mediaMaskingView];
 
-    self.textMaskingView = [BubbleMaskingView new];
-    self.textMaskingView.layoutMargins = UIEdgeInsetsZero;
-    [self.myPayloadView addSubview:self.textMaskingView];
+    //    self.textMaskingView = [BubbleMaskingView new];
+    //    self.textMaskingView.layoutMargins = UIEdgeInsetsZero;
+    //    [self.myPayloadView addSubview:self.textMaskingView];
 
     self.footerView = [UIView containerView];
     [self.contentView addSubview:self.footerView];
@@ -209,12 +209,14 @@ NS_ASSUME_NONNULL_BEGIN
     self.dateHeaderLabel.textColor = [UIColor lightGrayColor];
     [self.contentView addSubview:self.dateHeaderLabel];
 
-    self.bubbleImageView = [UIImageView new];
-    self.bubbleImageView.layoutMargins = UIEdgeInsetsZero;
+    self.myBubbleImageView = [UIImageView new];
+    self.myBubbleImageView.layoutMargins = UIEdgeInsetsZero;
     // Enable userInteractionEnabled so that links in textView work.
-    self.bubbleImageView.userInteractionEnabled = YES;
-    [self.textMaskingView addSubview:self.bubbleImageView];
-    [self.bubbleImageView autoPinToSuperviewEdges];
+    self.myBubbleImageView.userInteractionEnabled = YES;
+    //    [self.textMaskingView addSubview:self.bubbleImageView];
+    [self.myPayloadView addSubview:self.myBubbleImageView];
+    //    [self.myBubbleImageView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    //    [self.myBubbleImageView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     self.textView = [OWSMessageTextView new];
     self.textView.backgroundColor = [UIColor clearColor];
@@ -224,7 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.textView.textContainerInset = UIEdgeInsetsZero;
     self.textView.contentInset = UIEdgeInsetsZero;
     self.textView.scrollEnabled = NO;
-    [self.bubbleImageView addSubview:self.textView];
+    [self.myBubbleImageView addSubview:self.textView];
     OWSAssert(self.textView.superview);
 
     self.footerLabel = [UILabel new];
@@ -233,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.footerView addSubview:self.footerLabel];
 
     // Hide these views by default.
-    self.bubbleImageView.hidden = YES;
+    self.myBubbleImageView.hidden = YES;
     self.textView.hidden = YES;
     self.dateHeaderLabel.hidden = YES;
     self.footerLabel.hidden = YES;
@@ -245,10 +247,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self.mediaMaskingView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     [self.mediaMaskingView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
 
-    [self.textMaskingView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.mediaMaskingView];
-    [self.textMaskingView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-    [self.textMaskingView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.textMaskingView];
+    [self.myBubbleImageView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.mediaMaskingView];
+    // want sized to fit...
+    //    [self.textMaskingView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    //    [self.textMaskingView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    //    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.textMaskingView];
+    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.myBubbleImageView];
 
     [self.footerView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.footerView autoPinWidthToSuperview];
@@ -404,7 +408,7 @@ NS_ASSUME_NONNULL_BEGIN
         bubbleImageData = [self.bubbleFactory bubbleWithMessage:message];
     }
 
-    self.bubbleImageView.image = bubbleImageData.messageBubbleImage;
+    self.myBubbleImageView.image = bubbleImageData.messageBubbleImage;
 
     [self updateDateHeader];
     [self updateFooter];
@@ -741,6 +745,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray *accumulatedConstraints = [self.contentConstraints mutableCopy];
     [accumulatedConstraints addObjectsFromArray:@[
+        [self.myBubbleImageView autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeLeading : ALEdgeTrailing)],
         [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
         [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
         [self.textView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:attachmentView withOffset:self.textVMargin],
@@ -760,7 +765,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.tapForMoreLabel.font = [self tapForMoreFont];
         self.tapForMoreLabel.textColor = [self.textColor colorWithAlphaComponent:0.85];
         self.tapForMoreLabel.textAlignment = [self.tapForMoreLabel textAlignmentUnnatural];
-        [self.bubbleImageView addSubview:self.tapForMoreLabel];
+        [self.myBubbleImageView addSubview:self.tapForMoreLabel];
 
         self.contentConstraints = @[
             [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
@@ -785,10 +790,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForTextDisplay
 {
-    self.bubbleImageView.hidden = NO;
+    self.myBubbleImageView.hidden = NO;
     self.textView.hidden = NO;
     self.textView.text = self.displayableText.displayText;
     self.textView.textColor = self.textColor;
+    [self.textView setCompressionResistanceHigh];
+    [self.textView setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
+    [self.textView setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+
     // Honor dynamic type in the message bodies.
     self.textView.font = [self textMessageFont];
     self.textView.linkTextAttributes = @{
@@ -908,7 +917,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(view);
 
-    view.userInteractionEnabled = NO;
+    // FIXME why disable? make sure we can interact with both media and caption
+    //    view.userInteractionEnabled = NO;
     [self.mediaMaskingView addSubview:view];
     self.contentConstraints = [view autoPinToSuperviewEdges];
     [self cropMediaViewToBubbbleShape:view];
@@ -963,6 +973,23 @@ NS_ASSUME_NONNULL_BEGIN
     [self cropMediaViewToBubbbleShape:self.customView];
 }
 
+- (CGSize)textViewSizeForViewWidth:(int)viewWidth maxMessageWidth:(int)maxMessageWidth
+{
+    BOOL isRTL = self.isRTL;
+    CGFloat leftMargin = isRTL ? self.textTrailingMargin : self.textLeadingMargin;
+    CGFloat rightMargin = isRTL ? self.textLeadingMargin : self.textTrailingMargin;
+    CGFloat textVMargin = self.textVMargin;
+    const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
+
+    self.textView.text = self.displayableText.displayText;
+    // Honor dynamic type in the message bodies.
+    self.textView.font = [self textMessageFont];
+    CGSize textSize = [self.textView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
+    CGFloat tapForMoreHeight = (self.displayableText.isTextTruncated ? [self tapForMoreHeight] : 0.f);
+    return CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
+        (CGFloat)ceil(textSize.height + textVMargin * 2 + tapForMoreHeight));
+}
+
 - (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
 {
     OWSAssert(self.viewItem);
@@ -974,19 +1001,21 @@ NS_ASSUME_NONNULL_BEGIN
     CGSize textContentSize = CGSizeZero;
 
     if (self.viewItem.hasText) {
-        BOOL isRTL = self.isRTL;
-        CGFloat leftMargin = isRTL ? self.textTrailingMargin : self.textLeadingMargin;
-        CGFloat rightMargin = isRTL ? self.textLeadingMargin : self.textTrailingMargin;
-        CGFloat textVMargin = self.textVMargin;
-        const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
+        //        BOOL isRTL = self.isRTL;
+        //        CGFloat leftMargin = isRTL ? self.textTrailingMargin : self.textLeadingMargin;
+        //        CGFloat rightMargin = isRTL ? self.textLeadingMargin : self.textTrailingMargin;
+        //        CGFloat textVMargin = self.textVMargin;
+        //        const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
+        //
+        //        self.textView.text = self.displayableText.displayText;
+        //        // Honor dynamic type in the message bodies.
+        //        self.textView.font = [self textMessageFont];
+        //        CGSize textSize = [self.textView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
+        //        CGFloat tapForMoreHeight = (self.displayableText.isTextTruncated ? [self tapForMoreHeight] : 0.f);
+        //        textContentSize = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
+        //            (CGFloat)ceil(textSize.height + textVMargin * 2 + tapForMoreHeight));
 
-        self.textView.text = self.displayableText.displayText;
-        // Honor dynamic type in the message bodies.
-        self.textView.font = [self textMessageFont];
-        CGSize textSize = [self.textView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
-        CGFloat tapForMoreHeight = (self.displayableText.isTextTruncated ? [self tapForMoreHeight] : 0.f);
-        textContentSize = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
-            (CGFloat)ceil(textSize.height + textVMargin * 2 + tapForMoreHeight));
+        textContentSize = [self textViewSizeForViewWidth:viewWidth maxMessageWidth:maxMessageWidth];
     }
 
     switch (self.cellType) {
@@ -1136,11 +1165,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.tapForMoreLabel = nil;
     self.footerLabel.text = nil;
     self.footerLabel.hidden = YES;
-    self.bubbleImageView.image = nil;
-    self.bubbleImageView.hidden = YES;
+    self.myBubbleImageView.image = nil;
+    self.myBubbleImageView.hidden = YES;
     //    self.payloadView.maskedSubview = nil;
     self.mediaMaskingView.maskedSubview = nil;
-    self.textMaskingView.maskedSubview = nil;
+    //    self.textMaskingView.maskedSubview = nil;
 
     [self.stillImageView removeFromSuperview];
     self.stillImageView = nil;
