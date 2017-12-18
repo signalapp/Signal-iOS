@@ -669,6 +669,12 @@ NS_ASSUME_NONNULL_BEGIN
     DataSource *_Nullable dataSource =
         [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length] utiType:uti];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti];
+    
+    if (arc4random_uniform(100) > 50) {
+        // give 1/2 our attachments captions, and add a hint that it's a caption since we style them indistinguishably
+        // from a separate text message.
+        attachment.captionText = [NSString stringWithFormat:@"%@ (caption)", [self randomText]];
+    }
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender ignoreErrors:YES];
 }
 + (OWSSignalServiceProtosEnvelope *)createEnvelopeForThread:(TSThread *)thread

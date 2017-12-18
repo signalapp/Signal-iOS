@@ -240,19 +240,21 @@ NS_ASSUME_NONNULL_BEGIN
     self.dateHeaderLabel.hidden = YES;
     self.footerLabel.hidden = YES;
 
-    //    [self.payloadView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
-    //    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.payloadView];
+    [self.myPayloadView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
+    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.myPayloadView];
 
-    [self.mediaMaskingView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
+    [self.mediaMaskingView autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.mediaMaskingView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     [self.mediaMaskingView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
 
     [self.myBubbleImageView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.mediaMaskingView];
+    [self.myBubbleImageView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    
     // want sized to fit...
     //    [self.textMaskingView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     //    [self.textMaskingView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
     //    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.textMaskingView];
-    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.myBubbleImageView];
+//    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.myBubbleImageView];
 
     [self.footerView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.footerView autoPinWidthToSuperview];
@@ -431,10 +433,6 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_AnimatedImage:
             OWSAssert(self.viewItem.attachmentStream);
             [self loadForAnimatedImageDisplay];
-            OWSAssert(self.animatedImageView);
-            if (self.viewItem.hasText) {
-                [self loadCaptionForAttachmentView:self.animatedImageView];
-            }
             break;
         case OWSMessageCellType_Audio:
             OWSAssert(self.viewItem.attachmentStream);
@@ -451,10 +449,12 @@ NS_ASSUME_NONNULL_BEGIN
             [self.attachmentView createContents];
             [self replaceBubbleWithView:self.attachmentView];
             [self addAttachmentUploadViewIfNecessary:self.attachmentView];
+            [self addCaptionIfNecessary];
             break;
         }
         case OWSMessageCellType_DownloadingAttachment: {
             [self loadForDownloadingAttachment];
+            [self addCaptionIfNecessary];
             break;
         }
     }
@@ -738,17 +738,17 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont systemFontOfSize:12.0f];
 }
 
-- (void)loadCaptionForAttachmentView:(UIView *)attachmentView
+- (void)loadCaptionForAttachmentView
 {
-    OWSAssert(attachmentView);
     [self loadForTextDisplay];
 
     NSMutableArray *accumulatedConstraints = [self.contentConstraints mutableCopy];
     [accumulatedConstraints addObjectsFromArray:@[
         [self.myBubbleImageView autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeLeading : ALEdgeTrailing)],
+        [self.myBubbleImageView autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeTrailing : ALEdgeLeading) withInset:0 relation:NSLayoutRelationGreaterThanOrEqual],
         [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
         [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
-        [self.textView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:attachmentView withOffset:self.textVMargin],
+        [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
         [self.textView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
     ]];
 
@@ -780,6 +780,8 @@ NS_ASSUME_NONNULL_BEGIN
         ];
     } else {
         self.contentConstraints = @[
+            [self.myBubbleImageView autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeLeading : ALEdgeTrailing)],
+            [self.myBubbleImageView autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeTrailing : ALEdgeLeading) withInset:0 relation:NSLayoutRelationGreaterThanOrEqual],
             [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
             [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
             [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
@@ -832,6 +834,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.stillImageView.layer.magnificationFilter = kCAFilterTrilinear;
     [self replaceBubbleWithView:self.stillImageView];
     [self addAttachmentUploadViewIfNecessary:self.stillImageView];
+    [self addCaptionIfNecessary];
 }
 
 - (void)loadForAnimatedImageDisplay
@@ -845,6 +848,20 @@ NS_ASSUME_NONNULL_BEGIN
     self.animatedImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self replaceBubbleWithView:self.animatedImageView];
     [self addAttachmentUploadViewIfNecessary:self.animatedImageView];
+    [self addCaptionIfNecessary];
+}
+
+- (void)addCaptionIfNecessary
+{
+    if (self.viewItem.hasText) {
+        [self loadCaptionForAttachmentView];
+    } else {
+        NSMutableArray *accumulatedConstraints = [self.contentConstraints mutableCopy];
+        [accumulatedConstraints addObjectsFromArray:@[
+                                                      [self.myBubbleImageView autoSetDimension:ALDimensionHeight toSize:0]
+                                                      ]];
+        self.contentConstraints = [accumulatedConstraints copy];
+    }
 }
 
 - (void)loadForAudioDisplay
@@ -859,6 +876,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioMessageView createContents];
     [self replaceBubbleWithView:self.audioMessageView];
     [self addAttachmentUploadViewIfNecessary:self.audioMessageView];
+    [self addCaptionIfNecessary];
 }
 
 - (void)loadForVideoDisplay
@@ -884,6 +902,7 @@ NS_ASSUME_NONNULL_BEGIN
                      attachmentStateCallback:^(BOOL isAttachmentReady) {
                          videoPlayButton.hidden = !isAttachmentReady;
                      }];
+    [self addCaptionIfNecessary];
 }
 
 - (void)loadForDownloadingAttachment
@@ -911,6 +930,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.customView addSubview:self.attachmentPointerView];
     [self.attachmentPointerView autoPinWidthToSuperviewWithMargin:20.f];
     [self.attachmentPointerView autoVCenterInSuperview];
+    [self addCaptionIfNecessary];
 }
 
 - (void)replaceBubbleWithView:(UIView *)view
