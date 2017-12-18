@@ -159,9 +159,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) OWSExpirationTimerView *expirationTimerView;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *payloadConstraints;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *dateHeaderConstraints;
-@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *contentConstraints;
+@property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *contentConstraints;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *footerConstraints;
 @property (nonatomic) BOOL isPresentingMenuController;
+//@property (nonatomic) NSLayoutConstraint *textViewWidthConstraint;
+//@property (nonatomic) NSLayoutConstraint *textViewHeightConstraint;
 
 @end
 
@@ -180,6 +182,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)commontInit
 {
     OWSAssert(!self.textView);
+
+    _contentConstraints = [NSMutableArray new];
 
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
@@ -226,7 +230,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.textView.textContainerInset = UIEdgeInsetsZero;
     self.textView.contentInset = UIEdgeInsetsZero;
     self.textView.scrollEnabled = NO;
+    //    self.textViewWidthConstraint = [self.textView autoSetDimension:ALDimensionWidth toSize:0];
+    //    self.textViewHeightConstraint = [self.textView autoSetDimension:ALDimensionHeight toSize:0];
+
     [self.myBubbleImageView addSubview:self.textView];
+
     OWSAssert(self.textView.superview);
 
     self.footerLabel = [UILabel new];
@@ -249,12 +257,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.myBubbleImageView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.mediaMaskingView];
     [self.myBubbleImageView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    
+
     // want sized to fit...
     //    [self.textMaskingView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     //    [self.textMaskingView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
     //    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.textMaskingView];
-//    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.myBubbleImageView];
+    //    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.myBubbleImageView];
 
     [self.footerView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.footerView autoPinWidthToSuperview];
@@ -740,24 +748,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadCaptionForAttachmentView
 {
-    [self loadForTextDisplay];
-
-    NSMutableArray *accumulatedConstraints = [self.contentConstraints mutableCopy];
-    [accumulatedConstraints addObjectsFromArray:@[
-        [self.myBubbleImageView autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeLeading : ALEdgeTrailing)],
-        [self.myBubbleImageView autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeTrailing : ALEdgeLeading) withInset:0 relation:NSLayoutRelationGreaterThanOrEqual],
-        [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
-        [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
-        [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
-        [self.textView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
-    ]];
-
-    self.contentConstraints = [accumulatedConstraints copy];
+    [self loadForStandaloneTextDisplay];
+    return;
+    //    [self loadForTextDisplay];
+    //
+    //    NSMutableArray *accumulatedConstraints = [self.contentConstraints mutableCopy];
+    //    [accumulatedConstraints addObjectsFromArray:@[
+    //        [self.myBubbleImageView autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeLeading : ALEdgeTrailing)],
+    ////        [self.myBubbleImageView autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeTrailing :
+    /// ALEdgeLeading)withInset:0 /
+    /// relation:NSLayoutRelationGreaterThanOrEqual],
+    //        [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
+    //        [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
+    //        [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
+    //        [self.textView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
+    //    ]];
+    //
+    //    self.contentConstraints = [accumulatedConstraints copy];
 }
 
 - (void)loadForStandaloneTextDisplay
 {
     [self loadForTextDisplay];
+
     if (self.displayableText.isTextTruncated) {
         self.tapForMoreLabel = [UILabel new];
         self.tapForMoreLabel.text = NSLocalizedString(@"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
@@ -767,7 +780,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.tapForMoreLabel.textAlignment = [self.tapForMoreLabel textAlignmentUnnatural];
         [self.myBubbleImageView addSubview:self.tapForMoreLabel];
 
-        self.contentConstraints = @[
+        [self.contentConstraints addObjectsFromArray:@[
             [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
             [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
             [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
@@ -777,16 +790,41 @@ NS_ASSUME_NONNULL_BEGIN
             [self.tapForMoreLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.textView],
             [self.tapForMoreLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
             [self.tapForMoreLabel autoSetDimension:ALDimensionHeight toSize:self.tapForMoreHeight],
-        ];
+        ]];
     } else {
-        self.contentConstraints = @[
+        //        __block NSLayoutConstraint *tryToGrow;
+        //
+        //        [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow forConstraints:^{
+        //            tryToGrow = [self.myBubbleImageView autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeTrailing :
+        //            ALEdgeLeading) withInset:0];
+        //        }];
+
+        OWSAssert(self.contentWidth);
+        CGSize textBubbleSize = [self textBubbleSizeForContentWidth:self.contentWidth];
+
+        [self.contentConstraints addObjectsFromArray:@[
+            [self.myBubbleImageView autoSetDimension:ALDimensionWidth toSize:textBubbleSize.width],
+            [self.myBubbleImageView autoSetDimension:ALDimensionHeight toSize:textBubbleSize.height],
             [self.myBubbleImageView autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeLeading : ALEdgeTrailing)],
-            [self.myBubbleImageView autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeTrailing : ALEdgeLeading) withInset:0 relation:NSLayoutRelationGreaterThanOrEqual],
             [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
             [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
             [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
             [self.textView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
-        ];
+        ]];
+
+
+        //        self.contentConstraints = @[
+        //            [self.myBubbleImageView autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeLeading :
+        //            ALEdgeTrailing)],
+        ////            [self.myBubbleImageView
+        ////                autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeTrailing : ALEdgeLeading)withInset:0
+        ////                                  relation:NSLayoutRelationGreaterThanOrEqual],
+        //
+        //            [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
+        //            [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
+        //            [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
+        //            [self.textView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
+        //        ];
     }
 }
 
@@ -796,9 +834,13 @@ NS_ASSUME_NONNULL_BEGIN
     self.textView.hidden = NO;
     self.textView.text = self.displayableText.displayText;
     self.textView.textColor = self.textColor;
-    [self.textView setCompressionResistanceHigh];
-    [self.textView setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
-    [self.textView setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+
+    //    [self.textView setCompressionResistanceHigh];
+    //    [self.textView setContentCompressionResistancePriority:UILayoutPriorityRequired
+    //    forAxis:UILayoutConstraintAxisHorizontal]; [self.textView
+    //    setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+    //    [self.textView setContentHuggingPriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisHorizontal];
+    //    [self.textView setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
 
     // Honor dynamic type in the message bodies.
     self.textView.font = [self textMessageFont];
@@ -856,11 +898,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.viewItem.hasText) {
         [self loadCaptionForAttachmentView];
     } else {
-        NSMutableArray *accumulatedConstraints = [self.contentConstraints mutableCopy];
-        [accumulatedConstraints addObjectsFromArray:@[
-                                                      [self.myBubbleImageView autoSetDimension:ALDimensionHeight toSize:0]
-                                                      ]];
-        self.contentConstraints = [accumulatedConstraints copy];
+        [self.contentConstraints addObject:[self.myBubbleImageView autoSetDimension:ALDimensionHeight toSize:0]];
     }
 }
 
@@ -940,7 +978,7 @@ NS_ASSUME_NONNULL_BEGIN
     // FIXME why disable? make sure we can interact with both media and caption
     //    view.userInteractionEnabled = NO;
     [self.mediaMaskingView addSubview:view];
-    self.contentConstraints = [view autoPinToSuperviewEdges];
+    [self.contentConstraints addObjectsFromArray:[view autoPinToSuperviewEdges]];
     [self cropMediaViewToBubbbleShape:view];
     if (self.isMediaBeingSent) {
         view.layer.opacity = 0.75f;
@@ -989,16 +1027,18 @@ NS_ASSUME_NONNULL_BEGIN
     self.customView.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
     self.customView.userInteractionEnabled = NO;
     [self.myPayloadView addSubview:self.customView];
-    self.contentConstraints = [self.customView autoPinToSuperviewEdges];
+    [self.contentConstraints addObjectsFromArray:[self.customView autoPinToSuperviewEdges]];
     [self cropMediaViewToBubbbleShape:self.customView];
 }
 
-- (CGSize)textViewSizeForViewWidth:(int)viewWidth maxMessageWidth:(int)maxMessageWidth
+- (CGSize)textBubbleSizeForContentWidth:(int)contentWidth
 {
     BOOL isRTL = self.isRTL;
     CGFloat leftMargin = isRTL ? self.textTrailingMargin : self.textLeadingMargin;
     CGFloat rightMargin = isRTL ? self.textLeadingMargin : self.textTrailingMargin;
     CGFloat textVMargin = self.textVMargin;
+
+    const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
     const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
 
     self.textView.text = self.displayableText.displayText;
@@ -1006,17 +1046,26 @@ NS_ASSUME_NONNULL_BEGIN
     self.textView.font = [self textMessageFont];
     CGSize textSize = [self.textView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
     CGFloat tapForMoreHeight = (self.displayableText.isTextTruncated ? [self tapForMoreHeight] : 0.f);
-    return CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
+    CGSize textViewSize = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
         (CGFloat)ceil(textSize.height + textVMargin * 2 + tapForMoreHeight));
+
+    //    self.textViewWidthConstraint.constant = textViewSize.width;
+    //    self.textViewHeightConstraint.constant = textViewSize.height;
+    //
+    return textViewSize;
 }
 
+- (int)maxMessageWidthForContentWidth:(int)contentWidth
+{
+    return (int)floor(contentWidth * 0.8f);
+}
 - (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
 {
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
-    const int maxMessageWidth = (int)floor(contentWidth * 0.8f);
 
+    const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
     CGSize mediaContentSize = CGSizeZero;
     CGSize textContentSize = CGSizeZero;
 
@@ -1035,7 +1084,7 @@ NS_ASSUME_NONNULL_BEGIN
         //        textContentSize = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
         //            (CGFloat)ceil(textSize.height + textVMargin * 2 + tapForMoreHeight));
 
-        textContentSize = [self textViewSizeForViewWidth:viewWidth maxMessageWidth:maxMessageWidth];
+        textContentSize = [self textBubbleSizeForContentWidth:contentWidth];
     }
 
     switch (self.cellType) {
@@ -1168,7 +1217,7 @@ NS_ASSUME_NONNULL_BEGIN
     [NSLayoutConstraint deactivateConstraints:self.payloadConstraints];
     self.payloadConstraints = nil;
     [NSLayoutConstraint deactivateConstraints:self.contentConstraints];
-    self.contentConstraints = nil;
+    self.contentConstraints = [NSMutableArray new];
     [NSLayoutConstraint deactivateConstraints:self.dateHeaderConstraints];
     self.dateHeaderConstraints = nil;
     [NSLayoutConstraint deactivateConstraints:self.footerConstraints];
@@ -1179,6 +1228,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.textView.text = nil;
     self.textView.hidden = YES;
     self.textView.dataDetectorTypes = UIDataDetectorTypeNone;
+    //    self.textViewWidthConstraint.constant = 0;
+    //    self.textViewHeightConstraint.constant = 0;
     [self.failedSendBadgeView removeFromSuperview];
     self.failedSendBadgeView = nil;
     [self.tapForMoreLabel removeFromSuperview];

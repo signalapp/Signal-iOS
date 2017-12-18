@@ -668,8 +668,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = [Environment current].messageSender;
     DataSource *_Nullable dataSource =
         [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length] utiType:uti];
-    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti];
-    
+    SignalAttachment *attachment =
+        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti imageQuality:TSImageQualityOriginal];
+
     if (arc4random_uniform(100) > 50) {
         // give 1/2 our attachments captions, and add a hint that it's a caption since we style them indistinguishably
         // from a separate text message.
