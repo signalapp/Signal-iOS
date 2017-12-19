@@ -6,6 +6,7 @@
 #import "AppContext.h"
 #import "NSData+Base64.h"
 #import "NSNotificationCenter+OWS.h"
+#import "OWSFileSystem.h"
 #import "OWSStorage+Subclass.h"
 #import "TSAttachmentStream.h"
 #import "TSStorageManager.h"
@@ -255,9 +256,8 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
             // and behave like a clean install.
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
 
-            // Try to reset app by deleting database.
-            // Disabled resetting storage until we have better data on why this happens.
-            // [self resetAllStorage];
+            // Try to reset app by deleting all databases.
+            [OWSStorage deleteDatabaseFiles];
 
             if (![self tryToLoadDatabase]) {
                 OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
@@ -366,7 +366,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     };
     options.enableMultiProcessSupport = YES;
 
-    OWSDatabase *database = [[OWSDatabase alloc] initWithPath:[self dbPath]
+    OWSDatabase *database = [[OWSDatabase alloc] initWithPath:[self databaseFilePath]
                                                    serializer:nil
                                                  deserializer:[[self class] logOnFailureDeserializer]
                                                       options:options
@@ -429,13 +429,14 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 
 #pragma mark - Password
 
++ (void)deleteDatabaseFiles
+{
+    [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath]];
+}
+
 - (void)deleteDatabaseFile
 {
-    NSError *error;
-    [[NSFileManager defaultManager] removeItemAtPath:[self dbPath] error:&error];
-    if (error) {
-        DDLogError(@"Failed to delete database: %@", error.description);
-    }
+    [OWSFileSystem deleteFile:[self databaseFilePath]];
 }
 
 - (void)resetStorage
@@ -451,6 +452,9 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         [storage resetStorage];
     }
 
+    // This might be redundant but in the spirit of thoroughness...
+    [self deleteDatabaseFiles];
+
     [self deletePasswordFromKeychain];
 
     if (CurrentAppContext().isMainApp) {
@@ -462,7 +466,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 
 #pragma mark - Password
 
-- (NSString *)dbPath
+- (NSString *)databaseFilePath
 {
     OWS_ABSTRACT_METHOD();
 
@@ -525,7 +529,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         // or the keychain has become corrupt.  Either way, we want to get back to a
         // "known good state" and behave like a new install.
 
-        BOOL shouldHavePassword = [NSFileManager.defaultManager fileExistsAtPath:[self dbPath]];
+        BOOL shouldHavePassword = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
         if (shouldHavePassword) {
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
         }

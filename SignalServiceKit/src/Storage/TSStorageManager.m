@@ -213,11 +213,16 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
                      exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
 }
 
-- (NSString *)dbPath
++ (NSString *)databaseFilePath
 {
     DDLogVerbose(@"databasePath: %@", TSStorageManager.sharedDataDatabaseFilePath);
 
-    return TSStorageManager.sharedDataDatabaseFilePath;
+    return self.sharedDataDatabaseFilePath;
+}
+
+- (NSString *)databaseFilePath
+{
+    return TSStorageManager.databaseFilePath;
 }
 
 + (YapDatabaseConnection *)dbReadConnection
@@ -228,15 +233,6 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
     return TSStorageManager.sharedManager.dbReadWriteConnection;
-}
-
-- (void)deleteDatabaseFile
-{
-    NSError *error;
-    [[NSFileManager defaultManager] removeItemAtPath:[self dbPath] error:&error];
-    if (error) {
-        DDLogError(@"Failed to delete database: %@", error.description);
-    }
 }
 
 @end

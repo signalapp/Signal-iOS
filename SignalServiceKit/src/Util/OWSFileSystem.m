@@ -115,6 +115,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
++ (void)deleteFile:(NSString *)filePath
+{
+    NSError *error;
+    [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+    if (error) {
+        DDLogError(@"%@ Failed to delete file: %@", self.logTag, error.description);
+    }
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

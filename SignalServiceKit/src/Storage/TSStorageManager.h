@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)migrateToSharedData;
 
++ (NSString *)databaseFilePath;
+
 @end
 
 NS_ASSUME_NONNULL_END
