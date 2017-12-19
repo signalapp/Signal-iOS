@@ -15,6 +15,8 @@ extern NSString *const StorageIsReadyNotification;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initStorage NS_DESIGNATED_INITIALIZER;
 
+// Returns YES if _ALL_ storage classes have completed both their
+// sync _AND_ async view registrations.
 + (BOOL)isStorageReady;
 
 /**
