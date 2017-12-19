@@ -53,7 +53,7 @@ static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewContr
 static NSString *const kURLSchemeSGNLKey                = @"sgnl";
 static NSString *const kURLHostVerifyPrefix             = @"verify";
 
-@interface AppDelegate () <AttachmentApprovalViewControllerDelegate>
+@interface AppDelegate ()
 
 @property (nonatomic) UIWindow *screenProtectionWindow;
 @property (nonatomic) BOOL hasInitialRootViewController;
@@ -803,21 +803,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogInfo(@"Presenting initial root view controller");
 
     if ([TSAccountManager isRegistered]) {
-        // DO NOT COMMIT
-        //        SignalAttachment *_Nullable attachment = [SignalAttachment attachmentFromPasteboard];
-        //        if (!attachment.hasError) {
-        //            AttachmentApprovalViewController *approvalVC =
-        //                [[AttachmentApprovalViewController alloc] initWithAttachment:attachment delegate:self];
-        //            UINavigationController *approvalNavController =
-        //                [[UINavigationController alloc] initWithRootViewController:approvalVC];
-        //            approvalNavController.navigationBarHidden = YES;
-        //            self.window.rootViewController = approvalNavController;
-        //        } else {
         HomeViewController *homeView = [HomeViewController new];
         SignalsNavigationController *navigationController =
             [[SignalsNavigationController alloc] initWithRootViewController:homeView];
         self.window.rootViewController = navigationController;
-        //        }
     } else {
         RegistrationViewController *viewController = [RegistrationViewController new];
         OWSNavigationController *navigationController =
@@ -827,18 +816,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
-}
-
-- (void)didApproveAttachmentWithAttachment:(SignalAttachment *_Nonnull)attachment
-{
-    DDLogVerbose(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
-    [self.window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)didCancelAttachmentWithAttachment:(SignalAttachment *_Nonnull)attachment
-{
-    DDLogVerbose(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
-    [self.window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
