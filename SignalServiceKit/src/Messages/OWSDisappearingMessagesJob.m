@@ -363,7 +363,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)timerDidFire
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (!CurrentAppContext().isMainAppAndActive) {
         // Don't schedule run when inactive or not in main app.
@@ -380,7 +380,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)resetTimer
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self.timer invalidate];
     self.timer = nil;
@@ -391,14 +391,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self runNow];
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self resetTimer];
 }

@@ -155,7 +155,7 @@ const NSUInteger kAvatarViewDiameter = 52;
             contactsManager:(OWSContactsManager *)contactsManager
       blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(thread);
     OWSAssert(contactsManager);
     OWSAssert(blockedPhoneNumberSet);
@@ -289,8 +289,8 @@ const NSUInteger kAvatarViewDiameter = 52;
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
-    
+    OWSAssertIsOnMainThread();
+
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     if (recipientId.length == 0) {
         return;
@@ -310,8 +310,8 @@ const NSUInteger kAvatarViewDiameter = 52;
 
 -(void)updateNameLabel
 {
-    AssertIsOnMainThread();
-    
+    OWSAssertIsOnMainThread();
+
     TSThread *thread = self.thread;
     if (thread == nil) {
         OWSFail(@"%@ thread should not be nil", self.logTag);

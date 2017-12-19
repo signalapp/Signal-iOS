@@ -405,7 +405,7 @@
 
 - (void)socketStateDidChange
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateTableContents];
 }

@@ -147,7 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self.contactsViewHelper.contactsManager
         userRequestedSystemContactsRefreshWithCompletion:^(NSError *_Nullable error) {

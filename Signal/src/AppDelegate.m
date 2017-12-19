@@ -666,7 +666,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (!self.isEnvironmentSetup) {
         OWSFail(@"%@ ignoring %s because environment is not yet set up: %@.",
@@ -768,7 +768,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)registrationStateDidChange
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"registrationStateDidChange");
 

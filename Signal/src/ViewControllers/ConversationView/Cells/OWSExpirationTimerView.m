@@ -108,8 +108,8 @@ const CGFloat kExpirationTimerViewSize = 16.f;
 
 - (void)ensureAnimations
 {
-    OWSAssert([NSThread isMainThread]);
-    
+    OWSAssertIsOnMainThread();
+
     CGFloat secondsLeft = MAX(0, (self.expirationTimestamp - [NSDate ows_millisecondTimeStamp]) / 1000.f);
 
     [self clearAnimations];

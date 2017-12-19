@@ -170,7 +170,7 @@
 
 + (UIImage *)imageWithColor:(UIColor *)color
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(color);
 
     return [self imageWithColor:color size:CGSizeMake(1.f, 1.f)];
@@ -178,7 +178,7 @@
 
 + (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(color);
 
     CGRect rect = CGRectMake(0.0f, 0.0f, size.width, size.height);

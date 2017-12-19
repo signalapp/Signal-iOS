@@ -103,7 +103,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
                                     version:(NSString *)version
                                       async:(BOOL)async
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewName.length > 0);
     OWSAssert((viewGrouping));
 
@@ -446,7 +446,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
 
 + (void)asyncRegistrationCompletion
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     // All async registrations are complete when writes are unblocked.
     [[TSStorageManager sharedManager].newDatabaseConnection

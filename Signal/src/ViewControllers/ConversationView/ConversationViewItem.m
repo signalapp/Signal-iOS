@@ -131,7 +131,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (!self.cachedCellSize) {
         ConversationViewCell *_Nullable measurementCell = [self measurementCell];
@@ -166,7 +166,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (nullable ConversationViewCell *)measurementCell
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.interaction);
 
     // For performance reasons, we cache one instance of each kind of
@@ -211,7 +211,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
                                              indexPath:(NSIndexPath *)indexPath
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(collectionView);
     OWSAssert(indexPath);
     OWSAssert(self.interaction);
@@ -249,7 +249,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (void)setAudioProgress:(CGFloat)progress duration:(CGFloat)duration
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     self.audioProgressSeconds = progress;
 
@@ -352,7 +352,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (void)ensureViewState:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(transaction);
     OWSAssert(!self.hasViewState);
 
@@ -433,14 +433,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (OWSMessageCellType)messageCellType
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     return _messageCellType;
 }
 
 - (nullable DisplayableText *)displayableText
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.hasViewState);
 
     OWSAssert(_displayableText);
@@ -452,7 +452,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (nullable TSAttachmentStream *)attachmentStream
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.hasViewState);
 
     return _attachmentStream;
@@ -460,7 +460,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (nullable TSAttachmentPointer *)attachmentPointer
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.hasViewState);
 
     return _attachmentPointer;
@@ -468,7 +468,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (CGSize)contentSize
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.hasViewState);
 
     return _contentSize;

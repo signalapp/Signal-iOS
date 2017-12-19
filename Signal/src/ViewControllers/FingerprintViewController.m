@@ -530,7 +530,7 @@ typedef void (^CustomLayoutBlock)(void);
 
 - (void)identityStateDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateVerificationStateLabel];
 }

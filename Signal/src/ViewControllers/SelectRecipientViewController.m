@@ -311,7 +311,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                       backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                           [[ContactsUpdater sharedUpdater] lookupIdentifiers:possiblePhoneNumbers
                               success:^(NSArray<SignalRecipient *> *recipients) {
-                                  OWSAssert([NSThread isMainThread]);
+                                  OWSAssertIsOnMainThread();
                                   OWSAssert(recipients.count > 0);
 
                                   if (modalActivityIndicator.wasCancelled) {
@@ -326,7 +326,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                                          }];
                               }
                               failure:^(NSError *error) {
-                                  OWSAssert([NSThread isMainThread]);
+                                  OWSAssertIsOnMainThread();
                                   if (modalActivityIndicator.wasCancelled) {
                                       return;
                                   }

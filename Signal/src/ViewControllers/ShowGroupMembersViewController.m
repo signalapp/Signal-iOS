@@ -216,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)offerResetAllNoLongerVerified
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     UIAlertController *actionSheetController = [UIAlertController
         alertControllerWithTitle:nil
@@ -239,7 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)resetAllNoLongerVerified
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     OWSIdentityManager *identityManger = [OWSIdentityManager sharedManager];
     NSArray<NSString *> *recipientIds = [self noLongerVerifiedRecipientIds];
@@ -457,7 +457,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)identityStateDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateTableContents];
 }

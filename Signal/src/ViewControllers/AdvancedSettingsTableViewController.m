@@ -60,14 +60,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)socketStateDidChange
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateTableContents];
 }
 
 - (void)reachabilityChanged
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateTableContents];
 }
@@ -206,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSCountryMetadata *)ensureManualCensorshipCircumventionCountry
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     OWSCountryMetadata *countryMetadata = nil;
     NSString *countryCode = OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode;

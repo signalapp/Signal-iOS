@@ -68,12 +68,13 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     return self;
 }
 
-// This clobbers the superclass implementation to include an assert which
-// ensures that the database is in a ready state before creating write transactions.
+// Assert that the database is in a ready state (specifically that any sync database
+// view registrations have completed and any async registrations have been started)
+// before creating write transactions.
 //
 // Creating write transactions before the _sync_ database views are registered
 // causes YapDatabase to rebuild all of our database views, which is catastrophic.
-// We're not sure why, but it causes YDB's "view version" checks to fail.
+// Specifically, it causes YDB's "view version" checks to fail.
 - (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;

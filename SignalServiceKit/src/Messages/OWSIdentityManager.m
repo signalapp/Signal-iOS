@@ -442,7 +442,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (void)tryToSyncQueuedVerificationStates
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (!CurrentAppContext().isMainAppAndActive) {
         // Only try to sync if the main app is active to avoid interfering with startup.
@@ -747,7 +747,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     // We want to defer this so that we never call this method until
     // [UIApplicationDelegate applicationDidBecomeActive:] is complete.

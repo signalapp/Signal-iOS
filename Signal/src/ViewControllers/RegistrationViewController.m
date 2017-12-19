@@ -262,7 +262,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 - (void)updateCountryWithName:(NSString *)countryName
                   callingCode:(NSString *)callingCode
                   countryCode:(NSString *)countryCode {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(countryName.length > 0);
     OWSAssert(callingCode.length > 0);
     OWSAssert(countryCode.length > 0);

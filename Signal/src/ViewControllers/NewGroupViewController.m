@@ -441,7 +441,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (void)createGroup
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     TSGroupModel *model = [self makeGroup];
 
@@ -532,7 +532,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (void)setGroupAvatar:(nullable UIImage *)groupAvatar
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     _groupAvatar = groupAvatar;
 
@@ -619,7 +619,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (void)avatarDidChange:(UIImage *)image
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(image);
 
     self.groupAvatar = image;

@@ -110,14 +110,14 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 
 - (void)reachabilityChanged
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self tryToSyncEvents];
 }
 
 - (void)applicationDidBecomeActive
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self tryToSyncEvents];
 }

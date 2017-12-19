@@ -392,7 +392,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setGroupAvatar:(nullable UIImage *)groupAvatar
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     _groupAvatar = groupAvatar;
 
@@ -496,7 +496,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)avatarDidChange:(UIImage *)image
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(image);
 
     self.groupAvatar = image;

@@ -188,7 +188,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
 - (void)otherUsersProfileWillChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     OWSAssert(recipientId.length > 0);
@@ -339,7 +339,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
 - (void)updateSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     if ([signalAccounts isEqual:self.signalAccounts]) {
         DDLogDebug(@"%@ SignalAccounts unchanged.", self.logTag);
