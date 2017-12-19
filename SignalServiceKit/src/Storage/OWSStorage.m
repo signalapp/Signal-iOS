@@ -6,11 +6,13 @@
 #import "AppContext.h"
 #import "NSData+Base64.h"
 #import "NSNotificationCenter+OWS.h"
+#import "OWSBackgroundTask.h"
 #import "OWSFileSystem.h"
 #import "OWSSessionStorage.h"
 #import "OWSStorage+Subclass.h"
 #import "TSAttachmentStream.h"
 #import "TSStorageManager.h"
+#import "Threading.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
 #import <YapDatabase/YapDatabase.h>
@@ -33,6 +35,11 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 @protocol OWSDatabaseConnectionDelegate <NSObject>
 
 - (BOOL)areSyncRegistrationsComplete;
+
+- (void)readTransactionWillBegin;
+- (void)readTransactionDidComplete;
+- (void)readWriteTransactionWillBegin;
+- (void)readWriteTransactionDidComplete;
 
 @end
 
@@ -75,6 +82,70 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     return self;
 }
 
+#pragma mark - Read
+
+- (void)readWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+{
+    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
+    OWSAssert(delegate);
+    OWSAssert(delegate.areSyncRegistrationsComplete);
+
+    [delegate readTransactionWillBegin];
+    [super readWithBlock:block];
+    [delegate readTransactionDidComplete];
+}
+
+- (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+{
+    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
+    OWSAssert(delegate);
+    OWSAssert(delegate.areSyncRegistrationsComplete);
+
+    [delegate readTransactionWillBegin];
+    [super asyncReadWithBlock:block
+              completionBlock:^{
+                  [delegate readTransactionDidComplete];
+              }];
+}
+
+- (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+           completionBlock:(nullable dispatch_block_t)completionBlock
+{
+    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
+    OWSAssert(delegate);
+    OWSAssert(delegate.areSyncRegistrationsComplete);
+
+    [delegate readTransactionWillBegin];
+    [super asyncReadWithBlock:block
+              completionBlock:^{
+                  if (completionBlock) {
+                      completionBlock();
+                  }
+                  [delegate readTransactionDidComplete];
+              }];
+}
+
+- (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+           completionQueue:(nullable dispatch_queue_t)completionQueue
+           completionBlock:(nullable dispatch_block_t)completionBlock
+{
+    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
+    OWSAssert(delegate);
+    OWSAssert(delegate.areSyncRegistrationsComplete);
+
+    [delegate readTransactionWillBegin];
+    [super asyncReadWithBlock:block
+              completionQueue:completionQueue
+              completionBlock:^{
+                  if (completionBlock) {
+                      completionBlock();
+                  }
+                  [delegate readTransactionDidComplete];
+              }];
+}
+
+#pragma mark - Read Write
+
 // Assert that the database is in a ready state (specifically that any sync database
 // view registrations have completed and any async registrations have been started)
 // before creating write transactions.
@@ -88,7 +159,9 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     OWSAssert(delegate);
     OWSAssert(delegate.areSyncRegistrationsComplete);
 
+    [delegate readWriteTransactionWillBegin];
     [super readWriteWithBlock:block];
+    [delegate readWriteTransactionDidComplete];
 }
 
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
@@ -97,7 +170,11 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     OWSAssert(delegate);
     OWSAssert(delegate.areSyncRegistrationsComplete);
 
-    [super asyncReadWriteWithBlock:block];
+    [delegate readWriteTransactionWillBegin];
+    [super asyncReadWriteWithBlock:block
+                   completionBlock:^{
+                       [delegate readWriteTransactionDidComplete];
+                   }];
 }
 
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
@@ -107,7 +184,14 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     OWSAssert(delegate);
     OWSAssert(delegate.areSyncRegistrationsComplete);
 
-    [super asyncReadWriteWithBlock:block completionBlock:completionBlock];
+    [delegate readWriteTransactionWillBegin];
+    [super asyncReadWriteWithBlock:block
+                   completionBlock:^{
+                       if (completionBlock) {
+                           completionBlock();
+                       }
+                       [delegate readWriteTransactionDidComplete];
+                   }];
 }
 
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
@@ -118,7 +202,15 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     OWSAssert(delegate);
     OWSAssert(delegate.areSyncRegistrationsComplete);
 
-    [super asyncReadWriteWithBlock:block completionQueue:completionQueue completionBlock:completionBlock];
+    [delegate readWriteTransactionWillBegin];
+    [super asyncReadWriteWithBlock:block
+                   completionQueue:completionQueue
+                   completionBlock:^{
+                       if (completionBlock) {
+                           completionBlock();
+                       }
+                       [delegate readWriteTransactionDidComplete];
+                   }];
 }
 
 @end
@@ -238,6 +330,8 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 @interface OWSStorage () <OWSDatabaseConnectionDelegate>
 
 @property (atomic, nullable) YapDatabase *database;
+@property (atomic) NSInteger transactionCount;
+@property (atomic, nullable) OWSBackgroundTask *backgroundTask;
 
 @end
 
@@ -599,6 +693,57 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 + (void)deletePasswordFromKeychain
 {
     [SAMKeychain deletePasswordForService:keychainService account:keychainDBPassAccount];
+}
+
+#pragma mark - OWSDatabaseConnectionDelegate
+
+- (void)readTransactionWillBegin
+{
+    [self updateTransactionCount:+1];
+}
+
+- (void)readTransactionDidComplete
+{
+    [self updateTransactionCount:-1];
+}
+
+- (void)readWriteTransactionWillBegin
+{
+    [self updateTransactionCount:+1];
+}
+
+- (void)readWriteTransactionDidComplete
+{
+    [self updateTransactionCount:-1];
+}
+
+- (void)updateTransactionCount:(NSInteger)increment
+{
+    DispatchMainThreadSafe(^{
+        NSInteger oldValue = self.transactionCount;
+        NSInteger newValue = oldValue + increment;
+        self.transactionCount = newValue;
+        if (oldValue == 0 && newValue > 0) {
+            OWSAssert(!self.backgroundTask);
+
+            self.backgroundTask = [OWSBackgroundTask
+                backgroundTaskWithLabelStr:__PRETTY_FUNCTION__
+                           completionBlock:^(BackgroundTaskState backgroundTaskState) {
+                               switch (backgroundTaskState) {
+                                   case BackgroundTaskState_Success:
+                                       DDLogInfo(@"%@ BackgroundTaskState_Success", self.logTag);
+                                   case BackgroundTaskState_CouldNotStart:
+                                       DDLogInfo(@"%@ BackgroundTaskState_CouldNotStart", self.logTag);
+                                   case BackgroundTaskState_Expired:
+                                       DDLogInfo(@"%@ BackgroundTaskState_Expired", self.logTag);
+                               }
+                           }];
+        } else if (oldValue > 0 && newValue == 0) {
+            OWSAssert(self.backgroundTask);
+
+            self.backgroundTask = nil;
+        }
+    });
 }
 
 @end
