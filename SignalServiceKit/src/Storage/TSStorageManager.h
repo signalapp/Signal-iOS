@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// TODO: Rename to OWSPrimaryStorage?
 @interface TSStorageManager : OWSStorage
 
 - (instancetype)init NS_UNAVAILABLE;

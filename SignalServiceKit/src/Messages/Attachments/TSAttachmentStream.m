@@ -205,7 +205,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [OWSFileSystem ensureDirectoryExists:attachmentsFolder];
 
-        [OWSFileSystem protectFolderAtPath:attachmentsFolder];
+        [OWSFileSystem protectFileOrFolderAtPath:attachmentsFolder];
     });
     return attachmentsFolder;
 }

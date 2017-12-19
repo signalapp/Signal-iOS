@@ -65,6 +65,11 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     return self;
 }
 
+- (StorageType)storageType
+{
+    return StorageType_Primary;
+}
+
 - (void)resetStorage
 {
     _dbReadConnection = nil;
@@ -127,19 +132,15 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 {
     // The old database location was in the Document directory,
     // so protect the database files individually.
-    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath];
-    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath_SHM];
-    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath_WAL];
+    [OWSFileSystem protectFileOrFolderAtPath:self.primaryDatabaseFilePath];
+    [OWSFileSystem protectFileOrFolderAtPath:self.primaryDatabaseFilePath_SHM];
+    [OWSFileSystem protectFileOrFolderAtPath:self.primaryDatabaseFilePath_WAL];
 
     // Protect the entire new database directory.
-    [OWSFileSystem protectFolderAtPath:self.sharedDataDatabaseDirPath];
+    [OWSFileSystem protectFileOrFolderAtPath:self.sharedDataDatabaseDirPath];
 }
 
-- (BOOL)userSetPassword {
-    return FALSE;
-}
-
-+ (NSString *)legacyDatabaseDirPath
++ (NSString *)primaryDatabaseDirPath
 {
     return [OWSFileSystem appDocumentDirectoryPath];
 }
@@ -170,19 +171,19 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     return [self.databaseFilename stringByAppendingString:@"-wal"];
 }
 
-+ (NSString *)legacyDatabaseFilePath
++ (NSString *)primaryDatabaseFilePath
 {
-    return [self.legacyDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
+    return [self.primaryDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
 }
 
-+ (NSString *)legacyDatabaseFilePath_SHM
++ (NSString *)primaryDatabaseFilePath_SHM
 {
-    return [self.legacyDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
+    return [self.primaryDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
 }
 
-+ (NSString *)legacyDatabaseFilePath_WAL
++ (NSString *)primaryDatabaseFilePath_WAL
 {
-    return [self.legacyDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
+    return [self.primaryDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
 }
 
 + (NSString *)sharedDataDatabaseFilePath
@@ -202,13 +203,13 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 
 + (void)migrateToSharedData
 {
-    [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath
+    [OWSFileSystem moveAppFilePath:self.primaryDatabaseFilePath
                 sharedDataFilePath:self.sharedDataDatabaseFilePath
                      exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
-    [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_SHM
+    [OWSFileSystem moveAppFilePath:self.primaryDatabaseFilePath_SHM
                 sharedDataFilePath:self.sharedDataDatabaseFilePath_SHM
                      exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
-    [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_WAL
+    [OWSFileSystem moveAppFilePath:self.primaryDatabaseFilePath_WAL
                 sharedDataFilePath:self.sharedDataDatabaseFilePath_WAL
                      exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
 }

@@ -275,6 +275,13 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     return self;
 }
 
+- (StorageType)storageType
+{
+    OWS_ABSTRACT_METHOD();
+
+    return StorageType_Unknown;
+}
+
 - (BOOL)areAsyncRegistrationsComplete
 {
     OWS_ABSTRACT_METHOD();
