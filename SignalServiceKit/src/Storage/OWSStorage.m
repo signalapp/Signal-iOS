@@ -7,6 +7,7 @@
 #import "NSData+Base64.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBackgroundTask.h"
+#import "OWSDatabaseConnection.h"
 #import "OWSFileSystem.h"
 #import "OWSSessionStorage.h"
 #import "OWSStorage+Subclass.h"
@@ -29,191 +30,6 @@ NSString *const OWSStorageExceptionName_NoDatabase = @"OWSStorageExceptionName_N
 
 static NSString *keychainService = @"TSKeyChainService";
 static NSString *keychainDBPassAccount = @"TSDatabasePass";
-
-#pragma mark -
-
-@protocol OWSDatabaseConnectionDelegate <NSObject>
-
-- (BOOL)areSyncRegistrationsComplete;
-
-- (void)readTransactionWillBegin;
-- (void)readTransactionDidComplete;
-- (void)readWriteTransactionWillBegin;
-- (void)readWriteTransactionDidComplete;
-
-@end
-
-#pragma mark -
-
-@interface YapDatabaseConnection ()
-
-- (id)initWithDatabase:(YapDatabase *)database;
-
-@end
-
-#pragma mark -
-
-@interface OWSDatabaseConnection : YapDatabaseConnection
-
-@property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
-
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithDatabase:(YapDatabase *)database
-                        delegate:(id<OWSDatabaseConnectionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
-
-@end
-
-#pragma mark -
-
-@implementation OWSDatabaseConnection
-
-- (id)initWithDatabase:(YapDatabase *)database delegate:(id<OWSDatabaseConnectionDelegate>)delegate
-{
-    self = [super initWithDatabase:database];
-
-    if (!self) {
-        return self;
-    }
-
-    OWSAssert(delegate);
-
-    _delegate = delegate;
-
-    return self;
-}
-
-#pragma mark - Read
-
-- (void)readWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
-{
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [delegate readTransactionWillBegin];
-    [super readWithBlock:block];
-    [delegate readTransactionDidComplete];
-}
-
-- (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
-{
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [delegate readTransactionWillBegin];
-    [super asyncReadWithBlock:block
-              completionBlock:^{
-                  [delegate readTransactionDidComplete];
-              }];
-}
-
-- (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
-           completionBlock:(nullable dispatch_block_t)completionBlock
-{
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [delegate readTransactionWillBegin];
-    [super asyncReadWithBlock:block
-              completionBlock:^{
-                  if (completionBlock) {
-                      completionBlock();
-                  }
-                  [delegate readTransactionDidComplete];
-              }];
-}
-
-- (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
-           completionQueue:(nullable dispatch_queue_t)completionQueue
-           completionBlock:(nullable dispatch_block_t)completionBlock
-{
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [delegate readTransactionWillBegin];
-    [super asyncReadWithBlock:block
-              completionQueue:completionQueue
-              completionBlock:^{
-                  if (completionBlock) {
-                      completionBlock();
-                  }
-                  [delegate readTransactionDidComplete];
-              }];
-}
-
-#pragma mark - Read Write
-
-// Assert that the database is in a ready state (specifically that any sync database
-// view registrations have completed and any async registrations have been started)
-// before creating write transactions.
-//
-// Creating write transactions before the _sync_ database views are registered
-// causes YapDatabase to rebuild all of our database views, which is catastrophic.
-// Specifically, it causes YDB's "view version" checks to fail.
-- (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
-{
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [delegate readWriteTransactionWillBegin];
-    [super readWriteWithBlock:block];
-    [delegate readWriteTransactionDidComplete];
-}
-
-- (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
-{
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [delegate readWriteTransactionWillBegin];
-    [super asyncReadWriteWithBlock:block
-                   completionBlock:^{
-                       [delegate readWriteTransactionDidComplete];
-                   }];
-}
-
-- (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
-                completionBlock:(nullable dispatch_block_t)completionBlock
-{
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [delegate readWriteTransactionWillBegin];
-    [super asyncReadWriteWithBlock:block
-                   completionBlock:^{
-                       if (completionBlock) {
-                           completionBlock();
-                       }
-                       [delegate readWriteTransactionDidComplete];
-                   }];
-}
-
-- (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
-                completionQueue:(nullable dispatch_queue_t)completionQueue
-                completionBlock:(nullable dispatch_block_t)completionBlock
-{
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [delegate readWriteTransactionWillBegin];
-    [super asyncReadWriteWithBlock:block
-                   completionQueue:completionQueue
-                   completionBlock:^{
-                       if (completionBlock) {
-                           completionBlock();
-                       }
-                       [delegate readWriteTransactionDidComplete];
-                   }];
-}
-
-@end
 
 #pragma mark -
 
@@ -736,11 +552,13 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
                            completionBlock:^(BackgroundTaskState backgroundTaskState) {
                                switch (backgroundTaskState) {
                                    case BackgroundTaskState_Success:
-                                       DDLogInfo(@"%@ BackgroundTaskState_Success", self.logTag);
+                                       break;
                                    case BackgroundTaskState_CouldNotStart:
-                                       DDLogInfo(@"%@ BackgroundTaskState_CouldNotStart", self.logTag);
+                                       DDLogVerbose(@"%@ BackgroundTaskState_CouldNotStart", self.logTag);
+                                       break;
                                    case BackgroundTaskState_Expired:
-                                       DDLogInfo(@"%@ BackgroundTaskState_Expired", self.logTag);
+                                       DDLogVerbose(@"%@ BackgroundTaskState_Expired", self.logTag);
+                                       break;
                                }
                            }];
         } else if (oldValue > 0 && newValue == 0) {
