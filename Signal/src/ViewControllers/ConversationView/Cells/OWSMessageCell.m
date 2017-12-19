@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BubbleMaskingView : UIView
 
 @property (nonatomic) BOOL isOutgoing;
+@property (nonatomic) BOOL hasCaption;
 @property (nonatomic, nullable, weak) UIView *maskedSubview;
 
 @end
@@ -60,7 +61,17 @@ NS_ASSUME_NONNULL_BEGIN
     // The JSQ masks are not RTL-safe, so we need to invert the
     // mask orientation manually.
     BOOL hasOutgoingMask = self.isOutgoing ^ self.isRTL;
-    [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:maskedSubview isOutgoing:hasOutgoingMask];
+
+    // Since the caption has it's own tail, the media bubble looks better
+    // without a tail.
+    if (self.hasCaption) {
+        self.layoutMargins = UIEdgeInsetsMake(0, 0, 2, 8);
+        maskedSubview.clipsToBounds = YES;
+        maskedSubview.layer.cornerRadius = 10;
+    } else {
+        [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:maskedSubview
+                                                                    isOutgoing:hasOutgoingMask];
+    }
 }
 
 @end
@@ -978,7 +989,7 @@ NS_ASSUME_NONNULL_BEGIN
     // FIXME why disable? make sure we can interact with both media and caption
     //    view.userInteractionEnabled = NO;
     [self.mediaMaskingView addSubview:view];
-    [self.contentConstraints addObjectsFromArray:[view autoPinToSuperviewEdges]];
+    [self.contentConstraints addObjectsFromArray:[view autoPinEdgesToSuperviewMargins]];
     [self cropMediaViewToBubbbleShape:view];
     if (self.isMediaBeingSent) {
         view.layer.opacity = 0.75f;
@@ -1014,6 +1025,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(view.superview == self.mediaMaskingView);
 
     self.mediaMaskingView.isOutgoing = self.isOutgoing;
+    self.mediaMaskingView.hasCaption = self.viewItem.hasText;
     self.mediaMaskingView.maskedSubview = view;
     [self.mediaMaskingView updateMask];
 }
@@ -1240,7 +1252,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.myBubbleImageView.hidden = YES;
     //    self.payloadView.maskedSubview = nil;
     self.mediaMaskingView.maskedSubview = nil;
+    self.mediaMaskingView.hasCaption = NO;
     //    self.textMaskingView.maskedSubview = nil;
+    self.mediaMaskingView.layoutMargins = UIEdgeInsetsZero;
 
     [self.stillImageView removeFromSuperview];
     self.stillImageView = nil;
