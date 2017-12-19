@@ -243,27 +243,27 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 {
     self = [super init];
 
-    if (![self tryToLoadDatabase]) {
-        // Failing to load the database is catastrophic.
-        //
-        // The best we can try to do is to discard the current database
-        // and behave like a clean install.
-        OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
-
-        // Try to reset app by deleting database.
-        // Disabled resetting storage until we have better data on why this happens.
-        // [self resetAllStorage];
-
+    if (self) {
         if (![self tryToLoadDatabase]) {
-            OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
+            // Failing to load the database is catastrophic.
+            //
+            // The best we can try to do is to discard the current database
+            // and behave like a clean install.
+            OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
 
-            // Sleep to give analytics events time to be delivered.
-            [NSThread sleepForTimeInterval:15.0f];
+            // Try to reset app by deleting database.
+            // Disabled resetting storage until we have better data on why this happens.
+            // [self resetAllStorage];
 
-            [NSException raise:OWSStorageExceptionName_NoDatabase format:@"Failed to initialize database."];
+            if (![self tryToLoadDatabase]) {
+                OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
+
+                // Sleep to give analytics events time to be delivered.
+                [NSThread sleepForTimeInterval:15.0f];
+
+                [NSException raise:OWSStorageExceptionName_NoDatabase format:@"Failed to initialize database."];
+            }
         }
-
-        OWSSingletonAssert();
     }
 
     return self;
@@ -302,8 +302,6 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     }
 
     _database = database;
-    _dbReadConnection = self.newDatabaseConnection;
-    _dbReadWriteConnection = self.newDatabaseConnection;
 
     return YES;
 }
@@ -368,9 +366,6 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 - (void)resetStorage
 {
     self.database = nil;
-
-    _dbReadConnection = nil;
-    _dbReadWriteConnection = nil;
 
     [self deleteDatabaseFile];
 }

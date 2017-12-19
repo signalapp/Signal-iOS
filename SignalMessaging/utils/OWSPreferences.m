@@ -23,7 +23,7 @@ NSString *const OWSPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled
 NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 NSString *const OWSPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
-NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions";
+NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions2";
 NSString *const OWSPreferencesKey_IsRegistered = @"OWSPreferencesKey_IsRegistered";
 
 @implementation OWSPreferences
@@ -75,9 +75,9 @@ NSString *const OWSPreferencesKey_IsRegistered = @"OWSPreferencesKey_IsRegistere
     }
 }
 
-+ (void)setIsReadyForAppExtensions:(BOOL)value
++ (void)setIsReadyForAppExtensions
 {
-    [NSUserDefaults.appUserDefaults setObject:@(value) forKey:OWSPreferencesKey_IsReadyForAppExtensions];
+    [NSUserDefaults.appUserDefaults setObject:@(YES) forKey:OWSPreferencesKey_IsReadyForAppExtensions];
     [NSUserDefaults.appUserDefaults synchronize];
 }
 

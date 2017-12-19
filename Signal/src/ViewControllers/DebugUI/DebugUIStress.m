@@ -475,15 +475,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)hallucinateTwinGroup:(TSGroupThread *)groupThread
 {
     __block TSGroupThread *thread;
-    [[TSStorageManager sharedManager].dbReadWriteConnection
-     readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-         TSGroupModel *groupModel =
-         [[TSGroupModel alloc] initWithTitle:[groupThread.groupModel.groupName stringByAppendingString:@" Copy"]
-                                   memberIds:[groupThread.groupModel.groupMemberIds mutableCopy]
-                                       image:groupThread.groupModel.groupImage
-                                     groupId:[SecurityUtils generateRandomBytes:16]];
-         thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
-     }];
+    [TSStorageManager.dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            TSGroupModel *groupModel =
+                [[TSGroupModel alloc] initWithTitle:[groupThread.groupModel.groupName stringByAppendingString:@" Copy"]
+                                          memberIds:[groupThread.groupModel.groupMemberIds mutableCopy]
+                                              image:groupThread.groupModel.groupImage
+                                            groupId:[SecurityUtils generateRandomBytes:16]];
+            thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+        }];
     OWSAssert(thread);
 
     [SignalApp.sharedApp presentConversationForThread:thread];

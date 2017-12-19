@@ -229,10 +229,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __block TSThread *thread = nil;
-    [[TSStorageManager sharedManager].dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            thread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientId transaction:transaction];
-        }];
+    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        thread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientId transaction:transaction];
+    }];
     OWSAssert(thread);
 
     [self.selectThreadViewDelegate threadWasSelected:thread];

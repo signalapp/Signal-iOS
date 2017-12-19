@@ -28,7 +28,7 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 #pragma mark - Specific Preferences
 
 + (BOOL)isReadyForAppExtensions;
-+ (void)setIsReadyForAppExtensions:(BOOL)value;
++ (void)setIsReadyForAppExtensions;
 
 // TSAccountManager is the source of truth; this is less reliable
 // and should only be used in edge cases where the database is not

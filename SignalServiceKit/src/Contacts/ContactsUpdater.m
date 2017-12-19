@@ -122,11 +122,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSMutableSet *recipientIds = [NSMutableSet set];
-    [[TSStorageManager sharedManager].dbReadConnection
-        readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-            NSArray *allRecipientKeys = [transaction allKeysInCollection:[SignalRecipient collection]];
-            [recipientIds addObjectsFromArray:allRecipientKeys];
-        }];
+    [TSStorageManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        NSArray *allRecipientKeys = [transaction allKeysInCollection:[SignalRecipient collection]];
+        [recipientIds addObjectsFromArray:allRecipientKeys];
+    }];
 
     NSMutableSet<NSString *> *allContacts = [[abPhoneNumbers setByAddingObjectsFromSet:recipientIds] mutableCopy];
 
@@ -135,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  [recipientIds minusSet:matchedIds];
 
                                  // Cleaning up unregistered identifiers
-                                 [[TSStorageManager sharedManager].dbReadWriteConnection
+                                 [TSStorageManager.dbReadWriteConnection
                                      readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                          for (NSString *identifier in recipientIds) {
                                              SignalRecipient *recipient =
@@ -185,7 +184,7 @@ NS_ASSUME_NONNULL_BEGIN
               }
 
               // Insert or update contact attributes
-              [[TSStorageManager sharedManager].dbReadWriteConnection
+              [TSStorageManager.dbReadWriteConnection
                   readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                       for (NSString *identifier in attributesForIdentifier) {
                           SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:identifier

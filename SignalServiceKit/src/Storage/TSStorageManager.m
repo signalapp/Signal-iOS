@@ -28,6 +28,15 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 
 #pragma mark -
 
+@interface TSStorageManager ()
+
+@property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
+
+@end
+
+#pragma mark -
+
 @implementation TSStorageManager
 
 + (instancetype)sharedManager {
@@ -41,6 +50,28 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 #endif
     });
     return sharedManager;
+}
+
+- (instancetype)initStorage
+{
+    self = [super initStorage];
+
+    if (self) {
+        _dbReadConnection = self.newDatabaseConnection;
+        _dbReadWriteConnection = self.newDatabaseConnection;
+
+        OWSSingletonAssert();
+    }
+
+    return self;
+}
+
+- (void)resetStorage
+{
+    _dbReadConnection = nil;
+    _dbReadWriteConnection = nil;
+
+    [super resetStorage];
 }
 
 - (void)setupDatabaseWithSafeBlockingMigrations:(void (^_Nonnull)(void))safeBlockingMigrationsBlock
@@ -193,12 +224,12 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 
 + (YapDatabaseConnection *)dbReadConnection
 {
-    return TSStorageManager.sharedManager.dbReadConnection;
+    return TSStorageManager.dbReadConnection;
 }
 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
-    return TSStorageManager.sharedManager.dbReadWriteConnection;
+    return TSStorageManager.dbReadWriteConnection;
 }
 
 - (void)deleteDatabaseFile

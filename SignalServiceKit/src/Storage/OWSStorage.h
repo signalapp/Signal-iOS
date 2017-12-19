@@ -20,15 +20,13 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO: Deprecate?
 - (nullable YapDatabaseConnection *)newDatabaseConnection;
 
-// TODO: Deprecate.
-@property (nullable, nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
-@property (nullable, nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
-
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName
                completionBlock:(nullable void (^)(BOOL ready))completionBlock;
 - (nullable id)registeredExtension:(NSString *)extensionName;
+
+- (void)resetStorage;
 
 #pragma mark - Password
 

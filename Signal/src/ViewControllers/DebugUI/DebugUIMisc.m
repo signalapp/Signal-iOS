@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearHasDismissedOffers
 {
-    [TSStorageManager.sharedManager.dbReadWriteConnection
+    [TSStorageManager.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             NSMutableArray<TSContactThread *> *contactThreads = [NSMutableArray new];
             [transaction

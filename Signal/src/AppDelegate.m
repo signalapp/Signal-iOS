@@ -219,8 +219,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [TSStorageManager migrateToSharedData];
     [OWSProfileManager migrateToSharedData];
     [TSAttachmentStream migrateToSharedData];
-
-    [OWSPreferences setIsReadyForAppExtensions:YES];
 }
 
 - (void)startupLogging
@@ -764,6 +762,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [OWSProfileManager.sharedManager fetchLocalUsersProfile];
     [[OWSReadReceiptManager sharedManager] prepareCachedValues];
+
+    // Disable the SAE until the main app has successfully completed launch process
+    // at least once in the post-SAE world.
+    [OWSPreferences setIsReadyForAppExtensions];
 }
 
 - (void)registrationStateDidChange
