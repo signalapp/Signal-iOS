@@ -87,6 +87,11 @@
             if (!strongSelf) {
                 return;
             }
+
+            // Make a local copy of completionBlock to ensure that it is called
+            // exactly once.
+            BackgroundTaskCompletionBlock _Nullable completionBlock = nil;
+
             @synchronized(strongSelf)
             {
                 if (strongSelf.backgroundTaskId == UIBackgroundTaskInvalid) {
@@ -95,10 +100,12 @@
                 DDLogInfo(@"%@ %@ background task expired.", strongSelf.logTag, strongSelf.label);
                 strongSelf.backgroundTaskId = UIBackgroundTaskInvalid;
 
-                if (strongSelf.completionBlock) {
-                    strongSelf.completionBlock(BackgroundTaskState_Expired);
-                    strongSelf.completionBlock = nil;
-                }
+                completionBlock = strongSelf.completionBlock;
+                strongSelf.completionBlock = nil;
+            }
+
+            if (completionBlock) {
+                completionBlock(BackgroundTaskState_Expired);
             }
         }];
 
@@ -116,9 +123,7 @@
                 self.completionBlock = nil;
             }
             if (completionBlock) {
-                DispatchMainThreadSafe(^{
-                    completionBlock(BackgroundTaskState_CouldNotStart);
-                });
+                completionBlock(BackgroundTaskState_CouldNotStart);
             }
         }
     });
@@ -136,6 +141,7 @@
     {
         backgroundTaskId = self.backgroundTaskId;
         completionBlock = self.completionBlock;
+        self.completionBlock = nil;
     }
 
     if (backgroundTaskId == UIBackgroundTaskInvalid) {
@@ -146,11 +152,12 @@
     // endBackgroundTask must be called on the main thread.
     DispatchMainThreadSafe(^{
         DDLogVerbose(@"%@ %@ background task completed.", logTag, label);
-        [CurrentAppContext() endBackgroundTask:backgroundTaskId];
 
         if (completionBlock) {
             completionBlock(BackgroundTaskState_Success);
         }
+
+        [CurrentAppContext() endBackgroundTask:backgroundTaskId];
     });
 }
 
