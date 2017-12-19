@@ -90,11 +90,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 #pragma mark - UIMenuController
 
-- (NSArray<UIMenuItem *> *)menuControllerItems;
+- (NSArray<UIMenuItem *> *)textMenuControllerItems;
+- (NSArray<UIMenuItem *> *)mediaMenuControllerItems;
+
 - (BOOL)canPerformAction:(SEL)action;
-- (void)copyAction;
-- (void)shareAction;
-- (void)saveAction;
+- (void)copyMediaAction;
+- (void)copyTextAction;
+- (void)shareMediaAction;
+- (void)shareTextAction;
+- (void)saveMediaAction;
 - (void)deleteAction;
 - (SEL)metadataActionSelector;
 

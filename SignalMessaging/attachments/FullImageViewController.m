@@ -311,7 +311,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)longPressGesture:(UIGestureRecognizer *)sender
+- (void)longPressTextGesture:(UIGestureRecognizer *)sender
 {
     // We "eagerly" respond when the long press begins, not when it ends.
     if (sender.state == UIGestureRecognizerStateBegan) {
@@ -325,7 +325,30 @@ NS_ASSUME_NONNULL_BEGIN
             [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
         }
 
-        NSArray *menuItems = self.viewItem.menuControllerItems;
+        NSArray *menuItems = self.viewItem.textMenuControllerItems;
+        [UIMenuController sharedMenuController].menuItems = menuItems;
+        CGPoint location = [sender locationInView:self.view];
+        CGRect targetRect = CGRectMake(location.x, location.y, 1, 1);
+        [[UIMenuController sharedMenuController] setTargetRect:targetRect inView:self.view];
+        [[UIMenuController sharedMenuController] setMenuVisible:YES animated:YES];
+    }
+}
+
+- (void)longPressMediaGesture:(UIGestureRecognizer *)sender
+{
+    // We "eagerly" respond when the long press begins, not when it ends.
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        if (!self.viewItem) {
+            return;
+        }
+
+        [self.view becomeFirstResponder];
+
+        if ([UIMenuController sharedMenuController].isMenuVisible) {
+            [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
+        }
+
+        NSArray *menuItems = self.viewItem.mediaMenuControllerItems;
         [UIMenuController sharedMenuController].menuItems = menuItems;
         CGPoint location = [sender locationInView:self.view];
         CGRect targetRect = CGRectMake(location.x, location.y, 1, 1);
@@ -342,19 +365,29 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.viewItem canPerformAction:action];
 }
 
-- (void)copyAction:(nullable id)sender
+- (void)copyTextAction:(nullable id)sender
 {
-    [self.viewItem copyAction];
+    [self.viewItem copyTextAction];
 }
 
-- (void)shareAction:(nullable id)sender
+- (void)copyMediaAction:(nullable id)sender
 {
-    [self.viewItem shareAction];
+    [self.viewItem copyMediaAction];
 }
 
-- (void)saveAction:(nullable id)sender
+- (void)shareTextAction:(nullable id)sender
 {
-    [self.viewItem saveAction];
+    [self.viewItem shareTextAction];
+}
+
+- (void)shareMediaAction:(nullable id)sender
+{
+    [self.viewItem shareMediaAction];
+}
+
+- (void)saveMediaAction:(nullable id)sender
+{
+    [self.viewItem saveMediaAction];
 }
 
 - (void)deleteAction:(nullable id)sender
