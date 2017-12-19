@@ -1054,22 +1054,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     DDLogDebug(@"%@ shouldMarkMessageAsRead: %d (%@)", self.logTag, shouldMarkMessageAsRead, envelope.source);
 
-    //    // Other clients allow attachments to be sent along with body, we want the text displayed as a separate
-    //    // message
-    //    if ([attachmentIds count] > 0 && body != nil && body.length > 0) {
-    //        // We want the text to be displayed under the attachment.
-    //        uint64_t textMessageTimestamp = timestamp + 1;
-    //        TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
-    //                                                                             inThread:thread
-    //                                                                             authorId:envelope.source
-    //                                                                       sourceDeviceId:envelope.sourceDevice
-    //                                                                          messageBody:body
-    //                                                                        attachmentIds:@[]
-    //                                                                     expiresInSeconds:dataMessage.expireTimer];
-    //        DDLogDebug(@"%@ incoming extra text message: %@", self.logTag, incomingMessage.debugDescription);
-    //        [textMessage saveWithTransaction:transaction];
-    //    }
-
     // In case we already have a read receipt for this new message (this happens sometimes).
     [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
                                                                       transaction:transaction];
