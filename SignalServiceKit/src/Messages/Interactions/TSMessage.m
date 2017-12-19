@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static const NSUInteger OWSMessageSchemaVersion = 3;
+static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @interface TSMessage ()
 
@@ -127,16 +127,38 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
         return self;
     }
 
+    if (_schemaVersion < 2) {
+        // renamed _attachments to _attachmentIds
+        if (!_attachmentIds) {
+            _attachmentIds = [coder decodeObjectForKey:@"attachments"];
+        }
+    }
+
     if (_schemaVersion < 3) {
         _expiresInSeconds = 0;
         _expireStartedAt = 0;
         _expiresAt = 0;
     }
 
-    if (_schemaVersion < 2) {
-        // renamed _attachments to _attachmentIds
-        if (!_attachmentIds) {
-            _attachmentIds = [coder decodeObjectForKey:@"attachments"];
+    if (_schemaVersion < 4) {
+        // Wipe out the body field on these legacy attachment messages.
+        //
+        // Explantion: Historically, a message sent from iOS could be an attachment XOR a text message,
+        // but now we support sending an attachment+caption as a single message.
+        //
+        // Other clients have supported sending attachment+caption in a single message for a long time.
+        // So the way we used to handle receiving them was to make it look like they'd sent two messages:
+        // first the attachment+caption (we'd ignore this caption when rendering), followed by a separate
+        // message with just the caption (which we'd render as a simple independent text message), for
+        // which we'd offset the timestamp by a little bit to get the desired ordering.
+        //
+        // Now that we can properly render an attachment+caption message together, these legacy "dummy" text
+        // messages are not only unnecessary, but worse, would be rendered redundantly. For safety, rather
+        // than building the logic to try to find and delete the redundant "dummy" text messages which users
+        // have been seeing and interacting with, we delete the body field from the attachment message,
+        // which iOS users has never seen directly.
+        if (_attachmentIds.count > 0) {
+            _body = nil;
         }
     }
 
