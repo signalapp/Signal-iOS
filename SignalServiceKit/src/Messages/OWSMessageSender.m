@@ -16,6 +16,8 @@
 #import "OWSMessageServiceParams.h"
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "OWSOutgoingSyncMessage.h"
+#import "OWSSessionStorage+SessionStore.h"
+#import "OWSSessionStorage.h"
 #import "OWSUploadingService.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "SignalRecipient.h"
@@ -31,7 +33,6 @@
 #import "TSPreKeyManager.h"
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+SignedPreKeyStore.h"
-#import "TSStorageManager+sessionStore.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
 #import "Threading.h"
@@ -311,6 +312,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSSessionStorage *sessionStorage;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) OWSUploadingService *uploadingService;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
@@ -324,6 +326,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
                         storageManager:(TSStorageManager *)storageManager
+                        sessionStorage:(OWSSessionStorage *)sessionStorage
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        contactsUpdater:(ContactsUpdater *)contactsUpdater
 {
@@ -334,6 +337,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     _networkManager = networkManager;
     _storageManager = storageManager;
+    _sessionStorage = sessionStorage;
     _contactsManager = contactsManager;
     _contactsUpdater = contactsUpdater;
     _sendingQueueMap = [NSMutableDictionary new];
@@ -1096,7 +1100,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if (extraDevices && extraDevices.count > 0) {
             DDLogInfo(@"%@ removing extra devices: %@", self.logTag, extraDevices);
             for (NSNumber *extraDeviceId in extraDevices) {
-                [self.storageManager deleteSessionForContact:recipient.uniqueId deviceId:extraDeviceId.intValue];
+                [self.sessionStorage deleteSessionForContact:recipient.uniqueId deviceId:extraDeviceId.intValue];
             }
 
             [recipient removeDevices:[NSSet setWithArray:extraDevices]];
@@ -1241,7 +1245,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     messageDict = [self encryptedMessageWithPlaintext:plainText
                                                           toRecipient:recipient.uniqueId
                                                              deviceId:deviceNumber
-                                                        keyingStorage:self.storageManager
                                                              isSilent:message.isSilent];
                 } @catch (NSException *exception) {
                     encryptionException = exception;
@@ -1275,15 +1278,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (NSDictionary *)encryptedMessageWithPlaintext:(NSData *)plainText
                                     toRecipient:(NSString *)identifier
                                        deviceId:(NSNumber *)deviceNumber
-                                  keyingStorage:(TSStorageManager *)storage
                                        isSilent:(BOOL)isSilent
 {
     OWSAssert(plainText);
     OWSAssert(identifier.length > 0);
     OWSAssert(deviceNumber);
-    OWSAssert(storage);
 
-    if (![storage containsSession:identifier deviceId:[deviceNumber intValue]]) {
+    if (![self.sessionStorage containsSession:identifier deviceId:[deviceNumber intValue]]) {
         __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         __block PreKeyBundle *_Nullable bundle;
         __block NSException *_Nullable exception;
@@ -1322,9 +1323,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                            reason:@"Can't get a prekey bundle from the server with required information"
                                          userInfo:nil];
         } else {
-            SessionBuilder *builder = [[SessionBuilder alloc] initWithSessionStore:storage
-                                                                       preKeyStore:storage
-                                                                 signedPreKeyStore:storage
+            SessionBuilder *builder = [[SessionBuilder alloc] initWithSessionStore:self.sessionStorage
+                                                                       preKeyStore:self.storageManager
+                                                                 signedPreKeyStore:self.storageManager
                                                                   identityKeyStore:[OWSIdentityManager sharedManager]
                                                                        recipientId:identifier
                                                                           deviceId:[deviceNumber intValue]];
@@ -1345,9 +1346,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
-    SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storage
-                                                            preKeyStore:storage
-                                                      signedPreKeyStore:storage
+    SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:self.sessionStorage
+                                                            preKeyStore:self.storageManager
+                                                      signedPreKeyStore:self.storageManager
                                                        identityKeyStore:[OWSIdentityManager sharedManager]
                                                             recipientId:identifier
                                                                deviceId:[deviceNumber intValue]];
@@ -1420,7 +1421,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         dispatch_async([OWSDispatch sessionStoreQueue], ^{
             for (NSUInteger i = 0; i < [devices count]; i++) {
                 int deviceNumber = [devices[i] intValue];
-                [[TSStorageManager sharedManager] deleteSessionForContact:identifier deviceId:deviceNumber];
+                [self.sessionStorage deleteSessionForContact:identifier deviceId:deviceNumber];
             }
             completionHandler();
         });

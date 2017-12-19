@@ -22,6 +22,8 @@
 #import "OWSMessageSender.h"
 #import "OWSReadReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
+#import "OWSSessionStorage+SessionStore.h"
+#import "OWSSessionStorage.h"
 #import "OWSSyncConfigurationMessage.h"
 #import "OWSSyncContactsMessage.h"
 #import "OWSSyncGroupsMessage.h"
@@ -36,7 +38,6 @@
 #import "TSInfoMessage.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
-#import "TSStorageManager+SessionStore.h"
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 #import <YapDatabase/YapDatabase.h>
@@ -48,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSSessionStorage *sessionStorage;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSIncomingMessageFinder *incomingMessageFinder;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
@@ -79,6 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<OWSCallMessageHandler> callMessageHandler = [TextSecureKitEnv sharedEnv].callMessageHandler;
     OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
     OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
+    OWSSessionStorage *sessionStorage = OWSSessionStorage.sharedManager;
 
 
     return [self initWithNetworkManager:networkManager
@@ -86,7 +89,8 @@ NS_ASSUME_NONNULL_BEGIN
                      callMessageHandler:callMessageHandler
                         contactsManager:contactsManager
                         identityManager:identityManager
-                          messageSender:messageSender];
+                          messageSender:messageSender
+                         sessionStorage:sessionStorage];
 }
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
@@ -95,6 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        identityManager:(OWSIdentityManager *)identityManager
                          messageSender:(OWSMessageSender *)messageSender
+                        sessionStorage:(OWSSessionStorage *)sessionStorage
 {
     self = [super init];
 
@@ -108,6 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
     _contactsManager = contactsManager;
     _identityManager = identityManager;
     _messageSender = messageSender;
+    _sessionStorage = sessionStorage;
 
     _dbConnection = storageManager.newDatabaseConnection;
     _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithStorageManager:storageManager];
@@ -703,7 +709,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
 
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [self.storageManager deleteAllSessionsForContact:envelope.source];
+        [self.sessionStorage deleteAllSessionsForContact:envelope.source];
     });
 }
 

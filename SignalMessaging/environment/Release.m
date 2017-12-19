@@ -20,12 +20,13 @@
     dispatch_once(&onceToken, ^{
         // Order matters here.
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
-        [OWSSessionStorage sharedManager];
+        OWSSessionStorage *sessionStorage = [OWSSessionStorage sharedManager];
         TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
         OWSContactsManager *contactsManager = [OWSContactsManager new];
         ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
         OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithNetworkManager:networkManager
                                                                             storageManager:storageManager
+                                                                            sessionStorage:sessionStorage
                                                                            contactsManager:contactsManager
                                                                            contactsUpdater:contactsUpdater];
 

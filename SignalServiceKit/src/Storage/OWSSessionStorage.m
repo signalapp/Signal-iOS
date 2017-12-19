@@ -16,8 +16,7 @@ NSString *const OWSSessionStorageExceptionName_CouldNotCreateDatabaseDirectory
 
 @interface OWSSessionStorage ()
 
-@property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
-@property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @property (atomic) BOOL areAsyncRegistrationsComplete;
 @property (atomic) BOOL areSyncRegistrationsComplete;
@@ -47,8 +46,12 @@ NSString *const OWSSessionStorageExceptionName_CouldNotCreateDatabaseDirectory
     self = [super initStorage];
 
     if (self) {
-        _dbReadConnection = self.newDatabaseConnection;
-        _dbReadWriteConnection = self.newDatabaseConnection;
+        _dbConnection = self.newDatabaseConnection;
+
+        self.dbConnection.objectCacheEnabled = NO;
+#if DEBUG
+        self.dbConnection.permittedTransactions = YDB_AnySyncTransaction;
+#endif
 
         OWSSingletonAssert();
     }
@@ -63,8 +66,7 @@ NSString *const OWSSessionStorageExceptionName_CouldNotCreateDatabaseDirectory
 
 - (void)resetStorage
 {
-    _dbReadConnection = nil;
-    _dbReadWriteConnection = nil;
+    _dbConnection = nil;
 
     [super resetStorage];
 }
@@ -154,14 +156,9 @@ NSString *const OWSSessionStorageExceptionName_CouldNotCreateDatabaseDirectory
     return OWSSessionStorage.databaseFilePath;
 }
 
-+ (YapDatabaseConnection *)dbReadConnection
++ (YapDatabaseConnection *)dbConnection
 {
-    return OWSSessionStorage.sharedManager.dbReadConnection;
-}
-
-+ (YapDatabaseConnection *)dbReadWriteConnection
-{
-    return OWSSessionStorage.sharedManager.dbReadWriteConnection;
+    return OWSSessionStorage.sharedManager.dbConnection;
 }
 
 @end

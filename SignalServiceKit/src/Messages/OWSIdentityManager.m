@@ -11,13 +11,14 @@
 #import "OWSMessageSender.h"
 #import "OWSOutgoingNullMessage.h"
 #import "OWSRecipientIdentity.h"
+#import "OWSSessionStorage+SessionStore.h"
+#import "OWSSessionStorage.h"
 #import "OWSVerificationStateChangeMessage.h"
 #import "OWSVerificationStateSyncMessage.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
-#import "TSStorageManager+sessionStore.h"
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 #import "YapDatabaseConnection+OWS.h"
@@ -53,6 +54,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 @interface OWSIdentityManager ()
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSSessionStorage *sessionStorage;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 
@@ -76,12 +78,14 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
     OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
+    OWSSessionStorage *sessionStorage = OWSSessionStorage.sharedManager;
 
-    return [self initWithStorageManager:storageManager messageSender:messageSender];
+    return [self initWithStorageManager:storageManager messageSender:messageSender sessionStorage:sessionStorage];
 }
 
 - (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
                          messageSender:(OWSMessageSender *)messageSender
+                        sessionStorage:(OWSSessionStorage *)sessionStorage
 {
     self = [super init];
 
@@ -91,10 +95,12 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     OWSAssert(storageManager);
     OWSAssert(messageSender);
+    OWSAssert(sessionStorage);
 
     _storageManager = storageManager;
     _dbConnection = storageManager.newDatabaseConnection;
     _messageSender = messageSender;
+    _sessionStorage = sessionStorage;
 
     OWSSingletonAssert();
 
@@ -199,7 +205,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                              verificationState:verificationState] save];
 
             dispatch_async([OWSDispatch sessionStoreQueue], ^{
-                [self.storageManager archiveAllSessionsForContact:recipientId];
+                [self.sessionStorage archiveAllSessionsForContact:recipientId];
             });
 
             // Cancel any pending verification state sync messages for this recipient.

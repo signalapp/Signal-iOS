@@ -2,12 +2,11 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSStorageManager+SessionStore.h"
+#import "OWSSessionStorage+SessionStore.h"
 #import <AxolotlKit/SessionRecord.h>
 #import <YapDatabase/YapDatabase.h>
 
-NSString *const TSStorageManagerSessionStoreCollection = @"TSStorageManagerSessionStoreCollection";
-NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
+NSString *const OWSSessionStorageSessionStoreCollection = @"TSStorageManagerSessionStoreCollection";
 
 void AssertIsOnSessionStoreQueue()
 {
@@ -18,32 +17,7 @@ void AssertIsOnSessionStoreQueue()
 #endif
 }
 
-@implementation TSStorageManager (SessionStore)
-
-/**
- * Special purpose dbConnection which disables the object cache to better enforce transaction semantics on the store.
- * Note that it's still technically possible to access this collection from a different collection,
- * but that should be considered a bug.
- */
-+ (YapDatabaseConnection *)sessionDBConnection
-{
-    static dispatch_once_t onceToken;
-    static YapDatabaseConnection *sessionDBConnection;
-    dispatch_once(&onceToken, ^{
-        sessionDBConnection = [TSStorageManager sharedManager].newDatabaseConnection;
-        sessionDBConnection.objectCacheEnabled = NO;
-#if DEBUG
-        sessionDBConnection.permittedTransactions = YDB_AnySyncTransaction;
-#endif
-    });
-
-    return sessionDBConnection;
-}
-
-- (YapDatabaseConnection *)sessionDBConnection
-{
-    return [[self class] sessionDBConnection];
-}
+@implementation OWSSessionStorage (SessionStore)
 
 #pragma mark - SessionStore
 
@@ -52,8 +26,8 @@ void AssertIsOnSessionStoreQueue()
     AssertIsOnSessionStoreQueue();
 
     __block NSDictionary *dictionary;
-    [self.sessionDBConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        dictionary = [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        dictionary = [transaction objectForKey:contactIdentifier inCollection:OWSSessionStorageSessionStoreCollection];
     }];
 
     SessionRecord *record;
@@ -77,8 +51,8 @@ void AssertIsOnSessionStoreQueue()
     AssertIsOnSessionStoreQueue();
 
     __block NSDictionary *dictionary;
-    [self.sessionDBConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        dictionary = [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        dictionary = [transaction objectForKey:contactIdentifier inCollection:OWSSessionStorageSessionStoreCollection];
     }];
 
     return dictionary ? dictionary.allKeys : @[];
@@ -97,9 +71,9 @@ void AssertIsOnSessionStoreQueue()
     [session markAsUnFresh];
 
     __block NSDictionary *immutableDictionary;
-    [self.sessionDBConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         immutableDictionary =
-            [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+            [transaction objectForKey:contactIdentifier inCollection:OWSSessionStorageSessionStoreCollection];
     }];
 
     NSMutableDictionary *dictionary = [immutableDictionary mutableCopy];
@@ -110,10 +84,10 @@ void AssertIsOnSessionStoreQueue()
 
     [dictionary setObject:session forKey:@(deviceId)];
 
-    [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:[dictionary copy]
                         forKey:contactIdentifier
-                  inCollection:TSStorageManagerSessionStoreCollection];
+                  inCollection:OWSSessionStorageSessionStoreCollection];
     }];
 }
 
@@ -128,12 +102,12 @@ void AssertIsOnSessionStoreQueue()
 {
     AssertIsOnSessionStoreQueue();
     DDLogInfo(
-        @"[TSStorageManager (SessionStore)] deleting session for contact: %@ device: %d", contactIdentifier, deviceId);
+        @"[OWSSessionStorage (SessionStore)] deleting session for contact: %@ device: %d", contactIdentifier, deviceId);
 
     __block NSDictionary *immutableDictionary;
-    [self.sessionDBConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         immutableDictionary =
-            [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+            [transaction objectForKey:contactIdentifier inCollection:OWSSessionStorageSessionStoreCollection];
     }];
     NSMutableDictionary *dictionary = [immutableDictionary mutableCopy];
 
@@ -143,20 +117,20 @@ void AssertIsOnSessionStoreQueue()
 
     [dictionary removeObjectForKey:@(deviceId)];
 
-    [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:[dictionary copy]
                         forKey:contactIdentifier
-                  inCollection:TSStorageManagerSessionStoreCollection];
+                  inCollection:OWSSessionStorageSessionStoreCollection];
     }];
 }
 
 - (void)deleteAllSessionsForContact:(NSString *)contactIdentifier
 {
     AssertIsOnSessionStoreQueue();
-    DDLogInfo(@"[TSStorageManager (SessionStore)] deleting all sessions for contact:%@", contactIdentifier);
+    DDLogInfo(@"[OWSSessionStorage (SessionStore)] deleting all sessions for contact:%@", contactIdentifier);
 
-    [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction removeObjectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction removeObjectForKey:contactIdentifier inCollection:OWSSessionStorageSessionStoreCollection];
     }];
 }
 
@@ -164,12 +138,12 @@ void AssertIsOnSessionStoreQueue()
 {
     AssertIsOnSessionStoreQueue();
 
-    DDLogInfo(@"[TSStorageManager (SessionStore)] archiving all sessions for contact: %@", contactIdentifier);
+    DDLogInfo(@"[OWSSessionStorage (SessionStore)] archiving all sessions for contact: %@", contactIdentifier);
 
     __block NSDictionary<NSNumber *, SessionRecord *> *sessionRecords;
-    [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         sessionRecords =
-            [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+            [transaction objectForKey:contactIdentifier inCollection:OWSSessionStorageSessionStoreCollection];
 
         for (id deviceId in sessionRecords) {
             id object = sessionRecords[deviceId];
@@ -184,7 +158,7 @@ void AssertIsOnSessionStoreQueue()
 
         [transaction setObject:sessionRecords
                         forKey:contactIdentifier
-                  inCollection:TSStorageManagerSessionStoreCollection];
+                  inCollection:OWSSessionStorageSessionStoreCollection];
     }];
 }
 
@@ -192,9 +166,11 @@ void AssertIsOnSessionStoreQueue()
 
 - (void)resetSessionStore
 {
+    // TODO: AssertIsOnSessionStoreQueue();?
+
     DDLogWarn(@"%@ resetting session store", self.logTag);
-    [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [transaction removeAllObjectsInCollection:TSStorageManagerSessionStoreCollection];
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [transaction removeAllObjectsInCollection:OWSSessionStorageSessionStoreCollection];
     }];
 }
 
@@ -202,11 +178,11 @@ void AssertIsOnSessionStoreQueue()
 {
     AssertIsOnSessionStoreQueue();
 
-    NSString *tag = @"[TSStorageManager (SessionStore)]";
-    [self.sessionDBConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    NSString *tag = @"[OWSSessionStorage (SessionStore)]";
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         DDLogDebug(@"%@ All Sessions:", tag);
         [transaction
-            enumerateKeysAndObjectsInCollection:TSStorageManagerSessionStoreCollection
+            enumerateKeysAndObjectsInCollection:OWSSessionStorageSessionStoreCollection
                                      usingBlock:^(NSString *_Nonnull key,
                                          id _Nonnull deviceSessionsObject,
                                          BOOL *_Nonnull stop) {
