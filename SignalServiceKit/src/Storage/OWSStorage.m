@@ -723,6 +723,11 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         NSInteger oldValue = self.transactionCount;
         NSInteger newValue = oldValue + increment;
         self.transactionCount = newValue;
+
+        if (!CurrentAppContext().isMainApp) {
+            return;
+        }
+
         if (oldValue == 0 && newValue > 0) {
             OWSAssert(!self.backgroundTask);
 
