@@ -10,6 +10,7 @@
 #import "OWSError.h"
 #import "OWSIdentityManager.h"
 #import "OWSSessionStorage+SessionStore.h"
+#import "OWSSessionStorage.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
@@ -27,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSMessageDecrypter ()
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSSessionStorage *sessionStorage;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) OWSIdentityManager *identityManager;
@@ -52,13 +54,18 @@ NS_ASSUME_NONNULL_BEGIN
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
     OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
     OWSBlockingManager *blockingManager = [OWSBlockingManager sharedManager];
+    OWSSessionStorage *sessionStorage = [OWSSessionStorage sharedManager];
 
-    return [self initWithStorageManager:storageManager identityManager:identityManager blockingManager:blockingManager];
+    return [self initWithStorageManager:storageManager
+                        identityManager:identityManager
+                        blockingManager:blockingManager
+                         sessionStorage:sessionStorage];
 }
 
 - (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
                        identityManager:(OWSIdentityManager *)identityManager
                        blockingManager:(OWSBlockingManager *)blockingManager
+                        sessionStorage:(OWSSessionStorage *)sessionStorage
 {
     self = [super init];
 
@@ -69,6 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     _storageManager = storageManager;
     _identityManager = identityManager;
     _blockingManager = blockingManager;
+    _sessionStorage = sessionStorage;
 
     _dbConnection = storageManager.newDatabaseConnection;
 
@@ -237,7 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
         @try {
             id<CipherMessage> cipherMessage = cipherMessageBlock(encryptedData);
-            SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
+            SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:self.sessionStorage
                                                                     preKeyStore:storageManager
                                                               signedPreKeyStore:storageManager
                                                                identityKeyStore:self.identityManager

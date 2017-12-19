@@ -189,6 +189,8 @@ void AssertIsOnSessionStoreQueue()
     DDLogInfo(@"%s", __PRETTY_FUNCTION__);
 
     NSString *tag = @"[OWSSessionStorage (SessionStore)]";
+
+    __block int migratedRecordCount = 0;
     NSMutableDictionary<NSString *, NSDictionary<NSNumber *, SessionRecord *> *> *sessionRecordMaps =
         [NSMutableDictionary new];
 
@@ -221,6 +223,7 @@ void AssertIsOnSessionStoreQueue()
                                              }
                                              SessionRecord *sessionRecord = (SessionRecord *)sessionRecordObject;
                                              newDeviceSessions[deviceId] = sessionRecord;
+                                             migratedRecordCount++;
                                          }];
                                          if (newDeviceSessions.count > 0) {
                                              sessionRecordMaps[recipientId] = newDeviceSessions;
@@ -242,9 +245,12 @@ void AssertIsOnSessionStoreQueue()
         [transaction setObject:@(YES)
                         forKey:OWSSessionStorage_Key_HasMigratedToSessionStorage
                   inCollection:OWSSessionStorage_Collection];
-
-        DDLogInfo(@"%s complete.", __PRETTY_FUNCTION__);
     }];
+
+    DDLogInfo(@"%s migrated %d records for %zd recipients.",
+        __PRETTY_FUNCTION__,
+        migratedRecordCount,
+        sessionRecordMaps.count);
 }
 
 #pragma mark - debug
