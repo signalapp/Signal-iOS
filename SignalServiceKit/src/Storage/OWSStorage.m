@@ -160,30 +160,24 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     self = [super init];
 
     if (self) {
-        if (![self tryToLoadDatabase]) {
-            // Failing to load the database is catastrophic.
-            //
-            // The best we can try to do is to discard the current database
-            // and behave like a clean install.
-            OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
+        [self openDatabase];
 
-            // Try to reset app by deleting all databases.
-            //
-            // TODO: Possibly clean up all app files.
-            //            [OWSStorage deleteDatabaseFiles];
-
-            if (![self tryToLoadDatabase]) {
-                OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
-
-                // Sleep to give analytics events time to be delivered.
-                [NSThread sleepForTimeInterval:15.0f];
-
-                [NSException raise:OWSStorageExceptionName_NoDatabase format:@"Failed to initialize database."];
-            }
-        }
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationWillEnterForeground:)
+                                                     name:UIApplicationWillEnterForegroundNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationDidEnterBackground:)
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
     }
 
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (StorageType)storageType
@@ -191,6 +185,42 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     OWS_ABSTRACT_METHOD();
 
     return StorageType_Unknown;
+}
+
+- (void)openDatabase
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    if (![self tryToLoadDatabase]) {
+        // Failing to load the database is catastrophic.
+        //
+        // The best we can try to do is to discard the current database
+        // and behave like a clean install.
+        OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
+
+        // Try to reset app by deleting all databases.
+        [OWSStorage deleteDatabaseFiles];
+
+        if (![self tryToLoadDatabase]) {
+            OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
+
+            // Sleep to give analytics events time to be delivered.
+            [NSThread sleepForTimeInterval:15.0f];
+
+            [NSException raise:OWSStorageExceptionName_NoDatabase format:@"Failed to initialize database."];
+        }
+    }
+}
+
+- (void)closeDatabase
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    self.database = nil;
 }
 
 - (BOOL)areAsyncRegistrationsComplete
@@ -547,26 +577,71 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         if (oldValue == 0 && newValue > 0) {
             OWSAssert(!self.backgroundTask);
 
+            [self closeDatabaseIfNecessary];
+
             self.backgroundTask = [OWSBackgroundTask
-                backgroundTaskWithLabelStr:__PRETTY_FUNCTION__
-                           completionBlock:^(BackgroundTaskState backgroundTaskState) {
-                               switch (backgroundTaskState) {
-                                   case BackgroundTaskState_Success:
-                                       break;
-                                   case BackgroundTaskState_CouldNotStart:
-                                       DDLogVerbose(@"%@ BackgroundTaskState_CouldNotStart", self.logTag);
-                                       break;
-                                   case BackgroundTaskState_Expired:
-                                       DDLogVerbose(@"%@ BackgroundTaskState_Expired", self.logTag);
-                                       break;
-                               }
-                           }];
+                backgroundTaskWithLabel:[NSString stringWithFormat:@"%@ background task", self.logTag]
+                        completionBlock:^(BackgroundTaskState backgroundTaskState) {
+                            switch (backgroundTaskState) {
+                                case BackgroundTaskState_Success:
+                                    break;
+                                case BackgroundTaskState_CouldNotStart:
+                                    DDLogVerbose(@"%@ BackgroundTaskState_CouldNotStart", self.logTag);
+                                    break;
+                                case BackgroundTaskState_Expired:
+                                    DDLogVerbose(@"%@ BackgroundTaskState_Expired", self.logTag);
+                                    break;
+                            }
+                        }];
         } else if (oldValue > 0 && newValue == 0) {
             OWSAssert(self.backgroundTask);
 
             self.backgroundTask = nil;
         }
     });
+}
+
+- (void)closeDatabaseIfNecessary
+{
+    OWSAssertIsOnMainThread();
+
+    // Only close the session database in the background.
+    if (self.storageType != StorageType_Session) {
+        return;
+    }
+    // Only close the database if the app is in the background.
+    //
+    // TODO: We need to observe SAE lifecycle events.
+    if (CurrentAppContext().isMainApp && CurrentAppContext().mainApplicationState != UIApplicationStateBackground) {
+        return;
+    }
+    // Don't close the database while there are any lingering transactions.
+    if (self.transactionCount > 0) {
+        return;
+    }
+
+    [self closeDatabase];
+}
+
+- (void)openDatabaseIfNecessary
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.database) {
+        return;
+    }
+
+    [self openDatabase];
+}
+
+- (void)applicationDidEnterBackground:(NSNotification *)notification
+{
+    [self closeDatabaseIfNecessary];
+}
+
+- (void)applicationWillEnterForeground:(NSNotification *)notification
+{
+    [self openDatabaseIfNecessary];
 }
 
 @end

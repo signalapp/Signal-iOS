@@ -16,6 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)databaseFilePath;
 
+- (void)openDatabase;
+- (void)closeDatabase;
+
 - (void)resetStorage;
 
 @end

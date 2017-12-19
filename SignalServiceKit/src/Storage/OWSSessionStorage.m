@@ -46,13 +46,6 @@ NSString *const OWSSessionStorageExceptionName_CouldNotCreateDatabaseDirectory
     self = [super initStorage];
 
     if (self) {
-        _dbConnection = self.newDatabaseConnection;
-
-        self.dbConnection.objectCacheEnabled = NO;
-#if DEBUG
-        self.dbConnection.permittedTransactions = YDB_AnySyncTransaction;
-#endif
-
         OWSSingletonAssert();
     }
 
@@ -61,7 +54,26 @@ NSString *const OWSSessionStorageExceptionName_CouldNotCreateDatabaseDirectory
 
 - (StorageType)storageType
 {
-    return StorageType_Primary;
+    return StorageType_Session;
+}
+
+- (void)openDatabase
+{
+    [super openDatabase];
+
+    _dbConnection = self.newDatabaseConnection;
+
+    self.dbConnection.objectCacheEnabled = NO;
+#if DEBUG
+    self.dbConnection.permittedTransactions = YDB_AnySyncTransaction;
+#endif
+}
+
+- (void)closeDatabase
+{
+    [super closeDatabase];
+
+    _dbConnection = nil;
 }
 
 - (void)resetStorage
