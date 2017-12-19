@@ -186,39 +186,11 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     return [self.primaryDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
 }
 
-+ (NSString *)sharedDataDatabaseFilePath
-{
-    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
-}
-
-+ (NSString *)sharedDataDatabaseFilePath_SHM
-{
-    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
-}
-
-+ (NSString *)sharedDataDatabaseFilePath_WAL
-{
-    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
-}
-
-+ (void)migrateToSharedData
-{
-    [OWSFileSystem moveAppFilePath:self.primaryDatabaseFilePath
-                sharedDataFilePath:self.sharedDataDatabaseFilePath
-                     exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
-    [OWSFileSystem moveAppFilePath:self.primaryDatabaseFilePath_SHM
-                sharedDataFilePath:self.sharedDataDatabaseFilePath_SHM
-                     exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
-    [OWSFileSystem moveAppFilePath:self.primaryDatabaseFilePath_WAL
-                sharedDataFilePath:self.sharedDataDatabaseFilePath_WAL
-                     exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
-}
-
 + (NSString *)databaseFilePath
 {
-    DDLogVerbose(@"databasePath: %@", TSStorageManager.sharedDataDatabaseFilePath);
+    DDLogVerbose(@"databasePath: %@", TSStorageManager.primaryDatabaseFilePath);
 
-    return self.sharedDataDatabaseFilePath;
+    return self.primaryDatabaseFilePath;
 }
 
 - (NSString *)databaseFilePath

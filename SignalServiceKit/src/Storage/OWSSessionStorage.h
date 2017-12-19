@@ -20,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (YapDatabaseConnection *)dbConnection;
 + (YapDatabaseConnection *)dbConnection;
 
-+ (void)migrateToSharedData;
-
 + (NSString *)databaseFilePath;
 
 @end

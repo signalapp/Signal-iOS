@@ -10,6 +10,8 @@
 
 - (void)archiveAllSessionsForContact:(NSString *)contactIdentifier;
 
+- (void)migrateFromStorageIfNecessary:(OWSStorage *)storage;
+
 #pragma mark - debug
 
 - (void)resetSessionStore;

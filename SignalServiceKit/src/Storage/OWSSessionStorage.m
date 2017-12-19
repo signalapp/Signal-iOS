@@ -146,11 +146,6 @@ NSString *const OWSSessionStorageExceptionName_CouldNotCreateDatabaseDirectory
     return [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
 }
 
-+ (void)migrateToSharedData
-{
-    OWSFail(@"TODO");
-}
-
 - (NSString *)databaseFilePath
 {
     return OWSSessionStorage.databaseFilePath;

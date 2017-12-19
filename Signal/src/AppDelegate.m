@@ -37,6 +37,7 @@
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSOrphanedDataCleaner.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
+#import <SignalServiceKit/OWSSessionStorage+SessionStore.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
@@ -214,11 +215,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return;
     }
 
-    [NSUserDefaults migrateToSharedUserDefaults];
+    DDLogInfo(@"%s", __PRETTY_FUNCTION__);
 
-    [TSStorageManager migrateToSharedData];
-    [OWSProfileManager migrateToSharedData];
-    [TSAttachmentStream migrateToSharedData];
+    [NSUserDefaults migrateToSharedUserDefaults];
 }
 
 - (void)startupLogging
@@ -718,6 +717,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogInfo(@"%@ storageIsReady", self.logTag);
 
     [OWSPreferences setIsRegistered:[TSAccountManager isRegistered]];
+
+    // We need to do this _before_ anyone access the session or identity store state.
+    [OWSSessionStorage.sharedManager migrateFromStorageIfNecessary:TSStorageManager.sharedManager];
 
     if ([TSAccountManager isRegistered]) {
         DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
