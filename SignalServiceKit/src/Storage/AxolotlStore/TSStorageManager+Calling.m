@@ -15,14 +15,16 @@ NSString *const TSStorageManagerCallKitIdToPhoneNumberCollection = @"TSStorageMa
     OWSAssert(phoneNumber.length > 0);
     OWSAssert(callKitId.length > 0);
 
-    [self setObject:phoneNumber forKey:callKitId inCollection:TSStorageManagerCallKitIdToPhoneNumberCollection];
+    [self.dbReadWriteConnection setObject:phoneNumber
+                                   forKey:callKitId
+                             inCollection:TSStorageManagerCallKitIdToPhoneNumberCollection];
 }
 
 - (NSString *)phoneNumberForCallKitId:(NSString *)callKitId
 {
     OWSAssert(callKitId.length > 0);
 
-    return [self objectForKey:callKitId inCollection:TSStorageManagerCallKitIdToPhoneNumberCollection];
+    return [self.dbReadConnection objectForKey:callKitId inCollection:TSStorageManagerCallKitIdToPhoneNumberCollection];
 }
 
 @end

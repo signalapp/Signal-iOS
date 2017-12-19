@@ -424,7 +424,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 - (void)showVoiceMemoUI
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     self.voiceMemoStartTime = [NSDate date];
 
@@ -573,7 +573,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 - (void)hideVoiceMemoUI:(BOOL)animated
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     UIView *oldVoiceMemoUI = self.voiceMemoUI;
     self.voiceMemoUI = nil;
@@ -601,7 +601,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 - (void)setVoiceMemoUICancelAlpha:(CGFloat)cancelAlpha
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     // Fade out the voice message views as the cancel gesture
     // proceeds as feedback.
@@ -610,7 +610,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 - (void)updateVoiceMemo
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSTimeInterval durationSeconds = fabs([self.voiceMemoStartTime timeIntervalSinceNow]);
     self.recordingLabel.text = [OWSFormat formatDurationSeconds:(long)round(durationSeconds)];

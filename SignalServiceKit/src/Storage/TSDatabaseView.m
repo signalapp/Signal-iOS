@@ -95,7 +95,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     // so long as they don't conflict with any other extension names.
     YapDatabaseExtension *extension =
         [[YapDatabaseCrossProcessNotification alloc] initWithIdentifier:@"SignalCrossProcessNotifier"];
-    [[TSStorageManager sharedManager].database registerExtension:extension withName:@"SignalCrossProcessNotifier"];
+    [[TSStorageManager sharedManager] registerExtension:extension withName:@"SignalCrossProcessNotifier"];
 }
 
 + (void)registerMessageDatabaseViewWithName:(NSString *)viewName
@@ -103,11 +103,11 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
                                     version:(NSString *)version
                                       async:(BOOL)async
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewName.length > 0);
     OWSAssert((viewGrouping));
 
-    YapDatabaseView *existingView = [[TSStorageManager sharedManager].database registeredExtension:viewName];
+    YapDatabaseView *existingView = [[TSStorageManager sharedManager] registeredExtension:viewName];
     if (existingView) {
         OWSFail(@"Registered database view twice: %@", viewName);
         return;
@@ -126,7 +126,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
                                                                   options:options];
 
     if (async) {
-        [[TSStorageManager sharedManager].database
+        [[TSStorageManager sharedManager]
             asyncRegisterExtension:view
                           withName:viewName
                    completionBlock:^(BOOL ready) {
@@ -135,7 +135,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
                        DDLogInfo(@"%@ asyncRegisterExtension: %@ -> %d", self.logTag, viewName, ready);
                    }];
     } else {
-        [[TSStorageManager sharedManager].database registerExtension:view withName:viewName];
+        [[TSStorageManager sharedManager] registerExtension:view withName:viewName];
     }
 }
 
@@ -239,7 +239,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
 + (void)registerThreadDatabaseView
 {
     YapDatabaseView *threadView =
-        [[TSStorageManager sharedManager].database registeredExtension:TSThreadDatabaseViewExtensionName];
+        [[TSStorageManager sharedManager] registeredExtension:TSThreadDatabaseViewExtensionName];
     if (threadView) {
         OWSFail(@"Registered database view twice: %@", TSThreadDatabaseViewExtensionName);
         return;
@@ -285,8 +285,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     YapDatabaseView *databaseView =
         [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
 
-    [[TSStorageManager sharedManager].database registerExtension:databaseView
-                                                        withName:TSThreadDatabaseViewExtensionName];
+    [[TSStorageManager sharedManager] registerExtension:databaseView withName:TSThreadDatabaseViewExtensionName];
 }
 
 /**
@@ -399,7 +398,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     YapDatabaseView *view =
         [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
 
-    [[TSStorageManager sharedManager].database
+    [[TSStorageManager sharedManager]
         asyncRegisterExtension:view
                       withName:TSSecondaryDevicesDatabaseViewExtensionName
                completionBlock:^(BOOL ready) {
@@ -447,7 +446,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
 
 + (void)asyncRegistrationCompletion
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     // All async registrations are complete when writes are unblocked.
     [[TSStorageManager sharedManager].newDatabaseConnection

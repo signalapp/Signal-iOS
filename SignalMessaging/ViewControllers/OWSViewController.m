@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleKeyboardNotification:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (self.shouldIgnoreKeyboardChanges) {
         return;

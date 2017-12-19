@@ -6,7 +6,7 @@
 
 @implementation NSArray (FunctionalUtil)
 - (bool)any:(int (^)(id item))predicate {
-    ows_require(predicate != nil);
+    OWSAssert(predicate != nil);
     for (id e in self) {
         if (predicate(e)) {
             return true;
@@ -15,7 +15,7 @@
     return false;
 }
 - (bool)all:(int (^)(id item))predicate {
-     ows_require(predicate != nil);
+    OWSAssert(predicate != nil);
     for (id e in self) {
         if (!predicate(e)) {
             return false;
@@ -24,7 +24,7 @@
     return true;
 }
 - (id)firstMatchingElseNil:(int (^)(id item))predicate {
-     ows_require(predicate != nil);
+    OWSAssert(predicate != nil);
     for (id e in self) {
         if (predicate(e)) {
             return e;
@@ -33,7 +33,7 @@
     return nil;
 }
 - (NSArray *)map:(id (^)(id item))projection {
-     ows_require(projection != nil);
+    OWSAssert(projection != nil);
 
     NSMutableArray *r = [NSMutableArray arrayWithCapacity:self.count];
     for (id e in self) {
@@ -42,7 +42,7 @@
     return r;
 }
 - (NSArray *)filter:(int (^)(id item))predicate {
-     ows_require(predicate != nil);
+    OWSAssert(predicate != nil);
 
     NSMutableArray *r = [NSMutableArray array];
     for (id e in self) {
@@ -74,19 +74,19 @@
     return s;
 }
 - (NSDictionary *)keyedBy:(id (^)(id value))keySelector {
-     ows_require(keySelector != nil);
+    OWSAssert(keySelector != nil);
 
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
 
     for (id value in self) {
         result[keySelector(value)] = value;
     }
-     ows_require(result.count == self.count);
+    OWSAssert(result.count == self.count);
 
     return result;
 }
 - (NSDictionary *)groupBy:(id (^)(id value))keySelector {
-     ows_require(keySelector != nil);
+    OWSAssert(keySelector != nil);
 
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
 

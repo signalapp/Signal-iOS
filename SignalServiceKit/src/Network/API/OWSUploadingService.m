@@ -102,7 +102,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                                     location:location
                                 attachmentId:attachmentStream.uniqueId
                                      success:^{
-                                         OWSAssert([NSThread isMainThread]);
+                                         OWSAssertIsOnMainThread();
 
                                          DDLogInfo(@"%@ Uploaded attachment: %p.", self.logTag, attachmentStream);
                                          attachmentStream.serverId = serverId;
@@ -143,7 +143,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                               attachmentId:attachmentId];
         }
         completionHandler:^(NSURLResponse *_Nonnull response, id _Nullable responseObject, NSError *_Nullable error) {
-            OWSAssert([NSThread isMainThread]);
+            OWSAssertIsOnMainThread();
             if (error) {
                 [error setIsRetryable:YES];
                 return failureHandler(error);

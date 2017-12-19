@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SignalRecipient *)signalRecipientWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(transaction);
 
     OWSAssert(self.recipientId.length > 0);

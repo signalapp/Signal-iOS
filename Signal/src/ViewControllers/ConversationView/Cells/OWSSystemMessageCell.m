@@ -304,7 +304,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showMenuController
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogDebug(@"%@ long pressed system message cell: %@", self.logTag, self.viewItem.interaction.debugDescription);
 

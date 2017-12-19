@@ -10,18 +10,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)acceptNewIdentityKey
 {
-    NSAssert(NO, @"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
+    OWSFail(@"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
 }
 
 - (nullable NSData *)newIdentityKey
 {
-    NSAssert(NO, @"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
+    OWSFail(@"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
     return nil;
 }
 
 - (NSString *)theirSignalId
 {
-    NSAssert(NO, @"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
+    OWSFail(@"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
     return nil;
 }
 

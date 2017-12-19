@@ -331,14 +331,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)signalAccountsDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self ensureDynamicInteractions];
 }
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     OWSAssert(recipientId.length > 0);
@@ -358,7 +358,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)profileWhitelistDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     // If profile whitelist just changed, we may want to hide a profile whitelist offer.
     NSString *_Nullable recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
@@ -376,14 +376,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)blockedPhoneNumbersDidChange:(id)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self ensureBannerState];
 }
 
 - (void)identityStateDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateNavigationBarSubtitleLabel];
     [self ensureBannerState];
@@ -897,7 +897,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)resetVerificationStateToDefault
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
     for (NSString *recipientId in noLongerVerifiedRecipientIds) {
@@ -1882,7 +1882,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(recipientId.length > 0);
 
     return [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:recipientId];
@@ -1982,7 +1982,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
            attachmentStream:(TSAttachmentStream *)attachmentStream
                   imageView:(UIView *)imageView
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewItem);
     OWSAssert(attachmentStream);
     OWSAssert(imageView);
@@ -1997,7 +1997,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)didTapVideoViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewItem);
     OWSAssert(attachmentStream);
 
@@ -2031,7 +2031,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)didTapAudioViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewItem);
     OWSAssert(attachmentStream);
 
@@ -2061,7 +2061,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)didTapTruncatedTextMessage:(ConversationViewItem *)conversationItem
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(conversationItem);
     OWSAssert([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
@@ -2076,7 +2076,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem
                      attachmentPointer:(TSAttachmentPointer *)attachmentPointer
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewItem);
     OWSAssert(attachmentPointer);
 
@@ -2087,7 +2087,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(message);
 
     [self handleUnsentMessageTap:message];
@@ -2095,7 +2095,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)showMetadataViewForViewItem:(ConversationViewItem *)conversationItem
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(conversationItem);
     OWSAssert([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
@@ -2147,7 +2147,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)didTapSystemMessageWithInteraction:(TSInteraction *)interaction
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(interaction);
 
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
@@ -2196,7 +2196,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)ensureDynamicInteractions
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     const int currentMaxRangeSize = (int)(self.page + 1) * kYapDatabasePageSize;
     const int maxRangeSize = MAX(kConversationInitialMaxRangeSize, currentMaxRangeSize);
@@ -2215,7 +2215,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)clearUnreadMessagesIndicator
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (self.hasClearedUnreadMessagesIndicator) {
         // ensureDynamicInteractionsForThread is somewhat expensive
@@ -2307,7 +2307,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)ensureScrollDownButton
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     BOOL shouldShowScrollDownButton = NO;
     CGFloat scrollSpaceToBottom = (self.safeContentHeight + self.collectionView.contentInset.bottom
@@ -2387,7 +2387,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)messageWasSent:(TSOutgoingMessage *)message
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(message);
 
     [self updateLastVisibleTimestamp:message.timestampForSorting];
@@ -2523,7 +2523,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)chooseFromLibrary
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
         DDLogError(@"PhotoLibrary ImagePicker source not available");
@@ -2589,7 +2589,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
                          filename:(NSString *_Nullable)filename
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     void (^failedToPickAttachment)(NSError *error) = ^void(NSError *error) {
         DDLogError(@"failed to pick attachment with error: %@", error);
@@ -2614,7 +2614,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
         [self dismissViewControllerAnimated:YES
                                  completion:^{
-                                     OWSAssert([NSThread isMainThread]);
+                                     OWSAssertIsOnMainThread();
 
                                      if (imageFromCamera) {
                                          // "Camera" attachments _SHOULD_ be resized, if possible.
@@ -2664,7 +2664,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                            if (assetFetchingError || !imageData) {
                                return failedToPickAttachment(assetFetchingError);
                            }
-                           OWSAssert([NSThread isMainThread]);
+                           OWSAssertIsOnMainThread();
 
                            DataSource *_Nullable dataSource =
                                [DataSourceValue dataSourceWithData:imageData utiType:dataUTI];
@@ -2676,7 +2676,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                              imageQuality:TSImageQualityMedium];
                            [self dismissViewControllerAnimated:YES
                                                     completion:^{
-                                                        OWSAssert([NSThread isMainThread]);
+                                                        OWSAssertIsOnMainThread();
                                                         if (!attachment || [attachment hasError]) {
                                                             DDLogWarn(@"%@ %s Invalid attachment: %@.",
                                                                 self.logTag,
@@ -2694,7 +2694,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)sendMessageAttachment:(SignalAttachment *)attachment
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     // TODO: Should we assume non-nil or should we check for non-nil?
     OWSAssert(attachment != nil);
     OWSAssert(![attachment hasError]);
@@ -2726,7 +2726,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                      filename:(NSString *)filename
                            skipApprovalDialog:(BOOL)skipApprovalDialog
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [ModalActivityIndicatorViewController
         presentFromViewController:self
@@ -2740,7 +2740,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                       [compressionResult.attachmentPromise retainUntilComplete];
 
                       compressionResult.attachmentPromise.then(^(SignalAttachment *attachment) {
-                          OWSAssert([NSThread isMainThread]);
+                          OWSAssertIsOnMainThread();
                           OWSAssert([attachment isKindOfClass:[SignalAttachment class]]);
 
                           if (modalActivityIndicator.wasCancelled) {
@@ -2785,7 +2785,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
@@ -2797,7 +2797,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     // Currently, we update thread and message state every time
     // the database is modified.  That doesn't seem optimal, but
@@ -2991,7 +2991,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
     void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
-        OWSAssert([NSThread isMainThread]);
+        OWSAssertIsOnMainThread();
 
 
         if (!finished) {
@@ -3105,7 +3105,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)requestRecordingVoiceMemo
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSUUID *voiceMessageUUID = [NSUUID UUID];
     self.voiceMessageUUID = voiceMessageUUID;
@@ -3135,7 +3135,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)startRecordingVoiceMemo
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"startRecordingVoiceMemo");
 
@@ -3192,7 +3192,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)endRecordingVoiceMemo
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"endRecordingVoiceMemo");
 
@@ -3256,7 +3256,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)cancelRecordingVoiceMemo
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogDebug(@"cancelRecordingVoiceMemo");
 
@@ -3265,7 +3265,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)resetRecordingVoiceMemo
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self.audioRecorder stop];
     self.audioRecorder = nil;
@@ -3530,7 +3530,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)loadDraftInCompose
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     __block NSString *draft;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -3563,13 +3563,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)updateBackButtonUnreadCount
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
     self.backButtonUnreadCount = [self.messagesManager unreadMessagesCountExcept:self.thread];
 }
 
 - (void)setBackButtonUnreadCount:(NSUInteger)unreadCount
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
     if (_backButtonUnreadCount == unreadCount) {
         // No need to re-render same count.
         return;
@@ -3706,14 +3706,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)scrollToBottomImmediately
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self scrollToBottomAnimated:NO];
 }
 
 - (void)scrollToBottomAnimated:(BOOL)animated
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (self.isUserScrolling) {
         return;
@@ -3765,7 +3765,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)resendGroupUpdateForErrorMessage:(TSErrorMessage *)message
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert([_thread isKindOfClass:[TSGroupThread class]]);
     OWSAssert(message);
 
@@ -3883,7 +3883,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)voiceMemoGestureDidStart
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"voiceMemoGestureDidStart");
 
@@ -3905,7 +3905,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)voiceMemoGestureDidEnd
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"voiceMemoGestureDidEnd");
 
@@ -3916,7 +3916,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)voiceMemoGestureDidCancel
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"voiceMemoGestureDidCancel");
 
@@ -3927,14 +3927,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)voiceMemoGestureDidChange:(CGFloat)cancelAlpha
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self.inputToolbar setVoiceMemoUICancelAlpha:cancelAlpha];
 }
 
 - (void)cancelVoiceMemo
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self.inputToolbar cancelVoiceMemoIfNecessary];
     [self.inputToolbar hideVoiceMemoUI:NO];
@@ -4047,14 +4047,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)collectionViewWillChangeLayout
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     self.wasScrolledToBottomBeforeLayoutChange = [self isScrolledToBottom];
 }
 
 - (void)collectionViewDidChangeLayout
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateLastVisibleTimestamp];
 
@@ -4202,7 +4202,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 // and update the corresponding view item.
 - (void)reloadInteractionForViewItem:(ConversationViewItem *)viewItem
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewItem);
 
     // This should never happen, but don't crash in production if we have a bug.

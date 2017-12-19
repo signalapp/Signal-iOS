@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
     _messageSender = messageSender;
 
     _dbConnection = storageManager.newDatabaseConnection;
-    _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithDatabase:storageManager.database];
+    _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithStorageManager:storageManager];
     _blockingManager = [OWSBlockingManager sharedManager];
 
     OWSSingletonAssert();

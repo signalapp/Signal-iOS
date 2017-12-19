@@ -152,7 +152,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)blockedPhoneNumbersDidChange:(id)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
 
@@ -161,7 +161,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)signalAccountsDidChange:(id)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self.tableView reloadData];
 }
@@ -526,7 +526,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (NSArray<ExperienceUpgrade *> *)unseenUpgradeExperiences
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     __block NSArray<ExperienceUpgrade *> *unseenUpgrades;
     [self.editingDbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -537,7 +537,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)markAllUpgradeExperiencesAsSeen
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
@@ -546,7 +546,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)displayAnyUnseenUpgradeExperience
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     NSArray<ExperienceUpgrade *> *unseenUpgrades = [self unseenUpgradeExperiences];
 
@@ -626,7 +626,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     DDLogInfo(@"%@ beggining refreshing.", self.logTag);
     [SignalApp.sharedApp.messageFetcherJob run].always(^{
         DDLogInfo(@"%@ ending refreshing.", self.logTag);
@@ -798,7 +798,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                           animateDismissal:(BOOL)animateDismissal
                        animatePresentation:(BOOL)animatePresentation
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewController);
 
     [self presentViewControllerWithBlock:^{
@@ -811,7 +811,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                   animateDismissal:(BOOL)animateDismissal
                animatePresentation:(BOOL)animatePresentation
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewController);
 
     [self presentViewControllerWithBlock:^{
@@ -822,7 +822,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)presentViewControllerWithBlock:(void (^)(void))presentationBlock animateDismissal:(BOOL)animateDismissal
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(presentationBlock);
 
     // Presenting a "top level" view controller has three steps:
@@ -897,7 +897,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)updateMappings
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ self.currentGrouping ]
                                                                      view:TSThreadDatabaseViewExtensionName];
@@ -914,10 +914,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (YapDatabaseConnection *)uiDatabaseConnection
 {
-    NSAssert([NSThread isMainThread], @"Must access uiDatabaseConnection on main thread!");
+    OWSAssertIsOnMainThread();
+
     if (!_uiDatabaseConnection) {
-        YapDatabase *database = TSStorageManager.sharedManager.database;
-        _uiDatabaseConnection = [database newConnection];
+        _uiDatabaseConnection = [TSStorageManager.sharedManager newDatabaseConnection];
         [_uiDatabaseConnection beginLongLivedReadTransaction];
     }
     return _uiDatabaseConnection;
@@ -925,7 +925,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
@@ -937,7 +937,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (!self.shouldObserveDBModifications) {
         return;

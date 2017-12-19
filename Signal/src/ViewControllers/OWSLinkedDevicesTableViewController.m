@@ -202,7 +202,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
@@ -219,7 +219,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 

@@ -98,7 +98,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         return self;
     }
 
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(storageManager);
     OWSAssert(messageSender);
     OWSAssert(messageSender);
@@ -507,7 +507,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (void)fetchLocalUsersProfile
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSString *_Nullable localNumber = [TSAccountManager sharedInstance].localNumber;
     if (!localNumber) {
@@ -1072,7 +1072,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSData *nameData = [profileName dataUsingEncoding:NSUTF8StringEncoding];
     return nameData.length > kOWSProfileManager_NameDataLength;
@@ -1181,7 +1181,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (void)resetProfileStorage
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSError *error;
     [[NSFileManager defaultManager] removeItemAtPath:[self profileAvatarsDirPath] error:&error];
@@ -1196,7 +1196,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                         fromViewController:(UIViewController *)fromViewController
                                    success:(void (^)(void))successHandler
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     UIAlertController *alertController =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
@@ -1216,7 +1216,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (void)userAddedThreadToProfileWhitelist:(TSThread *)thread success:(void (^)(void))successHandler
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     OWSProfileKeyMessage *message =
         [[OWSProfileKeyMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
@@ -1250,7 +1250,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     // TODO: Sync if necessary.
 }

@@ -1,8 +1,12 @@
-#import <CocoaLumberjack/CocoaLumberjack.h>
+//
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//
+
 #import "BadArgument.h"
 #import "BadState.h"
 #import "OperationFailed.h"
-#import "SecurityFailure.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
+
 /// 'require(X)' is used to indicate parameter-related preconditions that callers must satisfy.
 /// Failure to satisfy indicates a bug in the caller.
 #define ows_require(expr)                                                                                \
@@ -38,16 +42,4 @@
                                                       (desc),                                                 \
                                                       (@ #expr),                                              \
                                                       __FILE__,                                               \
-                                                      __LINE__]]
-
-/// 'checkSecurityOperation(X, Desc)' is used to throw exceptions if operations fail due to authentication or other
-/// crypto failures, and describe the problem.
-/// Failure does not indicate a bug.
-/// Methods may throw these exceptions for callers to catch as a 'returned error' result.
-#define checkSecurityOperation(expr, desc)                                                                            \
-    if (!(expr))                                                                                                      \
-    [SecurityFailure raise:[NSString stringWithFormat:@"Security related failure: %@ Expected: %@(in %s at line %d)", \
-                                                      (desc),                                                         \
-                                                      (@ #expr),                                                      \
-                                                      __FILE__,                                                       \
                                                       __LINE__]]

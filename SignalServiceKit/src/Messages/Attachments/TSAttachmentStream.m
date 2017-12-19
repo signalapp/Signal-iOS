@@ -305,7 +305,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)deleteAttachments
 {
     NSError *error;
-
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
     NSURL *fileURL = [NSURL fileURLWithPath:self.attachmentsFolder];
@@ -318,15 +317,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     for (NSURL *url in contents) {
-        NSError *deletionError;
-        [fileManager removeItemAtURL:url error:&deletionError];
-        if (deletionError) {
-            OWSFail(@"failed to remove item at path: %@ with error: %@", url, deletionError);
-            // continue to try to delete remaining items.
+        [fileManager removeItemAtURL:url error:&error];
+        if (error) {
+            OWSFail(@"failed to remove item at path: %@ with error: %@", url, error);
         }
     }
-
-    return;
 }
 
 - (CGSize)calculateImageSize
@@ -398,7 +393,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)imageSize
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (self.cachedImageWidth && self.cachedImageHeight) {
         return CGSizeMake(self.cachedImageWidth.floatValue, self.cachedImageHeight.floatValue);
@@ -429,7 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)calculateAudioDurationSeconds
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert([self isAudio]);
 
     NSError *error;
@@ -449,7 +444,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)audioDurationSeconds
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (self.cachedAudioDurationSeconds) {
         return self.cachedAudioDurationSeconds.floatValue;

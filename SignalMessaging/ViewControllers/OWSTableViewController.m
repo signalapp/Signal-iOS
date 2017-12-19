@@ -443,7 +443,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 - (void)setContents:(OWSTableContents *)contents
 {
     OWSAssert(contents);
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     _contents = contents;
 

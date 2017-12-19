@@ -89,7 +89,7 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey
 
 - (void)signalAccountsDidChange:(id)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self sendSyncContactsMessageIfPossible];
 }
@@ -98,7 +98,7 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey
 
 - (void)sendSyncContactsMessageIfNecessary
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     if (!self.serialQueue) {
         _serialQueue = dispatch_queue_create("org.whispersystems.contacts.syncing", DISPATCH_QUEUE_SERIAL);
@@ -121,8 +121,8 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey
         NSData *messageData = [syncContactsMessage buildPlainTextAttachmentData];
 
         NSData *lastMessageData =
-            [[TSStorageManager sharedManager] objectForKey:kTSStorageManagerOWSContactsSyncingLastMessageKey
-                                              inCollection:kTSStorageManagerOWSContactsSyncingCollection];
+            [TSStorageManager.dbReadConnection objectForKey:kTSStorageManagerOWSContactsSyncingLastMessageKey
+                                               inCollection:kTSStorageManagerOWSContactsSyncingCollection];
 
         if (lastMessageData && [lastMessageData isEqual:messageData]) {
             // Ignore redundant contacts sync message.
@@ -139,9 +139,9 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey
             success:^{
                 DDLogInfo(@"%@ Successfully sent contacts sync message.", self.logTag);
 
-                [[TSStorageManager sharedManager] setObject:messageData
-                                                     forKey:kTSStorageManagerOWSContactsSyncingLastMessageKey
-                                               inCollection:kTSStorageManagerOWSContactsSyncingCollection];
+                [TSStorageManager.dbReadWriteConnection setObject:messageData
+                                                           forKey:kTSStorageManagerOWSContactsSyncingLastMessageKey
+                                                     inCollection:kTSStorageManagerOWSContactsSyncingCollection];
 
                 dispatch_async(self.serialQueue, ^{
                     self.isRequestInFlight = NO;
@@ -159,7 +159,7 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey
 
 - (void)sendSyncContactsMessageIfPossible
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
     if (self.contactsManager.signalAccounts.count == 0) {
         // Don't bother if the contacts manager has no contacts,
         // e.g. if the contacts manager hasn't finished setup.

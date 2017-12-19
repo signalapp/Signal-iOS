@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)initializeMapping
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSString *grouping = TSInboxGroup;
 
@@ -117,14 +117,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (YapDatabaseConnection *)uiDatabaseConnection
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     return _uiDatabaseConnection;
 }
 
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
@@ -175,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateThreads
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSMutableArray<TSThread *> *threads = [NSMutableArray new];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {

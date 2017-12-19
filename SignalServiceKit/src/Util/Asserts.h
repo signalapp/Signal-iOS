@@ -71,6 +71,8 @@
 
 #endif
 
+#define OWS_ABSTRACT_METHOD() OWSFail(@"Method needs to be implemented by subclasses.")
+
 #pragma mark - Singleton Asserts
 
 // The "singleton asserts" can be used to ensure

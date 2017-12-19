@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    success:(void (^)(void))successHandler
                                    failure:(void (^)(NSError *error))failureHandler
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(text.length > 0);
     OWSAssert(thread);
     OWSAssert(messageSender);
@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    messageSender:(OWSMessageSender *)messageSender
                                     ignoreErrors:(BOOL)ignoreErrors
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(attachment);
     OWSAssert(ignoreErrors || ![attachment hasError]);
     OWSAssert([attachment mimeType].length > 0);

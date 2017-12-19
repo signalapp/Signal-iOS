@@ -75,8 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark To be subclassed.
 
 - (BOOL)isGroupThread {
-    NSAssert(false, @"An abstract method on TSThread was called.");
-    return FALSE;
+    OWS_ABSTRACT_METHOD();
+
+    return NO;
 }
 
 // Override in ContactThread
@@ -86,13 +87,15 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSString *)name {
-    NSAssert(FALSE, @"Should be implemented in subclasses");
+    OWS_ABSTRACT_METHOD();
+
     return nil;
 }
 
 - (NSArray<NSString *> *)recipientIdentifiers
 {
-    NSAssert(FALSE, @"Should be implemented in subclasses");
+    OWS_ABSTRACT_METHOD();
+
     return @[];
 }
 

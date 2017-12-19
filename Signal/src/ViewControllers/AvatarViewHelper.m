@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showChangeAvatarUI
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.delegate);
 
     UIAlertController *actionSheetController =
@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)takePicture
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.delegate);
 
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)chooseFromLibrary
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.delegate);
 
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.delegate);
 
     [self.delegate.fromViewController dismissViewControllerAnimated:YES completion:nil];
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.delegate);
 
     UIImage *rawAvatar = [info objectForKey:UIImagePickerControllerOriginalImage];
@@ -125,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
         dismissViewControllerAnimated:YES
                            completion:^{
                                if (rawAvatar) {
-                                   OWSAssert([NSThread isMainThread]);
+                                   OWSAssertIsOnMainThread();
 
                                    CropScaleImageViewController *vc = [[CropScaleImageViewController alloc]
                                         initWithSrcImage:rawAvatar

@@ -4,12 +4,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class YapDatabase;
+@class TSStorageManager;
 @class YapDatabaseReadTransaction;
 
 @interface OWSIncomingMessageFinder : NSObject
 
-- (instancetype)initWithDatabase:(YapDatabase *)database NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager NS_DESIGNATED_INITIALIZER;
 
 /**
  * Must be called before using this finder.
