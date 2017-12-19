@@ -2,6 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSStorage.h"
 #import <YapDatabase/YapDatabaseViewTransaction.h>
 
 extern NSString *const TSInboxGroup;
@@ -20,27 +21,27 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (void)registerCrossProcessNotifier;
++ (void)registerCrossProcessNotifier:(OWSStorage *)storage;
 
 // This method must be called _AFTER_ registerThreadInteractionsDatabaseView.
-+ (void)registerThreadDatabaseView;
++ (void)registerThreadDatabaseView:(OWSStorage *)storage;
 
-+ (void)registerThreadInteractionsDatabaseView;
-+ (void)asyncRegisterThreadOutgoingMessagesDatabaseView;
++ (void)registerThreadInteractionsDatabaseView:(OWSStorage *)storage;
++ (void)asyncRegisterThreadOutgoingMessagesDatabaseView:(OWSStorage *)storage;
 
 // Instances of OWSReadTracking for wasRead is NO and shouldAffectUnreadCounts is YES.
 //
 // Should be used for "unread message counts".
-+ (void)registerUnreadDatabaseView;
++ (void)registerUnreadDatabaseView:(OWSStorage *)storage;
 
 // Should be used for "unread indicator".
 //
 // Instances of OWSReadTracking for wasRead is NO.
-+ (void)asyncRegisterUnseenDatabaseView;
++ (void)asyncRegisterUnseenDatabaseView:(OWSStorage *)storage;
 
-+ (void)asyncRegisterThreadSpecialMessagesDatabaseView;
++ (void)asyncRegisterThreadSpecialMessagesDatabaseView:(OWSStorage *)storage;
 
-+ (void)asyncRegisterSecondaryDevicesDatabaseView;
++ (void)asyncRegisterSecondaryDevicesDatabaseView:(OWSStorage *)storage;
 
 // Returns the "unseen" database view if it is ready;
 // otherwise it returns the "unread" database view.

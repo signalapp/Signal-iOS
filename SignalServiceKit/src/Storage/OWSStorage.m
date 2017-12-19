@@ -7,6 +7,7 @@
 #import "NSData+Base64.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSFileSystem.h"
+#import "OWSSessionStorage.h"
 #import "OWSStorage+Subclass.h"
 #import "TSAttachmentStream.h"
 #import "TSStorageManager.h"
@@ -310,6 +311,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 {
     return @[
         TSStorageManager.sharedManager,
+        OWSSessionStorage.sharedManager,
     ];
 }
 
@@ -441,6 +443,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 + (void)deleteDatabaseFiles
 {
     [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath]];
+    [OWSFileSystem deleteFile:[OWSSessionStorage databaseFilePath]];
 }
 
 - (void)deleteDatabaseFile

@@ -8,7 +8,6 @@
 #import "TSIncomingMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSOutgoingMessage.h"
-#import "TSStorageManager.h"
 #import "TSThread.h"
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
@@ -32,25 +31,29 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
 
 @implementation TSDatabaseView
 
-+ (void)registerCrossProcessNotifier
++ (void)registerCrossProcessNotifier:(OWSStorage *)storage
 {
+    OWSAssert(storage);
+
     // I don't think the identifier and name of this extension matter for our purposes,
     // so long as they don't conflict with any other extension names.
     YapDatabaseExtension *extension =
         [[YapDatabaseCrossProcessNotification alloc] initWithIdentifier:@"SignalCrossProcessNotifier"];
-    [[TSStorageManager sharedManager] registerExtension:extension withName:@"SignalCrossProcessNotifier"];
+    [storage registerExtension:extension withName:@"SignalCrossProcessNotifier"];
 }
 
 + (void)registerMessageDatabaseViewWithName:(NSString *)viewName
                                viewGrouping:(YapDatabaseViewGrouping *)viewGrouping
                                     version:(NSString *)version
                                       async:(BOOL)async
+                                    storage:(OWSStorage *)storage
 {
     OWSAssertIsOnMainThread();
     OWSAssert(viewName.length > 0);
     OWSAssert((viewGrouping));
+    OWSAssert(storage);
 
-    YapDatabaseView *existingView = [[TSStorageManager sharedManager] registeredExtension:viewName];
+    YapDatabaseView *existingView = [storage registeredExtension:viewName];
     if (existingView) {
         OWSFail(@"Registered database view twice: %@", viewName);
         return;
@@ -69,20 +72,19 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
                                                                   options:options];
 
     if (async) {
-        [[TSStorageManager sharedManager]
-            asyncRegisterExtension:view
-                          withName:viewName
-                   completionBlock:^(BOOL ready) {
-                       OWSCAssert(ready);
+        [storage asyncRegisterExtension:view
+                               withName:viewName
+                        completionBlock:^(BOOL ready) {
+                            OWSCAssert(ready);
 
-                       DDLogInfo(@"%@ asyncRegisterExtension: %@ -> %d", self.logTag, viewName, ready);
-                   }];
+                            DDLogInfo(@"%@ asyncRegisterExtension: %@ -> %d", self.logTag, viewName, ready);
+                        }];
     } else {
-        [[TSStorageManager sharedManager] registerExtension:view withName:viewName];
+        [storage registerExtension:view withName:viewName];
     }
 }
 
-+ (void)registerUnreadDatabaseView
++ (void)registerUnreadDatabaseView:(OWSStorage *)storage
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
@@ -98,10 +100,11 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     [self registerMessageDatabaseViewWithName:TSUnreadDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"1"
-                                        async:NO];
+                                        async:NO
+                                      storage:storage];
 }
 
-+ (void)asyncRegisterUnseenDatabaseView
++ (void)asyncRegisterUnseenDatabaseView:(OWSStorage *)storage
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
@@ -117,10 +120,11 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     [self registerMessageDatabaseViewWithName:TSUnseenDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"1"
-                                        async:YES];
+                                        async:YES
+                                      storage:storage];
 }
 
-+ (void)asyncRegisterThreadSpecialMessagesDatabaseView
++ (void)asyncRegisterThreadSpecialMessagesDatabaseView:(OWSStorage *)storage
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
@@ -144,10 +148,11 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     [self registerMessageDatabaseViewWithName:TSThreadSpecialMessagesDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"1"
-                                        async:YES];
+                                        async:YES
+                                      storage:storage];
 }
 
-+ (void)registerThreadInteractionsDatabaseView
++ (void)registerThreadInteractionsDatabaseView:(OWSStorage *)storage
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
@@ -160,10 +165,11 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     [self registerMessageDatabaseViewWithName:TSMessageDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"1"
-                                        async:NO];
+                                        async:NO
+                                      storage:storage];
 }
 
-+ (void)asyncRegisterThreadOutgoingMessagesDatabaseView
++ (void)asyncRegisterThreadOutgoingMessagesDatabaseView:(OWSStorage *)storage
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
@@ -176,13 +182,13 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     [self registerMessageDatabaseViewWithName:TSThreadOutgoingMessageDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"2"
-                                        async:YES];
+                                        async:YES
+                                      storage:storage];
 }
 
-+ (void)registerThreadDatabaseView
++ (void)registerThreadDatabaseView:(OWSStorage *)storage
 {
-    YapDatabaseView *threadView =
-        [[TSStorageManager sharedManager] registeredExtension:TSThreadDatabaseViewExtensionName];
+    YapDatabaseView *threadView = [storage registeredExtension:TSThreadDatabaseViewExtensionName];
     if (threadView) {
         OWSFail(@"Registered database view twice: %@", TSThreadDatabaseViewExtensionName);
         return;
@@ -228,7 +234,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     YapDatabaseView *databaseView =
         [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
 
-    [[TSStorageManager sharedManager] registerExtension:databaseView withName:TSThreadDatabaseViewExtensionName];
+    [storage registerExtension:databaseView withName:TSThreadDatabaseViewExtensionName];
 }
 
 /**
@@ -296,7 +302,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     }];
 }
 
-+ (void)asyncRegisterSecondaryDevicesDatabaseView
++ (void)asyncRegisterSecondaryDevicesDatabaseView:(OWSStorage *)storage
 {
     YapDatabaseViewGrouping *viewGrouping =
         [YapDatabaseViewGrouping withObjectBlock:^NSString *_Nullable(YapDatabaseReadTransaction *_Nonnull transaction,
@@ -341,16 +347,15 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     YapDatabaseView *view =
         [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
 
-    [[TSStorageManager sharedManager]
-        asyncRegisterExtension:view
-                      withName:TSSecondaryDevicesDatabaseViewExtensionName
-               completionBlock:^(BOOL ready) {
-                   if (ready) {
-                       DDLogDebug(@"%@ Successfully set up extension: %@", self.logTag, TSSecondaryDevicesGroup);
-                   } else {
-                       DDLogError(@"%@ Unable to setup extension: %@", self.logTag, TSSecondaryDevicesGroup);
-                   }
-               }];
+    [storage asyncRegisterExtension:view
+                           withName:TSSecondaryDevicesDatabaseViewExtensionName
+                    completionBlock:^(BOOL ready) {
+                        if (ready) {
+                            DDLogDebug(@"%@ Successfully set up extension: %@", self.logTag, TSSecondaryDevicesGroup);
+                        } else {
+                            DDLogError(@"%@ Unable to setup extension: %@", self.logTag, TSSecondaryDevicesGroup);
+                        }
+                    }];
 }
 
 + (id)unseenDatabaseViewExtension:(YapDatabaseReadTransaction *)transaction

@@ -81,10 +81,10 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 - (void)runSyncRegistrations
 {
     // Synchronously register extensions which are essential for views.
-    [TSDatabaseView registerCrossProcessNotifier];
-    [TSDatabaseView registerThreadInteractionsDatabaseView];
-    [TSDatabaseView registerThreadDatabaseView];
-    [TSDatabaseView registerUnreadDatabaseView];
+    [TSDatabaseView registerCrossProcessNotifier:self];
+    [TSDatabaseView registerThreadInteractionsDatabaseView:self];
+    [TSDatabaseView registerThreadDatabaseView:self];
+    [TSDatabaseView registerUnreadDatabaseView:self];
     [self registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
     [OWSMessageReceiver syncRegisterDatabaseExtension:self];
     [OWSBatchMessageProcessor syncRegisterDatabaseExtension:self];
@@ -107,13 +107,13 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     //
     // All sync registrations must be done before all async registrations,
     // or the sync registrations will block on the async registrations.
-    [TSDatabaseView asyncRegisterUnseenDatabaseView];
-    [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView];
-    [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView];
+    [TSDatabaseView asyncRegisterUnseenDatabaseView:self];
+    [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
+    [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
 
     // Register extensions which aren't essential for rendering threads async.
     [OWSIncomingMessageFinder asyncRegisterExtensionWithStorageManager:self];
-    [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView];
+    [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:self];
     [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
     [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithStorageManager:self];
     [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithStorageManager:self];

@@ -8,6 +8,7 @@
 #import "OWSContactsManager.h"
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSSessionStorage.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 
 @implementation Release
@@ -19,6 +20,7 @@
     dispatch_once(&onceToken, ^{
         // Order matters here.
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
+        [OWSSessionStorage sharedManager];
         TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
         OWSContactsManager *contactsManager = [OWSContactsManager new];
         ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
