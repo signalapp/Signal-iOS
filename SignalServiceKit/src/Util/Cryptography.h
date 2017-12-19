@@ -34,7 +34,7 @@ typedef NS_ENUM(NSInteger, TSMACType) {
     TSHMACSHA256AttachementType  = 3
 };
 
-+ (NSMutableData *)generateRandomBytes:(NSUInteger)numberBytes;
++ (NSData *)generateRandomBytes:(NSUInteger)numberBytes;
 
 #pragma mark SHA and HMAC methods
 

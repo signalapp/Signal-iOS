@@ -8,6 +8,7 @@
 #import "OWSError.h"
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonHMAC.h>
+#import <Curve25519Kit/Randomness.h>
 #import <openssl/evp.h>
 
 #define HMAC256_KEY_LENGTH 32
@@ -99,16 +100,9 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
 #pragma mark random bytes methods
 
-+ (NSMutableData *)generateRandomBytes:(NSUInteger)numberBytes {
-    /* used to generate db master key, and to generate signaling key, both at install */
-    NSMutableData *randomBytes = [NSMutableData dataWithLength:numberBytes];
-    int err = SecRandomCopyBytes(kSecRandomDefault, numberBytes, [randomBytes mutableBytes]);
-    if (err != noErr) {
-        DDLogError(@"Error in generateRandomBytes: %d", err);
-        @throw
-            [NSException exceptionWithName:@"random problem" reason:@"problem generating random bytes." userInfo:nil];
-    }
-    return randomBytes;
++ (NSData *)generateRandomBytes:(NSUInteger)numberBytes
+{
+    return [Randomness generateRandomBytes:numberBytes];
 }
 
 #pragma mark SHA1
