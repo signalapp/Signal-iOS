@@ -3,7 +3,6 @@
 //
 
 #import "ConversationViewItem.h"
-#import "NSString+OWS.h"
 #import "OWSAudioMessageView.h"
 #import "OWSContactOffersCell.h"
 #import "OWSMessageCell.h"
@@ -11,6 +10,7 @@
 #import "OWSUnreadIndicatorCell.h"
 #import "Signal-Swift.h"
 #import <AssetsLibrary/AssetsLibrary.h>
+#import <SignalMessaging/NSString+OWS.h>
 #import <SignalServiceKit/TSInteraction.h>
 
 NS_ASSUME_NONNULL_BEGIN

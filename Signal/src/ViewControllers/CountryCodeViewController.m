@@ -3,11 +3,11 @@
 //
 
 #import "CountryCodeViewController.h"
-#import "NSString+OWS.h"
 #import "PhoneNumberUtil.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/NSString+OWS.h>
 
 @interface CountryCodeViewController () <OWSTableViewControllerDelegate, UISearchBarDelegate>
 

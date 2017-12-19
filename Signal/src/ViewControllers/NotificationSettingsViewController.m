@@ -3,9 +3,9 @@
 //
 
 #import "NotificationSettingsViewController.h"
-#import "Environment.h"
 #import "NotificationSettingsOptionsViewController.h"
-#import "OWSPreferences.h"
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSPreferences.h>
 
 @implementation NotificationSettingsViewController
 

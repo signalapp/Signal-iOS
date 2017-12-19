@@ -3,9 +3,9 @@
 //
 
 #import "OWSPreferences.h"
-#import "YapDatabaseConnection+OWS.h"
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/TSStorageHeaders.h>
+#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

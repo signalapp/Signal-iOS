@@ -3,11 +3,11 @@
 //
 
 #import "ViewControllerUtils.h"
-#import "Environment.h"
 #import "HomeViewController.h"
 #import "PhoneNumber.h"
 #import "Signal-Swift.h"
 #import <AVFoundation/AVFoundation.h>
+#import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN

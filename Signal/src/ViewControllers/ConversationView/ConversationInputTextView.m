@@ -3,8 +3,8 @@
 //
 
 #import "ConversationInputTextView.h"
-#import "NSString+OWS.h"
 #import "Signal-Swift.h"
+#import <SignalMessaging/NSString+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

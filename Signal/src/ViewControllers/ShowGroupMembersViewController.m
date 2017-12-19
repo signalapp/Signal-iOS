@@ -3,7 +3,6 @@
 //
 
 #import "ShowGroupMembersViewController.h"
-#import "Environment.h"
 #import "HomeViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
@@ -12,6 +11,7 @@
 #import <SignalMessaging/BlockListUIUtils.h>
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
+#import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/OWSBlockingManager.h>

@@ -17,15 +17,12 @@
 #import "ConversationViewLayout.h"
 #import "DateUtil.h"
 #import "DebugUITableViewController.h"
-#import "Environment.h"
 #import "FingerprintViewController.h"
 #import "FullImageViewController.h"
 #import "NSAttributedString+OWS.h"
-#import "NSString+OWS.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSContactOffersCell.h"
-#import "OWSContactsManager.h"
 #import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -63,7 +60,10 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <PromiseKit/AnyPromise.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSContactOffersInteraction.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/TSUnreadIndicatorInteraction.h>

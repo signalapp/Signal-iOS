@@ -3,10 +3,10 @@
 //
 
 #import "AvatarViewHelper.h"
-#import "OWSContactsManager.h"
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/TSGroupModel.h>

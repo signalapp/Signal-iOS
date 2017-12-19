@@ -5,10 +5,10 @@
 #import "PushManager.h"
 #import "AppDelegate.h"
 #import "NotificationsManager.h"
-#import "OWSContactsManager.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "ThreadUtil.h"
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>

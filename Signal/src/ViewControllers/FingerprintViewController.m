@@ -3,14 +3,14 @@
 //
 
 #import "FingerprintViewController.h"
-#import "Environment.h"
 #import "FingerprintViewScanController.h"
 #import "OWSBezierPathView.h"
-#import "OWSContactsManager.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSError.h>

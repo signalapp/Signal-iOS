@@ -8,7 +8,6 @@
 #import "ConversationViewController.h"
 #import "InboxTableViewCell.h"
 #import "NewContactThreadViewController.h"
-#import "OWSContactsManager.h"
 #import "OWSNavigationController.h"
 #import "ProfileViewController.h"
 #import "PushManager.h"
@@ -20,6 +19,7 @@
 #import "TSStorageManager.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>

@@ -2,9 +2,9 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <XCTest/XCTest.h>
 #import "TestUtil.h"
-#import "OWSContactsManager.h"
+#import <SignalMessaging/OWSContactsManager.h>
+#import <XCTest/XCTest.h>
 
 @interface OWSContactsManagerTest : XCTestCase
 

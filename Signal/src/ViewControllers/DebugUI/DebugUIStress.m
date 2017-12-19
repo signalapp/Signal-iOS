@@ -3,11 +3,11 @@
 //
 
 #import "DebugUIStress.h"
-#import "Environment.h"
 #import "OWSMessageSender.h"
 #import "OWSTableViewController.h"
 #import "SignalApp.h"
 #import "ThreadUtil.h"
+#import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSDynamicOutgoingMessage.h>

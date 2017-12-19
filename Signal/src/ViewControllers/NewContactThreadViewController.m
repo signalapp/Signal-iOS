@@ -5,7 +5,6 @@
 #import "NewContactThreadViewController.h"
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
-#import "Environment.h"
 #import "NewGroupViewController.h"
 #import "NewNonContactConversationViewController.h"
 #import "OWSTableViewController.h"
@@ -14,6 +13,7 @@
 #import "UIColor+OWS.h"
 #import "UIView+OWS.h"
 #import <MessageUI/MessageUI.h>
+#import <SignalMessaging/Environment.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
