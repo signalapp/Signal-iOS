@@ -6,6 +6,7 @@
 #import "AppContext.h"
 #import "NSData+Base64.h"
 #import "NSNotificationCenter+OWS.h"
+#import "OWSStorage+Subclass.h"
 #import "TSAttachmentStream.h"
 #import "TSStorageManager.h"
 #import <Curve25519Kit/Randomness.h>

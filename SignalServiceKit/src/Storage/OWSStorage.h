@@ -17,12 +17,6 @@ extern NSString *const StorageIsReadyNotification;
 
 + (BOOL)isStorageReady;
 
-- (void)runSyncRegistrations;
-- (void)runAsyncRegistrationsWithCompletion:(void (^_Nonnull)(void))completion;
-
-- (BOOL)areAsyncRegistrationsComplete;
-- (BOOL)areSyncRegistrationsComplete;
-
 /**
  * The safeBlockingMigrationsBlock block will
  * run any outstanding version migrations that are a) blocking and b) safe
@@ -43,8 +37,6 @@ extern NSString *const StorageIsReadyNotification;
                       withName:(NSString *)extensionName
                completionBlock:(nullable void (^)(BOOL ready))completionBlock;
 - (nullable id)registeredExtension:(NSString *)extensionName;
-
-- (void)resetStorage;
 
 #pragma mark - Password
 

@@ -11,6 +11,7 @@
 #import "OWSFileSystem.h"
 #import "OWSIncomingMessageFinder.h"
 #import "OWSMessageReceiver.h"
+#import "OWSStorage+Subclass.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
 
