@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initStorage NS_DESIGNATED_INITIALIZER;
 
-- (void)setDatabaseInitialized;
+- (void)setSyncRegistrationsAreComplete;
 
 + (void)resetAllStorage;
 
