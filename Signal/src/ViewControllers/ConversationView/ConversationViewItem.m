@@ -34,6 +34,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return @"OWSMessageCellType_GenericAttachment";
         case OWSMessageCellType_DownloadingAttachment:
             return @"OWSMessageCellType_DownloadingAttachment";
+        case OWSMessageCellType_Unknown:
+            return @"OWSMessageCellType_Unknown";
     }
 }
 
@@ -478,41 +480,70 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 #pragma mark - UIMenuController
 
-- (NSArray<UIMenuItem *> *)menuControllerItems
+- (NSArray<UIMenuItem *> *)textMenuControllerItems
+{
+    return @[
+        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION",
+                                              @"Short name for edit menu item to copy contents of media message.")
+                                   action:self.copyTextActionSelector],
+        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SHARE_ACTION",
+                                              @"Short name for edit menu item to share contents of media message.")
+                                   action:self.shareTextActionSelector],
+        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
+                                              @"Short name for edit menu item to show message metadata.")
+                                   action:self.metadataActionSelector],
+        // FIXME this is going to be confusing if the text/attachment look like separate entities.
+        // we can re-enable this once it's clear that deleting the text would also delete the attachment.
+        //        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
+        //                                              @"Short name for edit menu item to delete contents of media
+        //                                              message.")
+        //                                   action:self.deleteActionSelector],
+    ];
+}
+- (NSArray<UIMenuItem *> *)mediaMenuControllerItems
 {
     return @[
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SHARE_ACTION",
                                               @"Short name for edit menu item to share contents of media message.")
-                                   action:self.shareActionSelector],
+                                   action:self.shareMediaActionSelector],
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
                                               @"Short name for edit menu item to show message metadata.")
                                    action:self.metadataActionSelector],
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION",
                                               @"Short name for edit menu item to copy contents of media message.")
-                                   action:self.copyActionSelector],
+                                   action:self.copyMediaActionSelector],
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
                                               @"Short name for edit menu item to delete contents of media message.")
                                    action:self.deleteActionSelector],
-        // TODO: Do we want a save action?
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION",
                                               @"Short name for edit menu item to save contents of media message.")
-                                   action:self.saveActionSelector],
+                                   action:self.saveMediaActionSelector],
     ];
 }
 
-- (SEL)copyActionSelector
+- (SEL)copyTextActionSelector
 {
-    return NSSelectorFromString(@"copyAction:");
+    return NSSelectorFromString(@"copyTextAction:");
 }
 
-- (SEL)saveActionSelector
+- (SEL)copyMediaActionSelector
 {
-    return NSSelectorFromString(@"saveAction:");
+    return NSSelectorFromString(@"copyMediaAction:");
 }
 
-- (SEL)shareActionSelector
+- (SEL)saveMediaActionSelector
 {
-    return NSSelectorFromString(@"shareAction:");
+    return NSSelectorFromString(@"saveMediaAction:");
+}
+
+- (SEL)shareTextActionSelector
+{
+    return NSSelectorFromString(@"shareTextAction:");
+}
+
+- (SEL)shareMediaActionSelector
+{
+    return NSSelectorFromString(@"shareMediaAction:");
 }
 
 - (SEL)deleteActionSelector
@@ -528,12 +559,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 // We only use custom actions in UIMenuController.
 - (BOOL)canPerformAction:(SEL)action
 {
-    if (action == self.copyActionSelector) {
-        return [self hasActionContent];
-    } else if (action == self.saveActionSelector) {
-        return [self canSave];
-    } else if (action == self.shareActionSelector) {
-        return [self hasActionContent];
+    if (action == self.copyTextActionSelector) {
+        return [self hasTextActionContent];
+    } else if (action == self.copyMediaActionSelector) {
+        return [self hasMediaActionContent];
+    } else if (action == self.saveMediaActionSelector) {
+        return [self canSaveMedia];
+    } else if (action == self.shareTextActionSelector) {
+        return [self hasTextActionContent];
+    } else if (action == self.shareMediaActionSelector) {
+        return [self hasMediaActionContent];
     } else if (action == self.deleteActionSelector) {
         return YES;
     } else if (action == self.metadataActionSelector) {
@@ -543,14 +578,40 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
-- (void)copyAction
+- (void)copyTextAction
 {
     switch (self.messageCellType) {
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
+        case OWSMessageCellType_StillImage:
+        case OWSMessageCellType_AnimatedImage:
+        case OWSMessageCellType_Audio:
+        case OWSMessageCellType_Video:
+        case OWSMessageCellType_GenericAttachment: {
             OWSAssert(self.displayableText);
             [UIPasteboard.generalPasteboard setString:self.displayableText.fullText];
             break;
+        }
+        case OWSMessageCellType_DownloadingAttachment: {
+            OWSFail(@"%@ Can't copy not-yet-downloaded attachment", self.logTag);
+            break;
+        }
+        case OWSMessageCellType_Unknown: {
+            OWSFail(@"%@ No text to copy", self.logTag);
+            break;
+        }
+    }
+}
+
+- (void)copyMediaAction
+{
+    switch (self.messageCellType) {
+        case OWSMessageCellType_Unknown:
+        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_OversizeTextMessage: {
+            OWSFail(@"%@ No media to copy", self.logTag);
+            break;
+        }
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
         case OWSMessageCellType_Audio:
@@ -576,13 +637,37 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
-- (void)shareAction
+- (void)shareTextAction
 {
     switch (self.messageCellType) {
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
+        case OWSMessageCellType_StillImage:
+        case OWSMessageCellType_AnimatedImage:
+        case OWSMessageCellType_Audio:
+        case OWSMessageCellType_Video:
+        case OWSMessageCellType_GenericAttachment: {
             OWSAssert(self.displayableText);
             [AttachmentSharing showShareUIForText:self.displayableText.fullText];
+            break;
+        }
+        case OWSMessageCellType_DownloadingAttachment: {
+            OWSFail(@"%@ Can't share not-yet-downloaded attachment", self.logTag);
+            break;
+        }
+        case OWSMessageCellType_Unknown: {
+            OWSFail(@"%@ No text to share", self.logTag)
+        }
+    }
+}
+
+- (void)shareMediaAction
+{
+    switch (self.messageCellType) {
+        case OWSMessageCellType_Unknown:
+        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_OversizeTextMessage:
+            OWSFail(@"No media to share.");
             break;
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
@@ -598,9 +683,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
-- (BOOL)canSave
+- (BOOL)canSaveMedia
 {
     switch (self.messageCellType) {
+        case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
             return NO;
@@ -619,9 +705,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
-- (void)saveAction
+- (void)saveMediaAction
 {
     switch (self.messageCellType) {
+        case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
             OWSFail(@"%@ Cannot save text data.", self.logTag);
@@ -668,13 +755,18 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self.interaction remove];
 }
 
-- (BOOL)hasActionContent
+- (BOOL)hasTextActionContent
+{
+    return self.hasText && self.displayableText.fullText.length > 0;
+}
+
+- (BOOL)hasMediaActionContent
 {
     switch (self.messageCellType) {
+        case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
-            OWSAssert(self.displayableText);
-            return self.displayableText.fullText.length > 0;
+            return NO;
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
         case OWSMessageCellType_Audio:

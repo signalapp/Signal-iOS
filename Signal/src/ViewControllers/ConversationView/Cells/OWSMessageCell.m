@@ -256,13 +256,21 @@ NS_ASSUME_NONNULL_BEGIN
     [self.footerView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.footerView autoPinWidthToSuperview];
 
-    UITapGestureRecognizer *tap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-    [self addGestureRecognizer:tap];
+    UITapGestureRecognizer *mediaTap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMediaTapGesture:)];
+    [self.mediaMaskingView addGestureRecognizer:mediaTap];
 
-    UILongPressGestureRecognizer *longPress =
-        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
-    [self addGestureRecognizer:longPress];
+    UITapGestureRecognizer *textTap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTextTapGesture:)];
+    [self.textBubbleImageView addGestureRecognizer:textTap];
+
+    UILongPressGestureRecognizer *mediaLongPress =
+        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleMediaLongPressGesture:)];
+    [self.mediaMaskingView addGestureRecognizer:mediaLongPress];
+
+    UILongPressGestureRecognizer *textLongPress =
+        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleTextLongPressGesture:)];
+    [self.textBubbleImageView addGestureRecognizer:textLongPress];
 
     PanDirectionGestureRecognizer *panGesture =
         [[PanDirectionGestureRecognizer alloc] initWithDirection:PanDirectionHorizontal
@@ -335,6 +343,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSMessageCellType)cellType
 {
     return self.viewItem.messageCellType;
+}
+
+- (BOOL)hasText
+{
+    // This should always be valid for the appropriate cell types.
+    OWSAssert(self.viewItem);
+
+    return self.viewItem.hasText;
 }
 
 - (nullable DisplayableText *)displayableText
@@ -830,7 +846,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addCaptionIfNecessary
 {
-    if (self.viewItem.hasText) {
+    if (self.hasText) {
         [self loadForTextDisplay];
     } else {
         [self.contentConstraints addObject:[self.textBubbleImageView autoSetDimension:ALDimensionHeight toSize:0]];
@@ -949,7 +965,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.mediaMaskingView.isOutgoing = self.isOutgoing;
     // Hide tail on attachments followed by a caption
-    self.mediaMaskingView.hideTail = self.viewItem.hasText;
+    self.mediaMaskingView.hideTail = self.hasText;
     self.mediaMaskingView.maskedSubview = view;
     [self.mediaMaskingView updateMask];
 }
@@ -1002,7 +1018,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGSize mediaContentSize = CGSizeZero;
     CGSize textContentSize = CGSizeZero;
 
-    if (self.viewItem.hasText) {
+    if (self.hasText) {
         textContentSize = [self textBubbleSizeForContentWidth:contentWidth];
     }
     switch (self.cellType) {
@@ -1208,72 +1224,110 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Gesture recognizers
 
-- (void)handleTapGesture:(UITapGestureRecognizer *)sender
+- (void)handleTextTapGesture:(UITapGestureRecognizer *)sender
 {
     OWSAssert(self.delegate);
 
-    if (sender.state == UIGestureRecognizerStateRecognized) {
-
-        if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-            if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
-                [self.delegate didTapFailedOutgoingMessage:outgoingMessage];
-                return;
-            } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
-                // Ignore taps on outgoing messages being sent.
-                return;
-            }
-        }
-
-        switch (self.cellType) {
-            case OWSMessageCellType_TextMessage:
-            case OWSMessageCellType_OversizeTextMessage:
-                if (self.displayableText.isTextTruncated) {
-                    [self.delegate didTapTruncatedTextMessage:self.viewItem];
-                    return;
-                }
-                break;
-            case OWSMessageCellType_StillImage:
-                [self.delegate didTapImageViewItem:self.viewItem
-                                  attachmentStream:self.attachmentStream
-                                         imageView:self.stillImageView];
-                break;
-            case OWSMessageCellType_AnimatedImage:
-                [self.delegate didTapImageViewItem:self.viewItem
-                                  attachmentStream:self.attachmentStream
-                                         imageView:self.animatedImageView];
-                break;
-            case OWSMessageCellType_Audio:
-                [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:self.attachmentStream];
-                return;
-            case OWSMessageCellType_Video:
-                [self.delegate didTapVideoViewItem:self.viewItem attachmentStream:self.attachmentStream];
-                return;
-            case OWSMessageCellType_GenericAttachment:
-                [AttachmentSharing showShareUIForAttachment:self.attachmentStream];
-                break;
-            case OWSMessageCellType_DownloadingAttachment: {
-                OWSAssert(self.attachmentPointer);
-                if (self.attachmentPointer.state == TSAttachmentPointerStateFailed) {
-                    [self.delegate didTapFailedIncomingAttachment:self.viewItem
-                                                attachmentPointer:self.attachmentPointer];
-                }
-                break;
-            }
-        }
-
+    if (sender.state != UIGestureRecognizerStateRecognized) {
         DDLogInfo(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.debugDescription);
+        return;
+    }
+
+    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
+        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+            [self.delegate didTapFailedOutgoingMessage:outgoingMessage];
+            return;
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
+            // Ignore taps on outgoing messages being sent.
+            return;
+        }
+    }
+
+    if (self.hasText && self.displayableText.isTextTruncated) {
+        [self.delegate didTapTruncatedTextMessage:self.viewItem];
+        return;
     }
 }
 
-- (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
+- (void)handleMediaTapGesture:(UITapGestureRecognizer *)sender
+{
+    OWSAssert(self.delegate);
+
+    if (sender.state != UIGestureRecognizerStateRecognized) {
+        DDLogInfo(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.debugDescription);
+        return;
+    }
+
+    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
+        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+            [self.delegate didTapFailedOutgoingMessage:outgoingMessage];
+            return;
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
+            // Ignore taps on outgoing messages being sent.
+            return;
+        }
+    }
+
+    switch (self.cellType) {
+        case OWSMessageCellType_Unknown:
+            break;
+        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_OversizeTextMessage:
+            if (self.displayableText.isTextTruncated) {
+                [self.delegate didTapTruncatedTextMessage:self.viewItem];
+                return;
+            }
+            break;
+        case OWSMessageCellType_StillImage:
+            [self.delegate didTapImageViewItem:self.viewItem
+                              attachmentStream:self.attachmentStream
+                                     imageView:self.stillImageView];
+            break;
+        case OWSMessageCellType_AnimatedImage:
+            [self.delegate didTapImageViewItem:self.viewItem
+                              attachmentStream:self.attachmentStream
+                                     imageView:self.animatedImageView];
+            break;
+        case OWSMessageCellType_Audio:
+            [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:self.attachmentStream];
+            return;
+        case OWSMessageCellType_Video:
+            [self.delegate didTapVideoViewItem:self.viewItem attachmentStream:self.attachmentStream];
+            return;
+        case OWSMessageCellType_GenericAttachment:
+            [AttachmentSharing showShareUIForAttachment:self.attachmentStream];
+            break;
+        case OWSMessageCellType_DownloadingAttachment: {
+            OWSAssert(self.attachmentPointer);
+            if (self.attachmentPointer.state == TSAttachmentPointerStateFailed) {
+                [self.delegate didTapFailedIncomingAttachment:self.viewItem attachmentPointer:self.attachmentPointer];
+            }
+            break;
+        }
+    }
+}
+
+- (void)handleTextLongPressGesture:(UILongPressGestureRecognizer *)sender
 {
     OWSAssert(self.delegate);
 
     // We "eagerly" respond when the long press begins, not when it ends.
     if (sender.state == UIGestureRecognizerStateBegan) {
         CGPoint location = [sender locationInView:self];
-        [self showMenuController:location];
+        [self showTextMenuController:location];
+    }
+}
+
+- (void)handleMediaLongPressGesture:(UILongPressGestureRecognizer *)sender
+{
+    OWSAssert(self.delegate);
+
+    // We "eagerly" respond when the long press begins, not when it ends.
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        CGPoint location = [sender locationInView:self];
+        [self showMediaMenuController:location];
     }
 }
 
@@ -1286,7 +1340,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - UIMenuController
 
-- (void)showMenuController:(CGPoint)fromLocation
+- (void)showTextMenuController:(CGPoint)fromLocation
 {
     // We don't want taps on messages to hide the keyboard,
     // so we only let messages become first responder
@@ -1301,7 +1355,29 @@ NS_ASSUME_NONNULL_BEGIN
 
     // We use custom action selectors so that we can control
     // the ordering of the actions in the menu.
-    NSArray *menuItems = self.viewItem.menuControllerItems;
+    NSArray *menuItems = self.viewItem.textMenuControllerItems;
+    [UIMenuController sharedMenuController].menuItems = menuItems;
+    CGRect targetRect = CGRectMake(fromLocation.x, fromLocation.y, 1, 1);
+    [[UIMenuController sharedMenuController] setTargetRect:targetRect inView:self];
+    [[UIMenuController sharedMenuController] setMenuVisible:YES animated:YES];
+}
+
+- (void)showMediaMenuController:(CGPoint)fromLocation
+{
+    // We don't want taps on messages to hide the keyboard,
+    // so we only let messages become first responder
+    // while they are trying to present the menu controller.
+    self.isPresentingMenuController = YES;
+
+    [self becomeFirstResponder];
+
+    if ([UIMenuController sharedMenuController].isMenuVisible) {
+        [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
+    }
+
+    // We use custom action selectors so that we can control
+    // the ordering of the actions in the menu.
+    NSArray *menuItems = self.viewItem.mediaMenuControllerItems;
     [UIMenuController sharedMenuController].menuItems = menuItems;
     CGRect targetRect = CGRectMake(fromLocation.x, fromLocation.y, 1, 1);
     [[UIMenuController sharedMenuController] setTargetRect:targetRect inView:self];
@@ -1313,19 +1389,29 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.viewItem canPerformAction:action];
 }
 
-- (void)copyAction:(nullable id)sender
+- (void)copyTextAction:(nullable id)sender
 {
-    [self.viewItem copyAction];
+    [self.viewItem copyTextAction];
 }
 
-- (void)shareAction:(nullable id)sender
+- (void)copyMediaAction:(nullable id)sender
 {
-    [self.viewItem shareAction];
+    [self.viewItem copyMediaAction];
 }
 
-- (void)saveAction:(nullable id)sender
+- (void)shareTextAction:(nullable id)sender
 {
-    [self.viewItem saveAction];
+    [self.viewItem shareTextAction];
+}
+
+- (void)shareMediaAction:(nullable id)sender
+{
+    [self.viewItem shareMediaAction];
+}
+
+- (void)saveMediaAction:(nullable id)sender
+{
+    [self.viewItem saveMediaAction];
 }
 
 - (void)deleteAction:(nullable id)sender
