@@ -62,7 +62,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 
 #pragma mark - YAP integration
 
-- (YapDatabaseSecondaryIndex *)indexExtension
++ (YapDatabaseSecondaryIndex *)indexExtension
 {
     YapDatabaseSecondaryIndexSetup *setup = [YapDatabaseSecondaryIndexSetup new];
 
@@ -92,21 +92,21 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
     return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
 }
 
-- (void)asyncRegisterExtension
++ (void)asyncRegisterExtensionWithStorageManager:(TSStorageManager *)storageManager
 {
     DDLogInfo(@"%@ registering async.", self.logTag);
-    [self.storageManager asyncRegisterExtension:self.indexExtension
-                                       withName:OWSIncomingMessageFinderExtensionName
-                                completionBlock:^(BOOL ready) {
-                                    DDLogInfo(@"%@ finished registering async.", self.logTag);
-                                }];
+    [storageManager asyncRegisterExtension:self.indexExtension
+                                  withName:OWSIncomingMessageFinderExtensionName
+                           completionBlock:^(BOOL ready) {
+                               DDLogInfo(@"%@ finished registering async.", self.logTag);
+                           }];
 }
 
 // We should not normally hit this, as we should have prefer registering async, but it is useful for testing.
 - (void)registerExtension
 {
     DDLogError(@"%@ registering SYNC. We should prefer async when possible.", self.logTag);
-    [self.storageManager registerExtension:self.indexExtension withName:OWSIncomingMessageFinderExtensionName];
+    [self.storageManager registerExtension:self.class.indexExtension withName:OWSIncomingMessageFinderExtensionName];
 }
 
 #pragma mark - instance methods

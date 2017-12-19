@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Database extensions required for class to work.
  */
-- (void)asyncRegisterDatabaseExtensions;
++ (void)asyncRegisterDatabaseExtensionsWithStorageManager:(TSStorageManager *)storageManager;
 
 /**
  * Only use the sync version for testing, generally we'll want to register extensions async

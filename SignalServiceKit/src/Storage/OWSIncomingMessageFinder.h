@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Must be called before using this finder.
  */
-- (void)asyncRegisterExtension;
++ (void)asyncRegisterExtensionWithStorageManager:(TSStorageManager *)storageManager;
 
 /**
  * Detects existance of a duplicate incoming message.

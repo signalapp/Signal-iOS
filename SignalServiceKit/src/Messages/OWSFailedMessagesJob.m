@@ -105,7 +105,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 
 #pragma mark - YapDatabaseExtension
 
-- (YapDatabaseSecondaryIndex *)indexDatabaseExtension
++ (YapDatabaseSecondaryIndex *)indexDatabaseExtension
 {
     YapDatabaseSecondaryIndexSetup *setup = [YapDatabaseSecondaryIndexSetup new];
     [setup addColumn:OWSFailedMessagesJobMessageStateColumn withType:YapDatabaseSecondaryIndexTypeInteger];
@@ -130,21 +130,21 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 // Useful for tests, don't use in app startup path because it's slow.
 - (void)blockingRegisterDatabaseExtensions
 {
-    [self.storageManager registerExtension:[self indexDatabaseExtension]
+    [self.storageManager registerExtension:[self.class indexDatabaseExtension]
                                   withName:OWSFailedMessagesJobMessageStateIndex];
 }
 
-- (void)asyncRegisterDatabaseExtensions
++ (void)asyncRegisterDatabaseExtensionsWithStorageManager:(TSStorageManager *)storageManager
 {
-    [self.storageManager asyncRegisterExtension:[self indexDatabaseExtension]
-                                       withName:OWSFailedMessagesJobMessageStateIndex
-                                completionBlock:^(BOOL ready) {
-                                    if (ready) {
-                                        DDLogDebug(@"%@ completed registering extension async.", self.logTag);
-                                    } else {
-                                        DDLogError(@"%@ failed registering extension async.", self.logTag);
-                                    }
-                                }];
+    [storageManager asyncRegisterExtension:[self indexDatabaseExtension]
+                                  withName:OWSFailedMessagesJobMessageStateIndex
+                           completionBlock:^(BOOL ready) {
+                               if (ready) {
+                                   DDLogDebug(@"%@ completed registering extension async.", self.logTag);
+                               } else {
+                                   DDLogError(@"%@ failed registering extension async.", self.logTag);
+                               }
+                           }];
 }
 
 @end
