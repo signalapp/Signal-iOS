@@ -305,9 +305,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
     }
 
     private func displayableTextIfText() -> String? {
-        let messageCellType = viewItem.messageCellType()
-        guard messageCellType == .textMessage ||
-            messageCellType == .oversizeTextMessage else {
+        guard viewItem.hasText else {
                 return nil
         }
         guard let displayableText = viewItem.displayableText() else {
@@ -327,6 +325,10 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
     private func contentRows() -> [UIView] {
         var rows = [UIView]()
 
+        if message.attachmentIds.count > 0 {
+            rows += addAttachmentRows()
+        }
+
         if let messageBody = displayableTextIfText() {
 
             self.messageBody = messageBody
@@ -334,10 +336,10 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
             let isIncoming = self.message as? TSIncomingMessage != nil
 
             // UITextView can't render extremely long text due to constraints
-            // on the size of its backing buffer, especially when we're 
+            // on the size of its backing buffer, especially when we're
             // embedding it "full-size' within a UIScrollView as we do in this view.
             //
-            // Therefore we're doing something unusual here.  
+            // Therefore we're doing something unusual here.
             // See comments on updateTextLayout.
             let messageTextView = UITextView()
             self.messageTextView = messageTextView
@@ -382,9 +384,9 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
             bubbleView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing, withInset: bubbleViewHMargin)
             self.bubbleViewWidthConstraint = bubbleView.autoSetDimension(.width, toSize:0)
             rows.append(row)
-        } else if message.attachmentIds.count > 0 {
-            rows += addAttachmentRows()
-        } else {
+        }
+
+        if rows.count == 0 {
             // Neither attachment nor body.
             owsFail("\(self.TAG) Message has neither attachment nor body.")
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY",
