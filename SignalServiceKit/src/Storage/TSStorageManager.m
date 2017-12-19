@@ -201,16 +201,6 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     return TSStorageManager.sharedManager.dbReadWriteConnection;
 }
 
-- (void)deleteThreadsAndMessages {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction removeAllObjectsInCollection:[TSThread collection]];
-        [transaction removeAllObjectsInCollection:[SignalRecipient collection]];
-        [transaction removeAllObjectsInCollection:[TSInteraction collection]];
-        [transaction removeAllObjectsInCollection:[TSAttachment collection]];
-    }];
-    [TSAttachmentStream deleteAttachments];
-}
-
 - (void)deleteDatabaseFile
 {
     NSError *error;

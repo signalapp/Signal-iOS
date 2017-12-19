@@ -28,8 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)setupDatabaseWithSafeBlockingMigrations:(void (^_Nonnull)(void))safeBlockingMigrationsBlock;
 
-- (void)deleteThreadsAndMessages;
-
 // TODO: Deprecate.
 + (YapDatabaseConnection *)dbReadConnection;
 + (YapDatabaseConnection *)dbReadWriteConnection;
