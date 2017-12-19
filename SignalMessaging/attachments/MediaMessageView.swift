@@ -172,8 +172,16 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         let stackView = wrapViewsInVerticalStack(subviews: subviews)
         self.addSubview(stackView)
         fileNameLabel?.autoPinWidthToSuperview(withMargin: 32)
+
+        // We want to center the stackView in it's superview while ensuring
+        // it's superview is big enough to contain it.
         stackView.autoPinWidthToSuperview()
         stackView.autoVCenterInSuperview()
+        NSLayoutConstraint.autoSetPriority(UILayoutPriorityDefaultLow) {
+            stackView.autoPinHeightToSuperview()
+        }
+        stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+        stackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
     }
 
     private func createAnimatedPreview() {
@@ -286,8 +294,16 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         let stackView = wrapViewsInVerticalStack(subviews: subviews)
         self.addSubview(stackView)
         fileNameLabel?.autoPinWidthToSuperview(withMargin: 32)
+
+        // We want to center the stackView in it's superview while ensuring
+        // it's superview is big enough to contain it.
         stackView.autoPinWidthToSuperview()
         stackView.autoVCenterInSuperview()
+        NSLayoutConstraint.autoSetPriority(UILayoutPriorityDefaultLow) {
+            stackView.autoPinHeightToSuperview()
+        }
+        stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+        stackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
     }
 
     private func createHeroViewSize() -> CGFloat {

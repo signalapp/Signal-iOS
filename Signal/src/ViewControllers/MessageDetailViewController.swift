@@ -300,7 +300,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         }
 
         if let mediaMessageView = mediaMessageView {
-            mediaMessageView.autoPinToSquareAspectRatio()
+            mediaMessageView.autoMatch(.height, to: .width, of: mediaMessageView, withOffset:0, relation: .lessThanOrEqual)
         }
     }
 
