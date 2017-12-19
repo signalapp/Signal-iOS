@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const StorageIsReadyNotification;
+
 @class YapDatabaseExtension;
 
 @interface OWSStorage : NSObject
@@ -13,7 +15,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initStorage NS_DESIGNATED_INITIALIZER;
 
-- (void)setSyncRegistrationsAreComplete;
++ (BOOL)isStorageReady;
+
+- (void)runSyncRegistrations;
+- (void)runAsyncRegistrationsWithCompletion:(void (^_Nonnull)(void))completion;
+
+- (BOOL)areAsyncRegistrationsComplete;
+- (BOOL)areSyncRegistrationsComplete;
+
+/**
+ * The safeBlockingMigrationsBlock block will
+ * run any outstanding version migrations that are a) blocking and b) safe
+ * to be run before the environment and storage is completely configured.
+ *
+ * Specifically, these migration should not depend on or affect the data
+ * of any database view.
+ */
++ (void)setupWithSafeBlockingMigrations:(void (^_Nonnull)(void))safeBlockingMigrationsBlock;
 
 + (void)resetAllStorage;
 

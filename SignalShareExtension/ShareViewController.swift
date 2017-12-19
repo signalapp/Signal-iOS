@@ -102,8 +102,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         OWSContactsSyncing.sharedManager()
 
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(databaseViewRegistrationComplete),
-                                               name: .DatabaseViewRegistrationComplete,
+                                               selector: #selector(storageIsReady),
+                                               name: .StorageIsReady,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(registrationStateDidChange),
@@ -177,7 +177,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     }
 
     @objc
-    func databaseViewRegistrationComplete() {
+    func storageIsReady() {
         AssertIsOnMainThread()
 
         Logger.debug("\(self.logTag) \(#function)")
@@ -232,7 +232,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     private func ensureRootViewController() {
         Logger.debug("\(self.logTag) \(#function)")
 
-        guard !TSDatabaseView.hasPendingViewRegistrations() else {
+        guard OWSStorage.isStorageReady() else {
             return
         }
         guard !hasInitialRootViewController else {

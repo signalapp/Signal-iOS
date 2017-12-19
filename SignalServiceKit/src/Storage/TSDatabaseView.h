@@ -4,8 +4,6 @@
 
 #import <YapDatabase/YapDatabaseViewTransaction.h>
 
-extern NSString *const DatabaseViewRegistrationCompleteNotification;
-
 extern NSString *const TSInboxGroup;
 extern NSString *const TSArchiveGroup;
 extern NSString *const TSUnreadIncomingMessagesGroup;
@@ -21,9 +19,6 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 @interface TSDatabaseView : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-
-// This method can be called from any thread.
-+ (BOOL)hasPendingViewRegistrations;
 
 + (void)registerCrossProcessNotifier;
 
@@ -56,8 +51,5 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 
 // NOTE: It is not safe to call this method while hasPendingViewRegistrations is YES.
 + (id)threadSpecialMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
-
-// This method should be called _after_ all async database registrations have been started.
-+ (void)asyncRegistrationCompletion;
 
 @end

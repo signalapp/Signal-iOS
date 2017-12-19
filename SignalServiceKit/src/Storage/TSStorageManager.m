@@ -28,6 +28,9 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
 
+@property (atomic) BOOL areAsyncRegistrationsComplete;
+@property (atomic) BOOL areSyncRegistrationsComplete;
+
 @end
 
 #pragma mark -
@@ -69,7 +72,7 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     [super resetStorage];
 }
 
-- (void)setupDatabaseWithSafeBlockingMigrations:(void (^_Nonnull)(void))safeBlockingMigrationsBlock
+- (void)runSyncRegistrations
 {
     // Synchronously register extensions which are essential for views.
     [TSDatabaseView registerCrossProcessNotifier];
@@ -86,15 +89,13 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     // seeing, this issue only seems to affect sync and not async registrations.  We've always
     // been opening write transactions before the async registrations complete without negative
     // consequences.
-    [self setSyncRegistrationsAreComplete];
+    OWSAssert(!self.areSyncRegistrationsComplete);
+    self.areSyncRegistrationsComplete = YES;
+}
 
-    // Run the blocking migrations.
-    //
-    // These need to run _before_ the async registered database views or
-    // they will block on them, which (in the upgrade case) can block
-    // return of appDidFinishLaunching... which in term can cause the
-    // app to crash on launch.
-    safeBlockingMigrationsBlock();
+- (void)runAsyncRegistrationsWithCompletion:(void (^_Nonnull)(void))completion
+{
+    OWSAssert(completion);
 
     // Asynchronously register other extensions.
     //
@@ -111,10 +112,14 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithStorageManager:self];
     [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithStorageManager:self];
 
-    // NOTE: [TSDatabaseView asyncRegistrationCompletion] ensures that
-    // DatabaseViewRegistrationCompleteNotification is not fired until all
-    // of the async registrations are complete.
-    [TSDatabaseView asyncRegistrationCompletion];
+    // Block until all async registrations are complete.
+    [self.newDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        OWSAssert(!self.areAsyncRegistrationsComplete);
+
+        self.areAsyncRegistrationsComplete = YES;
+
+        completion();
+    }];
 }
 
 + (void)protectFiles
@@ -216,12 +221,12 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 
 + (YapDatabaseConnection *)dbReadConnection
 {
-    return TSStorageManager.dbReadConnection;
+    return TSStorageManager.sharedManager.dbReadConnection;
 }
 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
-    return TSStorageManager.dbReadWriteConnection;
+    return TSStorageManager.sharedManager.dbReadWriteConnection;
 }
 
 - (void)deleteDatabaseFile
