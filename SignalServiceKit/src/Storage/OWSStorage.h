@@ -6,14 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol OWSDatabaseConnectionDelegate <NSObject>
-
-- (BOOL)isDatabaseInitialized;
-
-@end
-
-#pragma mark -
-
 @class YapDatabaseExtension;
 
 @interface OWSStorage : NSObject

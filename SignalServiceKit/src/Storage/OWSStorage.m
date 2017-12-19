@@ -23,6 +23,14 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 
 #pragma mark -
 
+@protocol OWSDatabaseConnectionDelegate <NSObject>
+
+- (BOOL)isDatabaseInitialized;
+
+@end
+
+#pragma mark -
+
 @interface YapDatabaseConnection ()
 
 - (id)initWithDatabase:(YapDatabase *)database;
