@@ -7,6 +7,7 @@
 #import "ContactsUpdater.h"
 #import "NSData+keyVersionByte.h"
 #import "NSData+messagePadding.h"
+#import "OWSBackgroundTask.h"
 #import "OWSBlockingManager.h"
 #import "OWSDevice.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -122,11 +123,6 @@ static void *kNSError_MessageSender_IsFatal = &kNSError_MessageSender_IsFatal;
                         success:(void (^)(void))successHandler
                         failure:(void (^)(NSError *_Nonnull error))failureHandler NS_DESIGNATED_INITIALIZER;
 
-#pragma mark - background task mgmt
-
-- (void)startBackgroundTask;
-- (void)endBackgroundTask;
-
 @end
 
 #pragma mark -
@@ -159,7 +155,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 @property (nonatomic, readonly) void (^successHandler)(void);
 @property (nonatomic, readonly) void (^failureHandler)(NSError *_Nonnull error);
 @property (nonatomic) OWSSendMessageOperationState operationState;
-@property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
+@property (nonatomic) OWSBackgroundTask *backgroundTask;
 
 @end
 
@@ -178,7 +174,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     }
 
     _operationState = OWSSendMessageOperationStateNew;
-    _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+    self.backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     _message = message;
     _messageSender = messageSender;
@@ -216,38 +212,6 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
     return self;
 }
 
-#pragma mark - background task mgmt
-
-// We want to make sure to finish sending any in-flight messages when the app is backgrounded.
-// We have to call `startBackgroundTask` *before* the task is enqueued, since we can't guarantee when the operation will
-// be dequeued.
-- (void)startBackgroundTask
-{
-    AssertIsOnMainThread();
-    OWSAssert(self.backgroundTaskIdentifier == UIBackgroundTaskInvalid);
-
-    self.backgroundTaskIdentifier = [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
-        DDLogWarn(@"%@ Timed out while in background trying to send message: %@", self.logTag, self.message);
-        [self endBackgroundTask];
-    }];
-}
-
-- (void)endBackgroundTask
-{
-    [CurrentAppContext() endBackgroundTask:self.backgroundTaskIdentifier];
-}
-
-- (void)setBackgroundTaskIdentifier:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier
-{
-    AssertIsOnMainThread();
-
-    // Should only be sent once per operation
-    OWSAssert(!CurrentAppContext().isMainApp || _backgroundTaskIdentifier == UIBackgroundTaskInvalid);
-    OWSAssert(!CurrentAppContext().isMainApp || backgroundTaskIdentifier != UIBackgroundTaskInvalid);
-
-    _backgroundTaskIdentifier = backgroundTaskIdentifier;
-}
-
 #pragma mark - NSOperation overrides
 
 - (BOOL)isExecuting
@@ -262,11 +226,6 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 
 - (void)start
 {
-    // Should call `startBackgroundTask` before enqueuing the operation
-    // to ensure we don't get suspended before the operation completes.
-
-    OWSAssert(!CurrentAppContext().isMainApp || self.backgroundTaskIdentifier != UIBackgroundTaskInvalid);
-
     [self willChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
     self.operationState = OWSSendMessageOperationStateExecuting;
     [self didChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
@@ -339,8 +298,6 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 
     [self didChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
     [self didChangeValueForKey:OWSSendMessageOperationKeyIsFinished];
-
-    [self endBackgroundTask];
 }
 
 @end
@@ -452,17 +409,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                      success:successHandler
                                                      failure:failureHandler];
 
-        // startBackgroundTask must be called on the main thread.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            // We call `startBackgroundTask` here to prevent our app from suspending while being backgrounded
-            // until the operation is completed - at which point the OWSSendMessageOperation ends it's background task.
-
-            [sendMessageOperation startBackgroundTask];
-
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
-                [sendingQueue addOperation:sendMessageOperation];
-            });
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
+            [sendingQueue addOperation:sendMessageOperation];
         });
     });
 }

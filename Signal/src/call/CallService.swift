@@ -584,16 +584,19 @@ protocol CallServiceObserver: class {
 
         self.call = newCall
 
-        let backgroundTask = UIApplication.shared.beginBackgroundTask {
-            let timeout = CallError.timeout(description: "background task time ran out before call connected.")
-            DispatchQueue.main.async {
-                guard self.call == newCall else {
-                    Logger.warn("\(self.logTag) ignoring obsolete call in \(#function)")
-                    return
-                }
-                self.handleFailedCall(failedCall: newCall, error: timeout)
+        var backgroundTask = OWSBackgroundTask(label:"\(#function)", completionBlock: { [weak self] _ in
+            AssertIsOnMainThread()
+            guard let strongSelf = self else {
+                return
             }
-        }
+            let timeout = CallError.timeout(description: "background task time ran out before call connected.")
+
+            guard strongSelf.call == newCall else {
+                Logger.warn("\(strongSelf.logTag) ignoring obsolete call in \(#function)")
+                return
+            }
+            strongSelf.handleFailedCall(failedCall: newCall, error: timeout)
+        })
 
         let incomingCallPromise = firstly {
             return getIceServers()
@@ -674,7 +677,8 @@ protocol CallServiceObserver: class {
             }
         }.always {
             Logger.debug("\(self.logTag) ending background task awaiting inbound call connection")
-            UIApplication.shared.endBackgroundTask(backgroundTask)
+
+            backgroundTask = nil
         }
         incomingCallPromise.retainUntilComplete()
     }

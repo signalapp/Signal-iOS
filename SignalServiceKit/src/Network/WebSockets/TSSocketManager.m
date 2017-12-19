@@ -7,6 +7,7 @@
 #import "Cryptography.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NSTimer+OWS.h"
+#import "OWSBackgroundTask.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
 #import "OWSSignalService.h"
@@ -72,7 +73,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 @property (nonatomic) NSTimer *backgroundKeepAliveTimer;
 // This is used to manage the iOS "background task" used to
 // keep the app alive in the background.
-@property (nonatomic) UIBackgroundTaskIdentifier fetchingTaskIdentifier;
+@property (nonatomic) OWSBackgroundTask *backgroundTask;
 
 // We cache this value instead of consulting [UIApplication sharedApplication].applicationState,
 // because UIKit only provides a "will resign active" notification, not a "did resign active"
@@ -100,7 +101,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     _signalService = [OWSSignalService sharedInstance];
     _messageReceiver = [OWSMessageReceiver sharedInstance];
     _state = SocketManagerStateClosed;
-    _fetchingTaskIdentifier = UIBackgroundTaskInvalid;
 
     OWSSingletonAssert();
 
@@ -381,6 +381,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]) {
 
+        __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
             NSData *decryptedPayload =
@@ -389,6 +391,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             if (!decryptedPayload) {
                 DDLogWarn(@"%@ Failed to decrypt incoming payload or bad HMAC", self.logTag);
                 [self sendWebSocketMessageAcknowledgement:message];
+                backgroundTask = nil;
                 return;
             }
 
@@ -398,6 +401,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self sendWebSocketMessageAcknowledgement:message];
+                backgroundTask = nil;
             });
         });
     } else {
@@ -513,7 +517,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         return YES;
     } else if (self.backgroundKeepAliveUntilDate && [self.backgroundKeepAliveUntilDate timeIntervalSinceNow] > 0.f) {
         OWSAssert(self.backgroundKeepAliveTimer);
-        OWSAssert(self.fetchingTaskIdentifier != UIBackgroundTaskInvalid);
         // If app is doing any work in the background, keep web socket alive.
         return YES;
     } else {
@@ -532,7 +535,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     } else if (!self.backgroundKeepAliveUntilDate) {
         OWSAssert(!self.backgroundKeepAliveUntilDate);
         OWSAssert(!self.backgroundKeepAliveTimer);
-        OWSAssert(self.fetchingTaskIdentifier == UIBackgroundTaskInvalid);
 
         DDLogInfo(@"%s activating socket in the background", __PRETTY_FUNCTION__);
 
@@ -551,19 +553,25 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         // Additionally, we want the reconnect timer to work in the background too.
         [[NSRunLoop mainRunLoop] addTimer:self.backgroundKeepAliveTimer forMode:NSDefaultRunLoopMode];
 
-        self.fetchingTaskIdentifier = [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
-            OWSAssert([NSThread isMainThread]);
+        __weak typeof(self) weakSelf = self;
+        self.backgroundTask =
+            [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__
+                                          completionBlock:^(BackgroundTaskState backgroundTaskState) {
+                                              OWSAssert([NSThread isMainThread]);
+                                              __strong typeof(self) strongSelf = weakSelf;
+                                              if (!strongSelf) {
+                                                  return;
+                                              }
 
-            DDLogInfo(@"%s background task expired", __PRETTY_FUNCTION__);
-
-            [self clearBackgroundState];
-            [self applyDesiredSocketState];
-        }];
+                                              if (backgroundTaskState == BackgroundTaskState_Expired) {
+                                                  [strongSelf clearBackgroundState];
+                                              }
+                                              [strongSelf applyDesiredSocketState];
+                                          }];
     } else {
         OWSAssert(self.backgroundKeepAliveUntilDate);
         OWSAssert(self.backgroundKeepAliveTimer);
         OWSAssert([self.backgroundKeepAliveTimer isValid]);
-        OWSAssert(self.fetchingTaskIdentifier != UIBackgroundTaskInvalid);
 
         if ([self.backgroundKeepAliveUntilDate timeIntervalSinceNow] < durationSeconds) {
             // Update state used to keep socket alive in background.
@@ -623,11 +631,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     self.backgroundKeepAliveUntilDate = nil;
     [self.backgroundKeepAliveTimer invalidate];
     self.backgroundKeepAliveTimer = nil;
-
-    if (self.fetchingTaskIdentifier != UIBackgroundTaskInvalid) {
-        [CurrentAppContext() endBackgroundTask:self.fetchingTaskIdentifier];
-        self.fetchingTaskIdentifier = UIBackgroundTaskInvalid;
-    }
+    self.backgroundTask = nil;
 }
 
 #pragma mark - Reconnect

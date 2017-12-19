@@ -5,6 +5,7 @@
 #import "OWSMessageReceiver.h"
 #import "AppContext.h"
 #import "NSArray+OWS.h"
+#import "OWSBackgroundTask.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSMessageDecrypter.h"
 #import "OWSQueues.h"
@@ -308,6 +309,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         return;
     }
 
+    __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
     [self processJob:job
           completion:^(BOOL success) {
               [self.finder removeJobWithId:job.uniqueId];
@@ -316,6 +319,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
                   success ? @"decrypted" : @"failed to decrypt",
                   (unsigned long)[OWSMessageDecryptJob numberOfKeysInCollection]);
               [self drainQueueWorkStep];
+              backgroundTask = nil;
           }];
 }
 

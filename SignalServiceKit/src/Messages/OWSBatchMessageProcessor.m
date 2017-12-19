@@ -5,6 +5,7 @@
 #import "OWSBatchMessageProcessor.h"
 #import "AppContext.h"
 #import "NSArray+OWS.h"
+#import "OWSBackgroundTask.h"
 #import "OWSMessageManager.h"
 #import "OWSQueues.h"
 #import "OWSSignalServiceProtos.pb.h"
@@ -335,9 +336,13 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
         return;
     }
 
+    OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
     [self processJobs:jobs];
 
     [self.finder removeJobsWithIds:jobs.uniqueIds];
+
+    backgroundTask = nil;
 
     DDLogVerbose(@"%@ completed %zd jobs. %zd jobs left.",
         self.logTag,
