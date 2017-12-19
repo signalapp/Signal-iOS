@@ -20,6 +20,7 @@
 #import "TSStorageManager+sessionStore.h"
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
+#import "YapDatabaseConnection+OWS.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <Curve25519Kit/Curve25519.h>
 

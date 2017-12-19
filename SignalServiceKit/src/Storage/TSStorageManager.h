@@ -4,11 +4,6 @@
 
 #import "OWSStorage.h"
 #import "TSStorageKeys.h"
-#import "YapDatabaseConnection+OWS.h"
-
-@class ECKeyPair;
-@class PreKeyRecord;
-@class SignedPreKeyRecord;
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -7,7 +7,7 @@
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
-#import <YapDatabase/YapDatabaseConnection.h>
+#import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 

@@ -3,6 +3,7 @@
 //
 
 #import "SignalKeyingStorage.h"
+#import "YapDatabaseConnection+OWS.h"
 #import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/TSStorageManager.h>
 

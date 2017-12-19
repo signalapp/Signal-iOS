@@ -4,7 +4,7 @@
 
 #import "OWSRecipientIdentity.h"
 #import "TSStorageManager.h"
-#import <YapDatabase/YapDatabaseConnection.h>
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

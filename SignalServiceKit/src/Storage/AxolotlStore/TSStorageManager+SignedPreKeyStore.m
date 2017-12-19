@@ -6,6 +6,7 @@
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+SignedPreKeyStore.h"
 #import "TSStorageManager+keyFromIntLong.h"
+#import "YapDatabaseConnection+OWS.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <Curve25519Kit/Ed25519.h>

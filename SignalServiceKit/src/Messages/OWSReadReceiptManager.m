@@ -16,6 +16,8 @@
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 #import "Threading.h"
+#import "YapDatabaseConnection+OWS.h"
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

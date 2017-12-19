@@ -39,6 +39,7 @@
 #import "TSStorageManager+SessionStore.h"
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -4,6 +4,7 @@
 
 #import "TSStorageManager+SessionStore.h"
 #import <AxolotlKit/SessionRecord.h>
+#import <YapDatabase/YapDatabase.h>
 
 NSString *const TSStorageManagerSessionStoreCollection = @"TSStorageManagerSessionStoreCollection";
 NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";

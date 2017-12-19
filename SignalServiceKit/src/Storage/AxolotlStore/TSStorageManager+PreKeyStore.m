@@ -4,6 +4,7 @@
 
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+keyFromIntLong.h"
+#import "YapDatabaseConnection+OWS.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionBuilder.h>
 

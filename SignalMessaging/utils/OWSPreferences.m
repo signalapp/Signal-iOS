@@ -3,6 +3,7 @@
 //
 
 #import "OWSPreferences.h"
+#import "YapDatabaseConnection+OWS.h"
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/TSStorageHeaders.h>
 

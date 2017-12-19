@@ -12,6 +12,7 @@
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
+#import <YapDatabase/YapDatabase.h>
 
 #define NEEDS_TO_REGISTER_PUSH_KEY @"Register For Push"
 #define NEEDS_TO_REGISTER_ATTRIBUTES @"Register Attributes"

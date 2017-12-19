@@ -10,6 +10,7 @@
 #import "TSContactsIntersectionRequest.h"
 #import "TSNetworkManager.h"
 #import "TSStorageManager.h"
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
