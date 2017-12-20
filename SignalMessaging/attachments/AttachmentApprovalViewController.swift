@@ -123,7 +123,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         containerView.addSubview(mediaMessageView)
         mediaMessageView.autoPinEdgesToSuperviewEdges()
 
-        if attachment.isImage || attachment.isVideo {
+        if isZoomable {
             // Add top and bottom gradients to ensure toolbar controls are legible
             // when placed over image/video preview which may be a clashing color.
             let topGradient = GradientView(from: backgroundColor, to: UIColor.clear)
@@ -211,6 +211,14 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     // MARK: CaptioningToolbarDelegate
 
+    func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar) {
+        self.shouldShrinkAttachment = true
+    }
+
+    func captioningToolbarDidEndEditing(_ captioningToolbar: CaptioningToolbar) {
+        self.shouldShrinkAttachment = false
+    }
+
     func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar, captionText: String?) {
         self.sendAttachment(captionText: captionText)
     }
@@ -220,6 +228,10 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     }
 
     // MARK: Helpers
+
+    var isZoomable: Bool {
+        return attachment.isImage || attachment.isVideo
+    }
 
     private func sendAttachment(captionText: String?) {
         // disable controls after send was tapped.
@@ -236,12 +248,36 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         attachment.captionText = captionText
         self.delegate?.didApproveAttachment(attachment: attachment)
     }
+
+    // When the keyboard is popped, it can obscure the attachment view.
+    private var shouldShrinkAttachment: Bool = false {
+        didSet {
+            UIView.animate(withDuration: 0.2) {
+                if self.shouldShrinkAttachment {
+                    let kScaleFactor: CGFloat = 0.7
+                    let scale = CGAffineTransform(scaleX: kScaleFactor, y: kScaleFactor)
+
+                    let originalHeight = self.scrollView.bounds.size.height
+
+                    // Position the new scaled item to be centered with respect
+                    // to it's new size.
+                    let heightDelta = originalHeight * (1 - kScaleFactor)
+                    let translate = CGAffineTransform(translationX: 0, y: -heightDelta / 2)
+
+                    self.scrollView.transform = scale.concatenating(translate)
+                } else {
+                    self.scrollView.transform = CGAffineTransform.identity
+                }
+            }
+        }
+    }
+
 }
 
 extension AttachmentApprovalViewController: UIScrollViewDelegate {
 
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        if attachment.isImage || attachment.isVideo {
+        if isZoomable {
             return mediaMessageView
         } else {
             // don't zoom for audio or generic attachments.
@@ -330,6 +366,8 @@ private class GradientView: UIView {
 protocol CaptioningToolbarDelegate: class {
     func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar, captionText: String?)
     func captioningToolbar(_ captioningToolbar: CaptioningToolbar, didChangeTextViewHeight newHeight: CGFloat)
+    func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar)
+    func captioningToolbarDidEndEditing(_ captioningToolbar: CaptioningToolbar)
 }
 
 class CaptioningToolbar: UIView, UITextViewDelegate {
@@ -478,6 +516,14 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         } else {
             return true
         }
+    }
+
+    public func textViewDidBeginEditing(_ textView: UITextView) {
+        self.captioningToolbarDelegate?.captioningToolbarDidBeginEditing(self)
+    }
+
+    public func textViewDidEndEditing(_ textView: UITextView) {
+        self.captioningToolbarDelegate?.captioningToolbarDidEndEditing(self)
     }
 
     // MARK: - Helpers
