@@ -492,12 +492,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
                                               @"Short name for edit menu item to show message metadata.")
                                    action:self.metadataActionSelector],
-        // FIXME this is going to be confusing if the text/attachment look like separate entities.
-        // we can re-enable this once it's clear that deleting the text would also delete the attachment.
-        //        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
-        //                                              @"Short name for edit menu item to delete contents of media
-        //                                              message.")
-        //                                   action:self.deleteActionSelector],
+        // FIXME: when deleting a caption, users will be surprised that it also deletes the attachment.
+        // We either need to implement a way to remove the caption separate from the attachment
+        // or make a design change which clarifies that the whole message is getting deleted.
+        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
+                                                            @"Short name for edit menu item to delete contents of media message.")
+                                                            action:self.deleteActionSelector]
     ];
 }
 - (NSArray<UIMenuItem *> *)mediaMenuControllerItems
