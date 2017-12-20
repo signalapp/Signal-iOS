@@ -12,7 +12,7 @@ public protocol AttachmentApprovalViewControllerDelegate: class {
 }
 
 @objc
-public class AttachmentApprovalViewController: OWSViewController {
+public class AttachmentApprovalViewController: OWSViewController, CaptioningToolbarDelegate {
 
     let TAG = "[AttachmentApprovalViewController]"
     weak var delegate: AttachmentApprovalViewControllerDelegate?
@@ -21,7 +21,7 @@ public class AttachmentApprovalViewController: OWSViewController {
 
     let attachment: SignalAttachment
 
-    private(set) var bottomToolbar: UIToolbar!
+    private(set) var bottomToolbar: UIView!
     private(set) var mediaMessageView: MediaMessageView!
     private(set) var scrollView: UIScrollView!
 
@@ -123,7 +123,7 @@ public class AttachmentApprovalViewController: OWSViewController {
         containerView.addSubview(mediaMessageView)
         mediaMessageView.autoPinEdgesToSuperviewEdges()
 
-        if attachment.isImage || attachment.isVideo {
+        if isZoomable {
             // Add top and bottom gradients to ensure toolbar controls are legible
             // when placed over image/video preview which may be a clashing color.
             let topGradient = GradientView(from: backgroundColor, to: UIColor.clear)
@@ -131,12 +131,6 @@ public class AttachmentApprovalViewController: OWSViewController {
             topGradient.autoPinWidthToSuperview()
             topGradient.autoPinEdge(toSuperviewEdge: .top)
             topGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(60))
-
-            let bottomGradient = GradientView(from: UIColor.clear, to: backgroundColor)
-            self.view.addSubview(bottomGradient)
-            bottomGradient.autoPinWidthToSuperview()
-            bottomGradient.autoPinEdge(toSuperviewEdge: .bottom)
-            bottomGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(100))
         }
 
         // Hide the play button embedded in the MediaView and replace it with our own.
@@ -170,26 +164,18 @@ public class AttachmentApprovalViewController: OWSViewController {
         topToolbar.items = [cancelButton]
 
         // Bottom Toolbar
-        self.bottomToolbar = makeClearToolbar()
-        // Making a toolbar transparent requires setting an empty uiimage
-        bottomToolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
-        bottomToolbar.backgroundColor = UIColor.clear
+        let captioningToolbar = CaptioningToolbar()
+        captioningToolbar.captioningToolbarDelegate = self
+        self.bottomToolbar = captioningToolbar
+    }
 
-        let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
-        let sendButton = UIBarButtonItem(title:  sendTitle,
-                                         style: .plain,
-                                         target: self,
-                                         action: #selector(sendPressed))
-        sendButton.tintColor = UIColor.white
+    override public var inputAccessoryView: UIView? {
+        self.bottomToolbar.layoutIfNeeded()
+        return self.bottomToolbar
+    }
 
-        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        bottomToolbar.items = [flexibleSpace, sendButton]
-
-        self.view.addSubview(bottomToolbar)
-        bottomToolbar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-        bottomToolbar.autoPinWidthToSuperview()
-        bottomToolbar.setCompressionResistanceVerticalHigh()
-        bottomToolbar.setContentHuggingVerticalHigh()
+    override public var canBecomeFirstResponder: Bool {
+        return true
     }
 
     private func makeClearToolbar() -> UIToolbar {
@@ -217,7 +203,31 @@ public class AttachmentApprovalViewController: OWSViewController {
         self.delegate?.didCancelAttachment(attachment: attachment)
     }
 
-    func sendPressed(sender: UIButton) {
+    // MARK: CaptioningToolbarDelegate
+
+    func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar) {
+        self.shouldShrinkAttachment = true
+    }
+
+    func captioningToolbarDidEndEditing(_ captioningToolbar: CaptioningToolbar) {
+        self.shouldShrinkAttachment = false
+    }
+
+    func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar, captionText: String?) {
+        self.sendAttachment(captionText: captionText)
+    }
+
+    func captioningToolbar(_ captioningToolbar: CaptioningToolbar, didChangeTextViewHeight newHeight: CGFloat) {
+        Logger.info("Changed height: \(newHeight)")
+    }
+
+    // MARK: Helpers
+
+    var isZoomable: Bool {
+        return attachment.isImage || attachment.isVideo
+    }
+
+    private func sendAttachment(captionText: String?) {
         // disable controls after send was tapped.
         self.bottomToolbar.isUserInteractionEnabled = false
 
@@ -229,14 +239,39 @@ public class AttachmentApprovalViewController: OWSViewController {
         activityIndicatorView.autoCenterInSuperview()
         activityIndicatorView.startAnimating()
 
+        attachment.captionText = captionText
         self.delegate?.didApproveAttachment(attachment: attachment)
     }
+
+    // When the keyboard is popped, it can obscure the attachment view.
+    private var shouldShrinkAttachment: Bool = false {
+        didSet {
+            UIView.animate(withDuration: 0.2) {
+                if self.shouldShrinkAttachment {
+                    let kScaleFactor: CGFloat = 0.7
+                    let scale = CGAffineTransform(scaleX: kScaleFactor, y: kScaleFactor)
+
+                    let originalHeight = self.scrollView.bounds.size.height
+
+                    // Position the new scaled item to be centered with respect
+                    // to it's new size.
+                    let heightDelta = originalHeight * (1 - kScaleFactor)
+                    let translate = CGAffineTransform(translationX: 0, y: -heightDelta / 2)
+
+                    self.scrollView.transform = scale.concatenating(translate)
+                } else {
+                    self.scrollView.transform = CGAffineTransform.identity
+                }
+            }
+        }
+    }
+
 }
 
 extension AttachmentApprovalViewController: UIScrollViewDelegate {
 
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        if attachment.isImage || attachment.isVideo {
+        if isZoomable {
             return mediaMessageView
         } else {
             // don't zoom for audio or generic attachments.
@@ -320,4 +355,182 @@ private class GradientView: UIView {
         super.layoutSubviews()
         gradientLayer.frame = self.bounds
     }
+}
+
+protocol CaptioningToolbarDelegate: class {
+    func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar, captionText: String?)
+    func captioningToolbar(_ captioningToolbar: CaptioningToolbar, didChangeTextViewHeight newHeight: CGFloat)
+    func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar)
+    func captioningToolbarDidEndEditing(_ captioningToolbar: CaptioningToolbar)
+}
+
+class CaptioningToolbar: UIView, UITextViewDelegate {
+
+    weak var captioningToolbarDelegate: CaptioningToolbarDelegate?
+    private let sendButton: UIButton
+    private let textView: UITextView
+
+    // Layout Constants
+    var maxTextViewHeight: CGFloat {
+        // About ~4 lines in portrait and ~3 lines in landscape.
+        // Otherwise we risk obscuring too much of the content.
+        return UIDevice.current.orientation.isPortrait ? 160 : 100
+    }
+
+    let kMinTextViewHeight: CGFloat = 38
+    var textViewHeight: CGFloat {
+        didSet {
+            self.captioningToolbarDelegate?.captioningToolbar(self, didChangeTextViewHeight: textViewHeight)
+        }
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    class MessageTextView: UITextView {
+        // When creating new lines, contentOffset is animated, but because because
+        // we are simultaneously resizing the text view, this can cause the
+        // text in the textview to be "too high" in the text view.
+        // Solution is to disable animation for setting content offset.
+        override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
+            super.setContentOffset(contentOffset, animated: false)
+        }
+    }
+
+    let kSendButtonShadowOffset: CGFloat = 1
+    init() {
+        self.textView =  MessageTextView()
+        self.sendButton = UIButton(type: .system)
+        self.textViewHeight = kMinTextViewHeight
+
+        super.init(frame: CGRect.zero)
+
+        self.backgroundColor = UIColor.clear
+
+        textView.delegate = self
+        textView.backgroundColor = UIColor.white
+        textView.layer.cornerRadius = 4.0
+        textView.addBorder(with: UIColor.lightGray)
+        textView.font = UIFont.ows_dynamicTypeBody()
+        textView.returnKeyType = .done
+
+        let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
+        sendButton.setTitle(sendTitle, for: .normal)
+        sendButton.addTarget(self, action: #selector(didTapSend), for: .touchUpInside)
+
+        sendButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: 16)
+        sendButton.titleLabel?.textAlignment = .center
+        sendButton.tintColor = UIColor.white
+        sendButton.backgroundColor = UIColor.ows_systemPrimaryButton
+        sendButton.layer.cornerRadius = 4
+
+        // Send Button Shadow - without this the send button bottom doesn't align with the toolbar.
+        sendButton.layer.shadowColor = UIColor.darkGray.cgColor
+        sendButton.layer.shadowOffset = CGSize(width: 0, height: kSendButtonShadowOffset)
+        sendButton.layer.shadowOpacity = 0.8
+        sendButton.layer.shadowRadius = 0.0
+        sendButton.layer.masksToBounds = false
+
+        // Increase hit area of send button
+        sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
+
+        let bottomGradient = GradientView(from: UIColor.clear, to: UIColor.black)
+        self.addSubview(bottomGradient)
+        bottomGradient.autoPinWidthToSuperview()
+        bottomGradient.autoPinEdge(toSuperviewEdge: .bottom)
+        bottomGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(100))
+
+        addSubview(sendButton)
+        addSubview(textView)
+
+        sendButton.sizeToFit()
+    }
+
+    func didTapSend() {
+        self.captioningToolbarDelegate?.captioningToolbarDidTapSend(self, captionText: self.textView.text)
+    }
+
+    // MARK: - UIView Overrides
+
+    // We do progammatic layout, explicitly computing and setting frames since autoLayout does
+    // not seem to work with inputAccessory views, even when forcing a layout.
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("Before layout >>> self: \(self.frame) textView: \(self.textView.frame), sendButton:\(sendButton.frame)")
+
+        let kToolbarMargin: CGFloat = 4
+
+        let sendButtonWidth = sendButton.frame.size.width
+
+        let kOriginalToolbarHeight = kMinTextViewHeight + 2 * kToolbarMargin
+        // Assume send button has proper size.
+        let textViewWidth = frame.size.width - 3 * kToolbarMargin - sendButtonWidth
+
+        // determine height given a fixed width
+        let textViewHeight = clampedTextViewHeight(fixedWidth: textViewWidth)
+        textView.frame = CGRect(x: kToolbarMargin, y: kToolbarMargin, width: textViewWidth, height: textViewHeight)
+        assert(self.textViewHeight == textViewHeight, "textView.height inconsistent with what was computed in textViewDidChange")
+
+        let newToolbarHeight = textViewHeight + 2 * kToolbarMargin
+
+        // frame origin is with respect to the initial height of the toolbar, so we must offset the toolbar frame
+        // by the difference, else the toolbar will extend into and behind the keyboard.
+        let toolbarHeightOffset = kOriginalToolbarHeight - newToolbarHeight
+        self.frame = CGRect(x: 0, y: toolbarHeightOffset, width: frame.size.width, height: newToolbarHeight)
+
+        // Send Button
+
+        // position in bottom right corner
+        let sendButtonX = frame.size.width - kToolbarMargin - sendButton.frame.size.width
+        let sendButtonY = frame.size.height - kToolbarMargin - sendButton.frame.size.height - kSendButtonShadowOffset
+        sendButton.frame = CGRect(origin: CGPoint(x: sendButtonX, y: sendButtonY), size: sendButton.frame.size)
+
+        Logger.debug("After layout >>> self: \(self.frame) textView: \(self.textView.frame), sendButton:\(sendButton.frame)")
+    }
+
+    // MARK: - UITextViewDelegate
+
+    public func textViewDidChange(_ textView: UITextView) {
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        // compute new height assuming width is unchanged
+        let currentSize = textView.frame.size
+        let newHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
+
+        if newHeight != self.textViewHeight {
+            Logger.debug("\(self.logTag) TextView height changed: \(self.textViewHeight) -> \(newHeight)")
+            self.textViewHeight = newHeight
+            self.setNeedsLayout()
+            self.layoutIfNeeded()
+        }
+    }
+
+    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
+        // allows the user to get the keyboard out of the way while in the attachment approval view.
+        if text == "\n" {
+            textView.resignFirstResponder()
+            return false
+        } else {
+            return true
+        }
+    }
+
+    public func textViewDidBeginEditing(_ textView: UITextView) {
+        self.captioningToolbarDelegate?.captioningToolbarDidBeginEditing(self)
+    }
+
+    public func textViewDidEndEditing(_ textView: UITextView) {
+        self.captioningToolbarDelegate?.captioningToolbarDidEndEditing(self)
+    }
+
+    // MARK: - Helpers
+
+    private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {
+        let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        return Clamp(contentSize.height, kMinTextViewHeight, maxTextViewHeight)
+    }
+
 }

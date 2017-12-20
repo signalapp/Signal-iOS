@@ -26,7 +26,7 @@ import SignalServiceKit
         // Font config
         nameLabel.font = UIFont.ows_dynamicTypeBody()
         subtitleLabel.font = UIFont.ows_footnote()
-        subtitleLabel.textColor = UIColor.ows_darkGray()
+        subtitleLabel.textColor = UIColor.ows_darkGray
 
         // Listen to notifications...
         // TODO avatar, group name change, group membership change, group member name change
