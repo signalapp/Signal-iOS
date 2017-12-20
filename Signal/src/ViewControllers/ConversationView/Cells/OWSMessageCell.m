@@ -62,12 +62,15 @@ NS_ASSUME_NONNULL_BEGIN
     // mask orientation manually.
     BOOL hasOutgoingMask = self.isOutgoing ^ self.isRTL;
 
-    // Since the caption has it's own tail, the media bubble looks better
-    // without a tail.
+    // Since the caption has it's own tail, the media bubble just above
+    // it looks better without a tail.
     if (self.hideTail) {
         self.layoutMargins = UIEdgeInsetsMake(0, 0, 2, 8);
         maskedSubview.clipsToBounds = YES;
-        maskedSubview.layer.cornerRadius = 10;
+
+        // I arrived at this cornerRadius by superimposing the generated corner
+        // over that generated from the JSQMessagesMediaViewBubbleImageMasker
+        maskedSubview.layer.cornerRadius = 17;
     } else {
         [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:maskedSubview
                                                                     isOutgoing:hasOutgoingMask];
