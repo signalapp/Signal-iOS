@@ -325,7 +325,7 @@ NS_ASSUME_NONNULL_BEGIN
             [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
         }
 
-        NSArray *menuItems = self.viewItem.menuControllerItems;
+        NSArray *menuItems = self.viewItem.mediaMenuControllerItems;
         [UIMenuController sharedMenuController].menuItems = menuItems;
         CGPoint location = [sender locationInView:self.view];
         CGRect targetRect = CGRectMake(location.x, location.y, 1, 1);
@@ -342,19 +342,19 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.viewItem canPerformAction:action];
 }
 
-- (void)copyAction:(nullable id)sender
+- (void)copyMediaAction:(nullable id)sender
 {
-    [self.viewItem copyAction];
+    [self.viewItem copyMediaAction];
 }
 
-- (void)shareAction:(nullable id)sender
+- (void)shareMediaAction:(nullable id)sender
 {
-    [self.viewItem shareAction];
+    [self.viewItem shareMediaAction];
 }
 
-- (void)saveAction:(nullable id)sender
+- (void)saveMediaAction:(nullable id)sender
 {
-    [self.viewItem saveAction];
+    [self.viewItem saveMediaAction];
 }
 
 - (void)deleteAction:(nullable id)sender

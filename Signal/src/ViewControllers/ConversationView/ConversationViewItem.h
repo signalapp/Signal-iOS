@@ -8,6 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, OWSMessageCellType) {
+    OWSMessageCellType_Unknown,
     OWSMessageCellType_TextMessage,
     OWSMessageCellType_OversizeTextMessage,
     OWSMessageCellType_StillImage,
@@ -16,8 +17,6 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_Video,
     OWSMessageCellType_GenericAttachment,
     OWSMessageCellType_DownloadingAttachment,
-    // Treat invalid messages as empty text messages.
-    OWSMessageCellType_Unknown = OWSMessageCellType_TextMessage,
 };
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
@@ -44,7 +43,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly) TSInteraction *interaction;
 
 @property (nonatomic, readonly) BOOL isGroupThread;
-
+@property (nonatomic, readonly) BOOL hasText;
 @property (nonatomic) BOOL shouldShowDate;
 @property (nonatomic) BOOL shouldHideRecipientStatus;
 
@@ -83,7 +82,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (nullable DisplayableText *)displayableText;
 - (nullable TSAttachmentStream *)attachmentStream;
 - (nullable TSAttachmentPointer *)attachmentPointer;
-- (CGSize)contentSize;
+- (CGSize)mediaSize;
 
 // We don't want to try to load the media for this item (if any)
 // if a load has previously failed.
@@ -91,11 +90,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 #pragma mark - UIMenuController
 
-- (NSArray<UIMenuItem *> *)menuControllerItems;
+- (NSArray<UIMenuItem *> *)textMenuControllerItems;
+- (NSArray<UIMenuItem *> *)mediaMenuControllerItems;
+
 - (BOOL)canPerformAction:(SEL)action;
-- (void)copyAction;
-- (void)shareAction;
-- (void)saveAction;
+- (void)copyMediaAction;
+- (void)copyTextAction;
+- (void)shareMediaAction;
+- (void)shareTextAction;
+- (void)saveMediaAction;
 - (void)deleteAction;
 - (SEL)metadataActionSelector;
 

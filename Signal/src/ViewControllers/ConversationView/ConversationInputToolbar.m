@@ -123,7 +123,6 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
         setTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"Label for the send button in the conversation view.")
         forState:UIControlStateNormal];
     [self.sendButton setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
-    self.sendButton.titleLabel.font = [UIFont ows_regularFontWithSize:17.0f];
     self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:16.f];
     [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];

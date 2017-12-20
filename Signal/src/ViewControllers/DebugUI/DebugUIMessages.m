@@ -378,7 +378,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
     DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
     [dataSource setSourceFilename:filename];
-    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
+    SignalAttachment *attachment =
+        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
+    if (arc4random_uniform(100) > 50) {
+        attachment.captionText = [self randomCaptionText];
+    }
+
     OWSAssert(attachment);
     if ([attachment hasError]) {
         DDLogError(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
@@ -663,12 +668,24 @@ NS_ASSUME_NONNULL_BEGIN
     [self sendRandomAttachment:thread uti:uti length:256];
 }
 
++ (NSString *)randomCaptionText
+{
+    return [NSString stringWithFormat:@"%@ (caption)", [self randomText]];
+}
+
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti length:(NSUInteger)length
 {
     OWSMessageSender *messageSender = [Environment current].messageSender;
     DataSource *_Nullable dataSource =
         [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length] utiType:uti];
-    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti];
+    SignalAttachment *attachment =
+        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti imageQuality:TSImageQualityOriginal];
+
+    if (arc4random_uniform(100) > 50) {
+        // give 1/2 our attachments captions, and add a hint that it's a caption since we
+        // style them indistinguishably from a separate text message.
+        attachment.captionText = [self randomCaptionText];
+    }
     [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender ignoreErrors:YES];
 }
 + (OWSSignalServiceProtosEnvelope *)createEnvelopeForThread:(TSThread *)thread
@@ -1007,6 +1024,7 @@ NS_ASSUME_NONNULL_BEGIN
                 TSOutgoingMessage *message =
                     [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                         inThread:thread
+                                                     messageBody:nil
                                                   isVoiceMessage:NO
                                                 expiresInSeconds:0];
                 DDLogError(@"%@ sendFakeMessages outgoing attachment timestamp: %llu.", self.logTag, message.timestamp);
@@ -1043,6 +1061,7 @@ NS_ASSUME_NONNULL_BEGIN
     [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                          inThread:thread
+                                                                      messageBody:nil
                                                                    isVoiceMessage:NO
                                                                  expiresInSeconds:0];
         DDLogError(@"%@ sendFakeMessages outgoing attachment timestamp: %llu.", self.logTag, message.timestamp);

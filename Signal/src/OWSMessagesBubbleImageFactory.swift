@@ -26,12 +26,12 @@ class OWSMessagesBubbleImageFactory: NSObject {
     }()
 
     public lazy var outgoing: JSQMessagesBubbleImage = {
-        let color = UIColor.ows_materialBlue()
+        let color = UIColor.ows_materialBlue
         return self.outgoing(color: color)
     }()
 
     public lazy var currentlyOutgoing: JSQMessagesBubbleImage = {
-        let color = UIColor.ows_fadedBlue()
+        let color = UIColor.ows_fadedBlue
         return self.outgoing(color: color)
     }()
 
