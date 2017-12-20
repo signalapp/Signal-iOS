@@ -6,7 +6,6 @@
 #import "TSIncomingMessage.h"
 #import "TSStorageManager.h"
 #import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseSecondaryIndex.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -12,7 +12,6 @@
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
 #import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

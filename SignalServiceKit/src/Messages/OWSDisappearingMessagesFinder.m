@@ -9,8 +9,6 @@
 #import "TSStorageManager.h"
 #import "TSThread.h"
 #import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseQuery.h>
-#import <YapDatabase/YapDatabaseSecondaryIndex.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
