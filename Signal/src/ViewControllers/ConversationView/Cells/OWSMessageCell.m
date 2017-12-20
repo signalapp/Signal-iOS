@@ -247,8 +247,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.payloadView];
 
     [self.mediaMaskingView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [self.mediaMaskingView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-    [self.mediaMaskingView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
 
     [self.textBubbleImageView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.mediaMaskingView];
     [self.textBubbleImageView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
@@ -928,7 +926,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     view.userInteractionEnabled = NO;
     [self.mediaMaskingView addSubview:view];
+
+    CGSize mediaSize = [self mediaBubbleSizeForContentWidth:self.contentWidth];
+
+    [self.contentConstraints
+        addObject:[self.mediaMaskingView
+                      autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeLeading : ALEdgeTrailing)]];
+    [self.contentConstraints addObjectsFromArray:[self.mediaMaskingView autoSetDimensionsToSize:mediaSize]];
     [self.contentConstraints addObjectsFromArray:[view autoPinEdgesToSuperviewMargins]];
+
     [self cropMediaViewToBubbbleShape:view];
     if (self.isMediaBeingSent) {
         view.layer.opacity = 0.75f;
@@ -985,6 +991,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)textBubbleSizeForContentWidth:(int)contentWidth
 {
+    if (!self.hasText) {
+        return CGSizeZero;
+    }
+
     BOOL isRTL = self.isRTL;
     CGFloat leftMargin = isRTL ? self.textTrailingMargin : self.textLeadingMargin;
     CGFloat rightMargin = isRTL ? self.textLeadingMargin : self.textTrailingMargin;
@@ -1004,28 +1014,15 @@ NS_ASSUME_NONNULL_BEGIN
     return textViewSize;
 }
 
-- (int)maxMessageWidthForContentWidth:(int)contentWidth
+- (CGSize)mediaBubbleSizeForContentWidth:(int)contentWidth
 {
-    return (int)floor(contentWidth * 0.8f);
-}
-- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
-{
-    OWSAssert(self.viewItem);
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-
-
     const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
-    CGSize mediaContentSize = CGSizeZero;
-    CGSize textContentSize = CGSizeZero;
 
-    if (self.hasText) {
-        textContentSize = [self textBubbleSizeForContentWidth:contentWidth];
-    }
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage: {
-            break;
+            return CGSizeZero;
         }
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
@@ -1052,19 +1049,29 @@ NS_ASSUME_NONNULL_BEGIN
                 mediaWidth = (CGFloat)round(maxMediaWidth);
                 mediaHeight = (CGFloat)round(maxMediaWidth / contentAspectRatio);
             }
-            mediaContentSize = CGSizeMake(mediaWidth, mediaHeight);
-            break;
+            return CGSizeMake(mediaWidth, mediaHeight);
         }
         case OWSMessageCellType_Audio:
-            mediaContentSize = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
-            break;
+            return CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
         case OWSMessageCellType_GenericAttachment:
-            mediaContentSize = CGSizeMake(maxMessageWidth, [OWSGenericAttachmentView bubbleHeight]);
-            break;
+            return CGSizeMake(maxMessageWidth, [OWSGenericAttachmentView bubbleHeight]);
         case OWSMessageCellType_DownloadingAttachment:
-            mediaContentSize = CGSizeMake(200, 90);
-            break;
+            return CGSizeMake(200, 90);
     }
+}
+
+- (int)maxMessageWidthForContentWidth:(int)contentWidth
+{
+    return (int)floor(contentWidth * 0.8f);
+}
+
+- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
+{
+    OWSAssert(self.viewItem);
+    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+
+    CGSize mediaContentSize = [self mediaBubbleSizeForContentWidth:contentWidth];
+    CGSize textContentSize = [self textBubbleSizeForContentWidth:contentWidth];
 
     CGFloat cellContentWidth = fmax(mediaContentSize.width, textContentSize.width);
     CGFloat cellContentHeight = mediaContentSize.height + textContentSize.height;
