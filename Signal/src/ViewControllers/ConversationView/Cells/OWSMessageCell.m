@@ -65,7 +65,11 @@ NS_ASSUME_NONNULL_BEGIN
     // Since the caption has it's own tail, the media bubble just above
     // it looks better without a tail.
     if (self.hideTail) {
-        self.layoutMargins = UIEdgeInsetsMake(0, 0, 2, 8);
+        if (hasOutgoingMask) {
+            self.layoutMargins = UIEdgeInsetsMake(0, 0, 2, 8);
+        } else {
+            self.layoutMargins = UIEdgeInsetsMake(0, 8, 2, 0);
+        }
         maskedSubview.clipsToBounds = YES;
 
         // I arrived at this cornerRadius by superimposing the generated corner
