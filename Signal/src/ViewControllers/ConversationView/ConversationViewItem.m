@@ -377,6 +377,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 self.messageCellType = OWSMessageCellType_OversizeTextMessage;
                 self.displayableText =
                     [self displayableTextForAttachmentStream:self.attachmentStream interactionId:message.uniqueId];
+                self.hasText = YES;
             } else if ([self.attachmentStream isAnimated] || [self.attachmentStream isImage] ||
                 [self.attachmentStream isVideo]) {
                 if ([self.attachmentStream isAnimated]) {

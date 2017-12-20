@@ -148,9 +148,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         contentView.autoPinEdge(toSuperviewEdge: .bottom)
         scrollView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
-        let hasAttachment = message.attachmentIds.count > 0
-
-        if hasAttachment {
+        if hasMediaAttachment {
             let footer = UIToolbar()
             footer.barTintColor = UIColor.ows_materialBlue()
             view.addSubview(footer)
@@ -325,7 +323,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
     private func contentRows() -> [UIView] {
         var rows = [UIView]()
 
-        if message.attachmentIds.count > 0 {
+        if hasMediaAttachment {
             rows += addAttachmentRows()
         }
 
@@ -401,19 +399,27 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         return rows
     }
 
+    private func fetchAttachment(transaction: YapDatabaseReadTransaction) -> TSAttachment? {
+        guard let attachmentId = message.attachmentIds[0] as? String else {
+            owsFail("Invalid attachment")
+            return nil
+        }
+
+        guard let attachment = TSAttachment.fetch(uniqueId: attachmentId, transaction: transaction) else {
+            owsFail("Missing attachment")
+            return nil
+        }
+
+        return attachment
+    }
+
     private func addAttachmentRows() -> [UIView] {
         var rows = [UIView]()
 
-        guard let attachmentId = message.attachmentIds[0] as? String else {
-            owsFail("Invalid attachment")
+        guard let attachment = self.attachment else {
+            owsFail("no attachment to add.")
             return rows
         }
-
-        guard let attachment = TSAttachment.fetch(uniqueId: attachmentId) else {
-            owsFail("Missing attachment")
-            return rows
-        }
-        self.attachment = attachment
 
         guard let attachmentStream = attachment as? TSAttachmentStream else {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED",
@@ -445,7 +451,25 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         return rows
     }
 
+    var hasMediaAttachment: Bool {
+        guard let attachment = self.attachment else {
+            return false
+        }
+
+        guard attachment.contentType != OWSMimeTypeOversizeTextMessage else {
+            // to the user, oversized text attachments should behave
+            // just like regular text messages.
+            return false
+        }
+
+        return true
+    }
+
     private func addAttachmentMetadataRows() -> [UIView] {
+        guard hasMediaAttachment else {
+            return []
+        }
+
         var rows = [UIView]()
 
         if let attachment = self.attachment {
@@ -575,6 +599,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
                 return
             }
             self.message = newMessage
+            self.attachment = self.fetchAttachment(transaction: transaction)
         }
     }
 
