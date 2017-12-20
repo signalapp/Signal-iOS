@@ -369,6 +369,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     weak var captioningToolbarDelegate: CaptioningToolbarDelegate?
     private let sendButton: UIButton
     private let textView: UITextView
+    private let bottomGradient: GradientView
 
     // Layout Constants
     var maxTextViewHeight: CGFloat {
@@ -400,8 +401,9 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
 
     let kSendButtonShadowOffset: CGFloat = 1
     init() {
-        self.textView =  MessageTextView()
         self.sendButton = UIButton(type: .system)
+        self.bottomGradient = GradientView(from: UIColor.clear, to: UIColor.black)
+        self.textView =  MessageTextView()
         self.textViewHeight = kMinTextViewHeight
 
         super.init(frame: CGRect.zero)
@@ -435,12 +437,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         // Increase hit area of send button
         sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
 
-        let bottomGradient = GradientView(from: UIColor.clear, to: UIColor.black)
-        self.addSubview(bottomGradient)
-        bottomGradient.autoPinWidthToSuperview()
-        bottomGradient.autoPinEdge(toSuperviewEdge: .bottom)
-        bottomGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(100))
-
+        addSubview(bottomGradient)
         addSubview(sendButton)
         addSubview(textView)
 
@@ -457,44 +454,46 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     // not seem to work with inputAccessory views, even when forcing a layout.
     override func layoutSubviews() {
         super.layoutSubviews()
-        Logger.debug("\(self.logTag) in \(#function)")
-        Logger.debug("Before layout >>> self: \(self.frame) textView: \(self.textView.frame), sendButton:\(sendButton.frame)")
 
-        let kToolbarMargin: CGFloat = 4
+        let kToolbarHMargin: CGFloat = 8
+        let kToolbarVMargin: CGFloat = 8
 
         let sendButtonWidth = sendButton.frame.size.width
 
-        let kOriginalToolbarHeight = kMinTextViewHeight + 2 * kToolbarMargin
+        let kOriginalToolbarHeight = kMinTextViewHeight + 2 * kToolbarVMargin
         // Assume send button has proper size.
-        let textViewWidth = frame.size.width - 3 * kToolbarMargin - sendButtonWidth
+        let textViewWidth = frame.size.width - 3 * kToolbarHMargin - sendButtonWidth
 
         // determine height given a fixed width
         let textViewHeight = clampedTextViewHeight(fixedWidth: textViewWidth)
-        textView.frame = CGRect(x: kToolbarMargin, y: kToolbarMargin, width: textViewWidth, height: textViewHeight)
-        assert(self.textViewHeight == textViewHeight, "textView.height inconsistent with what was computed in textViewDidChange")
+        let newToolbarHeight = textViewHeight + 2 * kToolbarVMargin
+        self.frame.size.height = newToolbarHeight
+        let toolbarHeightOffset = newToolbarHeight - kOriginalToolbarHeight
 
-        let newToolbarHeight = textViewHeight + 2 * kToolbarMargin
-
-        // frame origin is with respect to the initial height of the toolbar, so we must offset the toolbar frame
-        // by the difference, else the toolbar will extend into and behind the keyboard.
-        let toolbarHeightOffset = kOriginalToolbarHeight - newToolbarHeight
-        self.frame = CGRect(x: 0, y: toolbarHeightOffset, width: frame.size.width, height: newToolbarHeight)
+        let textViewY = kToolbarVMargin - toolbarHeightOffset
+        textView.frame = CGRect(x: kToolbarHMargin, y: textViewY, width: textViewWidth, height: textViewHeight)
+        if (self.textViewHeight != textViewHeight) {
+            // textViewHeight changed without textView's content changing, this can happen
+            // when the user flips their device orientation after writing a caption.
+            self.textViewHeight = textViewHeight
+        }
 
         // Send Button
 
         // position in bottom right corner
-        let sendButtonX = frame.size.width - kToolbarMargin - sendButton.frame.size.width
-        let sendButtonY = frame.size.height - kToolbarMargin - sendButton.frame.size.height - kSendButtonShadowOffset
+        let sendButtonX = frame.size.width - kToolbarHMargin - sendButton.frame.size.width
+        let sendButtonY = kOriginalToolbarHeight - kToolbarVMargin - sendButton.frame.size.height - kSendButtonShadowOffset
         sendButton.frame = CGRect(origin: CGPoint(x: sendButtonX, y: sendButtonY), size: sendButton.frame.size)
+        sendButton.frame.size.height = kMinTextViewHeight - kSendButtonShadowOffset - textView.layer.borderWidth
 
-        Logger.debug("After layout >>> self: \(self.frame) textView: \(self.textView.frame), sendButton:\(sendButton.frame)")
+        let bottomGradientHeight = ScaleFromIPhone5(100)
+        let bottomGradientY = kOriginalToolbarHeight - bottomGradientHeight
+        bottomGradient.frame = CGRect(x: 0, y: bottomGradientY, width: frame.size.width, height: bottomGradientHeight)
     }
 
     // MARK: - UITextViewDelegate
 
     public func textViewDidChange(_ textView: UITextView) {
-        Logger.debug("\(self.logTag) in \(#function)")
-
         // compute new height assuming width is unchanged
         let currentSize = textView.frame.size
         let newHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
