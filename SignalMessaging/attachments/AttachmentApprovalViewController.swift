@@ -131,12 +131,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
             topGradient.autoPinWidthToSuperview()
             topGradient.autoPinEdge(toSuperviewEdge: .top)
             topGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(60))
-
-            let bottomGradient = GradientView(from: UIColor.clear, to: backgroundColor)
-            self.view.addSubview(bottomGradient)
-            bottomGradient.autoPinWidthToSuperview()
-            bottomGradient.autoPinEdge(toSuperviewEdge: .bottom)
-            bottomGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(100))
         }
 
         // Hide the play button embedded in the MediaView and replace it with our own.
@@ -440,6 +434,12 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
 
         // Increase hit area of send button
         sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
+
+        let bottomGradient = GradientView(from: UIColor.clear, to: UIColor.black)
+        self.addSubview(bottomGradient)
+        bottomGradient.autoPinWidthToSuperview()
+        bottomGradient.autoPinEdge(toSuperviewEdge: .bottom)
+        bottomGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(100))
 
         addSubview(sendButton)
         addSubview(textView)
