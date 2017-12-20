@@ -40,7 +40,7 @@ class SAEFailedViewController: UIViewController {
                                                                 action: #selector(cancelPressed))
         self.navigationItem.title = "Signal"
 
-        self.view.backgroundColor = UIColor.ows_signalBrandBlue()
+        self.view.backgroundColor = UIColor.ows_signalBrandBlue
 
         let logoImage = UIImage(named: "logoSignal")
         let logoImageView = UIImageView(image: logoImage)

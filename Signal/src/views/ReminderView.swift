@@ -48,7 +48,7 @@ class ReminderView: UIView {
     }
 
     func setupSubviews() {
-        self.backgroundColor = UIColor.ows_reminderYellow()
+        self.backgroundColor = UIColor.ows_reminderYellow
         self.clipsToBounds = true
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(gestureRecognizer:)))

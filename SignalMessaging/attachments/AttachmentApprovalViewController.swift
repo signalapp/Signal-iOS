@@ -366,6 +366,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         }
     }
 
+    let kSendButtonShadowOffset: CGFloat = 1
     init() {
         self.textView =  MessageTextView()
         self.sendButton = UIButton(type: .system)
@@ -389,8 +390,15 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         sendButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: 16)
         sendButton.titleLabel?.textAlignment = .center
         sendButton.tintColor = UIColor.white
-        sendButton.backgroundColor = UIColor.ows_materialBlue()
+        sendButton.backgroundColor = UIColor.ows_systemPrimaryButton
         sendButton.layer.cornerRadius = 4
+
+        // Send Button Shadow - without this the send button bottom doesn't align with the toolbar.
+        sendButton.layer.shadowColor = UIColor.darkGray.cgColor
+        sendButton.layer.shadowOffset = CGSize(width: 0, height: kSendButtonShadowOffset)
+        sendButton.layer.shadowOpacity = 0.8
+        sendButton.layer.shadowRadius = 0.0
+        sendButton.layer.masksToBounds = false
 
         // Increase hit area of send button
         sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
@@ -438,7 +446,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
 
         // position in bottom right corner
         let sendButtonX = frame.size.width - kToolbarMargin - sendButton.frame.size.width
-        let sendButtonY = frame.size.height - kToolbarMargin - sendButton.frame.size.height
+        let sendButtonY = frame.size.height - kToolbarMargin - sendButton.frame.size.height - kSendButtonShadowOffset
         sendButton.frame = CGRect(origin: CGPoint(x: sendButtonX, y: sendButtonY), size: sendButton.frame.size)
 
         Logger.debug("After layout >>> self: \(self.frame) textView: \(self.textView.frame), sendButton:\(sendButton.frame)")
