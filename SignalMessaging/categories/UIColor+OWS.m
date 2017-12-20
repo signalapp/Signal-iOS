@@ -96,6 +96,16 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIColor colorWithRed:242.f / 255.f green:242.f / 255.f blue:242.f / 255.f alpha:1.f];
 }
 
++ (UIColor *)ows_systemPrimaryButtonColor
+{
+    static UIColor *sharedColor;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^(void) {
+        sharedColor = [UIView new].tintColor;
+    });
+    return sharedColor;
+}
+
 + (UIColor *)backgroundColorForContact:(NSString *)contactIdentifier
 {
     NSArray *colors = @[

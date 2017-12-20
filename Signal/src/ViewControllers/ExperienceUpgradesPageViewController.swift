@@ -94,7 +94,7 @@ private class IntroductingReadReceiptsExperienceUpgradeViewController: Experienc
         let button = MultiLineButton()
         view.addSubview(button)
         button.setTitle(title, for: .normal)
-        button.setTitleColor(UIColor.ows_signalBrandBlue(), for: .normal)
+        button.setTitleColor(UIColor.ows_signalBrandBlue, for: .normal)
         button.isUserInteractionEnabled = true
         button.addTarget(self, action:#selector(didTapButton), for: .touchUpInside)
         button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
@@ -198,7 +198,7 @@ private class IntroductingProfilesExperienceUpgradeViewController: ExperienceUpg
         let buttonTitle = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON", comment: "button label shown one time, after user upgrades app")
         button.setTitle(buttonTitle, for: .normal)
         button.setTitleColor(UIColor.white, for: .normal)
-        button.backgroundColor = UIColor.ows_materialBlue()
+        button.backgroundColor = UIColor.ows_materialBlue
 
         button.isUserInteractionEnabled = true
         button.addTarget(self, action:#selector(didTapButton), for: .touchUpInside)
@@ -259,7 +259,7 @@ private class CallKitExperienceUpgradeViewController: ExperienceUpgradeViewContr
         view.addSubview(privacySettingsButton)
         let privacyTitle = NSLocalizedString("UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON", comment: "button label shown once when when user upgrades app, in context of call kit")
         privacySettingsButton.setTitle(privacyTitle, for: .normal)
-        privacySettingsButton.setTitleColor(UIColor.ows_signalBrandBlue(), for: .normal)
+        privacySettingsButton.setTitleColor(UIColor.ows_signalBrandBlue, for: .normal)
         privacySettingsButton.isUserInteractionEnabled = true
         privacySettingsButton.addTarget(self, action:#selector(didTapPrivacySettingsButton), for: .touchUpInside)
         privacySettingsButton.titleLabel?.font = bodyLabel.font
@@ -368,7 +368,7 @@ func setPageControlAppearance() {
     if #available(iOS 9.0, *) {
         let pageControl = UIPageControl.appearance(whenContainedInInstancesOf: [UIPageViewController.self])
         pageControl.pageIndicatorTintColor = UIColor.lightGray
-        pageControl.currentPageIndicatorTintColor = UIColor.ows_materialBlue()
+        pageControl.currentPageIndicatorTintColor = UIColor.ows_materialBlue
     } else {
         // iOS8 won't see the page controls =(
     }
@@ -429,13 +429,13 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
         // Header Background
         let headerBackgroundView = UIView()
         view.addSubview(headerBackgroundView)
-        headerBackgroundView.backgroundColor = UIColor.ows_materialBlue()
+        headerBackgroundView.backgroundColor = UIColor.ows_materialBlue
 
         // Dismiss button
         let dismissButton = UIButton()
         view.addSubview(dismissButton)
         dismissButton.setTitle(CommonStrings.dismissButton, for: .normal)
-        dismissButton.setTitleColor(UIColor.ows_signalBrandBlue(), for: .normal)
+        dismissButton.setTitleColor(UIColor.ows_signalBrandBlue, for: .normal)
         dismissButton.isUserInteractionEnabled = true
         dismissButton.addTarget(self, action:#selector(didTapDismissButton), for: .touchUpInside)
         dismissButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5(16))

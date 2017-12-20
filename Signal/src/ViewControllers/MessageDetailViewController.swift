@@ -150,7 +150,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
 
         if hasMediaAttachment {
             let footer = UIToolbar()
-            footer.barTintColor = UIColor.ows_materialBlue()
+            footer.barTintColor = UIColor.ows_materialBlue
             view.addSubview(footer)
             footer.autoPinWidthToSuperview(withMargin: 0)
             footer.autoPinEdge(.top, to: .bottom, of: scrollView)
@@ -239,7 +239,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
                     cell.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
                     let statusLabel = UILabel()
                     statusLabel.text = statusMessage
-                    statusLabel.textColor = UIColor.ows_darkGray()
+                    statusLabel.textColor = UIColor.ows_darkGray
                     statusLabel.font = UIFont.ows_footnote()
                     statusLabel.sizeToFit()
                     cell.accessoryView = statusLabel
@@ -530,7 +530,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
 
         if subtitle.count > 0 {
             let subtitleLabel = self.valueLabel(text: subtitle)
-            subtitleLabel.textColor = UIColor.ows_darkGray()
+            subtitleLabel.textColor = UIColor.ows_darkGray
             row.addSubview(subtitleLabel)
             subtitleLabel.autoPinTrailingToSuperview()
             subtitleLabel.autoPinLeading(toTrailingOf: nameLabel, margin: 10)

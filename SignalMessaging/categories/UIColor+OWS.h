@@ -8,21 +8,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIColor (OWS)
 
-+ (UIColor *)ows_signalBrandBlueColor;
-+ (UIColor *)ows_materialBlueColor;
-+ (UIColor *)ows_destructiveRedColor;
-+ (UIColor *)ows_fadedBlueColor;
-+ (UIColor *)ows_darkBackgroundColor;
-+ (UIColor *)ows_darkGrayColor;
-+ (UIColor *)ows_yellowColor;
-+ (UIColor *)ows_reminderYellowColor;
-+ (UIColor *)ows_reminderDarkYellowColor;
-+ (UIColor *)ows_greenColor;
-+ (UIColor *)ows_redColor;
-+ (UIColor *)ows_blackColor;
-+ (UIColor *)ows_errorMessageBorderColor;
-+ (UIColor *)ows_infoMessageBorderColor;
-+ (UIColor *)ows_inputToolbarBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *ows_systemPrimaryButtonColor;
+@property (class, readonly, nonatomic) UIColor *ows_signalBrandBlueColor;
+@property (class, readonly, nonatomic) UIColor *ows_materialBlueColor;
+@property (class, readonly, nonatomic) UIColor *ows_destructiveRedColor;
+@property (class, readonly, nonatomic) UIColor *ows_fadedBlueColor;
+@property (class, readonly, nonatomic) UIColor *ows_darkBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *ows_darkGrayColor;
+@property (class, readonly, nonatomic) UIColor *ows_yellowColor;
+@property (class, readonly, nonatomic) UIColor *ows_reminderYellowColor;
+@property (class, readonly, nonatomic) UIColor *ows_reminderDarkYellowColor;
+@property (class, readonly, nonatomic) UIColor *ows_greenColor;
+@property (class, readonly, nonatomic) UIColor *ows_redColor;
+@property (class, readonly, nonatomic) UIColor *ows_blackColor;
+@property (class, readonly, nonatomic) UIColor *ows_errorMessageBorderColor;
+@property (class, readonly, nonatomic) UIColor *ows_infoMessageBorderColor;
+@property (class, readonly, nonatomic) UIColor *ows_inputToolbarBackgroundColor;
+
 + (UIColor *)backgroundColorForContact:(NSString *)contactIdentifier;
 + (UIColor *)colorWithRGBHex:(unsigned long)value;
 
