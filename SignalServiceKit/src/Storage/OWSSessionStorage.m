@@ -27,6 +27,8 @@ NSString *const OWSSessionStorageExceptionName_CouldNotCreateDatabaseDirectory
 
 @implementation OWSSessionStorage
 
+@synthesize dbConnection = _dbConnection;
+
 + (instancetype)sharedManager
 {
     static OWSSessionStorage *sharedManager = nil;
@@ -161,6 +163,13 @@ NSString *const OWSSessionStorageExceptionName_CouldNotCreateDatabaseDirectory
 - (NSString *)databaseFilePath
 {
     return OWSSessionStorage.databaseFilePath;
+}
+
+- (YapDatabaseConnection *)dbConnection
+{
+    OWSAssert(_dbConnection);
+
+    return _dbConnection;
 }
 
 + (YapDatabaseConnection *)dbConnection

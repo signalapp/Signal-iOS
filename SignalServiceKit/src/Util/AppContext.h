@@ -4,6 +4,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const OWSApplicationDidEnterBackgroundNotification;
+extern NSString *const OWSApplicationWillEnterForegroundNotification;
+extern NSString *const OWSApplicationWillResignActiveNotification;
+extern NSString *const OWSApplicationDidBecomeActiveNotification;
+
 typedef void (^BackgroundTaskExpirationHandler)(void);
 
 @class OWSAES256Key;

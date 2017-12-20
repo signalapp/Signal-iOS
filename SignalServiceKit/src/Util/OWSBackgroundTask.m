@@ -154,7 +154,9 @@
             completionBlock(BackgroundTaskState_Success);
         }
 
-        [CurrentAppContext() endBackgroundTask:backgroundTaskId];
+        if (backgroundTaskId != UIBackgroundTaskInvalid) {
+            [CurrentAppContext() endBackgroundTask:backgroundTaskId];
+        }
     });
 }
 

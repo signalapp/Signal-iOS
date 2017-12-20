@@ -6,6 +6,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const OWSApplicationDidEnterBackgroundNotification = @"OWSApplicationDidEnterBackgroundNotification";
+NSString *const OWSApplicationWillEnterForegroundNotification = @"OWSApplicationWillEnterForegroundNotification";
+NSString *const OWSApplicationWillResignActiveNotification = @"OWSApplicationWillResignActiveNotification";
+NSString *const OWSApplicationDidBecomeActiveNotification = @"OWSApplicationDidBecomeActiveNotification";
+
 static id<AppContext> currentAppContext = nil;
 
 id<AppContext> CurrentAppContext(void)

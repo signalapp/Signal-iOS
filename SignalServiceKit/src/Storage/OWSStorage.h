@@ -39,6 +39,8 @@ typedef NS_ENUM(NSUInteger, StorageType) {
 
 + (void)resetAllStorage;
 
++ (void)applicationWillEnterForeground;
+
 // TODO: Deprecate?
 - (nullable YapDatabaseConnection *)newDatabaseConnection;
 

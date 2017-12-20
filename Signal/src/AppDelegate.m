@@ -76,6 +76,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     DDLogWarn(@"%@ applicationWillEnterForeground.", self.logTag);
 
+    // We want to prod OWSStorage here so that all storage is valid.
+    [OWSStorage applicationWillEnterForeground];
+
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 }
 

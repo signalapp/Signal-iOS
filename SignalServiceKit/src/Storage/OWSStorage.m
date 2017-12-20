@@ -163,12 +163,12 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         [self openDatabase];
 
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationWillEnterForeground:)
-                                                     name:UIApplicationWillEnterForegroundNotification
+                                                 selector:@selector(applicationDidEnterBackground:)
+                                                     name:OWSApplicationDidEnterBackgroundNotification
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationDidEnterBackground:)
-                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                 selector:@selector(extensionHostWillEnterForeground:)
+                                                     name:OWSApplicationWillEnterForegroundNotification
                                                    object:nil];
     }
 
@@ -639,9 +639,32 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     [self closeDatabaseIfNecessary];
 }
 
-- (void)applicationWillEnterForeground:(NSNotification *)notification
+- (void)applicationWillEnterForeground
 {
     [self openDatabaseIfNecessary];
+}
+
++ (void)applicationWillEnterForeground
+{
+    OWSAssertIsOnMainThread();
+
+    for (OWSStorage *storage in self.allStorages) {
+        [storage applicationWillEnterForeground];
+    }
+}
+
+- (void)extensionHostDidEnterBackground:(NSNotification *)notification
+{
+    [self closeDatabaseIfNecessary];
+}
+
+- (void)extensionHostWillEnterForeground:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    for (OWSStorage *storage in OWSStorage.allStorages) {
+        [storage applicationWillEnterForeground];
+    }
 }
 
 @end
