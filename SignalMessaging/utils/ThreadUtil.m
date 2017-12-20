@@ -97,14 +97,20 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
                                    messageSender:(OWSMessageSender *)messageSender
+                                      completion:(void (^_Nullable)(NSError *_Nullable error))completion
 {
-    return [self sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender ignoreErrors:NO];
+    return [self sendMessageWithAttachment:attachment
+                                  inThread:thread
+                             messageSender:messageSender
+                              ignoreErrors:NO
+                                completion:completion];
 }
 
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
                                    messageSender:(OWSMessageSender *)messageSender
                                     ignoreErrors:(BOOL)ignoreErrors
+                                      completion:(void (^_Nullable)(NSError *_Nullable error))completion
 {
     OWSAssertIsOnMainThread();
     OWSAssert(attachment);
@@ -128,9 +134,19 @@ NS_ASSUME_NONNULL_BEGIN
         inMessage:message
         success:^{
             DDLogDebug(@"%@ Successfully sent message attachment.", self.logTag);
+            if (completion) {
+                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                    completion(nil);
+                });
+            }
         }
         failure:^(NSError *error) {
             DDLogError(@"%@ Failed to send message attachment with error: %@", self.logTag, error);
+            if (completion) {
+                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                    completion(error);
+                });
+            }
         }];
 
     return message;

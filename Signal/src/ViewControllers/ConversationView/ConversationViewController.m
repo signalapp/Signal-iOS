@@ -2705,8 +2705,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         (unsigned long)[attachment dataLength],
         [attachment mimeType]);
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-    TSOutgoingMessage *message =
-        [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
+    TSOutgoingMessage *message = [ThreadUtil sendMessageWithAttachment:attachment
+                                                              inThread:self.thread
+                                                         messageSender:self.messageSender
+                                                            completion:nil];
 
     [self messageWasSent:message];
 
@@ -3864,8 +3866,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
-        message =
-            [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
+        message = [ThreadUtil sendMessageWithAttachment:attachment
+                                               inThread:self.thread
+                                          messageSender:self.messageSender
+                                             completion:nil];
     } else {
         message = [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
     }
