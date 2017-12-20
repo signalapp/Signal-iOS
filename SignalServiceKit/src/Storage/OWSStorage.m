@@ -257,7 +257,9 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
 
             // Try to reset app by deleting all databases.
-            [OWSStorage deleteDatabaseFiles];
+            //
+            // TODO: Possibly clean up all app files.
+            //            [OWSStorage deleteDatabaseFiles];
 
             if (![self tryToLoadDatabase]) {
                 OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);

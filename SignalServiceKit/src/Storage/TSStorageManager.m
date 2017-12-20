@@ -26,8 +26,8 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 
 @interface TSStorageManager ()
 
-@property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
-@property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
+@property (nonatomic, readonly, nullable) YapDatabaseConnection *dbReadConnection;
+@property (nonatomic, readonly, nullable) YapDatabaseConnection *dbReadWriteConnection;
 
 @property (atomic) BOOL areAsyncRegistrationsComplete;
 @property (atomic) BOOL areSyncRegistrationsComplete;
