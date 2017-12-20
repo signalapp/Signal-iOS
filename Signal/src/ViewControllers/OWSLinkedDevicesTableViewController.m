@@ -12,7 +12,7 @@
 #import <SignalServiceKit/OWSDevicesService.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSStorageManager.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
+#import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 #import <YapDatabase/YapDatabaseViewMappings.h>
 

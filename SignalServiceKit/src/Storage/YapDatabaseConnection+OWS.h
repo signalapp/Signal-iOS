@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseConnection.h>
 
 @class ECKeyPair;
 @class PreKeyRecord;

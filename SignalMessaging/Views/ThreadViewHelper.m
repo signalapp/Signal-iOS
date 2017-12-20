@@ -8,6 +8,8 @@
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseViewChange.h>
+#import <YapDatabase/YapDatabaseViewConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
