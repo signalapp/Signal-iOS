@@ -156,7 +156,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         // messages are not only unnecessary, but worse, would be rendered redundantly. For safety, rather
         // than building the logic to try to find and delete the redundant "dummy" text messages which users
         // have been seeing and interacting with, we delete the body field from the attachment message,
-        // which iOS users has never seen directly.
+        // which iOS users have never seen directly.
         if (_attachmentIds.count > 0) {
             _body = nil;
         }
