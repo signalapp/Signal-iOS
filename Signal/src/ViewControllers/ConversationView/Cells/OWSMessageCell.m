@@ -522,6 +522,9 @@ NS_ASSUME_NONNULL_BEGIN
 // cell is no longer visible.
 - (void)ensureViewMediaState
 {
+    CGSize mediaSize = [self mediaBubbleSizeForContentWidth:self.contentWidth];
+    [self.contentConstraints addObjectsFromArray:[self.mediaMaskingView autoSetDimensionsToSize:mediaSize]];
+
     if (!self.isCellVisible) {
         // Eagerly unload.
         self.stillImageView.image = nil;
@@ -781,6 +784,9 @@ NS_ASSUME_NONNULL_BEGIN
         self.textView.shouldIgnoreEvents = NO;
     }
 
+    OWSAssert(self.contentWidth);
+    CGSize textBubbleSize = [self textBubbleSizeForContentWidth:self.contentWidth];
+
     if (self.displayableText.isTextTruncated) {
         self.tapForMoreLabel = [UILabel new];
         self.tapForMoreLabel.text = NSLocalizedString(@"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
@@ -791,6 +797,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self.textBubbleImageView addSubview:self.tapForMoreLabel];
 
         [self.contentConstraints addObjectsFromArray:@[
+            [self.textBubbleImageView autoSetDimension:ALDimensionWidth toSize:textBubbleSize.width],
+            [self.textBubbleImageView autoSetDimension:ALDimensionHeight toSize:textBubbleSize.height],
             [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
             [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
             [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
@@ -802,9 +810,6 @@ NS_ASSUME_NONNULL_BEGIN
             [self.tapForMoreLabel autoSetDimension:ALDimensionHeight toSize:self.tapForMoreHeight],
         ]];
     } else {
-        OWSAssert(self.contentWidth);
-        CGSize textBubbleSize = [self textBubbleSizeForContentWidth:self.contentWidth];
-
         [self.contentConstraints addObjectsFromArray:@[
             [self.textBubbleImageView autoSetDimension:ALDimensionWidth toSize:textBubbleSize.width],
             [self.textBubbleImageView autoSetDimension:ALDimensionHeight toSize:textBubbleSize.height],
@@ -934,12 +939,10 @@ NS_ASSUME_NONNULL_BEGIN
     view.userInteractionEnabled = NO;
     [self.mediaMaskingView addSubview:view];
 
-    CGSize mediaSize = [self mediaBubbleSizeForContentWidth:self.contentWidth];
-
     [self.contentConstraints
         addObject:[self.mediaMaskingView
                       autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeLeading : ALEdgeTrailing)]];
-    [self.contentConstraints addObjectsFromArray:[self.mediaMaskingView autoSetDimensionsToSize:mediaSize]];
+
     [self.contentConstraints addObjectsFromArray:[view autoPinEdgesToSuperviewMargins]];
 
     [self cropMediaViewToBubbbleShape:view];
