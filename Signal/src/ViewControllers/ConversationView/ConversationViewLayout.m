@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ConversationViewLayout ()
 
-@property (nonatomic) CGSize mediaSize;
+@property (nonatomic) CGSize contentSize;
 
 @property (nonatomic, readonly) NSMutableDictionary<NSNumber *, UICollectionViewLayoutAttributes *> *itemAttributesMap;
 
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clearState
 {
-    self.mediaSize = CGSizeZero;
+    self.contentSize = CGSizeZero;
     [self.itemAttributesMap removeAllObjects];
     self.hasLayout = NO;
 }
@@ -137,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     contentBottom += vInset;
-    self.mediaSize = CGSizeMake(viewWidth, contentBottom);
+    self.contentSize = CGSizeMake(viewWidth, contentBottom);
 }
 
 - (nullable NSArray<__kindof UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)rect
@@ -158,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)collectionViewContentSize
 {
-    return self.mediaSize;
+    return self.contentSize;
 }
 
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
