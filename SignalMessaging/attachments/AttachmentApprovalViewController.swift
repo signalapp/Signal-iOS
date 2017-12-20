@@ -12,7 +12,7 @@ public protocol AttachmentApprovalViewControllerDelegate: class {
 }
 
 @objc
-public class AttachmentApprovalViewController: OWSViewController, MessagingToolbarDelegate {
+public class AttachmentApprovalViewController: OWSViewController, CaptioningToolbarDelegate {
 
     let TAG = "[AttachmentApprovalViewController]"
     weak var delegate: AttachmentApprovalViewControllerDelegate?
@@ -170,9 +170,9 @@ public class AttachmentApprovalViewController: OWSViewController, MessagingToolb
         topToolbar.items = [cancelButton]
 
         // Bottom Toolbar
-        let messagingToolbar = MessagingToolbar()
-        messagingToolbar.messagingToolbarDelegate = self
-        self.bottomToolbar = messagingToolbar
+        let captioningToolbar = CaptioningToolbar()
+        captioningToolbar.captioningToolbarDelegate = self
+        self.bottomToolbar = captioningToolbar
     }
 
     override public var inputAccessoryView: UIView? {
@@ -209,10 +209,14 @@ public class AttachmentApprovalViewController: OWSViewController, MessagingToolb
         self.delegate?.didCancelAttachment(attachment: attachment)
     }
 
-    // MARK: MessagingToolbarDelegate
+    // MARK: CaptioningToolbarDelegate
 
-    func messagingToolbarDidTapSend(_ messagingToolbar: MessagingToolbar, captionText: String?) {
+    func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar, captionText: String?) {
         self.sendAttachment(captionText: captionText)
+    }
+
+    func captioningToolbar(_ captioningToolbar: CaptioningToolbar, didChangeTextViewHeight newHeight: CGFloat) {
+        Logger.info("Changed height: \(newHeight)")
     }
 
     // MARK: Helpers
@@ -323,13 +327,14 @@ private class GradientView: UIView {
     }
 }
 
-protocol MessagingToolbarDelegate: class {
-    func messagingToolbarDidTapSend(_ messagingToolbar: MessagingToolbar, captionText: String?)
+protocol CaptioningToolbarDelegate: class {
+    func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar, captionText: String?)
+    func captioningToolbar(_ captioningToolbar: CaptioningToolbar, didChangeTextViewHeight newHeight: CGFloat)
 }
 
-class MessagingToolbar: UIView, UITextViewDelegate {
+class CaptioningToolbar: UIView, UITextViewDelegate {
 
-    weak var messagingToolbarDelegate: MessagingToolbarDelegate?
+    weak var captioningToolbarDelegate: CaptioningToolbarDelegate?
     private let sendButton: UIButton
     private let textView: UITextView
 
@@ -341,7 +346,11 @@ class MessagingToolbar: UIView, UITextViewDelegate {
     }
 
     let kMinTextViewHeight: CGFloat = 38
-    var textViewHeight: CGFloat
+    var textViewHeight: CGFloat {
+        didSet {
+            self.captioningToolbarDelegate?.captioningToolbar(self, didChangeTextViewHeight: textViewHeight)
+        }
+    }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -364,13 +373,14 @@ class MessagingToolbar: UIView, UITextViewDelegate {
 
         super.init(frame: CGRect.zero)
 
-        self.backgroundColor = UIColor.ows_inputToolbarBackground()
+        self.backgroundColor = UIColor.clear
 
         textView.delegate = self
         textView.backgroundColor = UIColor.white
         textView.layer.cornerRadius = 4.0
         textView.addBorder(with: UIColor.lightGray)
         textView.font = UIFont.ows_dynamicTypeBody()
+        textView.returnKeyType = .done
 
         let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
         sendButton.setTitle(sendTitle, for: .normal)
@@ -378,10 +388,12 @@ class MessagingToolbar: UIView, UITextViewDelegate {
 
         sendButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: 16)
         sendButton.titleLabel?.textAlignment = .center
-        sendButton.tintColor = UIColor.ows_materialBlue()
+        sendButton.tintColor = UIColor.white
+        sendButton.backgroundColor = UIColor.ows_materialBlue()
+        sendButton.layer.cornerRadius = 4
 
         // Increase hit area of send button
-        sendButton.contentEdgeInsets = UIEdgeInsets(top: 20, left: 8, bottom: 4, right: 8)
+        sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
 
         addSubview(sendButton)
         addSubview(textView)
@@ -390,7 +402,7 @@ class MessagingToolbar: UIView, UITextViewDelegate {
     }
 
     func didTapSend() {
-        self.messagingToolbarDelegate?.messagingToolbarDidTapSend(self, captionText: self.textView.text)
+        self.captioningToolbarDelegate?.captioningToolbarDidTapSend(self, captionText: self.textView.text)
     }
 
     // MARK: - UITextViewDelegate
