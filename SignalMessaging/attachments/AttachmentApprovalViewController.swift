@@ -215,11 +215,9 @@ public class AttachmentApprovalViewController: OWSViewController, MessagingToolb
         self.sendAttachment(captionText: captionText)
     }
 
-    func messagingToolbar(_ messagingToolbar: MessagingToolbar, didChangeHeight newHeight: CGFloat) {
-        self.scrollView.contentInset.bottom = newHeight
-    }
+    // MARK: Helpers
 
-    func sendAttachment(captionText: String?) {
+    private func sendAttachment(captionText: String?) {
         // disable controls after send was tapped.
         self.bottomToolbar.isUserInteractionEnabled = false
 
@@ -327,7 +325,6 @@ private class GradientView: UIView {
 
 protocol MessagingToolbarDelegate: class {
     func messagingToolbarDidTapSend(_ messagingToolbar: MessagingToolbar, captionText: String?)
-    func messagingToolbar(_ messagingToolbar: MessagingToolbar, didChangeHeight newHeight: CGFloat)
 }
 
 class MessagingToolbar: UIView, UITextViewDelegate {
@@ -342,14 +339,9 @@ class MessagingToolbar: UIView, UITextViewDelegate {
         // Otherwise we risk obscuring too much of the content.
         return UIDevice.current.orientation.isPortrait ? 160 : 100
     }
-    let kMinTextViewHeight: CGFloat = 38
 
-    var textViewHeight: CGFloat {
-        didSet {
-            // TODO magic numbers
-            self.messagingToolbarDelegate?.messagingToolbar(self, didChangeHeight: textViewHeight + 2 * 4)
-        }
-    }
+    let kMinTextViewHeight: CGFloat = 38
+    var textViewHeight: CGFloat
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

@@ -311,30 +311,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)longPressTextGesture:(UIGestureRecognizer *)sender
-{
-    // We "eagerly" respond when the long press begins, not when it ends.
-    if (sender.state == UIGestureRecognizerStateBegan) {
-        if (!self.viewItem) {
-            return;
-        }
-
-        [self.view becomeFirstResponder];
-
-        if ([UIMenuController sharedMenuController].isMenuVisible) {
-            [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
-        }
-
-        NSArray *menuItems = self.viewItem.textMenuControllerItems;
-        [UIMenuController sharedMenuController].menuItems = menuItems;
-        CGPoint location = [sender locationInView:self.view];
-        CGRect targetRect = CGRectMake(location.x, location.y, 1, 1);
-        [[UIMenuController sharedMenuController] setTargetRect:targetRect inView:self.view];
-        [[UIMenuController sharedMenuController] setMenuVisible:YES animated:YES];
-    }
-}
-
-- (void)longPressMediaGesture:(UIGestureRecognizer *)sender
+- (void)longPressGesture:(UIGestureRecognizer *)sender
 {
     // We "eagerly" respond when the long press begins, not when it ends.
     if (sender.state == UIGestureRecognizerStateBegan) {
@@ -365,19 +342,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.viewItem canPerformAction:action];
 }
 
-- (void)copyTextAction:(nullable id)sender
-{
-    [self.viewItem copyTextAction];
-}
-
 - (void)copyMediaAction:(nullable id)sender
 {
     [self.viewItem copyMediaAction];
-}
-
-- (void)shareTextAction:(nullable id)sender
-{
-    [self.viewItem shareTextAction];
 }
 
 - (void)shareMediaAction:(nullable id)sender

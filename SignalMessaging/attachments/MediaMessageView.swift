@@ -173,7 +173,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         self.addSubview(stackView)
         fileNameLabel?.autoPinWidthToSuperview(withMargin: 32)
 
-        // We want to center the stackView in it's superview while ensuring
+        // We want to center the stackView in it's superview while also ensuring
         // it's superview is big enough to contain it.
         stackView.autoPinWidthToSuperview()
         stackView.autoVCenterInSuperview()
@@ -295,7 +295,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         self.addSubview(stackView)
         fileNameLabel?.autoPinWidthToSuperview(withMargin: 32)
 
-        // We want to center the stackView in it's superview while ensuring
+        // We want to center the stackView in it's superview while also ensuring
         // it's superview is big enough to contain it.
         stackView.autoPinWidthToSuperview()
         stackView.autoVCenterInSuperview()
