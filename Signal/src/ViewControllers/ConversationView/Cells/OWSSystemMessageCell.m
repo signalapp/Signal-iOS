@@ -4,13 +4,13 @@
 
 #import "OWSSystemMessageCell.h"
 #import "ConversationViewItem.h"
-#import "Environment.h"
 #import "NSBundle+JSQMessages.h"
-#import "OWSContactsManager.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <JSQMessagesViewController/UIView+JSQMessages.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSErrorMessage.h>

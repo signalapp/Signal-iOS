@@ -5,7 +5,6 @@
 #import "RegistrationViewController.h"
 #import "CodeVerificationViewController.h"
 #import "CountryCodeViewController.h"
-#import "NSString+OWS.h"
 #import "PhoneNumber.h"
 #import "PhoneNumberUtil.h"
 #import "Signal-Swift.h"
@@ -14,6 +13,7 @@
 #import "ViewControllerUtils.h"
 #import <SAMKeychain/SAMKeychain.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalMessaging/NSString+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

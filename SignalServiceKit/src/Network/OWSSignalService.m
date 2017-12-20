@@ -10,6 +10,7 @@
 #import "TSAccountManager.h"
 #import "TSConstants.h"
 #import "TSStorageManager.h"
+#import "YapDatabaseConnection+OWS.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
 
 NS_ASSUME_NONNULL_BEGIN

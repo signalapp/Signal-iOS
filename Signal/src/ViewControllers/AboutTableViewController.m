@@ -3,10 +3,10 @@
 //
 
 #import "AboutTableViewController.h"
-#import "Environment.h"
-#import "OWSPreferences.h"
 #import "Signal-Swift.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSStorageManager.h>
@@ -71,7 +71,7 @@
 #ifdef DEBUG
     __block NSUInteger threadCount;
     __block NSUInteger messageCount;
-    [TSStorageManager.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [TSStorageManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         threadCount = [[transaction ext:TSThreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
         messageCount = [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInAllGroups];
     }];

@@ -12,6 +12,7 @@
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
+#import <YapDatabase/YapDatabase.h>
 
 #define NEEDS_TO_REGISTER_PUSH_KEY @"Register For Push"
 #define NEEDS_TO_REGISTER_ATTRIBUTES @"Register Attributes"
@@ -180,7 +181,7 @@
         NSError *deleteError;
         if ([fm removeItemAtPath:bloomFilterPath error:&deleteError]) {
             DDLogInfo(@"Successfully removed bloom filter cache.");
-            [[TSStorageManager sharedManager].dbReadWriteConnection
+            [TSStorageManager.dbReadWriteConnection
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                     [transaction removeAllObjectsInCollection:@"TSRecipient"];
                 }];

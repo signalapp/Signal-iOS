@@ -4,9 +4,9 @@
 
 #import "PrivacySettingsTableViewController.h"
 #import "BlockListViewController.h"
-#import "Environment.h"
-#import "OWSPreferences.h"
 #import "Signal-Swift.h"
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSPreferences.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 
 NS_ASSUME_NONNULL_BEGIN

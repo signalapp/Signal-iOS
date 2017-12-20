@@ -9,6 +9,7 @@
 #import <AxolotlKit/SessionCipher.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/OWSStorage.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -39,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   profileManager:OWSProfileManager.sharedManager];
         [TextSecureKitEnv setSharedEnv:sharedEnv];
 
-        [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{
+        [OWSStorage setupWithSafeBlockingMigrations:^{
             [VersionMigrations runSafeBlockingMigrations];
         }];
         [[Environment current].contactsManager startObserving];

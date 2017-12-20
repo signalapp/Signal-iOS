@@ -4,13 +4,13 @@
 
 #import "DebugUISyncMessages.h"
 #import "DebugUIContacts.h"
-#import "Environment.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <AFNetworking/AFNetworking.h>
 #import <AxolotlKit/PreKeyBundle.h>
 #import <Curve25519Kit/Randomness.h>
+#import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>

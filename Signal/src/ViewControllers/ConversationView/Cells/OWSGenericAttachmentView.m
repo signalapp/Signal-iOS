@@ -3,13 +3,13 @@
 //
 
 #import "OWSGenericAttachmentView.h"
-#import "NSString+OWS.h"
 #import "OWSBezierPathView.h"
 #import "UIColor+JSQMessages.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
+#import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/TSAttachmentStream.h>

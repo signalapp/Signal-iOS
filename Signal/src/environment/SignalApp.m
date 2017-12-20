@@ -172,7 +172,7 @@
 
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
-        [[TSStorageManager sharedManager].dbReadWriteConnection
+        [TSStorageManager.dbReadWriteConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
             }];

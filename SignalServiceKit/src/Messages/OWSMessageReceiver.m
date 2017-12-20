@@ -10,6 +10,7 @@
 #import "OWSMessageDecrypter.h"
 #import "OWSQueues.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "OWSStorage.h"
 #import "TSDatabaseView.h"
 #import "TSStorageManager.h"
 #import "TSYapDatabaseObject.h"
@@ -241,8 +242,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     _isDrainingQueue = NO;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(databaseViewRegistrationComplete)
-                                                 name:DatabaseViewRegistrationCompleteNotification
+                                             selector:@selector(storageIsReady)
+                                                 name:StorageIsReadyNotification
                                                object:nil];
 
     return self;
@@ -253,7 +254,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)databaseViewRegistrationComplete
+- (void)storageIsReady
 {
     [self drainQueue];
 }
@@ -283,9 +284,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     }
 
     dispatch_async(self.serialQueue, ^{
-        if ([TSDatabaseView hasPendingViewRegistrations]) {
-            // We don't want to process incoming messages until database
-            // view registration is complete.
+        if (![OWSStorage isStorageReady]) {
+            // We don't want to process incoming messages until storage is ready.
             return;
         }
 

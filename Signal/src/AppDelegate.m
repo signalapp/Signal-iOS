@@ -7,27 +7,27 @@
 #import "AppUpdateNag.h"
 #import "CodeVerificationViewController.h"
 #import "DebugLogger.h"
-#import "Environment.h"
 #import "MainAppContext.h"
 #import "NotificationsManager.h"
-#import "OWSContactsManager.h"
-#import "OWSContactsSyncing.h"
 #import "OWSNavigationController.h"
-#import "OWSPreferences.h"
 #import "Pastelog.h"
 #import "PushManager.h"
 #import "RegistrationViewController.h"
-#import "Release.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "SignalsNavigationController.h"
-#import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
 #import <SignalMessaging/AppSetup.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSContactsManager.h>
+#import <SignalMessaging/OWSContactsSyncing.h>
 #import <SignalMessaging/OWSMath.h>
+#import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/Release.h>
 #import <SignalMessaging/SignalMessaging.h>
+#import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -135,7 +135,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).
     //
-    // This block will be cleared in databaseViewRegistrationComplete.
+    // This block will be cleared in storageIsReady.
     [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 
     [AppSetup setupEnvironment:^{
@@ -175,8 +175,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [OWSContactsSyncing sharedManager];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(databaseViewRegistrationComplete)
-                                                 name:DatabaseViewRegistrationCompleteNotification
+                                             selector:@selector(storageIsReady)
+                                                 name:StorageIsReadyNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange)
@@ -219,8 +219,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [TSStorageManager migrateToSharedData];
     [OWSProfileManager migrateToSharedData];
     [TSAttachmentStream migrateToSharedData];
-
-    [OWSPreferences setIsReadyForAppExtensions:YES];
 }
 
 - (void)startupLogging
@@ -715,9 +713,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                            completionHandler:completionHandler];
 }
 
-- (void)databaseViewRegistrationComplete
+- (void)storageIsReady
 {
-    DDLogInfo(@"%@ databaseViewRegistrationComplete", self.logTag);
+    DDLogInfo(@"%@ storageIsReady", self.logTag);
 
     [OWSPreferences setIsRegistered:[TSAccountManager isRegistered]];
 
@@ -741,8 +739,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [Environment.current.contactsManager loadSignalAccountsFromCache];
 
-    [self ensureRootViewController];
-
     // If there were any messages in our local queue which we hadn't yet processed.
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
     [[OWSBatchMessageProcessor sharedInstance] handleAnyUnprocessedEnvelopesAsync];
@@ -764,6 +760,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [OWSProfileManager.sharedManager fetchLocalUsersProfile];
     [[OWSReadReceiptManager sharedManager] prepareCachedValues];
+
+    // Disable the SAE until the main app has successfully completed launch process
+    // at least once in the post-SAE world.
+    [OWSPreferences setIsReadyForAppExtensions];
+
+    [self ensureRootViewController];
 }
 
 - (void)registrationStateDidChange
@@ -795,7 +797,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 {
     DDLogInfo(@"%@ ensureRootViewController", self.logTag);
 
-    if ([TSDatabaseView hasPendingViewRegistrations] || self.hasInitialRootViewController) {
+    if (![OWSStorage isStorageReady] || self.hasInitialRootViewController) {
         return;
     }
     self.hasInitialRootViewController = YES;

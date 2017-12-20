@@ -6,15 +6,15 @@
 #import "AboutTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"
 #import "DebugUITableViewController.h"
-#import "Environment.h"
 #import "NotificationSettingsViewController.h"
-#import "OWSContactsManager.h"
 #import "OWSLinkedDevicesTableViewController.h"
 #import "OWSNavigationController.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSSocketManager.h>

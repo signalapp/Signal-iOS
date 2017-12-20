@@ -3,7 +3,6 @@
 //
 
 #import "DebugUIMisc.h"
-#import "Environment.h"
 #import "OWSCountryMetadata.h"
 #import "OWSTableViewController.h"
 #import "RegistrationViewController.h"
@@ -11,6 +10,7 @@
 #import "ThreadUtil.h"
 #import <AFNetworking/AFNetworking.h>
 #import <AxolotlKit/PreKeyBundle.h>
+#import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearHasDismissedOffers
 {
-    [TSStorageManager.sharedManager.dbReadWriteConnection
+    [TSStorageManager.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             NSMutableArray<TSContactThread *> *contactThreads = [NSMutableArray new];
             [transaction

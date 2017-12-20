@@ -5,12 +5,18 @@
 #import "OWSStorage.h"
 #import "AppContext.h"
 #import "NSData+Base64.h"
+#import "NSNotificationCenter+OWS.h"
+#import "OWSFileSystem.h"
+#import "OWSStorage+Subclass.h"
 #import "TSAttachmentStream.h"
 #import "TSStorageManager.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *const StorageIsReadyNotification = @"StorageIsReadyNotification";
 
 NSString *const OWSStorageExceptionName_DatabasePasswordInaccessibleWhileBackgrounded
     = @"OWSStorageExceptionName_DatabasePasswordInaccessibleWhileBackgrounded";
@@ -25,7 +31,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 
 @protocol OWSDatabaseConnectionDelegate <NSObject>
 
-- (BOOL)isDatabaseInitialized;
+- (BOOL)areSyncRegistrationsComplete;
 
 @end
 
@@ -79,7 +85,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 {
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssert(delegate);
-    OWSAssert(delegate.isDatabaseInitialized);
+    OWSAssert(delegate.areSyncRegistrationsComplete);
 
     [super readWriteWithBlock:block];
 }
@@ -88,7 +94,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 {
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssert(delegate);
-    OWSAssert(delegate.isDatabaseInitialized);
+    OWSAssert(delegate.areSyncRegistrationsComplete);
 
     [super asyncReadWriteWithBlock:block];
 }
@@ -98,7 +104,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 {
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssert(delegate);
-    OWSAssert(delegate.isDatabaseInitialized);
+    OWSAssert(delegate.areSyncRegistrationsComplete);
 
     [super asyncReadWriteWithBlock:block completionBlock:completionBlock];
 }
@@ -109,7 +115,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 {
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssert(delegate);
-    OWSAssert(delegate.isDatabaseInitialized);
+    OWSAssert(delegate.areSyncRegistrationsComplete);
 
     [super asyncReadWriteWithBlock:block completionQueue:completionQueue completionBlock:completionBlock];
 }
@@ -231,7 +237,6 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 @interface OWSStorage () <OWSDatabaseConnectionDelegate>
 
 @property (atomic, nullable) YapDatabase *database;
-@property (atomic) BOOL isDatabaseInitialized;
 
 @end
 
@@ -243,37 +248,109 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 {
     self = [super init];
 
-    if (![self tryToLoadDatabase]) {
-        // Failing to load the database is catastrophic.
-        //
-        // The best we can try to do is to discard the current database
-        // and behave like a clean install.
-        OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
-
-        // Try to reset app by deleting database.
-        // Disabled resetting storage until we have better data on why this happens.
-        // [self resetAllStorage];
-
+    if (self) {
         if (![self tryToLoadDatabase]) {
-            OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
+            // Failing to load the database is catastrophic.
+            //
+            // The best we can try to do is to discard the current database
+            // and behave like a clean install.
+            OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
 
-            // Sleep to give analytics events time to be delivered.
-            [NSThread sleepForTimeInterval:15.0f];
+            // Try to reset app by deleting all databases.
+            //
+            // TODO: Possibly clean up all app files.
+            //            [OWSStorage deleteDatabaseFiles];
 
-            [NSException raise:OWSStorageExceptionName_NoDatabase format:@"Failed to initialize database."];
+            if (![self tryToLoadDatabase]) {
+                OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
+
+                // Sleep to give analytics events time to be delivered.
+                [NSThread sleepForTimeInterval:15.0f];
+
+                [NSException raise:OWSStorageExceptionName_NoDatabase format:@"Failed to initialize database."];
+            }
         }
-
-        OWSSingletonAssert();
     }
 
     return self;
 }
 
-- (void)setDatabaseInitialized
+- (BOOL)areAsyncRegistrationsComplete
 {
-    OWSAssert(!self.isDatabaseInitialized);
+    OWS_ABSTRACT_METHOD();
 
-    self.isDatabaseInitialized = YES;
+    return NO;
+}
+
+- (BOOL)areSyncRegistrationsComplete
+{
+    OWS_ABSTRACT_METHOD();
+
+    return NO;
+}
+
+- (void)runSyncRegistrations
+{
+    OWS_ABSTRACT_METHOD();
+}
+
+- (void)runAsyncRegistrationsWithCompletion:(void (^_Nonnull)(void))completion
+{
+    OWS_ABSTRACT_METHOD();
+}
+
++ (NSArray<OWSStorage *> *)allStorages
+{
+    return @[
+        TSStorageManager.sharedManager,
+    ];
+}
+
++ (void)setupWithSafeBlockingMigrations:(void (^_Nonnull)(void))safeBlockingMigrationsBlock
+{
+    OWSAssert(safeBlockingMigrationsBlock);
+
+    for (OWSStorage *storage in self.allStorages) {
+        [storage runSyncRegistrations];
+    }
+
+    // Run the blocking migrations.
+    //
+    // These need to run _before_ the async registered database views or
+    // they will block on them, which (in the upgrade case) can block
+    // return of appDidFinishLaunching... which in term can cause the
+    // app to crash on launch.
+    safeBlockingMigrationsBlock();
+
+    for (OWSStorage *storage in self.allStorages) {
+        [storage runAsyncRegistrationsWithCompletion:^{
+            [self postRegistrationCompleteNotificationIfPossible];
+        }];
+    }
+}
+
++ (void)postRegistrationCompleteNotificationIfPossible
+{
+    if (!self.isStorageReady) {
+        return;
+    }
+
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:StorageIsReadyNotification
+                                                                 object:nil
+                                                               userInfo:nil];
+    });
+}
+
++ (BOOL)isStorageReady
+{
+    for (OWSStorage *storage in self.allStorages) {
+        if (!storage.areAsyncRegistrationsComplete) {
+            return NO;
+        }
+    }
+    return YES;
 }
 
 - (BOOL)tryToLoadDatabase
@@ -291,7 +368,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     };
     options.enableMultiProcessSupport = YES;
 
-    OWSDatabase *database = [[OWSDatabase alloc] initWithPath:[self dbPath]
+    OWSDatabase *database = [[OWSDatabase alloc] initWithPath:[self databaseFilePath]
                                                    serializer:nil
                                                  deserializer:[[self class] logOnFailureDeserializer]
                                                       options:options
@@ -302,8 +379,6 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     }
 
     _database = database;
-    _dbReadConnection = self.newDatabaseConnection;
-    _dbReadWriteConnection = self.newDatabaseConnection;
 
     return YES;
 }
@@ -356,28 +431,31 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 
 #pragma mark - Password
 
++ (void)deleteDatabaseFiles
+{
+    [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath]];
+}
+
 - (void)deleteDatabaseFile
 {
-    NSError *error;
-    [[NSFileManager defaultManager] removeItemAtPath:[self dbPath] error:&error];
-    if (error) {
-        DDLogError(@"Failed to delete database: %@", error.description);
-    }
+    [OWSFileSystem deleteFile:[self databaseFilePath]];
 }
 
 - (void)resetStorage
 {
     self.database = nil;
 
-    _dbReadConnection = nil;
-    _dbReadWriteConnection = nil;
-
     [self deleteDatabaseFile];
 }
 
 + (void)resetAllStorage
 {
-    [[TSStorageManager sharedManager] resetStorage];
+    for (OWSStorage *storage in self.allStorages) {
+        [storage resetStorage];
+    }
+
+    // This might be redundant but in the spirit of thoroughness...
+    [self deleteDatabaseFiles];
 
     [self deletePasswordFromKeychain];
 
@@ -390,7 +468,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 
 #pragma mark - Password
 
-- (NSString *)dbPath
+- (NSString *)databaseFilePath
 {
     OWS_ABSTRACT_METHOD();
 
@@ -453,7 +531,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         // or the keychain has become corrupt.  Either way, we want to get back to a
         // "known good state" and behave like a new install.
 
-        BOOL shouldHavePassword = [NSFileManager.defaultManager fileExistsAtPath:[self dbPath]];
+        BOOL shouldHavePassword = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
         if (shouldHavePassword) {
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
         }

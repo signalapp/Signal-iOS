@@ -3,7 +3,6 @@
 //
 
 #import "TSDatabaseView.h"
-#import "NSNotificationCenter+OWS.h"
 #import "OWSDevice.h"
 #import "OWSReadTracking.h"
 #import "TSIncomingMessage.h"
@@ -14,8 +13,6 @@
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
-
-NSString *const DatabaseViewRegistrationCompleteNotification = @"DatabaseViewRegistrationCompleteNotification";
 
 NSString *const TSInboxGroup = @"TSInboxGroup";
 NSString *const TSArchiveGroup = @"TSArchiveGroup";
@@ -33,61 +30,7 @@ NSString *const TSUnseenDatabaseViewExtensionName = @"TSUnseenDatabaseViewExtens
 NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName = @"TSThreadSpecialMessagesDatabaseViewExtensionName";
 NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesDatabaseViewExtensionName";
 
-@interface TSDatabaseView ()
-
-@property (nonatomic) BOOL areAllAsyncRegistrationsComplete;
-
-@end
-
-#pragma mark -
-
 @implementation TSDatabaseView
-
-+ (instancetype)sharedInstance
-{
-    static TSDatabaseView *sharedInstance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedInstance = [[self alloc] initDefault];
-    });
-    return sharedInstance;
-}
-
-- (instancetype)initDefault
-{
-    self = [super init];
-
-    if (!self) {
-        return self;
-    }
-
-    OWSSingletonAssert();
-
-    return self;
-}
-
-- (BOOL)hasPendingViewRegistrations
-{
-    @synchronized(self)
-    {
-        return !self.areAllAsyncRegistrationsComplete;
-    }
-}
-
-+ (BOOL)hasPendingViewRegistrations
-{
-    return ![TSDatabaseView sharedInstance].areAllAsyncRegistrationsComplete;
-}
-
-- (void)setAreAllAsyncRegistrationsComplete
-{
-    @synchronized(self)
-    {
-        OWSAssert(!self.areAllAsyncRegistrationsComplete);
-
-        self.areAllAsyncRegistrationsComplete = YES;
-    }
-}
 
 + (void)registerCrossProcessNotifier
 {
@@ -442,21 +385,6 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     OWSAssert(result);
 
     return result;
-}
-
-+ (void)asyncRegistrationCompletion
-{
-    OWSAssertIsOnMainThread();
-
-    // All async registrations are complete when writes are unblocked.
-    [[TSStorageManager sharedManager].newDatabaseConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [TSDatabaseView.sharedInstance setAreAllAsyncRegistrationsComplete];
-
-            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:DatabaseViewRegistrationCompleteNotification
-                                                                     object:nil
-                                                                   userInfo:nil];
-        }];
 }
 
 @end

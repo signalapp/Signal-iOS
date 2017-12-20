@@ -6,7 +6,6 @@
 #import "AppDelegate.h"
 #import "AvatarViewHelper.h"
 #import "HomeViewController.h"
-#import "NSString+OWS.h"
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
 #import "SignalsNavigationController.h"
@@ -14,6 +13,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
+#import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/TSStorageManager.h>

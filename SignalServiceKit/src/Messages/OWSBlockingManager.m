@@ -8,6 +8,7 @@
 #import "OWSMessageSender.h"
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
+#import "YapDatabaseConnection+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

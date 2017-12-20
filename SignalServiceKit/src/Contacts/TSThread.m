@@ -12,7 +12,6 @@
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
 #import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -246,7 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (TSInteraction *) lastInteraction {
     __block TSInteraction *last;
-    [TSStorageManager.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [TSStorageManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         last = [[transaction ext:TSMessageDatabaseViewExtensionName] lastObjectInGroup:self.uniqueId];
     }];
     return last;
@@ -255,7 +254,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (TSInteraction *)lastInteractionForInbox
 {
     __block TSInteraction *last = nil;
-    [TSStorageManager.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [TSStorageManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [[transaction ext:TSMessageDatabaseViewExtensionName]
             enumerateRowsInGroup:self.uniqueId
                      withOptions:NSEnumerationReverse

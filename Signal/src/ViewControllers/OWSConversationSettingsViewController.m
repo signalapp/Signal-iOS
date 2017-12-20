@@ -5,11 +5,9 @@
 #import "OWSConversationSettingsViewController.h"
 #import "BlockListUIUtils.h"
 #import "ContactsViewHelper.h"
-#import "Environment.h"
 #import "FingerprintViewController.h"
 #import "OWSAddToContactViewController.h"
 #import "OWSBlockingManager.h"
-#import "OWSContactsManager.h"
 #import "PhoneNumber.h"
 #import "ShowGroupMembersViewController.h"
 #import "Signal-Swift.h"
@@ -17,7 +15,9 @@
 #import "UIView+OWS.h"
 #import "UpdateGroupViewController.h"
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSAvatarBuilder.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/UIUtil.h>

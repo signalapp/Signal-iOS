@@ -2,8 +2,10 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSStorageKeys.h"
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+keyFromIntLong.h"
+#import "YapDatabaseConnection+OWS.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionBuilder.h>
 

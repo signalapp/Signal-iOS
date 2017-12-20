@@ -5,8 +5,8 @@
 #import "AddToGroupViewController.h"
 #import "BlockListUIUtils.h"
 #import "ContactsViewHelper.h"
-#import "OWSContactsManager.h"
 #import "Signal-Swift.h"
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/SignalAccount.h>
 
 NS_ASSUME_NONNULL_BEGIN

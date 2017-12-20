@@ -14,6 +14,7 @@
 #import "TSSocketManager.h"
 #import "TSStorageManager+SessionStore.h"
 #import "YapDatabaseConnection+OWS.h"
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

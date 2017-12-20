@@ -4,13 +4,13 @@
 
 #import "SelectRecipientViewController.h"
 #import "CountryCodeViewController.h"
-#import "Environment.h"
-#import "OWSContactsManager.h"
 #import "PhoneNumber.h"
 #import "Signal-Swift.h"
 #import "ViewControllerUtils.h"
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSTableViewController.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIUtil.h>
