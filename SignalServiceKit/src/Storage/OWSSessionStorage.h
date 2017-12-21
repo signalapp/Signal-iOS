@@ -23,6 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)databaseFilePath_SHM;
 + (NSString *)databaseFilePath_WAL;
 
+#pragma mark - Migration
+
+- (void)migrateCollection:(NSString *)collection fromStorage:(OWSStorage *)storage valueClass:(Class)valueClass;
+
 @end
 
 NS_ASSUME_NONNULL_END
