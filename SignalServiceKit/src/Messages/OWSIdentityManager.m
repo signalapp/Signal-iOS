@@ -472,8 +472,17 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (void)tryToSyncQueuedVerificationStates
 {
-    OWSAssert(self.hasMigratedToSessionStorage);
     OWSAssertIsOnMainThread();
+
+    if (!self.hasMigratedToSessionStorage) {
+        return;
+    }
+    if (!CurrentAppContext().isMainApp) {
+        return;
+    }
+    if (CurrentAppContext().mainApplicationState != UIApplicationStateActive) {
+        return;
+    }
 
     if (!CurrentAppContext().isMainAppAndActive) {
         // Only try to sync if the main app is active to avoid interfering with startup.
@@ -810,6 +819,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                         forKey:OWSIdentityStore_Key_HasMigratedToSessionStorage
                   inCollection:OWSIdentityStore_Collection];
     }];
+    [self tryToSyncQueuedVerificationStates];
 }
 
 #pragma mark - Notifications

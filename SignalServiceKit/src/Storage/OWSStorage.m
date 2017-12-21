@@ -9,6 +9,8 @@
 #import "OWSBackgroundTask.h"
 #import "OWSDatabaseConnection.h"
 #import "OWSFileSystem.h"
+#import "OWSIdentityManager.h"
+#import "OWSSessionStorage+SessionStore.h"
 #import "OWSSessionStorage.h"
 #import "OWSStorage+Subclass.h"
 #import "TSAttachmentStream.h"
@@ -270,6 +272,13 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     // return of appDidFinishLaunching... which in term can cause the
     // app to crash on launch.
     safeBlockingMigrationsBlock();
+
+    // We need to do this _before_ anyone accesses the session or identity store state.
+    //
+    // None of this state is used by a view, so we can safely do this before the
+    // view registrations.
+    [OWSSessionStorage.sharedManager migrateFromStorageIfNecessary:TSStorageManager.sharedManager];
+    [OWSIdentityManager.sharedManager migrateFromStorageIfNecessary:TSStorageManager.sharedManager];
 
     for (OWSStorage *storage in self.allStorages) {
         [storage runAsyncRegistrationsWithCompletion:^{
