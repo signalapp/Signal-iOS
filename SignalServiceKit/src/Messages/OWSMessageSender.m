@@ -861,7 +861,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             NSString *localizedErrorDescription =
                 [NSString stringWithFormat:localizedErrorDescriptionFormat,
                           [self.contactsManager displayNameForPhoneIdentifier:recipient.recipientId]];
-            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeUntrustedIdentityKey, localizedErrorDescription);
+            NSError *error = OWSErrorMakeUntrustedIdentityError(localizedErrorDescription, recipient.recipientId);
 
             // Key will continue to be unaccepted, so no need to retry. It'll only cause us to hit the Pre-Key request
             // rate limit
@@ -869,7 +869,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Avoid the "Too many failures with this contact" error rate limiting.
             [error setIsFatal:YES];
 
-            PreKeyBundle *newKeyBundle = exception.userInfo[TSInvalidPreKeyBundleKey];
+            PreKeyBundle *_Nullable newKeyBundle = exception.userInfo[TSInvalidPreKeyBundleKey];
+            if (newKeyBundle == nil) {
+                OWSProdFail([OWSAnalyticsEvents messageSenderErrorMissingNewPreKeyBundle]);
+                failureHandler(error);
+                return;
+            }
+
             if (![newKeyBundle isKindOfClass:[PreKeyBundle class]]) {
                 OWSProdFail([OWSAnalyticsEvents messageSenderErrorUnexpectedKeyBundle]);
                 failureHandler(error);

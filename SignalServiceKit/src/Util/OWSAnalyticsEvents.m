@@ -222,6 +222,11 @@ NS_ASSUME_NONNULL_BEGIN
     return @"error_update_attributes_request_failed";
 }
 
++ (NSString *)messageSenderErrorMissingNewPreKeyBundle
+{
+    return @"messageSenderErrorMissingNewPreKeyBundle";
+}
+
 + (NSString *)messageManagerErrorCallMessageNoActionablePayload
 {
     return @"message_manager_error_call_message_no_actionable_payload";

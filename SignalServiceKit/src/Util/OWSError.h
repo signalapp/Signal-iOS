@@ -13,7 +13,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeFailedToEncodeJson = 14,
     OWSErrorCodeFailedToDecodeQR = 15,
     OWSErrorCodePrivacyVerificationFailure = 20,
-    OWSErrorCodeUntrustedIdentityKey = 25,
+    OWSErrorCodeUntrustedIdentity = 25,
     OWSErrorCodeFailedToSendOutgoingMessage = 30,
     OWSErrorCodeFailedToDecryptMessage = 100,
     OWSErrorCodeFailedToEncryptMessage = 110,
@@ -29,7 +29,10 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeMessageDeletedBeforeSent = 777410,
 };
 
+extern NSString *const OWSErrorRecipientIdentifierKey;
+
 extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);
+extern NSError *OWSErrorMakeUntrustedIdentityError(NSString *description, NSString *recipientId);
 extern NSError *OWSErrorMakeUnableToProcessServerResponseError(void);
 extern NSError *OWSErrorMakeFailedToSendOutgoingMessageError(void);
 extern NSError *OWSErrorMakeNoSuchSignalRecipientError(void);
