@@ -38,6 +38,13 @@ public class ProfileFetcherJob: NSObject {
     public func run(recipientIds: [String]) {
         AssertIsOnMainThread()
 
+        if (!CurrentAppContext().isMainApp) {
+            // Only refresh profiles in the MainApp to decrease the chance of missed SN notifications
+            // in the AppExtension for our users who choose not to verify contacts.
+            owsFail("Should only fetch profiles in the main app")
+            return
+        }
+
         DispatchQueue.main.async {
             for recipientId in recipientIds {
                 self.updateProfile(recipientId: recipientId)
@@ -74,11 +81,11 @@ public class ProfileFetcherJob: NSObject {
         if !ignoreThrottling {
             if let lastDate = ProfileFetcherJob.fetchDateMap[recipientId] {
                 let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
-                // Don't check a profile more often than every N minutes.
+                // Don't check a profile more often than every N seconds.
                 //
-                // Only throttle profile fetch in production builds in order to
-                // facilitate debugging.
-                let kGetProfileMaxFrequencySeconds = _isDebugAssertConfiguration() ? 0 : 60.0 * 5.0
+                // Throttle less in debug to make it easier to test problems
+                // with our fetching logic.
+                let kGetProfileMaxFrequencySeconds = _isDebugAssertConfiguration() ? 60 : 60.0 * 5.0
                 guard lastTimeInterval > kGetProfileMaxFrequencySeconds else {
                     return Promise(error: ProfileFetcherJobError.throttled(lastTimeInterval: lastTimeInterval))
                 }

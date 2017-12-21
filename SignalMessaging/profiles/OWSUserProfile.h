@@ -32,12 +32,6 @@ extern NSString *const kLocalProfileUniqueId;
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (atomic, readonly, nullable) NSString *avatarFileName;
 
-// This should reflect when either:
-//
-// * The last successful update finished.
-// * The current in-flight update began.
-@property (atomic, readonly, nullable) NSDate *lastUpdateDate;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 + (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId
@@ -62,14 +56,6 @@ extern NSString *const kLocalProfileUniqueId;
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
-               avatarFileName:(nullable NSString *)avatarFileName
-               lastUpdateDate:(nullable NSDate *)lastUpdateDate
-                 dbConnection:(YapDatabaseConnection *)dbConnection
-                   completion:(nullable OWSUserProfileCompletion)completion;
-
-- (void)updateWithProfileName:(nullable NSString *)profileName
-                avatarUrlPath:(nullable NSString *)avatarUrlPath
-               lastUpdateDate:(nullable NSDate *)lastUpdateDate
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion;
 
@@ -79,10 +65,6 @@ extern NSString *const kLocalProfileUniqueId;
                      completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
-                    dbConnection:(YapDatabaseConnection *)dbConnection
-                      completion:(nullable OWSUserProfileCompletion)completion;
-
-- (void)updateWithLastUpdateDate:(nullable NSDate *)lastUpdateDate
                     dbConnection:(YapDatabaseConnection *)dbConnection
                       completion:(nullable OWSUserProfileCompletion)completion;
 

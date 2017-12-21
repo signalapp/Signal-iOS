@@ -206,7 +206,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
         // We don't need to use OWSOrphanedDataCleaner in the SAE.
 
-        OWSProfileManager.shared().fetchLocalUsersProfile()
+        // We don't need to fetch the local profile in the SAE
 
         OWSReadReceiptManager.shared().prepareCachedValues()
 

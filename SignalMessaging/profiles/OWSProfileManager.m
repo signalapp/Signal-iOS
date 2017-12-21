@@ -722,6 +722,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
         OWSUserProfile *userProfile =
             [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+
         OWSAssert(userProfile);
         if (userProfile.profileKey && [userProfile.profileKey.keyData isEqual:profileKey.keyData]) {
             // Ignore redundant update.
@@ -734,7 +735,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                             avatarFileName:nil
                               dbConnection:self.dbConnection
                                 completion:^{
-                                    [self refreshProfileForRecipientId:recipientId ignoreThrottling:YES];
+                                    [ProfileFetcherJob runWithRecipientId:recipientId
+                                                           networkManager:self.networkManager
+                                                         ignoreThrottling:YES];
                                 }];
     });
 }
@@ -751,6 +754,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSUserProfile *userProfile =
         [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
     OWSAssert(userProfile);
+
     return userProfile.profileKey;
 }
 
@@ -758,25 +762,24 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(recipientId.length > 0);
 
-    [self refreshProfileForRecipientId:recipientId];
-
     OWSUserProfile *userProfile =
         [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+
     return userProfile.profileName;
-    return self.localUserProfile.profileName;
 }
 
 - (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
-    [self refreshProfileForRecipientId:recipientId];
-
     OWSUserProfile *userProfile =
         [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+
     if (userProfile.avatarFileName.length > 0) {
         return [self loadProfileAvatarWithFilename:userProfile.avatarFileName];
-    } else if (userProfile.avatarUrlPath.length > 0) {
+    }
+
+    if (userProfile.avatarUrlPath.length > 0) {
         [self downloadAvatarForUserProfile:userProfile];
     }
 
@@ -892,46 +895,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     });
 }
 
-- (void)refreshProfileForRecipientId:(NSString *)recipientId
-{
-    [self refreshProfileForRecipientId:recipientId ignoreThrottling:NO];
-}
-
-- (void)refreshProfileForRecipientId:(NSString *)recipientId ignoreThrottling:(BOOL)ignoreThrottling
-{
-    OWSAssert(recipientId.length > 0);
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        OWSUserProfile *userProfile =
-            [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
-
-        if (!userProfile.profileKey) {
-            // There's no point in fetching the profile for a user
-            // if we don't have their profile key; we won't be able
-            // to decrypt it.
-            return;
-        }
-
-        // Throttle and debounce the updates.
-        const NSTimeInterval kMaxRefreshFrequency = 5 * kMinuteInterval;
-        if (userProfile.lastUpdateDate
-            && fabs([userProfile.lastUpdateDate timeIntervalSinceNow]) < kMaxRefreshFrequency) {
-            // This profile was updated recently or already has an update in flight.
-            return;
-        }
-
-        [userProfile updateWithLastUpdateDate:[NSDate new]
-                                 dbConnection:self.dbConnection
-                                   completion:^{
-                                       dispatch_async(dispatch_get_main_queue(), ^{
-                                           [ProfileFetcherJob runWithRecipientId:recipientId
-                                                                  networkManager:self.networkManager
-                                                                ignoreThrottling:ignoreThrottling];
-                                       });
-                                   }];
-    });
-}
-
 - (void)updateProfileForRecipientId:(NSString *)recipientId
                profileNameEncrypted:(nullable NSData *)profileNameEncrypted
                       avatarUrlPath:(nullable NSString *)avatarUrlPath;
@@ -959,8 +922,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
         [userProfile updateWithProfileName:profileName
                              avatarUrlPath:avatarUrlPath
-                            avatarFileName:nil
-                            lastUpdateDate:[NSDate new]
+                            avatarFileName:userProfile.avatarFileName // use existing file name if already downloaded
                               dbConnection:self.dbConnection
                                 completion:nil];
 
@@ -978,7 +940,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             //   downloaded the latest avatar by downloadAvatarForUserProfile.
             [localUserProfile updateWithProfileName:profileName
                                       avatarUrlPath:avatarUrlPath
-                                     lastUpdateDate:[NSDate new]
                                        dbConnection:self.dbConnection
                                          completion:nil];
         }
