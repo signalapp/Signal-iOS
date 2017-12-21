@@ -959,7 +959,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
         [userProfile updateWithProfileName:profileName
                              avatarUrlPath:avatarUrlPath
-                            avatarFileName:nil
+                            avatarFileName:userProfile.avatarFileName // use existing file name if already downloaded
                             lastUpdateDate:[NSDate new]
                               dbConnection:self.dbConnection
                                 completion:nil];

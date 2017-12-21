@@ -106,27 +106,50 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         dbConnection:(YapDatabaseConnection *)dbConnection
           completion:(nullable OWSUserProfileCompletion)completion
 {
-    id beforeSnapshot = self.dictionaryValue;
-
+    NSDictionary *beforeSnapshot = self.dictionaryValue;
+    
     changeBlock(self);
 
-    __block BOOL didChange = YES;
+    __block BOOL didChangeSignificantly = NO;
     [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSString *collection = [[self class] collection];
         OWSUserProfile *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
-        if (latestInstance) {
+        if (!latestInstance) {
+            didChangeSignificantly = YES;
+            [self saveWithTransaction:transaction];
+        } else {
             changeBlock(latestInstance);
 
-            id afterSnapshot = latestInstance.dictionaryValue;
-            if ([beforeSnapshot isEqual:afterSnapshot]) {
-                DDLogVerbose(
-                    @"%@ Ignoring redundant update in %s: %@", self.logTag, functionName, self.debugDescription);
-                didChange = NO;
+            BOOL needsSave = NO;
+            NSDictionary *afterSnapshot = latestInstance.dictionaryValue;
+            if (![beforeSnapshot.allKeys isEqual:afterSnapshot.allKeys]) {
+                needsSave = YES;
+                didChangeSignificantly = YES;
             } else {
+                for (id key in beforeSnapshot) {
+                    id beforeValue = beforeSnapshot[key];
+                    id afterValue = afterSnapshot[key];
+                    if (![beforeValue isEqual:afterValue]) {
+                        if ([key isEqual:@"lastUpdateDate"]) {
+                            // lastUpdatedDate changes all the time to debounce when we poll the
+                            // service, but it's not a significant change that should affect the user.
+                            needsSave = YES;
+                            
+                            // Continue looking for any significant changes
+                            continue;
+                        }
+                        
+                        // Otherwise we should notify the system.
+                        didChangeSignificantly = YES;
+                        break;
+                    }
+                }
+            }
+            
+            if (needsSave) {
+                DDLogVerbose(@"%@ Saving changed profile in %s: %@", self.logTag, functionName, self.debugDescription);
                 [latestInstance saveWithTransaction:transaction];
             }
-        } else {
-            [self saveWithTransaction:transaction];
         }
     }];
 
@@ -134,7 +157,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
     }
 
-    if (!didChange) {
+    if (!didChangeSignificantly) {
         return;
     }
 
