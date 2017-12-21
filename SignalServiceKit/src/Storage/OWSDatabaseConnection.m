@@ -3,6 +3,7 @@
 //
 
 #import "OWSDatabaseConnection.h"
+#import "AppContext.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -109,6 +110,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(delegate);
     OWSAssert(delegate.areSyncRegistrationsComplete);
 
+#ifdef DEBUG
+    if (!CurrentAppContext().isMainApp) {
+        DDLogInfo(@"SAE is writing to database.");
+    }
+#endif
+
     [delegate readWriteTransactionWillBegin];
     [super readWriteWithBlock:block];
     [delegate readWriteTransactionDidComplete];
@@ -119,6 +126,12 @@ NS_ASSUME_NONNULL_BEGIN
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssert(delegate);
     OWSAssert(delegate.areSyncRegistrationsComplete);
+
+#ifdef DEBUG
+    if (!CurrentAppContext().isMainApp) {
+        DDLogInfo(@"SAE is writing to database.");
+    }
+#endif
 
     [delegate readWriteTransactionWillBegin];
     [super asyncReadWriteWithBlock:block
@@ -133,6 +146,12 @@ NS_ASSUME_NONNULL_BEGIN
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssert(delegate);
     OWSAssert(delegate.areSyncRegistrationsComplete);
+
+#ifdef DEBUG
+    if (!CurrentAppContext().isMainApp) {
+        DDLogInfo(@"SAE is writing to database.");
+    }
+#endif
 
     [delegate readWriteTransactionWillBegin];
     [super asyncReadWriteWithBlock:block
@@ -151,6 +170,12 @@ NS_ASSUME_NONNULL_BEGIN
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssert(delegate);
     OWSAssert(delegate.areSyncRegistrationsComplete);
+
+#ifdef DEBUG
+    if (!CurrentAppContext().isMainApp) {
+        DDLogInfo(@"SAE is writing to database.");
+    }
+#endif
 
     [delegate readWriteTransactionWillBegin];
     [super asyncReadWriteWithBlock:block
