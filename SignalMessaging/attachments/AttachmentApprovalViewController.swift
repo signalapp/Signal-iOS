@@ -206,11 +206,11 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     // MARK: CaptioningToolbarDelegate
 
     func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar) {
-        self.shouldShrinkAttachment = true
+        self.scaleAttachmentView(.compact)
     }
 
     func captioningToolbarDidEndEditing(_ captioningToolbar: CaptioningToolbar) {
-        self.shouldShrinkAttachment = false
+        self.scaleAttachmentView(.fullsize)
     }
 
     func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar, captionText: String?) {
@@ -231,36 +231,53 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         // Toolbar flickers in and out if there are errors
         // and remains visible momentarily after share extension is dismissed.
         // It's easiest to just hide it at this point since we're done with it.
-        self.bottomToolbar.isUserInteractionEnabled = false
-        self.bottomToolbar.isHidden = true
+        shouldAllowAttachmentViewResizing = false
+        bottomToolbar.isUserInteractionEnabled = false
+        bottomToolbar.isHidden = true
 
         attachment.captionText = captionText
-        self.delegate?.attachmentApproval(self, didApproveAttachment: attachment)
+        delegate?.attachmentApproval(self, didApproveAttachment: attachment)
     }
 
     // When the keyboard is popped, it can obscure the attachment view.
-    private var shouldShrinkAttachment: Bool = false {
-        didSet {
-            UIView.animate(withDuration: 0.2) {
-                if self.shouldShrinkAttachment {
-                    let kScaleFactor: CGFloat = 0.7
-                    let scale = CGAffineTransform(scaleX: kScaleFactor, y: kScaleFactor)
+    // so we sometimes allows resizing the attachment.
+    private var shouldAllowAttachmentViewResizing: Bool = true
 
-                    let originalHeight = self.scrollView.bounds.size.height
+    enum AttachmetViewScale {
+        case fullsize, compact
+    }
 
-                    // Position the new scaled item to be centered with respect
-                    // to it's new size.
-                    let heightDelta = originalHeight * (1 - kScaleFactor)
-                    let translate = CGAffineTransform(translationX: 0, y: -heightDelta / 2)
-
-                    self.scrollView.transform = scale.concatenating(translate)
-                } else {
+    private func scaleAttachmentView(_ fit: AttachmetViewScale) {
+        guard shouldAllowAttachmentViewResizing else {
+            if self.scrollView.transform != CGAffineTransform.identity {
+                UIView.animate(withDuration: 0.2) {
                     self.scrollView.transform = CGAffineTransform.identity
                 }
             }
+            return
+        }
+
+        switch fit {
+        case .fullsize:
+            UIView.animate(withDuration: 0.2) {
+                self.scrollView.transform = CGAffineTransform.identity
+            }
+        case .compact:
+            UIView.animate(withDuration: 0.2) {
+                let kScaleFactor: CGFloat = 0.7
+                let scale = CGAffineTransform(scaleX: kScaleFactor, y: kScaleFactor)
+
+                let originalHeight = self.scrollView.bounds.size.height
+
+                // Position the new scaled item to be centered with respect
+                // to it's new size.
+                let heightDelta = originalHeight * (1 - kScaleFactor)
+                let translate = CGAffineTransform(translationX: 0, y: -heightDelta / 2)
+
+                self.scrollView.transform = scale.concatenating(translate)
+            }
         }
     }
-
 }
 
 extension AttachmentApprovalViewController: UIScrollViewDelegate {
