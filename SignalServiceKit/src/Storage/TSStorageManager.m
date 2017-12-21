@@ -132,15 +132,15 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 {
     // The old database location was in the Document directory,
     // so protect the database files individually.
-    [OWSFileSystem protectFileOrFolderAtPath:self.primaryDatabaseFilePath];
-    [OWSFileSystem protectFileOrFolderAtPath:self.primaryDatabaseFilePath_SHM];
-    [OWSFileSystem protectFileOrFolderAtPath:self.primaryDatabaseFilePath_WAL];
+    [OWSFileSystem protectFileOrFolderAtPath:self.databaseFilePath];
+    [OWSFileSystem protectFileOrFolderAtPath:self.databaseFilePath_SHM];
+    [OWSFileSystem protectFileOrFolderAtPath:self.databaseFilePath_WAL];
 
     // Protect the entire new database directory.
     [OWSFileSystem protectFileOrFolderAtPath:self.sharedDataDatabaseDirPath];
 }
 
-+ (NSString *)primaryDatabaseDirPath
++ (NSString *)databaseDirPath
 {
     return [OWSFileSystem appDocumentDirectoryPath];
 }
@@ -171,26 +171,19 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     return [self.databaseFilename stringByAppendingString:@"-wal"];
 }
 
-+ (NSString *)primaryDatabaseFilePath
-{
-    return [self.primaryDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
-}
-
-+ (NSString *)primaryDatabaseFilePath_SHM
-{
-    return [self.primaryDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
-}
-
-+ (NSString *)primaryDatabaseFilePath_WAL
-{
-    return [self.primaryDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
-}
-
 + (NSString *)databaseFilePath
 {
-    DDLogVerbose(@"databasePath: %@", TSStorageManager.primaryDatabaseFilePath);
+    return [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename];
+}
 
-    return self.primaryDatabaseFilePath;
++ (NSString *)databaseFilePath_SHM
+{
+    return [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
+}
+
++ (NSString *)databaseFilePath_WAL
+{
+    return [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
 }
 
 - (NSString *)databaseFilePath

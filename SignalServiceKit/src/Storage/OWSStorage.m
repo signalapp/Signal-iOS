@@ -443,7 +443,11 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 + (void)deleteDatabaseFiles
 {
     [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath]];
+    [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath_SHM]];
+    [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath_WAL]];
     [OWSFileSystem deleteFile:[OWSSessionStorage databaseFilePath]];
+    [OWSFileSystem deleteFile:[OWSSessionStorage databaseFilePath_SHM]];
+    [OWSFileSystem deleteFile:[OWSSessionStorage databaseFilePath_WAL]];
 }
 
 - (void)deleteDatabaseFile
