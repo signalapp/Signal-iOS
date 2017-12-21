@@ -198,59 +198,31 @@ NS_ASSUME_NONNULL_BEGIN
     [progressAlert addAction:progressCancelAction];
 
 
-    // Adding a subview to the alert controller like this is a total hack.
+    // We add a progress subview to an AlertController, which is a total hack.
     // ...but it looks good, and given how short a progress view is and how
     // little the alert controller changes, I'm not super worried about it.
-#ifdef DEBUG
-    if (@available(iOS 12, *)) {
-        // Congratulations! You survived to see another iOS release.
-        OWSFail(@"Make sure progress view still looks good increment this version canary.");
-    }
-#endif
     [progressAlert.view addSubview:self.progressView];
     [self.progressView autoPinWidthToSuperviewWithMargin:24];
     [self.progressView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:progressAlert.view withOffset:4];
-
-    void (^presentRetryDialog)(NSError *error) = ^(NSError *error) {
-        [fromViewController
-            dismissViewControllerAnimated:YES
-                               completion:^(void) {
-                                   AssertIsOnMainThread();
-                                   NSString *failureTitle
-                                       = NSLocalizedString(@"SHARE_EXTENSION_SENDING_FAILURE_TITLE", @"Alert title");
-
-                                   UIAlertController *failureAlert =
-                                       [UIAlertController alertControllerWithTitle:failureTitle
-                                                                           message:error.localizedDescription
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-
-                                   UIAlertAction *failureCancelAction =
-                                       [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
-                                                                style:UIAlertActionStyleCancel
-                                                              handler:^(UIAlertAction *_Nonnull action) {
-                                                                  [self.shareViewDelegate shareViewWasCancelled];
-                                                              }];
-                                   [failureAlert addAction:failureCancelAction];
-
-                                   UIAlertAction *retryAction =
-                                       [UIAlertAction actionWithTitle:[CommonStrings retryButton]
-                                                                style:UIAlertActionStyleDefault
-                                                              handler:^(UIAlertAction *action) {
-                                                                  [self tryToSendAttachment:attachment
-                                                                         fromViewController:fromViewController];
-                                                              }];
-                                   [failureAlert addAction:retryAction];
-
-                                   [fromViewController presentViewController:failureAlert animated:YES completion:nil];
-                               }];
-    };
+#ifdef DEBUG
+    if (@available(iOS 12, *)) {
+        // TODO: Congratulations! You survived to see another iOS release.
+        OWSFail(@"Make sure the progress view still looks good, and increment the version canary.");
+    }
+#endif
 
     void (^sendCompletion)(NSError *_Nullable) = ^(NSError *_Nullable error) {
         AssertIsOnMainThread();
 
         if (error) {
-            DDLogInfo(@"%@ Sending attachment failed with error: %@", self.logTag, error);
-            presentRetryDialog(error);
+            [fromViewController
+                dismissViewControllerAnimated:YES
+                                   completion:^(void) {
+                                       DDLogInfo(@"%@ Sending attachment failed with error: %@", self.logTag, error);
+                                       [self showSendFailureAlertWithError:error
+                                                                attachment:attachment
+                                                        fromViewController:fromViewController];
+                                   }];
             return;
         }
 
@@ -271,6 +243,36 @@ NS_ASSUME_NONNULL_BEGIN
                                    }];
 }
 
+- (void)showSendFailureAlertWithError:(NSError *)error
+                           attachment:(SignalAttachment *)attachment
+                   fromViewController:(UIViewController *)fromViewController
+{
+    AssertIsOnMainThread();
+
+    NSString *failureTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_FAILURE_TITLE", @"Alert title");
+
+    UIAlertController *failureAlert = [UIAlertController alertControllerWithTitle:failureTitle
+                                                                          message:error.localizedDescription
+                                                                   preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertAction *failureCancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
+                                                                  style:UIAlertActionStyleCancel
+                                                                handler:^(UIAlertAction *_Nonnull action) {
+                                                                    [self.shareViewDelegate shareViewWasCancelled];
+                                                                }];
+    [failureAlert addAction:failureCancelAction];
+
+    UIAlertAction *retryAction =
+        [UIAlertAction actionWithTitle:[CommonStrings retryButton]
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *action) {
+                                   [self tryToSendAttachment:attachment fromViewController:fromViewController];
+                               }];
+    [failureAlert addAction:retryAction];
+
+    [fromViewController presentViewController:failureAlert animated:YES completion:nil];
+}
+
 - (void)attachmentUploadProgress:(NSNotification *)notification
 {
     DDLogDebug(@"%@ upload progress.", self.logTag);
@@ -282,7 +284,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSString *attachmentRecordId = self.outgoingMessage.attachmentIds.firstObject;
+    NSString *_Nullable attachmentRecordId = self.outgoingMessage.attachmentIds.firstObject;
     if (!attachmentRecordId) {
         DDLogDebug(@"%@ Ignoring upload progress until outgoing message has an attachment record id", self.logTag);
         return;
