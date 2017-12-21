@@ -10,10 +10,18 @@ extern NSString *const StorageIsReadyNotification;
 
 @class YapDatabaseExtension;
 
+typedef NS_ENUM(NSUInteger, StorageType) {
+    StorageType_Unknown,
+    StorageType_Primary,
+    StorageType_Session,
+};
+
 @interface OWSStorage : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initStorage NS_DESIGNATED_INITIALIZER;
+
+- (StorageType)storageType;
 
 // Returns YES if _ALL_ storage classes have completed both their
 // sync _AND_ async view registrations.

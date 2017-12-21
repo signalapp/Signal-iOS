@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFileSystem
 
-+ (void)protectFolderAtPath:(NSString *)path
++ (void)protectFileOrFolderAtPath:(NSString *)path
 {
     if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
         return;

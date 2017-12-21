@@ -17,9 +17,9 @@
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalServiceKit/OWSSessionStorage+SessionStore.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInfoMessage.h>
-#import <SignalServiceKit/TSStorageManager+SessionStore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -7,6 +7,7 @@
 #import "NSData+Base64.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSFileSystem.h"
+#import "OWSSessionStorage.h"
 #import "OWSStorage+Subclass.h"
 #import "TSAttachmentStream.h"
 #import "TSStorageManager.h"
@@ -275,6 +276,13 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     return self;
 }
 
+- (StorageType)storageType
+{
+    OWS_ABSTRACT_METHOD();
+
+    return StorageType_Unknown;
+}
+
 - (BOOL)areAsyncRegistrationsComplete
 {
     OWS_ABSTRACT_METHOD();
@@ -303,6 +311,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 {
     return @[
         TSStorageManager.sharedManager,
+        OWSSessionStorage.sharedManager,
     ];
 }
 
@@ -434,6 +443,11 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 + (void)deleteDatabaseFiles
 {
     [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath]];
+    [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath_SHM]];
+    [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath_WAL]];
+    [OWSFileSystem deleteFile:[OWSSessionStorage databaseFilePath]];
+    [OWSFileSystem deleteFile:[OWSSessionStorage databaseFilePath_SHM]];
+    [OWSFileSystem deleteFile:[OWSSessionStorage databaseFilePath_WAL]];
 }
 
 - (void)deleteDatabaseFile

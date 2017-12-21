@@ -202,6 +202,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSSessionStorage *sessionStorage;
 @property (nonatomic, readonly) OWSMessageManager *messagesManager;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
@@ -272,6 +273,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _messageSender = [Environment current].messageSender;
     _outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
     _storageManager = [TSStorageManager sharedManager];
+    _sessionStorage = [OWSSessionStorage sharedManager];
     _messagesManager = [OWSMessageManager sharedManager];
     _networkManager = [TSNetworkManager sharedManager];
     _blockingManager = [OWSBlockingManager sharedManager];
@@ -1801,7 +1803,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     TSContactThread *contactThread = (TSContactThread *)self.thread;
                     [OWSSessionResetJob runWithContactThread:contactThread
                                                messageSender:self.messageSender
-                                              storageManager:self.storageManager];
+                                              sessionStorage:self.sessionStorage];
                 }];
     [alertController addAction:resetSessionAction];
 

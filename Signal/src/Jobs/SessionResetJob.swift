@@ -13,14 +13,14 @@ class SessionResetJob: NSObject {
 
     let recipientId: String
     let thread: TSThread
-    let storageManager: TSStorageManager
+    let sessionStorage: OWSSessionStorage
     let messageSender: MessageSender
 
-    required init(recipientId: String, thread: TSThread, messageSender: MessageSender, storageManager: TSStorageManager) {
+    required init(recipientId: String, thread: TSThread, messageSender: MessageSender, sessionStorage: OWSSessionStorage) {
         self.thread = thread
         self.recipientId = recipientId
         self.messageSender = messageSender
-        self.storageManager = storageManager
+        self.sessionStorage = sessionStorage
     }
 
     func run() {
@@ -28,7 +28,7 @@ class SessionResetJob: NSObject {
 
         OWSDispatch.sessionStoreQueue().async {
             Logger.info("\(self.TAG) deleting sessions for recipient: \(self.recipientId)")
-            self.storageManager.deleteAllSessions(forContact: self.recipientId)
+            self.sessionStorage.deleteAllSessions(forContact: self.recipientId)
 
             DispatchQueue.main.async {
                 let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.thread)
@@ -38,7 +38,7 @@ class SessionResetJob: NSObject {
                         // Archive the just-created session since the recipient should delete their corresponding
                         // session upon receiving and decrypting our EndSession message.
                         // Otherwise if we send another message before them, they wont have the session to decrypt it.
-                        self.storageManager.archiveAllSessions(forContact: self.recipientId)
+                        self.sessionStorage.archiveAllSessions(forContact: self.recipientId)
                     }
                     Logger.info("\(self.TAG) successfully sent EndSessionMessage.")
                     let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
@@ -55,7 +55,7 @@ class SessionResetJob: NSObject {
                         // Archive the just-created session since the recipient should delete their corresponding
                         // session upon receiving and decrypting our EndSession message.
                         // Otherwise if we send another message before them, they wont have the session to decrypt it.
-                        self.storageManager.archiveAllSessions(forContact: self.recipientId)
+                        self.sessionStorage.archiveAllSessions(forContact: self.recipientId)
                     }
                     Logger.error("\(self.TAG) failed to send EndSessionMessage with error: \(error.localizedDescription)")
                 })
@@ -63,11 +63,11 @@ class SessionResetJob: NSObject {
         }
     }
 
-    class func run(contactThread: TSContactThread, messageSender: MessageSender, storageManager: TSStorageManager) {
+    class func run(contactThread: TSContactThread, messageSender: MessageSender, sessionStorage: OWSSessionStorage) {
         let job = self.init(recipientId: contactThread.contactIdentifier(),
                             thread: contactThread,
                             messageSender: messageSender,
-                            storageManager: storageManager)
+                            sessionStorage: sessionStorage)
         job.run()
     }
 }

@@ -8,11 +8,12 @@
 #import "NSNotificationCenter+OWS.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSError.h"
+#import "OWSSessionStorage+SessionStore.h"
 #import "SecurityUtils.h"
 #import "TSNetworkManager.h"
 #import "TSPreKeyManager.h"
 #import "TSSocketManager.h"
-#import "TSStorageManager+SessionStore.h"
+#import "TSStorageManager.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <YapDatabase/YapDatabase.h>
 
@@ -93,7 +94,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
             [transaction removeAllObjectsInCollection:TSAccountManager_UserAccountCollection];
         }];
     }
-    [[TSStorageManager sharedManager] resetSessionStore];
+    [[OWSSessionStorage sharedManager] resetSessionStore];
 }
 
 + (BOOL)isRegistered

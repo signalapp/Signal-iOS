@@ -65,6 +65,11 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     return self;
 }
 
+- (StorageType)storageType
+{
+    return StorageType_Primary;
+}
+
 - (void)resetStorage
 {
     _dbReadConnection = nil;
@@ -76,10 +81,10 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 - (void)runSyncRegistrations
 {
     // Synchronously register extensions which are essential for views.
-    [TSDatabaseView registerCrossProcessNotifier];
-    [TSDatabaseView registerThreadInteractionsDatabaseView];
-    [TSDatabaseView registerThreadDatabaseView];
-    [TSDatabaseView registerUnreadDatabaseView];
+    [TSDatabaseView registerCrossProcessNotifier:self];
+    [TSDatabaseView registerThreadInteractionsDatabaseView:self];
+    [TSDatabaseView registerThreadDatabaseView:self];
+    [TSDatabaseView registerUnreadDatabaseView:self];
     [self registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
     [OWSMessageReceiver syncRegisterDatabaseExtension:self];
     [OWSBatchMessageProcessor syncRegisterDatabaseExtension:self];
@@ -102,13 +107,13 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     //
     // All sync registrations must be done before all async registrations,
     // or the sync registrations will block on the async registrations.
-    [TSDatabaseView asyncRegisterUnseenDatabaseView];
-    [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView];
-    [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView];
+    [TSDatabaseView asyncRegisterUnseenDatabaseView:self];
+    [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
+    [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
 
     // Register extensions which aren't essential for rendering threads async.
     [OWSIncomingMessageFinder asyncRegisterExtensionWithStorageManager:self];
-    [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView];
+    [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:self];
     [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
     [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithStorageManager:self];
     [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithStorageManager:self];
@@ -127,19 +132,15 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 {
     // The old database location was in the Document directory,
     // so protect the database files individually.
-    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath];
-    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath_SHM];
-    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath_WAL];
+    [OWSFileSystem protectFileOrFolderAtPath:self.databaseFilePath];
+    [OWSFileSystem protectFileOrFolderAtPath:self.databaseFilePath_SHM];
+    [OWSFileSystem protectFileOrFolderAtPath:self.databaseFilePath_WAL];
 
     // Protect the entire new database directory.
-    [OWSFileSystem protectFolderAtPath:self.sharedDataDatabaseDirPath];
+    [OWSFileSystem protectFileOrFolderAtPath:self.sharedDataDatabaseDirPath];
 }
 
-- (BOOL)userSetPassword {
-    return FALSE;
-}
-
-+ (NSString *)legacyDatabaseDirPath
++ (NSString *)databaseDirPath
 {
     return [OWSFileSystem appDocumentDirectoryPath];
 }
@@ -170,54 +171,19 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     return [self.databaseFilename stringByAppendingString:@"-wal"];
 }
 
-+ (NSString *)legacyDatabaseFilePath
-{
-    return [self.legacyDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
-}
-
-+ (NSString *)legacyDatabaseFilePath_SHM
-{
-    return [self.legacyDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
-}
-
-+ (NSString *)legacyDatabaseFilePath_WAL
-{
-    return [self.legacyDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
-}
-
-+ (NSString *)sharedDataDatabaseFilePath
-{
-    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
-}
-
-+ (NSString *)sharedDataDatabaseFilePath_SHM
-{
-    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
-}
-
-+ (NSString *)sharedDataDatabaseFilePath_WAL
-{
-    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
-}
-
-+ (void)migrateToSharedData
-{
-    [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath
-                sharedDataFilePath:self.sharedDataDatabaseFilePath
-                     exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
-    [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_SHM
-                sharedDataFilePath:self.sharedDataDatabaseFilePath_SHM
-                     exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
-    [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_WAL
-                sharedDataFilePath:self.sharedDataDatabaseFilePath_WAL
-                     exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
-}
-
 + (NSString *)databaseFilePath
 {
-    DDLogVerbose(@"databasePath: %@", TSStorageManager.sharedDataDatabaseFilePath);
+    return [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename];
+}
 
-    return self.sharedDataDatabaseFilePath;
++ (NSString *)databaseFilePath_SHM
+{
+    return [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
+}
+
++ (NSString *)databaseFilePath_WAL
+{
+    return [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
 }
 
 - (NSString *)databaseFilePath

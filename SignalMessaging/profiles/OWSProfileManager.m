@@ -1146,21 +1146,14 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     }
 }
 
-+ (NSString *)legacyProfileAvatarsDirPath
+- (NSString *)mainAppProfileAvatarsDirPath
 {
     return [[OWSFileSystem appDocumentDirectoryPath] stringByAppendingPathComponent:@"ProfileAvatars"];
 }
 
-+ (NSString *)sharedDataProfileAvatarsDirPath
+- (NSString *)sharedDataProfileAvatarsDirPath
 {
     return [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"ProfileAvatars"];
-}
-
-+ (void)migrateToSharedData
-{
-    [OWSFileSystem moveAppFilePath:self.legacyProfileAvatarsDirPath
-                sharedDataFilePath:self.sharedDataProfileAvatarsDirPath
-                     exceptionName:@"ProfileManagerCouldNotMigrateProfileDirectory"];
 }
 
 - (NSString *)profileAvatarsDirPath
@@ -1168,11 +1161,12 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     static NSString *profileAvatarsDirPath = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        profileAvatarsDirPath = OWSProfileManager.sharedDataProfileAvatarsDirPath;
-        
+        profileAvatarsDirPath = (CurrentAppContext().isMainApp ? self.mainAppProfileAvatarsDirPath
+                                                               : self.sharedDataProfileAvatarsDirPath);
+
         [OWSFileSystem ensureDirectoryExists:profileAvatarsDirPath];
-        
-        [OWSFileSystem protectFolderAtPath:profileAvatarsDirPath];
+
+        [OWSFileSystem protectFileOrFolderAtPath:profileAvatarsDirPath];
     });
     return profileAvatarsDirPath;
 }

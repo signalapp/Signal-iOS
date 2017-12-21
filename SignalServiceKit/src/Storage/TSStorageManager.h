@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// TODO: Rename to OWSPrimaryStorage?
 @interface TSStorageManager : OWSStorage
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -17,9 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (YapDatabaseConnection *)dbReadConnection;
 + (YapDatabaseConnection *)dbReadWriteConnection;
 
-+ (void)migrateToSharedData;
-
 + (NSString *)databaseFilePath;
++ (NSString *)databaseFilePath_SHM;
++ (NSString *)databaseFilePath_WAL;
 
 @end
 

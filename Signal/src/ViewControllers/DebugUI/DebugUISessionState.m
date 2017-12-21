@@ -6,8 +6,8 @@
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalServiceKit/OWSSessionStorage+SessionStore.h>
 #import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSStorageManager+SessionStore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
                        [OWSTableItem itemWithTitle:@"Log All Sessions"
                                        actionBlock:^{
                                            dispatch_async([OWSDispatch sessionStoreQueue], ^{
-                                               [[TSStorageManager sharedManager] printAllSessions];
+                                               [[OWSSessionStorage sharedManager] printAllSessions];
                                            });
                                        }],
                        [OWSTableItem itemWithTitle:@"Toggle Key Change"
@@ -61,14 +61,14 @@ NS_ASSUME_NONNULL_BEGIN
                        [OWSTableItem itemWithTitle:@"Delete all sessions"
                                        actionBlock:^{
                                            dispatch_async([OWSDispatch sessionStoreQueue], ^{
-                                               [[TSStorageManager sharedManager]
+                                               [[OWSSessionStorage sharedManager]
                                                    deleteAllSessionsForContact:thread.contactIdentifier];
                                            });
                                        }],
                        [OWSTableItem itemWithTitle:@"Archive all sessions"
                                        actionBlock:^{
                                            dispatch_async([OWSDispatch sessionStoreQueue], ^{
-                                               [[TSStorageManager sharedManager]
+                                               [[OWSSessionStorage sharedManager]
                                                    archiveAllSessionsForContact:thread.contactIdentifier];
                                            });
                                        }],
@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        actionBlock:^{
                                            [OWSSessionResetJob runWithContactThread:thread
                                                                       messageSender:[Environment current].messageSender
-                                                                     storageManager:[TSStorageManager sharedManager]];
+                                                                     sessionStorage:[OWSSessionStorage sharedManager]];
                                        }]
                    ]];
 }

@@ -24,8 +24,6 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 - (void)resetProfileStorage;
 
-+ (void)migrateToSharedData;
-
 #pragma mark - Local Profile
 
 // These two methods should only be called from the main thread.
