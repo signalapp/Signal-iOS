@@ -7,8 +7,8 @@ import MediaPlayer
 
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: class {
-    func didApproveAttachment(attachment: SignalAttachment)
-    func didCancelAttachment(attachment: SignalAttachment)
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachment attachment: SignalAttachment)
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didCancelAttachment attachment: SignalAttachment)
 }
 
 @objc
@@ -200,7 +200,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     }
 
     func cancelPressed(sender: UIButton) {
-        self.delegate?.didCancelAttachment(attachment: attachment)
+        self.delegate?.attachmentApproval(self, didCancelAttachment: attachment)
     }
 
     // MARK: CaptioningToolbarDelegate
@@ -214,7 +214,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     }
 
     func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar, captionText: String?) {
-        self.sendAttachment(captionText: captionText)
+        self.approveAttachment(captionText: captionText)
     }
 
     func captioningToolbar(_ captioningToolbar: CaptioningToolbar, didChangeTextViewHeight newHeight: CGFloat) {
@@ -227,20 +227,15 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         return attachment.isImage || attachment.isVideo
     }
 
-    private func sendAttachment(captionText: String?) {
-        // disable controls after send was tapped.
+    private func approveAttachment(captionText: String?) {
+        // Toolbar flickers in and out if there are errors
+        // and remains visible momentarily after share extension is dismissed.
+        // It's easiest to just hide it at this point since we're done with it.
         self.bottomToolbar.isUserInteractionEnabled = false
-
-        // FIXME
-        // this is just a temporary hack to provide some UI
-        // until we have a proper progress indicator
-        let activityIndicatorView = UIActivityIndicatorView()
-        view.addSubview(activityIndicatorView)
-        activityIndicatorView.autoCenterInSuperview()
-        activityIndicatorView.startAnimating()
+        self.bottomToolbar.isHidden = true
 
         attachment.captionText = captionText
-        self.delegate?.didApproveAttachment(attachment: attachment)
+        self.delegate?.attachmentApproval(self, didApproveAttachment: attachment)
     }
 
     // When the keyboard is popped, it can obscure the attachment view.

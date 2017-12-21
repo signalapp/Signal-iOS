@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly, weak) id<ShareViewDelegate> shareViewDelegate;
+@property (nonatomic, readonly) UIProgressView *progressView;
+@property (nullable, atomic) TSOutgoingMessage *outgoingMessage;
 
 @end
 
@@ -50,7 +52,18 @@ NS_ASSUME_NONNULL_BEGIN
     _contactsManager = [Environment current].contactsManager;
     _messageSender = [Environment current].messageSender;
 
+    _progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
     self.title = NSLocalizedString(@"SEND_EXTERNAL_FILE_VIEW_TITLE", @"Title for the 'send external file' view.");
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(attachmentUploadProgress:)
+                                                 name:kAttachmentUploadProgressNotification
+                                               object:nil];
 }
 
 - (BOOL)canSelectBlockedContact
@@ -150,22 +163,144 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - AttachmentApprovalViewControllerDelegate
 
-- (void)didApproveAttachmentWithAttachment:(SignalAttachment *)attachment
+- (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
+      didApproveAttachment:(SignalAttachment *)attachment
 {
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-    [ThreadUtil sendMessageWithAttachment:self.attachment inThread:self.thread messageSender:self.messageSender];
-
-    // This is just a temporary hack while testing to hopefully not dismiss too early.
-    // FIXME Show progress dialog
-    // FIXME don't dismiss until sending is complete
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.shareViewDelegate shareViewWasCompleted];
-    });
+    [self tryToSendAttachment:attachment fromViewController:attachmentApproval];
 }
 
-- (void)didCancelAttachmentWithAttachment:(SignalAttachment *)attachment
+- (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
+       didCancelAttachment:(SignalAttachment *)attachment
 {
     [self cancelShareExperience];
+}
+
+#pragma mark - Helpers
+
+- (void)tryToSendAttachment:(SignalAttachment *)attachment fromViewController:(UIViewController *)fromViewController
+{
+    // Reset progress in case we're retrying
+    self.progressView.progress = 0;
+
+    self.attachment = attachment;
+
+    NSString *progressTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", @"Alert title");
+    UIAlertController *progressAlert = [UIAlertController alertControllerWithTitle:progressTitle
+                                                                           message:nil
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertAction *progressCancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
+                                                                   style:UIAlertActionStyleCancel
+                                                                 handler:^(UIAlertAction *_Nonnull action) {
+                                                                     [self.shareViewDelegate shareViewWasCancelled];
+                                                                 }];
+    [progressAlert addAction:progressCancelAction];
+
+
+    // We add a progress subview to an AlertController, which is a total hack.
+    // ...but it looks good, and given how short a progress view is and how
+    // little the alert controller changes, I'm not super worried about it.
+    [progressAlert.view addSubview:self.progressView];
+    [self.progressView autoPinWidthToSuperviewWithMargin:24];
+    [self.progressView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:progressAlert.view withOffset:4];
+#ifdef DEBUG
+    if (@available(iOS 12, *)) {
+        // TODO: Congratulations! You survived to see another iOS release.
+        OWSFail(@"Make sure the progress view still looks good, and increment the version canary.");
+    }
+#endif
+
+    void (^sendCompletion)(NSError *_Nullable) = ^(NSError *_Nullable error) {
+        AssertIsOnMainThread();
+
+        if (error) {
+            [fromViewController
+                dismissViewControllerAnimated:YES
+                                   completion:^(void) {
+                                       DDLogInfo(@"%@ Sending attachment failed with error: %@", self.logTag, error);
+                                       [self showSendFailureAlertWithError:error
+                                                                attachment:attachment
+                                                        fromViewController:fromViewController];
+                                   }];
+            return;
+        }
+
+        DDLogInfo(@"%@ Sending attachment succeeded.", self.logTag);
+        [self.shareViewDelegate shareViewWasCompleted];
+    };
+
+    [fromViewController presentViewController:progressAlert
+                                     animated:YES
+                                   completion:^(void) {
+                                       TSOutgoingMessage *outgoingMessage =
+                                           [ThreadUtil sendMessageWithAttachment:self.attachment
+                                                                        inThread:self.thread
+                                                                   messageSender:self.messageSender
+                                                                      completion:sendCompletion];
+
+                                       self.outgoingMessage = outgoingMessage;
+                                   }];
+}
+
+- (void)showSendFailureAlertWithError:(NSError *)error
+                           attachment:(SignalAttachment *)attachment
+                   fromViewController:(UIViewController *)fromViewController
+{
+    AssertIsOnMainThread();
+
+    NSString *failureTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_FAILURE_TITLE", @"Alert title");
+
+    UIAlertController *failureAlert = [UIAlertController alertControllerWithTitle:failureTitle
+                                                                          message:error.localizedDescription
+                                                                   preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertAction *failureCancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
+                                                                  style:UIAlertActionStyleCancel
+                                                                handler:^(UIAlertAction *_Nonnull action) {
+                                                                    [self.shareViewDelegate shareViewWasCancelled];
+                                                                }];
+    [failureAlert addAction:failureCancelAction];
+
+    UIAlertAction *retryAction =
+        [UIAlertAction actionWithTitle:[CommonStrings retryButton]
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *action) {
+                                   [self tryToSendAttachment:attachment fromViewController:fromViewController];
+                               }];
+    [failureAlert addAction:retryAction];
+
+    [fromViewController presentViewController:failureAlert animated:YES completion:nil];
+}
+
+- (void)attachmentUploadProgress:(NSNotification *)notification
+{
+    DDLogDebug(@"%@ upload progress.", self.logTag);
+    AssertIsOnMainThread();
+    OWSAssert(self.progressView);
+
+    if (!self.outgoingMessage) {
+        DDLogDebug(@"%@ Ignoring upload progress until there is an outgoing message.", self.logTag);
+        return;
+    }
+
+    NSString *_Nullable attachmentRecordId = self.outgoingMessage.attachmentIds.firstObject;
+    if (!attachmentRecordId) {
+        DDLogDebug(@"%@ Ignoring upload progress until outgoing message has an attachment record id", self.logTag);
+        return;
+    }
+
+    NSDictionary *userinfo = [notification userInfo];
+    float progress = [[userinfo objectForKey:kAttachmentUploadProgressKey] floatValue];
+    NSString *attachmentID = [userinfo objectForKey:kAttachmentUploadAttachmentIDKey];
+
+    if ([attachmentRecordId isEqual:attachmentID]) {
+        if (!isnan(progress)) {
+            [self.progressView setProgress:progress animated:YES];
+        } else {
+            OWSFail(@"%@ Invalid attachment progress.", self.logTag);
+        }
+    }
 }
 
 @end

@@ -390,7 +390,7 @@ NS_ASSUME_NONNULL_BEGIN
         [DDLog flushLog];
     }
     OWSAssert(![attachment hasError]);
-    [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender];
+    [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender completion:nil];
     success();
 }
 
@@ -648,7 +648,7 @@ NS_ASSUME_NONNULL_BEGIN
     DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
-    [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender];
+    [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender completion:nil];
 }
 
 + (NSData *)createRandomNSDataOfSize:(size_t)size
@@ -686,7 +686,11 @@ NS_ASSUME_NONNULL_BEGIN
         // style them indistinguishably from a separate text message.
         attachment.captionText = [self randomCaptionText];
     }
-    [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender ignoreErrors:YES];
+    [ThreadUtil sendMessageWithAttachment:attachment
+                                 inThread:thread
+                            messageSender:messageSender
+                             ignoreErrors:YES
+                               completion:nil];
 }
 + (OWSSignalServiceProtosEnvelope *)createEnvelopeForThread:(TSThread *)thread
 {
