@@ -74,11 +74,11 @@ public class ProfileFetcherJob: NSObject {
         if !ignoreThrottling {
             if let lastDate = ProfileFetcherJob.fetchDateMap[recipientId] {
                 let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
-                // Don't check a profile more often than every N minutes.
+                // Don't check a profile more often than every N seconds.
                 //
-                // Only throttle profile fetch in production builds in order to
-                // facilitate debugging.
-                let kGetProfileMaxFrequencySeconds = _isDebugAssertConfiguration() ? 0 : 60.0 * 5.0
+                // Throttle less in debug to make it easier to test problems
+                // with our fetching logic.
+                let kGetProfileMaxFrequencySeconds = _isDebugAssertConfiguration() ? 60 : 60.0 * 5.0
                 guard lastTimeInterval > kGetProfileMaxFrequencySeconds else {
                     return Promise(error: ProfileFetcherJobError.throttled(lastTimeInterval: lastTimeInterval))
                 }
