@@ -718,7 +718,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [OWSPreferences setIsRegistered:[TSAccountManager isRegistered]];
 
-    // We need to do this _before_ anyone access the session or identity store state.
+    // We need to do this _before_ anyone accesses the session or identity store state.
     [OWSSessionStorage.sharedManager migrateFromStorageIfNecessary:TSStorageManager.sharedManager];
 
     if ([TSAccountManager isRegistered]) {
