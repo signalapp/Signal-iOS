@@ -3,13 +3,8 @@
 //
 
 #import "OWSPrimaryCopyStorage.h"
-
-//#import "AppContext.h"
 #import "OWSFileSystem.h"
 #import "OWSStorage+Subclass.h"
-
-//#import "TSDatabaseSecondaryIndexes.h"
-//#import "TSDatabaseView.h"
 #import "TSStorageManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -84,30 +79,6 @@ NSString *const OWSPrimaryCopyStorageExceptionName_CouldNotCreateDatabaseDirecto
     }];
 }
 
-//- (void)protectFiles
-//{
-//    // The old database location was in the Document directory,
-//    // so protect the database files individually.
-//    [OWSFileSystem protectFileOrFolderAtPath:self.databaseFilePath];
-//    [OWSFileSystem protectFileOrFolderAtPath:self.databaseFilePath_SHM];
-//    [OWSFileSystem protectFileOrFolderAtPath:self.databaseFilePath_WAL];
-//
-//    // Protect the entire new database directory.
-//    [OWSFileSystem protectFileOrFolderAtPath:self.sharedDataDatabaseDirPath];
-//}
-
-//+ (NSString *)sharedDataDatabaseDirPath
-//{
-//    NSString *databaseDirPath = [[OWSFileSystem appSharedDataDirectoryPath]
-//    stringByAppendingPathComponent:@"database"];
-//
-//    if (![OWSFileSystem ensureDirectoryExists:databaseDirPath]) {
-//        [NSException raise:OWSPrimaryCopyStorageExceptionName_CouldNotCreateDatabaseDirectory
-//                    format:@"Could not create new database directory"];
-//    }
-//    return databaseDirPath;
-//}
-
 + (NSString *)databaseCopyFilename
 {
     return @"Signal.sqlite";
@@ -148,21 +119,6 @@ NSString *const OWSPrimaryCopyStorageExceptionName_CouldNotCreateDatabaseDirecto
     return copyDatabaseFilePath;
 }
 
-//+ (NSString *)databaseFilename
-//{
-//    return @"Primary-Copy2.sqlite";
-//}
-//
-//+ (NSString *)databaseFilename_SHM
-//{
-//    return [self.databaseFilename stringByAppendingString:@"-shm"];
-//}
-//
-//+ (NSString *)databaseFilename_WAL
-//{
-//    return [self.databaseFilename stringByAppendingString:@"-wal"];
-//}
-
 - (NSString *)databaseFilePath
 {
     return [OWSPrimaryCopyStorage databaseCopyFilePathForDirName:self.dirName];
@@ -177,21 +133,6 @@ NSString *const OWSPrimaryCopyStorageExceptionName_CouldNotCreateDatabaseDirecto
 {
     return [self.databaseFilePath stringByAppendingString:@"-wal"];
 }
-
-//- (NSString *)databaseFilePath
-//{
-//    return OWSPrimaryCopyStorage.databaseFilePath;
-//}
-//
-//- (NSString *)databaseFilePath_SHM
-//{
-//    return OWSPrimaryCopyStorage.databaseFilePath_SHM;
-//}
-//
-//- (NSString *)databaseFilePath_WAL
-//{
-//    return OWSPrimaryCopyStorage.databaseFilePath_WAL;
-//}
 
 @end
 

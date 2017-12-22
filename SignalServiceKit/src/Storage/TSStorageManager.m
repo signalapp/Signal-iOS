@@ -26,9 +26,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// NSString *const TSStorageExceptionName_CouldNotCreateDatabaseDirectory
-//    = @"TSStorageExceptionName_CouldNotCreateDatabaseDirectory";
-
 NSString *const NSUserDefaultsKey_OWSPrimaryStorageLastBackupDirName
     = @"NSUserDefaultsKey_OWSPrimaryStorageLastBackupDirName";
 NSString *const NSUserDefaultsKey_OWSPrimaryStoragePreviousBackupDirName
@@ -36,7 +33,6 @@ NSString *const NSUserDefaultsKey_OWSPrimaryStoragePreviousBackupDirName
 NSString *const NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate
     = @"NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate";
 
-// TODO: Remove
 void runSyncRegistrationsForPrimaryStorage(OWSStorage *storage)
 {
     OWSCAssert(storage);
