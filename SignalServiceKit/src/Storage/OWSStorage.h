@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <YapDatabase/YapDatabaseConnection.h>
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,6 +14,10 @@ typedef NS_ENUM(NSUInteger, StorageType) {
     StorageType_Unknown,
     StorageType_Primary,
     StorageType_Session,
+    // The main app uses this to maintain a slightly stale copy of the primary
+    // storage for the SAE.
+    // The SAE uses this as their primary.
+    StorageType_PrimaryCopy,
 };
 
 @interface OWSStorage : NSObject
@@ -49,6 +53,8 @@ typedef NS_ENUM(NSUInteger, StorageType) {
                       withName:(NSString *)extensionName
                completionBlock:(nullable void (^)(BOOL ready))completionBlock;
 - (nullable id)registeredExtension:(NSString *)extensionName;
+
+- (unsigned long long)databaseFileSize;
 
 #pragma mark - Password
 

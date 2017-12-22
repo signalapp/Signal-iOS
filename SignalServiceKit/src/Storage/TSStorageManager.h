@@ -6,6 +6,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+void runSyncRegistrationsForPrimaryStorage(OWSStorage *storage);
+void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage);
+
 // TODO: Rename to OWSPrimaryStorage?
 @interface TSStorageManager : OWSStorage
 
@@ -21,6 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)databaseFilePath;
 + (NSString *)databaseFilePath_SHM;
 + (NSString *)databaseFilePath_WAL;
+
+// This method is used to copy the primary database for the SAE.
+- (void)copyPrimaryDatabaseFileWithCompletion:(void (^_Nonnull)(void))completion;
 
 @end
 

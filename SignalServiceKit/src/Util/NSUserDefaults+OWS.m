@@ -2,6 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
+#import "AppContext.h"
 #import "NSUserDefaults+OWS.h"
 #import "TSConstants.h"
 
@@ -34,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)removeAll
 {
+    OWSAssert(CurrentAppContext().isMainApp);
+
     NSDictionary<NSString *, id> *dictionary = self.dictionaryRepresentation;
     for (NSString *key in dictionary) {
         [self removeObjectForKey:key];

@@ -764,7 +764,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // Disable the SAE until the main app has successfully completed launch process
     // at least once in the post-SAE world.
-    [OWSPreferences setIsReadyForAppExtensions];
+    [TSStorageManager.sharedManager copyPrimaryDatabaseFileWithCompletion:^{
+        // Don't mark the SAE as "ready" until we have a complete copy of the
+        // primary database.
+        [OWSPreferences setIsReadyForAppExtensions];
+    }];
 
     [self ensureRootViewController];
 }

@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (YapDatabaseConnection *)dbConnection;
 + (YapDatabaseConnection *)dbConnection;
 
++ (NSString *)databaseDirPath;
 + (NSString *)databaseFilePath;
 + (NSString *)databaseFilePath_SHM;
 + (NSString *)databaseFilePath_WAL;

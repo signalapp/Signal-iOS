@@ -3,7 +3,11 @@
 //
 
 #import "TSStorageManager.h"
+#import "AppContext.h"
+#import "NSDate+OWS.h"
+#import "NSUserDefaults+OWS.h"
 #import "OWSAnalytics.h"
+#import "OWSBackgroundTask.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSDisappearingMessagesFinder.h"
 #import "OWSFailedAttachmentDownloadsJob.h"
@@ -11,18 +15,61 @@
 #import "OWSFileSystem.h"
 #import "OWSIncomingMessageFinder.h"
 #import "OWSMessageReceiver.h"
+#import "OWSPrimaryCopyStorage.h"
 #import "OWSStorage+Subclass.h"
+#import "SignalAccount.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
+#import "TSThread.h"
+#import "Threading.h"
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const TSStorageManagerExceptionName_CouldNotMoveDatabaseFile
-    = @"TSStorageManagerExceptionName_CouldNotMoveDatabaseFile";
-NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
-    = @"TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory";
+// NSString *const TSStorageExceptionName_CouldNotCreateDatabaseDirectory
+//    = @"TSStorageExceptionName_CouldNotCreateDatabaseDirectory";
 
-#pragma mark -
+NSString *const NSUserDefaultsKey_OWSPrimaryStorageLastBackupDirName
+    = @"NSUserDefaultsKey_OWSPrimaryStorageLastBackupDirName";
+NSString *const NSUserDefaultsKey_OWSPrimaryStoragePreviousBackupDirName
+    = @"NSUserDefaultsKey_OWSPrimaryStoragePreviousBackupDirName";
+NSString *const NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate
+    = @"NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate";
+
+// TODO: Remove
+void runSyncRegistrationsForPrimaryStorage(OWSStorage *storage)
+{
+    OWSCAssert(storage);
+
+    // Synchronously register extensions which are essential for views.
+    [TSDatabaseView registerCrossProcessNotifier:storage];
+    [TSDatabaseView registerThreadInteractionsDatabaseView:storage];
+    [TSDatabaseView registerThreadDatabaseView:storage];
+    [TSDatabaseView registerUnreadDatabaseView:storage];
+    [storage registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
+    [OWSMessageReceiver syncRegisterDatabaseExtension:storage];
+    [OWSBatchMessageProcessor syncRegisterDatabaseExtension:storage];
+}
+
+void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
+{
+    OWSCAssert(storage);
+
+    // Asynchronously register other extensions.
+    //
+    // All sync registrations must be done before all async registrations,
+    // or the sync registrations will block on the async registrations.
+    [TSDatabaseView asyncRegisterUnseenDatabaseView:storage];
+    [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:storage];
+    [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:storage];
+
+    // Register extensions which aren't essential for rendering threads async.
+    [OWSIncomingMessageFinder asyncRegisterExtensionWithStorageManager:storage];
+    [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:storage];
+    [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:storage];
+    [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithStorageManager:storage];
+    [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithStorageManager:storage];
+}
 
 @interface TSStorageManager ()
 
@@ -56,8 +103,19 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     self = [super initStorage];
 
     if (self) {
+        [self openDatabase];
+
+        [self observeNotifications];
+
         _dbReadConnection = self.newDatabaseConnection;
         _dbReadWriteConnection = self.newDatabaseConnection;
+#if DEBUG
+        if (!CurrentAppContext().isMainApp) {
+            // In the SAE, the app should only read from the primary copy database.
+            self.dbReadConnection.permittedTransactions = YDB_AnyReadTransaction;
+            self.dbReadWriteConnection.permittedTransactions = YDB_AnyReadTransaction;
+        }
+#endif
 
         OWSSingletonAssert();
     }
@@ -80,14 +138,7 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 
 - (void)runSyncRegistrations
 {
-    // Synchronously register extensions which are essential for views.
-    [TSDatabaseView registerCrossProcessNotifier:self];
-    [TSDatabaseView registerThreadInteractionsDatabaseView:self];
-    [TSDatabaseView registerThreadDatabaseView:self];
-    [TSDatabaseView registerUnreadDatabaseView:self];
-    [self registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
-    [OWSMessageReceiver syncRegisterDatabaseExtension:self];
-    [OWSBatchMessageProcessor syncRegisterDatabaseExtension:self];
+    runSyncRegistrationsForPrimaryStorage(self);
 
     // See comments on OWSDatabaseConnection.
     //
@@ -103,20 +154,7 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 {
     OWSAssert(completion);
 
-    // Asynchronously register other extensions.
-    //
-    // All sync registrations must be done before all async registrations,
-    // or the sync registrations will block on the async registrations.
-    [TSDatabaseView asyncRegisterUnseenDatabaseView:self];
-    [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
-    [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
-
-    // Register extensions which aren't essential for rendering threads async.
-    [OWSIncomingMessageFinder asyncRegisterExtensionWithStorageManager:self];
-    [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:self];
-    [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
-    [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithStorageManager:self];
-    [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithStorageManager:self];
+    runAsyncRegistrationsForPrimaryStorage(self);
 
     // Block until all async registrations are complete.
     [self.newDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
@@ -135,9 +173,6 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     [OWSFileSystem protectFileOrFolderAtPath:self.databaseFilePath];
     [OWSFileSystem protectFileOrFolderAtPath:self.databaseFilePath_SHM];
     [OWSFileSystem protectFileOrFolderAtPath:self.databaseFilePath_WAL];
-
-    // Protect the entire new database directory.
-    [OWSFileSystem protectFileOrFolderAtPath:self.sharedDataDatabaseDirPath];
 }
 
 + (NSString *)databaseDirPath
@@ -145,19 +180,11 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     return [OWSFileSystem appDocumentDirectoryPath];
 }
 
-+ (NSString *)sharedDataDatabaseDirPath
-{
-    NSString *databaseDirPath = [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"database"];
-
-    if (![OWSFileSystem ensureDirectoryExists:databaseDirPath]) {
-        [NSException raise:TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
-                    format:@"Could not create new database directory"];
-    }
-    return databaseDirPath;
-}
-
 + (NSString *)databaseFilename
 {
+    // We should only refer to the "original" primary database in the main app.
+    OWSAssert(CurrentAppContext().isMainApp);
+
     return @"Signal.sqlite";
 }
 
@@ -171,24 +198,92 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     return [self.databaseFilename stringByAppendingString:@"-wal"];
 }
 
++ (nullable NSString *)lastBackupPath
+{
+
+    NSString *_Nullable copyDirName =
+        [NSUserDefaults.appUserDefaults objectForKey:NSUserDefaultsKey_OWSPrimaryStorageLastBackupDirName];
+    if (!copyDirName) {
+        return nil;
+    }
+    return [OWSPrimaryCopyStorage databaseCopyFilePathForDirName:copyDirName];
+}
+
+// In the SAE, we should use the primary database copy.
 + (NSString *)databaseFilePath
 {
-    return [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename];
+    NSString *filePath;
+    if (CurrentAppContext().isMainApp) {
+        filePath = [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename];
+    } else {
+        NSString *_Nullable copyDatabaseFilePath = self.lastBackupPath;
+        if (!copyDatabaseFilePath || ![[NSFileManager defaultManager] fileExistsAtPath:copyDatabaseFilePath]) {
+            OWSFail(@"%@ Missing last backup: %@", self.logTag, copyDatabaseFilePath);
+            [NSException raise:@"TSStorageExceptionName_MissingLastBackup" format:@"Last database backup not found"];
+        }
+        DDLogInfo(@"%@ Using database copy: %@", self.logTag, copyDatabaseFilePath);
+        filePath = copyDatabaseFilePath;
+    }
+
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSError *_Nullable error;
+        unsigned long long fileSize =
+            [[fileManager attributesOfItemAtPath:filePath error:&error][NSFileSize] unsignedLongLongValue];
+        if (error) {
+            DDLogError(@"%@ Couldn't fetch database file size: %@", self.logTag, error);
+        } else {
+            DDLogInfo(@"%@ Database file size: %llu", self.logTag, fileSize);
+        }
+
+        [OWSFileSystem protectFileOrFolderAtPath:filePath];
+    });
+
+    return filePath;
 }
 
 + (NSString *)databaseFilePath_SHM
 {
-    return [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
+    OWSAssert(CurrentAppContext().isMainApp);
+
+    NSString *filePath = [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
+
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [OWSFileSystem protectFileOrFolderAtPath:filePath];
+    });
+
+    return filePath;
 }
 
 + (NSString *)databaseFilePath_WAL
 {
-    return [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
+    OWSAssert(CurrentAppContext().isMainApp);
+
+    NSString *filePath = [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
+
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [OWSFileSystem protectFileOrFolderAtPath:filePath];
+    });
+
+    return filePath;
 }
 
 - (NSString *)databaseFilePath
 {
     return TSStorageManager.databaseFilePath;
+}
+
+- (NSString *)databaseFilePath_SHM
+{
+    return TSStorageManager.databaseFilePath_SHM;
+}
+
+- (NSString *)databaseFilePath_WAL
+{
+    return TSStorageManager.databaseFilePath_WAL;
 }
 
 + (YapDatabaseConnection *)dbReadConnection
@@ -199,6 +294,235 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
     return TSStorageManager.sharedManager.dbReadWriteConnection;
+}
+
+#pragma mark - Primary Copy
+
+
+// To avoid the 0xdead10cc crashes (iOS app can't retain file lock
+// on files in shared data container while suspended), the main app
+// backs up its primary database to the "backup" database in the
+// shared data container.
+//
+// The database backup mechanism provided by YapDatabase/Sqlite supports
+// fast incremental backups so long as the backup copy is only modified
+// by backup (e.g. doesn't "fork").
+//
+// The SAE _SHOULD NOT_ modify its copy, but for rigor we don't want to
+// assume that we have eliminated all cases where it makes db writes, so
+// we do a file-based copy of the "backup" database to the "fork" database
+// and use that in the SAE. If the "fork-safe" database forks, this is
+// safe; those changes will be discarded the next time we make a "fork"
+// copy of the "backup" database.
+//
+// TODO: Alternately, we could owsFail()/throw an exception whenever
+// we try to write to the primary database from the SAE.
+//
+// Our options:
+//
+// * File-based copy of database file during main app launch before database file opened.
+//   NO, risks making appDidFinishLaunching too long,
+// * File-based copy of database file during main app launch after database file opened.
+//   NO, problematic to to lock primary database.
+// * YapDatabase-based backup of primary database as part of main app launch.
+//   PROBABLY.
+//
+// SAE might mutate and therefore fork its copy, prevent incremental backups.
+// We can't replace the SAE copy while the SAE is using it.
+//
+// Our options:
+//
+// * File-based copy of backup to "fork-safe copy" on SAE launch.
+// * File-based copy of backup to "fork-safe copy" on main app launch after backup.
+//   Coordinate latest copy using NSUserDefaults.
+//   Least developer effort, but lots of extra main app work, disk
+// *
+
+// * Don't use non-sqlite to share data.
+// * Only copy a few entities like TSThread, SignalAccount.
+// *
+
+- (NSTimeInterval)databaseCopyFrequency
+{
+    return kDayInterval;
+}
+
+- (void)copyPrimaryDatabaseFileWithCompletion:(void (^_Nonnull)(void))completion
+{
+    OWSAssert(CurrentAppContext().isMainApp);
+    OWSAssert(completion);
+
+    //    NSDate *_Nullable lastBackupDate =
+    //        [NSUserDefaults.appUserDefaults objectForKey:NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate];
+    //    if (lastBackupDate && fabs(lastBackupDate.timeIntervalSinceNow) < self.databaseCopyFrequency) {
+    //
+    //        DDLogInfo(@"%@ Skipping backup of primary database", self.logTag);
+    //
+    //        dispatch_async(dispatch_get_main_queue(), completion);
+    //
+    //        return;
+    //    }
+
+    DDLogInfo(@"%@ Primary Database Copy started", self.logTag);
+
+    NSString *copyDirName = [NSUUID UUID].UUIDString;
+
+    OWSPrimaryCopyStorage *copyStorage = [[OWSPrimaryCopyStorage alloc] initWithDirName:copyDirName];
+    [copyStorage runSyncRegistrations];
+    [copyStorage runAsyncRegistrationsWithCompletion:^{
+        NSDate *backupStartDate = [NSDate new];
+        [self copyDatabaseToStorage:copyStorage
+                         completion:^(NSError *_Nullable error) {
+                             OWSAssertIsOnMainThread();
+
+                             if (error) {
+                                 DDLogError(@"%@ Primary database copy failed: %@", self.logTag, error);
+                                 return;
+                             }
+                             DDLogInfo(@"%@ Primary database copy completed: %@, in: %f",
+                                 self.logTag,
+                                 copyDirName,
+                                 fabs(backupStartDate.timeIntervalSinceNow));
+
+                             // Rotate the previous database dir name, if possible.
+                             NSString *_Nullable previousBackupDirName = [NSUserDefaults.appUserDefaults
+                                 objectForKey:NSUserDefaultsKey_OWSPrimaryStorageLastBackupDirName];
+                             if (previousBackupDirName) {
+                                 [NSUserDefaults.appUserDefaults
+                                     setObject:previousBackupDirName
+                                        forKey:NSUserDefaultsKey_OWSPrimaryStoragePreviousBackupDirName];
+                             }
+
+                             [NSUserDefaults.appUserDefaults
+                                 setObject:copyDirName
+                                    forKey:NSUserDefaultsKey_OWSPrimaryStorageLastBackupDirName];
+                             [NSUserDefaults.appUserDefaults
+                                 setObject:backupStartDate
+                                    forKey:NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate];
+                             [NSUserDefaults.appUserDefaults synchronize];
+
+                             dispatch_async(dispatch_get_main_queue(), completion);
+
+                             [self cleanUpDatabaseCopies];
+                         }];
+    }];
+}
+
+- (void)copyDatabaseToStorage:(OWSPrimaryCopyStorage *)copyStorage
+                   completion:(void (^_Nonnull)(NSError *_Nullable))completionParameter
+{
+    // Wrap copy in a background task.
+    __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    void (^completion)(NSError *_Nullable) = ^(NSError *_Nullable error) {
+        DispatchMainThreadSafe(^{
+            completionParameter(error);
+
+            backgroundTask = nil;
+        });
+    };
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+        YapDatabaseConnection *srcDBConnection = self.newDatabaseConnection;
+        YapDatabaseConnection *dstDBConnection = copyStorage.newDatabaseConnection;
+
+        [TSStorageManager copyCollection:TSThread.collection
+                         srcDBConnection:srcDBConnection
+                         dstDBConnection:dstDBConnection
+                              valueClass:[TSThread class]];
+        [TSStorageManager copyCollection:SignalAccount.collection
+                         srcDBConnection:srcDBConnection
+                         dstDBConnection:dstDBConnection
+                              valueClass:[SignalAccount class]];
+
+        completion(nil);
+    });
+}
+
++ (void)copyCollection:(NSString *)collection
+       srcDBConnection:(YapDatabaseConnection *)srcDBConnection
+       dstDBConnection:(YapDatabaseConnection *)dstDBConnection
+            valueClass:(Class)valueClass
+{
+    OWSAssert(collection.length > 0);
+    OWSAssert(srcDBConnection);
+    OWSAssert(dstDBConnection);
+
+    DDLogInfo(@"%@: copying collection %@", self.logTag, collection);
+
+    NSMutableDictionary<NSString *, id> *collectionContents = [NSMutableDictionary new];
+
+    // 1. Read from old storage.
+    [srcDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction
+            enumerateKeysAndObjectsInCollection:collection
+                                     usingBlock:^(NSString *_Nonnull key, id _Nonnull value, BOOL *_Nonnull stop) {
+                                         if (![value isKindOfClass:valueClass]) {
+                                             OWSFail(
+                                                 @"Unexpected type: %@ in collection: %@.", [value class], collection);
+                                             return;
+                                         }
+
+                                         collectionContents[key] = value;
+                                     }];
+    }];
+
+    // 2. Write to new storage.
+    [dstDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [collectionContents enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key, id value, BOOL *_Nonnull stop){
+        }];
+    }];
+
+    DDLogInfo(@"%@ migrated %zd items.", self.logTag, (unsigned long)collectionContents.count);
+}
+
+- (void)cleanUpDatabaseCopies
+{
+    // We've just completed a database copy.  Try to delete obsolete database copies.
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *_Nullable lastBackupDirName =
+            [NSUserDefaults.appUserDefaults objectForKey:NSUserDefaultsKey_OWSPrimaryStorageLastBackupDirName];
+        NSString *_Nullable previousBackupDirName =
+            [NSUserDefaults.appUserDefaults objectForKey:NSUserDefaultsKey_OWSPrimaryStoragePreviousBackupDirName];
+
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSError *_Nullable error;
+        for (NSString *backupDirName in
+            [fileManager contentsOfDirectoryAtPath:OWSPrimaryCopyStorage.databaseCopiesDirPath error:&error]) {
+            DDLogVerbose(@"%@ Considering database copy: %@", self.logTag, backupDirName);
+            if (lastBackupDirName && [lastBackupDirName isEqualToString:backupDirName]) {
+                // Don't delete the current backup.
+                continue;
+            }
+            if (previousBackupDirName && [previousBackupDirName isEqualToString:backupDirName]) {
+                // Don't delete the last backup, the SAE may still be using it.
+                continue;
+            }
+            NSString *backupDirPath =
+                [OWSPrimaryCopyStorage.databaseCopiesDirPath stringByAppendingPathComponent:backupDirName];
+            [fileManager removeItemAtPath:backupDirPath error:&error];
+            if (error) {
+                DDLogInfo(@"%@ Couldn't delete database copy: %@, %@", self.logTag, backupDirPath, error);
+            }
+        }
+        if (error) {
+            DDLogInfo(@"%@ Couldn't list database copies dir contents: %@", self.logTag, error);
+        }
+    });
+}
+
+#pragma mark - OWSDatabaseConnectionDelegate
+
+- (void)readWriteTransactionWillBegin
+{
+    if (!CurrentAppContext().isMainApp) {
+        OWSFail(@"%@ Should not write to primary database from SAE.", self.logTag);
+
+        [NSException raise:@"OWSStorageExceptionName_UnsafeWriteToBackupDB"
+                    format:@"Should not write to primary database from SAE."];
+    } else {
+        [super readWriteTransactionWillBegin];
+    }
 }
 
 @end

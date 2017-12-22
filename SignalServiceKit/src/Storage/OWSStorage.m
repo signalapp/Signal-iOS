@@ -10,6 +10,7 @@
 #import "OWSDatabaseConnection.h"
 #import "OWSFileSystem.h"
 #import "OWSIdentityManager.h"
+#import "OWSPrimaryCopyStorage.h"
 #import "OWSSessionStorage+SessionStore.h"
 #import "OWSSessionStorage.h"
 #import "OWSStorage+Subclass.h"
@@ -161,25 +162,20 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 {
     self = [super init];
 
-    if (self) {
-        [self openDatabase];
-
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationDidEnterBackground:)
-                                                     name:OWSApplicationDidEnterBackgroundNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(extensionHostWillEnterForeground:)
-                                                     name:OWSApplicationWillEnterForegroundNotification
-                                                   object:nil];
-    }
-
     return self;
 }
 
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidEnterBackground:)
+                                                 name:OWSApplicationDidEnterBackgroundNotification
+                                               object:nil];
 }
 
 - (StorageType)storageType
@@ -203,7 +199,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
 
         // Try to reset app by deleting all databases.
-        [OWSStorage deleteDatabaseFiles];
+        [self deleteDatabaseFile];
 
         if (![self tryToLoadDatabase]) {
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
@@ -391,17 +387,20 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 
 + (void)deleteDatabaseFiles
 {
-    [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath]];
-    [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath_SHM]];
-    [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath_WAL]];
-    [OWSFileSystem deleteFile:[OWSSessionStorage databaseFilePath]];
-    [OWSFileSystem deleteFile:[OWSSessionStorage databaseFilePath_SHM]];
-    [OWSFileSystem deleteFile:[OWSSessionStorage databaseFilePath_WAL]];
+    [OWSFileSystem deleteFileIfExists:[TSStorageManager databaseFilePath]];
+    [OWSFileSystem deleteFileIfExists:[TSStorageManager databaseFilePath_SHM]];
+    [OWSFileSystem deleteFileIfExists:[TSStorageManager databaseFilePath_WAL]];
+    [OWSFileSystem deleteFileIfExists:[OWSPrimaryCopyStorage databaseCopiesDirPath]];
+    [OWSFileSystem deleteFileIfExists:[OWSSessionStorage databaseFilePath]];
+    [OWSFileSystem deleteFileIfExists:[OWSSessionStorage databaseFilePath_SHM]];
+    [OWSFileSystem deleteFileIfExists:[OWSSessionStorage databaseFilePath_WAL]];
 }
 
 - (void)deleteDatabaseFile
 {
-    [OWSFileSystem deleteFile:[self databaseFilePath]];
+    [OWSFileSystem deleteFileIfExists:[self databaseFilePath]];
+    [OWSFileSystem deleteFileIfExists:[self databaseFilePath_SHM]];
+    [OWSFileSystem deleteFileIfExists:[self databaseFilePath_WAL]];
 }
 
 - (void)resetStorage
@@ -432,6 +431,20 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 #pragma mark - Password
 
 - (NSString *)databaseFilePath
+{
+    OWS_ABSTRACT_METHOD();
+
+    return @"";
+}
+
+- (NSString *)databaseFilePath_SHM
+{
+    OWS_ABSTRACT_METHOD();
+
+    return @"";
+}
+
+- (NSString *)databaseFilePath_WAL
 {
     OWS_ABSTRACT_METHOD();
 
@@ -662,18 +675,18 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     }
 }
 
-- (void)extensionHostDidEnterBackground:(NSNotification *)notification
+- (unsigned long long)databaseFileSize
 {
-    [self closeDatabaseIfNecessary];
-}
-
-- (void)extensionHostWillEnterForeground:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    for (OWSStorage *storage in OWSStorage.allStorages) {
-        [storage applicationWillEnterForeground];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *_Nullable error;
+    unsigned long long fileSize =
+        [[fileManager attributesOfItemAtPath:self.databaseFilePath error:&error][NSFileSize] unsignedLongLongValue];
+    if (error) {
+        DDLogError(@"%@ Couldn't fetch database file size: %@", self.logTag, error);
+    } else {
+        DDLogInfo(@"%@ Database file size: %llu", self.logTag, fileSize);
     }
+    return fileSize;
 }
 
 @end

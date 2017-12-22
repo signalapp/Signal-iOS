@@ -49,6 +49,10 @@ NSString *const OWSSessionStorageExceptionName_CouldNotCreateDatabaseDirectory
     self = [super initStorage];
 
     if (self) {
+        [self openDatabase];
+
+        [self observeNotifications];
+
         OWSSingletonAssert();
     }
 
@@ -164,6 +168,16 @@ NSString *const OWSSessionStorageExceptionName_CouldNotCreateDatabaseDirectory
 - (NSString *)databaseFilePath
 {
     return OWSSessionStorage.databaseFilePath;
+}
+
+- (NSString *)databaseFilePath_SHM
+{
+    return OWSSessionStorage.databaseFilePath_SHM;
+}
+
+- (NSString *)databaseFilePath_WAL
+{
+    return OWSSessionStorage.databaseFilePath_WAL;
 }
 
 - (YapDatabaseConnection *)dbConnection
