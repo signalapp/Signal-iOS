@@ -42,13 +42,6 @@ extern NSString *const kLocalProfileUniqueId;
 #pragma mark - Update With... Methods
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
-                   profileKey:(OWSAES256Key *)profileKey
-                avatarUrlPath:(nullable NSString *)avatarUrlPath
-               avatarFileName:(nullable NSString *)avatarFileName
-                 dbConnection:(YapDatabaseConnection *)dbConnection
-                   completion:(nullable OWSUserProfileCompletion)completion;
-
-- (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                avatarFileName:(nullable NSString *)avatarFileName
                  dbConnection:(YapDatabaseConnection *)dbConnection

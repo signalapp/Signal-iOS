@@ -105,7 +105,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         dbConnection:(YapDatabaseConnection *)dbConnection
           completion:(nullable OWSUserProfileCompletion)completion
 {
-    id beforeSnapshot = self.dictionaryValue;
+    NSDictionary *beforeSnapshot = self.dictionaryValue;
 
     changeBlock(self);
 
@@ -116,12 +116,19 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         if (latestInstance) {
             changeBlock(latestInstance);
 
-            id afterSnapshot = latestInstance.dictionaryValue;
+            NSDictionary *afterSnapshot = latestInstance.dictionaryValue;
             if ([beforeSnapshot isEqual:afterSnapshot]) {
                 DDLogVerbose(
                     @"%@ Ignoring redundant update in %s: %@", self.logTag, functionName, self.debugDescription);
                 didChange = NO;
             } else {
+                NSString *_Nullable oldAvatarUrlPath = beforeSnapshot[@"avatarUrlPath"];
+                if (!latestInstance.avatarUrlPath || ![latestInstance.avatarUrlPath isEqual:oldAvatarUrlPath]) {
+                    // If the avatarURL changed, the avatarFileName can't be valid.
+                    // Clear it.
+                    latestInstance.avatarFileName = nil;
+                }
+
                 [latestInstance saveWithTransaction:transaction];
             }
         } else {
@@ -192,24 +199,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     [self applyChanges:^(OWSUserProfile *userProfile) {
         [userProfile setProfileName:[profileName ows_stripped]];
         [userProfile setAvatarUrlPath:avatarUrlPath];
-    }
-          functionName:__PRETTY_FUNCTION__
-          dbConnection:dbConnection
-            completion:completion];
-}
-
-- (void)updateWithProfileName:(nullable NSString *)profileName
-                   profileKey:(OWSAES256Key *)profileKey
-                avatarUrlPath:(nullable NSString *)avatarUrlPath
-               avatarFileName:(nullable NSString *)avatarFileName
-                 dbConnection:(YapDatabaseConnection *)dbConnection
-                   completion:(nullable OWSUserProfileCompletion)completion
-{
-    [self applyChanges:^(OWSUserProfile *userProfile) {
-        [userProfile setProfileName:[profileName ows_stripped]];
-        [userProfile setProfileKey:profileKey];
-        [userProfile setAvatarUrlPath:avatarUrlPath];
-        [userProfile setAvatarFileName:avatarFileName];
     }
           functionName:__PRETTY_FUNCTION__
           dbConnection:dbConnection

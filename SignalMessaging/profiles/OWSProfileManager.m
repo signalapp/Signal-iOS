@@ -729,16 +729,15 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             return;
         }
 
-        [userProfile updateWithProfileName:nil
-                                profileKey:profileKey
-                             avatarUrlPath:nil
-                            avatarFileName:nil
-                              dbConnection:self.dbConnection
-                                completion:^{
-                                    [ProfileFetcherJob runWithRecipientId:recipientId
-                                                           networkManager:self.networkManager
-                                                         ignoreThrottling:YES];
-                                }];
+        [userProfile clearWithProfileKey:profileKey
+                            dbConnection:self.dbConnection
+                              completion:^{
+                                  dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                      [ProfileFetcherJob runWithRecipientId:recipientId
+                                                             networkManager:self.networkManager
+                                                           ignoreThrottling:YES];
+                                  });
+                              }];
     });
 }
 
@@ -911,14 +910,13 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         OWSUserProfile *userProfile =
             [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+
         if (!userProfile.profileKey) {
             return;
         }
 
         NSString *_Nullable profileName =
             [self decryptProfileNameData:profileNameEncrypted profileKey:userProfile.profileKey];
-
-        BOOL isAvatarSame = [self isNullableStringEqual:userProfile.avatarUrlPath toString:avatarUrlPath];
 
         [userProfile updateWithProfileName:profileName
                              avatarUrlPath:avatarUrlPath
@@ -944,10 +942,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                                          completion:nil];
         }
 
-        if (!isAvatarSame) {
-            if (avatarUrlPath) {
-                [self downloadAvatarForUserProfile:userProfile];
-            }
+        if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length == 0) {
+            [self downloadAvatarForUserProfile:userProfile];
         }
     });
 }
