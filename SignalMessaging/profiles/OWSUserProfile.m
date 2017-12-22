@@ -29,7 +29,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 @property (atomic, nullable) NSString *profileName;
 @property (atomic, nullable) NSString *avatarUrlPath;
 @property (atomic, nullable) NSString *avatarFileName;
-@property (atomic, nullable) NSDate *lastUpdateDate;
 
 @end
 
@@ -106,7 +105,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         dbConnection:(YapDatabaseConnection *)dbConnection
           completion:(nullable OWSUserProfileCompletion)completion
 {
-    id beforeSnapshot = self.dictionaryValue;
+    NSDictionary *beforeSnapshot = self.dictionaryValue;
 
     changeBlock(self);
 
@@ -117,12 +116,19 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         if (latestInstance) {
             changeBlock(latestInstance);
 
-            id afterSnapshot = latestInstance.dictionaryValue;
+            NSDictionary *afterSnapshot = latestInstance.dictionaryValue;
             if ([beforeSnapshot isEqual:afterSnapshot]) {
                 DDLogVerbose(
                     @"%@ Ignoring redundant update in %s: %@", self.logTag, functionName, self.debugDescription);
                 didChange = NO;
             } else {
+                NSString *_Nullable oldAvatarUrlPath = beforeSnapshot[@"avatarUrlPath"];
+                if (!latestInstance.avatarUrlPath || ![latestInstance.avatarUrlPath isEqual:oldAvatarUrlPath]) {
+                    // If the avatarURL changed, the avatarFileName can't be valid.
+                    // Clear it.
+                    latestInstance.avatarFileName = nil;
+                }
+
                 [latestInstance saveWithTransaction:transaction];
             }
         } else {
@@ -187,50 +193,12 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
-               avatarFileName:(nullable NSString *)avatarFileName
-               lastUpdateDate:(nullable NSDate *)lastUpdateDate
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
     [self applyChanges:^(OWSUserProfile *userProfile) {
         [userProfile setProfileName:[profileName ows_stripped]];
         [userProfile setAvatarUrlPath:avatarUrlPath];
-        [userProfile setAvatarFileName:avatarFileName];
-        [userProfile setLastUpdateDate:lastUpdateDate];
-    }
-          functionName:__PRETTY_FUNCTION__
-          dbConnection:dbConnection
-            completion:completion];
-}
-
-- (void)updateWithProfileName:(nullable NSString *)profileName
-                avatarUrlPath:(nullable NSString *)avatarUrlPath
-               lastUpdateDate:(nullable NSDate *)lastUpdateDate
-                 dbConnection:(YapDatabaseConnection *)dbConnection
-                   completion:(nullable OWSUserProfileCompletion)completion
-{
-    [self applyChanges:^(OWSUserProfile *userProfile) {
-        [userProfile setProfileName:[profileName ows_stripped]];
-        [userProfile setAvatarUrlPath:avatarUrlPath];
-        [userProfile setLastUpdateDate:lastUpdateDate];
-    }
-          functionName:__PRETTY_FUNCTION__
-          dbConnection:dbConnection
-            completion:completion];
-}
-
-- (void)updateWithProfileName:(nullable NSString *)profileName
-                   profileKey:(OWSAES256Key *)profileKey
-                avatarUrlPath:(nullable NSString *)avatarUrlPath
-               avatarFileName:(nullable NSString *)avatarFileName
-                 dbConnection:(YapDatabaseConnection *)dbConnection
-                   completion:(nullable OWSUserProfileCompletion)completion
-{
-    [self applyChanges:^(OWSUserProfile *userProfile) {
-        [userProfile setProfileName:[profileName ows_stripped]];
-        [userProfile setProfileKey:profileKey];
-        [userProfile setAvatarUrlPath:avatarUrlPath];
-        [userProfile setAvatarFileName:avatarFileName];
     }
           functionName:__PRETTY_FUNCTION__
           dbConnection:dbConnection
@@ -263,18 +231,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             completion:completion];
 }
 
-- (void)updateWithLastUpdateDate:(nullable NSDate *)lastUpdateDate
-                    dbConnection:(YapDatabaseConnection *)dbConnection
-                      completion:(nullable OWSUserProfileCompletion)completion
-{
-    [self applyChanges:^(OWSUserProfile *userProfile) {
-        [userProfile setLastUpdateDate:lastUpdateDate];
-    }
-          functionName:__PRETTY_FUNCTION__
-          dbConnection:dbConnection
-            completion:completion];
-}
-
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
                dbConnection:(YapDatabaseConnection *)dbConnection
                  completion:(nullable OWSUserProfileCompletion)completion;
@@ -284,7 +240,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         [userProfile setProfileName:nil];
         [userProfile setAvatarUrlPath:nil];
         [userProfile setAvatarFileName:nil];
-        [userProfile setLastUpdateDate:nil];
     }
           functionName:__PRETTY_FUNCTION__
           dbConnection:dbConnection
@@ -338,15 +293,14 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 // This should only be used in verbose, developer-only logs.
 - (NSString *)debugDescription
 {
-    return [NSString stringWithFormat:@"%@ %p %@ %zd %@ %@ %@ %f",
+    return [NSString stringWithFormat:@"%@ %p %@ %zd %@ %@ %@",
                      self.logTag,
                      self,
                      self.recipientId,
                      self.profileKey.keyData.length,
                      self.profileName,
                      self.avatarUrlPath,
-                     self.avatarFileName,
-                     self.lastUpdateDate.timeIntervalSinceNow];
+                     self.avatarFileName];
 }
 
 @end
