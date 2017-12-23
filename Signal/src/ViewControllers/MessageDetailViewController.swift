@@ -400,8 +400,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
     }
 
     private func fetchAttachment(transaction: YapDatabaseReadTransaction) -> TSAttachment? {
-        guard let attachmentId = message.attachmentIds[0] as? String else {
-            owsFail("Invalid attachment")
+        guard let attachmentId = message.attachmentIds.firstObject as? String else {
             return nil
         }
 
