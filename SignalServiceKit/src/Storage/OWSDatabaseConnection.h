@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <YapDatabase/YapDatabaseConnection.h>
@@ -26,6 +26,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDatabase:(YapDatabase *)database
                         delegate:(id<OWSDatabaseConnectionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
+
+#pragma mark - "Safe" Read Write
+
+- (void)safeAsyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
+                    completionQueue:(nullable dispatch_queue_t)completionQueue
+                    completionBlock:(nullable dispatch_block_t)completionBlock;
 
 @end
 

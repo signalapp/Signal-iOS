@@ -16,8 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)databaseCopyFilePathForDirName:(NSString *)dirName;
 
-+ (NSDictionary<NSString *, Class> *)primaryCopyCollections;
-
 @end
 
 NS_ASSUME_NONNULL_END

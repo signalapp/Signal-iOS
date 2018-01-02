@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRecipientIdentity.h"
@@ -8,6 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const TSStorageManagerTrustedKeysCollection;
+extern NSString *const OWSIdentityStore_Collection;
 
 // This notification will be fired whenever identities are created
 // or their verification state changes.

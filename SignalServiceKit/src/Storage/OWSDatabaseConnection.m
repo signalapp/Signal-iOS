@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDatabaseConnection.h"
@@ -47,32 +47,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
 {
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [delegate readTransactionWillBegin];
-    [super asyncReadWithBlock:block
-              completionBlock:^{
-                  [delegate readTransactionDidComplete];
-              }];
+    [self asyncReadWithBlock:block completionQueue:NULL completionBlock:nil];
 }
 
 - (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
            completionBlock:(nullable dispatch_block_t)completionBlock
 {
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [delegate readTransactionWillBegin];
-    [super asyncReadWithBlock:block
-              completionBlock:^{
-                  if (completionBlock) {
-                      completionBlock();
-                  }
-                  [delegate readTransactionDidComplete];
-              }];
+    [self asyncReadWithBlock:block completionQueue:NULL completionBlock:completionBlock];
 }
 
 - (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
@@ -123,44 +104,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-#ifdef DEBUG
-    if (!CurrentAppContext().isMainApp) {
-        DDLogInfo(@"SAE is writing to database.");
-    }
-#endif
-
-    [delegate readWriteTransactionWillBegin];
-    [super asyncReadWriteWithBlock:block
-                   completionBlock:^{
-                       [delegate readWriteTransactionDidComplete];
-                   }];
+    [self asyncReadWriteWithBlock:block completionQueue:NULL completionBlock:nil];
 }
 
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
                 completionBlock:(nullable dispatch_block_t)completionBlock
 {
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-#ifdef DEBUG
-    if (!CurrentAppContext().isMainApp) {
-        DDLogInfo(@"SAE is writing to database.");
-    }
-#endif
-
-    [delegate readWriteTransactionWillBegin];
-    [super asyncReadWriteWithBlock:block
-                   completionBlock:^{
-                       if (completionBlock) {
-                           completionBlock();
-                       }
-                       [delegate readWriteTransactionDidComplete];
-                   }];
+    [self asyncReadWriteWithBlock:block completionQueue:NULL completionBlock:completionBlock];
 }
 
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
@@ -185,6 +135,35 @@ NS_ASSUME_NONNULL_BEGIN
                            completionBlock();
                        }
                        [delegate readWriteTransactionDidComplete];
+                   }];
+}
+
+#pragma mark - "Safe" Read Write
+
+- (void)safeAsyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
+                    completionQueue:(nullable dispatch_queue_t)completionQueue
+                    completionBlock:(nullable dispatch_block_t)completionBlock
+{
+    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
+    OWSAssert(delegate);
+    OWSAssert(delegate.areSyncRegistrationsComplete);
+
+#ifdef DEBUG
+    if (!CurrentAppContext().isMainApp) {
+        DDLogInfo(@"SAE is writing to database.");
+    }
+#endif
+
+    // "Safe" read/write transactions promise not to write, so treat them
+    // like a read transaction from the POV of the delegate.
+    [delegate readTransactionWillBegin];
+    [super asyncReadWriteWithBlock:block
+                   completionQueue:completionQueue
+                   completionBlock:^{
+                       if (completionBlock) {
+                           completionBlock();
+                       }
+                       [delegate readTransactionDidComplete];
                    }];
 }
 

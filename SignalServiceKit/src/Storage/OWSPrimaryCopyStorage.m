@@ -146,14 +146,6 @@ NSString *const OWSPrimaryCopyStorageExceptionName_CouldNotCreateDatabaseDirecto
     return [self.databaseFilePath stringByAppendingString:@"-wal"];
 }
 
-+ (NSDictionary<NSString *, Class> *)primaryCopyCollections
-{
-    return @{
-        TSThread.collection : TSThread.class,
-        SignalAccount.collection : SignalAccount.class,
-    };
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

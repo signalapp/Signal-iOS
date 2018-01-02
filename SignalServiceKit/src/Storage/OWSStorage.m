@@ -698,7 +698,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     OWSAssert(srcDBConnection);
     OWSAssert(dstDBConnection);
 
-    DDLogInfo(@"%@: copying collection %@", self.logTag, collection);
+    DDLogVerbose(@"%@: copying collection %@", self.logTag, collection);
 
     NSMutableDictionary<NSString *, id> *collectionContents = [NSMutableDictionary new];
 
@@ -725,7 +725,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         }];
     }];
 
-    DDLogInfo(@"%@ migrated %zd items.", self.logTag, (unsigned long)collectionContents.count);
+    DDLogVerbose(@"%@ migrated %zd items in %@.", self.logTag, (unsigned long)collectionContents.count, collection);
 }
 
 @end

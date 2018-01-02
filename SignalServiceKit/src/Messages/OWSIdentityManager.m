@@ -806,6 +806,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     DDLogInfo(@"%s", __PRETTY_FUNCTION__);
 
+    if (!CurrentAppContext().isMainApp) {
+        [NSException raise:@"OWSStorageExceptionName_SessionMigrationOutsideMainApp"
+                    format:@"Can only migrate session storage in main app."];
+    }
+
     [self.sessionStorage copyCollection:TSStorageManagerIdentityKeyStoreCollection
                             fromStorage:storage
                              valueClass:[ECKeyPair class]];

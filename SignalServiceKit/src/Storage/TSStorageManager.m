@@ -17,8 +17,10 @@
 #import "OWSMessageReceiver.h"
 #import "OWSPrimaryCopyStorage.h"
 #import "OWSStorage+Subclass.h"
+#import "TSAttachment.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
+#import "TSInteraction.h"
 #import "Threading.h"
 #import <YapDatabase/YapDatabase.h>
 
@@ -151,13 +153,16 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
     runAsyncRegistrationsForPrimaryStorage(self);
 
     // Block until all async registrations are complete.
-    [self.newDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    OWSDatabaseConnection *dbConnection = (OWSDatabaseConnection *)self.newDatabaseConnection;
+    [dbConnection safeAsyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         OWSAssert(!self.areAsyncRegistrationsComplete);
 
         self.areAsyncRegistrationsComplete = YES;
 
         completion();
-    }];
+    }
+                              completionQueue:NULL
+                              completionBlock:nil];
 }
 
 + (void)protectFiles
@@ -239,7 +244,9 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 + (NSString *)databaseFilePath_SHM
 {
-    OWSAssert(CurrentAppContext().isMainApp);
+    if (!CurrentAppContext().isMainApp) {
+        return [[self lastBackupPath] stringByAppendingString:@"-shm"];
+    }
 
     NSString *filePath = [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
 
@@ -253,7 +260,9 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 + (NSString *)databaseFilePath_WAL
 {
-    OWSAssert(CurrentAppContext().isMainApp);
+    if (!CurrentAppContext().isMainApp) {
+        return [[self lastBackupPath] stringByAppendingString:@"-wal"];
+    }
 
     NSString *filePath = [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
 
@@ -427,13 +436,24 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
         YapDatabaseConnection *srcDBConnection = self.newDatabaseConnection;
         YapDatabaseConnection *dstDBConnection = copyStorage.newDatabaseConnection;
 
-        [[OWSPrimaryCopyStorage primaryCopyCollections]
-            enumerateKeysAndObjectsUsingBlock:^(NSString *collection, Class collectionClass, BOOL *stop) {
-                [OWSStorage copyCollection:collection
-                           srcDBConnection:srcDBConnection
-                           dstDBConnection:dstDBConnection
-                                valueClass:collectionClass];
-            }];
+        NSArray<NSString *> *collectionsToIgnore = @[
+            TSInteraction.collection,
+            TSAttachment.collection,
+        ];
+        NSMutableArray<NSString *> *allCollections = [NSMutableArray new];
+        [srcDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [allCollections addObjectsFromArray:transaction.allCollections];
+        }];
+        for (NSString *collection in allCollections) {
+            if ([collectionsToIgnore containsObject:collection]) {
+                DDLogVerbose(@"%@ Ignoring: %@", self.logTag, collection);
+                continue;
+            }
+            [OWSStorage copyCollection:collection
+                       srcDBConnection:srcDBConnection
+                       dstDBConnection:dstDBConnection
+                            valueClass:[NSObject class]];
+        }
 
         completion(nil);
     });
