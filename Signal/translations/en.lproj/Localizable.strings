@@ -1540,6 +1540,9 @@
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
 
+/* alert body when sharing file failed because of untrusted/changed identity keys */
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
+
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "Loading...";
 

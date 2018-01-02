@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "SharingThreadPickerViewController.h"
@@ -11,6 +11,8 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/OWSDispatch.h>
+#import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSThread.h>
 
@@ -124,26 +126,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
     self.thread = thread;
 
-    __weak typeof(self) weakSelf = self;
-
-    // FIXME SHARINGEXTENSION
-    // Handling safety number changes brings in a lot of machinery.
-    // How do we want to handle this?
-    // e.g. fingerprint scanning, etc. in the SAE or just redirect the user to the main app?
-    //    BOOL didShowSNAlert =
-    //        [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:thread.recipientIdentifiers
-    //                                                              confirmationText:[SafetyNumberStrings
-    //                                                              confirmSendButton]
-    //                                                               contactsManager:self.contactsManager
-    //                                                                    completion:^(BOOL didConfirm) {
-    //                                                                        if (didConfirm) {
-    //                                                                            [weakSelf threadWasSelected:thread];
-    //                                                                        }
-    //                                                                    }];
-    //    if (didShowSNAlert) {
-    //        return;
-    //    }
-
     AttachmentApprovalViewController *approvalVC =
         [[AttachmentApprovalViewController alloc] initWithAttachment:self.attachment delegate:self];
 
@@ -211,7 +193,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 #endif
 
-    void (^sendCompletion)(NSError *_Nullable) = ^(NSError *_Nullable error) {
+    void (^sendCompletion)(NSError *_Nullable, TSOutgoingMessage *message) = ^(
+        NSError *_Nullable error, TSOutgoingMessage *message) {
         AssertIsOnMainThread();
 
         if (error) {
@@ -220,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    completion:^(void) {
                                        DDLogInfo(@"%@ Sending attachment failed with error: %@", self.logTag, error);
                                        [self showSendFailureAlertWithError:error
-                                                                attachment:attachment
+                                                                   message:message
                                                         fromViewController:fromViewController];
                                    }];
             return;
@@ -233,44 +216,183 @@ NS_ASSUME_NONNULL_BEGIN
     [fromViewController presentViewController:progressAlert
                                      animated:YES
                                    completion:^(void) {
-                                       TSOutgoingMessage *outgoingMessage =
+                                       __block TSOutgoingMessage *outgoingMessage =
                                            [ThreadUtil sendMessageWithAttachment:self.attachment
                                                                         inThread:self.thread
                                                                    messageSender:self.messageSender
-                                                                      completion:sendCompletion];
+                                                                      completion:^(NSError *_Nullable error) {
+                                                                          sendCompletion(error, outgoingMessage);
+                                                                      }];
 
                                        self.outgoingMessage = outgoingMessage;
                                    }];
 }
 
 - (void)showSendFailureAlertWithError:(NSError *)error
-                           attachment:(SignalAttachment *)attachment
+                              message:(TSOutgoingMessage *)message
                    fromViewController:(UIViewController *)fromViewController
 {
     AssertIsOnMainThread();
+    OWSAssert(error);
+    OWSAssert(message);
+    OWSAssert(fromViewController);
 
     NSString *failureTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_FAILURE_TITLE", @"Alert title");
 
-    UIAlertController *failureAlert = [UIAlertController alertControllerWithTitle:failureTitle
-                                                                          message:error.localizedDescription
-                                                                   preferredStyle:UIAlertControllerStyleAlert];
+    if ([error.domain isEqual:OWSSignalServiceKitErrorDomain] && error.code == OWSErrorCodeUntrustedIdentity) {
+        NSString *_Nullable untrustedRecipientId = error.userInfo[OWSErrorRecipientIdentifierKey];
 
-    UIAlertAction *failureCancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
-                                                                  style:UIAlertActionStyleCancel
-                                                                handler:^(UIAlertAction *_Nonnull action) {
-                                                                    [self.shareViewDelegate shareViewWasCancelled];
-                                                                }];
-    [failureAlert addAction:failureCancelAction];
+        NSString *failureFormat = NSLocalizedString(@"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
+            @"alert body when sharing file failed because of untrusted/changed identity keys");
 
-    UIAlertAction *retryAction =
-        [UIAlertAction actionWithTitle:[CommonStrings retryButton]
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *action) {
-                                   [self tryToSendAttachment:attachment fromViewController:fromViewController];
-                               }];
-    [failureAlert addAction:retryAction];
+        NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:untrustedRecipientId];
+        NSString *failureMessage = [NSString stringWithFormat:failureFormat, displayName];
 
-    [fromViewController presentViewController:failureAlert animated:YES completion:nil];
+        UIAlertController *failureAlert = [UIAlertController alertControllerWithTitle:failureTitle
+                                                                              message:failureMessage
+                                                                       preferredStyle:UIAlertControllerStyleAlert];
+
+        UIAlertAction *failureCancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
+                                                                      style:UIAlertActionStyleCancel
+                                                                    handler:^(UIAlertAction *_Nonnull action) {
+                                                                        [self.shareViewDelegate shareViewWasCancelled];
+                                                                    }];
+        [failureAlert addAction:failureCancelAction];
+
+        if (untrustedRecipientId.length > 0) {
+            UIAlertAction *confirmAction =
+                [UIAlertAction actionWithTitle:[SafetyNumberStrings confirmSendButton]
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction *action) {
+                                           [self confirmIdentityAndResendMessage:message
+                                                                     recipientId:untrustedRecipientId
+                                                              fromViewController:fromViewController];
+                                       }];
+
+            [failureAlert addAction:confirmAction];
+        } else {
+            // This shouldn't happen, but if it does we won't offer the user the ability to confirm.
+            // They may have to return to the main app to accept the identity change.
+            OWSFail(@"%@ Untrusted recipient error is missing recipient id.", self.logTag);
+        }
+
+        [fromViewController presentViewController:failureAlert animated:YES completion:nil];
+    } else {
+        // Non-identity failure, e.g. network offline, rate limit
+
+        UIAlertController *failureAlert = [UIAlertController alertControllerWithTitle:failureTitle
+                                                                              message:error.localizedDescription
+                                                                       preferredStyle:UIAlertControllerStyleAlert];
+
+        UIAlertAction *failureCancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
+                                                                      style:UIAlertActionStyleCancel
+                                                                    handler:^(UIAlertAction *_Nonnull action) {
+                                                                        [self.shareViewDelegate shareViewWasCancelled];
+                                                                    }];
+        [failureAlert addAction:failureCancelAction];
+
+        UIAlertAction *retryAction =
+            [UIAlertAction actionWithTitle:[CommonStrings retryButton]
+                                     style:UIAlertActionStyleDefault
+                                   handler:^(UIAlertAction *action) {
+                                       [self resendMessage:message fromViewController:fromViewController];
+                                   }];
+
+        [failureAlert addAction:retryAction];
+        [fromViewController presentViewController:failureAlert animated:YES completion:nil];
+    }
+}
+
+- (void)confirmIdentityAndResendMessage:(TSOutgoingMessage *)message
+                            recipientId:(NSString *)recipientId
+                     fromViewController:(UIViewController *)fromViewController
+{
+    AssertIsOnMainThread();
+    OWSAssert(message);
+    OWSAssert(recipientId.length > 0);
+    OWSAssert(fromViewController);
+
+    DDLogDebug(@"%@ Confirming identity for recipient: %@", self.logTag, recipientId);
+
+    dispatch_async([OWSDispatch sessionStoreQueue], ^(void) {
+        OWSVerificationState verificationState =
+            [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId];
+        switch (verificationState) {
+            case OWSVerificationStateVerified: {
+                OWSFail(@"%@ Shouldn't need to confirm identity if it was already verified", self.logTag);
+                break;
+            }
+            case OWSVerificationStateDefault: {
+                // If we learned of a changed SN during send, then we've already recorded the new identity
+                // and there's nothing else we need to do for the resend to succeed.
+                // We don't want to redundantly set status to "default" because we would create a
+                // "You marked Alice as unverified" notice, which wouldn't make sense if Alice was never
+                // marked as "Verified".
+                DDLogInfo(@"%@ recipient has acceptable verification status. Next send will succeed.", self.logTag);
+                break;
+            }
+            case OWSVerificationStateNoLongerVerified: {
+                DDLogInfo(@"%@ marked recipient: %@ as default verification status.", self.logTag, recipientId);
+                NSData *identityKey = [[OWSIdentityManager sharedManager] identityKeyForRecipientId:recipientId];
+                OWSAssert(identityKey);
+                [[OWSIdentityManager sharedManager] setVerificationState:OWSVerificationStateDefault
+                                                             identityKey:identityKey
+                                                             recipientId:recipientId
+                                                   isUserInitiatedChange:YES];
+                break;
+            }
+        }
+
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            [self resendMessage:message fromViewController:fromViewController];
+        });
+    });
+}
+
+- (void)resendMessage:(TSOutgoingMessage *)message fromViewController:(UIViewController *)fromViewController
+{
+    AssertIsOnMainThread();
+    OWSAssert(message);
+    OWSAssert(fromViewController);
+
+    NSString *progressTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", @"Alert title");
+    UIAlertController *progressAlert = [UIAlertController alertControllerWithTitle:progressTitle
+                                                                           message:nil
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertAction *progressCancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
+                                                                   style:UIAlertActionStyleCancel
+                                                                 handler:^(UIAlertAction *_Nonnull action) {
+                                                                     [self.shareViewDelegate shareViewWasCancelled];
+                                                                 }];
+    [progressAlert addAction:progressCancelAction];
+
+    [fromViewController
+        presentViewController:progressAlert
+                     animated:YES
+                   completion:^(void) {
+                       [self.messageSender enqueueMessage:message
+                           success:^(void) {
+                               DDLogInfo(@"%@ Resending attachment succeeded.", self.logTag);
+                               dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                   [self.shareViewDelegate shareViewWasCompleted];
+                               });
+                           }
+                           failure:^(NSError *error) {
+                               dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                   [fromViewController
+                                       dismissViewControllerAnimated:YES
+                                                          completion:^(void) {
+                                                              DDLogInfo(@"%@ Sending attachment failed with error: %@",
+                                                                  self.logTag,
+                                                                  error);
+                                                              [self showSendFailureAlertWithError:error
+                                                                                          message:message
+                                                                               fromViewController:fromViewController];
+                                                          }];
+                               });
+                           }];
+                   }];
 }
 
 - (void)attachmentUploadProgress:(NSNotification *)notification
