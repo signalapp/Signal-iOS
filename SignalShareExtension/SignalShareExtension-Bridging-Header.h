@@ -21,7 +21,7 @@
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppVersion.h>
-#import <SignalServiceKit/Asserts.h>
 #import <SignalServiceKit/NSObject+OWS.h>
+#import <SignalServiceKit/OWSAsserts.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>

@@ -58,7 +58,6 @@
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/AppVersion.h>
-#import <SignalServiceKit/Asserts.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/Cryptography.h>
@@ -72,6 +71,7 @@
 #import <SignalServiceKit/OWSAcknowledgeMessageDeliveryRequest.h>
 #import <SignalServiceKit/OWSAnalytics.h>
 #import <SignalServiceKit/OWSAnalyticsEvents.h>
+#import <SignalServiceKit/OWSAsserts.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSCallAnswerMessage.h>

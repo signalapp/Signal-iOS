@@ -42,7 +42,7 @@ public class DeviceSleepManager: NSObject {
 
         NotificationCenter.default.addObserver(self,
                                                selector:#selector(didEnterBackground),
-                                               name:NSNotification.Name.UIApplicationDidEnterBackground,
+                                               name:NSNotification.Name.OWSApplicationDidEnterBackground,
                                                object:nil)
     }
 

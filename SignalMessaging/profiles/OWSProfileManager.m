@@ -124,7 +124,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
-                                                 name:UIApplicationDidBecomeActiveNotification
+                                                 name:OWSApplicationDidBecomeActiveNotification
                                                object:nil];
 }
 

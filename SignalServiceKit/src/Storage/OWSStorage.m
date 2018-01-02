@@ -6,11 +6,14 @@
 #import "AppContext.h"
 #import "NSData+Base64.h"
 #import "NSNotificationCenter+OWS.h"
+#import "OWSBackgroundTask.h"
+#import "OWSDatabaseConnection.h"
 #import "OWSFileSystem.h"
 #import "OWSSessionStorage.h"
 #import "OWSStorage+Subclass.h"
 #import "TSAttachmentStream.h"
 #import "TSStorageManager.h"
+#import "Threading.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
 #import <YapDatabase/YapDatabase.h>
@@ -27,101 +30,6 @@ NSString *const OWSStorageExceptionName_NoDatabase = @"OWSStorageExceptionName_N
 
 static NSString *keychainService = @"TSKeyChainService";
 static NSString *keychainDBPassAccount = @"TSDatabasePass";
-
-#pragma mark -
-
-@protocol OWSDatabaseConnectionDelegate <NSObject>
-
-- (BOOL)areSyncRegistrationsComplete;
-
-@end
-
-#pragma mark -
-
-@interface YapDatabaseConnection ()
-
-- (id)initWithDatabase:(YapDatabase *)database;
-
-@end
-
-#pragma mark -
-
-@interface OWSDatabaseConnection : YapDatabaseConnection
-
-@property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
-
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithDatabase:(YapDatabase *)database
-                        delegate:(id<OWSDatabaseConnectionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
-
-@end
-
-#pragma mark -
-
-@implementation OWSDatabaseConnection
-
-- (id)initWithDatabase:(YapDatabase *)database delegate:(id<OWSDatabaseConnectionDelegate>)delegate
-{
-    self = [super initWithDatabase:database];
-
-    if (!self) {
-        return self;
-    }
-
-    OWSAssert(delegate);
-
-    _delegate = delegate;
-
-    return self;
-}
-
-// Assert that the database is in a ready state (specifically that any sync database
-// view registrations have completed and any async registrations have been started)
-// before creating write transactions.
-//
-// Creating write transactions before the _sync_ database views are registered
-// causes YapDatabase to rebuild all of our database views, which is catastrophic.
-// Specifically, it causes YDB's "view version" checks to fail.
-- (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
-{
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [super readWriteWithBlock:block];
-}
-
-- (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
-{
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [super asyncReadWriteWithBlock:block];
-}
-
-- (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
-                completionBlock:(nullable dispatch_block_t)completionBlock
-{
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [super asyncReadWriteWithBlock:block completionBlock:completionBlock];
-}
-
-- (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
-                completionQueue:(nullable dispatch_queue_t)completionQueue
-                completionBlock:(nullable dispatch_block_t)completionBlock
-{
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [super asyncReadWriteWithBlock:block completionQueue:completionQueue completionBlock:completionBlock];
-}
-
-@end
 
 #pragma mark -
 
@@ -238,6 +146,8 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 @interface OWSStorage () <OWSDatabaseConnectionDelegate>
 
 @property (atomic, nullable) YapDatabase *database;
+@property (atomic) NSInteger transactionCount;
+@property (atomic, nullable) OWSBackgroundTask *backgroundTask;
 
 @end
 
@@ -250,30 +160,24 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     self = [super init];
 
     if (self) {
-        if (![self tryToLoadDatabase]) {
-            // Failing to load the database is catastrophic.
-            //
-            // The best we can try to do is to discard the current database
-            // and behave like a clean install.
-            OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
+        [self openDatabase];
 
-            // Try to reset app by deleting all databases.
-            //
-            // TODO: Possibly clean up all app files.
-            //            [OWSStorage deleteDatabaseFiles];
-
-            if (![self tryToLoadDatabase]) {
-                OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
-
-                // Sleep to give analytics events time to be delivered.
-                [NSThread sleepForTimeInterval:15.0f];
-
-                [NSException raise:OWSStorageExceptionName_NoDatabase format:@"Failed to initialize database."];
-            }
-        }
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationDidEnterBackground:)
+                                                     name:OWSApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(extensionHostWillEnterForeground:)
+                                                     name:OWSApplicationWillEnterForegroundNotification
+                                                   object:nil];
     }
 
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (StorageType)storageType
@@ -281,6 +185,42 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     OWS_ABSTRACT_METHOD();
 
     return StorageType_Unknown;
+}
+
+- (void)openDatabase
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    if (![self tryToLoadDatabase]) {
+        // Failing to load the database is catastrophic.
+        //
+        // The best we can try to do is to discard the current database
+        // and behave like a clean install.
+        OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
+
+        // Try to reset app by deleting all databases.
+        [OWSStorage deleteDatabaseFiles];
+
+        if (![self tryToLoadDatabase]) {
+            OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
+
+            // Sleep to give analytics events time to be delivered.
+            [NSThread sleepForTimeInterval:15.0f];
+
+            [NSException raise:OWSStorageExceptionName_NoDatabase format:@"Failed to initialize database."];
+        }
+    }
+}
+
+- (void)closeDatabase
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    self.database = nil;
 }
 
 - (BOOL)areAsyncRegistrationsComplete
@@ -599,6 +539,132 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 + (void)deletePasswordFromKeychain
 {
     [SAMKeychain deletePasswordForService:keychainService account:keychainDBPassAccount];
+}
+
+#pragma mark - OWSDatabaseConnectionDelegate
+
+- (void)readTransactionWillBegin
+{
+    [self updateTransactionCount:+1];
+}
+
+- (void)readTransactionDidComplete
+{
+    [self updateTransactionCount:-1];
+}
+
+- (void)readWriteTransactionWillBegin
+{
+    [self updateTransactionCount:+1];
+}
+
+- (void)readWriteTransactionDidComplete
+{
+    [self updateTransactionCount:-1];
+}
+
+- (void)updateTransactionCount:(NSInteger)increment
+{
+    DispatchMainThreadSafe(^{
+        NSInteger oldValue = self.transactionCount;
+        NSInteger newValue = oldValue + increment;
+        self.transactionCount = newValue;
+
+        if (!CurrentAppContext().isMainApp) {
+            return;
+        }
+
+        if (oldValue == 0 && newValue > 0) {
+            OWSAssert(!self.backgroundTask);
+
+            [self closeDatabaseIfNecessary];
+
+            self.backgroundTask = [OWSBackgroundTask
+                backgroundTaskWithLabel:[NSString stringWithFormat:@"%@ background task", self.logTag]
+                        completionBlock:^(BackgroundTaskState backgroundTaskState) {
+                            switch (backgroundTaskState) {
+                                case BackgroundTaskState_Success:
+                                    break;
+                                case BackgroundTaskState_CouldNotStart:
+                                    DDLogVerbose(@"%@ BackgroundTaskState_CouldNotStart", self.logTag);
+                                    break;
+                                case BackgroundTaskState_Expired:
+                                    DDLogVerbose(@"%@ BackgroundTaskState_Expired", self.logTag);
+                                    break;
+                            }
+                        }];
+        } else if (oldValue > 0 && newValue == 0) {
+            OWSAssert(self.backgroundTask);
+
+            self.backgroundTask = nil;
+        }
+    });
+}
+
+- (void)closeDatabaseIfNecessary
+{
+    OWSAssertIsOnMainThread();
+
+    // Only close the session database in the background.
+    if (self.storageType != StorageType_Session) {
+        return;
+    }
+    // Only close the database if the app is in the background.
+    //
+    // TODO: We need to observe SAE lifecycle events.
+    if (CurrentAppContext().isMainApp && CurrentAppContext().mainApplicationState != UIApplicationStateBackground) {
+        return;
+    }
+    // Don't close the database while there are any lingering transactions.
+    if (self.transactionCount > 0) {
+        return;
+    }
+
+    [self closeDatabase];
+}
+
+- (void)openDatabaseIfNecessary
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.database) {
+        return;
+    }
+
+    [self openDatabase];
+}
+
+- (void)applicationDidEnterBackground:(NSNotification *)notification
+{
+    [self closeDatabaseIfNecessary];
+}
+
+- (void)applicationWillEnterForeground
+{
+    [self openDatabaseIfNecessary];
+}
+
++ (void)applicationWillEnterForeground
+{
+    OWSAssertIsOnMainThread();
+
+    for (OWSStorage *storage in self.allStorages) {
+        [storage applicationWillEnterForeground];
+    }
+}
+
+- (void)extensionHostDidEnterBackground:(NSNotification *)notification
+{
+    [self closeDatabaseIfNecessary];
+}
+
+- (void)extensionHostWillEnterForeground:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    for (OWSStorage *storage in OWSStorage.allStorages) {
+        [storage applicationWillEnterForeground];
+    }
 }
 
 @end
