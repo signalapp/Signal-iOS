@@ -8,8 +8,8 @@
 #import <YapDatabase/YapDatabase.h>
 
 NSString *const OWSSessionStorageSessionStoreCollection = @"TSStorageManagerSessionStoreCollection";
-NSString *const OWSSessionStore_Collection = @"OWSSessionStore_Collection";
-NSString *const OWSSessionStore_Key_HasMigratedToSessionStorage = @"OWSSessionStore_Key_HasMigratedToSessionStorage";
+NSString *const OWSSessionStore_Collection = @"OWSSessionStorage_Collection";
+NSString *const OWSSessionStore_Key_HasMigratedToSessionStorage = @"OWSSessionStorage_Key_HasMigratedToSessionStorage";
 
 void AssertIsOnSessionStoreQueue()
 {
