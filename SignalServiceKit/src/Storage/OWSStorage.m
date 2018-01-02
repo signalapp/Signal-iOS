@@ -185,6 +185,13 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     return StorageType_Unknown;
 }
 
+- (nullable id)dbNotificationObject
+{
+    OWSAssert(self.database);
+
+    return self.database;
+}
+
 - (void)openDatabase
 {
     OWSAssertIsOnMainThread();
@@ -698,8 +705,6 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     OWSAssert(srcDBConnection);
     OWSAssert(dstDBConnection);
 
-    DDLogVerbose(@"%@: copying collection %@", self.logTag, collection);
-
     NSMutableDictionary<NSString *, id> *collectionContents = [NSMutableDictionary new];
 
     // 1. Read from old storage.
@@ -725,7 +730,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         }];
     }];
 
-    DDLogVerbose(@"%@ migrated %zd items in %@.", self.logTag, (unsigned long)collectionContents.count, collection);
+    DDLogVerbose(@"%@ copied %zd items in %@.", self.logTag, (unsigned long)collectionContents.count, collection);
 }
 
 @end
