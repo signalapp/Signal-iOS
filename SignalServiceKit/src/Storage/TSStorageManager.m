@@ -30,8 +30,6 @@ NSString *const NSUserDefaultsKey_OWSPrimaryStorageLastBackupDirName
     = @"NSUserDefaultsKey_OWSPrimaryStorageLastBackupDirName";
 NSString *const NSUserDefaultsKey_OWSPrimaryStoragePreviousBackupDirName
     = @"NSUserDefaultsKey_OWSPrimaryStoragePreviousBackupDirName";
-// NSString *const NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate
-//    = @"NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate";
 
 void runSyncRegistrationsForPrimaryStorage(OWSStorage *storage)
 {
@@ -105,13 +103,15 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
 
         _dbReadConnection = self.newDatabaseConnection;
         _dbReadWriteConnection = self.newDatabaseConnection;
-#if DEBUG
-        if (!CurrentAppContext().isMainApp) {
-            // In the SAE, the app should only read from the primary copy database.
-            self.dbReadConnection.permittedTransactions = YDB_AnyReadTransaction;
-            self.dbReadWriteConnection.permittedTransactions = YDB_AnyReadTransaction;
-        }
-#endif
+
+        // TODO: Audit all writes to primary storage from SAE.
+        //#if DEBUG
+        //        if (!CurrentAppContext().isMainApp) {
+        //            // In the SAE, the app should only read from the primary copy database.
+        //            self.dbReadConnection.permittedTransactions = YDB_AnyReadTransaction;
+        //            self.dbReadWriteConnection.permittedTransactions = YDB_AnyReadTransaction;
+        //        }
+        //#endif
 
         OWSSingletonAssert();
     }
@@ -355,17 +355,6 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
     OWSAssert(CurrentAppContext().isMainApp);
     OWSAssert(completion);
 
-    //    NSDate *_Nullable lastBackupDate =
-    //        [NSUserDefaults.appUserDefaults objectForKey:NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate];
-    //    if (lastBackupDate && fabs(lastBackupDate.timeIntervalSinceNow) < self.databaseCopyFrequency) {
-    //
-    //        DDLogInfo(@"%@ Skipping backup of primary database", self.logTag);
-    //
-    //        dispatch_async(dispatch_get_main_queue(), completion);
-    //
-    //        return;
-    //    }
-
     NSString *copyDirName = [NSUUID UUID].UUIDString;
 
     DDLogInfo(@"%@ Primary database copy started: %@", self.logTag, copyDirName);
@@ -406,9 +395,6 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
                              [NSUserDefaults.appUserDefaults
                                  setObject:copyDirName
                                     forKey:NSUserDefaultsKey_OWSPrimaryStorageLastBackupDirName];
-                             //                             [NSUserDefaults.appUserDefaults
-                             //                                 setObject:backupStartDate
-                             //                                    forKey:NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate];
                              [NSUserDefaults.appUserDefaults synchronize];
 
                              dispatch_async(dispatch_get_main_queue(), completion);
@@ -496,19 +482,20 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
     });
 }
 
-#pragma mark - OWSDatabaseConnectionDelegate
-
-- (void)readWriteTransactionWillBegin
-{
-    if (!CurrentAppContext().isMainApp) {
-        OWSFail(@"%@ Should not write to primary database from SAE.", self.logTag);
-
-        [NSException raise:@"OWSStorageExceptionName_UnsafeWriteToBackupDB"
-                    format:@"Should not write to primary database from SAE."];
-    } else {
-        [super readWriteTransactionWillBegin];
-    }
-}
+// TODO: Audit all writes to the primary storage from the SAE.
+//#pragma mark - OWSDatabaseConnectionDelegate
+//
+//- (void)readWriteTransactionWillBegin
+//{
+//    if (!CurrentAppContext().isMainApp) {
+//        OWSFail(@"%@ Should not write to primary database from SAE.", self.logTag);
+//
+//        [NSException raise:@"OWSStorageExceptionName_UnsafeWriteToBackupDB"
+//                    format:@"Should not write to primary database from SAE."];
+//    } else {
+//        [super readWriteTransactionWillBegin];
+//    }
+//}
 
 @end
 
