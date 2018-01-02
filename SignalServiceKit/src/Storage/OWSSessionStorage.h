@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSStorage.h"
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Migration
 
-- (void)migrateCollection:(NSString *)collection fromStorage:(OWSStorage *)storage valueClass:(Class)valueClass;
+- (void)copyCollection:(NSString *)collection fromStorage:(OWSStorage *)storage valueClass:(Class)valueClass;
 
 @end
 

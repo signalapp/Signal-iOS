@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSStorage.h"
@@ -687,6 +687,45 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         DDLogInfo(@"%@ Database file size: %llu", self.logTag, fileSize);
     }
     return fileSize;
+}
+
++ (void)copyCollection:(NSString *)collection
+       srcDBConnection:(YapDatabaseConnection *)srcDBConnection
+       dstDBConnection:(YapDatabaseConnection *)dstDBConnection
+            valueClass:(Class)valueClass
+{
+    OWSAssert(collection.length > 0);
+    OWSAssert(srcDBConnection);
+    OWSAssert(dstDBConnection);
+
+    DDLogInfo(@"%@: copying collection %@", self.logTag, collection);
+
+    NSMutableDictionary<NSString *, id> *collectionContents = [NSMutableDictionary new];
+
+    // 1. Read from old storage.
+    [srcDBConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [transaction
+            enumerateKeysAndObjectsInCollection:collection
+                                     usingBlock:^(NSString *_Nonnull key, id _Nonnull value, BOOL *_Nonnull stop) {
+                                         if (![value isKindOfClass:valueClass]) {
+                                             OWSFail(
+                                                 @"Unexpected type: %@ in collection: %@.", [value class], collection);
+                                             return;
+                                         }
+
+                                         collectionContents[key] = value;
+                                     }];
+    }];
+
+    // 2. Write to new storage.
+    [dstDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        OWSAssert([transaction numberOfKeysInCollection:collection] == 0);
+        [collectionContents enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key, id value, BOOL *_Nonnull stop) {
+            [transaction setObject:value forKey:key inCollection:collection];
+        }];
+    }];
+
+    DDLogInfo(@"%@ migrated %zd items.", self.logTag, (unsigned long)collectionContents.count);
 }
 
 @end

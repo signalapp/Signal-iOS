@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPreferences.h"
@@ -25,7 +25,7 @@ NSString *const OWSPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled
 NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 NSString *const OWSPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
-NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_4";
+NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKey_IsRegistered = @"OWSPreferencesKey_IsRegistered";
 
 @implementation OWSPreferences

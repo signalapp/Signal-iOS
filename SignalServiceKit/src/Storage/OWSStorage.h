@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <YapDatabase/YapDatabase.h>
@@ -55,6 +55,11 @@ typedef NS_ENUM(NSUInteger, StorageType) {
 - (nullable id)registeredExtension:(NSString *)extensionName;
 
 - (unsigned long long)databaseFileSize;
+
++ (void)copyCollection:(NSString *)collection
+       srcDBConnection:(YapDatabaseConnection *)srcDBConnection
+       dstDBConnection:(YapDatabaseConnection *)dstDBConnection
+            valueClass:(Class)valueClass;
 
 #pragma mark - Password
 

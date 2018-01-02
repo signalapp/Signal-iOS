@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSStorageManager.h"
@@ -17,10 +17,8 @@
 #import "OWSMessageReceiver.h"
 #import "OWSPrimaryCopyStorage.h"
 #import "OWSStorage+Subclass.h"
-#import "SignalAccount.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
-#import "TSThread.h"
 #import "Threading.h"
 #import <YapDatabase/YapDatabase.h>
 
@@ -30,8 +28,8 @@ NSString *const NSUserDefaultsKey_OWSPrimaryStorageLastBackupDirName
     = @"NSUserDefaultsKey_OWSPrimaryStorageLastBackupDirName";
 NSString *const NSUserDefaultsKey_OWSPrimaryStoragePreviousBackupDirName
     = @"NSUserDefaultsKey_OWSPrimaryStoragePreviousBackupDirName";
-NSString *const NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate
-    = @"NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate";
+// NSString *const NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate
+//    = @"NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate";
 
 void runSyncRegistrationsForPrimaryStorage(OWSStorage *storage)
 {
@@ -359,13 +357,20 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
     //        return;
     //    }
 
-    DDLogInfo(@"%@ Primary Database Copy started", self.logTag);
-
     NSString *copyDirName = [NSUUID UUID].UUIDString;
 
+    DDLogInfo(@"%@ Primary database copy started: %@", self.logTag, copyDirName);
+
+    NSDate *registrationsStartDate = [NSDate new];
     OWSPrimaryCopyStorage *copyStorage = [[OWSPrimaryCopyStorage alloc] initWithDirName:copyDirName];
     [copyStorage runSyncRegistrations];
     [copyStorage runAsyncRegistrationsWithCompletion:^{
+
+        DDLogInfo(@"%@ Primary database copy registrations completed: %@, in: %f",
+            self.logTag,
+            copyDirName,
+            fabs(registrationsStartDate.timeIntervalSinceNow));
+
         NSDate *backupStartDate = [NSDate new];
         [self copyDatabaseToStorage:copyStorage
                          completion:^(NSError *_Nullable error) {
@@ -392,9 +397,9 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
                              [NSUserDefaults.appUserDefaults
                                  setObject:copyDirName
                                     forKey:NSUserDefaultsKey_OWSPrimaryStorageLastBackupDirName];
-                             [NSUserDefaults.appUserDefaults
-                                 setObject:backupStartDate
-                                    forKey:NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate];
+                             //                             [NSUserDefaults.appUserDefaults
+                             //                                 setObject:backupStartDate
+                             //                                    forKey:NSUserDefaultsKey_OWSPrimaryStorageLastBackupDate];
                              [NSUserDefaults.appUserDefaults synchronize];
 
                              dispatch_async(dispatch_get_main_queue(), completion);
@@ -422,54 +427,16 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
         YapDatabaseConnection *srcDBConnection = self.newDatabaseConnection;
         YapDatabaseConnection *dstDBConnection = copyStorage.newDatabaseConnection;
 
-        [TSStorageManager copyCollection:TSThread.collection
-                         srcDBConnection:srcDBConnection
-                         dstDBConnection:dstDBConnection
-                              valueClass:[TSThread class]];
-        [TSStorageManager copyCollection:SignalAccount.collection
-                         srcDBConnection:srcDBConnection
-                         dstDBConnection:dstDBConnection
-                              valueClass:[SignalAccount class]];
+        [[OWSPrimaryCopyStorage primaryCopyCollections]
+            enumerateKeysAndObjectsUsingBlock:^(NSString *collection, Class collectionClass, BOOL *stop) {
+                [OWSStorage copyCollection:collection
+                           srcDBConnection:srcDBConnection
+                           dstDBConnection:dstDBConnection
+                                valueClass:collectionClass];
+            }];
 
         completion(nil);
     });
-}
-
-+ (void)copyCollection:(NSString *)collection
-       srcDBConnection:(YapDatabaseConnection *)srcDBConnection
-       dstDBConnection:(YapDatabaseConnection *)dstDBConnection
-            valueClass:(Class)valueClass
-{
-    OWSAssert(collection.length > 0);
-    OWSAssert(srcDBConnection);
-    OWSAssert(dstDBConnection);
-
-    DDLogInfo(@"%@: copying collection %@", self.logTag, collection);
-
-    NSMutableDictionary<NSString *, id> *collectionContents = [NSMutableDictionary new];
-
-    // 1. Read from old storage.
-    [srcDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction
-            enumerateKeysAndObjectsInCollection:collection
-                                     usingBlock:^(NSString *_Nonnull key, id _Nonnull value, BOOL *_Nonnull stop) {
-                                         if (![value isKindOfClass:valueClass]) {
-                                             OWSFail(
-                                                 @"Unexpected type: %@ in collection: %@.", [value class], collection);
-                                             return;
-                                         }
-
-                                         collectionContents[key] = value;
-                                     }];
-    }];
-
-    // 2. Write to new storage.
-    [dstDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [collectionContents enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key, id value, BOOL *_Nonnull stop){
-        }];
-    }];
-
-    DDLogInfo(@"%@ migrated %zd items.", self.logTag, (unsigned long)collectionContents.count);
 }
 
 - (void)cleanUpDatabaseCopies
@@ -499,6 +466,8 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
             [fileManager removeItemAtPath:backupDirPath error:&error];
             if (error) {
                 DDLogInfo(@"%@ Couldn't delete database copy: %@, %@", self.logTag, backupDirPath, error);
+            } else {
+                DDLogVerbose(@"%@ Deleted database copy: %@, %@", self.logTag, backupDirPath, error);
             }
         }
         if (error) {

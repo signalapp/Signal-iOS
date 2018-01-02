@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSessionStorage+SessionStore.h"
@@ -187,9 +187,7 @@ void AssertIsOnSessionStoreQueue()
 
     DDLogInfo(@"%s", __PRETTY_FUNCTION__);
 
-    [self migrateCollection:OWSSessionStorageSessionStoreCollection
-                fromStorage:storage
-                 valueClass:[NSDictionary class]];
+    [self copyCollection:OWSSessionStorageSessionStoreCollection fromStorage:storage valueClass:[NSDictionary class]];
 
     // Mark migration as complete.
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

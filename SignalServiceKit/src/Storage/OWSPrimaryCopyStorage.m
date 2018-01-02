@@ -1,11 +1,13 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPrimaryCopyStorage.h"
 #import "OWSFileSystem.h"
 #import "OWSStorage+Subclass.h"
+#import "SignalAccount.h"
 #import "TSStorageManager.h"
+#import "TSThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -43,6 +45,13 @@ NSString *const OWSPrimaryCopyStorageExceptionName_CouldNotCreateDatabaseDirecto
 
     return self;
 }
+
+//- (instancetype)initStorage
+//{
+//    self = [super initStorage];
+//
+//    return self;
+//}
 
 - (StorageType)storageType
 {
@@ -121,7 +130,10 @@ NSString *const OWSPrimaryCopyStorageExceptionName_CouldNotCreateDatabaseDirecto
 
 - (NSString *)databaseFilePath
 {
-    return [OWSPrimaryCopyStorage databaseCopyFilePathForDirName:self.dirName];
+    NSString *filePath = [OWSPrimaryCopyStorage databaseCopyFilePathForDirName:self.dirName];
+    DDLogInfo(@"%@ databaseFilePath: %@", self.logTag, filePath);
+    OWSAssert(![[NSFileManager defaultManager] fileExistsAtPath:filePath]);
+    return filePath;
 }
 
 - (NSString *)databaseFilePath_SHM
@@ -132,6 +144,14 @@ NSString *const OWSPrimaryCopyStorageExceptionName_CouldNotCreateDatabaseDirecto
 - (NSString *)databaseFilePath_WAL
 {
     return [self.databaseFilePath stringByAppendingString:@"-wal"];
+}
+
++ (NSDictionary<NSString *, Class> *)primaryCopyCollections
+{
+    return @{
+        TSThread.collection : TSThread.class,
+        SignalAccount.collection : SignalAccount.class,
+    };
 }
 
 @end
