@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "SharingThreadPickerViewController.h"
@@ -239,11 +239,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *failureTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_FAILURE_TITLE", @"Alert title");
 
-    if (error.code == OWSErrorCodeUntrustedIdentity) {
+    if ([error.domain isEqual:OWSSignalServiceKitErrorDomain] && error.code == OWSErrorCodeUntrustedIdentity) {
         NSString *_Nullable untrustedRecipientId = error.userInfo[OWSErrorRecipientIdentifierKey];
 
-        NSString *failureFormat = NSLocalizedString(@"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
-            @"alert body when sharing filefailed because of untrusted/changed identity keys");
+        NSString *failureFormat = NSLocalizedString(@"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
+            @"alert body when sharing file failed because of untrusted/changed identity keys");
 
         NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:untrustedRecipientId];
         NSString *failureMessage = [NSString stringWithFormat:failureFormat, displayName];

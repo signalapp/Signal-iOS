@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -16,6 +16,12 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     let TAG = "[AttachmentApprovalViewController]"
     weak var delegate: AttachmentApprovalViewControllerDelegate?
+
+    // We sometimes shrink the attachment view so that it remains somewhat visible
+    // when the keyboard is presented.
+    enum AttachmentViewScale {
+        case fullsize, compact
+    }
 
     // MARK: Properties
 
@@ -240,14 +246,10 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     }
 
     // When the keyboard is popped, it can obscure the attachment view.
-    // so we sometimes allows resizing the attachment.
+    // so we sometimes allow resizing the attachment.
     private var shouldAllowAttachmentViewResizing: Bool = true
 
-    enum AttachmetViewScale {
-        case fullsize, compact
-    }
-
-    private func scaleAttachmentView(_ fit: AttachmetViewScale) {
+    private func scaleAttachmentView(_ fit: AttachmentViewScale) {
         guard shouldAllowAttachmentViewResizing else {
             if self.scrollView.transform != CGAffineTransform.identity {
                 UIView.animate(withDuration: 0.2) {
