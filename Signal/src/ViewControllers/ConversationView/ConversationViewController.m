@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewController.h"
@@ -64,7 +64,6 @@
 #import <JSQMessagesViewController/JSQSystemSoundPlayer+JSQMessages.h>
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
 #import <JSQSystemSoundPlayer.h>
-#import <MediaPlayer/MediaPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
@@ -215,17 +214,18 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic, readonly) BOOL isGroupConversation;
 @property (nonatomic) BOOL isUserScrolling;
 
+@property (nonatomic) NSLayoutConstraint *scrollDownButtonButtomConstraint;
+
 @property (nonatomic) ConversationScrollButton *scrollDownButton;
 #ifdef DEBUG
 @property (nonatomic) ConversationScrollButton *scrollUpButton;
 #endif
 
+@property (nonatomic) BOOL isViewCompletelyAppeared;
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL isAppInBackground;
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL viewHasEverAppeared;
-@property (nonatomic) BOOL wasScrolledToBottomBeforeKeyboardShow;
-@property (nonatomic) BOOL wasScrolledToBottomBeforeLayoutChange;
 @property (nonatomic) BOOL hasUnreadMessages;
 
 @end
@@ -318,6 +318,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(signalAccountsDidChange:)
                                                  name:OWSContactsManagerSignalAccountsDidChangeNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillChangeFrame:)
+                                                 name:UIKeyboardWillChangeFrameNotification
                                                object:nil];
 }
 
@@ -452,13 +456,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     if (_peek) {
         self.inputToolbar.hidden = YES;
-        [self.inputToolbar endEditing:TRUE];
+        [self dismissKeyBoard];
         return;
     }
 
     if (self.userLeftGroup) {
         self.inputToolbar.hidden = YES; // user has requested they leave the group. further sends disallowed
-        [self.inputToolbar endEditing:TRUE];
+        [self dismissKeyBoard];
     } else {
         self.inputToolbar.hidden = NO;
     }
@@ -501,6 +505,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.collectionView.dataSource = self;
     self.collectionView.showsVerticalScrollIndicator = YES;
     self.collectionView.showsHorizontalScrollIndicator = NO;
+    self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.collectionView];
     [self.collectionView autoPinWidthToSuperview];
@@ -517,10 +522,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _inputToolbar = [ConversationInputToolbar new];
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
-    [self.view addSubview:self.inputToolbar];
-    [self.inputToolbar autoPinWidthToSuperview];
-    [self.inputToolbar autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.collectionView];
-    [self autoPinViewToBottomGuideOrKeyboard:self.inputToolbar];
+    [self.collectionView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
@@ -532,6 +534,16 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.loadMoreHeader autoPinWidthToWidthOfView:self.view];
     [self.loadMoreHeader autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.loadMoreHeader autoSetDimension:ALDimensionHeight toSize:kLoadMoreHeaderHeight];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (nullable UIView *)inputAccessoryView
+{
+    return self.inputToolbar;
 }
 
 - (void)registerCellClasses
@@ -883,6 +895,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                               }];
         [actionSheetController addAction:dismissAction];
 
+        [self dismissKeyBoard];
         [self presentViewController:actionSheetController animated:YES completion:nil];
     }
 }
@@ -999,6 +1012,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         _callOnOpen = NO;
     }
 
+    self.isViewCompletelyAppeared = YES;
     self.viewHasEverAppeared = YES;
 }
 
@@ -1012,6 +1026,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [super viewWillDisappear:animated];
 
+    self.isViewCompletelyAppeared = NO;
     [self.inputToolbar viewWillDisappear:animated];
 }
 
@@ -1029,7 +1044,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self markVisibleMessagesAsRead];
     [self cancelVoiceMemo];
     [self.cellMediaCache removeAllObjects];
-    [self.inputToolbar endEditingTextMessage];
 
     self.isUserScrolling = NO;
 }
@@ -1388,11 +1402,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
+    // FIXME inputAccessoryView - if using numeric keyboard, switch back to alpha after
+    // sending.
     // The JSQ event listeners cause a bounce animation, so we temporarily disable them.
-    [self setShouldIgnoreKeyboardChanges:YES];
-    [self dismissKeyBoard];
-    [self popKeyBoard];
-    [self setShouldIgnoreKeyboardChanges:NO];
+    //    [self setShouldIgnoreKeyboardChanges:YES];
+    //    [self dismissKeyBoard];
+    //    [self popKeyBoard];
+    //    [self setShouldIgnoreKeyboardChanges:NO];
 }
 
 #pragma mark - Dynamic Text
@@ -1635,6 +1651,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [actionSheetController addAction:resendMessageAction];
 
+    [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
@@ -1669,6 +1686,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [actionSheetController addAction:resendMessageAction];
 
+    [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
@@ -1796,6 +1814,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 }];
     [alertController addAction:resetSessionAction];
 
+    [self dismissKeyBoard];
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -1836,6 +1855,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                }];
     [actionSheetController addAction:acceptSafetyNumberAction];
 
+    [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
@@ -1865,9 +1885,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [alertController addAction:callAction];
     [alertController addAction:[OWSAlerts cancelAction]];
 
-    [[UIApplication sharedApplication].frontmostViewController presentViewController:alertController
-                                                                            animated:YES
-                                                                          completion:nil];
+    [self dismissKeyBoard];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 #pragma mark - ConversationViewCellDelegate
@@ -1916,6 +1935,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 }];
     [actionSheetController addAction:blockAction];
 
+    [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
@@ -2018,6 +2038,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // MPMoviePlayerController will animate a crop of its
     // contents rather than scaling them.
     _videoPlayer.view.frame = self.view.bounds;
+
+    // FIXME inputAccessoryView - we lose and regain first responder here, causing keyboard to appear above video
+    // Approaches:
+    // - put the video player in a separate VC (like the full image view controller)
+    // - some kind of "showing video" flag to supress first responder.
     [_videoPlayer setFullscreen:YES animated:NO];
 }
 
@@ -2235,7 +2260,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.view addSubview:self.scrollDownButton];
     [self.scrollDownButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
     [self.scrollDownButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
-    [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.inputToolbar];
+
+    self.scrollDownButtonButtomConstraint =
+        [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.collectionView];
     [self.scrollDownButton autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
 
 #ifdef DEBUG
@@ -2351,6 +2378,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [[UIDocumentMenuViewController alloc] initWithDocumentTypes:documentTypes inMode:pickerMode];
     menuController.delegate = self;
 
+    [self dismissKeyBoard];
     [self presentViewController:menuController animated:YES completion:nil];
 }
 
@@ -2362,6 +2390,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [[GifPickerViewController alloc] initWithThread:self.thread messageSender:self.messageSender];
     view.delegate = self;
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:view];
+
+    [self dismissKeyBoard];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
@@ -2401,6 +2431,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         // post iOS11, document picker has no blue header.
         [UIUtil applyDefaultSystemAppearence];
     }
+
+    [self dismissKeyBoard];
     [self presentViewController:documentPicker animated:YES completion:nil];
 }
 
@@ -2497,8 +2529,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
         picker.allowsEditing = NO;
         picker.delegate = self;
-        
+
         dispatch_async(dispatch_get_main_queue(), ^{
+            [self dismissKeyBoard];
             [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
         });
     }];
@@ -2518,6 +2551,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     picker.delegate = self;
     picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
 
+    [self dismissKeyBoard];
     [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 
@@ -3081,7 +3115,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     const CGFloat kIsAtBottomTolerancePts = 5;
     // Note the usage of MAX() to handle the case where there isn't enough
     // content to fill the collection view at its current size.
-    CGFloat contentOffsetYBottom = MAX(0.f, contentHeight - self.collectionView.bounds.size.height);
+    CGFloat contentOffsetYBottom
+        = MAX(0.f, contentHeight + self.collectionView.contentInset.bottom - self.collectionView.bounds.size.height);
     BOOL isScrolledToBottom = (self.collectionView.contentOffset.y > contentOffsetYBottom - kIsAtBottomTolerancePts);
 
     return isScrolledToBottom;
@@ -3274,6 +3309,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)attachmentButtonPressed
 {
+    [self dismissKeyBoard];
 
     __weak ConversationViewController *weakSelf = self;
     if ([self isBlockedContactConversation]) {
@@ -3349,6 +3385,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [gifAction setValue:gifImage forKey:@"image"];
     [actionSheetController addAction:gifAction];
 
+    [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:true completion:nil];
 }
 
@@ -3658,6 +3695,100 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     });
 }
 
+- (void)keyboardWillChangeFrame:(NSNotification *)notification
+{
+    // `willChange` is the correct keyboard notifiation to observe when adjusting contentInset
+    // in lockstep with the keyboard presentation animation. `didChange` results in the contentInset
+    // not adjusting until after the keyboard is fully up.
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    [self handleKeyboardNotification:notification];
+}
+
+- (void)handleKeyboardNotification:(NSNotification *)notification
+{
+    AssertIsOnMainThread();
+
+    NSDictionary *userInfo = [notification userInfo];
+
+    NSValue *_Nullable keyboardBeginFrameValue = userInfo[UIKeyboardFrameBeginUserInfoKey];
+    if (!keyboardBeginFrameValue) {
+        OWSFail(@"%@ Missing keyboard begin frame", self.logTag);
+        return;
+    }
+
+    NSValue *_Nullable keyboardEndFrameValue = userInfo[UIKeyboardFrameEndUserInfoKey];
+    if (!keyboardEndFrameValue) {
+        OWSFail(@"%@ Missing keyboard end frame", self.logTag);
+        return;
+    }
+    CGRect keyboardEndFrame = [keyboardEndFrameValue CGRectValue];
+
+    //    DDLogVerbose(@"%@ keyboard change. Old Frame: %@, New Frame: %@",
+    //        self.logTag,
+    //        NSStringFromCGRect(keyboardBeginFrame),
+    //        NSStringFromCGRect(keyboardEndFrame));
+
+    UIEdgeInsets oldInsets = self.collectionView.contentInset;
+    UIEdgeInsets newInsets = oldInsets;
+
+    // bottomLayoutGuide accounts for extra offset needed on iPhoneX
+    newInsets.bottom = keyboardEndFrame.size.height - self.bottomLayoutGuide.length;
+
+    BOOL wasScrolledToBottom = [self isScrolledToBottom];
+
+    void (^adjustInsets)(void) = ^(void) {
+        self.collectionView.contentInset = newInsets;
+        self.collectionView.scrollIndicatorInsets = newInsets;
+
+        // Note there is a bug in iOS11.2 which where switching to the emoji keyboard
+        // does not fire a UIKeyboardFrameWillChange notification. In that case, the scroll
+        // down button gets mostly obscured by the keyboard.
+        // RADAR: #36297652
+        self.scrollDownButtonButtomConstraint.constant = -1 * newInsets.bottom;
+        [self.scrollDownButton setNeedsLayout];
+        [self.scrollDownButton layoutIfNeeded];
+        // HACK: I've made the assumption that we are already in the context of an animation, in which case the
+        // above should be sufficient to smoothly move the scrollDown button in step with the keyboard presentation
+        // animation. Yet, setting the constraint doesn't animate the movement of the button - it "jumps" to it's final
+        // position. So here we manually lay out the scroll down button frame (seemingly redundantly), which allows it
+        // to be smoothly animated.
+        CGRect newButtonFrame = self.scrollDownButton.frame;
+        newButtonFrame.origin.y
+            = self.scrollDownButton.superview.height - (newInsets.bottom + self.scrollDownButton.height);
+        self.scrollDownButton.frame = newButtonFrame;
+
+        // Adjust content offset to prevent the presented keyboard from obscuring content.
+        if (wasScrolledToBottom) {
+            // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
+            [self scrollToBottomAnimated:NO];
+        } else {
+            // If we were scrolled away from the bottom, shift the content in lockstep with the
+            // keyboard, up to the limits of the content bounds.
+            CGFloat insetChange = newInsets.bottom - oldInsets.bottom;
+            CGFloat oldYOffset = self.collectionView.contentOffset.y;
+            CGFloat newYOffset = Clamp(oldYOffset + insetChange, 0, self.safeContentHeight);
+            CGPoint newOffset = CGPointMake(0, newYOffset);
+
+            // If the user is dismissing the keyboard via interactive scrolling, any additional conset offset feels
+            // redundant, so we only adjust content offset when *presenting* the keyboard.
+            if (insetChange > 0 && newYOffset > keyboardEndFrame.origin.y) {
+                [self.collectionView setContentOffset:newOffset animated:NO];
+            }
+        }
+    };
+
+    if (self.isViewCompletelyAppeared) {
+        adjustInsets();
+    } else {
+        // Even though we are scrolling without explicitly animating, the notification seems to occur within the context
+        // of a system animation, which is desirable when the view is visible, because the user sees the content rise
+        // in sync with the keyboard. However, when the view hasn't yet been presented, the animation conflicts and the
+        // result is that initial load causes the collection cells to visably "animate" to their final position once the
+        // view appears.
+        [UIView performWithoutAnimation:adjustInsets];
+    }
+}
+
 - (void)didApproveAttachment:(SignalAttachment *)attachment
 {
     OWSAssert(attachment);
@@ -3690,13 +3821,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     return [self.collectionView.collectionViewLayout collectionViewContentSize].height;
 }
 
-- (void)scrollToBottomImmediately
-{
-    OWSAssert([NSThread isMainThread]);
-
-    [self scrollToBottomAnimated:NO];
-}
-
 - (void)scrollToBottomAnimated:(BOOL)animated
 {
     OWSAssert([NSThread isMainThread]);
@@ -3706,9 +3830,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 
     CGFloat contentHeight = self.safeContentHeight;
-    CGFloat dstY = MAX(0, contentHeight - self.collectionView.height);
-    [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:animated];
 
+    CGFloat dstY
+        = MAX(0, contentHeight + self.collectionView.contentInset.bottom - self.collectionView.bounds.size.height);
+
+    [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:NO];
     [self didScrollToBottom];
 }
 
@@ -3718,22 +3844,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     [self updateLastVisibleTimestamp];
     [self autoLoadMoreIfNecessary];
-
-    if (self.isUserScrolling && [self isScrolledAwayFromBottom]) {
-        [self.inputToolbar endEditingTextMessage];
-    }
-}
-
-// See the comments on isScrolledToBottom.
-- (BOOL)isScrolledAwayFromBottom
-{
-    CGFloat contentHeight = self.safeContentHeight;
-    // Note the usage of MAX() to handle the case where there isn't enough
-    // content to fill the collection view at its current size.
-    CGFloat contentOffsetYBottom = MAX(0.f, contentHeight - self.collectionView.bounds.size.height);
-    const CGFloat kThreshold = 250;
-    BOOL isScrolledAwayFromBottom = (self.collectionView.contentOffset.y < contentOffsetYBottom - kThreshold);
-    return isScrolledAwayFromBottom;
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
@@ -4034,8 +4144,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)collectionViewWillChangeLayout
 {
     OWSAssert([NSThread isMainThread]);
-
-    self.wasScrolledToBottomBeforeLayoutChange = [self isScrolledToBottom];
 }
 
 - (void)collectionViewDidChangeLayout
@@ -4043,15 +4151,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     OWSAssert([NSThread isMainThread]);
 
     [self updateLastVisibleTimestamp];
-
-    // JSQMessageView has glitchy behavior. When presenting/dismissing view
-    // controllers, the size of the input toolbar and/or collection view can
-    // repeatedly change, leaving scroll state in an invalid state.  The
-    // simplest fix that covers most cases is to ensure that we remain
-    // "scrolled to bottom" across these changes.
-    if (self.wasScrolledToBottomBeforeLayoutChange) {
-        [self scrollToBottomImmediately];
-    }
 }
 
 #pragma mark - View Items

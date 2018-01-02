@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIView+OWS.h"
@@ -296,6 +296,32 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     } else {
         margin += (self.isRTL ? self.superview.layoutMargins.left : self.superview.layoutMargins.right);
         return [self autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:margin];
+    }
+}
+
+- (NSLayoutConstraint *)autoPinBottomToSuperviewWithMargin:(CGFloat)margin
+{
+    if (@available(iOS 9.0, *)) {
+        NSLayoutConstraint *constraint =
+        [self.bottomAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.bottomAnchor
+                                          constant:-margin];
+        constraint.active = YES;
+        return constraint;
+    } else {
+        return [self autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:margin];
+    }
+}
+
+- (NSLayoutConstraint *)autoPinTopToSuperviewWithMargin:(CGFloat)margin
+{
+    if (@available(iOS 9.0, *)) {
+        NSLayoutConstraint *constraint =
+        [self.topAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.topAnchor
+                                       constant:margin];
+        constraint.active = YES;
+        return constraint;
+    } else {
+        return [self autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:margin];
     }
 }
 
