@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSessionStorage.h"
@@ -180,17 +180,17 @@ NSString *const OWSSessionStorageExceptionName_CouldNotCreateDatabaseDirectory
 
 #pragma mark - Migration
 
-- (void)migrateCollection:(NSString *)collection fromStorage:(OWSStorage *)storage valueClass:(Class)valueClass
+- (void)migrateCollection:(NSString *)collection fromStorage:(OWSStorage *)fromStorage valueClass:(Class)valueClass
 {
     OWSAssert(collection.length > 0);
-    OWSAssert(storage);
+    OWSAssert(fromStorage);
 
     DDLogInfo(@"%@: migrating %@", self.logTag, collection);
 
     NSMutableDictionary<NSString *, id> *collectionContents = [NSMutableDictionary new];
 
     // 1. Read from old storage.
-    [storage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [fromStorage.newDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [transaction
             enumerateKeysAndObjectsInCollection:collection
                                      usingBlock:^(NSString *_Nonnull key, id _Nonnull value, BOOL *_Nonnull stop) {

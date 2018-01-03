@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSIdentityManager.h"
@@ -792,9 +792,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (BOOL)hasMigratedToSessionStorage
 {
-    return [self.dbConnection boolForKey:OWSIdentityStore_Key_HasMigratedToSessionStorage
-                            inCollection:OWSIdentityStore_Collection
-                            defaultValue:NO];
+    return [self.sessionStorage.dbConnection boolForKey:OWSIdentityStore_Key_HasMigratedToSessionStorage
+                                           inCollection:OWSIdentityStore_Collection
+                                           defaultValue:NO];
 }
 
 - (void)migrateFromStorageIfNecessary:(OWSStorage *)storage
@@ -814,12 +814,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                 valueClass:[NSDictionary class]];
 
     // Mark migration as complete.
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.sessionStorage.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:@(YES)
                         forKey:OWSIdentityStore_Key_HasMigratedToSessionStorage
                   inCollection:OWSIdentityStore_Collection];
     }];
-    [self tryToSyncQueuedVerificationStates];
 }
 
 #pragma mark - Notifications
