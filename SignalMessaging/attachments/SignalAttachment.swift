@@ -15,6 +15,7 @@ enum SignalAttachmentError: Error {
     case couldNotParseImage
     case couldNotConvertToJpeg
     case couldNotConvertToMpeg4
+    case couldNotRemoveMetadata
     case invalidFileFormat
 }
 
@@ -53,6 +54,8 @@ extension SignalAttachmentError: LocalizedError {
             return NSLocalizedString("ATTACHMENT_ERROR_INVALID_FILE_FORMAT", comment: "Attachment error message for attachments with an invalid file format")
         case .couldNotConvertToMpeg4:
             return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4", comment: "Attachment error message for video attachments which could not be converted to MP4")
+        case .couldNotRemoveMetadata:
+            return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA", comment: "Attachment error message for image attachments in which metadata could not be removed")
         }
     }
 }
@@ -625,8 +628,13 @@ public class SignalAttachment: NSObject {
             }
 
             if isValidOutput {
-                Logger.verbose("\(TAG) Sending raw \(attachment.mimeType)")
-                return attachment
+                if Environment.preferences().isRemoveMetadataEnabled() {
+                    Logger.verbose("\(TAG) Rewriting attachment with metadata removed \(attachment.mimeType)")
+                    return removeImageMetadata(attachment : attachment)
+                } else {
+                    Logger.verbose("\(TAG) Sending raw \(attachment.mimeType)")
+                    return attachment
+                }
             } else {
                 Logger.verbose("\(TAG) Compressing attachment as image/jpeg, \(dataSource.dataLength()) bytes")
                 return compressImageAsJPEG(image: image, attachment: attachment, filename: dataSource.sourceFilename, imageQuality: imageQuality)
@@ -802,6 +810,59 @@ public class SignalAttachment: NSObject {
             return 0.5
         }
     }
+    
+    private class func removeImageMetadata(attachment: SignalAttachment) -> SignalAttachment {
+        
+        guard let source = CGImageSourceCreateWithData(attachment.data as CFData, nil) else {
+            let attachment = SignalAttachment(dataSource : DataSourceValue.emptyDataSource(), dataUTI: attachment.dataUTI)
+            attachment.error = .missingData
+            return attachment
+        }
+        
+        guard let type = CGImageSourceGetType(source) else {
+            let attachment = SignalAttachment(dataSource : DataSourceValue.emptyDataSource(), dataUTI: attachment.dataUTI)
+            attachment.error = .invalidFileFormat
+            return attachment
+        }
+        
+        let count = CGImageSourceGetCount(source)
+        let mutableData = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(mutableData as CFMutableData, type, count, nil) else {
+            attachment.error = .couldNotRemoveMetadata
+            return attachment
+        }
+        
+        let removeMetadataProperties : [String : AnyObject] =
+        [
+            kCGImagePropertyExifDictionary as String : kCFNull,
+            kCGImagePropertyExifAuxDictionary as String : kCFNull,
+            kCGImagePropertyGPSDictionary as String : kCFNull,
+            kCGImagePropertyTIFFDictionary as String : kCFNull,
+            kCGImagePropertyJFIFDictionary as String : kCFNull,
+            kCGImagePropertyPNGDictionary as String : kCFNull,
+            kCGImagePropertyIPTCDictionary as String : kCFNull,
+            kCGImagePropertyMakerAppleDictionary as String : kCFNull
+        ]
+        
+        for index in 0...count-1 {
+            CGImageDestinationAddImageFromSource(destination, source, index, removeMetadataProperties as CFDictionary)
+        }
+        
+        if CGImageDestinationFinalize(destination) {
+            guard let dataSource = DataSourceValue.dataSource(with:mutableData as Data, utiType:attachment.dataUTI) else {
+                attachment.error = .couldNotRemoveMetadata
+                return attachment
+            }
+            
+            let strippedAttachment = SignalAttachment(dataSource : dataSource, dataUTI: attachment.dataUTI)
+            return strippedAttachment
+            
+        } else {
+            Logger.verbose("\(TAG) CGImageDestinationFinalize failed")
+            attachment.error = .couldNotRemoveMetadata
+            return attachment
+        }
+    }
 
     // MARK: Video Attachments
 
@@ -863,6 +924,9 @@ public class SignalAttachment: NSObject {
 
         exportSession.shouldOptimizeForNetworkUse = true
         exportSession.outputFileType = AVFileTypeMPEG4
+        if Environment.preferences().isRemoveMetadataEnabled() {
+            exportSession.metadataItemFilter = AVMetadataItemFilter.forSharing()
+        }
 
         let exportURL = videoTempPath.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")
         exportSession.outputURL = exportURL

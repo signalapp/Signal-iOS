@@ -67,6 +67,15 @@ NS_ASSUME_NONNULL_BEGIN
                                                              target:weakSelf
                                                            selector:@selector(didToggleScreenSecuritySwitch:)]];
     [contents addSection:screenSecuritySection];
+    
+    OWSTableSection *removeMetadataSection = [OWSTableSection new];
+    removeMetadataSection.headerTitle = NSLocalizedString(@"SETTINGS_REMOVE_METADATA_TITLE", @"Remove metadata section header");
+    removeMetadataSection.footerTitle = NSLocalizedString(@"SETTINGS_REMOVE_METADATA_DETAIL", @"Remove metadata section footer");
+    [removeMetadataSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_REMOVE_METADATA", @"Remove metadata table cell label")
+                                                               isOn:[Environment.preferences isRemoveMetadataEnabled]
+                                                             target:weakSelf
+                                                           selector:@selector(didToggleRemoveMetadataSwitch:)]];
+    [contents addSection:removeMetadataSection];
 
     // Allow calls to connect directly vs. using TURN exclusively
     OWSTableSection *callingSection = [OWSTableSection new];
@@ -190,6 +199,13 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL enabled = sender.isOn;
     DDLogInfo(@"%@ toggled screen security: %@", self.logTag, enabled ? @"ON" : @"OFF");
     [Environment.preferences setScreenSecurity:enabled];
+}
+
+- (void)didToggleRemoveMetadataSwitch:(UISwitch *)sender
+{
+    BOOL enabled = sender.isOn;
+    DDLogInfo(@"%@ toggled remove metadata: %@", self.logTag, enabled ? @"ON" : @"OFF");
+    [Environment.preferences setIsRemoveMetadataEnabled:enabled];
 }
 
 - (void)didToggleReadReceiptsSwitch:(UISwitch *)sender
