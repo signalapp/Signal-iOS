@@ -188,16 +188,22 @@ NS_ASSUME_NONNULL_BEGIN
                    backupDirPath:backupDirPath]) {
         return;
     }
-    if (![self copyDirectory:OWSFileSystem.appDocumentDirectoryPath
-                  dstDirName:@"appDocumentDirectoryPath"
-               backupDirPath:backupDirPath]) {
-        return;
-    }
-    if (![self copyDirectory:OWSFileSystem.appSharedDataDirectoryPath
-                  dstDirName:@"appSharedDataDirectoryPath"
-               backupDirPath:backupDirPath]) {
-        return;
-    }
+    // Use a read/write transaction to acquire a file lock on the database files.
+    //
+    // TODO: If we use multiple database files, lock them too.
+    [TSStorageManager.sharedManager.newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            if (![self copyDirectory:OWSFileSystem.appDocumentDirectoryPath
+                          dstDirName:@"appDocumentDirectoryPath"
+                       backupDirPath:backupDirPath]) {
+                return;
+            }
+            if (![self copyDirectory:OWSFileSystem.appSharedDataDirectoryPath
+                          dstDirName:@"appSharedDataDirectoryPath"
+                       backupDirPath:backupDirPath]) {
+                return;
+            }
+        }];
     if (![self zipDirectory:backupDirPath dstFilePath:backupZipPath]) {
         return;
     }
