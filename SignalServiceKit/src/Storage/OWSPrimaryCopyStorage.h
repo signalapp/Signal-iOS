@@ -6,6 +6,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// In the main app, TSStorageManager is backed by the "primary" database and
+// OWSPrimaryCopyStorage is backed by the "primary copy" database.
+//
+// In the SAE, TSStorageManager is backed by the "primary copy" database.
 @interface OWSPrimaryCopyStorage : OWSStorage
 
 - (instancetype)init NS_UNAVAILABLE;
