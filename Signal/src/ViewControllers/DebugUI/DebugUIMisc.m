@@ -3,6 +3,7 @@
 //
 
 #import "DebugUIMisc.h"
+#import "OWSBackup.h"
 #import "OWSCountryMetadata.h"
 #import "OWSTableViewController.h"
 #import "RegistrationViewController.h"
@@ -93,6 +94,10 @@ NS_ASSUME_NONNULL_BEGIN
                                              [DebugUIMisc sendUnencryptedDatabase:thread];
                                          }]];
     }
+    [items addObject:[OWSTableItem itemWithTitle:@"Export Database"
+                                     actionBlock:^{
+                                         [OWSBackup exportDatabase];
+                                     }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
