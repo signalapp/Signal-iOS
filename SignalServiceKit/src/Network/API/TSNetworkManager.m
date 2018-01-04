@@ -3,9 +3,12 @@
 //
 
 #import "TSNetworkManager.h"
+#import "AppContext.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSSignalService.h"
 #import "TSAccountManager.h"
+#import "TSRecipientPrekeyRequest.h"
+#import "TSSubmitMessageRequest.h"
 #import "TSVerifyCodeRequest.h"
 #import <AFNetworking/AFNetworking.h>
 
@@ -56,6 +59,13 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
             failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failureBlock
 {
     DDLogInfo(@"%@ Making request: %@", self.logTag, request);
+    if (!CurrentAppContext().isMainApp) {
+        if (![request isKindOfClass:[TSRecipientPrekeyRequest class]]
+            && ![request isKindOfClass:[TSSubmitMessageRequest class]]) {
+            // The SAE should only make requests directly related to message sending.
+            OWSFail(@"%@ Making request: %@", self.logTag, request);
+        }
+    }
 
     void (^failure)(NSURLSessionDataTask *task, NSError *error) =
         [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock];

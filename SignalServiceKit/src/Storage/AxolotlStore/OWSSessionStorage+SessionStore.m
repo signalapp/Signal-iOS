@@ -8,9 +8,8 @@
 #import <YapDatabase/YapDatabase.h>
 
 NSString *const OWSSessionStorageSessionStoreCollection = @"TSStorageManagerSessionStoreCollection";
-NSString *const OWSSessionStorage_Collection = @"OWSSessionStorage_Collection";
-NSString *const OWSSessionStorage_Key_HasMigratedToSessionStorage
-    = @"OWSSessionStorage_Key_HasMigratedToSessionStorage";
+NSString *const OWSSessionStore_Collection = @"OWSSessionStorage_Collection";
+NSString *const OWSSessionStore_Key_HasMigratedToSessionStorage = @"OWSSessionStorage_Key_HasMigratedToSessionStorage";
 
 void AssertIsOnSessionStoreQueue()
 {
@@ -174,8 +173,8 @@ void AssertIsOnSessionStoreQueue()
 
 - (BOOL)hasMigratedToSessionStorage
 {
-    return [self.dbConnection boolForKey:OWSSessionStorage_Key_HasMigratedToSessionStorage
-                            inCollection:OWSSessionStorage_Collection
+    return [self.dbConnection boolForKey:OWSSessionStore_Key_HasMigratedToSessionStorage
+                            inCollection:OWSSessionStore_Collection
                             defaultValue:NO];
 }
 
@@ -188,69 +187,16 @@ void AssertIsOnSessionStoreQueue()
 
     DDLogInfo(@"%s", __PRETTY_FUNCTION__);
 
-    NSString *tag = @"[OWSSessionStorage (SessionStore)]";
+    [self migrateCollection:OWSSessionStorageSessionStoreCollection
+                fromStorage:storage
+                 valueClass:[NSDictionary class]];
 
-    __block int migratedRecordCount = 0;
-    NSMutableDictionary<NSString *, NSDictionary<NSNumber *, SessionRecord *> *> *sessionRecordMaps =
-        [NSMutableDictionary new];
-
-    // 1. Read from old storage.
-    [storage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction
-            enumerateKeysAndObjectsInCollection:OWSSessionStorageSessionStoreCollection
-                                     usingBlock:^(NSString *_Nonnull recipientId,
-                                         id _Nonnull deviceSessionsObject,
-                                         BOOL *_Nonnull stop) {
-                                         if (![deviceSessionsObject isKindOfClass:[NSDictionary class]]) {
-                                             OWSFail(
-                                                 @"%@ Unexpected type: %@ in collection.", tag, deviceSessionsObject);
-                                             return;
-                                         }
-                                         NSDictionary<NSNumber *, SessionRecord *> *oldDeviceSessions
-                                             = (NSDictionary *)deviceSessionsObject;
-                                         NSMutableDictionary<NSNumber *, SessionRecord *> *newDeviceSessions =
-                                             [NSMutableDictionary new];
-
-                                         DDLogDebug(@"%@     Sessions for recipient: %@", tag, recipientId);
-                                         [oldDeviceSessions enumerateKeysAndObjectsUsingBlock:^(id _Nonnull deviceId,
-                                             id _Nonnull sessionRecordObject,
-                                             BOOL *_Nonnull stop) {
-                                             if (![sessionRecordObject isKindOfClass:[SessionRecord class]]) {
-                                                 OWSFail(@"%@ Unexpected type: %@ in collection.",
-                                                     tag,
-                                                     sessionRecordObject);
-                                                 return;
-                                             }
-                                             SessionRecord *sessionRecord = (SessionRecord *)sessionRecordObject;
-                                             newDeviceSessions[deviceId] = sessionRecord;
-                                             migratedRecordCount++;
-                                         }];
-                                         if (newDeviceSessions.count > 0) {
-                                             sessionRecordMaps[recipientId] = newDeviceSessions;
-                                         }
-                                     }];
-    }];
-
-    // 2. Write to new storage.
+    // Mark migration as complete.
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [sessionRecordMaps enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull recipientId,
-            NSDictionary<NSNumber *, SessionRecord *> *sessionRecordMap,
-            BOOL *_Nonnull stop) {
-            [transaction setObject:sessionRecordMap
-                            forKey:recipientId
-                      inCollection:OWSSessionStorageSessionStoreCollection];
-        }];
-
-        // 3. Mark migration as complete.
         [transaction setObject:@(YES)
-                        forKey:OWSSessionStorage_Key_HasMigratedToSessionStorage
-                  inCollection:OWSSessionStorage_Collection];
+                        forKey:OWSSessionStore_Key_HasMigratedToSessionStorage
+                  inCollection:OWSSessionStore_Collection];
     }];
-
-    DDLogInfo(@"%s migrated %d records for %zd recipients.",
-        __PRETTY_FUNCTION__,
-        migratedRecordCount,
-        sessionRecordMaps.count);
 }
 
 #pragma mark - debug

@@ -18,6 +18,7 @@ extern const NSUInteger kIdentityKeyLength;
 
 @class OWSRecipientIdentity;
 @class OWSSignalServiceProtosVerified;
+@class OWSStorage;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSIdentityManager : NSObject <IdentityKeyStore>
@@ -48,6 +49,8 @@ extern const NSUInteger kIdentityKeyLength;
 
 // This method can be called from any thread.
 - (void)processIncomingSyncMessage:(OWSSignalServiceProtosVerified *)verified;
+
+- (void)migrateFromStorageIfNecessary:(OWSStorage *)storage;
 
 @end
 
