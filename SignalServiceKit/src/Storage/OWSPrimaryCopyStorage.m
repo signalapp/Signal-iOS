@@ -46,13 +46,6 @@ NSString *const OWSPrimaryCopyStorageExceptionName_CouldNotCreateDatabaseDirecto
     return self;
 }
 
-//- (instancetype)initStorage
-//{
-//    self = [super initStorage];
-//
-//    return self;
-//}
-
 - (StorageType)storageType
 {
     return StorageType_PrimaryCopy;
