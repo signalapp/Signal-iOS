@@ -214,6 +214,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(backupDirPath.length > 0);
 
     NSString *filePath = [backupDirPath stringByAppendingPathComponent:fileName];
+
+    DDLogVerbose(@"%@ writeData: %@", self.logTag, filePath);
+
     NSError *error;
     BOOL success = [data writeToFile:filePath options:NSDataWritingAtomic error:&error];
     if (!success || error) {
@@ -231,12 +234,32 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *dstDirPath = [backupDirPath stringByAppendingPathComponent:dstDirName];
 
+    DDLogVerbose(@"%@ copyDirectory: %@ -> %@", self.logTag, srcDirPath, dstDirPath);
+
+    // We "manually" copy the "root" items in the src directory.
+    // Can't just use [NSFileManager copyItemAtPath:...] because the shared data container
+    // contains files that the app is not allowed to access.
+    [OWSFileSystem ensureDirectoryExists:dstDirPath];
     NSError *error = nil;
-    BOOL success = [[NSFileManager defaultManager] copyItemAtPath:srcDirPath toPath:dstDirPath error:&error];
-    if (!success || error) {
-        OWSFail(@"%@ failed to copy directory: %@, %@", self.logTag, dstDirName, error);
+    NSArray<NSString *> *fileNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:srcDirPath error:&error];
+    if (error) {
+        OWSFail(@"%@ failed to list directory: %@, %@", self.logTag, srcDirPath, error);
         return NO;
     }
+    for (NSString *fileName in fileNames) {
+        NSString *srcFilePath = [srcDirPath stringByAppendingPathComponent:fileName];
+        NSString *dstFilePath = [dstDirPath stringByAppendingPathComponent:fileName];
+        if ([fileName hasPrefix:@"."]) {
+            DDLogVerbose(@"%@ ignoring: %@", self.logTag, srcFilePath);
+            continue;
+        }
+        BOOL success = [[NSFileManager defaultManager] copyItemAtPath:srcFilePath toPath:dstFilePath error:&error];
+        if (!success || error) {
+            OWSFail(@"%@ failed to copy directory item: %@, %@", self.logTag, srcFilePath, error);
+            return NO;
+        }
+    }
+
     return YES;
 }
 
@@ -247,6 +270,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(userDefaults);
     OWSAssert(fileName.length > 0);
     OWSAssert(backupDirPath.length > 0);
+
+    DDLogVerbose(@"%@ writeUserDefaults: %@", self.logTag, fileName);
 
     NSDictionary<NSString *, id> *dictionary = userDefaults.dictionaryRepresentation;
     if (!dictionary) {
