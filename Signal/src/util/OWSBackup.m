@@ -7,6 +7,7 @@
 #import "Signal-Swift.h"
 #import "zlib.h"
 #import <SSZipArchive/SSZipArchive.h>
+#import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/TSStorageManager.h>
@@ -24,7 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSBackup ()
 
 @property (nonatomic) NSString *password;
-@property (nonatomic) NSString *rootDirPath;
+@property (nonatomic) NSString *backupDirPath;
+@property (nonatomic) NSString *backupZipPath;
 @property (atomic) BOOL cancelled;
 
 @end
@@ -35,21 +37,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dealloc
 {
-    OWSAssert(self.rootDirPath.length > 0);
+    OWSAssert(self.backupDirPath.length > 0);
 
-    DDLogInfo(@"%@ Cleaning up: %@", self.logTag, self.rootDirPath);
-    [OWSFileSystem deleteFileIfExists:self.rootDirPath];
+    DDLogInfo(@"%@ Cleaning up: %@", self.logTag, self.backupDirPath);
+    [OWSFileSystem deleteFileIfExists:self.backupDirPath];
 }
 
-+ (void)exportDatabase
++ (void)exportBackup
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[OWSBackup new] showBackupUI];
+        [[OWSBackup new] exportBackup];
     });
 }
 
-- (void)showBackupUI
+- (void)exportBackup
 {
+    OWSAssertIsOnMainThread();
+
     // TODO: Should the user pick a password?
     NSString *password = [NSUUID UUID].UUIDString;
     self.password = password;
@@ -57,15 +61,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self showExportProgressUI:^(UIAlertController *exportProgressAlert) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self exportDatabase];
+            [self exportToFilesAndZip];
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                [exportProgressAlert
-                    dismissViewControllerAnimated:YES
-                                       completion:^{
-                                           [self showExportCompleteUI:^(UIAlertController *exportCompleteAlert){
-                                           }];
-                                       }];
+                [exportProgressAlert dismissViewControllerAnimated:YES
+                                                        completion:^{
+                                                            [self showExportCompleteUI:^{
+                                                                [self showShareUI];
+                                                            }];
+                                                        }];
             });
         });
     }];
@@ -73,18 +77,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showExportProgressUI:(void (^_Nonnull)(UIAlertController *))completion
 {
+    OWSAssertIsOnMainThread();
     OWSAssert(completion);
-    OWSAssert(self.password.length > 0);
 
     NSString *title = NSLocalizedString(
         @"BACKUP_EXPORT_IN_PROGRESS_ALERT_TITLE", @"Title for the 'backup export in progress' alert.");
-    NSString *message = [NSString
-        stringWithFormat:
-            NSLocalizedString(@"BACKUP_EXPORT_IN_PROGRESS_MESSAGE_ALERT_FORMAT",
-                @"Format for message for the 'backup export in progress' alert. Embeds: {{the backup password}}"),
-        self.password];
     UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleAlert];
 
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
                                                            style:UIAlertActionStyleCancel
@@ -93,16 +92,23 @@ NS_ASSUME_NONNULL_BEGIN
                                                          }];
     [alert addAction:cancelAction];
 
+    __weak UIAlertController *weakAlert = alert;
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
     [fromViewController presentViewController:alert
                                      animated:YES
                                    completion:^(void) {
-                                       completion(alert);
+                                       UIAlertController *strongAlert = weakAlert;
+                                       if (!strongAlert) {
+                                           OWSFail(@"%@ missing alert.", self.logTag);
+                                           return;
+                                       }
+                                       completion(strongAlert);
                                    }];
 }
 
-- (void)showExportCompleteUI:(void (^_Nonnull)(UIAlertController *))completion
+- (void)showExportCompleteUI:(void (^_Nonnull)(void))completion
 {
+    OWSAssertIsOnMainThread();
     OWSAssert(completion);
     OWSAssert(self.password.length > 0);
 
@@ -111,34 +117,50 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *message = [NSString
         stringWithFormat:
             NSLocalizedString(@"BACKUP_EXPORT_COMPLETE_ALERT_MESSAGE_FORMAT",
-                @"Format for message for the 'backup export complete' alert. Embeds: {{the backup password}}"),
+                @"Format for message for the 'backup export complete' alert. Embeds: {{the backup password}}."),
         self.password];
     UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
 
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:[CommonStrings dismissButton]
-                                                            style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction *_Nonnull action) {
-                                                              self.cancelled = YES;
-                                                          }];
-    [alert addAction:dismissAction];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", comment
+                                                                               : nil)
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction *_Nonnull action) {
+                                                         completion();
+                                                     }];
+    [alert addAction:okAction];
 
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:alert
-                                     animated:YES
-                                   completion:^(void) {
-                                       completion(alert);
-                                   }];
+    [fromViewController presentViewController:alert animated:YES completion:nil];
 }
 
-- (void)exportDatabase
+- (void)showShareUI
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(self.backupZipPath.length > 0);
+
+    [AttachmentSharing showShareUIForURL:[NSURL fileURLWithPath:self.backupZipPath]];
+}
+
+- (void)exportToFilesAndZip
 {
     NSString *temporaryDirectory = NSTemporaryDirectory();
-    NSString *backupName = [NSUUID UUID].UUIDString;
-    NSString *rootDirPath = [temporaryDirectory stringByAppendingPathComponent:backupName];
-    self.rootDirPath = rootDirPath;
+    NSString *rootDirPath = [temporaryDirectory stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
     NSString *backupDirPath = [rootDirPath stringByAppendingPathComponent:@"Contents"];
-    NSString *backupZipPath = [rootDirPath stringByAppendingPathComponent:[backupName stringByAppendingString:@".zip"]];
+
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    [dateFormatter setLocale:[NSLocale currentLocale]];
+    [dateFormatter setDateFormat:@"yyyy.MM.dd hh.mm.ss"];
+    NSString *backupDateTime = [dateFormatter stringFromDate:[NSDate new]];
+    NSString *backupName =
+        [NSString stringWithFormat:NSLocalizedString(@"BACKUP_FILENAME_FORMAT",
+                                       @"Format for backup filenames. Embeds: {{the date and time of the backup}}. "
+                                       @"Should not include characters like slash (/ or \\) or colon (:)."),
+                  backupDateTime];
+    NSString *backupZipPath =
+        [rootDirPath stringByAppendingPathComponent:[backupName stringByAppendingString:@".signalbackup"]];
+    self.backupDirPath = backupDirPath;
+    self.backupZipPath = backupZipPath;
     DDLogInfo(@"%@ rootDirPath: %@", self.logTag, rootDirPath);
     DDLogInfo(@"%@ backupDirPath: %@", self.logTag, backupDirPath);
     DDLogInfo(@"%@ backupZipPath: %@", self.logTag, backupZipPath);
@@ -177,6 +199,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [OWSFileSystem protectFolderAtPath:backupZipPath];
+
+    [OWSFileSystem deleteFileIfExists:self.backupDirPath];
 }
 
 - (BOOL)writeData:(NSData *)data fileName:(NSString *)fileName backupDirPath:(NSString *)backupDirPath

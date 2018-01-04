@@ -94,9 +94,9 @@ NS_ASSUME_NONNULL_BEGIN
                                              [DebugUIMisc sendUnencryptedDatabase:thread];
                                          }]];
     }
-    [items addObject:[OWSTableItem itemWithTitle:@"Export Database"
+    [items addObject:[OWSTableItem itemWithTitle:@"Export Backup"
                                      actionBlock:^{
-                                         [OWSBackup exportDatabase];
+                                         [OWSBackup exportBackup];
                                      }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];

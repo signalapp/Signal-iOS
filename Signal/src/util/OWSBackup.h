@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSBackup : NSObject
 
-+ (void)exportDatabase;
++ (void)exportBackup;
 
 @end
 

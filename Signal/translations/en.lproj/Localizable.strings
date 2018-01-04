@@ -145,6 +145,18 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
 
+/* Format for message for the 'backup export complete' alert. Embeds: {{the backup password}} */
+"BACKUP_EXPORT_COMPLETE_ALERT_MESSAGE_FORMAT" = "Your backup password is: %@. Make sure to keep a copy of this password or you won't be able to restore from this backup.";
+
+/* Title for the 'backup export complete' alert. */
+"BACKUP_EXPORT_COMPLETE_ALERT_TITLE" = "Backup Complete";
+
+/* Title for the 'backup export in progress' alert. */
+"BACKUP_EXPORT_IN_PROGRESS_ALERT_TITLE" = "Exporting Backup...";
+
+/* Format for backup filenames. Embeds: {{the date and time of the backup}} */
+"BACKUP_FILENAME_FORMAT" = "Signal Backup %@";
+
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
 
