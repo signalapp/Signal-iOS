@@ -27,12 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithDatabase:(YapDatabase *)database
                         delegate:(id<OWSDatabaseConnectionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
-#pragma mark - "Safe" Read Write
-
-- (void)safeAsyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
-                    completionQueue:(nullable dispatch_queue_t)completionQueue
-                    completionBlock:(nullable dispatch_block_t)completionBlock;
-
 @end
 
 NS_ASSUME_NONNULL_END

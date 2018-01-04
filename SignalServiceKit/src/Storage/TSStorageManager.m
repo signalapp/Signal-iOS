@@ -154,15 +154,14 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
 
     // Block until all async registrations are complete.
     OWSDatabaseConnection *dbConnection = (OWSDatabaseConnection *)self.newDatabaseConnection;
-    [dbConnection safeAsyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        OWSAssert(!self.areAsyncRegistrationsComplete);
+    [dbConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue()
+                                       completionBlock:^{
+                                           OWSAssert(!self.areAsyncRegistrationsComplete);
 
-        self.areAsyncRegistrationsComplete = YES;
+                                           self.areAsyncRegistrationsComplete = YES;
 
-        completion();
-    }
-                              completionQueue:NULL
-                              completionBlock:nil];
+                                           completion();
+                                       }];
 }
 
 + (void)protectFiles

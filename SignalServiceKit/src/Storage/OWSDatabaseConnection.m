@@ -138,35 +138,6 @@ NS_ASSUME_NONNULL_BEGIN
                    }];
 }
 
-#pragma mark - "Safe" Read Write
-
-- (void)safeAsyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
-                    completionQueue:(nullable dispatch_queue_t)completionQueue
-                    completionBlock:(nullable dispatch_block_t)completionBlock
-{
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-#ifdef DEBUG
-    if (!CurrentAppContext().isMainApp) {
-        DDLogInfo(@"SAE is writing to database.");
-    }
-#endif
-
-    // "Safe" read/write transactions promise not to write, so treat them
-    // like a read transaction from the POV of the delegate.
-    [delegate readTransactionWillBegin];
-    [super asyncReadWriteWithBlock:block
-                   completionQueue:completionQueue
-                   completionBlock:^{
-                       if (completionBlock) {
-                           completionBlock();
-                       }
-                       [delegate readTransactionDidComplete];
-                   }];
-}
-
 @end
 
 NS_ASSUME_NONNULL_END
