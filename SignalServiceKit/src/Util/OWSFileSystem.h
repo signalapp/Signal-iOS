@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteFile:(NSString *)filePath;
 
++ (void)deleteFileIfExists:(NSString *)filePath;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -1,8 +1,8 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <YapDatabase/YapDatabaseConnection.h>
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,6 +14,10 @@ typedef NS_ENUM(NSUInteger, StorageType) {
     StorageType_Unknown,
     StorageType_Primary,
     StorageType_Session,
+    // The main app uses this to maintain a slightly stale copy of the primary
+    // storage for the SAE.
+    // The SAE uses this as their primary.
+    StorageType_PrimaryCopy,
 };
 
 @interface OWSStorage : NSObject
@@ -26,6 +30,9 @@ typedef NS_ENUM(NSUInteger, StorageType) {
 // Returns YES if _ALL_ storage classes have completed both their
 // sync _AND_ async view registrations.
 + (BOOL)isStorageReady;
+
+// This object can be used to filter database notifications.
+@property (nonatomic, readonly, nullable) id dbNotificationObject;
 
 /**
  * The safeBlockingMigrationsBlock block will
@@ -49,6 +56,13 @@ typedef NS_ENUM(NSUInteger, StorageType) {
                       withName:(NSString *)extensionName
                completionBlock:(nullable void (^)(BOOL ready))completionBlock;
 - (nullable id)registeredExtension:(NSString *)extensionName;
+
+- (unsigned long long)databaseFileSize;
+
++ (void)copyCollection:(NSString *)collection
+       srcDBConnection:(YapDatabaseConnection *)srcDBConnection
+       dstDBConnection:(YapDatabaseConnection *)dstDBConnection
+            valueClass:(Class)valueClass;
 
 #pragma mark - Password
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -82,7 +82,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         NotificationCenter.default.addObserver(self,
             selector: #selector(yapDatabaseModified),
             name: NSNotification.Name.YapDatabaseModified,
-            object: nil)
+            object: TSStorageManager.shared().dbNotificationObject)
     }
 
     override func viewWillAppear(_ animated: Bool) {

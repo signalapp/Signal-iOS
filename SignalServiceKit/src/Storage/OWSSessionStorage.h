@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSStorage.h"
@@ -19,13 +19,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (YapDatabaseConnection *)dbConnection;
 + (YapDatabaseConnection *)dbConnection;
 
++ (NSString *)databaseDirPath;
 + (NSString *)databaseFilePath;
 + (NSString *)databaseFilePath_SHM;
 + (NSString *)databaseFilePath_WAL;
 
 #pragma mark - Migration
 
-- (void)migrateCollection:(NSString *)collection fromStorage:(OWSStorage *)storage valueClass:(Class)valueClass;
+- (void)copyCollection:(NSString *)collection fromStorage:(OWSStorage *)storage valueClass:(Class)valueClass;
 
 @end
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSStorage.h"
@@ -10,6 +10,7 @@
 #import "OWSDatabaseConnection.h"
 #import "OWSFileSystem.h"
 #import "OWSIdentityManager.h"
+#import "OWSPrimaryCopyStorage.h"
 #import "OWSSessionStorage+SessionStore.h"
 #import "OWSSessionStorage.h"
 #import "OWSStorage+Subclass.h"
@@ -161,19 +162,6 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 {
     self = [super init];
 
-    if (self) {
-        [self openDatabase];
-
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationDidEnterBackground:)
-                                                     name:OWSApplicationDidEnterBackgroundNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(extensionHostWillEnterForeground:)
-                                                     name:OWSApplicationWillEnterForegroundNotification
-                                                   object:nil];
-    }
-
     return self;
 }
 
@@ -182,11 +170,26 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidEnterBackground:)
+                                                 name:OWSApplicationDidEnterBackgroundNotification
+                                               object:nil];
+}
+
 - (StorageType)storageType
 {
     OWS_ABSTRACT_METHOD();
 
     return StorageType_Unknown;
+}
+
+- (nullable id)dbNotificationObject
+{
+    OWSAssert(self.database);
+
+    return self.database;
 }
 
 - (void)openDatabase
@@ -203,7 +206,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
 
         // Try to reset app by deleting all databases.
-        [OWSStorage deleteDatabaseFiles];
+        [self deleteDatabaseFile];
 
         if (![self tryToLoadDatabase]) {
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
@@ -391,17 +394,20 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 
 + (void)deleteDatabaseFiles
 {
-    [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath]];
-    [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath_SHM]];
-    [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath_WAL]];
-    [OWSFileSystem deleteFile:[OWSSessionStorage databaseFilePath]];
-    [OWSFileSystem deleteFile:[OWSSessionStorage databaseFilePath_SHM]];
-    [OWSFileSystem deleteFile:[OWSSessionStorage databaseFilePath_WAL]];
+    [OWSFileSystem deleteFileIfExists:[TSStorageManager databaseFilePath]];
+    [OWSFileSystem deleteFileIfExists:[TSStorageManager databaseFilePath_SHM]];
+    [OWSFileSystem deleteFileIfExists:[TSStorageManager databaseFilePath_WAL]];
+    [OWSFileSystem deleteFileIfExists:[OWSPrimaryCopyStorage databaseCopiesDirPath]];
+    [OWSFileSystem deleteFileIfExists:[OWSSessionStorage databaseFilePath]];
+    [OWSFileSystem deleteFileIfExists:[OWSSessionStorage databaseFilePath_SHM]];
+    [OWSFileSystem deleteFileIfExists:[OWSSessionStorage databaseFilePath_WAL]];
 }
 
 - (void)deleteDatabaseFile
 {
-    [OWSFileSystem deleteFile:[self databaseFilePath]];
+    [OWSFileSystem deleteFileIfExists:[self databaseFilePath]];
+    [OWSFileSystem deleteFileIfExists:[self databaseFilePath_SHM]];
+    [OWSFileSystem deleteFileIfExists:[self databaseFilePath_WAL]];
 }
 
 - (void)resetStorage
@@ -432,6 +438,20 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 #pragma mark - Password
 
 - (NSString *)databaseFilePath
+{
+    OWS_ABSTRACT_METHOD();
+
+    return @"";
+}
+
+- (NSString *)databaseFilePath_SHM
+{
+    OWS_ABSTRACT_METHOD();
+
+    return @"";
+}
+
+- (NSString *)databaseFilePath_WAL
 {
     OWS_ABSTRACT_METHOD();
 
@@ -662,18 +682,55 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     }
 }
 
-- (void)extensionHostDidEnterBackground:(NSNotification *)notification
+- (unsigned long long)databaseFileSize
 {
-    [self closeDatabaseIfNecessary];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *_Nullable error;
+    unsigned long long fileSize =
+        [[fileManager attributesOfItemAtPath:self.databaseFilePath error:&error][NSFileSize] unsignedLongLongValue];
+    if (error) {
+        DDLogError(@"%@ Couldn't fetch database file size: %@", self.logTag, error);
+    } else {
+        DDLogInfo(@"%@ Database file size: %llu", self.logTag, fileSize);
+    }
+    return fileSize;
 }
 
-- (void)extensionHostWillEnterForeground:(NSNotification *)notification
++ (void)copyCollection:(NSString *)collection
+       srcDBConnection:(YapDatabaseConnection *)srcDBConnection
+       dstDBConnection:(YapDatabaseConnection *)dstDBConnection
+            valueClass:(Class)valueClass
 {
-    OWSAssertIsOnMainThread();
+    OWSAssert(collection.length > 0);
+    OWSAssert(srcDBConnection);
+    OWSAssert(dstDBConnection);
 
-    for (OWSStorage *storage in OWSStorage.allStorages) {
-        [storage applicationWillEnterForeground];
-    }
+    NSMutableDictionary<NSString *, id> *collectionContents = [NSMutableDictionary new];
+
+    // 1. Read from old storage.
+    [srcDBConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [transaction
+            enumerateKeysAndObjectsInCollection:collection
+                                     usingBlock:^(NSString *_Nonnull key, id _Nonnull value, BOOL *_Nonnull stop) {
+                                         if (![value isKindOfClass:valueClass]) {
+                                             OWSFail(
+                                                 @"Unexpected type: %@ in collection: %@.", [value class], collection);
+                                             return;
+                                         }
+
+                                         collectionContents[key] = value;
+                                     }];
+    }];
+
+    // 2. Write to new storage.
+    [dstDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        OWSAssert([transaction numberOfKeysInCollection:collection] == 0);
+        [collectionContents enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key, id value, BOOL *_Nonnull stop) {
+            [transaction setObject:value forKey:key inCollection:collection];
+        }];
+    }];
+
+    DDLogVerbose(@"%@ copied %zd items in %@.", self.logTag, (unsigned long)collectionContents.count, collection);
 }
 
 @end

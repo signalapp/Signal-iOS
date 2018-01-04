@@ -124,6 +124,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
++ (void)deleteFileIfExists:(NSString *)filePath
+{
+    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        [self deleteFile:filePath];
+    }
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
