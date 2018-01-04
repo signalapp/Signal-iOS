@@ -4,8 +4,10 @@
 
 #import "OWSBackup.h"
 #import "NSUserDefaults+OWS.h"
+#import "Signal-Swift.h"
 #import "zlib.h"
 #import <SSZipArchive/SSZipArchive.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/TSStorageManager.h>
 
@@ -21,7 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSBackup ()
 
+@property (nonatomic) NSString *password;
 @property (nonatomic) NSString *rootDirPath;
+@property (atomic) BOOL cancelled;
 
 @end
 
@@ -34,14 +38,97 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.rootDirPath.length > 0);
 
     DDLogInfo(@"%@ Cleaning up: %@", self.logTag, self.rootDirPath);
-    [OWSFileSystem deleteFile:self.rootDirPath];
+    [OWSFileSystem deleteFileIfExists:self.rootDirPath];
 }
 
 + (void)exportDatabase
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [[OWSBackup new] exportDatabase];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[OWSBackup new] showBackupUI];
     });
+}
+
+- (void)showBackupUI
+{
+    // TODO: Should the user pick a password?
+    NSString *password = [NSUUID UUID].UUIDString;
+    self.password = password;
+    DDLogVerbose(@"%@ backup export complete; password: %@", self.logTag, password);
+
+    [self showExportProgressUI:^(UIAlertController *exportProgressAlert) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self exportDatabase];
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [exportProgressAlert
+                    dismissViewControllerAnimated:YES
+                                       completion:^{
+                                           [self showExportCompleteUI:^(UIAlertController *exportCompleteAlert){
+                                           }];
+                                       }];
+            });
+        });
+    }];
+}
+
+- (void)showExportProgressUI:(void (^_Nonnull)(UIAlertController *))completion
+{
+    OWSAssert(completion);
+    OWSAssert(self.password.length > 0);
+
+    NSString *title = NSLocalizedString(
+        @"BACKUP_EXPORT_IN_PROGRESS_ALERT_TITLE", @"Title for the 'backup export in progress' alert.");
+    NSString *message = [NSString
+        stringWithFormat:
+            NSLocalizedString(@"BACKUP_EXPORT_IN_PROGRESS_MESSAGE_ALERT_FORMAT",
+                @"Format for message for the 'backup export in progress' alert. Embeds: {{the backup password}}"),
+        self.password];
+    UIAlertController *alert =
+        [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction *_Nonnull action) {
+                                                             self.cancelled = YES;
+                                                         }];
+    [alert addAction:cancelAction];
+
+    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
+    [fromViewController presentViewController:alert
+                                     animated:YES
+                                   completion:^(void) {
+                                       completion(alert);
+                                   }];
+}
+
+- (void)showExportCompleteUI:(void (^_Nonnull)(UIAlertController *))completion
+{
+    OWSAssert(completion);
+    OWSAssert(self.password.length > 0);
+
+    NSString *title
+        = NSLocalizedString(@"BACKUP_EXPORT_COMPLETE_ALERT_TITLE", @"Title for the 'backup export complete' alert.");
+    NSString *message = [NSString
+        stringWithFormat:
+            NSLocalizedString(@"BACKUP_EXPORT_COMPLETE_ALERT_MESSAGE_FORMAT",
+                @"Format for message for the 'backup export complete' alert. Embeds: {{the backup password}}"),
+        self.password];
+    UIAlertController *alert =
+        [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:[CommonStrings dismissButton]
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *_Nonnull action) {
+                                                              self.cancelled = YES;
+                                                          }];
+    [alert addAction:dismissAction];
+
+    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
+    [fromViewController presentViewController:alert
+                                     animated:YES
+                                   completion:^(void) {
+                                       completion(alert);
+                                   }];
 }
 
 - (void)exportDatabase
@@ -151,15 +238,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(srcDirPath.length > 0);
     OWSAssert(dstFilePath.length > 0);
-
-    // TODO:
-    NSString *password = [NSUUID UUID].UUIDString;
+    OWSAssert(self.password.length > 0);
 
     BOOL success = [SSZipArchive createZipFileAtPath:dstFilePath
                              withContentsOfDirectory:srcDirPath
                                  keepParentDirectory:NO
                                     compressionLevel:Z_DEFAULT_COMPRESSION
-                                            password:password
+                                            password:self.password
                                                  AES:YES
                                      progressHandler:^(NSUInteger entryNumber, NSUInteger total) {
                                          DDLogVerbose(@"%@ Zip progress: %zd / %zd = %f",
@@ -185,45 +270,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     return YES;
 }
-
-//- (BOOL)zipDirectory:(NSString *)srcDirPath
-//      rootSrcDirPath:(NSString *)rootSrcDirPath
-//         zipFile:(OZZipFile *)zipFile
-//{
-//    OWSAssert(srcDirPath.length > 0);
-//    OWSAssert(rootSrcDirPath.length > 0);
-//    OWSAssert(zipFile);
-//
-//    NSFileManager *fileManager = [NSFileManager defaultManager] ;
-//    NSError *error;
-//    NSArray <NSString *> *filenames =[fileManager contentsOfDirectoryAtPath:srcDirPath error:&error];
-//    if (error) {
-//        OWSFail(@"%@ failed to get directory contents: %@", self.logTag, error);
-//        return NO;
-//    }
-//    for (NSString *fileName in filenames) {
-//
-//    }
-//
-//    //    OZZipWriteStream *stream= [zipFile writeFileInZipWithName:@"abc.txt"
-//    //                                             compressionLevel:OZZipCompressionLevelBest];
-//    //
-//    //    [stream writeData:abcData];
-//    //    [stream finishedWriting];}
-//    //
-//    // NSData *fileData= // Your file data
-//    // uint32_t crc= [fileData crc32];
-//    //
-//    // OZZipWriteStream *stream= [zipFile writeFileInZipWithName:@"abc.txt"
-//    //                                         compressionLevel:OZZipCompressionLevelBest
-//    //                                                 password:@"password"
-//    //                                                    crc32:crc];
-//    //
-//    //[stream writeData:fileData];
-//    [stream finishedWriting];
-//
-//    return YES;
-//}
 
 @end
 
