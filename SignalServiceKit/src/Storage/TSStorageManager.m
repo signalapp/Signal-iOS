@@ -104,15 +104,6 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
         _dbReadConnection = self.newDatabaseConnection;
         _dbReadWriteConnection = self.newDatabaseConnection;
 
-        // TODO: Audit all writes to primary storage from SAE.
-        //#if DEBUG
-        //        if (!CurrentAppContext().isMainApp) {
-        //            // In the SAE, the app should only read from the primary copy database.
-        //            self.dbReadConnection.permittedTransactions = YDB_AnyReadTransaction;
-        //            self.dbReadWriteConnection.permittedTransactions = YDB_AnyReadTransaction;
-        //        }
-        //#endif
-
         OWSSingletonAssert();
     }
 
@@ -300,7 +291,6 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 #pragma mark - Primary Copy
 
-
 // To avoid the 0xdead10cc crashes (iOS app can't retain file lock
 // on files in shared data container while suspended), the main app
 // backs up its primary database to the "backup" database in the
@@ -480,21 +470,6 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
         }
     });
 }
-
-// TODO: Audit all writes to the primary storage from the SAE.
-//#pragma mark - OWSDatabaseConnectionDelegate
-//
-//- (void)readWriteTransactionWillBegin
-//{
-//    if (!CurrentAppContext().isMainApp) {
-//        OWSFail(@"%@ Should not write to primary database from SAE.", self.logTag);
-//
-//        [NSException raise:@"OWSStorageExceptionName_UnsafeWriteToBackupDB"
-//                    format:@"Should not write to primary database from SAE."];
-//    } else {
-//        [super readWriteTransactionWillBegin];
-//    }
-//}
 
 @end
 
