@@ -55,6 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     // TODO: Should the user pick a password?
+    //       If not, should probably generate something more user-friendly,
+    //       e.g. case-insensitive set of hexadecimal?
     NSString *password = [NSUUID UUID].UUIDString;
     self.password = password;
     DDLogVerbose(@"%@ backup export complete; password: %@", self.logTag, password);
@@ -112,6 +114,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(completion);
     OWSAssert(self.password.length > 0);
 
+    // TODO: We probably want to offer an option that lets users copy
+    // the password to the pasteboard.
     NSString *title
         = NSLocalizedString(@"BACKUP_EXPORT_COMPLETE_ALERT_TITLE", @"Title for the 'backup export complete' alert.");
     NSString *message = [NSString
