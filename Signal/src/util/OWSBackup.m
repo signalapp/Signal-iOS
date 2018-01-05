@@ -7,7 +7,6 @@
 #import "Signal-Swift.h"
 #import "zlib.h"
 #import <SSZipArchive/SSZipArchive.h>
-#import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/TSStorageManager.h>
@@ -24,10 +23,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSBackup ()
 
-@property (nonatomic) NSString *password;
+@property (nonatomic, nullable) TSThread *currentThread;
+
+@property (nonatomic, nullable) NSString *backupPassword;
+
 @property (nonatomic) NSString *backupDirPath;
 @property (nonatomic) NSString *backupZipPath;
-@property (atomic) BOOL cancelled;
 
 @end
 
@@ -43,107 +44,58 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSFileSystem deleteFileIfExists:self.backupDirPath];
 }
 
-+ (void)exportBackup
+- (void)setBackupState:(OWSBackupState)backupState
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[OWSBackup new] exportBackup];
-    });
+    _backupState = backupState;
+
+    [self.delegate backupStateDidChange];
 }
 
-- (void)exportBackup
+- (void)cancel
+{
+    self.backupState = OWSBackupState_Cancelled;
+}
+
+- (BOOL)isCancelled
+{
+    return self.backupState == OWSBackupState_Cancelled;
+}
+
+- (void)exportBackup:(nullable TSThread *)currentThread skipPassword:(BOOL)skipPassword
 {
     OWSAssertIsOnMainThread();
 
-    // TODO: Should the user pick a password?
-    //       If not, should probably generate something more user-friendly,
-    //       e.g. case-insensitive set of hexadecimal?
-    NSString *password = [NSUUID UUID].UUIDString;
-    self.password = password;
-    DDLogVerbose(@"%@ backup export complete; password: %@", self.logTag, password);
+    self.currentThread = currentThread;
+    self.backupState = OWSBackupState_InProgress;
 
-    [self showExportProgressUI:^(UIAlertController *exportProgressAlert) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self exportToFilesAndZip];
+    if (skipPassword) {
+        DDLogVerbose(@"%@ backup export without password", self.logTag);
+    } else {
+        // TODO: Should the user pick a password?
+        //       If not, should probably generate something more user-friendly,
+        //       e.g. case-insensitive set of hexadecimal?
+        NSString *backupPassword = [NSUUID UUID].UUIDString;
+        self.backupPassword = backupPassword;
+        DDLogVerbose(@"%@ backup export with password: %@", self.logTag, backupPassword);
+    }
 
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [exportProgressAlert dismissViewControllerAnimated:YES
-                                                        completion:^{
-                                                            [self showExportCompleteUI:^{
-                                                                [self showShareUI];
-                                                            }];
-                                                        }];
-            });
+    [self startExport];
+}
+
+- (void)startExport
+{
+    OWSAssertIsOnMainThread();
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self exportToFilesAndZip];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (!self.isCancelled) {
+                self.backupState = OWSBackupState_Complete;
+            }
+            [self.delegate backupStateDidChange];
         });
-    }];
-}
-
-- (void)showExportProgressUI:(void (^_Nonnull)(UIAlertController *))completion
-{
-    OWSAssertIsOnMainThread();
-    OWSAssert(completion);
-
-    NSString *title = NSLocalizedString(
-        @"BACKUP_EXPORT_IN_PROGRESS_ALERT_TITLE", @"Title for the 'backup export in progress' alert.");
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleAlert];
-
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:[CommonStrings cancelButton]
-                                                           style:UIAlertActionStyleCancel
-                                                         handler:^(UIAlertAction *_Nonnull action) {
-                                                             self.cancelled = YES;
-                                                         }];
-    [alert addAction:cancelAction];
-
-    __weak UIAlertController *weakAlert = alert;
-    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:alert
-                                     animated:YES
-                                   completion:^(void) {
-                                       UIAlertController *strongAlert = weakAlert;
-                                       if (!strongAlert) {
-                                           OWSFail(@"%@ missing alert.", self.logTag);
-                                           return;
-                                       }
-                                       completion(strongAlert);
-                                   }];
-}
-
-- (void)showExportCompleteUI:(void (^_Nonnull)(void))completion
-{
-    OWSAssertIsOnMainThread();
-    OWSAssert(completion);
-    OWSAssert(self.password.length > 0);
-
-    // TODO: We probably want to offer an option that lets users copy
-    // the password to the pasteboard.
-    NSString *title
-        = NSLocalizedString(@"BACKUP_EXPORT_COMPLETE_ALERT_TITLE", @"Title for the 'backup export complete' alert.");
-    NSString *message = [NSString
-        stringWithFormat:
-            NSLocalizedString(@"BACKUP_EXPORT_COMPLETE_ALERT_MESSAGE_FORMAT",
-                @"Format for message for the 'backup export complete' alert. Embeds: {{the backup password}}."),
-        self.password];
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-
-    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", comment
-                                                                               : nil)
-                                                       style:UIAlertActionStyleDefault
-                                                     handler:^(UIAlertAction *_Nonnull action) {
-                                                         completion();
-                                                     }];
-    [alert addAction:okAction];
-
-    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:alert animated:YES completion:nil];
-}
-
-- (void)showShareUI
-{
-    OWSAssertIsOnMainThread();
-    OWSAssert(self.backupZipPath.length > 0);
-
-    [AttachmentSharing showShareUIForURL:[NSURL fileURLWithPath:self.backupZipPath]];
+    });
 }
 
 - (void)exportToFilesAndZip
@@ -173,9 +125,16 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSFileSystem protectFolderAtPath:rootDirPath];
     [OWSFileSystem ensureDirectoryExists:backupDirPath];
 
+    if (self.isCancelled) {
+        return;
+    }
+
     NSData *databasePassword = [TSStorageManager sharedManager].databasePassword;
 
     if (![self writeData:databasePassword fileName:@"databasePassword" backupDirPath:backupDirPath]) {
+        return;
+    }
+    if (self.isCancelled) {
         return;
     }
     if (![self writeUserDefaults:NSUserDefaults.standardUserDefaults
@@ -183,9 +142,15 @@ NS_ASSUME_NONNULL_BEGIN
                    backupDirPath:backupDirPath]) {
         return;
     }
+    if (self.isCancelled) {
+        return;
+    }
     if (![self writeUserDefaults:NSUserDefaults.appUserDefaults
                         fileName:@"appUserDefaults"
                    backupDirPath:backupDirPath]) {
+        return;
+    }
+    if (self.isCancelled) {
         return;
     }
     // Use a read/write transaction to acquire a file lock on the database files.
@@ -198,12 +163,18 @@ NS_ASSUME_NONNULL_BEGIN
                        backupDirPath:backupDirPath]) {
                 return;
             }
+            if (self.isCancelled) {
+                return;
+            }
             if (![self copyDirectory:OWSFileSystem.appSharedDataDirectoryPath
                           dstDirName:@"appSharedDataDirectoryPath"
                        backupDirPath:backupDirPath]) {
                 return;
             }
         }];
+    if (self.isCancelled) {
+        return;
+    }
     if (![self zipDirectory:backupDirPath dstFilePath:backupZipPath]) {
         return;
     }
@@ -297,14 +268,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(srcDirPath.length > 0);
     OWSAssert(dstFilePath.length > 0);
-    OWSAssert(self.password.length > 0);
 
     BOOL success = [SSZipArchive createZipFileAtPath:dstFilePath
                              withContentsOfDirectory:srcDirPath
                                  keepParentDirectory:NO
                                     compressionLevel:Z_DEFAULT_COMPRESSION
-                                            password:self.password
-                                                 AES:YES
+                                            password:self.backupPassword
+                                                 AES:self.backupPassword != nil
                                      progressHandler:^(NSUInteger entryNumber, NSUInteger total) {
                                          DDLogVerbose(@"%@ Zip progress: %zd / %zd = %f",
                                              self.logTag,

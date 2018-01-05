@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSViewController.h"
@@ -50,9 +50,12 @@ typedef NS_ENUM(NSInteger, OWSTableItemType) {
 };
 
 typedef void (^OWSTableActionBlock)(void);
+typedef void (^OWSTableSubPageBlock)(UIViewController *viewController);
 typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 
 @interface OWSTableItem : NSObject
+
+@property (nonatomic, weak) UIViewController *tableViewController;
 
 + (OWSTableItem *)itemWithTitle:(NSString *)title actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
@@ -72,6 +75,12 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 + (OWSTableItem *)disclosureItemWithText:(NSString *)text
                          customRowHeight:(CGFloat)customRowHeight
                              actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
++ (OWSTableItem *)subPageItemWithText:(NSString *)text actionBlock:(nullable OWSTableSubPageBlock)actionBlock;
+
++ (OWSTableItem *)subPageItemWithText:(NSString *)text
+                      customRowHeight:(CGFloat)customRowHeight
+                          actionBlock:(nullable OWSTableSubPageBlock)actionBlock;
 
 + (OWSTableItem *)actionItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
 

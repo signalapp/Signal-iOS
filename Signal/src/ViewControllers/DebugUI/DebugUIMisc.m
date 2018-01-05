@@ -4,6 +4,7 @@
 
 #import "DebugUIMisc.h"
 #import "OWSBackup.h"
+#import "OWSBackupViewController.h"
 #import "OWSCountryMetadata.h"
 #import "OWSTableViewController.h"
 #import "RegistrationViewController.h"
@@ -94,10 +95,22 @@ NS_ASSUME_NONNULL_BEGIN
                                              [DebugUIMisc sendUnencryptedDatabase:thread];
                                          }]];
     }
-    [items addObject:[OWSTableItem itemWithTitle:@"Export Backup"
-                                     actionBlock:^{
-                                         [OWSBackup exportBackup];
-                                     }]];
+    [items addObject:[OWSTableItem
+                         subPageItemWithText:@"Export Backup w/ Password"
+                                 actionBlock:^(UIViewController *viewController) {
+                                     OWSBackupViewController *backupViewController = [OWSBackupViewController new];
+                                     [backupViewController exportBackup:thread skipPassword:NO];
+                                     [viewController.navigationController pushViewController:backupViewController
+                                                                                    animated:YES];
+                                 }]];
+    [items addObject:[OWSTableItem
+                         subPageItemWithText:@"Export Backup w/o Password"
+                                 actionBlock:^(UIViewController *viewController) {
+                                     OWSBackupViewController *backupViewController = [OWSBackupViewController new];
+                                     [backupViewController exportBackup:thread skipPassword:YES];
+                                     [viewController.navigationController pushViewController:backupViewController
+                                                                                    animated:YES];
+                                 }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
