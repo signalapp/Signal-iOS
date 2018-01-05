@@ -169,7 +169,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic) NSArray<ConversationViewItem *> *viewItems;
 @property (nonatomic) NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache;
 
-@property (nonatomic, nullable) MPMoviePlayerController *videoPlayer;
 @property (nonatomic, nullable) AVAudioRecorder *audioRecorder;
 @property (nonatomic, nullable) OWSAudioAttachmentPlayer *audioAttachmentPlayer;
 @property (nonatomic, nullable) NSUUID *voiceMessageUUID;
@@ -1999,6 +1998,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     OWSAssert(attachmentStream);
     OWSAssert(imageView);
 
+    [self dismissKeyBoard];
+
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     CGRect convertedRect = [imageView convertRect:imageView.bounds toView:window];
     FullImageViewController *vc = [[FullImageViewController alloc] initWithAttachmentStream:attachmentStream
@@ -2007,43 +2008,22 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [vc presentFromViewController:self];
 }
 
-- (void)didTapVideoViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
+- (void)didTapVideoViewItem:(ConversationViewItem *)viewItem
+           attachmentStream:(TSAttachmentStream *)attachmentStream
+                  imageView:(UIImageView *)imageView
 {
     OWSAssert([NSThread isMainThread]);
     OWSAssert(viewItem);
     OWSAssert(attachmentStream);
 
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:[attachmentStream.mediaURL path]]) {
-        OWSFail(@"%@ Missing video file: %@", self.logTag, attachmentStream.mediaURL);
-    }
-
     [self dismissKeyBoard];
-    self.videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attachmentStream.mediaURL];
-    [_videoPlayer prepareToPlay];
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    CGRect convertedRect = [imageView convertRect:imageView.bounds toView:window];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(moviePlayerWillExitFullscreen:)
-                                                 name:MPMoviePlayerWillExitFullscreenNotification
-                                               object:_videoPlayer];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(moviePlayerDidExitFullscreen:)
-                                                 name:MPMoviePlayerDidExitFullscreenNotification
-                                               object:_videoPlayer];
-
-    _videoPlayer.controlStyle = MPMovieControlStyleDefault;
-    _videoPlayer.shouldAutoplay = YES;
-    [self.view addSubview:_videoPlayer.view];
-    // We can't animate from the cell media frame;
-    // MPMoviePlayerController will animate a crop of its
-    // contents rather than scaling them.
-    _videoPlayer.view.frame = self.view.bounds;
-
-    // FIXME inputAccessoryView - we lose and regain first responder here, causing keyboard to appear above video
-    // Approaches:
-    // - put the video player in a separate VC (like the full image view controller)
-    // - some kind of "showing video" flag to supress first responder.
-    [_videoPlayer setFullscreen:YES animated:NO];
+    FullImageViewController *vc = [[FullImageViewController alloc] initWithAttachmentStream:attachmentStream
+                                                                                   fromRect:convertedRect
+                                                                                   viewItem:viewItem];
+    [vc presentFromViewController:self];
 }
 
 - (void)didTapAudioViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
@@ -2122,42 +2102,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                       message:message
                                                          mode:MessageMetadataViewModeFocusOnMetadata];
     [self.navigationController pushViewController:view animated:YES];
-}
-
-#pragma mark - Video Playback
-
-// There's more than one way to exit the fullscreen video playback.
-// There's a done button, a "toggle fullscreen" button and I think
-// there's some gestures too.  These fire slightly different notifications.
-// We want to hide & clean up the video player immediately in all of
-// these cases.
-- (void)moviePlayerWillExitFullscreen:(id)sender
-{
-    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    [self clearVideoPlayer];
-}
-
-// See comment on moviePlayerWillExitFullscreen:
-- (void)moviePlayerDidExitFullscreen:(id)sender
-{
-    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    [self clearVideoPlayer];
-}
-
-- (void)clearVideoPlayer
-{
-    [_videoPlayer stop];
-    [_videoPlayer.view removeFromSuperview];
-    self.videoPlayer = nil;
-}
-
-- (void)setVideoPlayer:(MPMoviePlayerController *_Nullable)videoPlayer
-{
-    _videoPlayer = videoPlayer;
-
-    [ViewControllerUtils setAudioIgnoresHardwareMuteSwitch:videoPlayer != nil];
 }
 
 #pragma mark - System Messages
