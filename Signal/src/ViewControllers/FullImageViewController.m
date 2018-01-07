@@ -18,7 +18,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define kMinZoomScale 1.0f
 #define kMaxZoomScale 8.0f
 
 // In order to use UIMenuController, the view from which it is
@@ -45,10 +44,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface FullImageViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
+@interface FullImageViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, PlayerProgressBarDelegate>
 
 @property (nonatomic) UIScrollView *scrollView;
-@property (nonatomic) UIImageView *imageView;
+//@property (nonatomic) UIImageView *imageView;
+@property (nonatomic) UIView *imageView;
 
 @property (nonatomic) UIButton *shareButton;
 
@@ -63,6 +63,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL areToolbarsHidden;
 @property (nonatomic, nullable) MPMoviePlayerController *mpVideoPlayer;
 @property (nonatomic, nullable) AVPlayer *videoPlayer;
+@property (nonatomic, nullable) UIButton *playVideoButton;
+@property (nonatomic, nullable) PlayerProgressBar *videoProgressBar;
+@property (nonatomic, nullable) UIBarButtonItem *videoPlayBarButton;
+@property (nonatomic, nullable) UIBarButtonItem *videoPauseBarButton;
 
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *imageViewConstraints;
 @property (nonatomic, nullable) NSLayoutConstraint *imageViewBottomConstraint;
@@ -201,7 +205,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateMinZoomScale
 {
     CGSize viewSize = self.scrollView.bounds.size;
-    UIImage *image = self.imageView.image;
+    UIImage *image = self.image;
     OWSAssert(image);
 
     if (image.size.width == 0 || image.size.height == 0) {
@@ -212,8 +216,11 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat scaleWidth = viewSize.width / image.size.width;
     CGFloat scaleHeight = viewSize.height / image.size.height;
     CGFloat minScale = MIN(scaleWidth, scaleHeight);
-    self.scrollView.minimumZoomScale = minScale;
-    self.scrollView.zoomScale = minScale;
+
+    if (minScale != self.scrollView.minimumZoomScale) {
+        self.scrollView.minimumZoomScale = minScale;
+        self.scrollView.zoomScale = minScale;
+    }
 }
 
 #pragma mark - Initializers
@@ -246,12 +253,7 @@ NS_ASSUME_NONNULL_BEGIN
             self.imageView = [UIImageView new];
         }
     } else if (self.isVideo) {
-        [self setupVideoPlayer];
-
-        // Present the static video preview
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:self.image];
-        self.imageView = imageView;
-
+        self.imageView = [self buildVideoPlayerView];
     } else {
         // Present the static image using standard UIImageView
         UIImageView *imageView = [[UIImageView alloc] initWithImage:self.image];
@@ -276,39 +278,78 @@ NS_ASSUME_NONNULL_BEGIN
     [self applyInitialImageViewConstraints];
 
     if (self.isVideo) {
-        UIButton *playButton = [UIButton new];
+        PlayerProgressBar *videoProgressBar = [PlayerProgressBar new];
+        videoProgressBar.delegate = self;
+        videoProgressBar.player = self.videoPlayer;
 
-        [playButton addTarget:self action:@selector(playVideo) forControlEvents:UIControlEventTouchUpInside];
+        self.videoProgressBar = videoProgressBar;
+        [self.view addSubview:videoProgressBar];
+        [videoProgressBar autoPinWidthToSuperview];
+        [videoProgressBar autoPinToTopLayoutGuideOfViewController:self withInset:0];
+        CGFloat kVideoProgressBarHeight = 44;
+        [videoProgressBar autoSetDimension:ALDimensionHeight toSize:kVideoProgressBarHeight];
+
+        UIButton *playVideoButton = [UIButton new];
+        self.playVideoButton = playVideoButton;
+
+        [playVideoButton addTarget:self action:@selector(playVideo) forControlEvents:UIControlEventTouchUpInside];
 
         UIImage *playImage = [UIImage imageNamed:@"play_button"];
-        [playButton setBackgroundImage:playImage forState:UIControlStateNormal];
-        playButton.contentMode = UIViewContentModeScaleAspectFill;
+        [playVideoButton setBackgroundImage:playImage forState:UIControlStateNormal];
+        playVideoButton.contentMode = UIViewContentModeScaleAspectFill;
 
-        [self.view addSubview:playButton];
+        [self.view addSubview:playVideoButton];
 
-        CGFloat playButtonWidth = ScaleFromIPhone5(70);
-        [playButton autoSetDimensionsToSize:CGSizeMake(playButtonWidth, playButtonWidth)];
-        [playButton autoCenterInSuperview];
+        CGFloat playVideoButtonWidth = ScaleFromIPhone5(70);
+        [playVideoButton autoSetDimensionsToSize:CGSizeMake(playVideoButtonWidth, playVideoButtonWidth)];
+        [playVideoButton autoCenterInSuperview];
     }
 
     UIToolbar *footerBar = [UIToolbar new];
     _footerBar = footerBar;
     footerBar.barTintColor = [UIColor ows_signalBrandBlueColor];
-    [footerBar setItems:@[
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
-                                                      target:self
-                                                      action:@selector(didPressShare:)],
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash
-                                                      target:self
-                                                      action:@selector(didPressDelete:)],
-    ]
-               animated:NO];
+    self.videoPlayBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPlay
+                                                                            target:self
+                                                                            action:@selector(didPressPlayBarButton:)];
+    self.videoPauseBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPause
+                                                                             target:self
+                                                                             action:@selector(didPressPauseBarButton:)];
+    [self updateFooterBarButtonItemsWithIsPlayingVideo:YES];
     [self.view addSubview:footerBar];
 
     [footerBar autoPinWidthToSuperview];
     [footerBar autoPinToBottomLayoutGuideOfViewController:self withInset:0];
     [footerBar autoSetDimension:ALDimensionHeight toSize:kFooterHeight];
+}
+
+- (void)updateFooterBarButtonItemsWithIsPlayingVideo:(BOOL)isPlayingVideo
+{
+    OWSAssert(self.footerBar);
+
+    NSMutableArray<UIBarButtonItem *> *toolbarItems = [NSMutableArray new];
+
+    [toolbarItems addObjectsFromArray:@[
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                      target:self
+                                                      action:@selector(didPressShare:)],
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+    ]];
+
+    if (self.isVideo) {
+        UIBarButtonItem *playerButton = isPlayingVideo ? self.videoPauseBarButton : self.videoPlayBarButton;
+        [toolbarItems addObjectsFromArray:@[
+            playerButton,
+            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                          target:nil
+                                                          action:nil],
+        ]];
+    }
+
+    [toolbarItems addObject:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash
+                                                                          target:self
+                                                                          action:@selector(didPressDelete:)]];
+
+    [self.footerBar setItems:toolbarItems animated:NO];
 }
 
 - (void)applyInitialImageViewConstraints
@@ -352,7 +393,7 @@ NS_ASSUME_NONNULL_BEGIN
     ]];
 }
 
-- (void)setupVideoPlayer
+- (UIView *)buildVideoPlayerView
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:[self.attachmentUrl path]]) {
@@ -361,12 +402,23 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (@available(iOS 9.0, *)) {
         AVPlayer *player = [[AVPlayer alloc] initWithURL:self.attachmentUrl];
+        [player seekToTime:kCMTimeZero];
         self.videoPlayer = player;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(playerItemDidPlayToCompletion:)
                                                      name:AVPlayerItemDidPlayToEndTimeNotification
                                                    object:player.currentItem];
+
+        VideoPlayerView *playerView = [VideoPlayerView new];
+        playerView.player = player;
+
+        [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
+                             forConstraints:^{
+                                 [playerView autoSetDimensionsToSize:self.image.size];
+                             }];
+
+        return playerView;
     } else {
         MPMoviePlayerController *videoPlayer =
             [[MPMoviePlayerController alloc] initWithContentURL:self.attachmentStream.mediaURL];
@@ -374,6 +426,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         videoPlayer.controlStyle = MPMovieControlStyleNone;
         [videoPlayer prepareToPlay];
+
+        return [[UIImageView alloc] initWithImage:self.image];
 
         //
         //        [[NSNotificationCenter defaultCenter] addObserver:self
@@ -426,31 +480,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     _areToolbarsHidden = areToolbarsHidden;
 
-    if (!areToolbarsHidden) {
-        // Hiding the status bar affects the positioing of the navbar. We don't want to show that in the animation
-        // so when *showing* the toolbars, we show the status bar first. When hiding, we hide it last.
-        [[UIApplication sharedApplication] setStatusBarHidden:areToolbarsHidden withAnimation:UIStatusBarAnimationFade];
-    }
+    // Hiding the status bar affects the positioing of the navbar. We don't want to show that in the animation
+    // so when *showing* the toolbars, we show the status bar first. When hiding, we hide it last.
+    [[UIApplication sharedApplication] setStatusBarHidden:areToolbarsHidden withAnimation:UIStatusBarAnimationNone];
+    [self.navigationController setNavigationBarHidden:areToolbarsHidden animated:NO];
+    self.videoProgressBar.hidden = areToolbarsHidden;
+
     [UIView animateWithDuration:0.1
-        animations:^(void) {
-            self.view.backgroundColor = areToolbarsHidden ? UIColor.blackColor : UIColor.whiteColor;
-            self.navigationController.navigationBar.alpha = areToolbarsHidden ? 0 : 1;
-            self.footerBar.alpha = areToolbarsHidden ? 0 : 1;
-        }
-        completion:^(BOOL finished) {
-            // although navbar has 0 alpha at this point, if we don't also "hide" it, adjusting the status bar
-            // resets the alpha.
-            if (areToolbarsHidden) {
-                //                             [self.navigationController setNavigationBarHidden:areToolbarsHidden
-                //                             animated:NO];
-                // Hiding the status bar affects the positioing of the navbar. We don't want to show that in the
-                // animation so when *showing* the toolbars, we show the status bar first. When hiding, we hide it last.
-                [[UIApplication sharedApplication] setStatusBarHidden:areToolbarsHidden
-                                                        withAnimation:UIStatusBarAnimationNone];
-                // position the navbar, but have it be transparent
-                self.navigationController.navigationBar.alpha = 0;
-            }
-        }];
+                     animations:^(void) {
+                         self.view.backgroundColor = areToolbarsHidden ? UIColor.blackColor : UIColor.whiteColor;
+                         self.footerBar.alpha = areToolbarsHidden ? 0 : 1;
+                     }];
 }
 
 - (void)initializeGestureRecognizers
@@ -489,7 +529,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Gesture Recognizers
-
 
 - (void)didTapDismissButton:(id)sender
 {
@@ -603,6 +642,20 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)deleteAction:(nullable id)sender
 {
     [self didPressDelete:sender];
+}
+
+- (void)didPressPlayBarButton:(id)sender
+{
+    OWSAssert(self.isVideo);
+    OWSAssert(self.videoPlayer);
+    [self playVideo];
+}
+
+- (void)didPressPauseBarButton:(id)sender
+{
+    OWSAssert(self.isVideo);
+    OWSAssert(self.videoPlayer);
+    [self pauseVideo];
 }
 
 #pragma mark - Presentation
@@ -725,23 +778,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)playVideo
 {
+    OWSAssert(self.videoPlayer);
+    AVPlayer *player = self.videoPlayer;
+
+    [self updateFooterBarButtonItemsWithIsPlayingVideo:YES];
+    self.playVideoButton.hidden = YES;
+    self.areToolbarsHidden = YES;
+
+    OWSAssert(player.currentItem);
+    AVPlayerItem *item = player.currentItem;
+    if (CMTIME_COMPARE_INLINE(item.currentTime, ==, item.duration)) {
+        // Rewind for repeated plays
+        [player seekToTime:kCMTimeZero];
+    }
+
+    [player play];
+}
+
+- (void)pauseVideo
+{
     OWSAssert(self.isVideo);
     OWSAssert(self.videoPlayer);
 
-    AVPlayerViewController *vc = [AVPlayerViewController new];
-    AVPlayer *player = self.videoPlayer;
-    vc.player = player;
-
-    vc.modalPresentationStyle = UIModalPresentationCustom;
-    vc.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-
-    // Rewind for repeated plays
-    [player seekToTime:kCMTimeZero];
-    [self presentViewController:vc
-                       animated:NO
-                     completion:^(void) {
-                         [player play];
-                     }];
+    [self updateFooterBarButtonItemsWithIsPlayingVideo:NO];
+    [self.videoPlayer pause];
 }
 
 - (void)playerItemDidPlayToCompletion:(NSNotification *)notification
@@ -750,8 +810,39 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.videoPlayer);
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    [self dismissViewControllerAnimated:NO completion:nil];
+    //    [self dismissViewControllerAnimated:NO completion:nil];
+    self.areToolbarsHidden = NO;
+    self.playVideoButton.hidden = NO;
+
+    [self updateFooterBarButtonItemsWithIsPlayingVideo:NO];
 }
+
+- (void)playerProgressBarDidStartScrubbing:(PlayerProgressBar *)playerProgressBar
+{
+    OWSAssert(self.videoPlayer);
+    [self.videoPlayer pause];
+}
+
+- (void)playerProgressBar:(PlayerProgressBar *)playerProgressBar scrubbedToTime:(CMTime)time
+{
+    OWSAssert(self.videoPlayer);
+    [self.videoPlayer seekToTime:time];
+}
+
+- (void)playerProgressBar:(PlayerProgressBar *)playerProgressBar
+    didFinishScrubbingAtTime:(CMTime)time
+        shouldResumePlayback:(BOOL)shouldResumePlayback
+{
+    OWSAssert(self.videoPlayer);
+    [self.videoPlayer seekToTime:time];
+
+    if (shouldResumePlayback) {
+        [self.videoPlayer play];
+    }
+}
+
+
+// iOS8 TODO
 
 - (void)moviePlayerPlaybackStateDidChange:(NSNotification *)notification
 {
