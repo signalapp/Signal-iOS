@@ -12,6 +12,7 @@
 #import "UIUtil.h"
 #import "UIView+OWS.h"
 #import <AVKit/AVKit.h>
+#import <MediaPlayer/MPMoviePlayerViewController.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <YYImage/YYImage.h>
@@ -61,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UIToolbar *footerBar;
 @property (nonatomic) BOOL areToolbarsHidden;
-@property (nonatomic, nullable) MPMoviePlayerController *mpVideoPlayer;
+
 @property (nonatomic, nullable) AVPlayer *videoPlayer;
 @property (nonatomic, nullable) UIButton *playVideoButton;
 @property (nonatomic, nullable) PlayerProgressBar *videoProgressBar;
@@ -278,16 +279,18 @@ NS_ASSUME_NONNULL_BEGIN
     [self applyInitialImageViewConstraints];
 
     if (self.isVideo) {
-        PlayerProgressBar *videoProgressBar = [PlayerProgressBar new];
-        videoProgressBar.delegate = self;
-        videoProgressBar.player = self.videoPlayer;
+        if (@available(iOS 9, *)) {
+            PlayerProgressBar *videoProgressBar = [PlayerProgressBar new];
+            videoProgressBar.delegate = self;
+            videoProgressBar.player = self.videoPlayer;
 
-        self.videoProgressBar = videoProgressBar;
-        [self.view addSubview:videoProgressBar];
-        [videoProgressBar autoPinWidthToSuperview];
-        [videoProgressBar autoPinToTopLayoutGuideOfViewController:self withInset:0];
-        CGFloat kVideoProgressBarHeight = 44;
-        [videoProgressBar autoSetDimension:ALDimensionHeight toSize:kVideoProgressBarHeight];
+            self.videoProgressBar = videoProgressBar;
+            [self.view addSubview:videoProgressBar];
+            [videoProgressBar autoPinWidthToSuperview];
+            [videoProgressBar autoPinToTopLayoutGuideOfViewController:self withInset:0];
+            CGFloat kVideoProgressBarHeight = 44;
+            [videoProgressBar autoSetDimension:ALDimensionHeight toSize:kVideoProgressBarHeight];
+        }
 
         UIButton *playVideoButton = [UIButton new];
         self.playVideoButton = playVideoButton;
@@ -336,13 +339,16 @@ NS_ASSUME_NONNULL_BEGIN
     ]];
 
     if (self.isVideo) {
-        UIBarButtonItem *playerButton = isPlayingVideo ? self.videoPauseBarButton : self.videoPlayBarButton;
-        [toolbarItems addObjectsFromArray:@[
-            playerButton,
-            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                          target:nil
-                                                          action:nil],
-        ]];
+        // bar button video controls only work on iOS9+
+        if (@available(iOS 9.0, *)) {
+            UIBarButtonItem *playerButton = isPlayingVideo ? self.videoPauseBarButton : self.videoPlayBarButton;
+            [toolbarItems addObjectsFromArray:@[
+                playerButton,
+                [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                              target:nil
+                                                              action:nil],
+            ]];
+        }
     }
 
     [toolbarItems addObject:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash
@@ -420,55 +426,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         return playerView;
     } else {
-        MPMoviePlayerController *videoPlayer =
-            [[MPMoviePlayerController alloc] initWithContentURL:self.attachmentStream.mediaURL];
-        self.mpVideoPlayer = videoPlayer;
-
-        videoPlayer.controlStyle = MPMovieControlStyleNone;
-        [videoPlayer prepareToPlay];
-
         return [[UIImageView alloc] initWithImage:self.image];
-
-        //
-        //        [[NSNotificationCenter defaultCenter] addObserver:self
-        //                                                 selector:@selector(moviePlayerWillExitFullscreen:)
-        //                                                     name:MPMoviePlayerWillExitFullscreenNotification
-        //                                                   object:videoPlayer];
-        //        [[NSNotificationCenter defaultCenter] addObserver:self
-        //                                                 selector:@selector(moviePlayerDidExitFullscreen:)
-        //                                                     name:MPMoviePlayerDidExitFullscreenNotification
-        //                                                   object:videoPlayer];
-        //        [[NSNotificationCenter defaultCenter] addObserver:self
-        //                                                 selector:@selector(moviePlayerWillEnterFullscreen:)
-        //                                                     name:MPMoviePlayerWillEnterFullscreenNotification
-        //                                                   object:videoPlayer];
-        //        [[NSNotificationCenter defaultCenter] addObserver:self
-        //                                                 selector:@selector(moviePlayerPlaybackStateDidChange:)
-        //                                                     name:MPMoviePlayerPlaybackStateDidChangeNotification
-        //                                                   object:videoPlayer];
-        //
-        //        [[NSNotificationCenter defaultCenter] addObserver:self
-        //                                                 selector:@selector(moviePlayerDidEnterFullscreen:)
-        //                                                     name:MPMoviePlayerDidEnterFullscreenNotification
-        //                                                   object:videoPlayer];
-        //
-        //
-        //        [[NSNotificationCenter defaultCenter] addObserver:self
-        //                                                 selector:@selector(moviePlayerDidFinishPlayback:)
-        //                                                     name:MPMoviePlayerPlaybackDidFinishNotification
-        //                                                   object:videoPlayer];
-        //
-        //        // Don't show any controls intially. We switch control style after the view is fullscreen to make them
-        //        appear upon tapping.
-        ////        videoPlayer.controlStyle = MPMovieControlStyleFullscreen;
-        //        videoPlayer.shouldAutoplay = YES;
-        //
-        //        // We can't animate from the cell media frame;
-        //        // MPMoviePlayerController will animate a crop of its
-        //        // contents rather than scaling them.
-        //        videoPlayer.view.frame = self.view.bounds;
-        //
-        //        self.imageView = videoPlayer.view;
     }
 }
 
@@ -778,21 +736,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)playVideo
 {
-    OWSAssert(self.videoPlayer);
-    AVPlayer *player = self.videoPlayer;
+    if (@available(iOS 9, *)) {
+        OWSAssert(self.videoPlayer);
+        AVPlayer *player = self.videoPlayer;
 
-    [self updateFooterBarButtonItemsWithIsPlayingVideo:YES];
-    self.playVideoButton.hidden = YES;
-    self.areToolbarsHidden = YES;
+        [self updateFooterBarButtonItemsWithIsPlayingVideo:YES];
+        self.playVideoButton.hidden = YES;
+        self.areToolbarsHidden = YES;
 
-    OWSAssert(player.currentItem);
-    AVPlayerItem *item = player.currentItem;
-    if (CMTIME_COMPARE_INLINE(item.currentTime, ==, item.duration)) {
-        // Rewind for repeated plays
-        [player seekToTime:kCMTimeZero];
+        OWSAssert(player.currentItem);
+        AVPlayerItem *item = player.currentItem;
+        if (CMTIME_COMPARE_INLINE(item.currentTime, ==, item.duration)) {
+            // Rewind for repeated plays
+            [player seekToTime:kCMTimeZero];
+        }
+
+        [player play];
+    } else {
+        [self legacyPlayVideo];
+        return;
     }
-
-    [player play];
 }
 
 - (void)pauseVideo
@@ -841,99 +804,20 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+#pragma mark iOS8 Video Playback
 
-// iOS8 TODO
-
-- (void)moviePlayerPlaybackStateDidChange:(NSNotification *)notification
+// AVPlayer was introduced in iOS9, so on iOS8 we fall back to MPMoviePlayer
+// This causes an unforutnate "double present" since we present the full screen view and then the MPMovie view over top.
+// And similarly a double dismiss.
+- (void)legacyPlayVideo
 {
-    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-    OWSAssert(self.mpVideoPlayer);
-}
-
-- (void)moviePlayerWillEnterFullscreen:(NSNotification *)notification
-{
-    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-    OWSAssert(self.videoPlayer);
-    self.mpVideoPlayer.controlStyle = MPMovieControlStyleNone;
-}
-
-- (void)moviePlayerDidEnterFullscreen:(NSNotification *)notification
-{
-    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-    OWSAssert(self.videoPlayer);
-    self.mpVideoPlayer.controlStyle = MPMovieControlStyleFullscreen;
-}
-
-// There's more than one way to exit the fullscreen video playback.
-// There's a done button, a "toggle fullscreen" button and I think
-// there's some gestures too.  These fire slightly different notifications.
-// We want to hide & clean up the video player immediately in all of
-// these cases.
-- (void)moviePlayerWillExitFullscreen:(NSNotification *)notification
-{
-    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    // If we didn't just complete playback, user chose to exit fullscreen.
-    // In that case, we dismiss the view controller since the user is probably done.
-    //    if (!self.didJustCompleteVideoPlayback) {
-    //        [self dismiss];
-    //    }
-
-    //    self.didJustCompleteVideoPlayback = NO;
-    self.mpVideoPlayer.controlStyle = MPMovieControlStyleNone;
-
-    //    [self clearVideoPlayer];
-}
-
-// See comment on moviePlayerWillExitFullscreen:
-- (void)moviePlayerDidExitFullscreen:(NSNotification *)notification
-{
-    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-    self.mpVideoPlayer.controlStyle = MPMovieControlStyleEmbedded;
-    //    [self clearVideoPlayer];
-}
-
-- (void)moviePlayerDidFinishPlayback:(NSNotification *)notification
-{
-    OWSAssert(self.videoPlayer);
-
-    NSNumber *reason = notification.userInfo[MPMoviePlayerPlaybackDidFinishReasonUserInfoKey];
-    DDLogDebug(@"%@ movie player finished with reason %@", self.logTag, reason);
-    OWSAssert(reason);
-
-    switch (reason.integerValue) {
-        case MPMovieFinishReasonPlaybackEnded: {
-            DDLogDebug(@"%@ video played to completion.", self.logTag);
-            self.mpVideoPlayer.controlStyle = MPMovieControlStyleNone;
-            [self.mpVideoPlayer setFullscreen:NO animated:YES];
-            break;
-        }
-        case MPMovieFinishReasonPlaybackError: {
-            DDLogDebug(@"%@ error playing video.", self.logTag);
-            break;
-        }
-        case MPMovieFinishReasonUserExited: {
-            // FIXME: unable to fire this (only tried on iOS11.2 so far)
-            DDLogDebug(@"%@ user exited video playback", self.logTag);
-            [self dismiss];
-            break;
-        }
+    if (@available(iOS 9.0, *)) {
+        OWSFail(@"legacy video is for iOS8 only");
     }
+    MPMoviePlayerViewController *vc = [[MPMoviePlayerViewController alloc] initWithContentURL:self.attachmentUrl];
+
+    [self presentViewController:vc animated:YES completion:nil];
 }
-
-//- (void)clearVideoPlayer
-//{
-//    [self.videoPlayer stop];
-//    [self.videoPlayer.view removeFromSuperview];
-//    self.videoPlayer = nil;
-//}
-
-//- (void)setVideoPlayer:(MPMoviePlayerController *_Nullable)videoPlayer
-//{
-//    _mpVideoPlayer = mpVideoPlayer;
-//
-//    [ViewControllerUtils setAudioIgnoresHardwareMuteSwitch:videoPlayer != nil];
-//}
 
 #pragma mark - Saving images to Camera Roll
 
