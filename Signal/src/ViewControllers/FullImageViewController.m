@@ -4,6 +4,7 @@
 
 #import "FullImageViewController.h"
 #import "AttachmentSharing.h"
+#import "ConversationViewController.h"
 #import "ConversationViewItem.h"
 #import "Signal-Swift.h"
 #import "TSAttachmentStream.h"
@@ -18,8 +19,6 @@
 #import <YYImage/YYImage.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-#define kMaxZoomScale 8.0f
 
 // In order to use UIMenuController, the view from which it is
 // presented must have certain custom behaviors.
@@ -132,7 +131,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.attachmentStream) {
         return self.attachmentStream.image;
     } else if (self.attachment) {
-        return self.attachment.image;
+        if (self.isVideo) {
+            return self.attachment.videoPreview;
+        } else {
+            return self.attachment.image;
+        }
     } else {
         return nil;
     }
@@ -220,6 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (minScale != self.scrollView.minimumZoomScale) {
         self.scrollView.minimumZoomScale = minScale;
+        self.scrollView.maximumZoomScale = minScale * 8;
         self.scrollView.zoomScale = minScale;
     }
 }
@@ -235,8 +239,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.scrollView = scrollView;
     scrollView.delegate = self;
 
-    // TODO set max based on MIN.
-    scrollView.maximumZoomScale = kMaxZoomScale;
     scrollView.showsVerticalScrollIndicator = NO;
     scrollView.showsHorizontalScrollIndicator = NO;
     scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
@@ -247,7 +249,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isAnimated) {
         if ([self.fileData ows_isValidImage]) {
             YYImage *animatedGif = [YYImage imageWithData:self.fileData];
-            YYAnimatedImageView *animatedView = [[YYAnimatedImageView alloc] init];
+            YYAnimatedImageView *animatedView = [YYAnimatedImageView new];
             animatedView.image = animatedGif;
             self.imageView = animatedView;
         } else {
@@ -308,21 +310,27 @@ NS_ASSUME_NONNULL_BEGIN
         [playVideoButton autoCenterInSuperview];
     }
 
-    UIToolbar *footerBar = [UIToolbar new];
-    _footerBar = footerBar;
-    footerBar.barTintColor = [UIColor ows_signalBrandBlueColor];
-    self.videoPlayBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPlay
-                                                                            target:self
-                                                                            action:@selector(didPressPlayBarButton:)];
-    self.videoPauseBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPause
-                                                                             target:self
-                                                                             action:@selector(didPressPauseBarButton:)];
-    [self updateFooterBarButtonItemsWithIsPlayingVideo:YES];
-    [self.view addSubview:footerBar];
 
-    [footerBar autoPinWidthToSuperview];
-    [footerBar autoPinToBottomLayoutGuideOfViewController:self withInset:0];
-    [footerBar autoSetDimension:ALDimensionHeight toSize:kFooterHeight];
+    // Don't show footer bar after tapping approval-view
+    if (self.viewItem) {
+        UIToolbar *footerBar = [UIToolbar new];
+        _footerBar = footerBar;
+        footerBar.barTintColor = [UIColor ows_signalBrandBlueColor];
+        self.videoPlayBarButton =
+            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPlay
+                                                          target:self
+                                                          action:@selector(didPressPlayBarButton:)];
+        self.videoPauseBarButton =
+            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPause
+                                                          target:self
+                                                          action:@selector(didPressPauseBarButton:)];
+        [self updateFooterBarButtonItemsWithIsPlayingVideo:YES];
+        [self.view addSubview:footerBar];
+
+        [footerBar autoPinWidthToSuperview];
+        [footerBar autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+        [footerBar autoSetDimension:ALDimensionHeight toSize:kFooterHeight];
+    }
 }
 
 - (void)updateFooterBarButtonItemsWithIsPlayingVideo:(BOOL)isPlayingVideo
@@ -438,8 +446,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     _areToolbarsHidden = areToolbarsHidden;
 
-    // Hiding the status bar affects the positioing of the navbar. We don't want to show that in the animation
-    // so when *showing* the toolbars, we show the status bar first. When hiding, we hide it last.
+    // Hiding the status bar affects the positioing of the navbar. We don't want to show that in an animation, it's
+    // better to just have everythign "flit" in/out.
     [[UIApplication sharedApplication] setStatusBarHidden:areToolbarsHidden withAnimation:UIStatusBarAnimationNone];
     [self.navigationController setNavigationBarHidden:areToolbarsHidden animated:NO];
     self.videoProgressBar.hidden = areToolbarsHidden;
@@ -490,7 +498,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didTapDismissButton:(id)sender
 {
-    [self dismiss];
+    [self dismissSelfAnimated:YES completion:nil];
 }
 
 - (void)didTapImage:(id)sender
@@ -519,7 +527,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [self dismiss];
+    [self dismissSelfAnimated:YES completion:nil];
 }
 
 - (void)longPressGesture:(UIGestureRecognizer *)sender {
@@ -551,23 +559,56 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didPressShare:(id)sender
 {
-    DDLogInfo(@"%@: sharing image.", self.logTag);
+    DDLogInfo(@"%@: didPressShare", self.logTag);
+    if (!self.viewItem) {
+        OWSFail(@"share should only be available when a viewItem is present");
+        return;
+    }
 
     [self.viewItem shareAction];
 }
 
 - (void)didPressDelete:(id)sender
 {
-    DDLogInfo(@"%@: sharing image.", self.logTag);
+    DDLogInfo(@"%@: didPressDelete", self.logTag);
+    if (!self.viewItem) {
+        OWSFail(@"delete should only be available when a viewItem is present");
+        return;
+    }
 
     UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    [actionSheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
-                                                    style:UIAlertActionStyleDestructive
-                                                  handler:^(UIAlertAction *action) {
-                                                      [self.viewItem deleteAction];
-                                                      [self dismiss];
-                                                  }]];
+
+    [actionSheet
+        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
+                                           style:UIAlertActionStyleDestructive
+                                         handler:^(UIAlertAction *action) {
+                                             OWSAssert([self.presentingViewController
+                                                 isKindOfClass:[UINavigationController class]]);
+                                             UINavigationController *navController
+                                                 = (UINavigationController *)self.presentingViewController;
+
+                                             if ([navController.topViewController
+                                                     isKindOfClass:[ConversationViewController class]]) {
+                                                 [self dismissSelfAnimated:YES
+                                                                completion:^{
+                                                                    [self.viewItem deleteAction];
+                                                                }];
+                                             } else if ([navController.topViewController
+                                                            isKindOfClass:[MessageDetailViewController class]]) {
+                                                 [self dismissSelfAnimated:NO
+                                                                completion:^{
+                                                                    [self.viewItem deleteAction];
+                                                                }];
+                                                 [navController popViewControllerAnimated:YES];
+                                             } else {
+                                                 OWSFail(@"Unexpected presentation context.");
+                                                 [self dismissSelfAnimated:YES
+                                                                completion:^{
+                                                                    [self.viewItem deleteAction];
+                                                                }];
+                                             }
+                                         }]];
 
     [actionSheet addAction:[OWSAlerts cancelAction]];
 
@@ -576,6 +617,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canPerformAction:(SEL)action withSender:(nullable id)sender
 {
+    if (self.viewItem == nil) {
+        return NO;
+    }
+
     if (action == self.viewItem.metadataActionSelector) {
         return NO;
     }
@@ -584,21 +629,41 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)copyAction:(nullable id)sender
 {
+    if (!self.viewItem) {
+        OWSFail(@"copy should only be available when a viewItem is present");
+        return;
+    }
+
     [self.viewItem copyAction];
 }
 
 - (void)shareAction:(nullable id)sender
 {
-    [self.viewItem shareAction];
+    if (!self.viewItem) {
+        OWSFail(@"share should only be available when a viewItem is present");
+        return;
+    }
+
+    [self didPressShare:sender];
 }
 
 - (void)saveAction:(nullable id)sender
 {
+    if (!self.viewItem) {
+        OWSFail(@"save should only be available when a viewItem is present");
+        return;
+    }
+
     [self.viewItem saveAction];
 }
 
 - (void)deleteAction:(nullable id)sender
 {
+    if (!self.viewItem) {
+        OWSFail(@"delete should only be available when a viewItem is present");
+        return;
+    }
+
     [self didPressDelete:sender];
 }
 
@@ -674,7 +739,7 @@ NS_ASSUME_NONNULL_BEGIN
                                }];
 }
 
-- (void)dismiss
+- (void)dismissSelfAnimated:(BOOL)isAnimated completion:(void (^_Nullable)(void))completion
 {
     self.view.userInteractionEnabled = NO;
     [UIApplication sharedApplication].statusBarHidden = NO;
@@ -686,21 +751,26 @@ NS_ASSUME_NONNULL_BEGIN
     // Move the image view pack to it's initial position, i.e. where
     // it sits on the screen in the conversation view.
     [self applyInitialImageViewConstraints];
-    [UIView animateWithDuration:0.2
-        delay:0.0
-        options:UIViewAnimationOptionCurveEaseInOut
-        animations:^(void) {
-            [self.imageView.superview layoutIfNeeded];
 
-            // In case user has hidden bars, which changes background to black.
-            self.view.backgroundColor = UIColor.whiteColor;
+    if (isAnimated) {
+        [UIView animateWithDuration:0.2
+            delay:0.0
+            options:UIViewAnimationOptionCurveEaseInOut
+            animations:^(void) {
+                [self.imageView.superview layoutIfNeeded];
 
-            // fade out content and toolbars
-            self.navigationController.view.alpha = 0.0;
-        }
-        completion:^(BOOL finished) {
-            [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
-        }];
+                // In case user has hidden bars, which changes background to black.
+                self.view.backgroundColor = UIColor.whiteColor;
+
+                // fade out content and toolbars
+                self.navigationController.view.alpha = 0.0;
+            }
+            completion:^(BOOL finished) {
+                [self.presentingViewController dismissViewControllerAnimated:NO completion:completion];
+            }];
+    } else {
+        [self.presentingViewController dismissViewControllerAnimated:NO completion:completion];
+    }
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -773,7 +843,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.videoPlayer);
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    //    [self dismissViewControllerAnimated:NO completion:nil];
     self.areToolbarsHidden = NO;
     self.playVideoButton.hidden = NO;
 

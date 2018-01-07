@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -406,7 +406,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         }
 
         guard let attachment = TSAttachment.fetch(uniqueId: attachmentId) else {
-            owsFail("Missing attachment")
+            Logger.warn("\(TAG) Missing attachment. Was it deleted?")
             return rows
         }
         self.attachment = attachment
@@ -433,7 +433,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         let contentType = attachment.contentType
         if let dataUTI = MIMETypeUtil.utiType(forMIMEType: contentType) {
             let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
-            let mediaMessageView = MediaMessageView(attachment: attachment, mode: .small)
+            let mediaMessageView = MediaMessageView(attachment: attachment, mode: .small, viewItem: viewItem, attachmentStream: attachmentStream)
             mediaMessageView.backgroundColor = UIColor.white
             self.mediaMessageView = mediaMessageView
             rows.append(mediaMessageView)
