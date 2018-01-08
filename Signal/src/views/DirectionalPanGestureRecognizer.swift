@@ -6,7 +6,7 @@ import UIKit.UIGestureRecognizerSubclass
 
 @objc
 enum PanDirection: Int {
-    case forward, backward, up, down, any
+    case left, right, up, down, any
 }
 
 @objc
@@ -33,13 +33,13 @@ class PanDirectionGestureRecognizer: UIPanGestureRecognizer {
             let deltaX = previousLocation.x - location.x
 
             switch direction {
-            case .down where deltaY < 0:
-                return
             case .up where deltaY > 0:
                 return
-            case .forward where deltaX < 0:
+            case .down where deltaY < 0:
                 return
-            case .backward where deltaX > 0:
+            case .left where deltaX > 0:
+                return
+            case .right where deltaX < 0:
                 return
             default:
                 break
@@ -52,7 +52,7 @@ class PanDirectionGestureRecognizer: UIPanGestureRecognizer {
         if state == .began {
             let vel = velocity(in: view)
             switch direction {
-            case .forward, .backward:
+            case .left, .right:
                 if fabs(vel.y) > fabs(vel.x) {
                     state = .cancelled
                 }

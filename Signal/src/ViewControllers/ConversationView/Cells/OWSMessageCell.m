@@ -283,7 +283,7 @@ const CGFloat OWSMessageCellCornerRadius = 17;
     [self.textBubbleImageView addGestureRecognizer:textLongPress];
 
     PanDirectionGestureRecognizer *panGesture =
-        [[PanDirectionGestureRecognizer alloc] initWithDirection:PanDirectionForward
+        [[PanDirectionGestureRecognizer alloc] initWithDirection:(self.isRTL ? PanDirectionLeft : PanDirectionRight)
                                                           target:self
                                                           action:@selector(handlePanGesture:)];
     [self addGestureRecognizer:panGesture];
