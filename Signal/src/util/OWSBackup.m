@@ -23,6 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSBackup ()
 
+@property (nonatomic) OWSBackupState backupState;
+
+@property (nonatomic) CGFloat backupProgress;
+
 @property (nonatomic, nullable) TSThread *currentThread;
 
 @property (nonatomic, nullable) NSString *backupPassword;
@@ -51,14 +55,21 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegate backupStateDidChange];
 }
 
+- (void)fail
+{
+    if (!self.isCancelledOrFailed) {
+        self.backupState = OWSBackupState_Failed;
+    }
+}
+
 - (void)cancel
 {
     self.backupState = OWSBackupState_Cancelled;
 }
 
-- (BOOL)isCancelled
+- (BOOL)isCancelledOrFailed
 {
-    return self.backupState == OWSBackupState_Cancelled;
+    return (self.backupState == OWSBackupState_Cancelled || self.backupState == OWSBackupState_Failed);
 }
 
 - (void)exportBackup:(nullable TSThread *)currentThread skipPassword:(BOOL)skipPassword
@@ -90,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self exportToFilesAndZip];
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (!self.isCancelled) {
+            if (!self.isCancelledOrFailed) {
                 self.backupState = OWSBackupState_Complete;
             }
             [self.delegate backupStateDidChange];
@@ -125,32 +136,35 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSFileSystem protectFolderAtPath:rootDirPath];
     [OWSFileSystem ensureDirectoryExists:backupDirPath];
 
-    if (self.isCancelled) {
+    if (self.isCancelledOrFailed) {
         return;
     }
 
     NSData *databasePassword = [TSStorageManager sharedManager].databasePassword;
 
     if (![self writeData:databasePassword fileName:@"databasePassword" backupDirPath:backupDirPath]) {
+        [self fail];
         return;
     }
-    if (self.isCancelled) {
+    if (self.isCancelledOrFailed) {
         return;
     }
     if (![self writeUserDefaults:NSUserDefaults.standardUserDefaults
                         fileName:@"standardUserDefaults"
                    backupDirPath:backupDirPath]) {
+        [self fail];
         return;
     }
-    if (self.isCancelled) {
+    if (self.isCancelledOrFailed) {
         return;
     }
     if (![self writeUserDefaults:NSUserDefaults.appUserDefaults
                         fileName:@"appUserDefaults"
                    backupDirPath:backupDirPath]) {
+        [self fail];
         return;
     }
-    if (self.isCancelled) {
+    if (self.isCancelledOrFailed) {
         return;
     }
     // Use a read/write transaction to acquire a file lock on the database files.
@@ -161,21 +175,24 @@ NS_ASSUME_NONNULL_BEGIN
             if (![self copyDirectory:OWSFileSystem.appDocumentDirectoryPath
                           dstDirName:@"appDocumentDirectoryPath"
                        backupDirPath:backupDirPath]) {
+                [self fail];
                 return;
             }
-            if (self.isCancelled) {
+            if (self.isCancelledOrFailed) {
                 return;
             }
             if (![self copyDirectory:OWSFileSystem.appSharedDataDirectoryPath
                           dstDirName:@"appSharedDataDirectoryPath"
                        backupDirPath:backupDirPath]) {
+                [self fail];
                 return;
             }
         }];
-    if (self.isCancelled) {
+    if (self.isCancelledOrFailed) {
         return;
     }
     if (![self zipDirectory:backupDirPath dstFilePath:backupZipPath]) {
+        [self fail];
         return;
     }
 
@@ -281,7 +298,10 @@ NS_ASSUME_NONNULL_BEGIN
                                              entryNumber,
                                              total,
                                              entryNumber / (CGFloat)total);
-                                         // TODO:
+
+                                         CGFloat progress = entryNumber / (CGFloat)total;
+                                         self.backupProgress = progress;
+                                         [self.delegate backupProgressDidChange];
                                      }];
 
     if (!success) {

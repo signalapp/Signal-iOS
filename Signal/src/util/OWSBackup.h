@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)backupStateDidChange;
 
+- (void)backupProgressDidChange;
+
 @end
 
 #pragma mark -
@@ -16,6 +18,7 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
     OWSBackupState_InProgress,
     OWSBackupState_Cancelled,
     OWSBackupState_Complete,
+    OWSBackupState_Failed,
 };
 
 @class TSThread;
@@ -24,7 +27,9 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 
 @property (nonatomic, weak) id<OWSBackupDelegate> delegate;
 
-@property (nonatomic) OWSBackupState backupState;
+@property (nonatomic, readonly) OWSBackupState backupState;
+
+@property (nonatomic, readonly) CGFloat backupProgress;
 
 // If non-nil, backup is encrypted.
 @property (nonatomic, nullable, readonly) NSString *backupPassword;

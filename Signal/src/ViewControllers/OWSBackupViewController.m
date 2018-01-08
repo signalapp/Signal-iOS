@@ -4,6 +4,7 @@
 
 #import "OWSBackupViewController.h"
 #import "OWSBackup.h"
+#import "OWSProgressView.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <SignalMessaging/AttachmentSharing.h>
@@ -19,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSBackupViewController () <OWSBackupDelegate>
 
 @property (nonatomic) OWSBackup *backup;
+
+@property (nonatomic, nullable) OWSProgressView *progressView;
 
 @end
 
@@ -58,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (UIView *subview in self.view.subviews) {
         [subview removeFromSuperview];
     }
+    self.progressView = nil;
 
     switch (self.backup.backupState) {
         case OWSBackupState_InProgress:
@@ -69,32 +73,37 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSBackupState_Complete:
             [self showCompleteUI];
             break;
+        case OWSBackupState_Failed:
+            [self showFailedUI];
+            break;
     }
 }
 
 - (void)showInProgressUI
 {
-
-    UIView *container = [UIView new];
-    [self.view addSubview:container];
-    [container autoCenterInSuperview];
-
-    UIActivityIndicatorView *activityIndicatorView =
-        [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    [container addSubview:activityIndicatorView];
-    [activityIndicatorView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [activityIndicatorView autoHCenterInSuperview];
-    [activityIndicatorView startAnimating];
+    self.progressView = [OWSProgressView new];
+    self.progressView.color = [UIColor ows_materialBlueColor];
+    self.progressView.progress = self.backup.backupProgress;
+    [self.progressView autoSetDimension:ALDimensionWidth toSize:300];
+    [self.progressView autoSetDimension:ALDimensionHeight toSize:20];
 
     UILabel *label = [UILabel new];
     label.text = NSLocalizedString(
         @"BACKUP_EXPORT_IN_PROGRESS_MESSAGE", @"Message indicating that backup export is in progress.");
     label.textColor = [UIColor blackColor];
     label.font = [UIFont ows_regularFontWithSize:18.f];
-    [container addSubview:label];
-    [label autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:activityIndicatorView withOffset:20.f];
-    [label autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    [label autoPinWidthToSuperview];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.numberOfLines = 0;
+    label.lineBreakMode = NSLineBreakByWordWrapping;
+
+    UIView *container = [UIView verticalStackWithSubviews:@[
+        label,
+        self.progressView,
+    ]
+                                                  spacing:10];
+    [self.view addSubview:container];
+    [container autoVCenterInSuperview];
+    [container autoPinWidthToSuperviewWithMargin:25.f];
 }
 
 - (void)showCancelledUI
@@ -108,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     {
         NSString *message = NSLocalizedString(
-            @"BACKUP_EXPORT_COMPLETE_MESSAGE", @"Message indicating that backup export without password is complete.");
+            @"BACKUP_EXPORT_COMPLETE_MESSAGE", @"Message indicating that backup export is complete.");
 
         UILabel *label = [UILabel new];
         label.text = message;
@@ -122,8 +131,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.backup.backupPassword) {
         NSString *message = [NSString stringWithFormat:NSLocalizedString(@"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT",
-                                                           @"Format for message indicating that backup export with "
-                                                           @"password is complete. Embeds: {{the backup password}}."),
+                                                           @"Format for message indicating that backup export "
+                                                           @"is complete. Embeds: {{the backup password}}."),
                                       self.backup.backupPassword];
 
         UILabel *label = [UILabel new];
@@ -154,6 +163,32 @@ NS_ASSUME_NONNULL_BEGIN
             addObject:[self makeButtonWithTitle:NSLocalizedString(@"BACKUP_EXPORT_SEND_BACKUP_BUTTON",
                                                     @"Label for button that 'send backup' in the current conversation.")
                                        selector:@selector(sendBackup)]];
+    }
+
+    // TODO: We should offer the option to save the backup to "Files", iCloud, Dropbox, etc.
+
+    UIView *container = [UIView verticalStackWithSubviews:subviews spacing:10];
+    [self.view addSubview:container];
+    [container autoVCenterInSuperview];
+    [container autoPinWidthToSuperviewWithMargin:25.f];
+}
+
+- (void)showFailedUI
+{
+    NSMutableArray<UIView *> *subviews = [NSMutableArray new];
+
+    {
+        NSString *message
+            = NSLocalizedString(@"BACKUP_EXPORT_FAILED_MESSAGE", @"Message indicating that backup export failed.");
+
+        UILabel *label = [UILabel new];
+        label.text = message;
+        label.textColor = [UIColor blackColor];
+        label.font = [UIFont ows_regularFontWithSize:18.f];
+        label.textAlignment = NSTextAlignmentCenter;
+        label.numberOfLines = 0;
+        label.lineBreakMode = NSLineBreakByWordWrapping;
+        [subviews addObject:label];
     }
 
     // TODO: We should offer the option to save the backup to "Files", iCloud, Dropbox, etc.
@@ -262,6 +297,14 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ %s.", self.logTag, __PRETTY_FUNCTION__);
 
     [self updateUI];
+}
+
+
+- (void)backupProgressDidChange
+{
+    DDLogInfo(@"%@ %s.", self.logTag, __PRETTY_FUNCTION__);
+
+    self.progressView.progress = self.backup.backupProgress;
 }
 
 @end
