@@ -44,7 +44,7 @@
 		34B3F8791E8DF1700035BE1A /* CountryCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8411E8DF1700035BE1A /* CountryCodeViewController.m */; };
 		34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */; };
 		34B3F87C1E8DF1700035BE1A /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8461E8DF1700035BE1A /* FingerprintViewController.m */; };
-		34B3F87D1E8DF1700035BE1A /* FullImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8481E8DF1700035BE1A /* FullImageViewController.m */; };
+		34B3F87D1E8DF1700035BE1A /* MediaDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8481E8DF1700035BE1A /* MediaDetailViewController.m */; };
 		34B3F87E1E8DF1700035BE1A /* InboxTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84A1E8DF1700035BE1A /* InboxTableViewCell.m */; };
 		34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
 		34B3F8811E8DF1700035BE1A /* LockInteractionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84E1E8DF1700035BE1A /* LockInteractionController.m */; };
@@ -467,8 +467,8 @@
 		34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradesPageViewController.swift; sourceTree = "<group>"; };
 		34B3F8451E8DF1700035BE1A /* FingerprintViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerprintViewController.h; sourceTree = "<group>"; };
 		34B3F8461E8DF1700035BE1A /* FingerprintViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FingerprintViewController.m; sourceTree = "<group>"; };
-		34B3F8471E8DF1700035BE1A /* FullImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FullImageViewController.h; sourceTree = "<group>"; };
-		34B3F8481E8DF1700035BE1A /* FullImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FullImageViewController.m; sourceTree = "<group>"; };
+		34B3F8471E8DF1700035BE1A /* MediaDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaDetailViewController.h; sourceTree = "<group>"; };
+		34B3F8481E8DF1700035BE1A /* MediaDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaDetailViewController.m; sourceTree = "<group>"; };
 		34B3F8491E8DF1700035BE1A /* InboxTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InboxTableViewCell.h; sourceTree = "<group>"; };
 		34B3F84A1E8DF1700035BE1A /* InboxTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InboxTableViewCell.m; sourceTree = "<group>"; };
 		34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteFlow.swift; sourceTree = "<group>"; };
@@ -1029,8 +1029,8 @@
 				34B3F8461E8DF1700035BE1A /* FingerprintViewController.m */,
 				34E8BF361EE9E2FD00F5F4CA /* FingerprintViewScanController.h */,
 				34E8BF371EE9E2FD00F5F4CA /* FingerprintViewScanController.m */,
-				34B3F8471E8DF1700035BE1A /* FullImageViewController.h */,
-				34B3F8481E8DF1700035BE1A /* FullImageViewController.m */,
+				34B3F8471E8DF1700035BE1A /* MediaDetailViewController.h */,
+				34B3F8481E8DF1700035BE1A /* MediaDetailViewController.m */,
 				34BECE2C1F7ABCE000D7438D /* GifPicker */,
 				34B3F86F1E8DF1700035BE1A /* HomeViewController.h */,
 				34B3F8701E8DF1700035BE1A /* HomeViewController.m */,
@@ -2389,7 +2389,7 @@
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
 				34D1F0B01F867BFC0066283D /* OWSSystemMessageCell.m in Sources */,
 				45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */,
-				34B3F87D1E8DF1700035BE1A /* FullImageViewController.m in Sources */,
+				34B3F87D1E8DF1700035BE1A /* MediaDetailViewController.m in Sources */,
 				45666F7B1D9C0533008FE134 /* OWSDatabaseMigration.m in Sources */,
 				34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppSettingsViewController.h"
@@ -10,7 +10,7 @@
 #import "DebugUIPage.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
-#import "FullImageViewController.h"
+#import "MediaDetailViewController.h"
 #import "HomeViewController.h"
 #import "NSString+OWS.h"
 #import "NotificationsManager.h"

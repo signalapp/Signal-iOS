@@ -19,7 +19,7 @@
 #import "DebugUITableViewController.h"
 #import "Environment.h"
 #import "FingerprintViewController.h"
-#import "FullImageViewController.h"
+#import "MediaDetailViewController.h"
 #import "NSAttributedString+OWS.h"
 #import "NSString+OWS.h"
 #import "NewGroupViewController.h"
@@ -2002,7 +2002,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     CGRect convertedRect = [imageView convertRect:imageView.bounds toView:window];
-    FullImageViewController *vc = [[FullImageViewController alloc] initWithAttachmentStream:attachmentStream
+    MediaDetailViewController *vc = [[MediaDetailViewController alloc] initWithAttachmentStream:attachmentStream
                                                                                    fromRect:convertedRect
                                                                                    viewItem:viewItem];
     [vc presentFromViewController:self];
@@ -2020,7 +2020,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     CGRect convertedRect = [imageView convertRect:imageView.bounds toView:window];
 
-    FullImageViewController *vc = [[FullImageViewController alloc] initWithAttachmentStream:attachmentStream
+    MediaDetailViewController *vc = [[MediaDetailViewController alloc] initWithAttachmentStream:attachmentStream
                                                                                    fromRect:convertedRect
                                                                                    viewItem:viewItem];
     [vc presentFromViewController:self];

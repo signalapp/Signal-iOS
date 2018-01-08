@@ -412,7 +412,7 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         guard let fromView = sender.view else {
             return
         }
-        showFullImageViewController(fromView: fromView)
+        showMediaDetailViewController(fromView: fromView)
     }
 
     private func fromViewController() -> UIViewController? {
@@ -437,22 +437,22 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         guard let fromView = sender.view else {
             return
         }
-        showFullImageViewController(fromView: fromView)
+        showMediaDetailViewController(fromView: fromView)
     }
 
-    func showFullImageViewController(fromView: UIView) {
+    func showMediaDetailViewController(fromView: UIView) {
         guard let fromViewController = fromViewController() else {
             return
         }
         let window = UIApplication.shared.keyWindow
         let convertedRect = fromView.convert(fromView.bounds, to:window)
 
-        let viewController: FullImageViewController = {
+        let viewController: MediaDetailViewController = {
             if let viewItem = self.viewItem, let attachmentStream = self.attachmentStream {
-                return FullImageViewController(attachmentStream: attachmentStream, from: convertedRect, viewItem: viewItem)
+                return MediaDetailViewController(attachmentStream: attachmentStream, from: convertedRect, viewItem: viewItem)
             } else {
                 // e.g. when MediaMessageView does not belong to a persisted interaction, e.g. approval view.
-                return FullImageViewController(attachment: attachment, from:convertedRect)
+                return MediaDetailViewController(attachment: attachment, from:convertedRect)
             }
         }()
 

@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "FullImageViewController.h"
+#import "MediaDetailViewController.h"
 #import "AttachmentSharing.h"
 #import "ConversationViewController.h"
 #import "ConversationViewItem.h"
@@ -44,11 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface FullImageViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, PlayerProgressBarDelegate>
+@interface MediaDetailViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, PlayerProgressBarDelegate>
 
 @property (nonatomic) UIScrollView *scrollView;
-//@property (nonatomic) UIImageView *imageView;
-@property (nonatomic) UIView *imageView;
+@property (nonatomic) UIView *mediaView;
 
 @property (nonatomic) UIButton *shareButton;
 
@@ -69,14 +68,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UIBarButtonItem *videoPauseBarButton;
 
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *imageViewConstraints;
-@property (nonatomic, nullable) NSLayoutConstraint *imageViewBottomConstraint;
-@property (nonatomic, nullable) NSLayoutConstraint *imageViewLeadingConstraint;
-@property (nonatomic, nullable) NSLayoutConstraint *imageViewTopConstraint;
-@property (nonatomic, nullable) NSLayoutConstraint *imageViewTrailingConstraint;
+@property (nonatomic, nullable) NSLayoutConstraint *mediaViewBottomConstraint;
+@property (nonatomic, nullable) NSLayoutConstraint *mediaViewLeadingConstraint;
+@property (nonatomic, nullable) NSLayoutConstraint *mediaViewTopConstraint;
+@property (nonatomic, nullable) NSLayoutConstraint *mediaViewTrailingConstraint;
 
 @end
 
-@implementation FullImageViewController
+@implementation MediaDetailViewController
 
 - (instancetype)initWithAttachmentStream:(TSAttachmentStream *)attachmentStream
                                 fromRect:(CGRect)rect
@@ -251,32 +250,32 @@ NS_ASSUME_NONNULL_BEGIN
             YYImage *animatedGif = [YYImage imageWithData:self.fileData];
             YYAnimatedImageView *animatedView = [YYAnimatedImageView new];
             animatedView.image = animatedGif;
-            self.imageView = animatedView;
+            self.mediaView = animatedView;
         } else {
-            self.imageView = [UIImageView new];
+            self.mediaView = [UIImageView new];
         }
     } else if (self.isVideo) {
-        self.imageView = [self buildVideoPlayerView];
+        self.mediaView = [self buildVideoPlayerView];
     } else {
         // Present the static image using standard UIImageView
         UIImageView *imageView = [[UIImageView alloc] initWithImage:self.image];
 
-        self.imageView = imageView;
+        self.mediaView = imageView;
     }
 
-    OWSAssert(self.imageView);
+    OWSAssert(self.mediaView);
 
-    [scrollView addSubview:self.imageView];
-    self.imageView.contentMode = UIViewContentModeScaleAspectFit;
-    self.imageView.userInteractionEnabled = YES;
-    self.imageView.clipsToBounds = YES;
-    self.imageView.layer.allowsEdgeAntialiasing = YES;
-    self.imageView.translatesAutoresizingMaskIntoConstraints = NO;
+    [scrollView addSubview:self.mediaView];
+    self.mediaView.contentMode = UIViewContentModeScaleAspectFit;
+    self.mediaView.userInteractionEnabled = YES;
+    self.mediaView.clipsToBounds = YES;
+    self.mediaView.layer.allowsEdgeAntialiasing = YES;
+    self.mediaView.translatesAutoresizingMaskIntoConstraints = NO;
 
     // Use trilinear filters for better scaling quality at
     // some performance cost.
-    self.imageView.layer.minificationFilter = kCAFilterTrilinear;
-    self.imageView.layer.magnificationFilter = kCAFilterTrilinear;
+    self.mediaView.layer.minificationFilter = kCAFilterTrilinear;
+    self.mediaView.layer.magnificationFilter = kCAFilterTrilinear;
 
     [self applyInitialImageViewConstraints];
 
@@ -373,15 +372,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     CGRect convertedRect =
-        [self.imageView.superview convertRect:self.originRect fromView:[UIApplication sharedApplication].keyWindow];
+        [self.mediaView.superview convertRect:self.originRect fromView:[UIApplication sharedApplication].keyWindow];
 
     NSMutableArray<NSLayoutConstraint *> *imageViewConstraints = [NSMutableArray new];
     self.imageViewConstraints = imageViewConstraints;
 
-    [imageViewConstraints addObjectsFromArray:[self.imageView autoSetDimensionsToSize:convertedRect.size]];
+    [imageViewConstraints addObjectsFromArray:[self.mediaView autoSetDimensionsToSize:convertedRect.size]];
     [imageViewConstraints addObjectsFromArray:@[
-        [self.imageView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:convertedRect.origin.y],
-        [self.imageView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:convertedRect.origin.x]
+        [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:convertedRect.origin.y],
+        [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:convertedRect.origin.x]
     ]];
 }
 
@@ -394,16 +393,16 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<NSLayoutConstraint *> *imageViewConstraints = [NSMutableArray new];
     self.imageViewConstraints = imageViewConstraints;
 
-    self.imageViewLeadingConstraint = [self.imageView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-    self.imageViewTopConstraint = [self.imageView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    self.imageViewTrailingConstraint = [self.imageView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-    self.imageViewBottomConstraint = [self.imageView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    self.mediaViewLeadingConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    self.mediaViewTopConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    self.mediaViewTrailingConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    self.mediaViewBottomConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     [imageViewConstraints addObjectsFromArray:@[
-        self.imageViewTopConstraint,
-        self.imageViewTrailingConstraint,
-        self.imageViewBottomConstraint,
-        self.imageViewLeadingConstraint
+        self.mediaViewTopConstraint,
+        self.mediaViewTrailingConstraint,
+        self.mediaViewBottomConstraint,
+        self.mediaViewLeadingConstraint
     ]];
 }
 
@@ -710,7 +709,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                                    // Make sure imageView is layed out before we update it's frame in the next
                                    // animation.
-                                   [self.imageView.superview layoutIfNeeded];
+                                   [self.mediaView.superview layoutIfNeeded];
 
                                    // 2. Animate imageView from it's initial position, which should match where it was
                                    // in the presenting view to it's final position, front and center in this view. This
@@ -720,13 +719,13 @@ NS_ASSUME_NONNULL_BEGIN
                                        options:UIViewAnimationOptionCurveEaseOut
                                        animations:^(void) {
                                            [self applyFinalImageViewConstraints];
-                                           [self.imageView.superview layoutIfNeeded];
+                                           [self.mediaView.superview layoutIfNeeded];
                                            // We must lay out *before* we centerImageViewConstraints
                                            // because it uses the imageView.frame to build the contstraints
                                            // that will center the imageView, and then once again
                                            // to ensure that the centered constraints are applied.
                                            [self centerImageViewConstraints];
-                                           [self.imageView.superview layoutIfNeeded];
+                                           [self.mediaView.superview layoutIfNeeded];
                                            self.view.backgroundColor = UIColor.whiteColor;
                                        }
                                        completion:^(BOOL finished) {
@@ -744,9 +743,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.view.userInteractionEnabled = NO;
     [UIApplication sharedApplication].statusBarHidden = NO;
 
-    OWSAssert(self.imageView.superview);
+    OWSAssert(self.mediaView.superview);
 
-    [self.imageView.superview layoutIfNeeded];
+    [self.mediaView.superview layoutIfNeeded];
 
     // Move the image view pack to it's initial position, i.e. where
     // it sits on the screen in the conversation view.
@@ -757,7 +756,7 @@ NS_ASSUME_NONNULL_BEGIN
             delay:0.0
             options:UIViewAnimationOptionCurveEaseInOut
             animations:^(void) {
-                [self.imageView.superview layoutIfNeeded];
+                [self.mediaView.superview layoutIfNeeded];
 
                 // In case user has hidden bars, which changes background to black.
                 self.view.backgroundColor = UIColor.whiteColor;
@@ -777,7 +776,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
 {
-    return self.imageView;
+    return self.mediaView;
 }
 
 - (void)centerImageViewConstraints
@@ -785,15 +784,15 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.scrollView);
 
     CGSize scrollViewSize = self.scrollView.bounds.size;
-    CGSize imageViewSize = self.imageView.frame.size;
+    CGSize imageViewSize = self.mediaView.frame.size;
 
     CGFloat yOffset = MAX(0, (scrollViewSize.height - imageViewSize.height) / 2);
-    self.imageViewTopConstraint.constant = yOffset;
-    self.imageViewBottomConstraint.constant = yOffset;
+    self.mediaViewTopConstraint.constant = yOffset;
+    self.mediaViewBottomConstraint.constant = yOffset;
 
     CGFloat xOffset = MAX(0, (scrollViewSize.width - imageViewSize.width) / 2);
-    self.imageViewLeadingConstraint.constant = xOffset;
-    self.imageViewTrailingConstraint.constant = xOffset;
+    self.mediaViewLeadingConstraint.constant = xOffset;
+    self.mediaViewTrailingConstraint.constant = xOffset;
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
