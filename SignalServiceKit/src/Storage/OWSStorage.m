@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSStorage.h"
@@ -23,6 +23,7 @@ NSString *const OWSStorageExceptionName_DatabasePasswordInaccessibleWhileBackgro
 NSString *const OWSStorageExceptionName_DatabasePasswordUnwritable
     = @"OWSStorageExceptionName_DatabasePasswordUnwritable";
 NSString *const OWSStorageExceptionName_NoDatabase = @"OWSStorageExceptionName_NoDatabase";
+NSString *const OWSResetStorageNotification = @"OWSResetStorageNotification";
 
 static NSString *keychainService = @"TSKeyChainService";
 static NSString *keychainDBPassAccount = @"TSDatabasePass";
@@ -270,9 +271,19 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
                 [NSException raise:OWSStorageExceptionName_NoDatabase format:@"Failed to initialize database."];
             }
         }
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(resetStorage)
+                                                     name:OWSResetStorageNotification
+                                                   object:nil];
     }
 
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (BOOL)areAsyncRegistrationsComplete
@@ -450,9 +461,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 
 + (void)resetAllStorage
 {
-    for (OWSStorage *storage in self.allStorages) {
-        [storage resetStorage];
-    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:OWSResetStorageNotification object:nil];
 
     // This might be redundant but in the spirit of thoroughness...
     [self deleteDatabaseFiles];
