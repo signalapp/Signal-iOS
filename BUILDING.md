@@ -73,12 +73,15 @@ open Signal.xcworkspace
 In the TARGETS area of the General tab, change the Team drop down to
 your own. You will need to do that for all the listed targets, for ex. 
 Signal, SignalShareExtension, and SignalMessaging. You will need an Apple
-Developer account for this. On the Capabilities tab, turn off Push 
-Notifications and Data Protection. Background Modes should remain on.
-The App Groups capability will need to remain on in order to access the
-shared data storage. The App ID needs to match the SignalApplicationGroup
-string set in TSConstants.h. The iCloud capability, with iCloud Documents
-selected, will need to be on if you wish to test the Documents API.
+Developer account for this. 
+
+On the Capabilities tab, turn off Push Notifications and Data Protection,
+while keeping Background Modes on. The App Groups capability will need to
+remain on in order to access the shared data storage. The App ID needs to
+match the SignalApplicationGroup string set in TSConstants.h. 
+
+If you wish to test the Documents API, the iCloud capability will need to
+be on with the iCloud Documents option selected.
 
 Build and Run and you are ready to go!
 
