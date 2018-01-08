@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageCell.h"
@@ -1172,7 +1172,9 @@ NS_ASSUME_NONNULL_BEGIN
                 [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:self.attachmentStream];
                 return;
             case OWSMessageCellType_Video:
-                [self.delegate didTapVideoViewItem:self.viewItem attachmentStream:self.attachmentStream];
+                [self.delegate didTapVideoViewItem:self.viewItem
+                                  attachmentStream:self.attachmentStream
+                                         imageView:self.stillImageView];
                 return;
             case OWSMessageCellType_GenericAttachment:
                 [AttachmentSharing showShareUIForAttachment:self.attachmentStream];

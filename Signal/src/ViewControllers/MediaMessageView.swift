@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -18,6 +18,11 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     // MARK: Properties
 
     let mode: MediaMessageViewMode
+
+    // If this is for a persisted interaction, viewItem and attachmentStream will not be nil
+    // If this is for an attachmet draft, before sending, viewItem and attachmentStream will be nil
+    var viewItem: ConversationViewItem?
+    var attachmentStream: TSAttachmentStream?
 
     let attachment: SignalAttachment
 
@@ -45,10 +50,16 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         fatalError("\(#function) is unimplemented.")
     }
 
-    required init(attachment: SignalAttachment, mode: MediaMessageViewMode) {
+    convenience init(attachment: SignalAttachment, mode: MediaMessageViewMode) {
+        self.init(attachment: attachment, mode: mode, viewItem: nil, attachmentStream: nil)
+    }
+
+    required init(attachment: SignalAttachment, mode: MediaMessageViewMode, viewItem: ConversationViewItem?, attachmentStream: TSAttachmentStream?) {
         assert(!attachment.hasError)
-        self.mode = mode
         self.attachment = attachment
+        self.mode = mode
+        self.viewItem = viewItem
+        self.attachmentStream = attachmentStream
         super.init(frame: CGRect.zero)
 
         createViews()
@@ -401,13 +412,7 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         guard let fromView = sender.view else {
             return
         }
-        guard let fromViewController = fromViewController() else {
-            return
-        }
-        let window = UIApplication.shared.keyWindow
-        let convertedRect = fromView.convert(fromView.bounds, to:window)
-        let viewController = FullImageViewController(attachment:attachment, from:convertedRect)
-        viewController.present(from:fromViewController)
+        showMediaDetailViewController(fromView: fromView)
     }
 
     private func fromViewController() -> UIViewController? {
@@ -429,44 +434,28 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         guard sender.state == .recognized else {
             return
         }
-        guard let dataUrl = attachment.dataUrl else {
+        guard let fromView = sender.view else {
             return
         }
-        guard let videoPlayer = MPMoviePlayerController(contentURL: dataUrl) else {
+        showMediaDetailViewController(fromView: fromView)
+    }
+
+    func showMediaDetailViewController(fromView: UIView) {
+        guard let fromViewController = fromViewController() else {
             return
         }
-        videoPlayer.prepareToPlay()
+        let window = UIApplication.shared.keyWindow
+        let convertedRect = fromView.convert(fromView.bounds, to:window)
 
-        NotificationCenter.default.addObserver(forName: .MPMoviePlayerWillExitFullscreen, object: nil, queue: nil) { [weak self] _ in
-            self?.moviePlayerWillExitFullscreen()
-        }
-        NotificationCenter.default.addObserver(forName: .MPMoviePlayerDidExitFullscreen, object: nil, queue: nil) { [weak self] _ in
-            self?.moviePlayerDidExitFullscreen()
-        }
+        let viewController: MediaDetailViewController = {
+            if let viewItem = self.viewItem, let attachmentStream = self.attachmentStream {
+                return MediaDetailViewController(attachmentStream: attachmentStream, from: convertedRect, viewItem: viewItem)
+            } else {
+                // e.g. when MediaMessageView does not belong to a persisted interaction, e.g. approval view.
+                return MediaDetailViewController(attachment: attachment, from:convertedRect)
+            }
+        }()
 
-        videoPlayer.controlStyle = .default
-        videoPlayer.shouldAutoplay = true
-
-        self.addSubview(videoPlayer.view)
-        videoPlayer.view.frame = self.bounds
-        self.videoPlayer = videoPlayer
-        videoPlayer.view.autoPinToSuperviewEdges()
-        ViewControllerUtils.setAudioIgnoresHardwareMuteSwitch(true)
-        videoPlayer.setFullscreen(true, animated:false)
-    }
-
-    private func moviePlayerWillExitFullscreen() {
-        clearVideoPlayer()
-    }
-
-    private func moviePlayerDidExitFullscreen() {
-        clearVideoPlayer()
-    }
-
-    private func clearVideoPlayer() {
-        videoPlayer?.stop()
-        videoPlayer?.view.removeFromSuperview()
-        videoPlayer = nil
-        ViewControllerUtils.setAudioIgnoresHardwareMuteSwitch(false)
+        viewController.present(from:fromViewController)
     }
 }

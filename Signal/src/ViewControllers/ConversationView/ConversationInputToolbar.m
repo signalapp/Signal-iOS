@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputToolbar.h"
@@ -15,7 +15,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
-
+static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 @interface ConversationInputToolbar () <UIGestureRecognizerDelegate, ConversationTextViewToolbarDelegate>
 
 @property (nonatomic, readonly) UIView *contentView;
@@ -30,6 +30,8 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 @property (nonatomic) NSArray<NSLayoutConstraint *> *contentContraints;
 @property (nonatomic) NSValue *lastTextContentSize;
+@property (nonatomic) CGFloat toolbarHeight;
+@property (nonatomic) CGFloat textViewHeight;
 
 #pragma mark - Voice Memo Recording UI
 
@@ -68,18 +70,25 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [self removeKVOObservers];
 }
 
+- (CGSize)intrinsicContentSize
+{
+    CGSize newSize = CGSizeMake(self.bounds.size.width, self.toolbarHeight + ConversationInputToolbarBorderViewHeight);
+    return newSize;
+}
+
 - (void)createContents
 {
     self.layoutMargins = UIEdgeInsetsZero;
 
     self.backgroundColor = [UIColor ows_inputToolbarBackgroundColor];
+    self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
 
     UIView *borderView = [UIView new];
     borderView.backgroundColor = [UIColor colorWithWhite:238 / 255.f alpha:1.f];
     [self addSubview:borderView];
     [borderView autoPinWidthToSuperview];
     [borderView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [borderView autoSetDimension:ALDimensionHeight toSize:0.5f];
+    [borderView autoSetDimension:ALDimensionHeight toSize:ConversationInputToolbarBorderViewHeight];
 
     _contentView = [UIView containerView];
     [self addSubview:self.contentView];
@@ -223,11 +232,15 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     const CGFloat kMinTextViewHeight = ceil(self.inputTextView.font.lineHeight
         + self.inputTextView.textContainerInset.top + self.inputTextView.textContainerInset.bottom
         + self.inputTextView.contentInset.top + self.inputTextView.contentInset.bottom);
-    const CGFloat kMaxTextViewHeight = 100.f;
+    // Exactly 4 lines of text with default sizing.
+    const CGFloat kMaxTextViewHeight = 98.f;
     const CGFloat textViewDesiredHeight = (self.inputTextView.contentSize.height + self.inputTextView.contentInset.top
         + self.inputTextView.contentInset.bottom);
     const CGFloat textViewHeight = ceil(Clamp(textViewDesiredHeight, kMinTextViewHeight, kMaxTextViewHeight));
     const CGFloat kMinContentHeight = kMinTextViewHeight + textViewVInset * 2;
+
+    self.textViewHeight = textViewHeight;
+    self.toolbarHeight = textViewHeight + textViewVInset * 2;
 
     if (self.attachmentToApprove) {
         OWSAssert(self.attachmentView);
@@ -247,14 +260,14 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
         self.contentContraints = @[
             [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textViewVInset],
-            [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:textViewVInset],
+            [self.attachmentView autoPinBottomToSuperviewWithMargin:textViewVInset],
             [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:contentHInset],
             [self.attachmentView autoSetDimension:ALDimensionHeight toSize:150.f],
 
             [self.rightButtonWrapper autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.attachmentView],
             [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeRight],
             [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
-            [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+            [self.rightButtonWrapper autoPinBottomToSuperviewWithMargin:0],
 
             [rightButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
             [rightButton autoPinLeadingToSuperviewWithMargin:contentHSpacing],
@@ -316,7 +329,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     self.contentContraints = @[
         [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeLeft],
         [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+        [self.leftButtonWrapper autoPinBottomToSuperviewWithMargin:0],
 
         [leftButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
         [leftButton autoPinLeadingToSuperviewWithMargin:contentHInset],
@@ -325,18 +338,18 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
         [self.inputTextView autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.leftButtonWrapper],
         [self.inputTextView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textViewVInset],
-        [self.inputTextView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:textViewVInset],
+        [self.inputTextView autoPinBottomToSuperviewWithMargin:textViewVInset],
         [self.inputTextView autoSetDimension:ALDimensionHeight toSize:textViewHeight],
 
         [self.rightButtonWrapper autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.inputTextView],
         [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeRight],
         [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+        [self.rightButtonWrapper autoPinBottomToSuperviewWithMargin:0],
 
         [rightButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
         [rightButton autoPinLeadingToSuperviewWithMargin:contentHSpacing],
         [rightButton autoPinTrailingToSuperviewWithMargin:contentHInset],
-        [rightButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+        [rightButton autoPinEdgeToSuperviewEdge:ALEdgeBottom]
     ];
 
     // Layout immediately, unless the input toolbar hasn't even been laid out yet.
@@ -709,6 +722,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
             if (!lastTextContentSize || fabs(lastTextContentSize.CGSizeValue.width - textContentSize.width) > 0.1f
                 || fabs(lastTextContentSize.CGSizeValue.height - textContentSize.height) > 0.1f) {
                 [self ensureContentConstraints];
+                [self invalidateIntrinsicContentSize];
             }
         }
     }
@@ -811,8 +825,6 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 - (void)viewWillDisappear:(BOOL)animated
 {
     [self.attachmentView viewWillDisappear:animated];
-
-    [self endEditingTextMessage];
 }
 
 - (nullable NSString *)textInputPrimaryLanguage
