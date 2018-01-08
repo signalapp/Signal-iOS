@@ -1401,13 +1401,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         return;
     }
 
-    // FIXME inputAccessoryView - if using numeric keyboard, switch back to alpha after
-    // sending.
-    // The JSQ event listeners cause a bounce animation, so we temporarily disable them.
-    //    [self setShouldIgnoreKeyboardChanges:YES];
-    //    [self dismissKeyBoard];
-    //    [self popKeyBoard];
-    //    [self setShouldIgnoreKeyboardChanges:NO];
+    [self dismissKeyBoard];
+    [self popKeyBoard];
 }
 
 #pragma mark - Dynamic Text
