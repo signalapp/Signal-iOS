@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewLayout.h"
@@ -67,10 +67,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"%@ Missing delegate", self.logTag);
         [self clearState];
         return;
-    }
-    
-    if (self.collectionView.bounds.size.width <= 0.f || self.collectionView.bounds.size.height <= 0.f) {
-        [self.collectionView layoutIfNeeded];
     }
     
     if (self.collectionView.bounds.size.width <= 0.f || self.collectionView.bounds.size.height <= 0.f) {

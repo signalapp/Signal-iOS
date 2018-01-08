@@ -76,15 +76,6 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     return newSize;
 }
 
-- (void)setToolbarHeight:(CGFloat)toolbarHeight
-{
-    if (toolbarHeight == _toolbarHeight) {
-        return;
-    }
-
-    _toolbarHeight = toolbarHeight;
-}
-
 - (void)createContents
 {
     self.layoutMargins = UIEdgeInsetsZero;

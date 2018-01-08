@@ -3667,11 +3667,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
     CGRect keyboardEndFrame = [keyboardEndFrameValue CGRectValue];
 
-    //    DDLogVerbose(@"%@ keyboard change. Old Frame: %@, New Frame: %@",
-    //        self.logTag,
-    //        NSStringFromCGRect(keyboardBeginFrame),
-    //        NSStringFromCGRect(keyboardEndFrame));
-
     UIEdgeInsets oldInsets = self.collectionView.contentInset;
     UIEdgeInsets newInsets = oldInsets;
 
