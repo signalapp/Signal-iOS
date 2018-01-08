@@ -131,6 +131,37 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
++ (NSArray<NSString *> *_Nullable)allFilesInDirectoryRecursive:(NSString *)dirPath error:(NSError **)error
+{
+    OWSAssert(dirPath.length > 0);
+
+    *error = nil;
+
+    NSArray<NSString *> *filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:error];
+    if (*error) {
+        return nil;
+    }
+
+    NSMutableArray<NSString *> *filePaths = [NSMutableArray new];
+
+    for (NSString *filename in filenames) {
+        NSString *filePath = [dirPath stringByAppendingPathComponent:filename];
+
+        BOOL isDirectory;
+        [[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDirectory];
+        if (isDirectory) {
+            [filePaths addObjectsFromArray:[self allFilesInDirectoryRecursive:filePath error:error]];
+            if (*error) {
+                return nil;
+            }
+        } else {
+            [filePaths addObject:filePath];
+        }
+    }
+
+    return filePaths;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

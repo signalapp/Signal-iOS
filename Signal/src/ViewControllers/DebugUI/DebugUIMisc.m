@@ -4,7 +4,7 @@
 
 #import "DebugUIMisc.h"
 #import "OWSBackup.h"
-#import "OWSBackupViewController.h"
+#import "OWSBackupExportViewController.h"
 #import "OWSCountryMetadata.h"
 #import "OWSTableViewController.h"
 #import "RegistrationViewController.h"
@@ -98,7 +98,8 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem
                          subPageItemWithText:@"Export Backup w/ Password"
                                  actionBlock:^(UIViewController *viewController) {
-                                     OWSBackupViewController *backupViewController = [OWSBackupViewController new];
+                                     OWSBackupExportViewController *backupViewController =
+                                         [OWSBackupExportViewController new];
                                      [backupViewController exportBackup:thread skipPassword:NO];
                                      [viewController.navigationController pushViewController:backupViewController
                                                                                     animated:YES];
@@ -106,7 +107,8 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem
                          subPageItemWithText:@"Export Backup w/o Password"
                                  actionBlock:^(UIViewController *viewController) {
-                                     OWSBackupViewController *backupViewController = [OWSBackupViewController new];
+                                     OWSBackupExportViewController *backupViewController =
+                                         [OWSBackupExportViewController new];
                                      [backupViewController exportBackup:thread skipPassword:YES];
                                      [viewController.navigationController pushViewController:backupViewController
                                                                                     animated:YES];

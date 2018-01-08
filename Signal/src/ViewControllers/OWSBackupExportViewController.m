@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSBackupViewController.h"
+#import "OWSBackupExportViewController.h"
 #import "OWSBackup.h"
 #import "OWSProgressView.h"
 #import "Signal-Swift.h"
@@ -17,7 +17,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSBackupViewController () <OWSBackupDelegate>
+@interface OWSBackupExportViewController () <OWSBackupDelegate>
 
 @property (nonatomic) OWSBackup *backup;
 
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation OWSBackupViewController
+@implementation OWSBackupExportViewController
 
 - (void)loadView
 {
@@ -298,7 +298,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updateUI];
 }
-
 
 - (void)backupProgressDidChange
 {

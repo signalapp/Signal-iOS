@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppSettingsViewController.h"
@@ -89,6 +89,10 @@
     self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"Title for settings activity");
 
     [self updateTableContents];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self showDebugUI];
+    });
 }
 
 - (void)viewWillAppear:(BOOL)animated

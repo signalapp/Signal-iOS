@@ -4,6 +4,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const OWSBackup_FileExtension;
+
 @protocol OWSBackupDelegate <NSObject>
 
 - (void)backupStateDidChange;
@@ -39,6 +41,8 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 @property (nonatomic, readonly) NSString *backupZipPath;
 
 - (void)exportBackup:(nullable TSThread *)currentThread skipPassword:(BOOL)skipPassword;
+
+- (void)importBackup:(NSString *)backupZipPath password:(NSString *_Nullable)password;
 
 - (void)cancel;
 

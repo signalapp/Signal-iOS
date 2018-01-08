@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteFileIfExists:(NSString *)filePath;
 
++ (NSArray<NSString *> *_Nullable)allFilesInDirectoryRecursive:(NSString *)dirPath error:(NSError **)error;
+
 @end
 
 NS_ASSUME_NONNULL_END

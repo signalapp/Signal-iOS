@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSThread;
 
-@interface OWSBackupViewController : OWSViewController
+@interface OWSBackupExportViewController : OWSViewController
 
 // If currentThread is non-nil, we should offer to let users send the
 // backup in that thread.
