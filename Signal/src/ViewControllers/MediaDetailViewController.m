@@ -506,12 +506,27 @@ NS_ASSUME_NONNULL_BEGIN
     self.areToolbarsHidden = !self.areToolbarsHidden;
 }
 
-- (void)didDoubleTapImage:(id)sender
+- (void)didDoubleTapImage:(UITapGestureRecognizer *)gesture
 {
-    DDLogVerbose(@"%@ did tap image.", self.logTag);
+    DDLogVerbose(@"%@ did double tap image.", self.logTag);
     if (self.scrollView.zoomScale == self.scrollView.minimumZoomScale) {
-        [self.scrollView setZoomScale:self.scrollView.minimumZoomScale * 2 animated:YES];
+        CGFloat kDoubleTapZoomScale = 2;
+
+        CGFloat zoomWidth = self.scrollView.width / kDoubleTapZoomScale;
+        CGFloat zoomHeight = self.scrollView.height / kDoubleTapZoomScale;
+
+        // center zoom rect around tapLocation
+        CGPoint tapLocation = [gesture locationInView:self.scrollView];
+        CGFloat zoomX = MAX(0, tapLocation.x - zoomWidth / 2);
+        CGFloat zoomY = MAX(0, tapLocation.y - zoomHeight / 2);
+
+        CGRect zoomRect = CGRectMake(zoomX, zoomY, zoomWidth, zoomHeight);
+
+        CGRect translatedRect = [self.mediaView convertRect:zoomRect fromView:self.scrollView];
+
+        [self.scrollView zoomToRect:translatedRect animated:YES];
     } else {
+        // If already zoomed in at all, zoom out all the way.
         [self.scrollView setZoomScale:self.scrollView.minimumZoomScale animated:YES];
     }
 }
