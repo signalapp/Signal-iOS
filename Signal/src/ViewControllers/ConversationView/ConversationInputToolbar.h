@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -48,8 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)messageText;
 - (void)setMessageText:(NSString *_Nullable)value;
 - (void)clearTextMessage;
-
-- (nullable NSString *)textInputPrimaryLanguage;
+- (void)toggleDefaultKeyboard;
 
 - (void)updateFontSizes;
 

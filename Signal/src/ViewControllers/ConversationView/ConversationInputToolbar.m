@@ -199,6 +199,26 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     [self.inputTextView.undoManager removeAllActions];
 }
 
+- (void)toggleDefaultKeyboard
+{
+    // Primary language is nil for the emoji keyboard.
+    if (!self.inputTextView.textInputMode.primaryLanguage) {
+        // Stay on emoji keyboard after sending
+        return;
+    }
+
+    // Otherwise, we want to toggle back to default keyboard if the user had the numeric keyboard present.
+
+    // Momentarily switch to a non-default keyboard, else reloadInputViews
+    // will not affect the displayed keyboard. In practice this isn't perceptable to the user.
+    // The alternative would be to dismiss-and-pop the keyboard, but that can cause a more pronounced animation.
+    self.inputTextView.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+    [self.inputTextView reloadInputViews];
+
+    self.inputTextView.keyboardType = UIKeyboardTypeDefault;
+    [self.inputTextView reloadInputViews];
+}
+
 - (void)setShouldShowVoiceMemoButton:(BOOL)shouldShowVoiceMemoButton
 {
     if (_shouldShowVoiceMemoButton == shouldShowVoiceMemoButton) {
@@ -825,11 +845,6 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 - (void)viewWillDisappear:(BOOL)animated
 {
     [self.attachmentView viewWillDisappear:animated];
-}
-
-- (nullable NSString *)textInputPrimaryLanguage
-{
-    return self.inputTextView.textInputMode.primaryLanguage;
 }
 
 @end

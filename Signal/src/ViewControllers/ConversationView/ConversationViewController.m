@@ -1394,17 +1394,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 #pragma mark - JSQMessagesViewController method overrides
 
-- (void)toggleDefaultKeyboard
-{
-    // Primary language is nil for the emoji keyboard & we want to stay on it after sending
-    if (!self.inputToolbar.textInputPrimaryLanguage) {
-        return;
-    }
-
-    [self dismissKeyBoard];
-    [self popKeyBoard];
-}
-
 #pragma mark - Dynamic Text
 
 /**
@@ -3902,10 +3891,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self messageWasSent:message];
 
     if (updateKeyboardState) {
-        [self toggleDefaultKeyboard];
+        [self.inputToolbar toggleDefaultKeyboard];
     }
-    [self clearDraft];
     [self.inputToolbar clearTextMessage];
+    [self clearDraft];
     if (didAddToProfileWhitelist) {
         [self ensureDynamicInteractions];
     }
