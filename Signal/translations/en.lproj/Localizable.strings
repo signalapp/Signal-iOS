@@ -179,7 +179,7 @@
 "BACKUP_FILENAME_FORMAT" = "Signal Backup %@";
 
 /* Message indicating that backup import is complete. */
-"BACKUP_IMPORT_COMPLETE_MESSAGE" = "BACKUP_IMPORT_COMPLETE_MESSAGE";
+"BACKUP_IMPORT_COMPLETE_MESSAGE" = "Restore Complete";
 
 /* Label for button confirming backup import. */
 "BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "Restore";
@@ -190,26 +190,17 @@
 /* Title for alert confirming backup import. */
 "BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "Restore Backup?";
 
-/* Label for button that copies backup password to the pasteboard. */
-"BACKUP_IMPORT_COPY_PASSWORD_BUTTON" = "BACKUP_IMPORT_COPY_PASSWORD_BUTTON";
-
 /* Message indicating that backup import failed. */
-"BACKUP_IMPORT_FAILED_MESSAGE" = "BACKUP_IMPORT_FAILED_MESSAGE";
+"BACKUP_IMPORT_FAILED_MESSAGE" = "Restore Failed";
 
 /* Message indicating that backup import is in progress. */
-"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "BACKUP_IMPORT_IN_PROGRESS_MESSAGE";
+"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Restoring Backup...";
 
-/* Format for message indicating that backup import is complete. Embeds: {{the backup password}}. */
-"BACKUP_IMPORT_PASSWORD_MESSAGE_FORMAT" = "BACKUP_IMPORT_PASSWORD_MESSAGE_FORMAT";
-
-/* Label for button that 'send backup' in the current conversation. */
-"BACKUP_IMPORT_SEND_BACKUP_BUTTON" = "BACKUP_IMPORT_SEND_BACKUP_BUTTON";
-
-/* Label for button that opens share UI for backup. */
-"BACKUP_IMPORT_SHARE_BACKUP_BUTTON" = "BACKUP_IMPORT_SHARE_BACKUP_BUTTON";
+/* Label for button that restarts app to complete restore. */
+"BACKUP_IMPORT_RESTART_BUTTON" = "Restart App";
 
 /* Title for the 'backup import' view. */
-"BACKUP_IMPORT_VIEW_TITLE" = "BACKUP_IMPORT_VIEW_TITLE";
+"BACKUP_IMPORT_VIEW_TITLE" = "Restore Backup";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";

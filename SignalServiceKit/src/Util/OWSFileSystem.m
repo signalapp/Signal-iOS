@@ -9,10 +9,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFileSystem
 
-+ (void)protectFileOrFolderAtPath:(NSString *)path
++ (BOOL)protectFileOrFolderAtPath:(NSString *)path
 {
     if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
-        return;
+        return NO;
     }
 
     NSError *error;
@@ -26,7 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (error || !success) {
         OWSProdCritical([OWSAnalyticsEvents storageErrorFileProtection]);
+        return NO;
     }
+    return YES;
 }
 
 + (NSString *)appDocumentDirectoryPath
@@ -139,6 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<NSString *> *filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:error];
     if (*error) {
+        OWSFail(@"%@ could not find files in directory: %@", self.logTag, *error);
         return nil;
     }
 

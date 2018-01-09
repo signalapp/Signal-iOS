@@ -130,43 +130,11 @@ NS_ASSUME_NONNULL_BEGIN
         [subviews addObject:label];
     }
 
-    if (self.backup.backupPassword) {
-        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"BACKUP_IMPORT_PASSWORD_MESSAGE_FORMAT",
-                                                           @"Format for message indicating that backup import "
-                                                           @"is complete. Embeds: {{the backup password}}."),
-                                      self.backup.backupPassword];
-
-        UILabel *label = [UILabel new];
-        label.text = message;
-        label.textColor = [UIColor blackColor];
-        label.font = [UIFont ows_regularFontWithSize:14.f];
-        label.textAlignment = NSTextAlignmentCenter;
-        label.numberOfLines = 0;
-        label.lineBreakMode = NSLineBreakByWordWrapping;
-        [subviews addObject:label];
-    }
-
     [subviews addObject:[UIView new]];
 
-    if (self.backup.backupPassword) {
-        [subviews
-            addObject:[self makeButtonWithTitle:NSLocalizedString(@"BACKUP_IMPORT_COPY_PASSWORD_BUTTON",
-                                                    @"Label for button that copies backup password to the pasteboard.")
-                                       selector:@selector(copyPassword)]];
-    }
-
-    [subviews addObject:[self makeButtonWithTitle:NSLocalizedString(@"BACKUP_IMPORT_SHARE_BACKUP_BUTTON",
-                                                      @"Label for button that opens share UI for backup.")
-                                         selector:@selector(shareBackup)]];
-
-    if (self.backup.currentThread) {
-        [subviews
-            addObject:[self makeButtonWithTitle:NSLocalizedString(@"BACKUP_IMPORT_SEND_BACKUP_BUTTON",
-                                                    @"Label for button that 'send backup' in the current conversation.")
-                                       selector:@selector(sendBackup)]];
-    }
-
-    // TODO: We should offer the option to save the backup to "Files", iCloud, Dropbox, etc.
+    [subviews addObject:[self makeButtonWithTitle:NSLocalizedString(@"BACKUP_IMPORT_RESTART_BUTTON",
+                                                      @"Label for button that restarts app to complete restore.")
+                                         selector:@selector(restartApp)]];
 
     UIView *container = [UIView verticalStackWithSubviews:subviews spacing:10];
     [self.view addSubview:container];
@@ -218,7 +186,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self.backup cancel];
 
-    [self.navigationController popViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)restartApp
+{
+    DDLogInfo(@"%@ %s.", self.logTag, __PRETTY_FUNCTION__);
+
+    [NSException raise:@"OWSBackup_RestartAppToCompleteBackupRestore" format:@"Killing app to complete backup restore"];
 }
 
 #pragma mark - OWSBackupDelegate

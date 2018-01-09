@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "RegistrationViewController.h"
@@ -439,8 +439,9 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     OWSCAssert(value.length > 0);
 
     NSError *error;
-    [SAMKeychain setPassword:value forService:kKeychainService_LastRegistered account:key error:&error];
-    if (error) {
+    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
+    BOOL success = [SAMKeychain setPassword:value forService:kKeychainService_LastRegistered account:key error:&error];
+    if (!success || error) {
         DDLogError(@"%@ Error persisting 'last registered' value in keychain: %@", self.logTag, error);
     }
 }

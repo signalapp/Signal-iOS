@@ -46,6 +46,8 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 
 - (void)cancel;
 
++ (void)applicationDidFinishLaunching;
+
 @end
 
 NS_ASSUME_NONNULL_END

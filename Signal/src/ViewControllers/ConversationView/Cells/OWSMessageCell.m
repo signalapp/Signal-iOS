@@ -1367,8 +1367,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSBackupImportViewController *backupViewController = [OWSBackupImportViewController new];
     // TODO: Add support for restoring password-protected backups.
     [backupViewController importBackup:backupZipPath password:nil];
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:backupViewController];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:backupViewController animated:YES completion:nil];
+    [fromViewController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)handleTextLongPressGesture:(UILongPressGestureRecognizer *)sender
