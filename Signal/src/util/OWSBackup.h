@@ -44,13 +44,20 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 
 @property (nonatomic, weak) id<OWSBackupDelegate> delegate;
 
+// An instance of `OWSBackup` is used for three separate tasks:
+//
+// * Backup export
+// * Backup import preparation
+// * Backup import completion
+//
+// The "backup state" and "progress" apply to all three tasks.
 @property (nonatomic, readonly) OWSBackupState backupState;
-
 @property (nonatomic, readonly) CGFloat backupProgress;
 
 // If non-nil, backup is encrypted.
 @property (nonatomic, nullable, readonly) NSString *backupPassword;
 
+// Only applies to "backup export" task.
 @property (nonatomic, nullable, readonly) TSThread *currentThread;
 
 @property (nonatomic, readonly) NSString *backupZipPath;
