@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Hide the "import" directories from exports, etc. by prefixing their name with a period.
 NSString *const OWSBackup_DirNamePrefix = @".SignalBackup.";
 NSString *const OWSBackup_FileExtension = @".signalbackup";
-NSString *const OWSBackup_EncryptionKeyFilename = @"OWSBackup_EncryptionKeyFilename";
+NSString *const OWSBackup_EncryptionKeyFilename = @".encryptionKey";
 NSString *const OWSBackup_DatabasePasswordFilename = @".databasePassword";
 NSString *const OWSBackup_StandardUserDefaultsFilename = @".standardUserDefaults";
 NSString *const OWSBackup_AppUserDefaultsFilename = @".appUserDefaults";
@@ -171,6 +171,9 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
 - (void)exportToFilesAndZip
 {
     DDLogInfo(@"%@ %s.", self.logTag, __PRETTY_FUNCTION__);
+
+    // First, clean up any existing backup import/export state.
+    [OWSBackup cleanupBackupState];
 
     NSString *temporaryDirectory = NSTemporaryDirectory();
     NSString *rootDirName = [OWSBackup_DirNamePrefix stringByAppendingString:[NSUUID UUID].UUIDString];
