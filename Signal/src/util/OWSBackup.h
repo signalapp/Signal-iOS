@@ -25,6 +25,21 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 
 @class TSThread;
 
+// We restore backups as part of the app launch process.
+//
+// applicationDidFinishLaunching must complete quickly even for
+// large backups, to prevent the app from being killed on launch.
+// Therefore, we break up backup import/restoration into two parts:
+//
+// * Preparation (which includes the costly decryption/unzip of the
+//   backup file)
+// * Completion (file moves, NSUserDefaults writes, keychain writes).
+//
+// To protect data during backup and restore, we:
+//
+// * Optionally encrypt backup files with a password.
+// * Separately encrypt files containing keychain & NSUserDefaults data.
+// * Delete data from disk ASAP.
 @interface OWSBackup : NSObject
 
 @property (nonatomic, weak) id<OWSBackupDelegate> delegate;
