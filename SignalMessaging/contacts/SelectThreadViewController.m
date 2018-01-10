@@ -324,7 +324,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)recipientIdWasSelected:(NSString *)recipientId
 {
-    SignalAccount *signalAccount = [self.contactsViewHelper signalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self.contactsViewHelper signalAccountForRecipientId:recipientId];
     if (!signalAccount) {
         signalAccount = [[SignalAccount alloc] initWithRecipientId:recipientId];
     }
