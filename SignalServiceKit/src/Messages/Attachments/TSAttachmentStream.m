@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachmentStream.h"
@@ -205,7 +205,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [OWSFileSystem ensureDirectoryExists:attachmentsFolder];
 
-        [OWSFileSystem protectFolderAtPath:attachmentsFolder];
+        [OWSFileSystem protectFileOrFolderAtPath:attachmentsFolder];
     });
     return attachmentsFolder;
 }

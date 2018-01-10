@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ShareAppExtensionContext.h"
@@ -58,24 +58,43 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)extensionHostDidBecomeActive:(NSNotification *)notification
 {
+    OWSAssertIsOnMainThread();
+
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)extensionHostWillResignActive:(NSNotification *)notification
 {
+    OWSAssertIsOnMainThread();
+
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillResignActiveNotification object:nil];
 }
 
 - (void)extensionHostDidEnterBackground:(NSNotification *)notification
 {
+    OWSAssertIsOnMainThread();
+
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidEnterBackgroundNotification object:nil];
 }
 
 - (void)extensionHostWillEnterForeground:(NSNotification *)notification
 {
+    OWSAssertIsOnMainThread();
+
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    // We want to prod OWSStorage here so that all storage is valid.
+    [OWSStorage applicationWillEnterForeground];
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillEnterForegroundNotification object:nil];
 }
 
 #pragma mark -

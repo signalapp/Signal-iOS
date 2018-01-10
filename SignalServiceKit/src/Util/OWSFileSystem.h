@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (void)protectFolderAtPath:(NSString *)path;
++ (void)protectFileOrFolderAtPath:(NSString *)path;
 
 + (NSString *)appDocumentDirectoryPath;
 
@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)ensureDirectoryExists:(NSString *)dirPath;
 
 + (void)deleteFile:(NSString *)filePath;
+
++ (void)deleteFileIfExists:(NSString *)filePath;
 
 @end
 

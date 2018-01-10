@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackgroundTask.h"
@@ -134,8 +134,6 @@
     // Make a local copy of this state, since this method is called by `dealloc`.
     UIBackgroundTaskIdentifier backgroundTaskId;
     BackgroundTaskCompletionBlock _Nullable completionBlock;
-    NSString *logTag = self.logTag;
-    NSString *label = self.label;
 
     @synchronized(self)
     {
@@ -151,13 +149,14 @@
 
     // endBackgroundTask must be called on the main thread.
     DispatchMainThreadSafe(^{
-        DDLogVerbose(@"%@ %@ background task completed.", logTag, label);
 
         if (completionBlock) {
             completionBlock(BackgroundTaskState_Success);
         }
 
-        [CurrentAppContext() endBackgroundTask:backgroundTaskId];
+        if (backgroundTaskId != UIBackgroundTaskInvalid) {
+            [CurrentAppContext() endBackgroundTask:backgroundTaskId];
+        }
     });
 }
 
