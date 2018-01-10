@@ -139,7 +139,6 @@ NS_ASSUME_NONNULL_BEGIN
     ContactsViewHelper *helper = self.contactsViewHelper;
     OWSTableContents *contents = [OWSTableContents new];
 
-    // Existing threads are listed first, ordered by most recently active
     OWSTableSection *findByPhoneSection = [OWSTableSection new];
     [findByPhoneSection
         addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
