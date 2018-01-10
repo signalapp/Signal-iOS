@@ -19,7 +19,6 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 
 @interface OWSDeviceManager ()
 
-@property (atomic, nullable) NSNumber *mayHaveLinkedDevicesCached;
 @property (atomic) NSDate *lastReceivedSyncMessage;
 
 @end
@@ -49,13 +48,9 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 
     @synchronized(self)
     {
-        if (!self.mayHaveLinkedDevicesCached) {
-            self.mayHaveLinkedDevicesCached = @([dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
-                                                            inCollection:kTSStorageManager_OWSDeviceCollection
-                                                            defaultValue:NO]);
-        }
-
-        return [self.mayHaveLinkedDevicesCached boolValue];
+        return [dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
+                           inCollection:kTSStorageManager_OWSDeviceCollection
+                           defaultValue:NO];
     }
 }
 
@@ -63,15 +58,20 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 {
     OWSAssert(dbConnection);
 
+    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self setMayHaveLinkedDevices:value transaction:transaction];
+    }];
+}
+
+- (void)setMayHaveLinkedDevices:(BOOL)value transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+
     @synchronized(self)
     {
-        self.mayHaveLinkedDevicesCached = @(value);
-
-        [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [transaction setObject:@(value)
-                            forKey:kTSStorageManager_MayHaveLinkedDevices
-                      inCollection:kTSStorageManager_OWSDeviceCollection];
-        }];
+        [transaction setObject:@(value)
+                        forKey:kTSStorageManager_MayHaveLinkedDevices
+                  inCollection:kTSStorageManager_OWSDeviceCollection];
     }
 }
 
