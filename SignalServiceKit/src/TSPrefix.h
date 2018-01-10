@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -11,11 +11,10 @@ static const NSUInteger ddLogLevel = DDLogLevelAll;
 #else
 static const NSUInteger ddLogLevel = DDLogLevelInfo;
 #endif
-
-#import "Asserts.h"
 #import "Constraints.h"
 #import "NSObject+OWS.h"
 #import "OWSAnalytics.h"
+#import "OWSAsserts.h"
 #import "OWSDispatch.h"
 #import "iOSVersions.h"
 

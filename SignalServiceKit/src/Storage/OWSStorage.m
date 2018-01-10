@@ -596,6 +596,20 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     [SAMKeychain deletePasswordForService:keychainService account:keychainDBPassAccount];
 }
 
+- (unsigned long long)databaseFileSize
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *_Nullable error;
+    unsigned long long fileSize =
+        [[fileManager attributesOfItemAtPath:self.databaseFilePath error:&error][NSFileSize] unsignedLongLongValue];
+    if (error) {
+        DDLogError(@"%@ Couldn't fetch database file size: %@", self.logTag, error);
+    } else {
+        DDLogInfo(@"%@ Database file size: %llu", self.logTag, fileSize);
+    }
+    return fileSize;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
