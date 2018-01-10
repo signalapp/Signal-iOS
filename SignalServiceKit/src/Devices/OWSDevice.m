@@ -46,12 +46,9 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 {
     OWSAssert(dbConnection);
 
-    @synchronized(self)
-    {
-        return [dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
-                           inCollection:kTSStorageManager_OWSDeviceCollection
-                           defaultValue:NO];
-    }
+    return [dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
+                       inCollection:kTSStorageManager_OWSDeviceCollection
+                       defaultValue:NO];
 }
 
 - (void)setMayHaveLinkedDevices:(BOOL)value dbConnection:(YapDatabaseConnection *)dbConnection
@@ -67,12 +64,9 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 {
     OWSAssert(transaction);
 
-    @synchronized(self)
-    {
-        [transaction setObject:@(value)
-                        forKey:kTSStorageManager_MayHaveLinkedDevices
-                  inCollection:kTSStorageManager_OWSDeviceCollection];
-    }
+    [transaction setObject:@(value)
+                    forKey:kTSStorageManager_MayHaveLinkedDevices
+              inCollection:kTSStorageManager_OWSDeviceCollection];
 }
 
 - (BOOL)hasReceivedSyncMessageInLastSeconds:(NSTimeInterval)intervalSeconds
