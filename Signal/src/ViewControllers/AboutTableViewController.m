@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "AboutTableViewController.h"
@@ -75,11 +75,14 @@
         threadCount = [[transaction ext:TSThreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
         messageCount = [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInAllGroups];
     }];
+    unsigned long long databaseFileSize = [TSStorageManager.sharedManager databaseFileSize];
 
     OWSTableSection *debugSection = [OWSTableSection new];
     debugSection.headerTitle = @"Debug";
     [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Threads: %zd", threadCount]]];
     [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Messages: %zd", messageCount]]];
+    [debugSection
+        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database size: %llu", databaseFileSize]]];
     [contents addSection:debugSection];
 
     OWSPreferences *preferences = [Environment preferences];

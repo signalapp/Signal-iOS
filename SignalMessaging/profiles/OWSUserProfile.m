@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUserProfile.h"
@@ -112,7 +112,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     __block BOOL didChange = YES;
     [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSString *collection = [[self class] collection];
-        OWSUserProfile *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
+        OWSUserProfile *_Nullable latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
         if (latestInstance) {
             changeBlock(latestInstance);
 

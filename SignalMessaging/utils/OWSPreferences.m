@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPreferences.h"
+#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/TSStorageHeaders.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
@@ -24,7 +25,7 @@ NSString *const OWSPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled
 NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 NSString *const OWSPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
-NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions2";
+NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKey_IsRegistered = @"OWSPreferencesKey_IsRegistered";
 
 @implementation OWSPreferences
@@ -78,6 +79,8 @@ NSString *const OWSPreferencesKey_IsRegistered = @"OWSPreferencesKey_IsRegistere
 
 + (void)setIsReadyForAppExtensions
 {
+    OWSAssert(CurrentAppContext().isMainApp);
+
     [NSUserDefaults.appUserDefaults setObject:@(YES) forKey:OWSPreferencesKey_IsReadyForAppExtensions];
     [NSUserDefaults.appUserDefaults synchronize];
 }
@@ -95,6 +98,8 @@ NSString *const OWSPreferencesKey_IsRegistered = @"OWSPreferencesKey_IsRegistere
 
 + (void)setIsRegistered:(BOOL)value
 {
+    OWSAssert(CurrentAppContext().isMainApp);
+
     [NSUserDefaults.appUserDefaults setObject:@(value) forKey:OWSPreferencesKey_IsRegistered];
     [NSUserDefaults.appUserDefaults synchronize];
 }
@@ -143,6 +148,8 @@ NSString *const OWSPreferencesKey_IsRegistered = @"OWSPreferencesKey_IsRegistere
 
 + (void)setIsLoggingEnabled:(BOOL)flag
 {
+    OWSAssert(CurrentAppContext().isMainApp);
+
     // Logging preferences are stored in UserDefaults instead of the database, so that we can (optionally) start
     // logging before the database is initialized. This is important because sometimes there are problems *with* the
     // database initialization, and without logging it would be hard to track down.

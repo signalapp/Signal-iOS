@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -42,7 +42,7 @@ public class DeviceSleepManager: NSObject {
 
         NotificationCenter.default.addObserver(self,
                                                selector:#selector(didEnterBackground),
-                                               name:NSNotification.Name.UIApplicationDidEnterBackground,
+                                               name:NSNotification.Name.OWSApplicationDidEnterBackground,
                                                object:nil)
     }
 
