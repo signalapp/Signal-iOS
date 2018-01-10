@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "SelectThreadViewController.h"
@@ -8,6 +8,7 @@
 #import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "NSString+OWS.h"
+#import "NewNonContactConversationViewController.h"
 #import "OWSContactsManager.h"
 #import "OWSTableViewController.h"
 #import "ThreadViewHelper.h"
@@ -26,7 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SelectThreadViewController () <OWSTableViewControllerDelegate,
     ThreadViewHelperDelegate,
     ContactsViewHelperDelegate,
-    UISearchBarDelegate>
+    UISearchBarDelegate,
+    NewNonContactConversationViewControllerDelegate>
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) ConversationSearcher *conversationSearcher;
@@ -136,6 +138,20 @@ NS_ASSUME_NONNULL_BEGIN
     __weak SelectThreadViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
     OWSTableContents *contents = [OWSTableContents new];
+
+    OWSTableSection *findByPhoneSection = [OWSTableSection new];
+    [findByPhoneSection
+        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
+                                                         @"A label the cell that lets you add a new member to a group.")
+                                     customRowHeight:[ContactTableViewCell rowHeight]
+                                         actionBlock:^{
+                                             NewNonContactConversationViewController *viewController =
+                                                 [NewNonContactConversationViewController new];
+                                             viewController.nonContactConversationDelegate = weakSelf;
+                                             [weakSelf.navigationController pushViewController:viewController
+                                                                                      animated:YES];
+                                         }]];
+    [contents addSection:findByPhoneSection];
 
     // Existing threads are listed first, ordered by most recently active
     OWSTableSection *recentChatsSection = [OWSTableSection new];
@@ -302,6 +318,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldHideLocalNumber
 {
     return NO;
+}
+
+#pragma mark - NewNonContactConversationViewControllerDelegate
+
+- (void)recipientIdWasSelected:(NSString *)recipientId
+{
+    SignalAccount *_Nullable signalAccount = [self.contactsViewHelper signalAccountForRecipientId:recipientId];
+    if (!signalAccount) {
+        signalAccount = [[SignalAccount alloc] initWithRecipientId:recipientId];
+    }
+    [self signalAccountWasSelected:signalAccount];
 }
 
 @end

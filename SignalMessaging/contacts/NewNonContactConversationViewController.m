@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "NewNonContactConversationViewController.h"
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)contactsSectionTitle
 {
-    OWSAssert(0);
+    OWSFail(@"Method should never be called.");
 
     return nil;
 }
@@ -84,14 +84,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canSignalAccountBeSelected:(SignalAccount *)signalAccount
 {
-    OWSAssert(0);
+    OWSFail(@"Method should never be called.");
 
     return NO;
 }
 
 - (nullable NSString *)accessoryMessageForSignalAccount:(SignalAccount *)signalAccount
 {
-    OWSAssert(0);
+    OWSFail(@"Method should never be called.");
 
     return nil;
 }
