@@ -457,7 +457,6 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         // class to convert types for us.
         let utiTypes: [String] = [kUTTypeImage as String,
                                   kUTTypeData as String]
-        Logger.verbose("\(self.logTag) in \(#function): registeredTypeIdentifiers: \(itemProvider.registeredTypeIdentifiers)")
 
         let matchingUtiType = utiTypes.first { (utiType: String) -> Bool in
             itemProvider.hasItemConformingToTypeIdentifier(utiType)
