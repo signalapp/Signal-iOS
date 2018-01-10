@@ -441,6 +441,30 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         }.retainUntilComplete()
     }
 
+    private func utiTypeForItem(itemProvider: NSItemProvider) -> String? {
+        // Special case URLs.  Most shares will confirm to kUTTypeURL, but
+        // URLs will have kUTTypeURL as their only registered UTI type.
+        if itemProvider.registeredTypeIdentifiers.count == 1 {
+            if let firstUtiType = itemProvider.registeredTypeIdentifiers.first {
+                if firstUtiType == kUTTypeURL as String {
+                    return kUTTypeURL as String
+                }
+            }
+        }
+
+        // Order matters if we want to take advantage of share conversion in loadItem,
+        // Though currently we just use "data" for most things and rely on our SignalAttachment
+        // class to convert types for us.
+        let utiTypes: [String] = [kUTTypeImage as String,
+                                  kUTTypeData as String]
+        Logger.verbose("\(self.logTag) in \(#function): registeredTypeIdentifiers: \(itemProvider.registeredTypeIdentifiers)")
+
+        let matchingUtiType = utiTypes.first { (utiType: String) -> Bool in
+            itemProvider.hasItemConformingToTypeIdentifier(utiType)
+        }
+        return matchingUtiType
+    }
+
     private func buildAttachment() -> Promise<SignalAttachment> {
         guard let inputItem: NSExtensionItem = self.extensionContext?.inputItems.first as? NSExtensionItem else {
             let error = ShareViewControllerError.assertionError(description: "no input item")
@@ -455,18 +479,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         }
         Logger.info("\(self.logTag) attachment: \(itemProvider)")
 
-        // Order matters if we want to take advantage of share conversion in loadItem,
-        // Though currently we just use "data" for most things and rely on our SignalAttachment
-        // class to convert types for us.
-        let utiTypes: [String] = [kUTTypeImage as String,
-                                  kUTTypeURL as String,
-                                  kUTTypeData as String]
-
-        let matchingUtiType = utiTypes.first { (utiType: String) -> Bool in
-            itemProvider.hasItemConformingToTypeIdentifier(utiType)
-        }
-
-        guard let utiType = matchingUtiType else {
+        guard let utiType = utiTypeForItem(itemProvider: itemProvider) else {
             let error = ShareViewControllerError.unsupportedMedia
             return Promise(error: error)
         }
