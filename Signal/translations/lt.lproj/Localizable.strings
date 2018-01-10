@@ -665,7 +665,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Žymėti kaip patvirtintą";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Atstatyti šį seansą.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Atstatyti šį seansą";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Užbaigti grupės kūrimą";

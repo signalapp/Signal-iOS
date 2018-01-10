@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSIdentityManager.h"
@@ -8,6 +8,7 @@
 #import "NSNotificationCenter+OWS.h"
 #import "NotificationsProtocol.h"
 #import "OWSError.h"
+#import "OWSFileSystem.h"
 #import "OWSMessageSender.h"
 #import "OWSOutgoingNullMessage.h"
 #import "OWSRecipientIdentity.h"
@@ -133,8 +134,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (nullable ECKeyPair *)identityKeyPair
 {
-    return [self.dbConnection keyPairForKey:TSStorageManagerIdentityKeyStoreIdentityKey
-                               inCollection:TSStorageManagerIdentityKeyStoreCollection];
+    ECKeyPair *_Nullable identityKeyPair = [self.dbConnection keyPairForKey:TSStorageManagerIdentityKeyStoreIdentityKey
+                                                               inCollection:TSStorageManagerIdentityKeyStoreCollection];
+    return identityKeyPair;
 }
 
 - (int)localRegistrationId
@@ -744,6 +746,58 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         }
     }];
 }
+
+#pragma mark - Debug
+
+#if DEBUG
+- (void)clearIdentityState
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        NSMutableArray<NSString *> *identityKeysToRemove = [NSMutableArray new];
+        [transaction enumerateKeysInCollection:TSStorageManagerIdentityKeyStoreCollection
+                                    usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
+                                        if ([key isEqualToString:TSStorageManagerIdentityKeyStoreIdentityKey]) {
+                                            // Don't delete our own key.
+                                            return;
+                                        }
+                                        [identityKeysToRemove addObject:key];
+                                    }];
+        for (NSString *key in identityKeysToRemove) {
+            [transaction removeObjectForKey:key inCollection:TSStorageManagerIdentityKeyStoreCollection];
+        }
+        [transaction removeAllObjectsInCollection:TSStorageManagerTrustedKeysCollection];
+    }];
+}
+
+- (NSString *)identityKeySnapshotFilePath
+{
+    NSString *dirPath = [OWSFileSystem appDocumentDirectoryPath];
+    return [dirPath stringByAppendingPathComponent:@".identity-key-snapshot"];
+}
+
+- (NSString *)trustedKeySnapshotFilePath
+{
+    NSString *dirPath = [OWSFileSystem appDocumentDirectoryPath];
+    return [dirPath stringByAppendingPathComponent:@".trusted-key-snapshot"];
+}
+
+- (void)archiveIdentityState
+{
+    [self.dbConnection snapshotCollection:TSStorageManagerIdentityKeyStoreCollection
+                         snapshotFilePath:self.identityKeySnapshotFilePath];
+    [self.dbConnection snapshotCollection:TSStorageManagerTrustedKeysCollection
+                         snapshotFilePath:self.trustedKeySnapshotFilePath];
+}
+
+- (void)restoreIdentityState
+{
+    [self.dbConnection restoreSnapshotOfCollection:TSStorageManagerIdentityKeyStoreCollection
+                                  snapshotFilePath:self.identityKeySnapshotFilePath];
+    [self.dbConnection restoreSnapshotOfCollection:TSStorageManagerTrustedKeysCollection
+                                  snapshotFilePath:self.trustedKeySnapshotFilePath];
+}
+
+#endif
 
 #pragma mark - Notifications
 

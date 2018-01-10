@@ -665,7 +665,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "وضع علامة \"تم التحقق\"";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "إعادة تعيين هذه الجلسة.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "إعادة تعيين هذه الجلسة";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "إتمام إنشاء المجموعة";

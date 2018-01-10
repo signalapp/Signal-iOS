@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSFileSystem.h"
 #import "TSStorageManager+SessionStore.h"
+#import "YapDatabaseConnection+OWS.h"
 #import <AxolotlKit/SessionRecord.h>
 #import <YapDatabase/YapDatabase.h>
 
@@ -241,5 +243,29 @@ void AssertIsOnSessionStoreQueue()
                                      }];
     }];
 }
+
+#if DEBUG
+- (NSString *)snapshotFilePath
+{
+    NSString *dirPath = [OWSFileSystem appDocumentDirectoryPath];
+    return [dirPath stringByAppendingPathComponent:@".session-snapshot"];
+}
+
+- (void)archiveSessionStore
+{
+    AssertIsOnSessionStoreQueue();
+
+    [self.sessionDBConnection snapshotCollection:TSStorageManagerSessionStoreCollection
+                                snapshotFilePath:self.snapshotFilePath];
+}
+
+- (void)restoreSessionStore
+{
+    AssertIsOnSessionStoreQueue();
+
+    [self.sessionDBConnection restoreSnapshotOfCollection:TSStorageManagerSessionStoreCollection
+                                         snapshotFilePath:self.snapshotFilePath];
+}
+#endif
 
 @end
