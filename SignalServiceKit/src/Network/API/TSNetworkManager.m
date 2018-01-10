@@ -5,7 +5,6 @@
 #import "TSNetworkManager.h"
 #import "AppContext.h"
 #import "NSURLSessionDataTask+StatusCode.h"
-#import "OWSGetProfileRequest.h"
 #import "OWSSignalService.h"
 #import "TSAccountManager.h"
 #import "TSRecipientPrekeyRequest.h"
@@ -61,10 +60,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 {
     DDLogInfo(@"%@ Making request: %@", self.logTag, request);
     if (!CurrentAppContext().isMainApp) {
-        // TODO: Discuss which of these requests to suppress.
         if (![request isKindOfClass:[TSRecipientPrekeyRequest class]]
             && ![request isKindOfClass:[TSSubmitMessageRequest class]]
-            && ![request isKindOfClass:[OWSGetProfileRequest class]]
             && ![request isKindOfClass:[TSContactsIntersectionRequest class]]
             && ![request isKindOfClass:[TSAllocAttachmentRequest class]]) {
             // The SAE should only make requests directly related to message sending.
