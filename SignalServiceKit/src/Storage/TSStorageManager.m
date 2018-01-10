@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSStorageManager.h"
@@ -127,12 +127,12 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 {
     // The old database location was in the Document directory,
     // so protect the database files individually.
-    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath];
-    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath_SHM];
-    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath_WAL];
+    [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath];
+    [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath_SHM];
+    [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath_WAL];
 
     // Protect the entire new database directory.
-    [OWSFileSystem protectFolderAtPath:self.sharedDataDatabaseDirPath];
+    [OWSFileSystem protectFileOrFolderAtPath:self.sharedDataDatabaseDirPath];
 }
 
 - (BOOL)userSetPassword {

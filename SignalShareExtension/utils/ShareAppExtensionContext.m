@@ -4,6 +4,7 @@
 
 #import "ShareAppExtensionContext.h"
 #import <SignalMessaging/UIViewController+OWS.h>
+#import <SignalServiceKit/OWSStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -90,9 +91,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    // We want to prod OWSStorage here so that all storage is valid.
-    [OWSStorage applicationWillEnterForeground];
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillEnterForegroundNotification object:nil];
 }
