@@ -506,14 +506,26 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
             Logger.debug("\(self.logTag) building DataSource with url: \(url)")
 
-            guard let dataSource = DataSourcePath.dataSource(with: url) else {
+            var rawDataSource: DataSource?
+            if utiType == (kUTTypeURL as String) {
+                let urlString = url.absoluteString
+                rawDataSource = DataSourceValue.dataSource(withOversizeText:urlString)
+            } else {
+                rawDataSource = DataSourcePath.dataSource(with: url)
+            }
+            guard let dataSource = rawDataSource else {
                 throw ShareViewControllerError.assertionError(description: "Unable to read attachment data")
             }
-            dataSource.sourceFilename = url.lastPathComponent
+            if utiType != (kUTTypeURL as String) {
+                dataSource.sourceFilename = url.lastPathComponent
+            }
 
             // start with base utiType, but it might be something generic like "image"
             var specificUTIType = utiType
-            if url.pathExtension.count > 0 {
+            if utiType == (kUTTypeURL as String) {
+                Logger.debug("\(self.logTag) using text UTI type for URL.")
+                specificUTIType = kOversizeTextAttachmentUTI as String
+            } else if url.pathExtension.count > 0 {
                 // Determine a more specific utiType based on file extension
                 if let typeExtension = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) {
                     Logger.debug("\(self.logTag) utiType based on extension: \(typeExtension)")
@@ -571,7 +583,20 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     // Perhaps the AVFoundation APIs require some extra file system permssion we don't have in the
     // passed through URL.
     private func isVideoNeedingRelocation(itemProvider: NSItemProvider, itemUrl: URL) -> Bool {
-        guard MIMETypeUtil.utiType(forFileExtension: itemUrl.pathExtension) == kUTTypeMPEG4 as String else {
+        if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeURL as String) {
+            return false
+        }
+
+        let pathExtension = itemUrl.pathExtension
+        guard pathExtension.count > 0 else {
+            Logger.verbose("\(self.logTag) in \(#function): item URL has no file extension: \(itemUrl).")
+            return false
+        }
+        guard let utiTypeForURL = MIMETypeUtil.utiType(forFileExtension: pathExtension) else {
+            Logger.verbose("\(self.logTag) in \(#function): item has unknown UTI type: \(itemUrl).")
+            return false
+        }
+        guard utiTypeForURL == kUTTypeMPEG4 as String else {
             // Either it's not a video or it was a video which was not auto-converted to mp4.
             // Not affected by the issue.
             return false

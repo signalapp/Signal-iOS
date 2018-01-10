@@ -110,6 +110,8 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             createVideoPreview()
         } else if attachment.isAudio {
             createAudioPreview()
+        } else if attachment.isOversizeText {
+            createTextPreview()
         } else {
             createGenericPreview()
         }
@@ -284,6 +286,43 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             imageView.isUserInteractionEnabled = true
             imageView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(videoTapped)))
         }
+    }
+
+    private func createTextPreview() {
+
+        let data = attachment.data
+        guard let messageText = String(data: data, encoding: String.Encoding.utf8) else {
+            createGenericPreview()
+            return
+        }
+
+        let messageTextView = UITextView()
+        messageTextView.font = UIFont.ows_dynamicTypeBody()
+//        messageTextView.backgroundColor = UIColor.clear
+        messageTextView.backgroundColor = UIColor.white
+        messageTextView.isOpaque = false
+        messageTextView.isEditable = false
+        messageTextView.isSelectable = true
+        messageTextView.textContainerInset = UIEdgeInsets.zero
+        messageTextView.contentInset = UIEdgeInsets.zero
+        messageTextView.isScrollEnabled = true
+        messageTextView.showsHorizontalScrollIndicator = false
+        messageTextView.showsVerticalScrollIndicator = false
+        messageTextView.isUserInteractionEnabled = false
+//        messageTextView.textColor = isIncoming ? UIColor.black : UIColor.white
+        messageTextView.textColor = UIColor.black
+        messageTextView.text = messageText
+
+        self.addSubview(messageTextView)
+        messageTextView.autoPinWidthToSuperview()
+        messageTextView.autoVCenterInSuperview()
+
+        // TODO: How should text messages be displayed in this view?
+        NSLayoutConstraint.autoSetPriority(UILayoutPriorityDefaultLow) {
+            messageTextView.autoPinHeightToSuperview()
+        }
+        messageTextView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+        messageTextView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
     }
 
     private func createGenericPreview() {
