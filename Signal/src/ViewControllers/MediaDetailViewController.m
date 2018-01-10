@@ -44,6 +44,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+// This approximates the curve of our message bubbles, which makes the animation feel a little smoother.
+const CGFloat MediaDetailViewControllerMediaCornerRadius = 17;
+
 @interface MediaDetailViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, PlayerProgressBarDelegate>
 
 @property (nonatomic) UIScrollView *scrollView;
@@ -198,13 +201,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)viewDidLayoutSubviews
-{
-    [super viewDidLayoutSubviews];
-    [self updateMinZoomScale];
-    [self centerImageViewConstraints];
-}
-
 - (void)updateMinZoomScale
 {
     CGSize viewSize = self.scrollView.bounds.size;
@@ -277,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.mediaView.layer.minificationFilter = kCAFilterTrilinear;
     self.mediaView.layer.magnificationFilter = kCAFilterTrilinear;
 
-    [self applyInitialImageViewConstraints];
+    [self applyInitialMediaViewConstraints];
 
     if (self.isVideo) {
         if (@available(iOS 9, *)) {
@@ -365,7 +361,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.footerBar setItems:toolbarItems animated:NO];
 }
 
-- (void)applyInitialImageViewConstraints
+- (void)applyInitialMediaViewConstraints
 {
     if (self.imageViewConstraints.count > 0) {
         [NSLayoutConstraint deactivateConstraints:self.imageViewConstraints];
@@ -384,7 +380,7 @@ NS_ASSUME_NONNULL_BEGIN
     ]];
 }
 
-- (void)applyFinalImageViewConstraints
+- (void)applyFinalMediaViewConstraints
 {
     if (self.imageViewConstraints.count > 0) {
         [NSLayoutConstraint deactivateConstraints:self.imageViewConstraints];
@@ -450,10 +446,13 @@ NS_ASSUME_NONNULL_BEGIN
     [[UIApplication sharedApplication] setStatusBarHidden:areToolbarsHidden withAnimation:UIStatusBarAnimationNone];
     [self.navigationController setNavigationBarHidden:areToolbarsHidden animated:NO];
     self.videoProgressBar.hidden = areToolbarsHidden;
+    
+    // We don't animate the background color change because the old color shows through momentarily
+    // behind where the status bar "used to be".
+    self.view.backgroundColor = areToolbarsHidden ? UIColor.blackColor : UIColor.whiteColor;
 
     [UIView animateWithDuration:0.1
                      animations:^(void) {
-                         self.view.backgroundColor = areToolbarsHidden ? UIColor.blackColor : UIColor.whiteColor;
                          self.footerBar.alpha = areToolbarsHidden ? 0 : 1;
                      }];
 }
@@ -712,6 +711,14 @@ NS_ASSUME_NONNULL_BEGIN
     self.view.userInteractionEnabled = NO;
 
     self.view.alpha = 0.0;
+    
+    // Our zoomScale must == 1 in order for our initialMediaViewConstraints to align with the
+    // "zoomed" view's pre-presentation position.
+    OWSAssert(self.scrollView.zoomScale == 1.0);
+    [self.mediaView.superview layoutIfNeeded];
+    
+    self.mediaView.layer.cornerRadius = MediaDetailViewControllerMediaCornerRadius;
+    
     [viewController presentViewController:navController
                                  animated:NO
                                completion:^{
@@ -725,19 +732,21 @@ NS_ASSUME_NONNULL_BEGIN
                                    // Make sure imageView is layed out before we update it's frame in the next
                                    // animation.
                                    [self.mediaView.superview layoutIfNeeded];
+                                   [self applyFinalMediaViewConstraints];
 
                                    // 2. Animate imageView from it's initial position, which should match where it was
                                    // in the presenting view to it's final position, front and center in this view. This
-                                   // animation intentionally overlaps the previous
-                                   [UIView animateWithDuration:0.2
-                                       delay:0.08
+                                   // animation duration intentionally overlaps the previous
+                                   [UIView animateWithDuration:2.2
+                                       delay:2.08
                                        options:UIViewAnimationOptionCurveEaseOut
                                        animations:^(void) {
-                                           [self applyFinalImageViewConstraints];
+                                           self.mediaView.layer.cornerRadius = 0;
+                                           [self updateMinZoomScale];
                                            [self.mediaView.superview layoutIfNeeded];
-                                           // We must lay out *before* we centerImageViewConstraints
-                                           // because it uses the imageView.frame to build the contstraints
-                                           // that will center the imageView, and then once again
+                                           // We must lay out once *before* we centerImageViewConstraints
+                                           // because it uses the imageView.frame to build the constraints
+                                           // that will center the imageView, and then once again *after*
                                            // to ensure that the centered constraints are applied.
                                            [self centerImageViewConstraints];
                                            [self.mediaView.superview layoutIfNeeded];
@@ -764,7 +773,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Move the image view pack to it's initial position, i.e. where
     // it sits on the screen in the conversation view.
-    [self applyInitialImageViewConstraints];
+    [self applyInitialMediaViewConstraints];
 
     if (isAnimated) {
         [UIView animateWithDuration:0.2
@@ -772,7 +781,12 @@ NS_ASSUME_NONNULL_BEGIN
             options:UIViewAnimationOptionCurveEaseInOut
             animations:^(void) {
                 [self.mediaView.superview layoutIfNeeded];
-
+                
+                // Our zoomScale must == 1 in order for our initialMediaViewConstraints to align with the
+                // "zoomed" view's pre-presentation position.
+                self.scrollView.zoomScale = 1.0;
+                self.mediaView.layer.cornerRadius = MediaDetailViewControllerMediaCornerRadius;
+                
                 // In case user has hidden bars, which changes background to black.
                 self.view.backgroundColor = UIColor.whiteColor;
 
