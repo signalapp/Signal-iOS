@@ -198,7 +198,7 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
     DDLogInfo(@"%@ backupZipPath: %@", self.logTag, backupZipPath);
 
     [OWSFileSystem ensureDirectoryExists:rootDirPath];
-    [OWSFileSystem protectFolderAtPath:rootDirPath];
+    [OWSFileSystem protectFileOrFolderAtPath:rootDirPath];
     [OWSFileSystem ensureDirectoryExists:backupDirPath];
 
     if (self.isCancelledOrFailed) {
@@ -267,7 +267,7 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
         return [self fail];
     }
 
-    [OWSFileSystem protectFolderAtPath:backupZipPath];
+    [OWSFileSystem protectFileOrFolderAtPath:backupZipPath];
 
     [OWSFileSystem deleteFileIfExists:self.backupDirPath];
 }
@@ -486,7 +486,7 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
     DDLogInfo(@"%@ backupZipPath: %@", self.logTag, backupZipPath);
 
     [OWSFileSystem ensureDirectoryExists:rootDirPath];
-    [OWSFileSystem protectFolderAtPath:rootDirPath];
+    [OWSFileSystem protectFileOrFolderAtPath:rootDirPath];
     [OWSFileSystem ensureDirectoryExists:backupDirPath];
 
     NSError *error = nil;
@@ -799,7 +799,7 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
                 OWSFail(@"%@ failed to move directory item: %@, %@", self.logTag, dstFilePath, error);
                 return NO;
             }
-            if (![OWSFileSystem protectFolderAtPath:oldFilePath]) {
+            if (![OWSFileSystem protectFileOrFolderAtPath:oldFilePath]) {
                 OWSFail(@"%@ failed to protect old directory item: %@, %@", self.logTag, oldFilePath, error);
                 return NO;
             }
@@ -810,7 +810,7 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
             OWSFail(@"%@ failed to move directory item: %@, %@", self.logTag, dstFilePath, error);
             return NO;
         }
-        if (![OWSFileSystem protectFolderAtPath:dstFilePath]) {
+        if (![OWSFileSystem protectFileOrFolderAtPath:dstFilePath]) {
             OWSFail(@"%@ failed to protect directory item: %@, %@", self.logTag, dstFilePath, error);
             return NO;
         }
