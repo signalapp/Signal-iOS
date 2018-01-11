@@ -520,6 +520,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
             var rawDataSource: DataSource?
             if utiType == (kUTTypeURL as String) {
+                // Share URLs as oversize text messages whose text content is the URL.
                 let urlString = url.absoluteString
                 rawDataSource = DataSourceValue.dataSource(withOversizeText:urlString)
             } else {
@@ -529,12 +530,14 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                 throw ShareViewControllerError.assertionError(description: "Unable to read attachment data")
             }
             if utiType != (kUTTypeURL as String) {
+                // Ignore the filename for URLs.
                 dataSource.sourceFilename = url.lastPathComponent
             }
 
             // start with base utiType, but it might be something generic like "image"
             var specificUTIType = utiType
             if utiType == (kUTTypeURL as String) {
+                // Share URLs as oversize text messages whose text content is the URL.
                 Logger.debug("\(self.logTag) using text UTI type for URL.")
                 specificUTIType = kOversizeTextAttachmentUTI as String
             } else if url.pathExtension.count > 0 {
