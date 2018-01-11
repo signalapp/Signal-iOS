@@ -49,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UIScrollView *scrollView;
 @property (nonatomic) UIView *mediaView;
+@property (nonatomic) UIView *presentationView;
 
 @property (nonatomic) UIButton *shareButton;
 
@@ -68,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UIBarButtonItem *videoPlayBarButton;
 @property (nonatomic, nullable) UIBarButtonItem *videoPauseBarButton;
 
-@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *mediaViewConstraints;
+@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *presentationViewConstraints;
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewBottomConstraint;
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewLeadingConstraint;
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewTopConstraint;
@@ -199,6 +200,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+
+    [self updateMinZoomScale];
+    [self centerMediaViewConstraints];
+}
+
 - (void)updateMinZoomScale
 {
     CGSize viewSize = self.scrollView.bounds.size;
@@ -260,6 +269,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.mediaView);
 
     [scrollView addSubview:self.mediaView];
+    self.mediaViewLeadingConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    self.mediaViewTopConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    self.mediaViewTrailingConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    self.mediaViewBottomConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
     self.mediaView.contentMode = UIViewContentModeScaleAspectFit;
     self.mediaView.userInteractionEnabled = YES;
     self.mediaView.clipsToBounds = YES;
@@ -271,6 +285,19 @@ NS_ASSUME_NONNULL_BEGIN
     self.mediaView.layer.minificationFilter = kCAFilterTrilinear;
     self.mediaView.layer.magnificationFilter = kCAFilterTrilinear;
 
+    // The presentationView is only used during present/dismiss animations.
+    // It's a static image of the media content.
+    UIImageView *presentationView = [[UIImageView alloc] initWithImage:self.image];
+    self.presentationView = presentationView;
+    
+    [self.view addSubview:presentationView];
+    presentationView.hidden = YES;
+    presentationView.clipsToBounds = YES;
+    presentationView.layer.allowsEdgeAntialiasing = YES;
+    presentationView.layer.minificationFilter = kCAFilterTrilinear;
+    presentationView.layer.magnificationFilter = kCAFilterTrilinear;
+    presentationView.contentMode = UIViewContentModeScaleAspectFit;
+    
     [self applyInitialMediaViewConstraints];
 
     if (self.isVideo) {
@@ -361,42 +388,38 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applyInitialMediaViewConstraints
 {
-    if (self.mediaViewConstraints.count > 0) {
-        [NSLayoutConstraint deactivateConstraints:self.mediaViewConstraints];
+    if (self.presentationViewConstraints.count > 0) {
+        [NSLayoutConstraint deactivateConstraints:self.presentationViewConstraints];
     }
 
-    CGRect convertedRect =
-        [self.mediaView.superview convertRect:self.originRect fromView:[UIApplication sharedApplication].keyWindow];
-    
-    NSMutableArray<NSLayoutConstraint *> *mediaViewConstraints = [NSMutableArray new];
-    self.mediaViewConstraints = mediaViewConstraints;
+    CGRect convertedRect = [self.presentationView.superview convertRect:self.originRect
+                                                               fromView:[UIApplication sharedApplication].keyWindow];
 
-    [mediaViewConstraints addObjectsFromArray:[self.mediaView autoSetDimensionsToSize:convertedRect.size]];
-    [mediaViewConstraints addObjectsFromArray:@[
-        [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:convertedRect.origin.y],
-        [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:convertedRect.origin.x]
+    NSMutableArray<NSLayoutConstraint *> *presentationViewConstraints = [NSMutableArray new];
+    self.presentationViewConstraints = presentationViewConstraints;
+
+    [presentationViewConstraints
+        addObjectsFromArray:[self.presentationView autoSetDimensionsToSize:convertedRect.size]];
+    [presentationViewConstraints addObjectsFromArray:@[
+        [self.presentationView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:convertedRect.origin.y],
+        [self.presentationView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:convertedRect.origin.x]
     ]];
 }
 
 - (void)applyFinalMediaViewConstraints
 {
-    if (self.mediaViewConstraints.count > 0) {
-        [NSLayoutConstraint deactivateConstraints:self.mediaViewConstraints];
+    if (self.presentationViewConstraints.count > 0) {
+        [NSLayoutConstraint deactivateConstraints:self.presentationViewConstraints];
     }
 
-    NSMutableArray<NSLayoutConstraint *> *mediaViewConstraints = [NSMutableArray new];
-    self.mediaViewConstraints = mediaViewConstraints;
+    NSMutableArray<NSLayoutConstraint *> *presentationViewConstraints = [NSMutableArray new];
+    self.presentationViewConstraints = presentationViewConstraints;
 
-    self.mediaViewLeadingConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-    self.mediaViewTopConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    self.mediaViewTrailingConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-    self.mediaViewBottomConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-
-    [mediaViewConstraints addObjectsFromArray:@[
-        self.mediaViewTopConstraint,
-        self.mediaViewTrailingConstraint,
-        self.mediaViewBottomConstraint,
-        self.mediaViewLeadingConstraint
+    [presentationViewConstraints addObjectsFromArray:@[
+        [self.presentationView autoPinEdgeToSuperviewEdge:ALEdgeLeading],
+        [self.presentationView autoPinEdgeToSuperviewEdge:ALEdgeTop],
+        [self.presentationView autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
+        [self.presentationView autoPinEdgeToSuperviewEdge:ALEdgeBottom]
     ]];
 }
 
@@ -708,14 +731,22 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.view.userInteractionEnabled = NO;
 
+    // We want to animate the tapped media from it's position in the previous VC
+    // to it's resting place in the center of this view controller.
+    //
+    // Rather than animating the actual media view in place, we animate the presentationView, which is a static
+    // image of the media content. Animating the actual media view is problematic for a couple reasons:
+    // 1. The media view ultimately lives in a zoomable scrollView. Getting both original positioning and the final positioning
+    //    correct, involves manipulating the zoomScale and position simultaneously, which results in non-linear movement,
+    //    especially noticeable on high resolution images.
+    // 2. For Video views, the AVPlayerLayer content does not scale with the presentation animation. So you instead get a full scale
+    //    video, wherein only the cropping is animated.
+    // Using a simple image view allows us to address both these problems relatively easily.
     self.view.alpha = 0.0;
-    
-    // Our zoomScale must == 1 in order for our initialMediaViewConstraints to align with the
-    // "zoomed" view's pre-presentation position.
-    OWSAssert(self.scrollView.zoomScale == 1.0);
-    [self.mediaView.superview layoutIfNeeded];
 
-    self.mediaView.layer.cornerRadius = OWSMessageCellCornerRadius;
+    self.mediaView.hidden = YES;
+    self.presentationView.hidden = NO;
+    self.presentationView.layer.cornerRadius = OWSMessageCellCornerRadius;
 
     [viewController presentViewController:navController
                                  animated:NO
@@ -727,9 +758,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         self.view.alpha = 1.0;
                                                     }];
 
-                                   // Make sure imageView is layed out before we update it's frame in the next
-                                   // animation.
-                                   [self.mediaView.superview layoutIfNeeded];
+                                   [self.presentationView.superview layoutIfNeeded];
                                    [self applyFinalMediaViewConstraints];
 
                                    // 2. Animate imageView from it's initial position, which should match where it was
@@ -739,10 +768,9 @@ NS_ASSUME_NONNULL_BEGIN
                                        delay:0.08
                                        options:UIViewAnimationOptionCurveEaseOut
                                        animations:^(void) {
-                                           self.mediaView.layer.cornerRadius = 0;
-                                           [self updateMinZoomScale];
-                                           [self.mediaView.superview layoutIfNeeded];
-                                           
+                                           self.presentationView.layer.cornerRadius = 0;
+                                           [self.presentationView.superview layoutIfNeeded];
+
                                            // We must lay out once *before* we centerMediaViewConstraints
                                            // because it uses the imageView.frame to build the constraints
                                            // that will center the imageView, and then once again *after*
@@ -752,6 +780,11 @@ NS_ASSUME_NONNULL_BEGIN
                                            self.view.backgroundColor = UIColor.whiteColor;
                                        }
                                        completion:^(BOOL finished) {
+                                           // At this point our presentation view should be overlayed perfectly
+                                           // with our media view. Swapping them out should be imperceptible.
+                                           self.mediaView.hidden = NO;
+                                           self.presentationView.hidden = YES;
+
                                            self.view.userInteractionEnabled = YES;
 
                                            if (self.isVideo) {
@@ -763,14 +796,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dismissSelfAnimated:(BOOL)isAnimated completion:(void (^_Nullable)(void))completion
 {
+
     self.view.userInteractionEnabled = NO;
     [UIApplication sharedApplication].statusBarHidden = NO;
 
-    OWSAssert(self.mediaView.superview);
+    // Swapping mediaView for presentationView will be perceptible if we're not zoomed out all the way.
+    if (self.scrollView.zoomScale != self.scrollView.minimumZoomScale) {
+        [self.scrollView setZoomScale:self.scrollView.minimumZoomScale animated:YES];
+    }
 
-    [self.mediaView.superview layoutIfNeeded];
+    self.mediaView.hidden = YES;
+    self.presentationView.hidden = NO;
 
-    // Move the image view pack to it's initial position, i.e. where
+    // Move the presentationView back to it's initial position, i.e. where
     // it sits on the screen in the conversation view.
     [self applyInitialMediaViewConstraints];
 
@@ -779,12 +817,8 @@ NS_ASSUME_NONNULL_BEGIN
             delay:0.0
             options:UIViewAnimationOptionCurveEaseInOut
             animations:^(void) {
-                [self.mediaView.superview layoutIfNeeded];
-                
-                // Our zoomScale must == 1 in order for our initialMediaViewConstraints to align with the
-                // "zoomed" view's pre-presentation position.
-                self.scrollView.zoomScale = 1.0;
-                self.mediaView.layer.cornerRadius = OWSMessageCellCornerRadius;
+                [self.presentationView.superview layoutIfNeeded];
+                self.presentationView.layer.cornerRadius = OWSMessageCellCornerRadius;
 
                 // In case user has hidden bars, which changes background to black.
                 self.view.backgroundColor = UIColor.whiteColor;
