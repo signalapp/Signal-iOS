@@ -296,33 +296,48 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             return
         }
 
+        let messageBubbleView = UIImageView()
+        messageBubbleView.layoutMargins = .zero
+        let bubbleImageData =
+            OWSMessagesBubbleImageFactory.shared.outgoing
+        messageBubbleView.image = bubbleImageData.messageBubbleImage
+
+        let textColor = UIColor.white
+
         let messageTextView = UITextView()
         messageTextView.font = UIFont.ows_dynamicTypeBody()
-//        messageTextView.backgroundColor = UIColor.clear
-        messageTextView.backgroundColor = UIColor.white
+                messageTextView.backgroundColor = UIColor.clear
         messageTextView.isOpaque = false
         messageTextView.isEditable = false
-        messageTextView.isSelectable = true
+        messageTextView.isSelectable = false
         messageTextView.textContainerInset = UIEdgeInsets.zero
         messageTextView.contentInset = UIEdgeInsets.zero
-        messageTextView.isScrollEnabled = true
+        messageTextView.isScrollEnabled = false
         messageTextView.showsHorizontalScrollIndicator = false
         messageTextView.showsVerticalScrollIndicator = false
         messageTextView.isUserInteractionEnabled = false
-//        messageTextView.textColor = isIncoming ? UIColor.black : UIColor.white
-        messageTextView.textColor = UIColor.black
+        messageTextView.textColor = textColor
+        messageTextView.linkTextAttributes = [NSForegroundColorAttributeName : textColor,
+                                              NSUnderlineStyleAttributeName : [NSUnderlineStyle.styleSingle,
+                                                                               NSUnderlineStyle.patternSolid]
+                                              ]
+        messageTextView.dataDetectorTypes = [.link, .address, .calendarEvent]
         messageTextView.text = messageText
 
-        self.addSubview(messageTextView)
-        messageTextView.autoPinWidthToSuperview()
-        messageTextView.autoVCenterInSuperview()
+        messageBubbleView.layoutMargins = .zero
+        self.layoutMargins = .zero
 
-        // TODO: How should text messages be displayed in this view?
-        NSLayoutConstraint.autoSetPriority(UILayoutPriorityDefaultLow) {
-            messageTextView.autoPinHeightToSuperview()
-        }
-        messageTextView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-        messageTextView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
+        self.addSubview(messageBubbleView)
+        messageBubbleView.autoVCenterInSuperview()
+        messageBubbleView.autoHCenterInSuperview()
+        messageBubbleView.autoPinEdge(toSuperviewEdge: .leading, withInset: 25, relation: .greaterThanOrEqual)
+        messageBubbleView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 25, relation: .greaterThanOrEqual)
+
+        messageBubbleView.addSubview(messageTextView)
+        messageTextView.autoPinTopToSuperview(withMargin:10)
+        messageTextView.autoPinBottomToSuperview(withMargin:10)
+        messageTextView.autoPinLeadingToSuperview(withMargin:10)
+        messageTextView.autoPinTrailingToSuperview(withMargin:15)
     }
 
     private func createGenericPreview() {

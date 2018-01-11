@@ -268,6 +268,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinLeadingToSuperviewWithMargin:(CGFloat)margin
 {
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.leadingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.leadingAnchor
@@ -287,6 +289,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinTrailingToSuperviewWithMargin:(CGFloat)margin
 {
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.trailingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.trailingAnchor
@@ -299,8 +303,15 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     }
 }
 
+- (NSLayoutConstraint *)autoPinBottomToSuperview
+{
+    return [self autoPinBottomToSuperviewWithMargin:0.f];
+}
+
 - (NSLayoutConstraint *)autoPinBottomToSuperviewWithMargin:(CGFloat)margin
 {
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.bottomAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.bottomAnchor constant:-margin];
@@ -311,8 +322,15 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     }
 }
 
+- (NSLayoutConstraint *)autoPinTopToSuperview
+{
+    return [self autoPinTopToSuperviewWithMargin:0.f];
+}
+
 - (NSLayoutConstraint *)autoPinTopToSuperviewWithMargin:(CGFloat)margin
 {
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.topAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.topAnchor constant:margin];
@@ -333,6 +351,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin
 {
     OWSAssert(view);
+
+    self.translatesAutoresizingMaskIntoConstraints = NO;
 
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
@@ -355,6 +375,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(view);
 
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.trailingAnchor constraintEqualToAnchor:view.leadingAnchor constant:-margin];
@@ -376,6 +398,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(view);
 
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:margin];
@@ -396,6 +420,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSLayoutConstraint *)autoPinTrailingToView:(UIView *)view margin:(CGFloat)margin
 {
     OWSAssert(view);
+
+    self.translatesAutoresizingMaskIntoConstraints = NO;
 
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =

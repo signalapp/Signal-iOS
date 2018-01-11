@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalMessaging
 
 @objc
-class OWSMessagesBubbleImageFactory: NSObject {
+public class OWSMessagesBubbleImageFactory: NSObject {
 
     static let shared = OWSMessagesBubbleImageFactory()
 

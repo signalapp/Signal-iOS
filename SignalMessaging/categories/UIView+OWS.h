@@ -83,7 +83,10 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (NSLayoutConstraint *)autoPinLeadingToSuperviewWithMargin:(CGFloat)margin;
 - (NSLayoutConstraint *)autoPinTrailingToSuperview;
 - (NSLayoutConstraint *)autoPinTrailingToSuperviewWithMargin:(CGFloat)margin;
+
+- (NSLayoutConstraint *)autoPinTopToSuperview;
 - (NSLayoutConstraint *)autoPinTopToSuperviewWithMargin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinBottomToSuperview;
 - (NSLayoutConstraint *)autoPinBottomToSuperviewWithMargin:(CGFloat)margin;
 
 - (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view;
