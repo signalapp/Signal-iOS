@@ -584,6 +584,9 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             var rawDataSource: DataSource?
             if utiType == (kUTTypeURL as String) {
                 // Share URLs as oversize text messages whose text content is the URL.
+                //
+                // NOTE: SharingThreadPickerViewController will try to unpack them
+                //       and send them as normal text messages if possible.
                 let urlString = url.absoluteString
                 rawDataSource = DataSourceValue.dataSource(withOversizeText:urlString)
             } else {

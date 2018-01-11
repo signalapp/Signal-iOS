@@ -193,39 +193,63 @@ NS_ASSUME_NONNULL_BEGIN
     }
 #endif
 
-    void (^sendCompletion)(NSError *_Nullable, TSOutgoingMessage *message) = ^(
+    void (^sendCompletion)(NSError *_Nullable, TSOutgoingMessage *) = ^(
         NSError *_Nullable error, TSOutgoingMessage *message) {
-        AssertIsOnMainThread();
 
-        if (error) {
-            [fromViewController
-                dismissViewControllerAnimated:YES
-                                   completion:^(void) {
-                                       DDLogInfo(@"%@ Sending attachment failed with error: %@", self.logTag, error);
-                                       [self showSendFailureAlertWithError:error
-                                                                   message:message
-                                                        fromViewController:fromViewController];
-                                   }];
-            return;
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error) {
+                [fromViewController
+                    dismissViewControllerAnimated:YES
+                                       completion:^(void) {
+                                           DDLogInfo(
+                                               @"%@ Sending attachment failed with error: %@", self.logTag, error);
+                                           [self showSendFailureAlertWithError:error
+                                                                       message:message
+                                                            fromViewController:fromViewController];
+                                       }];
+                return;
+            }
 
-        DDLogInfo(@"%@ Sending attachment succeeded.", self.logTag);
-        [self.shareViewDelegate shareViewWasCompleted];
+            DDLogInfo(@"%@ Sending attachment succeeded.", self.logTag);
+            [self.shareViewDelegate shareViewWasCompleted];
+        });
     };
 
-    [fromViewController presentViewController:progressAlert
-                                     animated:YES
-                                   completion:^(void) {
-                                       __block TSOutgoingMessage *outgoingMessage =
-                                           [ThreadUtil sendMessageWithAttachment:self.attachment
-                                                                        inThread:self.thread
-                                                                   messageSender:self.messageSender
-                                                                      completion:^(NSError *_Nullable error) {
-                                                                          sendCompletion(error, outgoingMessage);
-                                                                      }];
-
-                                       self.outgoingMessage = outgoingMessage;
+    [fromViewController
+        presentViewController:progressAlert
+                     animated:YES
+                   completion:^(void) {
+                       __block TSOutgoingMessage *outgoingMessage = nil;
+                       if (self.attachment.isOversizeText
+                           && self.attachment.dataLength <= kOversizeTextMessageSizeThreshold) {
+                           // Try to unpack oversize text messages and send them as regular
+                           // text messages if possible.
+                           NSData *_Nullable data = self.attachment.data;
+                           if (!data) {
+                               DDLogError(@"%@ couldn't load data for oversize text attachment", self.logTag);
+                           } else {
+                               NSString *messageText =
+                                   [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                               outgoingMessage = [ThreadUtil sendMessageWithText:messageText
+                                   inThread:self.thread
+                                   messageSender:self.messageSender
+                                   success:^{
+                                       sendCompletion(nil, outgoingMessage);
+                                   }
+                                   failure:^(NSError *_Nonnull error) {
+                                       sendCompletion(error, outgoingMessage);
                                    }];
+                               return;
+                           }
+                       }
+
+                       outgoingMessage = [ThreadUtil sendMessageWithAttachment:self.attachment
+                                                                      inThread:self.thread
+                                                                 messageSender:self.messageSender
+                                                                    completion:^(NSError *_Nullable error) {
+                                                                        sendCompletion(error, outgoingMessage);
+                                                                    }];
+                   }];
 }
 
 - (void)showSendFailureAlertWithError:(NSError *)error
