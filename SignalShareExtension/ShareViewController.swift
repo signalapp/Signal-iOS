@@ -440,16 +440,24 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             owsFail("\(self.logTag) building attachment failed with error: \(error)")
         }.retainUntilComplete()
     }
+    
+    private func isUrlItem(itemProvider: NSItemProvider) -> Bool {
+        // Special case URLs.  Many shares (e.g. pdfs) will register kUTTypeURL, but
+        // URLs will have kUTTypeURL as their only registered UTI type.
+        guard itemProvider.registeredTypeIdentifiers.count == 1 else {
+            return false
+        }
+        guard let firstUtiType = itemProvider.registeredTypeIdentifiers.first else {
+            return false
+        }
+        return firstUtiType == kUTTypeURL as String
+    }
 
     private func utiTypeForItem(itemProvider: NSItemProvider) -> String? {
         // Special case URLs.  Many shares (e.g. pdfs) will register kUTTypeURL, but
         // URLs will have kUTTypeURL as their only registered UTI type.
-        if itemProvider.registeredTypeIdentifiers.count == 1 {
-            if let firstUtiType = itemProvider.registeredTypeIdentifiers.first {
-                if firstUtiType == kUTTypeURL as String {
-                    return kUTTypeURL as String
-                }
-            }
+        if isUrlItem(itemProvider:itemProvider) {
+            return kUTTypeURL as String
         }
 
         // Order matters if we want to take advantage of share conversion in loadItem,
@@ -598,7 +606,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     // Perhaps the AVFoundation APIs require some extra file system permssion we don't have in the
     // passed through URL.
     private func isVideoNeedingRelocation(itemProvider: NSItemProvider, itemUrl: URL) -> Bool {
-        if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeURL as String) {
+        if isUrlItem(itemProvider:itemProvider) {
             return false
         }
 
