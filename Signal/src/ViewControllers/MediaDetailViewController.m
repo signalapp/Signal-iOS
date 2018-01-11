@@ -6,6 +6,7 @@
 #import "AttachmentSharing.h"
 #import "ConversationViewController.h"
 #import "ConversationViewItem.h"
+#import "OWSMessageCell.h"
 #import "Signal-Swift.h"
 #import "TSAttachmentStream.h"
 #import "TSInteraction.h"
@@ -43,9 +44,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 #pragma mark -
-
-// This approximates the curve of our message bubbles, which makes the animation feel a little smoother.
-const CGFloat MediaDetailViewControllerMediaCornerRadius = 17;
 
 @interface MediaDetailViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, PlayerProgressBarDelegate>
 
@@ -716,9 +714,9 @@ const CGFloat MediaDetailViewControllerMediaCornerRadius = 17;
     // "zoomed" view's pre-presentation position.
     OWSAssert(self.scrollView.zoomScale == 1.0);
     [self.mediaView.superview layoutIfNeeded];
-    
-    self.mediaView.layer.cornerRadius = MediaDetailViewControllerMediaCornerRadius;
-    
+
+    self.mediaView.layer.cornerRadius = OWSMessageCellCornerRadius;
+
     [viewController presentViewController:navController
                                  animated:NO
                                completion:^{
@@ -737,8 +735,8 @@ const CGFloat MediaDetailViewControllerMediaCornerRadius = 17;
                                    // 2. Animate imageView from it's initial position, which should match where it was
                                    // in the presenting view to it's final position, front and center in this view. This
                                    // animation duration intentionally overlaps the previous
-                                   [UIView animateWithDuration:2.2
-                                       delay:2.08
+                                   [UIView animateWithDuration:0.2
+                                       delay:0.08
                                        options:UIViewAnimationOptionCurveEaseOut
                                        animations:^(void) {
                                            self.mediaView.layer.cornerRadius = 0;
@@ -785,8 +783,8 @@ const CGFloat MediaDetailViewControllerMediaCornerRadius = 17;
                 // Our zoomScale must == 1 in order for our initialMediaViewConstraints to align with the
                 // "zoomed" view's pre-presentation position.
                 self.scrollView.zoomScale = 1.0;
-                self.mediaView.layer.cornerRadius = MediaDetailViewControllerMediaCornerRadius;
-                
+                self.mediaView.layer.cornerRadius = OWSMessageCellCornerRadius;
+
                 // In case user has hidden bars, which changes background to black.
                 self.view.backgroundColor = UIColor.whiteColor;
 

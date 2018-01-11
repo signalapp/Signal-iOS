@@ -17,6 +17,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// This approximates the curve of our message bubbles, which makes the animation feel a little smoother.
+const CGFloat OWSMessageCellCornerRadius = 17;
+
 @interface BubbleMaskingView : UIView
 
 @property (nonatomic) BOOL isOutgoing;
