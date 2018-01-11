@@ -146,9 +146,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
             if (devices.count > 1) {
                 // Setting this flag here shouldn't be necessary, but we do so
                 // because the "cost" is low and it will improve robustness.
-                [OWSDeviceManager.sharedManager
-                    setMayHaveLinkedDevices:YES
-                               dbConnection:[[TSStorageManager sharedManager] newDatabaseConnection]];
+                [OWSDeviceManager.sharedManager setMayHaveLinkedDevices];
             }
 
             if (devices.count > [OWSDevice numberOfKeysInCollection]) {

@@ -16,8 +16,7 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
 + (instancetype)sharedManager;
 
 - (BOOL)mayHaveLinkedDevices:(YapDatabaseConnection *)dbConnection;
-- (void)setMayHaveLinkedDevices:(BOOL)value dbConnection:(YapDatabaseConnection *)dbConnection;
-- (void)setMayHaveLinkedDevices:(BOOL)value transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)setMayHaveLinkedDevices;
 
 - (BOOL)hasReceivedSyncMessageInLastSeconds:(NSTimeInterval)intervalSeconds;
 - (void)setHasReceivedSyncMessage;

@@ -19,6 +19,7 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 
 @interface OWSDeviceManager ()
 
+@property (atomic, nullable) NSNumber *mayHaveLinkedDevicesCached;
 @property (atomic) NSDate *lastReceivedSyncMessage;
 
 @end
@@ -46,27 +47,32 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 {
     OWSAssert(dbConnection);
 
-    return [dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
-                       inCollection:kTSStorageManager_OWSDeviceCollection
-                       defaultValue:NO];
+    // We don't bother synchronizing around
+    if (!self.mayHaveLinkedDevicesCached) {
+        self.mayHaveLinkedDevicesCached = @([dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
+                                                        inCollection:kTSStorageManager_OWSDeviceCollection
+                                                        defaultValue:YES]);
+    }
+
+    return [self.mayHaveLinkedDevicesCached boolValue];
 }
 
-- (void)setMayHaveLinkedDevices:(BOOL)value dbConnection:(YapDatabaseConnection *)dbConnection
+- (void)setMayHaveLinkedDevices
 {
-    OWSAssert(dbConnection);
+    if (self.mayHaveLinkedDevicesCached != nil && self.mayHaveLinkedDevicesCached.boolValue) {
+        // Skip redundant writes.
+        return;
+    }
 
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self setMayHaveLinkedDevices:value transaction:transaction];
-    }];
-}
+    self.mayHaveLinkedDevicesCached = @(YES);
 
-- (void)setMayHaveLinkedDevices:(BOOL)value transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssert(transaction);
-
-    [transaction setObject:@(value)
-                    forKey:kTSStorageManager_MayHaveLinkedDevices
-              inCollection:kTSStorageManager_OWSDeviceCollection];
+    // Note that we write async to avoid opening transactions within transactions.
+    [TSStorageManager.sharedManager.newDatabaseConnection
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [transaction setObject:@(YES)
+                            forKey:kTSStorageManager_MayHaveLinkedDevices
+                      inCollection:kTSStorageManager_OWSDeviceCollection];
+        }];
 }
 
 - (BOOL)hasReceivedSyncMessageInLastSeconds:(NSTimeInterval)intervalSeconds
@@ -77,6 +83,8 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 - (void)setHasReceivedSyncMessage
 {
     self.lastReceivedSyncMessage = [NSDate new];
+
+    [self setMayHaveLinkedDevices];
 }
 
 @end
