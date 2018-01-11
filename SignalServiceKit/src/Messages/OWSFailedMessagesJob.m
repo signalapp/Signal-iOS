@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFailedMessagesJob.h"
@@ -134,17 +134,17 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
                                   withName:OWSFailedMessagesJobMessageStateIndex];
 }
 
-+ (void)asyncRegisterDatabaseExtensionsWithStorageManager:(TSStorageManager *)storageManager
++ (void)asyncRegisterDatabaseExtensionsWithStorageManager:(OWSStorage *)storage
 {
-    [storageManager asyncRegisterExtension:[self indexDatabaseExtension]
-                                  withName:OWSFailedMessagesJobMessageStateIndex
-                           completionBlock:^(BOOL ready) {
-                               if (ready) {
-                                   DDLogDebug(@"%@ completed registering extension async.", self.logTag);
-                               } else {
-                                   DDLogError(@"%@ failed registering extension async.", self.logTag);
-                               }
-                           }];
+    [storage asyncRegisterExtension:[self indexDatabaseExtension]
+                           withName:OWSFailedMessagesJobMessageStateIndex
+                    completionBlock:^(BOOL ready) {
+                        if (ready) {
+                            DDLogDebug(@"%@ completed registering extension async.", self.logTag);
+                        } else {
+                            DDLogError(@"%@ failed registering extension async.", self.logTag);
+                        }
+                    }];
 }
 
 @end

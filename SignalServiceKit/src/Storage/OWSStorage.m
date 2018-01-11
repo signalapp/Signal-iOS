@@ -286,6 +286,13 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (nullable id)dbNotificationObject
+{
+    OWSAssert(self.database);
+
+    return self.database;
+}
+
 - (BOOL)areAsyncRegistrationsComplete
 {
     OWS_ABSTRACT_METHOD();

@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSStorage;
 @class TSStorageManager;
 @class YapDatabaseReadTransaction;
 
@@ -14,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Must be called before using this finder.
  */
-+ (void)asyncRegisterExtensionWithStorageManager:(TSStorageManager *)storageManager;
++ (void)asyncRegisterExtensionWithStorageManager:(OWSStorage *)storage;
 
 /**
  * Detects existance of a duplicate incoming message.

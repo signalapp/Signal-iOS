@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageReceiver.h"
@@ -190,17 +190,17 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     });
 }
 
-+ (void)syncRegisterDatabaseExtension:(TSStorageManager *)storageManager
++ (void)syncRegisterDatabaseExtension:(OWSStorage *)storage
 {
     [self registerLegacyClasses];
 
-    YapDatabaseView *existingView = [storageManager registeredExtension:OWSMessageDecryptJobFinderExtensionName];
+    YapDatabaseView *existingView = [storage registeredExtension:OWSMessageDecryptJobFinderExtensionName];
     if (existingView) {
         OWSFail(@"%@ was already initialized.", OWSMessageDecryptJobFinderExtensionName);
         // already initialized
         return;
     }
-    [storageManager registerExtension:[self databaseExtension] withName:OWSMessageDecryptJobFinderExtensionName];
+    [storage registerExtension:[self databaseExtension] withName:OWSMessageDecryptJobFinderExtensionName];
 }
 
 @end
@@ -422,9 +422,9 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 #pragma mark - class methods
 
-+ (void)syncRegisterDatabaseExtension:(TSStorageManager *)storageManager
++ (void)syncRegisterDatabaseExtension:(OWSStorage *)storage
 {
-    [OWSMessageDecryptJobFinder syncRegisterDatabaseExtension:storageManager];
+    [OWSMessageDecryptJobFinder syncRegisterDatabaseExtension:storage];
 }
 
 #pragma mark - instance methods

@@ -100,16 +100,18 @@ NS_ASSUME_NONNULL_BEGIN
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModified:)
                                                      name:YapDatabaseModifiedNotification
-                                                   object:nil];
+                                                   object:TSStorageManager.sharedManager.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModifiedExternally:)
                                                      name:YapDatabaseModifiedExternallyNotification
-                                                   object:nil];
+                                                   object:TSStorageManager.sharedManager.dbNotificationObject];
     } else {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:YapDatabaseModifiedNotification object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                        name:YapDatabaseModifiedNotification
+                                                      object:TSStorageManager.sharedManager.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] removeObserver:self
                                                         name:YapDatabaseModifiedExternallyNotification
-                                                      object:nil];
+                                                      object:TSStorageManager.sharedManager.dbNotificationObject];
     }
 }
 

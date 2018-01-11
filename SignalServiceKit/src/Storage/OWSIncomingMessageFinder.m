@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSIncomingMessageFinder.h"
@@ -92,14 +92,14 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
     return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
 }
 
-+ (void)asyncRegisterExtensionWithStorageManager:(TSStorageManager *)storageManager
++ (void)asyncRegisterExtensionWithStorageManager:(OWSStorage *)storage
 {
     DDLogInfo(@"%@ registering async.", self.logTag);
-    [storageManager asyncRegisterExtension:self.indexExtension
-                                  withName:OWSIncomingMessageFinderExtensionName
-                           completionBlock:^(BOOL ready) {
-                               DDLogInfo(@"%@ finished registering async.", self.logTag);
-                           }];
+    [storage asyncRegisterExtension:self.indexExtension
+                           withName:OWSIncomingMessageFinderExtensionName
+                    completionBlock:^(BOOL ready) {
+                        DDLogInfo(@"%@ finished registering async.", self.logTag);
+                    }];
 }
 
 // We should not normally hit this, as we should have prefer registering async, but it is useful for testing.
