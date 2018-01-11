@@ -168,7 +168,9 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         topToolbar.items = [cancelButton]
 
         // Bottom Toolbar
-        let captioningToolbar = CaptioningToolbar()
+        //
+        // Don't add a caption to text messages.
+        let captioningToolbar = CaptioningToolbar(allowCaptions:!self.attachment.isOversizeText)
         captioningToolbar.captioningToolbarDelegate = self
         self.bottomToolbar = captioningToolbar
 
@@ -557,6 +559,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     private let sendButton: UIButton
     private let textView: UITextView
     private let bottomGradient: GradientView
+    private let allowCaptions: Bool
 
     // Layout Constants
     var maxTextViewHeight: CGFloat {
@@ -587,11 +590,12 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     }
 
     let kSendButtonShadowOffset: CGFloat = 1
-    init() {
+    init(allowCaptions: Bool) {
         self.sendButton = UIButton(type: .system)
         self.bottomGradient = GradientView(from: UIColor.clear, to: UIColor.black)
         self.textView =  MessageTextView()
         self.textViewHeight = kMinTextViewHeight
+        self.allowCaptions = allowCaptions
 
         super.init(frame: CGRect.zero)
 
@@ -603,6 +607,9 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         textView.addBorder(with: UIColor.lightGray)
         textView.font = UIFont.ows_dynamicTypeBody()
         textView.returnKeyType = .done
+        if !allowCaptions {
+            textView.isHidden = true
+        }
 
         let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
         sendButton.setTitle(sendTitle, for: .normal)
