@@ -130,12 +130,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     SetRandFunctionSeed();
 
+    // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
+    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
+
     // If a backup restore is in progress, try to complete it.
     // Otherwise, cleanup backup state.
     [OWSBackup applicationDidFinishLaunching];
-
-    // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
-    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).

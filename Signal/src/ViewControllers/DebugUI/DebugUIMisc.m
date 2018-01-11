@@ -96,15 +96,6 @@ NS_ASSUME_NONNULL_BEGIN
                                          }]];
     }
     [items addObject:[OWSTableItem
-                         subPageItemWithText:@"Export Backup w/ Password"
-                                 actionBlock:^(UIViewController *viewController) {
-                                     OWSBackupExportViewController *backupViewController =
-                                         [OWSBackupExportViewController new];
-                                     [backupViewController exportBackup:thread skipPassword:NO];
-                                     [viewController.navigationController pushViewController:backupViewController
-                                                                                    animated:YES];
-                                 }]];
-    [items addObject:[OWSTableItem
                          subPageItemWithText:@"Export Backup w/o Password"
                                  actionBlock:^(UIViewController *viewController) {
                                      OWSBackupExportViewController *backupViewController =

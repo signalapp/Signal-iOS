@@ -667,6 +667,10 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
     }
     self.encryptionKey = [OWSAES256Key keyWithData:encryptionKeyData];
 
+    if (![self isValidBackup]) {
+        return;
+    }
+
     NSData *_Nullable databasePassword = [self readDataFromFileName:OWSBackup_DatabasePasswordFilename];
     if (!databasePassword) {
         OWSFail(@"%@ Could not retrieve database password.", self.logTag);
@@ -771,6 +775,10 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
     DDLogInfo(@"%@ restoreDirectoryContents: %@ -> %@", self.logTag, srcDirPath, dstDirPath);
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:srcDirPath]) {
+        // Not all backups will have both a "app documents" and "shared data container" folder.
+        // The latter should always be present for "modern" installs, but we are permissive
+        // here about what we accept so that we can easily apply this branch to historic
+        // (pre-shared data container) versions of the app and restore from them.
         DDLogInfo(@"%@ Skipping restore directory: %@.", self.logTag, srcDirPath);
         return YES;
     }
@@ -861,9 +869,10 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
 - (NSString *)relativePathforPath:(NSString *)filePath basePath:(NSString *)basePath
 {
     OWSAssert(filePath.stringByStandardizingPath.length > 0);
-    OWSAssert([filePath.stringByStandardizingPath hasPrefix:basePath]);
+    OWSAssert([filePath.stringByStandardizingPath hasPrefix:basePath.stringByStandardizingPath]);
 
-    NSString *relativePath = [filePath.stringByStandardizingPath substringFromIndex:basePath.length];
+    NSString *relativePath =
+        [filePath.stringByStandardizingPath substringFromIndex:basePath.stringByStandardizingPath.length];
     NSString *separator = @"/";
     if ([relativePath hasPrefix:separator]) {
         relativePath = [relativePath substringFromIndex:separator.length];

@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 // TODO: We shouldn't ignore the return value of this method.
-+ (BOOL)protectFileOrFolderAtPath:(NSString *)path;
++ (BOOL)protectFileOrFolderAtPath:(NSString *)path __attribute__((warn_unused_result));
 
 + (NSString *)appDocumentDirectoryPath;
 

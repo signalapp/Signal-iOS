@@ -217,6 +217,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.backup.backupPassword.length > 0);
 
+    // TODO: We could consider clearing the password from the pasteboard after a certain delay.
     [UIPasteboard.generalPasteboard setString:self.backup.backupPassword];
 }
 
