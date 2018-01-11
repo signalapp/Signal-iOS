@@ -442,7 +442,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     }
 
     private func utiTypeForItem(itemProvider: NSItemProvider) -> String? {
-        // Special case URLs.  Most shares will confirm to kUTTypeURL, but
+        // Special case URLs.  Many shares (e.g. pdfs) will register kUTTypeURL, but
         // URLs will have kUTTypeURL as their only registered UTI type.
         if itemProvider.registeredTypeIdentifiers.count == 1 {
             if let firstUtiType = itemProvider.registeredTypeIdentifiers.first {
