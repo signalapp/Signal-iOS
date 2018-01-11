@@ -51,7 +51,6 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 
     @synchronized(self)
     {
-        // We don't bother synchronizing around
         if (!self.mayHaveLinkedDevicesCached) {
             self.mayHaveLinkedDevicesCached = @([dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
                                                             inCollection:kTSStorageManager_OWSDeviceCollection
