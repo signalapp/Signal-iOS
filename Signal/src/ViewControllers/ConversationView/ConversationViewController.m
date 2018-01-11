@@ -3045,7 +3045,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // content to fill the collection view at its current size.
     CGFloat contentOffsetYBottom
         = MAX(0.f, contentHeight + self.collectionView.contentInset.bottom - self.collectionView.bounds.size.height);
-    BOOL isScrolledToBottom = (self.collectionView.contentOffset.y > contentOffsetYBottom - kIsAtBottomTolerancePts);
+    
+    CGFloat distanceFromBottom = contentOffsetYBottom - self.collectionView.contentOffset.y;
+    BOOL isScrolledToBottom = distanceFromBottom <= kIsAtBottomTolerancePts;
 
     return isScrolledToBottom;
 }
@@ -3693,7 +3695,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             CGPoint newOffset = CGPointMake(0, newYOffset);
 
             // If the user is dismissing the keyboard via interactive scrolling, any additional conset offset feels
-            // redundant, so we only adjust content offset when *presenting* the keyboard.
+            // redundant, so we only adjust content offset when *presenting* the keyboard (i.e. when insetChange > 0).
             if (insetChange > 0 && newYOffset > keyboardEndFrame.origin.y) {
                 [self.collectionView setContentOffset:newOffset animated:NO];
             }
@@ -3747,10 +3749,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)scrollToBottomAnimated:(BOOL)animated
 {
     OWSAssert([NSThread isMainThread]);
-
     if (self.isUserScrolling) {
         return;
     }
+    
+    // Ensure the view is fully layed out before we try to scroll to the bottom, since
+    // we use the collectionView bounds to determine where the "bottom" is.
+    [self.view layoutIfNeeded];
 
     CGFloat contentHeight = self.safeContentHeight;
 
