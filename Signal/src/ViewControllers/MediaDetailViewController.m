@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UIBarButtonItem *videoPlayBarButton;
 @property (nonatomic, nullable) UIBarButtonItem *videoPauseBarButton;
 
-@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *imageViewConstraints;
+@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *mediaViewConstraints;
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewBottomConstraint;
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewLeadingConstraint;
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewTopConstraint;
@@ -361,18 +361,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applyInitialMediaViewConstraints
 {
-    if (self.imageViewConstraints.count > 0) {
-        [NSLayoutConstraint deactivateConstraints:self.imageViewConstraints];
+    if (self.mediaViewConstraints.count > 0) {
+        [NSLayoutConstraint deactivateConstraints:self.mediaViewConstraints];
     }
 
     CGRect convertedRect =
         [self.mediaView.superview convertRect:self.originRect fromView:[UIApplication sharedApplication].keyWindow];
+    
+    NSMutableArray<NSLayoutConstraint *> *mediaViewConstraints = [NSMutableArray new];
+    self.mediaViewConstraints = mediaViewConstraints;
 
-    NSMutableArray<NSLayoutConstraint *> *imageViewConstraints = [NSMutableArray new];
-    self.imageViewConstraints = imageViewConstraints;
-
-    [imageViewConstraints addObjectsFromArray:[self.mediaView autoSetDimensionsToSize:convertedRect.size]];
-    [imageViewConstraints addObjectsFromArray:@[
+    [mediaViewConstraints addObjectsFromArray:[self.mediaView autoSetDimensionsToSize:convertedRect.size]];
+    [mediaViewConstraints addObjectsFromArray:@[
         [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:convertedRect.origin.y],
         [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:convertedRect.origin.x]
     ]];
@@ -380,19 +380,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applyFinalMediaViewConstraints
 {
-    if (self.imageViewConstraints.count > 0) {
-        [NSLayoutConstraint deactivateConstraints:self.imageViewConstraints];
+    if (self.mediaViewConstraints.count > 0) {
+        [NSLayoutConstraint deactivateConstraints:self.mediaViewConstraints];
     }
 
-    NSMutableArray<NSLayoutConstraint *> *imageViewConstraints = [NSMutableArray new];
-    self.imageViewConstraints = imageViewConstraints;
+    NSMutableArray<NSLayoutConstraint *> *mediaViewConstraints = [NSMutableArray new];
+    self.mediaViewConstraints = mediaViewConstraints;
 
     self.mediaViewLeadingConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     self.mediaViewTopConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTop];
     self.mediaViewTrailingConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
     self.mediaViewBottomConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
-    [imageViewConstraints addObjectsFromArray:@[
+    [mediaViewConstraints addObjectsFromArray:@[
         self.mediaViewTopConstraint,
         self.mediaViewTrailingConstraint,
         self.mediaViewBottomConstraint,
@@ -742,11 +742,12 @@ NS_ASSUME_NONNULL_BEGIN
                                            self.mediaView.layer.cornerRadius = 0;
                                            [self updateMinZoomScale];
                                            [self.mediaView.superview layoutIfNeeded];
-                                           // We must lay out once *before* we centerImageViewConstraints
+                                           
+                                           // We must lay out once *before* we centerMediaViewConstraints
                                            // because it uses the imageView.frame to build the constraints
                                            // that will center the imageView, and then once again *after*
                                            // to ensure that the centered constraints are applied.
-                                           [self centerImageViewConstraints];
+                                           [self centerMediaViewConstraints];
                                            [self.mediaView.superview layoutIfNeeded];
                                            self.view.backgroundColor = UIColor.whiteColor;
                                        }
@@ -806,7 +807,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self.mediaView;
 }
 
-- (void)centerImageViewConstraints
+- (void)centerMediaViewConstraints
 {
     OWSAssert(self.scrollView);
 
@@ -824,7 +825,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
-    [self centerImageViewConstraints];
+    [self centerMediaViewConstraints];
     [self.view layoutIfNeeded];
 }
 
