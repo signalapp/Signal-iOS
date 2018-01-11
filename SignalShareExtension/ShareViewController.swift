@@ -440,24 +440,46 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             owsFail("\(self.logTag) building attachment failed with error: \(error)")
         }.retainUntilComplete()
     }
-    
-    private func isUrlItem(itemProvider: NSItemProvider) -> Bool {
-        // Special case URLs.  Many shares (e.g. pdfs) will register kUTTypeURL, but
-        // URLs will have kUTTypeURL as their only registered UTI type.
+
+    private func itemMatchesSpecificUtiType(itemProvider: NSItemProvider, utiType: String) -> Bool {
+        // URLs, contacts and other special items have to be detected separately.
+        // Many shares (e.g. pdfs) will register many UTI types and/or conform to kUTTypeData.
         guard itemProvider.registeredTypeIdentifiers.count == 1 else {
             return false
         }
         guard let firstUtiType = itemProvider.registeredTypeIdentifiers.first else {
             return false
         }
-        return firstUtiType == kUTTypeURL as String
+        return firstUtiType == utiType
+    }
+
+    private func isUrlItem(itemProvider: NSItemProvider) -> Bool {
+        return itemMatchesSpecificUtiType(itemProvider:itemProvider,
+                                          utiType:kUTTypeURL as String)
+    }
+
+    private func isContactItem(itemProvider: NSItemProvider) -> Bool {
+        return itemMatchesSpecificUtiType(itemProvider:itemProvider,
+                                          utiType:kUTTypeContact as String)
+    }
+
+    private func isSpecialItem(itemProvider: NSItemProvider) -> Bool {
+        if isUrlItem(itemProvider:itemProvider) {
+            return true
+        } else if isContactItem(itemProvider:itemProvider) {
+            return true
+        } else {
+            return false
+        }
     }
 
     private func utiTypeForItem(itemProvider: NSItemProvider) -> String? {
-        // Special case URLs.  Many shares (e.g. pdfs) will register kUTTypeURL, but
-        // URLs will have kUTTypeURL as their only registered UTI type.
+        Logger.info("\(self.logTag) utiTypeForItem: \(itemProvider.registeredTypeIdentifiers)")
+
         if isUrlItem(itemProvider:itemProvider) {
             return kUTTypeURL as String
+        } else if isContactItem(itemProvider:itemProvider) {
+            return kUTTypeContact as String
         }
 
         // Order matters if we want to take advantage of share conversion in loadItem,
@@ -502,13 +524,39 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                 return
             }
 
-            guard let url = provider as? URL else {
-                let unexpectedTypeError = ShareViewControllerError.assertionError(description: "unexpected item type: \(String(describing: provider))")
-                reject(unexpectedTypeError)
+            guard let provider = provider else {
+                let missingProviderError = ShareViewControllerError.assertionError(description: "missing item provider")
+                reject(missingProviderError)
                 return
             }
 
-            fulfill(url)
+            Logger.info("\(self.logTag) provider type: \(type(of:provider))")
+
+            if let data = provider as? Data {
+                let tempDirPath = NSTemporaryDirectory()
+                var tempFileName = NSUUID().uuidString
+                if let customFileExtension = MIMETypeUtil.fileExtension(forUTIType:utiType) {
+                    tempFileName += "." + customFileExtension
+                }
+                let tempFilePath = (tempDirPath as NSString).appendingPathComponent(tempFileName)
+                do {
+                    let fileUrl = URL(fileURLWithPath:tempFilePath)
+                    try data.write(to: fileUrl)
+
+                    // Don't back up Giphy downloads.
+                    OWSFileSystem.protectFileOrFolder(atPath:tempFilePath)
+
+                    fulfill(fileUrl)
+                } catch let error as NSError {
+                    let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
+                    reject(writeError)
+                }
+            } else if let url = provider as? URL {
+                fulfill(url)
+            } else {
+                let unexpectedTypeError = ShareViewControllerError.assertionError(description: "unexpected item type: \(String(describing: provider))")
+                reject(unexpectedTypeError)
+            }
         })
 
         // TODO accept other data types
@@ -606,7 +654,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     // Perhaps the AVFoundation APIs require some extra file system permssion we don't have in the
     // passed through URL.
     private func isVideoNeedingRelocation(itemProvider: NSItemProvider, itemUrl: URL) -> Bool {
-        if isUrlItem(itemProvider:itemProvider) {
+        if isSpecialItem(itemProvider:itemProvider) {
             return false
         }
 
