@@ -19,7 +19,9 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 
 @interface OWSDeviceManager ()
 
+// This property should only be accessed while synchronized on self.
 @property (atomic, nullable) NSNumber *mayHaveLinkedDevicesCached;
+
 @property (atomic) NSDate *lastReceivedSyncMessage;
 
 @end
@@ -47,24 +49,30 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 {
     OWSAssert(dbConnection);
 
-    // We don't bother synchronizing around
-    if (!self.mayHaveLinkedDevicesCached) {
-        self.mayHaveLinkedDevicesCached = @([dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
-                                                        inCollection:kTSStorageManager_OWSDeviceCollection
-                                                        defaultValue:YES]);
-    }
+    @synchronized(self)
+    {
+        // We don't bother synchronizing around
+        if (!self.mayHaveLinkedDevicesCached) {
+            self.mayHaveLinkedDevicesCached = @([dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
+                                                            inCollection:kTSStorageManager_OWSDeviceCollection
+                                                            defaultValue:YES]);
+        }
 
-    return [self.mayHaveLinkedDevicesCached boolValue];
+        return [self.mayHaveLinkedDevicesCached boolValue];
+    }
 }
 
 - (void)setMayHaveLinkedDevices
 {
-    if (self.mayHaveLinkedDevicesCached != nil && self.mayHaveLinkedDevicesCached.boolValue) {
-        // Skip redundant writes.
-        return;
-    }
+    @synchronized(self)
+    {
+        if (self.mayHaveLinkedDevicesCached != nil && self.mayHaveLinkedDevicesCached.boolValue) {
+            // Skip redundant writes.
+            return;
+        }
 
-    self.mayHaveLinkedDevicesCached = @(YES);
+        self.mayHaveLinkedDevicesCached = @(YES);
+    }
 
     // Note that we write async to avoid opening transactions within transactions.
     [TSStorageManager.sharedManager.newDatabaseConnection
