@@ -441,7 +441,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         }.retainUntilComplete()
     }
 
-    private func itemMatchesSpecificUtiType(itemProvider: NSItemProvider, utiType: String) -> Bool {
+    private class func itemMatchesSpecificUtiType(itemProvider: NSItemProvider, utiType: String) -> Bool {
         // URLs, contacts and other special items have to be detected separately.
         // Many shares (e.g. pdfs) will register many UTI types and/or conform to kUTTypeData.
         guard itemProvider.registeredTypeIdentifiers.count == 1 else {
@@ -453,17 +453,17 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         return firstUtiType == utiType
     }
 
-    private func isUrlItem(itemProvider: NSItemProvider) -> Bool {
+    private class func isUrlItem(itemProvider: NSItemProvider) -> Bool {
         return itemMatchesSpecificUtiType(itemProvider:itemProvider,
                                           utiType:kUTTypeURL as String)
     }
 
-    private func isContactItem(itemProvider: NSItemProvider) -> Bool {
+    private class func isContactItem(itemProvider: NSItemProvider) -> Bool {
         return itemMatchesSpecificUtiType(itemProvider:itemProvider,
                                           utiType:kUTTypeContact as String)
     }
 
-    private func isSpecialItem(itemProvider: NSItemProvider) -> Bool {
+    private class func isSpecialItem(itemProvider: NSItemProvider) -> Bool {
         if isUrlItem(itemProvider:itemProvider) {
             return true
         } else if isContactItem(itemProvider:itemProvider) {
@@ -473,7 +473,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         }
     }
 
-    private func utiTypeForItem(itemProvider: NSItemProvider) -> String? {
+    private class func utiTypeForItem(itemProvider: NSItemProvider) -> String? {
         Logger.info("\(self.logTag) utiTypeForItem: \(itemProvider.registeredTypeIdentifiers)")
 
         if isUrlItem(itemProvider:itemProvider) {
@@ -508,13 +508,15 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         }
         Logger.info("\(self.logTag) attachment: \(itemProvider)")
 
-        guard let utiType = utiTypeForItem(itemProvider: itemProvider) else {
+        guard let utiType = ShareViewController.utiTypeForItem(itemProvider: itemProvider) else {
             let error = ShareViewControllerError.unsupportedMedia
             return Promise(error: error)
         }
         Logger.debug("\(logTag) matched utiType: \(utiType)")
 
         let (promise, fulfill, reject) = Promise<URL>.pending()
+
+        var customFileName: String?
 
         itemProvider.loadItem(forTypeIdentifier: utiType, options: nil, completionHandler: {
             (provider, error) in
@@ -533,6 +535,11 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             Logger.info("\(self.logTag) provider type: \(type(of:provider))")
 
             if let data = provider as? Data {
+                if ShareViewController.itemMatchesSpecificUtiType(itemProvider:itemProvider,
+                                              utiType:kUTTypeVCard as String) {
+                    customFileName = "Contact.vcf"
+                }
+
                 let tempDirPath = NSTemporaryDirectory()
                 var tempFileName = NSUUID().uuidString
                 if let customFileExtension = MIMETypeUtil.fileExtension(forUTIType:utiType) {
@@ -585,7 +592,9 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             guard let dataSource = rawDataSource else {
                 throw ShareViewControllerError.assertionError(description: "Unable to read attachment data")
             }
-            if utiType != (kUTTypeURL as String) {
+            if let customFileName = customFileName {
+                dataSource.sourceFilename = customFileName
+            } else if utiType != (kUTTypeURL as String) {
                 // Ignore the filename for URLs.
                 dataSource.sourceFilename = url.lastPathComponent
             }
@@ -654,7 +663,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     // Perhaps the AVFoundation APIs require some extra file system permssion we don't have in the
     // passed through URL.
     private func isVideoNeedingRelocation(itemProvider: NSItemProvider, itemUrl: URL) -> Bool {
-        if isSpecialItem(itemProvider:itemProvider) {
+        if ShareViewController.isSpecialItem(itemProvider:itemProvider) {
             return false
         }
 
