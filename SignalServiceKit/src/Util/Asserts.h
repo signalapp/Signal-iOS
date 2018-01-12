@@ -113,3 +113,5 @@
 #define OWSSingletonAssert()
 
 #endif
+
+#define OWSAssertIsOnMainThread() OWSCAssert([NSThread isMainThread])

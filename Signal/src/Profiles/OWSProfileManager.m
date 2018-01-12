@@ -1410,7 +1410,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             }
         }
 
-        [OWSFileSystem protectFolderAtPath:profileAvatarsDirPath];
+        [OWSFileSystem protectFileOrFolderAtPath:profileAvatarsDirPath];
     });
     return profileAvatarsDirPath;
 }

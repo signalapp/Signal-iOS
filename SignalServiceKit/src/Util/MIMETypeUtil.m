@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "MIMETypeUtil.h"
@@ -468,7 +468,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
 
 + (NSSet<NSString *> *)supportedVideoUTITypes
 {
-    OWSAssert([NSThread isMainThread]);
     static NSSet<NSString *> *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -479,7 +478,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
 
 + (NSSet<NSString *> *)supportedAudioUTITypes
 {
-    OWSAssert([NSThread isMainThread]);
     static NSSet<NSString *> *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -490,7 +488,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
 
 + (NSSet<NSString *> *)supportedImageUTITypes
 {
-    OWSAssert([NSThread isMainThread]);
     static NSSet<NSString *> *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -501,7 +498,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
 
 + (NSSet<NSString *> *)supportedAnimatedImageUTITypes
 {
-    OWSAssert([NSThread isMainThread]);
     static NSSet<NSString *> *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{

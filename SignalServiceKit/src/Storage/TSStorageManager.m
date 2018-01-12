@@ -350,9 +350,9 @@ void setDatabaseInitialized()
 }
 
 - (void)protectSignalFiles {
-    [OWSFileSystem protectFolderAtPath:[self dbPath]];
-    [OWSFileSystem protectFolderAtPath:[[self dbPath] stringByAppendingString:@"-shm"]];
-    [OWSFileSystem protectFolderAtPath:[[self dbPath] stringByAppendingString:@"-wal"]];
+    [OWSFileSystem protectFileOrFolderAtPath:[self dbPath]];
+    [OWSFileSystem protectFileOrFolderAtPath:[[self dbPath] stringByAppendingString:@"-shm"]];
+    [OWSFileSystem protectFileOrFolderAtPath:[[self dbPath] stringByAppendingString:@"-wal"]];
 }
 
 - (nullable YapDatabaseConnection *)newDatabaseConnection
@@ -486,6 +486,34 @@ void setDatabaseInitialized()
     return newDBPassword;
 }
 
++ (void)storeKeyChainValue:(NSData *)data keychainKey:(NSString *)keychainKey
+{
+    OWSAssert(keychainKey.length > 0);
+    OWSAssert(data.length > 0);
+    
+    NSError *error;
+    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
+    BOOL success = [SAMKeychain setPasswordData:data forService:keychainService account:keychainKey error:&error];
+    if (!success || error) {
+//        OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotStoreKeychainValue]);
+        
+        [self deletePasswordFromKeychain];
+        
+        // Sleep to give analytics events time to be delivered.
+        [NSThread sleepForTimeInterval:15.0f];
+        
+        [NSException raise:@"OWSStorageExceptionName_DatabasePasswordUnwritable"
+                    format:@"Setting keychain value failed with error: %@", error];
+    } else {
+        DDLogWarn(@"Succesfully set new keychain value.");
+    }
+}
+
++ (void)storeDatabasePassword:(NSData *)passwordData
+{
+    [self storeKeyChainValue:passwordData keychainKey:keychainDBPassAccount];
+}
+
 #pragma mark - convenience methods
 
 - (void)purgeCollection:(NSString *)collection {
@@ -611,9 +639,14 @@ void setDatabaseInitialized()
     [TSAttachmentStream deleteAttachments];
 }
 
-- (void)deletePasswordFromKeychain
++ (void)deletePasswordFromKeychain
 {
     [SAMKeychain deletePasswordForService:keychainService account:keychainDBPassAccount];
+}
+
+- (void)deletePasswordFromKeychain
+{
+    [TSStorageManager deletePasswordFromKeychain];
 }
 
 - (void)deleteDatabaseFile

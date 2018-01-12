@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppDelegate.h"
@@ -11,6 +11,7 @@
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
 #import "OWSContactsSyncing.h"
+#import "OWSBackup.h"
 #import "OWSNavigationController.h"
 #import "OWSPreferences.h"
 #import "OWSProfileManager.h"
@@ -115,6 +116,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
+
+    // If a backup restore is in progress, try to complete it.
+    // Otherwise, cleanup backup state.
+    [OWSBackup applicationDidFinishLaunching];
 
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).

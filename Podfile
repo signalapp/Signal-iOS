@@ -15,6 +15,7 @@ target 'Signal' do
     pod 'SignalServiceKit',           path: '.'
     pod 'SocketRocket',               :git => 'https://github.com/facebook/SocketRocket.git', :inhibit_warnings => true
     pod 'YYImage'
+    pod 'SSZipArchive', :inhibit_warnings => true
     target 'SignalTests' do
       inherit! :search_paths
     end

@@ -65,7 +65,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Utilities
 
-- (void)protectFolderAtPath:(NSString *)path;
+- (void)protectFileOrFolderAtPath:(NSString *)path;
+
+- (NSData *)databasePassword;
++ (void)storeDatabasePassword:(NSData *)passwordData;
 
 @end
 
