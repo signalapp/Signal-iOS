@@ -556,24 +556,11 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 
 - (NSString *)createAndSetNewDatabasePassword
 {
-    NSString *newDBPassword = [[Randomness generateRandomBytes:30] base64EncodedString];
-    NSError *keySetError;
-    [SAMKeychain setPassword:newDBPassword forService:keychainService account:keychainDBPassAccount error:&keySetError];
-    if (keySetError) {
-        OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotStoreDatabasePassword]);
+    NSString *password = [[Randomness generateRandomBytes:30] base64EncodedString];
 
-        [OWSStorage deletePasswordFromKeychain];
+    [OWSStorage storeDatabasePassword:password];
 
-        // Sleep to give analytics events time to be delivered.
-        [NSThread sleepForTimeInterval:15.0f];
-
-        [NSException raise:OWSStorageExceptionName_DatabasePasswordUnwritable
-                    format:@"Setting DB password failed with error: %@", keySetError];
-    } else {
-        DDLogWarn(@"Succesfully set new DB password.");
-    }
-
-    return newDBPassword;
+    return password;
 }
 
 - (void)backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:(NSString *)errorDescription
@@ -608,6 +595,27 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         DDLogInfo(@"%@ Database file size: %llu", self.logTag, fileSize);
     }
     return fileSize;
+}
+
++ (void)storeDatabasePassword:(NSString *)password
+{
+    NSError *error;
+    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
+    BOOL success =
+        [SAMKeychain setPassword:password forService:keychainService account:keychainDBPassAccount error:&error];
+    if (!success || error) {
+        OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotStoreDatabasePassword]);
+
+        [OWSStorage deletePasswordFromKeychain];
+
+        // Sleep to give analytics events time to be delivered.
+        [NSThread sleepForTimeInterval:15.0f];
+
+        [NSException raise:OWSStorageExceptionName_DatabasePasswordUnwritable
+                    format:@"Setting DB password failed with error: %@", error];
+    } else {
+        DDLogWarn(@"Succesfully set new DB password.");
+    }
 }
 
 @end

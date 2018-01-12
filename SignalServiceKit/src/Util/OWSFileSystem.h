@@ -8,7 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (void)protectFileOrFolderAtPath:(NSString *)path;
+// TODO: We shouldn't ignore the return value of this method.
++ (BOOL)protectFileOrFolderAtPath:(NSString *)path __attribute__((warn_unused_result));
 
 + (NSString *)appDocumentDirectoryPath;
 
@@ -26,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)deleteFile:(NSString *)filePath;
 
 + (void)deleteFileIfExists:(NSString *)filePath;
+
++ (NSArray<NSString *> *_Nullable)allFilesInDirectoryRecursive:(NSString *)dirPath error:(NSError **)error;
 
 @end
 
