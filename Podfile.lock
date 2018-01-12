@@ -27,7 +27,7 @@ PODS:
   - CocoaLumberjack/Extensions (3.3.0):
     - CocoaLumberjack/Default
   - Curve25519Kit (2.1.0)
-  - GRKOpenSSLFramework (1.0.2.11.2)
+  - GRKOpenSSLFramework (1.0.2.12)
   - HKDFKit (0.0.4)
   - JSQMessagesViewController (7.3.4):
     - JSQSystemSoundPlayer (~> 2.0.1)
@@ -171,7 +171,7 @@ CHECKOUT OPTIONS:
     :commit: 03a19c80aafc10a3464f0c086b1eb38239c507ac
     :git: https://github.com/WhisperSystems/Curve25519Kit
   GRKOpenSSLFramework:
-    :commit: b11a2ae061a6e607dd4895c81220b07834852bdc
+    :commit: 76df9a8de81543e9d968e4ee25125127d1779331
     :git: https://github.com/WhisperSystems/GRKOpenSSLFramework
   HKDFKit:
     :commit: d2e2e50990e88537d6c4e38cc32a6f6debd83446
@@ -189,7 +189,7 @@ SPEC CHECKSUMS:
   AxolotlKit: 7cfd2e71329b8dc398734e95b936450a2081fd60
   CocoaLumberjack: 3c8c74683302f9012bb168e1c4b7ae3c0b558431
   Curve25519Kit: 76d0859ecb34704f7732847812363f83b23a6a59
-  GRKOpenSSLFramework: 39829d7b30f95133301f44514d4d7c070961e9f8
+  GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
   HKDFKit: 3fb424060aaf69795bc8ab34c4c233b98dc6303b
   JSQMessagesViewController: 39fed975e3c9f8eba7292071e29eeb541d105e66
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
