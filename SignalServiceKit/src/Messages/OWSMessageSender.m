@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageSender.h"
@@ -1090,7 +1090,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if (missingDevices.count > 0) {
         NSString *localNumber = [TSAccountManager localNumber];
         if ([localNumber isEqualToString:recipient.uniqueId]) {
-            [OWSDeviceManager.sharedManager setMayHaveLinkedDevices:YES dbConnection:self.dbConnection];
+            [OWSDeviceManager.sharedManager setMayHaveLinkedDevices];
         }
     }
 
