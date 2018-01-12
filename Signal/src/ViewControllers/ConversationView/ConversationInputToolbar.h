@@ -26,8 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didApproveAttachment:(SignalAttachment *)attachment;
 
-- (void)toolbarHeightDidChange:(CGFloat)newHeight;
-
 @end
 
 #pragma mark -
