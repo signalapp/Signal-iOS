@@ -194,6 +194,8 @@ void AssertIsOnSessionStoreQueue()
 
 - (void)resetSessionStore
 {
+    AssertIsOnSessionStoreQueue();
+
     DDLogWarn(@"%@ resetting session store", self.logTag);
     [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [transaction removeAllObjectsInCollection:TSStorageManagerSessionStoreCollection];
@@ -247,11 +249,12 @@ void AssertIsOnSessionStoreQueue()
 #if DEBUG
 - (NSString *)snapshotFilePath
 {
+    // Prefix name with period "." so that backups will ignore these snapshots.
     NSString *dirPath = [OWSFileSystem appDocumentDirectoryPath];
     return [dirPath stringByAppendingPathComponent:@".session-snapshot"];
 }
 
-- (void)archiveSessionStore
+- (void)snapshotSessionStore
 {
     AssertIsOnSessionStoreQueue();
 

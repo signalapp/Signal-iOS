@@ -53,8 +53,10 @@ extern const NSUInteger kIdentityKeyLength;
 #pragma mark - Debug
 
 #if DEBUG
+// Clears everything except the local identity key.
 - (void)clearIdentityState;
-- (void)archiveIdentityState;
+
+- (void)snapshotIdentityState;
 - (void)restoreIdentityState;
 #endif
 

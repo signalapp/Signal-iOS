@@ -80,9 +80,9 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUISessionState clearSessionAndIdentityStore];
                         }],
-        [OWSTableItem itemWithTitle:@"Archive Session and Identity Store"
+        [OWSTableItem itemWithTitle:@"Snapshot Session and Identity Store"
                         actionBlock:^{
-                            [DebugUISessionState archiveSessionAndIdentityStore];
+                            [DebugUISessionState snapshotSessionAndIdentityStore];
                         }],
         [OWSTableItem itemWithTitle:@"Restore Session and Identity Store"
                         actionBlock:^{
@@ -105,12 +105,12 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-+ (void)archiveSessionAndIdentityStore
++ (void)snapshotSessionAndIdentityStore
 {
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[TSStorageManager sharedManager] archiveSessionStore];
+        [[TSStorageManager sharedManager] snapshotSessionStore];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[OWSIdentityManager sharedManager] archiveIdentityState];
+            [[OWSIdentityManager sharedManager] snapshotIdentityState];
         });
     });
 }

@@ -771,17 +771,19 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (NSString *)identityKeySnapshotFilePath
 {
+    // Prefix name with period "." so that backups will ignore these snapshots.
     NSString *dirPath = [OWSFileSystem appDocumentDirectoryPath];
     return [dirPath stringByAppendingPathComponent:@".identity-key-snapshot"];
 }
 
 - (NSString *)trustedKeySnapshotFilePath
 {
+    // Prefix name with period "." so that backups will ignore these snapshots.
     NSString *dirPath = [OWSFileSystem appDocumentDirectoryPath];
     return [dirPath stringByAppendingPathComponent:@".trusted-key-snapshot"];
 }
 
-- (void)archiveIdentityState
+- (void)snapshotIdentityState
 {
     [self.dbConnection snapshotCollection:TSStorageManagerIdentityKeyStoreCollection
                          snapshotFilePath:self.identityKeySnapshotFilePath];

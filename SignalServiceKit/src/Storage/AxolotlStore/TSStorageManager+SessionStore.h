@@ -13,7 +13,7 @@
 
 - (void)resetSessionStore;
 #if DEBUG
-- (void)archiveSessionStore;
+- (void)snapshotSessionStore;
 - (void)restoreSessionStore;
 #endif
 - (void)printAllSessions;
