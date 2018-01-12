@@ -79,7 +79,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         self.loadViewController = loadViewController
 
         // Don't display load screen immediately, in hopes that we can avoid it altogether.
-        after(seconds: 0.5).then { () -> Void in
+        after(seconds: 0.25).then { () -> Void in
             guard self.presentedViewController == nil else {
                 Logger.debug("\(self.logTag) setup completed quickly, no need to present load view controller.")
                 return
