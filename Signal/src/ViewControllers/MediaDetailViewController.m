@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIScrollView *scrollView;
 @property (nonatomic) UIView *mediaView;
 @property (nonatomic) UIView *presentationView;
-
+@property (nonatomic) UIView *replacingView;
 @property (nonatomic) UIButton *shareButton;
 
 @property (nonatomic) CGRect originRect;
@@ -717,8 +717,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Presentation
 
-- (void)presentFromViewController:(UIViewController *)viewController
+- (void)presentFromViewController:(UIViewController *)viewController replacingView:(UIView *)view;
 {
+    self.replacingView = view;
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self];
 
     // UIModalPresentationCustom retains the current view context behind our VC, allowing us to manually
@@ -755,6 +756,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    // 1. Fade in the entire view.
                                    [UIView animateWithDuration:0.1
                                                     animations:^{
+                                                        self.replacingView.alpha = 0.0;
                                                         self.view.alpha = 1.0;
                                                     }];
 
@@ -819,9 +821,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self applyInitialMediaViewConstraints];
 
     if (isAnimated) {
-        [UIView animateWithDuration:0.2
+        [UIView animateWithDuration:0.18
             delay:0.0
-            options:UIViewAnimationOptionCurveEaseInOut
+            options:UIViewAnimationOptionCurveEaseOut
             animations:^(void) {
                 [self.presentationView.superview layoutIfNeeded];
                 self.presentationView.layer.cornerRadius = OWSMessageCellCornerRadius;
@@ -829,13 +831,26 @@ NS_ASSUME_NONNULL_BEGIN
                 // In case user has hidden bars, which changes background to black.
                 self.view.backgroundColor = UIColor.whiteColor;
 
-                // fade out content and toolbars
-                self.navigationController.view.alpha = 0.0;
             }
-            completion:^(BOOL finished) {
-                [self.presentingViewController dismissViewControllerAnimated:NO completion:completion];
-            }];
+                         completion:nil];
+        
+        [UIView animateWithDuration:0.1
+                              delay:0.15
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^(void) {
+                             
+                             OWSAssert(self.replacingView);
+                             self.replacingView.alpha = 1.0;
+                             
+                             // fade out content and toolbars
+                             self.navigationController.view.alpha = 0.0;
+                         }
+                         completion:^(BOOL finished) {
+                             [self.presentingViewController dismissViewControllerAnimated:NO completion:completion];
+                         }];
+        
     } else {
+        self.replacingView.alpha = 1.0;
         [self.presentingViewController dismissViewControllerAnimated:NO completion:completion];
     }
 }

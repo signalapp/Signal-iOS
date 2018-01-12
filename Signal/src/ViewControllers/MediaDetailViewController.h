@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAttachment:(SignalAttachment *)attachment fromRect:(CGRect)rect;
 
-- (void)presentFromViewController:(UIViewController *)viewController;
+- (void)presentFromViewController:(UIViewController *)viewController replacingView:(UIView *)view;
 
 @end
 
