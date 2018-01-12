@@ -295,7 +295,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
-                                               object:nil];
+                                               object:TSStorageManager.sharedManager.dbNotificationObject];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification

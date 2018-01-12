@@ -137,7 +137,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
-                                               object:nil];
+                                               object:TSStorageManager.sharedManager.dbNotificationObject];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification

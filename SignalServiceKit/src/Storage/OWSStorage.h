@@ -19,6 +19,9 @@ extern NSString *const StorageIsReadyNotification;
 // sync _AND_ async view registrations.
 + (BOOL)isStorageReady;
 
+// This object can be used to filter database notifications.
+@property (nonatomic, readonly, nullable) id dbNotificationObject;
+
 /**
  * The safeBlockingMigrationsBlock block will
  * run any outstanding version migrations that are a) blocking and b) safe
