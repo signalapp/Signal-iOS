@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ShareAppExtensionContext ()
 
 @property (nonatomic) UIViewController *rootViewController;
+@property (atomic) BOOL isSAEInBackground;
 
 @end
 
@@ -63,6 +64,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
+    self.isSAEInBackground = NO;
+
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidBecomeActiveNotification object:nil];
 }
 
@@ -83,6 +86,8 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
 
+    self.isSAEInBackground = YES;
+
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidEnterBackgroundNotification object:nil];
 }
 
@@ -91,6 +96,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    self.isSAEInBackground = NO;
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillEnterForegroundNotification object:nil];
 }
@@ -119,6 +126,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle
 {
     DDLogInfo(@"Ignoring request to set status bar style since we're in an app extension");
+}
+
+- (BOOL)isInBackground
+{
+    return self.isSAEInBackground;
 }
 
 - (UIApplicationState)mainApplicationState

@@ -34,8 +34,12 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 
 // Should only be called if isMainApp is YES.
 //
-// In general, isMainAppAndActive will probably yield more readable code.
+// Wherever possible, use isMainAppAndActive or isInBackground instead.
+// This should only be used by debugging/logging code.
 - (UIApplicationState)mainApplicationState;
+
+// Similar to UIApplicationStateBackground, but works in SAE.
+- (BOOL)isInBackground;
 
 // Should start a background task if isMainApp is YES.
 // Should just return UIBackgroundTaskInvalid if isMainApp is NO.

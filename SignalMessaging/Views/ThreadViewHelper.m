@@ -64,8 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                  name:OWSApplicationDidEnterBackgroundNotification
                                                object:nil];
 
-    self.shouldObserveDBModifications
-        = !(CurrentAppContext().isMainApp && CurrentAppContext().mainApplicationState == UIApplicationStateBackground);
+    self.shouldObserveDBModifications = !CurrentAppContext().isInBackground;
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
