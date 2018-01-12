@@ -6,8 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-void runSyncRegistrationsForPrimaryStorage(OWSStorage *storage);
-void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage);
+void runSyncRegistrationsForStorage(OWSStorage *storage);
+void runAsyncRegistrationsForStorage(OWSStorage *storage);
 
 // TODO: Rename to OWSPrimaryStorage?
 @interface TSStorageManager : OWSStorage

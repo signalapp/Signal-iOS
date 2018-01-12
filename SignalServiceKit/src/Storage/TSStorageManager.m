@@ -23,7 +23,7 @@ NSString *const TSStorageManagerExceptionName_CouldNotMoveDatabaseFile
 NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     = @"TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory";
 
-void runSyncRegistrationsForPrimaryStorage(OWSStorage *storage)
+void runSyncRegistrationsForStorage(OWSStorage *storage)
 {
     OWSCAssert(storage);
 
@@ -37,7 +37,7 @@ void runSyncRegistrationsForPrimaryStorage(OWSStorage *storage)
     [OWSBatchMessageProcessor syncRegisterDatabaseExtension:storage];
 }
 
-void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
+void runAsyncRegistrationsForStorage(OWSStorage *storage)
 {
     OWSCAssert(storage);
 
@@ -109,7 +109,7 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 - (void)runSyncRegistrations
 {
-    runSyncRegistrationsForPrimaryStorage(self);
+    runSyncRegistrationsForStorage(self);
 
     // See comments on OWSDatabaseConnection.
     //
@@ -125,7 +125,7 @@ void runAsyncRegistrationsForPrimaryStorage(OWSStorage *storage)
 {
     OWSAssert(completion);
 
-    runAsyncRegistrationsForPrimaryStorage(self);
+    runAsyncRegistrationsForStorage(self);
 
     // Block until all async registrations are complete.
     YapDatabaseConnection *dbConnection = self.newDatabaseConnection;
