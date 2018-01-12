@@ -780,6 +780,12 @@ NS_ASSUME_NONNULL_BEGIN
                                            self.view.backgroundColor = UIColor.whiteColor;
                                        }
                                        completion:^(BOOL finished) {
+                                           // HACK: Setting the frame to itself *seems* like it should be a no-op, but
+                                           // it ensures the content is drawn at the right frame. In particular I was reproducibly
+                                           // some images squished (they were EXIF rotated, maybe relateed).
+                                           // similar to this report: https://stackoverflow.com/questions/27961884/swift-uiimageview-stretched-aspect
+                                           self.mediaView.frame = self.mediaView.frame;
+                                           
                                            // At this point our presentation view should be overlayed perfectly
                                            // with our media view. Swapping them out should be imperceptible.
                                            self.mediaView.hidden = NO;
