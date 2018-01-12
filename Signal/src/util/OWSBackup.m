@@ -754,12 +754,19 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
         return NO;
     }
 
+    // Clear out any existing keys in this instance of NSUserDefaults.
+    for (NSString *key in userDefaults.dictionaryRepresentation) {
+        [userDefaults removeObjectForKey:key];
+    }
+
     // TODO: this doesn't yet remove any keys, so you end up with the "union".
     for (NSString *key in dictionary) {
         id value = dictionary[key];
         OWSAssert(value);
         [userDefaults setObject:value forKey:key];
     }
+
+    [userDefaults synchronize];
 
     return YES;
 }
