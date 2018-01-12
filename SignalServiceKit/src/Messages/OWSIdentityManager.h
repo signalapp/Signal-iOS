@@ -50,6 +50,16 @@ extern const NSUInteger kIdentityKeyLength;
 // This method can be called from any thread.
 - (void)processIncomingSyncMessage:(OWSSignalServiceProtosVerified *)verified;
 
+#pragma mark - Debug
+
+#if DEBUG
+// Clears everything except the local identity key.
+- (void)clearIdentityState;
+
+- (void)snapshotIdentityState;
+- (void)restoreIdentityState;
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END

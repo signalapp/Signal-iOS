@@ -665,7 +665,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "علامت‌گذاری به عنوان تائید شده";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "بازگردانی این نشست به حالت اولیه.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "بازگردانی این نشست به حالت اولیه";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "اتمام ساخت گروه";

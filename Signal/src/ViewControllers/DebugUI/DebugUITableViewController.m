@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUITableViewController.h"
@@ -79,9 +79,9 @@ NS_ASSUME_NONNULL_BEGIN
         addObject:[self itemForSubsection:[DebugUIContacts new] viewController:viewController thread:thread]];
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUIDiskUsage new] viewController:viewController thread:thread]];
+    [subsectionItems
+        addObject:[self itemForSubsection:[DebugUISessionState new] viewController:viewController thread:thread]];
     if ([thread isKindOfClass:[TSContactThread class]]) {
-        [subsectionItems
-            addObject:[self itemForSubsection:[DebugUISessionState new] viewController:viewController thread:thread]];
         [subsectionItems
             addObject:[self itemForSubsection:[DebugUICalling new] viewController:viewController thread:thread]];
     }
@@ -111,6 +111,8 @@ NS_ASSUME_NONNULL_BEGIN
     [subsectionItems addObject:[self itemForSubsection:[DebugUIContacts new] viewController:viewController thread:nil]];
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUIDiskUsage new] viewController:viewController thread:nil]];
+    [subsectionItems
+        addObject:[self itemForSubsection:[DebugUISessionState new] viewController:viewController thread:nil]];
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUISyncMessages new] viewController:viewController thread:nil]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:nil]];

@@ -16,6 +16,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // Hide the "import" directories from exports, etc. by prefixing their name with a period.
+//
+// OWSBackup backs up files and directories in the "app documents" and "shared data container",
+// but ignores any top-level files or directories in those locations whose names start with a
+// period ".".
 NSString *const OWSBackup_DirNamePrefix = @".SignalBackup.";
 NSString *const OWSBackup_FileExtension = @".signalbackup";
 NSString *const OWSBackup_EncryptionKeyFilename = @".encryptionKey";

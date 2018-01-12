@@ -665,7 +665,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Merkitse varmennetuksi";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Alusta tämä istunto.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Alusta tämä istunto";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Päätä ryhmän luonti";

@@ -665,7 +665,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Mark as Verified";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Ресетирајте ја оваа сесија.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Ресетирајте ја оваа сесија";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Завршете со креирање на група";

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <YapDatabase/YapDatabaseConnection.h>
@@ -37,6 +37,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (int)incrementIntForKey:(NSString *)key inCollection:(NSString *)collection;
 
 - (void)purgeCollection:(NSString *)collection;
+
+#pragma mark - Debug
+
+#if DEBUG
+- (void)snapshotCollection:(NSString *)collection snapshotFilePath:(NSString *)snapshotFilePath;
+- (void)restoreSnapshotOfCollection:(NSString *)collection snapshotFilePath:(NSString *)snapshotFilePath;
+#endif
 
 @end
 

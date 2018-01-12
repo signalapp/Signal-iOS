@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <AxolotlKit/SessionStore.h>
 #import "TSStorageManager.h"
+#import <AxolotlKit/SessionStore.h>
 
 @interface TSStorageManager (SessionStore) <SessionStore>
 
@@ -12,6 +12,10 @@
 #pragma mark - debug
 
 - (void)resetSessionStore;
+#if DEBUG
+- (void)snapshotSessionStore;
+- (void)restoreSessionStore;
+#endif
 - (void)printAllSessions;
 
 @end

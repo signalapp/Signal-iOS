@@ -665,7 +665,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Mark as Verified";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Pārtraukt šo sesiju.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Pārtraukt šo sesiju";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
