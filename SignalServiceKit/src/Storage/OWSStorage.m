@@ -531,8 +531,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         [DDLog flushLog];
 
         if (CurrentAppContext().isMainApp) {
-            UIApplicationState applicationState = CurrentAppContext().mainApplicationState;
-            if (applicationState == UIApplicationStateBackground) {
+            if (CurrentAppContext().isInBackground) {
                 // TODO: Rather than crash here, we should detect the situation earlier
                 // and exit gracefully - (in the app delegate?). See the `
                 // This is a last ditch effort to avoid blowing away the user's database.
@@ -572,8 +571,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 
 - (void)backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:(NSString *)errorDescription
 {
-    OWSAssert(
-        CurrentAppContext().isMainApp && CurrentAppContext().mainApplicationState == UIApplicationStateBackground);
+    OWSAssert(CurrentAppContext().isMainApp && CurrentAppContext().isInBackground);
 
     // Sleep to give analytics events time to be delivered.
     [NSThread sleepForTimeInterval:5.0f];

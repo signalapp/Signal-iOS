@@ -120,6 +120,11 @@ NS_ASSUME_NONNULL_BEGIN
     [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle];
 }
 
+- (BOOL)isInBackground
+{
+    return [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;
+}
+
 - (UIApplicationState)mainApplicationState
 {
     return [UIApplication sharedApplication].applicationState;
