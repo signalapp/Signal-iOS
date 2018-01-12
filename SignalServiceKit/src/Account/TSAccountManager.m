@@ -3,6 +3,7 @@
 //
 
 #import "TSAccountManager.h"
+#import "AppContext.h"
 #import "NSData+Base64.h"
 #import "NSData+hexString.h"
 #import "NSNotificationCenter+OWS.h"
@@ -58,7 +59,19 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 
     OWSSingletonAssert();
 
+    if (!CurrentAppContext().isMainApp) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(yapDatabaseModifiedExternally:)
+                                                     name:YapDatabaseModifiedExternallyNotification
+                                                   object:nil];
+    }
+
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 + (instancetype)sharedInstance
@@ -452,6 +465,21 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
             DDLogError(@"%@ Failed to unregister with error: %@", self.logTag, error);
             failureBlock(error);
         }];
+}
+
+- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    // Any database write by the main app might reflect a deregistration,
+    // so clear the cached "is registered" state.  This will significantly
+    // erode the value of this cache in the SAE.
+    @synchronized(self)
+    {
+        _isRegistered = NO;
+    }
 }
 
 @end
