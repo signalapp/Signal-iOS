@@ -456,6 +456,6 @@ class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             }
         }()
 
-        viewController.present(from:fromViewController)
+        viewController.present(from: fromViewController, replacing: fromView)
     }
 }

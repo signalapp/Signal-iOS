@@ -1989,7 +1989,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     MediaDetailViewController *vc = [[MediaDetailViewController alloc] initWithAttachmentStream:attachmentStream
                                                                                    fromRect:convertedRect
                                                                                    viewItem:viewItem];
-    [vc presentFromViewController:self];
+    [vc presentFromViewController:self replacingView:imageView];
 }
 
 - (void)didTapVideoViewItem:(ConversationViewItem *)viewItem
@@ -2007,7 +2007,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     MediaDetailViewController *vc = [[MediaDetailViewController alloc] initWithAttachmentStream:attachmentStream
                                                                                    fromRect:convertedRect
                                                                                    viewItem:viewItem];
-    [vc presentFromViewController:self];
+    [vc presentFromViewController:self replacingView:imageView];
 }
 
 - (void)didTapAudioViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream

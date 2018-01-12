@@ -6,6 +6,7 @@
 #import "AttachmentSharing.h"
 #import "ConversationViewController.h"
 #import "ConversationViewItem.h"
+#import "OWSMessageCell.h"
 #import "Signal-Swift.h"
 #import "TSAttachmentStream.h"
 #import "TSInteraction.h"
@@ -48,7 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UIScrollView *scrollView;
 @property (nonatomic) UIView *mediaView;
-
+@property (nonatomic) UIView *presentationView;
+@property (nonatomic) UIView *replacingView;
 @property (nonatomic) UIButton *shareButton;
 
 @property (nonatomic) CGRect originRect;
@@ -67,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UIBarButtonItem *videoPlayBarButton;
 @property (nonatomic, nullable) UIBarButtonItem *videoPauseBarButton;
 
-@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *imageViewConstraints;
+@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *presentationViewConstraints;
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewBottomConstraint;
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewLeadingConstraint;
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewTopConstraint;
@@ -201,8 +203,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
+
     [self updateMinZoomScale];
-    [self centerImageViewConstraints];
+    [self centerMediaViewConstraints];
 }
 
 - (void)updateMinZoomScale
@@ -266,6 +269,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.mediaView);
 
     [scrollView addSubview:self.mediaView];
+    self.mediaViewLeadingConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    self.mediaViewTopConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    self.mediaViewTrailingConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    self.mediaViewBottomConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
     self.mediaView.contentMode = UIViewContentModeScaleAspectFit;
     self.mediaView.userInteractionEnabled = YES;
     self.mediaView.clipsToBounds = YES;
@@ -277,7 +285,20 @@ NS_ASSUME_NONNULL_BEGIN
     self.mediaView.layer.minificationFilter = kCAFilterTrilinear;
     self.mediaView.layer.magnificationFilter = kCAFilterTrilinear;
 
-    [self applyInitialImageViewConstraints];
+    // The presentationView is only used during present/dismiss animations.
+    // It's a static image of the media content.
+    UIImageView *presentationView = [[UIImageView alloc] initWithImage:self.image];
+    self.presentationView = presentationView;
+    
+    [self.view addSubview:presentationView];
+    presentationView.hidden = YES;
+    presentationView.clipsToBounds = YES;
+    presentationView.layer.allowsEdgeAntialiasing = YES;
+    presentationView.layer.minificationFilter = kCAFilterTrilinear;
+    presentationView.layer.magnificationFilter = kCAFilterTrilinear;
+    presentationView.contentMode = UIViewContentModeScaleAspectFit;
+    
+    [self applyInitialMediaViewConstraints];
 
     if (self.isVideo) {
         if (@available(iOS 9, *)) {
@@ -365,44 +386,40 @@ NS_ASSUME_NONNULL_BEGIN
     [self.footerBar setItems:toolbarItems animated:NO];
 }
 
-- (void)applyInitialImageViewConstraints
+- (void)applyInitialMediaViewConstraints
 {
-    if (self.imageViewConstraints.count > 0) {
-        [NSLayoutConstraint deactivateConstraints:self.imageViewConstraints];
+    if (self.presentationViewConstraints.count > 0) {
+        [NSLayoutConstraint deactivateConstraints:self.presentationViewConstraints];
     }
 
-    CGRect convertedRect =
-        [self.mediaView.superview convertRect:self.originRect fromView:[UIApplication sharedApplication].keyWindow];
+    CGRect convertedRect = [self.presentationView.superview convertRect:self.originRect
+                                                               fromView:[UIApplication sharedApplication].keyWindow];
 
-    NSMutableArray<NSLayoutConstraint *> *imageViewConstraints = [NSMutableArray new];
-    self.imageViewConstraints = imageViewConstraints;
+    NSMutableArray<NSLayoutConstraint *> *presentationViewConstraints = [NSMutableArray new];
+    self.presentationViewConstraints = presentationViewConstraints;
 
-    [imageViewConstraints addObjectsFromArray:[self.mediaView autoSetDimensionsToSize:convertedRect.size]];
-    [imageViewConstraints addObjectsFromArray:@[
-        [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:convertedRect.origin.y],
-        [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:convertedRect.origin.x]
+    [presentationViewConstraints
+        addObjectsFromArray:[self.presentationView autoSetDimensionsToSize:convertedRect.size]];
+    [presentationViewConstraints addObjectsFromArray:@[
+        [self.presentationView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:convertedRect.origin.y],
+        [self.presentationView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:convertedRect.origin.x]
     ]];
 }
 
-- (void)applyFinalImageViewConstraints
+- (void)applyFinalMediaViewConstraints
 {
-    if (self.imageViewConstraints.count > 0) {
-        [NSLayoutConstraint deactivateConstraints:self.imageViewConstraints];
+    if (self.presentationViewConstraints.count > 0) {
+        [NSLayoutConstraint deactivateConstraints:self.presentationViewConstraints];
     }
 
-    NSMutableArray<NSLayoutConstraint *> *imageViewConstraints = [NSMutableArray new];
-    self.imageViewConstraints = imageViewConstraints;
+    NSMutableArray<NSLayoutConstraint *> *presentationViewConstraints = [NSMutableArray new];
+    self.presentationViewConstraints = presentationViewConstraints;
 
-    self.mediaViewLeadingConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-    self.mediaViewTopConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    self.mediaViewTrailingConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-    self.mediaViewBottomConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-
-    [imageViewConstraints addObjectsFromArray:@[
-        self.mediaViewTopConstraint,
-        self.mediaViewTrailingConstraint,
-        self.mediaViewBottomConstraint,
-        self.mediaViewLeadingConstraint
+    [presentationViewConstraints addObjectsFromArray:@[
+        [self.presentationView autoPinEdgeToSuperviewEdge:ALEdgeLeading],
+        [self.presentationView autoPinEdgeToSuperviewEdge:ALEdgeTop],
+        [self.presentationView autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
+        [self.presentationView autoPinEdgeToSuperviewEdge:ALEdgeBottom]
     ]];
 }
 
@@ -450,10 +467,13 @@ NS_ASSUME_NONNULL_BEGIN
     [[UIApplication sharedApplication] setStatusBarHidden:areToolbarsHidden withAnimation:UIStatusBarAnimationNone];
     [self.navigationController setNavigationBarHidden:areToolbarsHidden animated:NO];
     self.videoProgressBar.hidden = areToolbarsHidden;
+    
+    // We don't animate the background color change because the old color shows through momentarily
+    // behind where the status bar "used to be".
+    self.view.backgroundColor = areToolbarsHidden ? UIColor.blackColor : UIColor.whiteColor;
 
     [UIView animateWithDuration:0.1
                      animations:^(void) {
-                         self.view.backgroundColor = areToolbarsHidden ? UIColor.blackColor : UIColor.whiteColor;
                          self.footerBar.alpha = areToolbarsHidden ? 0 : 1;
                      }];
 }
@@ -697,8 +717,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Presentation
 
-- (void)presentFromViewController:(UIViewController *)viewController
+- (void)presentFromViewController:(UIViewController *)viewController replacingView:(UIView *)view;
 {
+    self.replacingView = view;
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self];
 
     // UIModalPresentationCustom retains the current view context behind our VC, allowing us to manually
@@ -711,7 +732,23 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.view.userInteractionEnabled = NO;
 
+    // We want to animate the tapped media from it's position in the previous VC
+    // to it's resting place in the center of this view controller.
+    //
+    // Rather than animating the actual media view in place, we animate the presentationView, which is a static
+    // image of the media content. Animating the actual media view is problematic for a couple reasons:
+    // 1. The media view ultimately lives in a zoomable scrollView. Getting both original positioning and the final positioning
+    //    correct, involves manipulating the zoomScale and position simultaneously, which results in non-linear movement,
+    //    especially noticeable on high resolution images.
+    // 2. For Video views, the AVPlayerLayer content does not scale with the presentation animation. So you instead get a full scale
+    //    video, wherein only the cropping is animated.
+    // Using a simple image view allows us to address both these problems relatively easily.
     self.view.alpha = 0.0;
+
+    self.mediaView.hidden = YES;
+    self.presentationView.hidden = NO;
+    self.presentationView.layer.cornerRadius = OWSMessageCellCornerRadius;
+
     [viewController presentViewController:navController
                                  animated:NO
                                completion:^{
@@ -719,31 +756,43 @@ NS_ASSUME_NONNULL_BEGIN
                                    // 1. Fade in the entire view.
                                    [UIView animateWithDuration:0.1
                                                     animations:^{
+                                                        self.replacingView.alpha = 0.0;
                                                         self.view.alpha = 1.0;
                                                     }];
 
-                                   // Make sure imageView is layed out before we update it's frame in the next
-                                   // animation.
-                                   [self.mediaView.superview layoutIfNeeded];
+                                   [self.presentationView.superview layoutIfNeeded];
+                                   [self applyFinalMediaViewConstraints];
 
                                    // 2. Animate imageView from it's initial position, which should match where it was
                                    // in the presenting view to it's final position, front and center in this view. This
-                                   // animation intentionally overlaps the previous
+                                   // animation duration intentionally overlaps the previous
                                    [UIView animateWithDuration:0.2
                                        delay:0.08
                                        options:UIViewAnimationOptionCurveEaseOut
                                        animations:^(void) {
-                                           [self applyFinalImageViewConstraints];
-                                           [self.mediaView.superview layoutIfNeeded];
-                                           // We must lay out *before* we centerImageViewConstraints
-                                           // because it uses the imageView.frame to build the contstraints
-                                           // that will center the imageView, and then once again
+                                           self.presentationView.layer.cornerRadius = 0;
+                                           [self.presentationView.superview layoutIfNeeded];
+
+                                           // We must lay out once *before* we centerMediaViewConstraints
+                                           // because it uses the imageView.frame to build the constraints
+                                           // that will center the imageView, and then once again *after*
                                            // to ensure that the centered constraints are applied.
-                                           [self centerImageViewConstraints];
+                                           [self centerMediaViewConstraints];
                                            [self.mediaView.superview layoutIfNeeded];
                                            self.view.backgroundColor = UIColor.whiteColor;
                                        }
                                        completion:^(BOOL finished) {
+                                           // HACK: Setting the frame to itself *seems* like it should be a no-op, but
+                                           // it ensures the content is drawn at the right frame. In particular I was reproducibly
+                                           // some images squished (they were EXIF rotated, maybe relateed).
+                                           // similar to this report: https://stackoverflow.com/questions/27961884/swift-uiimageview-stretched-aspect
+                                           self.mediaView.frame = self.mediaView.frame;
+                                           
+                                           // At this point our presentation view should be overlayed perfectly
+                                           // with our media view. Swapping them out should be imperceptible.
+                                           self.mediaView.hidden = NO;
+                                           self.presentationView.hidden = YES;
+
                                            self.view.userInteractionEnabled = YES;
 
                                            if (self.isVideo) {
@@ -755,34 +804,53 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dismissSelfAnimated:(BOOL)isAnimated completion:(void (^_Nullable)(void))completion
 {
+
     self.view.userInteractionEnabled = NO;
     [UIApplication sharedApplication].statusBarHidden = NO;
 
-    OWSAssert(self.mediaView.superview);
+    // Swapping mediaView for presentationView will be perceptible if we're not zoomed out all the way.
+    if (self.scrollView.zoomScale != self.scrollView.minimumZoomScale) {
+        [self.scrollView setZoomScale:self.scrollView.minimumZoomScale animated:YES];
+    }
 
-    [self.mediaView.superview layoutIfNeeded];
+    self.mediaView.hidden = YES;
+    self.presentationView.hidden = NO;
 
-    // Move the image view pack to it's initial position, i.e. where
+    // Move the presentationView back to it's initial position, i.e. where
     // it sits on the screen in the conversation view.
-    [self applyInitialImageViewConstraints];
+    [self applyInitialMediaViewConstraints];
 
     if (isAnimated) {
-        [UIView animateWithDuration:0.2
+        [UIView animateWithDuration:0.18
             delay:0.0
-            options:UIViewAnimationOptionCurveEaseInOut
+            options:UIViewAnimationOptionCurveEaseOut
             animations:^(void) {
-                [self.mediaView.superview layoutIfNeeded];
+                [self.presentationView.superview layoutIfNeeded];
+                self.presentationView.layer.cornerRadius = OWSMessageCellCornerRadius;
 
                 // In case user has hidden bars, which changes background to black.
                 self.view.backgroundColor = UIColor.whiteColor;
 
-                // fade out content and toolbars
-                self.navigationController.view.alpha = 0.0;
             }
-            completion:^(BOOL finished) {
-                [self.presentingViewController dismissViewControllerAnimated:NO completion:completion];
-            }];
+                         completion:nil];
+        
+        [UIView animateWithDuration:0.1
+                              delay:0.15
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^(void) {
+                             
+                             OWSAssert(self.replacingView);
+                             self.replacingView.alpha = 1.0;
+                             
+                             // fade out content and toolbars
+                             self.navigationController.view.alpha = 0.0;
+                         }
+                         completion:^(BOOL finished) {
+                             [self.presentingViewController dismissViewControllerAnimated:NO completion:completion];
+                         }];
+        
     } else {
+        self.replacingView.alpha = 1.0;
         [self.presentingViewController dismissViewControllerAnimated:NO completion:completion];
     }
 }
@@ -794,7 +862,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self.mediaView;
 }
 
-- (void)centerImageViewConstraints
+- (void)centerMediaViewConstraints
 {
     OWSAssert(self.scrollView);
 
@@ -812,7 +880,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
-    [self centerImageViewConstraints];
+    [self centerMediaViewConstraints];
     [self.view layoutIfNeeded];
 }
 
