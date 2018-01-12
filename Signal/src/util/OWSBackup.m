@@ -754,11 +754,62 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
         return NO;
     }
 
+    // Clear out any existing keys in this instance of NSUserDefaults.
+    for (NSString *key in userDefaults.dictionaryRepresentation) {
+        [userDefaults removeObjectForKey:key];
+    }
+
     // TODO: this doesn't yet remove any keys, so you end up with the "union".
     for (NSString *key in dictionary) {
         id value = dictionary[key];
         OWSAssert(value);
         [userDefaults setObject:value forKey:key];
+    }
+
+    [userDefaults synchronize];
+
+    return YES;
+}
+
+- (BOOL)renameDirectoryContents:(NSString *)dirPath
+{
+    OWSAssert(dirPath.length > 0);
+
+    DDLogInfo(@"%@ renameDirectoryContents: %@", self.logTag, dirPath);
+
+    NSError *error = nil;
+    NSArray<NSString *> *fileNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:&error];
+    if (error) {
+        OWSFail(@"%@ failed to list directory: %@, %@", self.logTag, dirPath, error);
+        return NO;
+    }
+    for (NSString *fileName in fileNames) {
+        if ([fileName hasPrefix:@"."]) {
+            // Ignore hidden files and directories.
+            continue;
+        }
+        NSString *filePath = [dirPath stringByAppendingPathComponent:fileName];
+
+        // To replace an existing file or directory, rename the existing item
+        // by adding a date/time suffix.
+        NSDateFormatter *dateFormatter = [NSDateFormatter new];
+        [dateFormatter setLocale:[NSLocale currentLocale]];
+        [dateFormatter setDateFormat:@".yyyy.MM.dd hh.mm.ss"];
+        NSString *replacementDateTime = [dateFormatter stringFromDate:[NSDate new]];
+
+        // Prefix with period to prevent subsequent backups from including these old, replaced
+        // files and directories.
+        NSString *renamedFileName = [NSString stringWithFormat:@".Old.%@.%@", fileName, replacementDateTime];
+        NSString *renamedFilePath = [dirPath stringByAppendingPathComponent:renamedFileName];
+        BOOL success = [[NSFileManager defaultManager] moveItemAtPath:filePath toPath:renamedFilePath error:&error];
+        if (!success || error) {
+            OWSFail(@"%@ failed to move directory item: %@, %@", self.logTag, filePath, error);
+            return NO;
+        }
+        if (![OWSFileSystem protectFileOrFolderAtPath:renamedFilePath]) {
+            OWSFail(@"%@ failed to protect old directory item: %@, %@", self.logTag, renamedFilePath, error);
+            return NO;
+        }
     }
 
     return YES;
@@ -769,6 +820,11 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
     OWSAssert(srcDirName.length > 0);
     OWSAssert(dstDirPath.length > 0);
     OWSAssert(self.backupDirPath.length > 0);
+
+    // Rename any existing files and directories in this directory.
+    if (![self renameDirectoryContents:dstDirPath]) {
+        return NO;
+    }
 
     NSString *srcDirPath = [self.backupDirPath stringByAppendingPathComponent:srcDirName];
 
@@ -790,27 +846,18 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
         return NO;
     }
     for (NSString *fileName in fileNames) {
+        if ([fileName hasPrefix:@"."]) {
+            // Ignore hidden files and directories.
+            OWSFail(@"%@ can't restore hidden file or directory: %@", self.logTag, fileName);
+            continue;
+        }
         NSString *srcFilePath = [srcDirPath stringByAppendingPathComponent:fileName];
         NSString *dstFilePath = [dstDirPath stringByAppendingPathComponent:fileName];
 
         if ([[NSFileManager defaultManager] fileExistsAtPath:dstFilePath]) {
-            // To replace an existing file or directory, rename the existing item
-            // by adding a date/time suffix.
-            NSDateFormatter *dateFormatter = [NSDateFormatter new];
-            [dateFormatter setLocale:[NSLocale currentLocale]];
-            [dateFormatter setDateFormat:@".yyyy.MM.dd hh.mm.ss"];
-            NSString *replacementDateTime = [dateFormatter stringFromDate:[NSDate new]];
-
-            NSString *oldFilePath = [dstFilePath stringByAppendingString:replacementDateTime];
-            BOOL success = [[NSFileManager defaultManager] moveItemAtPath:dstFilePath toPath:oldFilePath error:&error];
-            if (!success || error) {
-                OWSFail(@"%@ failed to move directory item: %@, %@", self.logTag, dstFilePath, error);
-                return NO;
-            }
-            if (![OWSFileSystem protectFileOrFolderAtPath:oldFilePath]) {
-                OWSFail(@"%@ failed to protect old directory item: %@, %@", self.logTag, oldFilePath, error);
-                return NO;
-            }
+            // All conflicting contents should have already been moved by renameDirectoryContents.
+            OWSFail(@"%@ unexpected pre-existing file or directory: %@", self.logTag, fileName);
+            continue;
         }
 
         BOOL success = [[NSFileManager defaultManager] moveItemAtPath:srcFilePath toPath:dstFilePath error:&error];
