@@ -343,13 +343,6 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     }
 
     private func createUrlPreview() {
-
-        let data = attachment.data
-        guard let messageText = String(data: data, encoding: String.Encoding.utf8) else {
-            createGenericPreview()
-            return
-        }
-
         // Show nothing; URLs should only appear in the attachment approval view
         // of the SAE and in this context the URL will be placed in the caption field.
     }

@@ -494,6 +494,36 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         return matchingUtiType
     }
 
+    private class func createDataSource(utiType: String, url: URL, customFileName: String?) -> DataSource? {
+        if utiType == (kUTTypeURL as String) {
+            // Share URLs as oversize text messages whose text content is the URL.
+            //
+            // NOTE: SharingThreadPickerViewController will try to unpack them
+            //       and send them as normal text messages if possible.
+            let urlString = url.absoluteString
+            return DataSourceValue.dataSource(withOversizeText:urlString)
+        } else if UTTypeConformsTo(utiType as CFString, kUTTypeText) {
+            // Share text as oversize text messages.
+            //
+            // NOTE: SharingThreadPickerViewController will try to unpack them
+            //       and send them as normal text messages if possible.
+            let urlString = url.absoluteString
+            return DataSourceValue.dataSource(withOversizeText:urlString)
+        } else {
+            guard let dataSource = DataSourcePath.dataSource(with: url) else {
+                return nil
+            }
+
+            if let customFileName = customFileName {
+                dataSource.sourceFilename = customFileName
+            } else {
+                // Ignore the filename for URLs.
+                dataSource.sourceFilename = url.lastPathComponent
+            }
+            return dataSource
+        }
+    }
+
     private func buildAttachment() -> Promise<SignalAttachment> {
         guard let inputItem: NSExtensionItem = self.extensionContext?.inputItems.first as? NSExtensionItem else {
             let error = ShareViewControllerError.assertionError(description: "no input item")
@@ -540,24 +570,27 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                     customFileName = "Contact.vcf"
                 }
 
-                let tempDirPath = NSTemporaryDirectory()
-                var tempFileName = NSUUID().uuidString
-                if let customFileExtension = MIMETypeUtil.fileExtension(forUTIType:utiType) {
-                    tempFileName += "." + customFileExtension
-                }
-                let tempFilePath = (tempDirPath as NSString).appendingPathComponent(tempFileName)
-                do {
-                    let fileUrl = URL(fileURLWithPath:tempFilePath)
-                    try data.write(to: fileUrl)
-
-                    // Don't back up Giphy downloads.
-                    OWSFileSystem.protectFileOrFolder(atPath:tempFilePath)
-
-                    fulfill(fileUrl)
-                } catch let error as NSError {
+                let customFileExtension = MIMETypeUtil.fileExtension(forUTIType:utiType)
+                guard let tempFilePath = OWSFileSystem.writeData(toTemporaryFile: data, fileExtension: customFileExtension) else {
                     let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
                     reject(writeError)
+                    return
                 }
+                let fileUrl = URL(fileURLWithPath:tempFilePath)
+                fulfill(fileUrl)
+            } else if let string = provider as? String {
+                guard let data = string.data(using: String.Encoding.utf8) else {
+                    let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
+                    reject(writeError)
+                    return
+                }
+                guard let tempFilePath = OWSFileSystem.writeData(toTemporaryFile:data, fileExtension:"txt") else {
+                    let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
+                    reject(writeError)
+                    return
+                }
+                let fileUrl = URL(fileURLWithPath:tempFilePath)
+                fulfill(fileUrl)
             } else if let url = provider as? URL {
                 fulfill(url)
             } else {
@@ -581,31 +614,16 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
             Logger.debug("\(self.logTag) building DataSource with url: \(url)")
 
-            var rawDataSource: DataSource?
-            if utiType == (kUTTypeURL as String) {
-                // Share URLs as oversize text messages whose text content is the URL.
-                //
-                // NOTE: SharingThreadPickerViewController will try to unpack them
-                //       and send them as normal text messages if possible.
-                let urlString = url.absoluteString
-                rawDataSource = DataSourceValue.dataSource(withOversizeText:urlString)
-            } else {
-                rawDataSource = DataSourcePath.dataSource(with: url)
-            }
-            guard let dataSource = rawDataSource else {
+            guard let dataSource = ShareViewController.createDataSource(utiType : utiType, url : url, customFileName : customFileName) else {
                 throw ShareViewControllerError.assertionError(description: "Unable to read attachment data")
-            }
-            if let customFileName = customFileName {
-                dataSource.sourceFilename = customFileName
-            } else if utiType != (kUTTypeURL as String) {
-                // Ignore the filename for URLs.
-                dataSource.sourceFilename = url.lastPathComponent
             }
 
             // start with base utiType, but it might be something generic like "image"
             var specificUTIType = utiType
             if utiType == (kUTTypeURL as String) {
                 // Use kUTTypeURL for URLs.
+            } else if UTTypeConformsTo(utiType as CFString, kUTTypeText) {
+                // Use kUTTypeText for text.
             } else if url.pathExtension.count > 0 {
                 // Determine a more specific utiType based on file extension
                 if let typeExtension = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) {

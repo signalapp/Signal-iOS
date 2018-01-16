@@ -166,6 +166,28 @@ NS_ASSUME_NONNULL_BEGIN
     return filePaths;
 }
 
++ (nullable NSString *)writeDataToTemporaryFile:(NSData *)data fileExtension:(NSString *_Nullable)fileExtension
+{
+    OWSAssert(data);
+
+    NSString *temporaryDirectory = NSTemporaryDirectory();
+    NSString *tempFileName = NSUUID.UUID.UUIDString;
+    if (fileExtension.length > 0) {
+        tempFileName = [[tempFileName stringByAppendingString:@"."] stringByAppendingString:fileExtension];
+    }
+    NSString *tempFilePath = [temporaryDirectory stringByAppendingPathComponent:tempFileName];
+    NSError *error;
+    BOOL success = [data writeToFile:tempFilePath options:NSDataWritingAtomic error:&error];
+    if (!success || error) {
+        OWSFail(@"%@ could not write to temporary file: %@", self.logTag, error);
+        return nil;
+    }
+
+    [self protectFileOrFolderAtPath:tempFilePath];
+
+    return tempFilePath;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
