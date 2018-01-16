@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import AVFoundation
 
 @available(iOS 9.0, *)
 @objc

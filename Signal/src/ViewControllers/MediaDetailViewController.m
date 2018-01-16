@@ -332,7 +332,6 @@ NS_ASSUME_NONNULL_BEGIN
         [playVideoButton autoCenterInSuperview];
     }
 
-
     // Don't show footer bar after tapping approval-view
     if (self.viewItem) {
         UIToolbar *footerBar = [UIToolbar new];

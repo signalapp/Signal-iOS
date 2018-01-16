@@ -33,9 +33,6 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     public let attachment: SignalAttachment
 
     @objc
-    public var videoPlayer: MPMoviePlayerController?
-
-    @objc
     public var audioPlayer: OWSAudioAttachmentPlayer?
 
     @objc

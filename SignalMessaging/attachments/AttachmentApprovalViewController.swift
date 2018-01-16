@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import AVFoundation
 import MediaPlayer
 
 @objc
@@ -12,7 +13,7 @@ public protocol AttachmentApprovalViewControllerDelegate: class {
 }
 
 @objc
-public class AttachmentApprovalViewController: OWSViewController, CaptioningToolbarDelegate {
+public class AttachmentApprovalViewController: OWSViewController, CaptioningToolbarDelegate, PlayerProgressBarDelegate {
 
     let TAG = "[AttachmentApprovalViewController]"
     weak var delegate: AttachmentApprovalViewControllerDelegate?
@@ -26,10 +27,13 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     // MARK: Properties
 
     let attachment: SignalAttachment
+    private var videoPlayer: AVPlayer?
 
     private(set) var bottomToolbar: UIView!
     private(set) var mediaMessageView: MediaMessageView!
     private(set) var scrollView: UIScrollView!
+    private(set) var contentContainer: UIView!
+    private(set) var playVideoButton: UIView?
 
     // MARK: Initializers
 
@@ -97,10 +101,15 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
         self.mediaMessageView = MediaMessageView(attachment: attachment, mode: .attachmentApproval)
 
+        // Anything that should be shrunk when user pops keyboard lives in the contentContainer.
+        let contentContainer = UIView()
+        self.contentContainer = contentContainer
+        view.addSubview(contentContainer)
+        contentContainer.autoPinEdgesToSuperviewEdges()
+
         // Scroll View - used to zoom/pan on images and video
         scrollView = UIScrollView()
-        view.addSubview(scrollView)
-
+        contentContainer.addSubview(scrollView)
         scrollView.delegate = self
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
@@ -139,23 +148,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
             topGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(60))
         }
 
-        // Hide the play button embedded in the MediaView and replace it with our own.
-        // This allows us to zoom in on the media view without zooming in on the button
-        if attachment.isVideo {
-            self.mediaMessageView.videoPlayButton?.isHidden = true
-            let playButton = UIButton()
-            playButton.accessibilityLabel = NSLocalizedString("PLAY_BUTTON_ACCESSABILITY_LABEL", comment: "accessability label for button to start media playback")
-            playButton.setBackgroundImage(#imageLiteral(resourceName: "play_button"), for: .normal)
-            playButton.contentMode = .scaleAspectFit
-
-            let playButtonWidth = ScaleFromIPhone5(70)
-            playButton.autoSetDimensions(to: CGSize(width: playButtonWidth, height: playButtonWidth))
-            self.view.addSubview(playButton)
-
-            playButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
-            playButton.autoCenterInSuperview()
-        }
-
         // Top Toolbar
         let topToolbar = makeClearToolbar()
 
@@ -173,6 +165,67 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         let captioningToolbar = CaptioningToolbar()
         captioningToolbar.captioningToolbarDelegate = self
         self.bottomToolbar = captioningToolbar
+
+        // Hide the play button embedded in the MediaView and replace it with our own.
+        // This allows us to zoom in on the media view without zooming in on the button
+        if attachment.isVideo {
+
+            if #available(iOS 9.0, *) {
+                guard let videoURL = attachment.dataUrl else {
+                    owsFail("Missing videoURL")
+                    return
+                }
+
+                let player = AVPlayer(url: videoURL)
+                self.videoPlayer = player
+
+                NotificationCenter.default.addObserver(self,
+                                                       selector: #selector(playerItemDidPlayToCompletion(_:)),
+                                                       name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
+                                                       object: player.currentItem)
+
+                let playerView = VideoPlayerView()
+                playerView.player = player
+                self.mediaMessageView.addSubview(playerView)
+                playerView.autoPinEdgesToSuperviewEdges()
+
+                let pauseGesture = UITapGestureRecognizer(target: self, action: #selector(didTapPlayerView(_:)))
+                playerView.addGestureRecognizer(pauseGesture)
+
+                let progressBar = PlayerProgressBar()
+                progressBar.player = player
+                progressBar.delegate = self
+
+                // we don't want the progress bar to zoom during "pinch-to-zoom"
+                // but we do want it to shrink with the media content when the user
+                // pops the keyboard.
+                contentContainer.addSubview(progressBar)
+
+                progressBar.autoPinEdge(.top, to: .bottom, of: topToolbar)
+                progressBar.autoPinWidthToSuperview()
+                progressBar.autoSetDimension(.height, toSize: 44)
+            }
+
+            self.mediaMessageView.videoPlayButton?.isHidden = true
+            let playButton = UIButton()
+            self.playVideoButton = playButton
+            playButton.accessibilityLabel = NSLocalizedString("PLAY_BUTTON_ACCESSABILITY_LABEL", comment: "accessability label for button to start media playback")
+            playButton.setBackgroundImage(#imageLiteral(resourceName: "play_button"), for: .normal)
+            playButton.contentMode = .scaleAspectFit
+
+            let playButtonWidth = ScaleFromIPhone5(70)
+            playButton.autoSetDimensions(to: CGSize(width: playButtonWidth, height: playButtonWidth))
+            self.contentContainer.addSubview(playButton)
+
+            playButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
+            playButton.autoCenterInSuperview()
+        }
+    }
+
+    @available(iOS 9, *)
+    public func didTapPlayerView(_ gestureRecognizer: UIGestureRecognizer) {
+        assert(self.videoPlayer != nil)
+        self.pauseVideo()
     }
 
     override public var inputAccessoryView: UIView? {
@@ -202,8 +255,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     @objc
     public func playButtonTapped() {
-        // FIXME - use built in AVPlayer controls like MediaDetailViewController
-//        mediaMessageView.playVideo()
+        self.playVideo()
     }
 
     func cancelPressed(sender: UIButton) {
@@ -226,6 +278,120 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     func captioningToolbar(_ captioningToolbar: CaptioningToolbar, didChangeTextViewHeight newHeight: CGFloat) {
         Logger.info("Changed height: \(newHeight)")
+    }
+
+    // MARK: Video
+
+    private func playVideo() {
+        Logger.info("\(TAG) in \(#function)")
+
+        if #available(iOS 9, *) {
+            guard let videoPlayer = self.videoPlayer else {
+                owsFail("\(TAG) video player was unexpectedly nil")
+                return
+            }
+
+            guard let playVideoButton = self.playVideoButton else {
+                owsFail("\(TAG) playVideoButton was unexpectedly nil")
+                return
+            }
+            UIView.animate(withDuration: 0.1) {
+                playVideoButton.alpha = 0.0
+            }
+
+            guard let item = videoPlayer.currentItem else {
+                owsFail("\(TAG) video player item was unexpectedly nil")
+                return
+            }
+
+            if item.currentTime() == item.duration {
+                // Rewind for repeated plays, but only if it previously played to end.
+                videoPlayer.seek(to: kCMTimeZero)
+            }
+
+            videoPlayer.play()
+        } else {
+            self.playLegacyVideo()
+        }
+    }
+
+    private func playLegacyVideo() {
+        if #available(iOS 9, *) {
+            owsFail("should only use legacy video on iOS8")
+        }
+
+        guard let videoURL = self.attachment.dataUrl else {
+            owsFail("videoURL was unexpectedly nil")
+            return
+        }
+
+        guard let playerVC = MPMoviePlayerViewController(contentURL: videoURL) else {
+            owsFail("failed to init legacy video player")
+            return
+        }
+
+        self.present(playerVC, animated: true)
+    }
+
+    @available(iOS 9, *)
+    private func pauseVideo() {
+        guard let videoPlayer = self.videoPlayer else {
+            owsFail("\(TAG) video player was unexpectedly nil")
+            return
+        }
+
+        videoPlayer.pause()
+        guard let playVideoButton = self.playVideoButton else {
+            owsFail("\(TAG) playVideoButton was unexpectedly nil")
+            return
+        }
+        UIView.animate(withDuration: 0.1) {
+            playVideoButton.alpha = 1.0
+        }
+    }
+
+    @objc
+    private func playerItemDidPlayToCompletion(_ notification: Notification) {
+        guard let playVideoButton = self.playVideoButton else {
+            owsFail("\(TAG) playVideoButton was unexpectedly nil")
+            return
+        }
+        UIView.animate(withDuration: 0.1) {
+            playVideoButton.alpha = 1.0
+        }
+    }
+
+    @available(iOS 9.0, *)
+    public func playerProgressBarDidStartScrubbing(_ playerProgressBar: PlayerProgressBar) {
+        //  [self.videoPlayer pause];
+        guard let videoPlayer = self.videoPlayer else {
+            owsFail("\(TAG) video player was unexpectedly nil")
+            return
+        }
+        videoPlayer.pause()
+    }
+
+    @available(iOS 9.0, *)
+    public func playerProgressBar(_ playerProgressBar: PlayerProgressBar, scrubbedToTime time: CMTime) {
+        guard let videoPlayer = self.videoPlayer else {
+            owsFail("\(TAG) video player was unexpectedly nil")
+            return
+        }
+
+        videoPlayer.seek(to: time)
+    }
+
+    @available(iOS 9.0, *)
+    public func playerProgressBar(_ playerProgressBar: PlayerProgressBar, didFinishScrubbingAtTime time: CMTime, shouldResumePlayback: Bool) {
+        guard let videoPlayer = self.videoPlayer else {
+            owsFail("\(TAG) video player was unexpectedly nil")
+            return
+        }
+
+        videoPlayer.seek(to: time)
+        if (shouldResumePlayback) {
+            videoPlayer.play()
+        }
     }
 
     // MARK: Helpers
@@ -252,9 +418,9 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     private func scaleAttachmentView(_ fit: AttachmentViewScale) {
         guard shouldAllowAttachmentViewResizing else {
-            if self.scrollView.transform != CGAffineTransform.identity {
+            if self.contentContainer.transform != CGAffineTransform.identity {
                 UIView.animate(withDuration: 0.2) {
-                    self.scrollView.transform = CGAffineTransform.identity
+                    self.contentContainer.transform = CGAffineTransform.identity
                 }
             }
             return
@@ -263,7 +429,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         switch fit {
         case .fullsize:
             UIView.animate(withDuration: 0.2) {
-                self.scrollView.transform = CGAffineTransform.identity
+                self.contentContainer.transform = CGAffineTransform.identity
             }
         case .compact:
             UIView.animate(withDuration: 0.2) {
@@ -277,7 +443,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
                 let heightDelta = originalHeight * (1 - kScaleFactor)
                 let translate = CGAffineTransform(translationX: 0, y: -heightDelta / 2)
 
-                self.scrollView.transform = scale.concatenating(translate)
+                self.contentContainer.transform = scale.concatenating(translate)
             }
         }
     }
