@@ -22,10 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)voiceMemoGestureDidChange:(CGFloat)cancelAlpha;
 
-#pragma mark - Attachment Approval
-
-- (void)didApproveAttachment:(SignalAttachment *)attachment;
-
 @end
 
 #pragma mark -
@@ -59,12 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setVoiceMemoUICancelAlpha:(CGFloat)cancelAlpha;
 
 - (void)cancelVoiceMemoIfNecessary;
-
-#pragma mark - Attachment Approval
-
-- (void)showApprovalUIForAttachment:(SignalAttachment *)attachment;
-- (void)viewWillAppear:(BOOL)animated;
-- (void)viewWillDisappear:(BOOL)animated;
 
 @end
 

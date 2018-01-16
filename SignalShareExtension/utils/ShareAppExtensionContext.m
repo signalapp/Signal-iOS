@@ -128,6 +128,11 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"Ignoring request to set status bar style since we're in an app extension");
 }
 
+- (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated
+{
+    DDLogInfo(@"Ignoring request to show/hide status bar style since we're in an app extension");
+}
+
 - (BOOL)isInBackground
 {
     return self.isSAEInBackground;

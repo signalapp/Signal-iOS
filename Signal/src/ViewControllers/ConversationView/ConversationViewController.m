@@ -123,7 +123,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 #pragma mark -
 
-@interface ConversationViewController () <AVAudioPlayerDelegate,
+@interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
+    AVAudioPlayerDelegate,
     ContactsViewHelperDelegate,
     ContactEditingDelegate,
     CNContactViewControllerDelegate,
@@ -607,8 +608,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // or on another device.
     [self hideInputIfNeeded];
 
-    [self.inputToolbar viewWillAppear:animated];
-
     self.isViewVisible = YES;
 
     // We should have already requested contact access at this point, so this should be a no-op
@@ -1035,7 +1034,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [super viewWillDisappear:animated];
 
     self.isViewCompletelyAppeared = NO;
-    [self.inputToolbar viewWillDisappear:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -2562,13 +2560,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeMovie]) {
         // Video picked from library or captured with camera
 
-        BOOL isFromCamera = picker.sourceType == UIImagePickerControllerSourceTypeCamera;
         NSURL *videoURL = info[UIImagePickerControllerMediaURL];
         [self dismissViewControllerAnimated:YES
                                  completion:^{
                                      [self sendQualityAdjustedAttachmentForVideo:videoURL
                                                                         filename:filename
-                                                              skipApprovalDialog:isFromCamera];
+                                                              skipApprovalDialog:NO];
                                  }];
     } else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
         // Static Image captured from camera
@@ -2594,7 +2591,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                              [self showErrorAlertForAttachment:attachment];
                                              failedToPickAttachment(nil);
                                          } else {
-                                             [self tryToSendAttachmentIfApproved:attachment skipApprovalDialog:YES];
+                                             [self tryToSendAttachmentIfApproved:attachment skipApprovalDialog:NO];
                                          }
                                      } else {
                                          failedToPickAttachment(nil);
@@ -3637,7 +3634,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         } else if (skipApprovalDialog) {
             [self sendMessageAttachment:attachment];
         } else {
-            [self.inputToolbar showApprovalUIForAttachment:attachment];
+            AttachmentApprovalViewController *approvalVC = [[AttachmentApprovalViewController alloc] initWithAttachment:attachment delegate:self];
+            [self presentViewController:approvalVC animated:YES completion:nil];
         }
     });
 }
@@ -3731,11 +3729,15 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 }
 
-- (void)didApproveAttachment:(SignalAttachment *)attachment
+- (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval didApproveAttachment:(SignalAttachment * _Nonnull)attachment
 {
-    OWSAssert(attachment);
-
     [self sendMessageAttachment:attachment];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval didCancelAttachment:(SignalAttachment * _Nonnull)attachment
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)showErrorAlertForAttachment:(SignalAttachment *_Nullable)attachment
