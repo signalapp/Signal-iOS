@@ -220,35 +220,27 @@ NS_ASSUME_NONNULL_BEGIN
                      animated:YES
                    completion:^(void) {
                        __block TSOutgoingMessage *outgoingMessage = nil;
-                       if (self.attachment.isOversizeText
-                           && self.attachment.dataLength <= kOversizeTextMessageSizeThreshold) {
-                           // Try to unpack oversize text messages and send them as regular
-                           // text messages if possible.
-                           NSData *_Nullable data = self.attachment.data;
-                           if (!data) {
-                               DDLogError(@"%@ couldn't load data for oversize text attachment", self.logTag);
-                           } else {
-                               NSString *messageText =
-                                   [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                               outgoingMessage = [ThreadUtil sendMessageWithText:messageText
-                                   inThread:self.thread
-                                   messageSender:self.messageSender
-                                   success:^{
-                                       sendCompletion(nil, outgoingMessage);
-                                   }
-                                   failure:^(NSError *_Nonnull error) {
-                                       sendCompletion(error, outgoingMessage);
-                                   }];
-                               return;
-                           }
+                       if (self.attachment.isUrl && self.attachment.captionText.length > 0) {
+                           // Urls are added to the caption text, so discard the attachment
+                           // and send the caption as a regular text message.
+                           NSString *messageText = self.attachment.captionText;
+                           outgoingMessage = [ThreadUtil sendMessageWithText:messageText
+                               inThread:self.thread
+                               messageSender:self.messageSender
+                               success:^{
+                                   sendCompletion(nil, outgoingMessage);
+                               }
+                               failure:^(NSError *_Nonnull error) {
+                                   sendCompletion(error, outgoingMessage);
+                               }];
+                       } else {
+                           outgoingMessage = [ThreadUtil sendMessageWithAttachment:self.attachment
+                                                                          inThread:self.thread
+                                                                     messageSender:self.messageSender
+                                                                        completion:^(NSError *_Nullable error) {
+                                                                            sendCompletion(error, outgoingMessage);
+                                                                        }];
                        }
-
-                       outgoingMessage = [ThreadUtil sendMessageWithAttachment:self.attachment
-                                                                      inThread:self.thread
-                                                                 messageSender:self.messageSender
-                                                                    completion:^(NSError *_Nullable error) {
-                                                                        sendCompletion(error, outgoingMessage);
-                                                                    }];
                    }];
 }
 
