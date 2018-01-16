@@ -414,7 +414,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
 
     private func addAttachmentRows() -> [UIView] {
         var rows = [UIView]()
-        
+
         guard let attachment = self.attachment else {
             Logger.warn("\(TAG) Missing attachment. Was it deleted?")
             return rows
@@ -754,15 +754,15 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
     }
 
     // MARK: MediaDetailPresenter
-    
-    public func presentDetails(mediaMessageView: MediaMessageView, fromView: UIView) {        
+
+    public func presentDetails(mediaMessageView: MediaMessageView, fromView: UIView) {
         let window = UIApplication.shared.keyWindow
         let convertedRect = fromView.convert(fromView.bounds, to:window)
         guard let attachmentStream = self.attachmentStream else {
             owsFail("attachment stream unexpectedly nil")
             return
         }
-        
+
         let mediaDetailViewController = MediaDetailViewController(attachmentStream: attachmentStream, from: convertedRect, viewItem: self.viewItem)
         mediaDetailViewController.present(from: self, replacing: fromView)
     }

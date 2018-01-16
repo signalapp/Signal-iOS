@@ -31,7 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation AttachmentMenuView
 
-- (BOOL)canBecomeFirstResponder {
+- (BOOL)canBecomeFirstResponder
+{
     return YES;
 }
 
@@ -87,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self) {
         self.attachmentStream = attachmentStream;
-        self.originRect  = rect;
+        self.originRect = rect;
         self.viewItem = viewItem;
     }
 
@@ -128,7 +129,8 @@ NS_ASSUME_NONNULL_BEGIN
     return _fileData;
 }
 
-- (UIImage *)image {
+- (UIImage *)image
+{
     if (self.attachmentStream) {
         return self.attachmentStream.image;
     } else if (self.attachment) {
@@ -191,12 +193,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                       action:@selector(didTapDismissButton:)];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)viewWillDisappear:(BOOL)animated
+{
     [super viewWillDisappear:animated];
-    
+
     if ([UIMenuController sharedMenuController].isMenuVisible) {
-        [[UIMenuController sharedMenuController] setMenuVisible:NO
-                                                       animated:NO];
+        [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
     }
 }
 
@@ -289,7 +291,7 @@ NS_ASSUME_NONNULL_BEGIN
     // It's a static image of the media content.
     UIImageView *presentationView = [[UIImageView alloc] initWithImage:self.image];
     self.presentationView = presentationView;
-    
+
     [self.view addSubview:presentationView];
     presentationView.hidden = YES;
     presentationView.clipsToBounds = YES;
@@ -297,7 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
     presentationView.layer.minificationFilter = kCAFilterTrilinear;
     presentationView.layer.magnificationFilter = kCAFilterTrilinear;
     presentationView.contentMode = UIViewContentModeScaleAspectFit;
-    
+
     [self applyInitialMediaViewConstraints];
 
     if (self.isVideo) {
@@ -467,7 +469,7 @@ NS_ASSUME_NONNULL_BEGIN
     [[UIApplication sharedApplication] setStatusBarHidden:areToolbarsHidden withAnimation:UIStatusBarAnimationNone];
     [self.navigationController setNavigationBarHidden:areToolbarsHidden animated:NO];
     self.videoProgressBar.hidden = areToolbarsHidden;
-    
+
     // We don't animate the background color change because the old color shows through momentarily
     // behind where the status bar "used to be".
     self.view.backgroundColor = areToolbarsHidden ? UIColor.blackColor : UIColor.whiteColor;
@@ -495,20 +497,20 @@ NS_ASSUME_NONNULL_BEGIN
     // but in practice it works better if you use a separate GR for each
     // direction.
     for (NSNumber *direction in @[
-                                  @(UISwipeGestureRecognizerDirectionRight),
-                                  @(UISwipeGestureRecognizerDirectionLeft),
-                                  @(UISwipeGestureRecognizerDirectionUp),
-                                  @(UISwipeGestureRecognizerDirectionDown),
-                                  ]) {
+             @(UISwipeGestureRecognizerDirectionRight),
+             @(UISwipeGestureRecognizerDirectionLeft),
+             @(UISwipeGestureRecognizerDirectionUp),
+             @(UISwipeGestureRecognizerDirectionDown),
+         ]) {
         UISwipeGestureRecognizer *swipe =
             [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didSwipeImage:)];
-        swipe.direction = (UISwipeGestureRecognizerDirection) direction.integerValue;
+        swipe.direction = (UISwipeGestureRecognizerDirection)direction.integerValue;
         swipe.delegate = self;
         [self.view addGestureRecognizer:swipe];
     }
 
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self
-                                                                                            action:@selector(longPressGesture:)];
+    UILongPressGestureRecognizer *longPress =
+        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressGesture:)];
     longPress.delegate = self;
     [self.view addGestureRecognizer:longPress];
 }
@@ -564,7 +566,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self dismissSelfAnimated:YES completion:nil];
 }
 
-- (void)longPressGesture:(UIGestureRecognizer *)sender {
+- (void)longPressGesture:(UIGestureRecognizer *)sender
+{
     // We "eagerly" respond when the long press begins, not when it ends.
     if (sender.state == UIGestureRecognizerStateBegan) {
         if (!self.viewItem) {
@@ -572,22 +575,17 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         [self.view becomeFirstResponder];
-        
+
         if ([UIMenuController sharedMenuController].isMenuVisible) {
-            [[UIMenuController sharedMenuController] setMenuVisible:NO
-                                                           animated:NO];
+            [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
         }
 
         NSArray *menuItems = self.viewItem.mediaMenuControllerItems;
         [UIMenuController sharedMenuController].menuItems = menuItems;
         CGPoint location = [sender locationInView:self.view];
-        CGRect targetRect = CGRectMake(location.x,
-                                       location.y,
-                                       1, 1);
-        [[UIMenuController sharedMenuController] setTargetRect:targetRect
-                                                        inView:self.view];
-        [[UIMenuController sharedMenuController] setMenuVisible:YES
-                                                       animated:YES];
+        CGRect targetRect = CGRectMake(location.x, location.y, 1, 1);
+        [[UIMenuController sharedMenuController] setTargetRect:targetRect inView:self.view];
+        [[UIMenuController sharedMenuController] setMenuVisible:YES animated:YES];
     }
 }
 
@@ -784,11 +782,12 @@ NS_ASSUME_NONNULL_BEGIN
                                        }
                                        completion:^(BOOL finished) {
                                            // HACK: Setting the frame to itself *seems* like it should be a no-op, but
-                                           // it ensures the content is drawn at the right frame. In particular I was reproducibly
-                                           // some images squished (they were EXIF rotated, maybe relateed).
-                                           // similar to this report: https://stackoverflow.com/questions/27961884/swift-uiimageview-stretched-aspect
+                                           // it ensures the content is drawn at the right frame. In particular I was
+                                           // reproducibly some images squished (they were EXIF rotated, maybe
+                                           // relateed). similar to this report:
+                                           // https://stackoverflow.com/questions/27961884/swift-uiimageview-stretched-aspect
                                            self.mediaView.frame = self.mediaView.frame;
-                                           
+
                                            // At this point our presentation view should be overlayed perfectly
                                            // with our media view. Swapping them out should be imperceptible.
                                            self.mediaView.hidden = NO;
@@ -823,33 +822,33 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (isAnimated) {
         [UIView animateWithDuration:0.18
-            delay:0.0
-            options:UIViewAnimationOptionCurveEaseOut
-            animations:^(void) {
-                [self.presentationView.superview layoutIfNeeded];
-                self.presentationView.layer.cornerRadius = OWSMessageCellCornerRadius;
-
-                // In case user has hidden bars, which changes background to black.
-                self.view.backgroundColor = UIColor.whiteColor;
-
-            }
-                         completion:nil];
-        
-        [UIView animateWithDuration:0.1
-                              delay:0.15
-                            options:UIViewAnimationOptionCurveEaseInOut
+                              delay:0.0
+                            options:UIViewAnimationOptionCurveEaseOut
                          animations:^(void) {
-                             
-                             OWSAssert(self.replacingView);
-                             self.replacingView.alpha = 1.0;
-                             
-                             // fade out content and toolbars
-                             self.navigationController.view.alpha = 0.0;
+                             [self.presentationView.superview layoutIfNeeded];
+                             self.presentationView.layer.cornerRadius = OWSMessageCellCornerRadius;
+
+                             // In case user has hidden bars, which changes background to black.
+                             self.view.backgroundColor = UIColor.whiteColor;
+
                          }
-                         completion:^(BOOL finished) {
-                             [self.presentingViewController dismissViewControllerAnimated:NO completion:completion];
-                         }];
-        
+                         completion:nil];
+
+        [UIView animateWithDuration:0.1
+            delay:0.15
+            options:UIViewAnimationOptionCurveEaseInOut
+            animations:^(void) {
+
+                OWSAssert(self.replacingView);
+                self.replacingView.alpha = 1.0;
+
+                // fade out content and toolbars
+                self.navigationController.view.alpha = 0.0;
+            }
+            completion:^(BOOL finished) {
+                [self.presentingViewController dismissViewControllerAnimated:NO completion:completion];
+            }];
+
     } else {
         self.replacingView.alpha = 1.0;
         [self.presentingViewController dismissViewControllerAnimated:NO completion:completion];
@@ -973,11 +972,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Saving images to Camera Roll
 
-- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
+- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
+{
     if (error) {
         DDLogWarn(@"There was a problem saving <%@> to camera roll from %s ",
-                  error.localizedDescription,
-                  __PRETTY_FUNCTION__);
+            error.localizedDescription,
+            __PRETTY_FUNCTION__);
     }
 }
 

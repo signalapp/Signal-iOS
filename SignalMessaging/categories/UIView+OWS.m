@@ -303,8 +303,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
-        [self.bottomAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.bottomAnchor
-                                          constant:-margin];
+            [self.bottomAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.bottomAnchor constant:-margin];
         constraint.active = YES;
         return constraint;
     } else {
@@ -316,8 +315,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
-        [self.topAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.topAnchor
-                                       constant:margin];
+            [self.topAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.topAnchor constant:margin];
         constraint.active = YES;
         return constraint;
     } else {

@@ -1996,8 +1996,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     CGRect convertedRect = [imageView convertRect:imageView.bounds toView:window];
     MediaDetailViewController *vc = [[MediaDetailViewController alloc] initWithAttachmentStream:attachmentStream
-                                                                                   fromRect:convertedRect
-                                                                                   viewItem:viewItem];
+                                                                                       fromRect:convertedRect
+                                                                                       viewItem:viewItem];
     [vc presentFromViewController:self replacingView:imageView];
 }
 
@@ -2014,8 +2014,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     CGRect convertedRect = [imageView convertRect:imageView.bounds toView:window];
 
     MediaDetailViewController *vc = [[MediaDetailViewController alloc] initWithAttachmentStream:attachmentStream
-                                                                                   fromRect:convertedRect
-                                                                                   viewItem:viewItem];
+                                                                                       fromRect:convertedRect
+                                                                                       viewItem:viewItem];
     [vc presentFromViewController:self replacingView:imageView];
 }
 
@@ -3062,7 +3062,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // content to fill the collection view at its current size.
     CGFloat contentOffsetYBottom
         = MAX(0.f, contentHeight + self.collectionView.contentInset.bottom - self.collectionView.bounds.size.height);
-    
+
     CGFloat distanceFromBottom = contentOffsetYBottom - self.collectionView.contentOffset.y;
     BOOL isScrolledToBottom = distanceFromBottom <= kIsAtBottomTolerancePts;
 
@@ -3770,7 +3770,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (self.isUserScrolling) {
         return;
     }
-    
+
     // Ensure the view is fully layed out before we try to scroll to the bottom, since
     // we use the collectionView bounds to determine where the "bottom" is.
     [self.view layoutIfNeeded];

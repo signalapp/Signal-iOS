@@ -61,7 +61,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     @objc
     public var contentView: UIView?
-    
+
     private let mediaDetailPresenter: MediaDetailPresenter?
 
     // MARK: Initializers
@@ -475,7 +475,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         guard let fromView = sender.view else {
             return
         }
-        
+
         showMediaDetailViewController(fromView: fromView)
     }
 
@@ -493,7 +493,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         guard let fromView = sender.view else {
             return
         }
-        
+
         showMediaDetailViewController(fromView: fromView)
     }
 
