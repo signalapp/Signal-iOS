@@ -605,9 +605,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             // start with base utiType, but it might be something generic like "image"
             var specificUTIType = utiType
             if utiType == (kUTTypeURL as String) {
-                // Share URLs as oversize text messages whose text content is the URL.
-                Logger.debug("\(self.logTag) using text UTI type for URL.")
-                specificUTIType = kOversizeTextAttachmentUTI as String
+                // Use kUTTypeURL for URLs.
             } else if url.pathExtension.count > 0 {
                 // Determine a more specific utiType based on file extension
                 if let typeExtension = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) {

@@ -420,6 +420,11 @@ public class SignalAttachment: NSObject {
     }
 
     @objc
+    public var isUrl: Bool {
+        return dataUTI == (kUTTypeURL as String)
+    }
+
+    @objc
     public class func pasteboardHasPossibleAttachment() -> Bool {
         return UIPasteboard.general.numberOfItems > 0
     }

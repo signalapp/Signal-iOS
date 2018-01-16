@@ -112,6 +112,8 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             createAudioPreview()
         } else if attachment.isOversizeText {
             createTextPreview()
+        } else if attachment.isUrl {
+            createUrlPreview()
         } else {
             createGenericPreview()
         }
@@ -306,7 +308,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
         let messageTextView = UITextView()
         messageTextView.font = UIFont.ows_dynamicTypeBody()
-                messageTextView.backgroundColor = UIColor.clear
+        messageTextView.backgroundColor = UIColor.clear
         messageTextView.isOpaque = false
         messageTextView.isEditable = false
         messageTextView.isSelectable = false
@@ -320,7 +322,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         messageTextView.linkTextAttributes = [NSForegroundColorAttributeName : textColor,
                                               NSUnderlineStyleAttributeName : [NSUnderlineStyle.styleSingle,
                                                                                NSUnderlineStyle.patternSolid]
-                                              ]
+        ]
         messageTextView.dataDetectorTypes = [.link, .address, .calendarEvent]
         messageTextView.text = messageText
 
@@ -338,6 +340,18 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         messageTextView.autoPinBottomToSuperview(withMargin:10)
         messageTextView.autoPinLeadingToSuperview(withMargin:10)
         messageTextView.autoPinTrailingToSuperview(withMargin:15)
+    }
+
+    private func createUrlPreview() {
+
+        let data = attachment.data
+        guard let messageText = String(data: data, encoding: String.Encoding.utf8) else {
+            createGenericPreview()
+            return
+        }
+
+        // Show nothing; URLs should only appear in the attachment approval view
+        // of the SAE and in this context the URL will be placed in the caption field.
     }
 
     private func createGenericPreview() {
