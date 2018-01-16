@@ -202,7 +202,8 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     @objc
     public func playButtonTapped() {
-        mediaMessageView.playVideo()
+        // FIXME - use built in AVPlayer controls like MediaDetailViewController
+//        mediaMessageView.playVideo()
     }
 
     func cancelPressed(sender: UIButton) {

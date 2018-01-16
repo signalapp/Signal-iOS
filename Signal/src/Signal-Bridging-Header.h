@@ -11,7 +11,7 @@
 #import "DateUtil.h"
 #import "DebugUIPage.h"
 #import "FingerprintViewController.h"
-#import "FullImageViewController.h"
+#import "MediaDetailViewController.h"
 #import "HomeViewController.h"
 #import "NotificationsManager.h"
 #import "OWSAnyTouchGestureRecognizer.h"

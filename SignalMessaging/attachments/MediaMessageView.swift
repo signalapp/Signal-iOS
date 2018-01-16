@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,6 +12,11 @@ public enum MediaMessageViewMode: UInt {
     case large
     case small
     case attachmentApproval
+}
+
+@objc
+public protocol MediaDetailPresenter: class {
+    func presentDetails(mediaMessageView: MediaMessageView, fromView: UIView)
 }
 
 @objc
@@ -56,6 +61,8 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     @objc
     public var contentView: UIView?
+    
+    private let mediaDetailPresenter: MediaDetailPresenter?
 
     // MARK: Initializers
 
@@ -65,10 +72,15 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     }
 
     @objc
-    public required init(attachment: SignalAttachment, mode: MediaMessageViewMode) {
+    public convenience init(attachment: SignalAttachment, mode: MediaMessageViewMode) {
+        self.init(attachment: attachment, mode: mode, mediaDetailPresenter: nil)
+    }
+
+    public required init(attachment: SignalAttachment, mode: MediaMessageViewMode, mediaDetailPresenter: MediaDetailPresenter?) {
         assert(!attachment.hasError)
-        self.mode = mode
         self.attachment = attachment
+        self.mode = mode
+        self.mediaDetailPresenter = mediaDetailPresenter
         super.init(frame: CGRect.zero)
 
         createViews()
@@ -463,14 +475,8 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         guard let fromView = sender.view else {
             return
         }
-        guard let fromViewController = CurrentAppContext().frontmostViewController() else {
-            return
-        }
-
-        let window = CurrentAppContext().rootReferenceView
-        let convertedRect = fromView.convert(fromView.bounds, to:window)
-        let viewController = FullImageViewController(attachment:attachment, from:convertedRect)
-        viewController.present(from:fromViewController)
+        
+        showMediaDetailViewController(fromView: fromView)
     }
 
     // MARK: - Video Playback
@@ -484,60 +490,14 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         guard sender.state == .recognized else {
             return
         }
-
-        playVideo()
-    }
-
-    @objc
-    public func playVideo() {
-        guard let dataUrl = attachment.dataUrl else {
-            owsFail("\(self.logTag) attachment is missing dataUrl")
+        guard let fromView = sender.view else {
             return
         }
-
-        let filePath = dataUrl.path
-        guard FileManager.default.fileExists(atPath: filePath) else {
-            owsFail("\(self.logTag) file at \(filePath) doesn't exist")
-            return
-        }
-
-        guard let videoPlayer = MPMoviePlayerController(contentURL: dataUrl) else {
-            owsFail("\(self.logTag) unable to build moview player controller")
-            return
-        }
-
-        videoPlayer.prepareToPlay()
-
-        NotificationCenter.default.addObserver(forName: .MPMoviePlayerWillExitFullscreen, object: nil, queue: nil) { [weak self] _ in
-            self?.moviePlayerWillExitFullscreen()
-        }
-        NotificationCenter.default.addObserver(forName: .MPMoviePlayerDidExitFullscreen, object: nil, queue: nil) { [weak self] _ in
-            self?.moviePlayerDidExitFullscreen()
-        }
-
-        videoPlayer.controlStyle = .default
-        videoPlayer.shouldAutoplay = true
-
-        self.addSubview(videoPlayer.view)
-        videoPlayer.view.frame = self.bounds
-        self.videoPlayer = videoPlayer
-        videoPlayer.view.autoPinToSuperviewEdges()
-        OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(true)
-        videoPlayer.setFullscreen(true, animated:false)
+        
+        showMediaDetailViewController(fromView: fromView)
     }
 
-    private func moviePlayerWillExitFullscreen() {
-        clearVideoPlayer()
-    }
-
-    private func moviePlayerDidExitFullscreen() {
-        clearVideoPlayer()
-    }
-
-    private func clearVideoPlayer() {
-        videoPlayer?.stop()
-        videoPlayer?.view.removeFromSuperview()
-        videoPlayer = nil
-        OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(false)
+    func showMediaDetailViewController(fromView: UIView) {
+        self.mediaDetailPresenter?.presentDetails(mediaMessageView: self, fromView: fromView)
     }
 }
