@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,6 +15,8 @@ import Foundation
     static public let cancelButton = NSLocalizedString("TXT_CANCEL_TITLE", comment:"Label for the cancel button in an alert or action sheet.")
     @objc
     static public let retryButton = NSLocalizedString("RETRY_BUTTON_TEXT", comment:"Generic text for button that retries whatever the last action was.")
+    @objc
+    static public let openSettingsButton = NSLocalizedString("OPEN_SETTINGS_BUTTON", comment: "Button text which opens the settings app")
 }
 
 @objc public class MessageStrings: NSObject {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "AvatarViewHelper.h"
@@ -69,17 +69,22 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssert(self.delegate);
 
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.allowsEditing = NO;
-    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    [self.delegate.fromViewController ows_askForCameraPermissions:^(BOOL granted) {
+        if (!granted) {
+            DDLogWarn(@"%@ Camera permission denied.", self.logTag);
+            return;
+        }
 
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        picker.mediaTypes = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeImage, nil];
+        UIImagePickerController *picker = [UIImagePickerController new];
+        picker.delegate = self;
+        picker.allowsEditing = NO;
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage ];
+
         [self.delegate.fromViewController presentViewController:picker
                                                        animated:YES
                                                      completion:[UIUtil modalCompletionBlock]];
-    }
+    }];
 }
 
 - (void)chooseFromLibrary
@@ -87,16 +92,21 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssert(self.delegate);
 
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    [self.delegate.fromViewController ows_askForMediaLibraryPermissions:^(BOOL granted) {
+        if (!granted) {
+            DDLogWarn(@"%@ Media Library permission denied.", self.logTag);
+            return;
+        }
 
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-        picker.mediaTypes = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeImage, nil];
+        UIImagePickerController *picker = [UIImagePickerController new];
+        picker.delegate = self;
+        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage ];
+
         [self.delegate.fromViewController presentViewController:picker
                                                        animated:YES
                                                      completion:[UIUtil modalCompletionBlock]];
-    }
+    }];
 }
 
 /*

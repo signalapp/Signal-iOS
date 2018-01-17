@@ -314,8 +314,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
     imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
     button.imageEdgeInsets = imageEdgeInsets;
-    button.accessibilityLabel
-        = NSLocalizedString(@"OPEN_SETTINGS_BUTTON", "Label for button which opens the settings UI");
+    button.accessibilityLabel = CommonStrings.openSettingsButton;
+
     [button addTarget:self action:@selector(settingsButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     button.frame = CGRectMake(0,
         0,
