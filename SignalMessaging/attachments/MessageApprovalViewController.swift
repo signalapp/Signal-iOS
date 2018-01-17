@@ -18,7 +18,9 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
 
     // MARK: Properties
 
+    let thread: TSThread
     let initialMessageText: String
+    let contactsManager: OWSContactsManager
 
     private(set) var textView: UITextView!
     private(set) var topToolbar: UIToolbar!
@@ -31,8 +33,10 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
     }
 
     @objc
-    required public init(messageText: String, delegate: MessageApprovalViewControllerDelegate) {
+    required public init(messageText: String, thread: TSThread, contactsManager: OWSContactsManager, delegate: MessageApprovalViewControllerDelegate) {
         self.initialMessageText = messageText
+        self.thread = thread
+        self.contactsManager = contactsManager
         self.delegate = delegate
 
         super.init(nibName: nil, bundle: nil)
@@ -70,17 +74,23 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
 
     public override func loadView() {
 
-        self.view = UIView()
+        self.view = UIView.container()
         self.view.backgroundColor = UIColor.white
 
         // Top Toolbar
         topToolbar = UIToolbar()
-        topToolbar.backgroundColor = UIColor.ows_inputToolbarBackground
+        topToolbar.backgroundColor = UIColor.ows_toolbarBackground
         self.view.addSubview(topToolbar)
         topToolbar.autoPinWidthToSuperview()
         topToolbar.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         topToolbar.setContentHuggingVerticalHigh()
         topToolbar.setCompressionResistanceVerticalHigh()
+
+        // Recipient Row
+        let recipientRow = createRecipientRow()
+        view.addSubview(recipientRow)
+        recipientRow.autoPinWidthToSuperview()
+        recipientRow.autoPinEdge(.top, to: .bottom, of: topToolbar)
 
         // Text View
         textView = UITextView()
@@ -89,12 +99,156 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         textView.textColor = UIColor.black
         textView.font = UIFont.ows_dynamicTypeBody()
         textView.text = self.initialMessageText
+        textView.textContainerInset = UIEdgeInsets(top:0.0, left:0.0, bottom:0.0, right:0.0)
+        textView.contentInset = UIEdgeInsets(top:10.0, left:10.0, bottom:10.0, right:10.0)
         view.addSubview(textView)
         textView.autoPinWidthToSuperview()
-        textView.autoPinEdge(.top, to: .bottom, of: topToolbar)
+        textView.autoPinEdge(.top, to: .bottom, of: recipientRow)
         textView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
 
         updateToolbar()
+    }
+
+    private func createRecipientRow() -> UIView {
+        let recipientRow = UIView.container()
+        recipientRow.backgroundColor = UIColor.ows_toolbarBackground
+        recipientRow.autoSetDimension(.height, toSize: 40.0)
+
+        // Hairline borders should be 1 pixel, not 1 point.
+        let borderThickness = 1.0 / UIScreen.main.scale
+        let borderColor = UIColor(white:135 / 255.0, alpha:1.0)
+
+        let topBorder = UIView.container()
+        topBorder.backgroundColor = borderColor
+        recipientRow.addSubview(topBorder)
+        topBorder.autoPinWidthToSuperview()
+        topBorder.autoPinTopToSuperview()
+        topBorder.autoSetDimension(.height, toSize: borderThickness)
+
+        let bottomBorder = UIView.container()
+        bottomBorder.backgroundColor = borderColor
+        recipientRow.addSubview(bottomBorder)
+        bottomBorder.autoPinWidthToSuperview()
+        bottomBorder.autoPinBottomToSuperview()
+        bottomBorder.autoSetDimension(.height, toSize: borderThickness)
+
+        guard let font = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(14.0, 18.0)) else {
+            owsFail("Can't load font")
+            return recipientRow
+        }
+        let hSpacing = CGFloat(10)
+        let hMargin = CGFloat(15)
+
+        let toLabel = UILabel()
+        toLabel.text = NSLocalizedString("MESSAGE_APPROVAL_RECIPIENT_LABEL",
+                                         comment: "Label for the recipient name in the 'message approval' dialog.")
+        toLabel.textColor = UIColor.ows_darkGray
+        toLabel.font = font
+        recipientRow.addSubview(toLabel)
+        toLabel.autoVCenterInSuperview()
+        toLabel.autoPinLeadingToSuperview(withMargin: hMargin)
+        toLabel.setContentHuggingHorizontalHigh()
+        toLabel.setCompressionResistanceHorizontalHigh()
+
+        if let groupThread = self.thread as? TSGroupThread {
+            let groupName = (groupThread.name().count > 0
+            ? groupThread.name()
+                : MessageStrings.newGroupDefaultTitle)
+
+            let nameLabel = UILabel()
+            nameLabel.text = groupName
+            nameLabel.textColor = UIColor.black
+            nameLabel.font = font
+            nameLabel.lineBreakMode = .byTruncatingTail
+            recipientRow.addSubview(nameLabel)
+            nameLabel.autoVCenterInSuperview()
+            nameLabel.autoPinLeading(toTrailingOf: toLabel, margin:hSpacing)
+            nameLabel.autoPinTrailingToSuperview(withMargin: hMargin)
+            nameLabel.setContentHuggingHorizontalLow()
+            nameLabel.setCompressionResistanceHorizontalLow()
+
+            return recipientRow
+        }
+        guard let contactThread = self.thread as? TSContactThread else {
+            owsFail("Unexpected thread type")
+            return recipientRow
+        }
+
+//        let recipientLabel = UILabel()
+//        recipientLabel.text = NSLocalizedString("MESSAGE_APPROVAL_RECIPIENT_LABEL",
+//                                                comment: "Label for the recipient name in the 'message approval' dialog.")
+//        recipientLabel.textColor = UIColor.black
+//        recipientLabel.font = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(14.0, 18.0))
+//        recipientLabel.lineBreakMode = .byTruncatingTail
+//        recipientRow.addSubview(recipientLabel)
+//        recipientLabel.autoVCenterInSuperview()
+//        recipientLabel.autoPinLeading(toTrailingOf: toLabel)
+//        recipientLabel.autoPinTrailingToSuperview(withMargin: 20.0)
+//
+//
+//        topToolbar.autoSetDimension(.height, toSize: 30.0)
+//
+//        let toLabel = UILabel()
+//        toLabel.text = NSLocalizedString("MESSAGE_APPROVAL_RECIPIENT_LABEL",
+//                                         comment: "Label for the recipient name in the 'message approval' dialog.")
+//        toLabel.textColor = UIColor.ows_darkGray
+//        toLabel.font = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(14.0, 18.0))
+//        recipientRow.addSubview(toLabel)
+//        toLabel.autoVCenterInSuperview()
+//        toLabel.autoPinLeadingToSuperview(withMargin: 20.0)
+//
+        let recipientLabel = UILabel()
+        recipientLabel.textColor = UIColor.black
+        recipientLabel.font = font
+        recipientLabel.attributedText = contactsManager.formattedFullName(forRecipientId:contactThread.contactIdentifier(), font:font)
+        //            self.nameLabel.attributedText =
+        //                [contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font];
+        recipientLabel.lineBreakMode = .byTruncatingTail
+        recipientRow.addSubview(recipientLabel)
+        recipientLabel.autoVCenterInSuperview()
+        recipientLabel.autoPinLeading(toTrailingOf: toLabel, margin:hSpacing)
+        recipientLabel.autoPinTrailingToSuperview(withMargin: hMargin)
+        recipientLabel.setContentHuggingHorizontalLow()
+        recipientLabel.setCompressionResistanceHorizontalLow()
+
+//        recipientLabel
+
+    //            - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager
+    //        {
+    //            self.recipientId = recipientId;
+    //            self.contactsManager = contactsManager;
+    //
+    //            self.nameLabel.attributedText =
+    //                [contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font];
+    //
+    //            - (void)updateProfileName
+    //                {
+    //                    OWSContactsManager *contactsManager = self.contactsManager;
+    //                    if (contactsManager == nil) {
+    //                        OWSFail(@"%@ contactsManager should not be nil", self.logTag);
+    //                        self.profileNameLabel.text = nil;
+    //                        return;
+    //                    }
+    //
+    //                    NSString *recipientId = self.recipientId;
+    //                    if (recipientId.length == 0) {
+    //                        OWSFail(@"%@ recipientId should not be nil", self.logTag);
+    //                        self.profileNameLabel.text = nil;
+    //                        return;
+    //                    }
+    //
+    //                    if ([contactsManager hasNameInSystemContactsForRecipientId:recipientId]) {
+    //                        // Don't display profile name when we have a veritas name in system Contacts
+    //                        self.profileNameLabel.text = nil;
+    //                    } else {
+    //                        // Use profile name, if any is available
+    //                        self.profileNameLabel.text = [contactsManager formattedProfileNameForRecipientId:recipientId];
+    //                    }
+    //
+    //                    [self.profileNameLabel setNeedsLayout];
+    //            }
+
+        return recipientRow
     }
 
     // MARK: - Event Handlers

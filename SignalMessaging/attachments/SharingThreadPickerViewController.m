@@ -147,7 +147,10 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     if (messageText) {
         MessageApprovalViewController *approvalVC =
-            [[MessageApprovalViewController alloc] initWithMessageText:messageText delegate:self];
+            [[MessageApprovalViewController alloc] initWithMessageText:messageText
+                                                                thread:thread
+                                                       contactsManager:self.contactsManager
+                                                              delegate:self];
 
         [self.navigationController pushViewController:approvalVC animated:YES];
     } else {

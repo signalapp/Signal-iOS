@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) UIColor *ows_darkIconColor;
 @property (class, readonly, nonatomic) UIColor *ows_errorMessageBorderColor;
 @property (class, readonly, nonatomic) UIColor *ows_infoMessageBorderColor;
-@property (class, readonly, nonatomic) UIColor *ows_inputToolbarBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *ows_toolbarBackgroundColor;
 
 + (UIColor *)backgroundColorForContact:(NSString *)contactIdentifier;
 + (UIColor *)colorWithRGBHex:(unsigned long)value;

@@ -499,7 +499,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     [super loadView];
 
-    self.view.backgroundColor = [UIColor ows_inputToolbarBackgroundColor];
+    self.view.backgroundColor = [UIColor ows_toolbarBackgroundColor];
 }
 
 - (void)createContents

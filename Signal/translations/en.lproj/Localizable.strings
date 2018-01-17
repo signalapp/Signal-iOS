@@ -916,6 +916,12 @@
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
 
+/* Title for the 'message approval' dialog. */
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
+
+/* Label for the recipient name in the 'message approval' dialog. */
+"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "To:";
+
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "New Message";
 
