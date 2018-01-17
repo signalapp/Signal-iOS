@@ -507,8 +507,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             //
             // NOTE: SharingThreadPickerViewController will try to unpack them
             //       and send them as normal text messages if possible.
-            let urlString = url.absoluteString
-            return DataSourceValue.dataSource(withOversizeText:urlString)
+            return DataSourcePath.dataSource(with: url)
         } else {
             guard let dataSource = DataSourcePath.dataSource(with: url) else {
                 return nil
@@ -579,6 +578,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                 let fileUrl = URL(fileURLWithPath:tempFilePath)
                 fulfill((fileUrl, srcUtiType))
             } else if let string = provider as? String {
+                Logger.debug("\(self.logTag) string provider: \(string)")
                 guard let data = string.data(using: String.Encoding.utf8) else {
                     let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
                     reject(writeError)

@@ -133,6 +133,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     }
     NSData *data = self.attachment.data;
     NSString *_Nullable messageText = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    DDLogVerbose(@"%@ messageTextForAttachment: %@", self.logTag, messageText);
     return messageText;
 }
 
