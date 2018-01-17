@@ -546,6 +546,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         let (promise, fulfill, reject) = Promise<(URL, String)>.pending()
 
         var customFileName: String?
+        var isConvertibleToTextMessage = false
 
         itemProvider.loadItem(forTypeIdentifier: srcUtiType, options: nil, completionHandler: {
             (provider, error) in
@@ -589,13 +590,18 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                     reject(writeError)
                     return
                 }
+
                 let fileUrl = URL(fileURLWithPath:tempFilePath)
+
+                isConvertibleToTextMessage = !itemProvider.registeredTypeIdentifiers.contains(kUTTypeFileURL as String)
+
                 if UTTypeConformsTo(srcUtiType as CFString, kUTTypeText) {
                     fulfill((fileUrl, srcUtiType))
                 } else {
                     fulfill((fileUrl, kUTTypeText as String))
                 }
             } else if let url = provider as? URL {
+                isConvertibleToTextMessage = !itemProvider.registeredTypeIdentifiers.contains(kUTTypeFileURL as String)
                 fulfill((url, srcUtiType))
             } else {
                 let unexpectedTypeError = ShareViewControllerError.assertionError(description: "unexpected item type: \(String(describing: provider))")
@@ -661,6 +667,10 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             }
 
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
+            if isConvertibleToTextMessage {
+                Logger.info("\(self.logTag) isConvertibleToTextMessage")
+                attachment.isConvertibleToTextMessage = isConvertibleToTextMessage
+            }
             return Promise(value: attachment)
         }
     }

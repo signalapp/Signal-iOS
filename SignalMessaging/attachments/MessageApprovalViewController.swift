@@ -164,10 +164,6 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         nameLabel.setCompressionResistanceHorizontalLow()
         nameLabel.autoPinTopToSuperview(withMargin: vMargin)
 
-        recipientRow.logFrameLater(withLabel: "recipientRow")
-        toLabel.logFrameLater(withLabel: "toLabel")
-        nameLabel.logFrameLater(withLabel: "nameLabel")
-
         if let groupThread = self.thread as? TSGroupThread {
             let groupName = (groupThread.name().count > 0
             ? groupThread.name()

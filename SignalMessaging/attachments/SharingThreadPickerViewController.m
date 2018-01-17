@@ -131,6 +131,9 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     if (!(self.attachment.isUrl || self.attachment.isText)) {
         return nil;
     }
+    if (!self.attachment.isConvertibleToTextMessage) {
+        return nil;
+    }
     NSData *data = self.attachment.data;
     NSString *_Nullable messageText = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     DDLogVerbose(@"%@ messageTextForAttachment: %@", self.logTag, messageText);

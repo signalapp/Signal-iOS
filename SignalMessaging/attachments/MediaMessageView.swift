@@ -110,11 +110,6 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             createVideoPreview()
         } else if attachment.isAudio {
             createAudioPreview()
-            // We handle the isOversizeText case before isText.
-        } else if attachment.isOversizeText {
-            createOversizeTextPreview()
-        } else if attachment.isUrl || attachment.isText {
-            createTextPreview()
         } else {
             createGenericPreview()
         }
@@ -289,63 +284,6 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             imageView.isUserInteractionEnabled = true
             imageView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(videoTapped)))
         }
-    }
-
-    private func createOversizeTextPreview() {
-
-        let data = attachment.data
-        guard let messageText = String(data: data, encoding: String.Encoding.utf8) else {
-            createGenericPreview()
-            return
-        }
-
-        let messageBubbleView = UIImageView()
-        messageBubbleView.layoutMargins = .zero
-        let bubbleImageData =
-            OWSMessagesBubbleImageFactory.shared.outgoing
-        messageBubbleView.image = bubbleImageData.messageBubbleImage
-
-        let textColor = UIColor.white
-
-        let messageTextView = UITextView()
-        messageTextView.font = UIFont.ows_dynamicTypeBody()
-        messageTextView.backgroundColor = UIColor.clear
-        messageTextView.isOpaque = false
-        messageTextView.isEditable = false
-        messageTextView.isSelectable = false
-        messageTextView.textContainerInset = UIEdgeInsets.zero
-        messageTextView.contentInset = UIEdgeInsets.zero
-        messageTextView.isScrollEnabled = false
-        messageTextView.showsHorizontalScrollIndicator = false
-        messageTextView.showsVerticalScrollIndicator = false
-        messageTextView.isUserInteractionEnabled = false
-        messageTextView.textColor = textColor
-        messageTextView.linkTextAttributes = [NSForegroundColorAttributeName : textColor,
-                                              NSUnderlineStyleAttributeName : [NSUnderlineStyle.styleSingle,
-                                                                               NSUnderlineStyle.patternSolid]
-        ]
-        messageTextView.dataDetectorTypes = [.link, .address, .calendarEvent]
-        messageTextView.text = messageText
-
-        messageBubbleView.layoutMargins = .zero
-        self.layoutMargins = .zero
-
-        self.addSubview(messageBubbleView)
-        messageBubbleView.autoVCenterInSuperview()
-        messageBubbleView.autoHCenterInSuperview()
-        messageBubbleView.autoPinEdge(toSuperviewEdge: .leading, withInset: 25, relation: .greaterThanOrEqual)
-        messageBubbleView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 25, relation: .greaterThanOrEqual)
-
-        messageBubbleView.addSubview(messageTextView)
-        messageTextView.autoPinTopToSuperview(withMargin:10)
-        messageTextView.autoPinBottomToSuperview(withMargin:10)
-        messageTextView.autoPinLeadingToSuperview(withMargin:10)
-        messageTextView.autoPinTrailingToSuperview(withMargin:15)
-    }
-
-    private func createTextPreview() {
-        // Show nothing; URLs should only appear in the attachment approval view
-        // of the SAE and in this context the URL will be placed in the caption field.
     }
 
     private func createGenericPreview() {

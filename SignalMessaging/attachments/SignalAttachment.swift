@@ -138,6 +138,10 @@ public class SignalAttachment: NSObject {
         return dataSource.isValidImage()
     }
 
+    // This flag should be set for text attachments that can be sent as text messages.
+    @objc
+    public var isConvertibleToTextMessage = false
+
     // Attachment types are identified using UTIs.
     //
     // See: https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html
