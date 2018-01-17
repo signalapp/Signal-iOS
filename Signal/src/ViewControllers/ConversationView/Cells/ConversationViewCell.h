@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,7 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didTapImageViewItem:(ConversationViewItem *)viewItem
            attachmentStream:(TSAttachmentStream *)attachmentStream
                   imageView:(UIView *)imageView;
-- (void)didTapVideoViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream;
+- (void)didTapVideoViewItem:(ConversationViewItem *)viewItem
+           attachmentStream:(TSAttachmentStream *)attachmentStream
+                  imageView:(UIView *)imageView;
 - (void)didTapAudioViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream;
 - (void)didTapTruncatedTextMessage:(ConversationViewItem *)conversationItem;
 - (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem

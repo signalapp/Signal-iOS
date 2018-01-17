@@ -299,6 +299,30 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     }
 }
 
+- (NSLayoutConstraint *)autoPinBottomToSuperviewWithMargin:(CGFloat)margin
+{
+    if (@available(iOS 9.0, *)) {
+        NSLayoutConstraint *constraint =
+            [self.bottomAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.bottomAnchor constant:-margin];
+        constraint.active = YES;
+        return constraint;
+    } else {
+        return [self autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:margin];
+    }
+}
+
+- (NSLayoutConstraint *)autoPinTopToSuperviewWithMargin:(CGFloat)margin
+{
+    if (@available(iOS 9.0, *)) {
+        NSLayoutConstraint *constraint =
+            [self.topAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.topAnchor constant:margin];
+        constraint.active = YES;
+        return constraint;
+    } else {
+        return [self autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:margin];
+    }
+}
+
 - (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view
 {
     OWSAssert(view);

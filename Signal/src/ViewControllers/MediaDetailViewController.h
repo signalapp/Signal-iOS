@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSViewController.h"
@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalAttachment;
 @class TSAttachmentStream;
 
-@interface FullImageViewController : OWSViewController
+@interface MediaDetailViewController : OWSViewController
 
 // If viewItem is non-null, long press will show a menu controller.
 - (instancetype)initWithAttachmentStream:(TSAttachmentStream *)attachmentStream
@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAttachment:(SignalAttachment *)attachment fromRect:(CGRect)rect;
 
-- (void)presentFromViewController:(UIViewController *)viewController;
+- (void)presentFromViewController:(UIViewController *)viewController replacingView:(UIView *)view;
 
 @end
 

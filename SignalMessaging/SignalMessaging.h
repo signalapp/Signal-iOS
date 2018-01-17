@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -18,7 +18,6 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/ContactsViewHelper.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalMessaging/FullImageViewController.h>
 #import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSAudioAttachmentPlayer.h>
 #import <SignalMessaging/OWSContactAvatarBuilder.h>

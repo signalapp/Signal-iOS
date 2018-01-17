@@ -19,6 +19,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// This approximates the curve of our message bubbles, which makes the animation feel a little smoother.
+const CGFloat OWSMessageCellCornerRadius = 17;
+
 @interface BubbleMaskingView : UIView
 
 @property (nonatomic) BOOL isOutgoing;
@@ -1313,7 +1316,9 @@ NS_ASSUME_NONNULL_BEGIN
             [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:self.attachmentStream];
             return;
         case OWSMessageCellType_Video:
-            [self.delegate didTapVideoViewItem:self.viewItem attachmentStream:self.attachmentStream];
+            [self.delegate didTapVideoViewItem:self.viewItem
+                              attachmentStream:self.attachmentStream
+                                     imageView:self.stillImageView];
             return;
         case OWSMessageCellType_GenericAttachment:
 #ifdef DEBUG

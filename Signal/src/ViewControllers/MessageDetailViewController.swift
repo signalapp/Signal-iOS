@@ -12,7 +12,7 @@ enum MessageMetadataViewMode: UInt {
     case focusOnMetadata
 }
 
-class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
+class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, MediaDetailPresenter {
 
     static let TAG = "[MessageDetailViewController]"
     let TAG = "[MessageDetailViewController]"
@@ -405,7 +405,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         }
 
         guard let attachment = TSAttachment.fetch(uniqueId: attachmentId, transaction: transaction) else {
-            owsFail("Missing attachment")
+            Logger.warn("\(TAG) Missing attachment. Was it deleted?")
             return nil
         }
 
@@ -416,7 +416,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         var rows = [UIView]()
 
         guard let attachment = self.attachment else {
-            owsFail("no attachment to add.")
+            Logger.warn("\(TAG) Missing attachment. Was it deleted?")
             return rows
         }
 
@@ -442,7 +442,8 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         let contentType = attachment.contentType
         if let dataUTI = MIMETypeUtil.utiType(forMIMEType: contentType) {
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
-            let mediaMessageView = MediaMessageView(attachment: attachment, mode: .small)
+            let mediaMessageView = MediaMessageView(attachment: attachment, mode: .small, mediaDetailPresenter: self)
+
             mediaMessageView.backgroundColor = UIColor.white
             self.mediaMessageView = mediaMessageView
             rows.append(mediaMessageView)
@@ -750,5 +751,19 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         Logger.verbose("\(TAG) scrollViewDidScroll")
 
         updateTextLayout()
+    }
+
+    // MARK: MediaDetailPresenter
+
+    public func presentDetails(mediaMessageView: MediaMessageView, fromView: UIView) {
+        let window = UIApplication.shared.keyWindow
+        let convertedRect = fromView.convert(fromView.bounds, to:window)
+        guard let attachmentStream = self.attachmentStream else {
+            owsFail("attachment stream unexpectedly nil")
+            return
+        }
+
+        let mediaDetailViewController = MediaDetailViewController(attachmentStream: attachmentStream, from: convertedRect, viewItem: self.viewItem)
+        mediaDetailViewController.present(from: self, replacing: fromView)
     }
 }
