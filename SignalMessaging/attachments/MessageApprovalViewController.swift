@@ -99,8 +99,8 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         textView.textColor = UIColor.black
         textView.font = UIFont.ows_dynamicTypeBody()
         textView.text = self.initialMessageText
-        textView.textContainerInset = UIEdgeInsets(top:0.0, left:0.0, bottom:0.0, right:0.0)
-        textView.contentInset = UIEdgeInsets(top:10.0, left:10.0, bottom:10.0, right:10.0)
+        textView.contentInset = UIEdgeInsets(top:0.0, left:0.0, bottom:0.0, right:0.0)
+        textView.textContainerInset = UIEdgeInsets(top:10.0, left:10.0, bottom:10.0, right:10.0)
         view.addSubview(textView)
         textView.autoPinWidthToSuperview()
         textView.autoPinEdge(.top, to: .bottom, of: recipientRow)
