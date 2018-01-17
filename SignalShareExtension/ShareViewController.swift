@@ -538,17 +538,17 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         }
         Logger.info("\(self.logTag) attachment: \(itemProvider)")
 
-        guard let utiType = ShareViewController.utiTypeForItem(itemProvider: itemProvider) else {
+        guard let srcUtiType = ShareViewController.utiTypeForItem(itemProvider: itemProvider) else {
             let error = ShareViewControllerError.unsupportedMedia
             return Promise(error: error)
         }
-        Logger.debug("\(logTag) matched utiType: \(utiType)")
+        Logger.debug("\(logTag) matched utiType: \(srcUtiType)")
 
-        let (promise, fulfill, reject) = Promise<URL>.pending()
+        let (promise, fulfill, reject) = Promise<(URL, String)>.pending()
 
         var customFileName: String?
 
-        itemProvider.loadItem(forTypeIdentifier: utiType, options: nil, completionHandler: {
+        itemProvider.loadItem(forTypeIdentifier: srcUtiType, options: nil, completionHandler: {
             (provider, error) in
 
             guard error == nil else {
@@ -570,14 +570,14 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                     customFileName = "Contact.vcf"
                 }
 
-                let customFileExtension = MIMETypeUtil.fileExtension(forUTIType:utiType)
+                let customFileExtension = MIMETypeUtil.fileExtension(forUTIType:srcUtiType)
                 guard let tempFilePath = OWSFileSystem.writeData(toTemporaryFile: data, fileExtension: customFileExtension) else {
                     let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
                     reject(writeError)
                     return
                 }
                 let fileUrl = URL(fileURLWithPath:tempFilePath)
-                fulfill(fileUrl)
+                fulfill((fileUrl, srcUtiType))
             } else if let string = provider as? String {
                 guard let data = string.data(using: String.Encoding.utf8) else {
                     let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
@@ -590,9 +590,13 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                     return
                 }
                 let fileUrl = URL(fileURLWithPath:tempFilePath)
-                fulfill(fileUrl)
+                if UTTypeConformsTo(srcUtiType as CFString, kUTTypeText) {
+                    fulfill((fileUrl, srcUtiType))
+                } else {
+                    fulfill((fileUrl, kUTTypeText as String))
+                }
             } else if let url = provider as? URL {
-                fulfill(url)
+                fulfill((url, srcUtiType))
             } else {
                 let unexpectedTypeError = ShareViewControllerError.assertionError(description: "unexpected item type: \(String(describing: provider))")
                 reject(unexpectedTypeError)
@@ -602,7 +606,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         // TODO accept other data types
         // TODO whitelist attachment types
         // TODO coerce when necessary and possible
-        return promise.then { (itemUrl: URL) -> Promise<SignalAttachment> in
+        return promise.then { (itemUrl: URL, utiType: String) -> Promise<SignalAttachment> in
 
             let url: URL = try {
                 if self.isVideoNeedingRelocation(itemProvider: itemProvider, itemUrl: itemUrl) {
@@ -612,7 +616,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                 }
             }()
 
-            Logger.debug("\(self.logTag) building DataSource with url: \(url)")
+            Logger.debug("\(self.logTag) building DataSource with url: \(url), utiType: \(utiType)")
 
             guard let dataSource = ShareViewController.createDataSource(utiType : utiType, url : url, customFileName : customFileName) else {
                 throw ShareViewControllerError.assertionError(description: "Unable to read attachment data")

@@ -420,8 +420,13 @@ public class SignalAttachment: NSObject {
     }
 
     @objc
+    public var isText: Bool {
+        return UTTypeConformsTo(dataUTI as CFString, kUTTypeText) || isOversizeText
+    }
+
+    @objc
     public var isUrl: Bool {
-        return dataUTI == (kUTTypeURL as String)
+        return UTTypeConformsTo(dataUTI as CFString, kUTTypeURL)
     }
 
     @objc

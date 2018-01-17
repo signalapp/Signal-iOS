@@ -18,6 +18,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^SendCompletionBlock)(NSError *_Nullable, TSOutgoingMessage *);
+
 @interface SharingThreadPickerViewController () <SelectThreadViewControllerDelegate,
     AttachmentApprovalViewControllerDelegate>
 
@@ -193,8 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 #endif
 
-    void (^sendCompletion)(NSError *_Nullable, TSOutgoingMessage *) = ^(
-        NSError *_Nullable error, TSOutgoingMessage *message) {
+    SendCompletionBlock sendCompletion = ^(NSError *_Nullable error, TSOutgoingMessage *message) {
 
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error) {
@@ -215,33 +216,46 @@ NS_ASSUME_NONNULL_BEGIN
         });
     };
 
-    [fromViewController
-        presentViewController:progressAlert
-                     animated:YES
-                   completion:^(void) {
-                       __block TSOutgoingMessage *outgoingMessage = nil;
-                       if (self.attachment.isUrl && self.attachment.captionText.length > 0) {
-                           // Urls are added to the caption text, so discard the attachment
-                           // and send the caption as a regular text message.
-                           NSString *messageText = self.attachment.captionText;
-                           outgoingMessage = [ThreadUtil sendMessageWithText:messageText
-                               inThread:self.thread
-                               messageSender:self.messageSender
-                               success:^{
-                                   sendCompletion(nil, outgoingMessage);
-                               }
-                               failure:^(NSError *_Nonnull error) {
-                                   sendCompletion(error, outgoingMessage);
-                               }];
-                       } else {
-                           outgoingMessage = [ThreadUtil sendMessageWithAttachment:self.attachment
-                                                                          inThread:self.thread
-                                                                     messageSender:self.messageSender
-                                                                        completion:^(NSError *_Nullable error) {
-                                                                            sendCompletion(error, outgoingMessage);
-                                                                        }];
-                       }
-                   }];
+    [fromViewController presentViewController:progressAlert
+                                     animated:YES
+                                   completion:^(void) {
+                                       if ((self.attachment.isUrl || self.attachment.isText)
+                                           && self.attachment.captionText.length > 0) {
+                                           // Urls and text shares are added to the caption text, so discard
+                                           // the attachment and send the caption as a regular text message.
+                                           NSString *messageText = self.attachment.captionText;
+                                           [self sendAsTextMessage:messageText sendCompletion:sendCompletion];
+                                       } else {
+                                           [self sendAsAttachmentMessage:sendCompletion];
+                                       }
+                                   }];
+}
+
+- (void)sendAsTextMessage:(NSString *)messageText sendCompletion:(SendCompletionBlock)sendCompletion
+{
+    OWSAssert(messageText.length > 0);
+
+    __block TSOutgoingMessage *outgoingMessage = nil;
+    outgoingMessage = [ThreadUtil sendMessageWithText:messageText
+        inThread:self.thread
+        messageSender:self.messageSender
+        success:^{
+            sendCompletion(nil, outgoingMessage);
+        }
+        failure:^(NSError *_Nonnull error) {
+            sendCompletion(error, outgoingMessage);
+        }];
+}
+
+- (void)sendAsAttachmentMessage:(SendCompletionBlock)sendCompletion
+{
+    __block TSOutgoingMessage *outgoingMessage = nil;
+    outgoingMessage = [ThreadUtil sendMessageWithAttachment:self.attachment
+                                                   inThread:self.thread
+                                              messageSender:self.messageSender
+                                                 completion:^(NSError *_Nullable error) {
+                                                     sendCompletion(error, outgoingMessage);
+                                                 }];
 }
 
 - (void)showSendFailureAlertWithError:(NSError *)error

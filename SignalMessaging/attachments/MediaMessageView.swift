@@ -110,10 +110,11 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             createVideoPreview()
         } else if attachment.isAudio {
             createAudioPreview()
+            // We handle the isOversizeText case before isText.
         } else if attachment.isOversizeText {
+            createOversizeTextPreview()
+        } else if attachment.isUrl || attachment.isText {
             createTextPreview()
-        } else if attachment.isUrl {
-            createUrlPreview()
         } else {
             createGenericPreview()
         }
@@ -290,7 +291,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         }
     }
 
-    private func createTextPreview() {
+    private func createOversizeTextPreview() {
 
         let data = attachment.data
         guard let messageText = String(data: data, encoding: String.Encoding.utf8) else {
@@ -342,7 +343,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         messageTextView.autoPinTrailingToSuperview(withMargin:15)
     }
 
-    private func createUrlPreview() {
+    private func createTextPreview() {
         // Show nothing; URLs should only appear in the attachment approval view
         // of the SAE and in this context the URL will be placed in the caption field.
     }

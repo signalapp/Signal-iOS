@@ -130,8 +130,8 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         scrollView.autoPinEdgesToSuperviewEdges()
 
         let defaultCaption = self.defaultCaption()
-        let isUrlShare = defaultCaption != nil
-        let backgroundColor = isUrlShare ? UIColor.ows_signalBrandBlue : UIColor.black
+        let isTextualShare = defaultCaption != nil
+        let backgroundColor = isTextualShare ? UIColor.ows_signalBrandBlue : UIColor.black
         self.view.backgroundColor = backgroundColor
 
         // Create full screen container view so the scrollView
@@ -237,12 +237,12 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     }
 
     private func defaultCaption() -> String? {
-        guard self.attachment.isUrl else {
+        guard self.attachment.isUrl || self.attachment.isText else {
             return nil
         }
         let data = self.attachment.data
         guard let messageText = String(data: data, encoding: String.Encoding.utf8) else {
-            Logger.error("\(self.logTag) Couldn't load url strubg")
+            Logger.error("\(self.logTag) Couldn't load url or text string")
             return nil
         }
         return messageText
