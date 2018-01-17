@@ -73,6 +73,8 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
 - (CGSize)intrinsicContentSize
 {
+    // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, the intrinsicContentSize is used
+    // to determine the height of the rendered inputAccessoryView.
     CGSize newSize = CGSizeMake(self.bounds.size.width, self.toolbarHeight + ConversationInputToolbarBorderViewHeight);
     return newSize;
 }
