@@ -286,6 +286,13 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (nullable id)dbNotificationObject
+{
+    OWSAssert(self.database);
+
+    return self.database;
+}
+
 - (BOOL)areAsyncRegistrationsComplete
 {
     OWS_ABSTRACT_METHOD();
@@ -524,8 +531,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         [DDLog flushLog];
 
         if (CurrentAppContext().isMainApp) {
-            UIApplicationState applicationState = CurrentAppContext().mainApplicationState;
-            if (applicationState == UIApplicationStateBackground) {
+            if (CurrentAppContext().isInBackground) {
                 // TODO: Rather than crash here, we should detect the situation earlier
                 // and exit gracefully - (in the app delegate?). See the `
                 // This is a last ditch effort to avoid blowing away the user's database.
@@ -556,30 +562,16 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 
 - (NSString *)createAndSetNewDatabasePassword
 {
-    NSString *newDBPassword = [[Randomness generateRandomBytes:30] base64EncodedString];
-    NSError *keySetError;
-    [SAMKeychain setPassword:newDBPassword forService:keychainService account:keychainDBPassAccount error:&keySetError];
-    if (keySetError) {
-        OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotStoreDatabasePassword]);
+    NSString *password = [[Randomness generateRandomBytes:30] base64EncodedString];
 
-        [OWSStorage deletePasswordFromKeychain];
+    [OWSStorage storeDatabasePassword:password];
 
-        // Sleep to give analytics events time to be delivered.
-        [NSThread sleepForTimeInterval:15.0f];
-
-        [NSException raise:OWSStorageExceptionName_DatabasePasswordUnwritable
-                    format:@"Setting DB password failed with error: %@", keySetError];
-    } else {
-        DDLogWarn(@"Succesfully set new DB password.");
-    }
-
-    return newDBPassword;
+    return password;
 }
 
 - (void)backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:(NSString *)errorDescription
 {
-    OWSAssert(
-        CurrentAppContext().isMainApp && CurrentAppContext().mainApplicationState == UIApplicationStateBackground);
+    OWSAssert(CurrentAppContext().isMainApp && CurrentAppContext().isInBackground);
 
     // Sleep to give analytics events time to be delivered.
     [NSThread sleepForTimeInterval:5.0f];
@@ -594,6 +586,41 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 + (void)deletePasswordFromKeychain
 {
     [SAMKeychain deletePasswordForService:keychainService account:keychainDBPassAccount];
+}
+
+- (unsigned long long)databaseFileSize
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *_Nullable error;
+    unsigned long long fileSize =
+        [[fileManager attributesOfItemAtPath:self.databaseFilePath error:&error][NSFileSize] unsignedLongLongValue];
+    if (error) {
+        DDLogError(@"%@ Couldn't fetch database file size: %@", self.logTag, error);
+    } else {
+        DDLogInfo(@"%@ Database file size: %llu", self.logTag, fileSize);
+    }
+    return fileSize;
+}
+
++ (void)storeDatabasePassword:(NSString *)password
+{
+    NSError *error;
+    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
+    BOOL success =
+        [SAMKeychain setPassword:password forService:keychainService account:keychainDBPassAccount error:&error];
+    if (!success || error) {
+        OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotStoreDatabasePassword]);
+
+        [OWSStorage deletePasswordFromKeychain];
+
+        // Sleep to give analytics events time to be delivered.
+        [NSThread sleepForTimeInterval:15.0f];
+
+        [NSException raise:OWSStorageExceptionName_DatabasePasswordUnwritable
+                    format:@"Setting DB password failed with error: %@", error];
+    } else {
+        DDLogWarn(@"Succesfully set new DB password.");
+    }
 }
 
 @end

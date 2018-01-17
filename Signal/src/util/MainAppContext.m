@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "MainAppContext.h"
@@ -53,28 +53,46 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
+    AssertIsOnMainThread();
+
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillEnterForegroundNotification object:nil];
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
+    AssertIsOnMainThread();
+
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidEnterBackgroundNotification object:nil];
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
+    AssertIsOnMainThread();
+
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillResignActiveNotification object:nil];
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
+    AssertIsOnMainThread();
+
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
+    AssertIsOnMainThread();
+
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
 }
@@ -100,6 +118,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle
 {
     [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle];
+}
+
+- (BOOL)isInBackground
+{
+    return [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;
 }
 
 - (UIApplicationState)mainApplicationState

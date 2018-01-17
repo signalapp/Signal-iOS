@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSYapDatabaseObject.h"
@@ -16,7 +16,7 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
 + (instancetype)sharedManager;
 
 - (BOOL)mayHaveLinkedDevices:(YapDatabaseConnection *)dbConnection;
-- (void)setMayHaveLinkedDevices:(BOOL)value dbConnection:(YapDatabaseConnection *)dbConnection;
+- (void)setMayHaveLinkedDevices;
 
 - (BOOL)hasReceivedSyncMessageInLastSeconds:(NSTimeInterval)intervalSeconds;
 - (void)setHasReceivedSyncMessage;

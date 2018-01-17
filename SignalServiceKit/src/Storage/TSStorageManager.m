@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSStorageManager.h"
+#import "AppContext.h"
 #import "OWSAnalytics.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSDisappearingMessagesFinder.h"
@@ -22,8 +23,41 @@ NSString *const TSStorageManagerExceptionName_CouldNotMoveDatabaseFile
 NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     = @"TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory";
 
-#pragma mark -
+void runSyncRegistrationsForStorage(OWSStorage *storage)
+{
+    OWSCAssert(storage);
 
+    // Synchronously register extensions which are essential for views.
+    [TSDatabaseView registerCrossProcessNotifier:storage];
+    [TSDatabaseView registerThreadInteractionsDatabaseView:storage];
+    [TSDatabaseView registerThreadDatabaseView:storage];
+    [TSDatabaseView registerUnreadDatabaseView:storage];
+    [storage registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
+    [OWSMessageReceiver syncRegisterDatabaseExtension:storage];
+    [OWSBatchMessageProcessor syncRegisterDatabaseExtension:storage];
+}
+
+void runAsyncRegistrationsForStorage(OWSStorage *storage)
+{
+    OWSCAssert(storage);
+
+    // Asynchronously register other extensions.
+    //
+    // All sync registrations must be done before all async registrations,
+    // or the sync registrations will block on the async registrations.
+    [TSDatabaseView asyncRegisterUnseenDatabaseView:storage];
+    [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:storage];
+    [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:storage];
+
+    // Register extensions which aren't essential for rendering threads async.
+    [OWSIncomingMessageFinder asyncRegisterExtensionWithStorageManager:storage];
+    [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:storage];
+    [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:storage];
+    [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithStorageManager:storage];
+    [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithStorageManager:storage];
+}
+
+#pragma mark -
 @interface TSStorageManager ()
 
 @property (nonatomic, readonly, nullable) YapDatabaseConnection *dbReadConnection;
@@ -75,14 +109,7 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 
 - (void)runSyncRegistrations
 {
-    // Synchronously register extensions which are essential for views.
-    [TSDatabaseView registerCrossProcessNotifier];
-    [TSDatabaseView registerThreadInteractionsDatabaseView];
-    [TSDatabaseView registerThreadDatabaseView];
-    [TSDatabaseView registerUnreadDatabaseView];
-    [self registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
-    [OWSMessageReceiver syncRegisterDatabaseExtension:self];
-    [OWSBatchMessageProcessor syncRegisterDatabaseExtension:self];
+    runSyncRegistrationsForStorage(self);
 
     // See comments on OWSDatabaseConnection.
     //
@@ -98,45 +125,30 @@ NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
 {
     OWSAssert(completion);
 
-    // Asynchronously register other extensions.
-    //
-    // All sync registrations must be done before all async registrations,
-    // or the sync registrations will block on the async registrations.
-    [TSDatabaseView asyncRegisterUnseenDatabaseView];
-    [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView];
-    [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView];
-
-    // Register extensions which aren't essential for rendering threads async.
-    [OWSIncomingMessageFinder asyncRegisterExtensionWithStorageManager:self];
-    [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView];
-    [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
-    [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithStorageManager:self];
-    [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithStorageManager:self];
+    runAsyncRegistrationsForStorage(self);
 
     // Block until all async registrations are complete.
-    [self.newDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        OWSAssert(!self.areAsyncRegistrationsComplete);
+    YapDatabaseConnection *dbConnection = self.newDatabaseConnection;
+    [dbConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue()
+                                       completionBlock:^{
+                                           OWSAssert(!self.areAsyncRegistrationsComplete);
 
-        self.areAsyncRegistrationsComplete = YES;
+                                           self.areAsyncRegistrationsComplete = YES;
 
-        completion();
-    }];
+                                           completion();
+                                       }];
 }
 
 + (void)protectFiles
 {
     // The old database location was in the Document directory,
     // so protect the database files individually.
-    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath];
-    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath_SHM];
-    [OWSFileSystem protectFolderAtPath:self.legacyDatabaseFilePath_WAL];
+    [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath];
+    [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath_SHM];
+    [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath_WAL];
 
     // Protect the entire new database directory.
-    [OWSFileSystem protectFolderAtPath:self.sharedDataDatabaseDirPath];
-}
-
-- (BOOL)userSetPassword {
-    return FALSE;
+    [OWSFileSystem protectFileOrFolderAtPath:self.sharedDataDatabaseDirPath];
 }
 
 + (NSString *)legacyDatabaseDirPath

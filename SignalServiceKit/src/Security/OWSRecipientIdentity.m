@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRecipientIdentity.h"
@@ -103,31 +103,6 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
     }];
 }
 
-+ (YapDatabaseConnection *)dbReadConnection
-{
-    return self.dbReadWriteConnection;
-}
-
-/**
- * Override to disable the object cache to better enforce transaction semantics on the store.
- * Note that it's still technically possible to access this collection from a different collection,
- * but that should be considered a bug.
- */
-+ (YapDatabaseConnection *)dbReadWriteConnection
-{
-    static dispatch_once_t onceToken;
-    static YapDatabaseConnection *sharedDBConnection;
-    dispatch_once(&onceToken, ^{
-        sharedDBConnection = [TSStorageManager sharedManager].newDatabaseConnection;
-        sharedDBConnection.objectCacheEnabled = NO;
-#if DEBUG
-        sharedDBConnection.permittedTransactions = YDB_AnySyncTransaction;
-#endif
-    });
-
-    return sharedDBConnection;
-}
-
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction.connection == [OWSRecipientIdentity dbReadWriteConnection]);
@@ -155,6 +130,43 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
     OWSAssert(transaction.connection == [OWSRecipientIdentity dbReadConnection]);
 
     return [super fetchObjectWithUniqueID:uniqueID transaction:transaction];
+}
+
+#pragma mark - Database Connections
+
++ (YapDatabaseConnection *)dbReadConnection
+{
+    return self.dbReadWriteConnection;
+}
+
+/**
+ * Override to disable the object cache to better enforce transaction semantics on the store.
+ * Note that it's still technically possible to access this collection from a different collection,
+ * but that should be considered a bug.
+ */
++ (YapDatabaseConnection *)dbReadWriteConnection
+{
+    static dispatch_once_t onceToken;
+    static YapDatabaseConnection *sharedDBConnection;
+    dispatch_once(&onceToken, ^{
+        sharedDBConnection = [TSStorageManager sharedManager].newDatabaseConnection;
+        sharedDBConnection.objectCacheEnabled = NO;
+#if DEBUG
+        sharedDBConnection.permittedTransactions = YDB_AnySyncTransaction;
+#endif
+    });
+
+    return sharedDBConnection;
+}
+
+- (YapDatabaseConnection *)dbReadConnection
+{
+    return OWSRecipientIdentity.dbReadConnection;
+}
+
+- (YapDatabaseConnection *)dbReadWriteConnection
+{
+    return OWSRecipientIdentity.dbReadWriteConnection;
 }
 
 #pragma mark - debug

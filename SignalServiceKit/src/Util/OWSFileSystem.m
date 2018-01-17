@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFileSystem.h"
@@ -9,10 +9,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFileSystem
 
-+ (void)protectFolderAtPath:(NSString *)path
++ (BOOL)protectFileOrFolderAtPath:(NSString *)path
 {
     if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
-        return;
+        return NO;
     }
 
     NSError *error;
@@ -26,7 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (error || !success) {
         OWSProdCritical([OWSAnalyticsEvents storageErrorFileProtection]);
+        return NO;
     }
+    return YES;
 }
 
 + (NSString *)appDocumentDirectoryPath
@@ -122,6 +124,45 @@ NS_ASSUME_NONNULL_BEGIN
     if (error) {
         DDLogError(@"%@ Failed to delete file: %@", self.logTag, error.description);
     }
+}
+
++ (void)deleteFileIfExists:(NSString *)filePath
+{
+    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        [self deleteFile:filePath];
+    }
+}
+
++ (NSArray<NSString *> *_Nullable)allFilesInDirectoryRecursive:(NSString *)dirPath error:(NSError **)error
+{
+    OWSAssert(dirPath.length > 0);
+
+    *error = nil;
+
+    NSArray<NSString *> *filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:error];
+    if (*error) {
+        OWSFail(@"%@ could not find files in directory: %@", self.logTag, *error);
+        return nil;
+    }
+
+    NSMutableArray<NSString *> *filePaths = [NSMutableArray new];
+
+    for (NSString *filename in filenames) {
+        NSString *filePath = [dirPath stringByAppendingPathComponent:filename];
+
+        BOOL isDirectory;
+        [[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDirectory];
+        if (isDirectory) {
+            [filePaths addObjectsFromArray:[self allFilesInDirectoryRecursive:filePath error:error]];
+            if (*error) {
+                return nil;
+            }
+        } else {
+            [filePaths addObject:filePath];
+        }
+    }
+
+    return filePaths;
 }
 
 @end

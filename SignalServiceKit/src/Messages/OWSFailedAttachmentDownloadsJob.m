@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFailedAttachmentDownloadsJob.h"
@@ -82,7 +82,6 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
             [self enumerateAttemptingOutAttachmentsWithBlock:^(TSAttachmentPointer *attachment) {
                 // sanity check
                 if (attachment.state != TSAttachmentPointerStateFailed) {
-                    DDLogDebug(@"%@ marking attachment as failed", self.logTag);
                     attachment.state = TSAttachmentPointerStateFailed;
                     [attachment saveWithTransaction:transaction];
                     count++;
@@ -125,17 +124,17 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
                                   withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex];
 }
 
-+ (void)asyncRegisterDatabaseExtensionsWithStorageManager:(TSStorageManager *)storageManager
++ (void)asyncRegisterDatabaseExtensionsWithStorageManager:(OWSStorage *)storage
 {
-    [storageManager asyncRegisterExtension:[self indexDatabaseExtension]
-                                  withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex
-                           completionBlock:^(BOOL ready) {
-                               if (ready) {
-                                   DDLogDebug(@"%@ completed registering extension async.", self.logTag);
-                               } else {
-                                   DDLogError(@"%@ failed registering extension async.", self.logTag);
-                               }
-                           }];
+    [storage asyncRegisterExtension:[self indexDatabaseExtension]
+                           withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex
+                    completionBlock:^(BOOL ready) {
+                        if (ready) {
+                            DDLogDebug(@"%@ completed registering extension async.", self.logTag);
+                        } else {
+                            DDLogError(@"%@ failed registering extension async.", self.logTag);
+                        }
+                    }];
 }
 
 @end

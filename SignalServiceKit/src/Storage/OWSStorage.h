@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <YapDatabase/YapDatabaseConnection.h>
@@ -18,6 +18,9 @@ extern NSString *const StorageIsReadyNotification;
 // Returns YES if _ALL_ storage classes have completed both their
 // sync _AND_ async view registrations.
 + (BOOL)isStorageReady;
+
+// This object can be used to filter database notifications.
+@property (nonatomic, readonly, nullable) id dbNotificationObject;
 
 /**
  * The safeBlockingMigrationsBlock block will
@@ -39,6 +42,8 @@ extern NSString *const StorageIsReadyNotification;
                       withName:(NSString *)extensionName
                completionBlock:(nullable void (^)(BOOL ready))completionBlock;
 - (nullable id)registeredExtension:(NSString *)extensionName;
+
+- (unsigned long long)databaseFileSize;
 
 #pragma mark - Password
 

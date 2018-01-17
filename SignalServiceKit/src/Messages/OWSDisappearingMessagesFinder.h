@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSStorageManager;
+@class OWSStorage;
 @class TSMessage;
+@class TSStorageManager;
 @class TSThread;
 @class YapDatabaseReadTransaction;
 
@@ -27,12 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Database extensions required for class to work.
  */
-+ (void)asyncRegisterDatabaseExtensions:(TSStorageManager *)storageManager;
++ (void)asyncRegisterDatabaseExtensions:(OWSStorage *)storage;
 
 /**
  * Only use the sync version for testing, generally we'll want to register extensions async
  */
-+ (void)blockingRegisterDatabaseExtensions:(TSStorageManager *)storageManager;
++ (void)blockingRegisterDatabaseExtensions:(OWSStorage *)storage;
 
 @end
 

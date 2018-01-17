@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAccountManager.h"
@@ -93,7 +93,9 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
             [transaction removeAllObjectsInCollection:TSAccountManager_UserAccountCollection];
         }];
     }
-    [[TSStorageManager sharedManager] resetSessionStore];
+    dispatch_async([OWSDispatch sessionStoreQueue], ^{
+        [[TSStorageManager sharedManager] resetSessionStore];
+    });
 }
 
 + (BOOL)isRegistered

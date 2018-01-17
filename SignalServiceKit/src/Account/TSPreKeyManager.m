@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSPreKeyManager.h"
@@ -91,9 +91,10 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
 
 + (void)checkPreKeysIfNecessary
 {
-    if (CurrentAppContext().isMainApp) {
-        OWSAssert(CurrentAppContext().isMainAppAndActive);
+    if (!CurrentAppContext().isMainApp) {
+        return;
     }
+    OWSAssert(CurrentAppContext().isMainAppAndActive);
 
     // Update the prekey check timestamp.
     dispatch_async(TSPreKeyManager.prekeyQueue, ^{
@@ -214,6 +215,10 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
 
 + (void)checkPreKeys
 {
+    if (!CurrentAppContext().isMainApp) {
+        return;
+    }
+
     // Optimistically mark the prekeys as checked. This
     // de-bounces prekey checks.
     //

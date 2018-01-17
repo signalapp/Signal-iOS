@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppSetup.h"
@@ -7,6 +7,7 @@
 #import "Release.h"
 #import "VersionMigrations.h"
 #import <AxolotlKit/SessionCipher.h>
+#import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSStorage.h>
@@ -39,6 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
                                             notificationsManager:notificationsManager
                                                   profileManager:OWSProfileManager.sharedManager];
         [TextSecureKitEnv setSharedEnv:sharedEnv];
+
+        // Register renamed classes.
+        [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
+        [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
 
         [OWSStorage setupWithSafeBlockingMigrations:^{
             [VersionMigrations runSafeBlockingMigrations];

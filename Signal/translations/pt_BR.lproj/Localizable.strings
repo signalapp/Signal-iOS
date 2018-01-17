@@ -665,7 +665,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marcar como verificado";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reiniciar esta sessão.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reiniciar esta sessão";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Terminar de criar grupo";

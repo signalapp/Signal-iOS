@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBlockingManager.h"
+#import "AppContext.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBlockedPhoneNumbersMessage.h"
 #import "OWSMessageSender.h"
@@ -86,7 +87,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
-                                                 name:UIApplicationDidBecomeActiveNotification
+                                                 name:OWSApplicationDidBecomeActiveNotification
                                                object:nil];
 }
 

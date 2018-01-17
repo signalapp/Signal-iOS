@@ -665,7 +665,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Markeren als geverifieerd";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Deze sessie opnieuw instellen.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Deze sessie opnieuw instellen";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Voltooi aanmaken van groep";

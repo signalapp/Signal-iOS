@@ -665,7 +665,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Отметить как проверенный";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Сбросить сеанс связи.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Сбросить сеанс связи";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Завершение создания группы";

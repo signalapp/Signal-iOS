@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSTableViewController.h"
@@ -153,6 +153,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
     OWSTableItem *item = [OWSTableItem new];
     item.itemType = OWSTableItemTypeAction;
+    __weak OWSTableItem *weakItem = item;
     item.actionBlock = actionBlock;
     item.customCellBlock = ^{
         UITableViewCell *cell = [UITableViewCell new];
@@ -172,6 +173,45 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSAssert(customRowHeight > 0);
 
     OWSTableItem *item = [self disclosureItemWithText:text actionBlock:actionBlock];
+    item.customRowHeight = @(customRowHeight);
+    return item;
+}
+
++ (OWSTableItem *)subPageItemWithText:(NSString *)text actionBlock:(nullable OWSTableSubPageBlock)actionBlock
+{
+    OWSAssert(text.length > 0);
+    OWSAssert(actionBlock);
+
+    OWSTableItem *item = [OWSTableItem new];
+    item.itemType = OWSTableItemTypeAction;
+    __weak OWSTableItem *weakItem = item;
+    item.actionBlock = ^{
+        OWSTableItem *strongItem = weakItem;
+        OWSAssert(strongItem);
+        OWSAssert(strongItem.tableViewController);
+
+        if (actionBlock) {
+            actionBlock(strongItem.tableViewController);
+        }
+    };
+    item.customCellBlock = ^{
+        UITableViewCell *cell = [UITableViewCell new];
+        cell.textLabel.text = text;
+        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+        cell.textLabel.textColor = [UIColor blackColor];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        return cell;
+    };
+    return item;
+}
+
++ (OWSTableItem *)subPageItemWithText:(NSString *)text
+                      customRowHeight:(CGFloat)customRowHeight
+                          actionBlock:(nullable OWSTableSubPageBlock)actionBlock
+{
+    OWSAssert(customRowHeight > 0);
+
+    OWSTableItem *item = [self subPageItemWithText:text actionBlock:actionBlock];
     item.customRowHeight = @(customRowHeight);
     return item;
 }
@@ -480,6 +520,8 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     OWSTableItem *item = [self itemForIndexPath:indexPath];
+
+    item.tableViewController = self;
 
     UITableViewCell *customCell = [item customCell];
     if (customCell) {

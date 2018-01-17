@@ -665,7 +665,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Mark as Verified";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Nulstil denne session.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Nulstil denne session";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Færdigør gruppe opretning";

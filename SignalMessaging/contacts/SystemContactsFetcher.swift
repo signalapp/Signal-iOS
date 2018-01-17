@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -57,7 +57,7 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
         self.changeHandler = changeHandler
         self.lastSortOrder = CNContactsUserDefaults.shared().sortOrder
         NotificationCenter.default.addObserver(self, selector: #selector(runChangeHandler), name: .CNContactStoreDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: .UIApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: .OWSApplicationDidBecomeActive, object: nil)
     }
 
     @objc
@@ -401,12 +401,10 @@ public class SystemContactsFetcher: NSObject {
 
         switch authorizationStatus {
         case .notDetermined:
-            if CurrentAppContext().isMainApp {
-               if CurrentAppContext().mainApplicationState() == .background {
-                    Logger.error("\(self.TAG) do not request contacts permission when app is in background")
-                    completion(nil)
-                    return
-                }
+            if CurrentAppContext().isInBackground() {
+                Logger.error("\(self.TAG) do not request contacts permission when app is in background")
+                completion(nil)
+                return
             }
             self.contactStoreAdapter.requestAccess { (granted, error) in
                 if let error = error {

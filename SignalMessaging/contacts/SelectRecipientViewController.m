@@ -1,17 +1,17 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "SelectRecipientViewController.h"
 #import "CountryCodeViewController.h"
 #import "PhoneNumber.h"
-#import "Signal-Swift.h"
 #import "ViewControllerUtils.h"
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSTableViewController.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIView+OWS.h>
@@ -500,8 +500,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         return cell;
     }
                                                       customRowHeight:kCountryRowHeight + kPhoneNumberRowHeight
-                                                      + examplePhoneNumberRowHeight
-                                                      + kButtonRowHeight
+                                                      + examplePhoneNumberRowHeight + kButtonRowHeight
                                                           actionBlock:nil]];
     [contents addSection:phoneNumberSection];
 

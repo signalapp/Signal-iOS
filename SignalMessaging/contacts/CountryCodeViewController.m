@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "CountryCodeViewController.h"
@@ -110,7 +110,8 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)dismissWasPressed:(id)sender {
+- (void)dismissWasPressed:(id)sender
+{
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
