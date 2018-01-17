@@ -129,9 +129,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
         scrollView.autoPinEdgesToSuperviewEdges()
 
-        let defaultCaption = self.defaultCaption()
-        let isTextualShare = defaultCaption != nil
-        let backgroundColor = isTextualShare ? UIColor.ows_signalBrandBlue : UIColor.black
+        let backgroundColor = UIColor.black
         self.view.backgroundColor = backgroundColor
 
         // Create full screen container view so the scrollView
@@ -170,7 +168,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         topToolbar.items = [cancelButton]
 
         // Bottom Toolbar
-        let captioningToolbar = CaptioningToolbar(defaultCaption:defaultCaption)
+        let captioningToolbar = CaptioningToolbar()
         captioningToolbar.captioningToolbarDelegate = self
         self.bottomToolbar = captioningToolbar
 
@@ -234,18 +232,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     public func didTapPlayerView(_ gestureRecognizer: UIGestureRecognizer) {
         assert(self.videoPlayer != nil)
         self.pauseVideo()
-    }
-
-    private func defaultCaption() -> String? {
-        guard self.attachment.isUrl || self.attachment.isText else {
-            return nil
-        }
-        let data = self.attachment.data
-        guard let messageText = String(data: data, encoding: String.Encoding.utf8) else {
-            Logger.error("\(self.logTag) Couldn't load url or text string")
-            return nil
-        }
-        return messageText
     }
 
     override public var inputAccessoryView: UIView? {
@@ -601,7 +587,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     }
 
     let kSendButtonShadowOffset: CGFloat = 1
-    init(defaultCaption: String?) {
+    init() {
         self.sendButton = UIButton(type: .system)
         self.bottomGradient = GradientView(from: UIColor.clear, to: UIColor.black)
         self.textView =  MessageTextView()
@@ -617,9 +603,6 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         textView.addBorder(with: UIColor.lightGray)
         textView.font = UIFont.ows_dynamicTypeBody()
         textView.returnKeyType = .done
-        if let defaultCaption = defaultCaption {
-            textView.text = defaultCaption
-        }
 
         let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
         sendButton.setTitle(sendTitle, for: .normal)
