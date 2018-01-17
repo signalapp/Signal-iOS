@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactsViewHelper.h"
@@ -282,8 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
                                            style:UIAlertActionStyleCancel
                                          handler:nil]];
 
-    [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OPEN_SETTINGS_BUTTON",
-                                                                  @"Button text which opens the settings app")
+    [alertController addAction:[UIAlertAction actionWithTitle:CommonStrings.openSettingsButton
                                                         style:UIAlertActionStyleDefault
                                                       handler:^(UIAlertAction *_Nonnull action) {
                                                           [CurrentAppContext() openSystemSettings];

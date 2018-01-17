@@ -2466,18 +2466,18 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     [self ows_askForCameraPermissions:^(BOOL granted) {
         if (!granted) {
+            DDLogWarn(@"%@ camera permission denied.", self.logTag);
             return;
         }
-        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+
+        UIImagePickerController *picker = [UIImagePickerController new];
         picker.sourceType = UIImagePickerControllerSourceTypeCamera;
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
         picker.allowsEditing = NO;
         picker.delegate = self;
 
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self dismissKeyBoard];
-            [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
-        });
+        [self dismissKeyBoard];
+        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
     }];
 }
 
@@ -2485,18 +2485,20 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     OWSAssertIsOnMainThread();
 
-    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-        DDLogError(@"PhotoLibrary ImagePicker source not available");
-        return;
-    }
+    [self ows_askForMediaLibraryPermissions:^(BOOL granted) {
+        if (!granted) {
+            DDLogWarn(@"%@ Media Library permission denied.", self.logTag);
+            return;
+        }
 
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    picker.delegate = self;
-    picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
+        UIImagePickerController *picker = [UIImagePickerController new];
+        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        picker.delegate = self;
+        picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
 
-    [self dismissKeyBoard];
-    [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+        [self dismissKeyBoard];
+        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+    }];
 }
 
 /*

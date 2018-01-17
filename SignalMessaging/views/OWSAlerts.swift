@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,7 +14,7 @@ import Foundation
         let alertMessage = NSLocalizedString("CALL_AUDIO_PERMISSION_MESSAGE", comment:"Alert message when calling and permissions for microphone are missing")
         let alertController = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
         let dismissAction = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel)
-        let settingsString = NSLocalizedString("OPEN_SETTINGS_BUTTON", comment: "Button text which opens the settings app")
+        let settingsString = CommonStrings.openSettingsButton
         let settingsAction = UIAlertAction(title: settingsString, style: .default) { _ in
             CurrentAppContext().openSystemSettings()
         }
