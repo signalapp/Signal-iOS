@@ -126,15 +126,16 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 // If the attachment is textual (e.g. text or URL), returns the message text
 // for the attachment.  Returns nil otherwise.
-- (nullable NSString *)messageTextForAttachment
+- (nullable NSString *)convertAttachmentToMessageTextIfPossible
 {
-    if (!(self.attachment.isUrl || self.attachment.isText)) {
-        return nil;
-    }
     if (!self.attachment.isConvertibleToTextMessage) {
         return nil;
     }
+    if (self.attachment.dataLength >= kOversizeTextMessageSizeThreshold) {
+        return nil;
+    }
     NSData *data = self.attachment.data;
+    OWSAssert(data.length < kOversizeTextMessageSizeThreshold);
     NSString *_Nullable messageText = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     DDLogVerbose(@"%@ messageTextForAttachment: %@", self.logTag, messageText);
     return messageText;
@@ -146,7 +147,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     OWSAssert(thread);
     self.thread = thread;
 
-    NSString *_Nullable messageText = [self messageTextForAttachment];
+    NSString *_Nullable messageText = [self convertAttachmentToMessageTextIfPossible];
 
     if (messageText) {
         MessageApprovalViewController *approvalVC =
