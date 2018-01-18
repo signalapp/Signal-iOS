@@ -608,6 +608,19 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                 } else {
                     fulfill((itemUrl: url, utiType: srcUtiType))
                 }
+            } else if let image = value as? UIImage {
+                if let data = UIImagePNGRepresentation(image) {
+                    let tempFilePath = OWSFileSystem.temporaryFilePath(withFileExtension:"png")
+                    do {
+                        let url = NSURL.fileURL(withPath:tempFilePath)
+                        try data.write(to: url, options: .atomicWrite)
+                        fulfill((url, srcUtiType))
+                    } catch {
+                        reject(ShareViewControllerError.assertionError(description: "couldn't write UIImage: \(String(describing: error))"))
+                    }
+                } else {
+                    reject(ShareViewControllerError.assertionError(description: "couldn't convert UIImage to PNG: \(String(describing: error))"))
+                }
             } else {
                 // It's unavoidable that we may sometimes receives data types that we
                 // don't know how to handle.
