@@ -532,6 +532,15 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         }
         Logger.info("\(self.logTag) attachment: \(itemProvider)")
 
+        // We need to be very careful about which UTI type we use.
+        //
+        // * In the case of "textual" shares (e.g. web URLs and text snippets), we want to
+        //   coerce the UTI type to kUTTypeURL or kUTTypeText.
+        // * We want to treat shared files as file attachments.  Therefore we do not
+        //   want to treat file URLs like web URLs.
+        // * UTIs aren't very descriptive (there are far more MIME types than UTI types)
+        //   so in the case of file attachments we try to refine the attachment type
+        //   using the file extension.
         guard let srcUtiType = ShareViewController.utiTypeForItem(itemProvider: itemProvider) else {
             let error = ShareViewControllerError.unsupportedMedia
             return Promise(error: error)
