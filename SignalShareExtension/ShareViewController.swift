@@ -609,17 +609,23 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                     fulfill((itemUrl: url, utiType: srcUtiType))
                 }
             } else {
-                // It's unavoidable that we may sometimes receives data types that we
-                // don't know how to handle.
-                //
-                // See comments on NSItemProvider+OWS.h.
                 let unexpectedTypeError = ShareViewControllerError.assertionError(description: "unexpected value: \(String(describing: value))")
                 reject(unexpectedTypeError)
             }
         }
 
-        // See comments on NSItemProvider+OWS.h.
-        itemProvider.loadData(forTypeIdentifier: srcUtiType, options: nil, completionHandler: loadCompletion)
+        // NSItemProvider.loadItem(forTypeIdentifier:...) is unsafe to call from Swift,
+        // since it can yield values of arbitrary type.  It has a highly unusual design
+        // in which its behavior depends on the _type_ of the completion handler.
+        // loadItem(forTypeIdentifier:...) tries to satisfy the expected type of the
+        // completion handler.  This "hinting" only works in Objective-C.  In Swift,
+        // The type of the completion handler must agree with the param type.
+        //
+        // Unfortunately, we have no alternative.  Therefore, we face the real possibility
+        // of receiving an "unexpected type" that we don't know how to handle.
+        //
+        // See: https://developer.apple.com/documentation/foundation/nsitemprovider/1403900-loaditemfortypeidentifier
+        itemProvider.loadItem(forTypeIdentifier: srcUtiType, options: nil, completionHandler: loadCompletion)
 
         return promise.then { (itemUrl: URL, utiType: String) -> Promise<SignalAttachment> in
 
