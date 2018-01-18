@@ -23,6 +23,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSContactsSyncing.h>
+#import <SignalMessaging/OWSDatabaseConverter.h>
 #import <SignalMessaging/OWSMath.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
@@ -218,6 +219,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if ([OWSPreferences isReadyForAppExtensions]) {
         return;
     }
+
+    [OWSDatabaseConverter convertDatabaseIfNecessary];
 
     [NSUserDefaults migrateToSharedUserDefaults];
 

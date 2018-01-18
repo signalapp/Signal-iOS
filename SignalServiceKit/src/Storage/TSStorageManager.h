@@ -25,6 +25,8 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage);
 
 + (NSString *)databaseFilePath;
 
++ (NSString *)legacyDatabaseFilePath;
+
 @end
 
 NS_ASSUME_NONNULL_END

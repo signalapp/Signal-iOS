@@ -104,6 +104,8 @@
 		34612A071FD7238600532771 /* OWSContactsSyncing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34612A051FD7238500532771 /* OWSContactsSyncing.m */; };
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
 		3472229F1EB22FFE00E53955 /* AddToGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3472229E1EB22FFE00E53955 /* AddToGroupViewController.m */; };
+		34782E452011428D00A6F16B /* OWSDatabaseConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 34782E432011428D00A6F16B /* OWSDatabaseConverter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		34782E462011428D00A6F16B /* OWSDatabaseConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 34782E442011428D00A6F16B /* OWSDatabaseConverter.m */; };
 		347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
 		347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
 		347850331FD7494A007B8332 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
@@ -591,6 +593,8 @@
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		3472229D1EB22FFE00E53955 /* AddToGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddToGroupViewController.h; sourceTree = "<group>"; };
 		3472229E1EB22FFE00E53955 /* AddToGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddToGroupViewController.m; sourceTree = "<group>"; };
+		34782E432011428D00A6F16B /* OWSDatabaseConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDatabaseConverter.h; sourceTree = "<group>"; };
+		34782E442011428D00A6F16B /* OWSDatabaseConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDatabaseConverter.m; sourceTree = "<group>"; };
 		347850561FD86544007B8332 /* SAEFailedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAEFailedViewController.swift; sourceTree = "<group>"; };
 		347850581FD9972E007B8332 /* SwiftSingletons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftSingletons.swift; sourceTree = "<group>"; };
 		3478505A1FD999D5007B8332 /* et */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = et; path = translations/et.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1108,6 +1112,8 @@
 				45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */,
 				45855F351D9498A40084F340 /* OWSContactAvatarBuilder.h */,
 				45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */,
+				34782E432011428D00A6F16B /* OWSDatabaseConverter.h */,
+				34782E442011428D00A6F16B /* OWSDatabaseConverter.m */,
 				346129A81FD1F0DF00532771 /* OWSFormat.h */,
 				346129AA1FD1F0EE00532771 /* OWSFormat.m */,
 				45666EC71D994C0D008FE134 /* OWSGroupAvatarBuilder.h */,
@@ -1122,11 +1128,11 @@
 				34480B511FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m */,
 				346129331FD1A88700532771 /* OWSSwiftUtils.swift */,
 				45360B8C1F9521F800FA666C /* Searcher.swift */,
+				347850581FD9972E007B8332 /* SwiftSingletons.swift */,
 				346129BD1FD2068600532771 /* ThreadUtil.h */,
 				346129BE1FD2068600532771 /* ThreadUtil.m */,
 				B97940251832BD2400BD66CB /* UIUtil.h */,
 				B97940261832BD2400BD66CB /* UIUtil.m */,
-				347850581FD9972E007B8332 /* SwiftSingletons.swift */,
 				346129751FD1E0B500532771 /* WeakTimer.swift */,
 			);
 			path = utils;
@@ -2034,6 +2040,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				451F8A3A1FD711D9005CB9DA /* ContactsViewHelper.h in Headers */,
+				34782E452011428D00A6F16B /* OWSDatabaseConverter.h in Headers */,
 				34480B491FD0A60200BC14EF /* OWSMath.h in Headers */,
 				346129E71FD5C0C600532771 /* OWSDatabaseMigrationRunner.h in Headers */,
 				344D6CEA20069E070042AF96 /* SelectRecipientViewController.h in Headers */,
@@ -2792,6 +2799,7 @@
 				346129D01FD207F300532771 /* OWSAlerts.swift in Sources */,
 				454A965F1FD60EA3008D2A0E /* OWSFlatButton.swift in Sources */,
 				346129B61FD1F7E800532771 /* ProfileFetcherJob.swift in Sources */,
+				34782E462011428D00A6F16B /* OWSDatabaseConverter.m in Sources */,
 				346129F51FD5F31400532771 /* OWS102MoveLoggingPreferenceToUserDefaults.m in Sources */,
 				45194F8F1FD71FF500333B2C /* ThreadUtil.m in Sources */,
 				451F8A3B1FD71297005CB9DA /* UIUtil.m in Sources */,

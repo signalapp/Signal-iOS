@@ -5,6 +5,9 @@ use_frameworks!
 
 def shared_pods
   # OWS Pods
+  pod 'SQLCipher', :git => 'https://github.com/sqlcipher/sqlcipher.git', :commit => 'd5c2bec'
+  pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
+  # pod 'YapDatabase/SQLCipher', :git => 'https://github.com/WhisperSystems/YapDatabase.git', branch: 'charlesmchen/signal'
   pod 'SignalServiceKit', path: '.'
   pod 'AxolotlKit', git: 'https://github.com/WhisperSystems/SignalProtocolKit.git', branch: 'mkirk/framework-friendly'
   #pod 'AxolotlKit', path: '../SignalProtocolKit'
@@ -21,7 +24,7 @@ def shared_pods
   #pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'signal-master', :inhibit_warnings => true
   #pod 'JSQMessagesViewController',   path: '../JSQMessagesViewController'
   pod 'Mantle', :inhibit_warnings => true
-  pod 'YapDatabase/SQLCipher', :inhibit_warnings => true
+  # pod 'YapDatabase/SQLCipher', :inhibit_warnings => true
   pod 'PureLayout', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'SocketRocket', :git => 'https://github.com/facebook/SocketRocket.git', :inhibit_warnings => true
