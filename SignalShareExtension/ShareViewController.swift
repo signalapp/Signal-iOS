@@ -482,14 +482,9 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             return kUTTypeContact as String
         }
 
-        // Order matters if we want to take advantage of share conversion in loadItem,
-        // Though currently we just use "data" for most things and rely on our SignalAttachment
-        // class to convert types for us.
-        let utiTypes: [String] = [kUTTypeImage as String,
-                                  kUTTypeData as String]
-
-        let matchingUtiType = utiTypes.first { (utiType: String) -> Bool in
-            itemProvider.hasItemConformingToTypeIdentifier(utiType)
+        // Use the first UTI that conforms to "data".
+        let matchingUtiType = itemProvider.registeredTypeIdentifiers.first { (utiType: String) -> Bool in
+            UTTypeConformsTo(utiType as CFString, kUTTypeData)
         }
         return matchingUtiType
     }
@@ -548,25 +543,27 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         var customFileName: String?
         var isConvertibleToTextMessage = false
 
-        itemProvider.loadItem(forTypeIdentifier: srcUtiType, options: nil, completionHandler: {
-            (provider, error) in
+        let loadCompletion: NSItemProvider.CompletionHandler = {
+            (value, error) in
 
             guard error == nil else {
                 reject(error!)
                 return
             }
 
-            guard let provider = provider else {
+            guard let value = value else {
                 let missingProviderError = ShareViewControllerError.assertionError(description: "missing item provider")
                 reject(missingProviderError)
                 return
             }
 
-            Logger.info("\(self.logTag) provider type: \(type(of:provider))")
+            Logger.info("\(self.logTag) value type: \(type(of:value))")
 
-            if let data = provider as? Data {
+            if let data = value as? Data {
+                // Although we don't support contacts _yet_, when we do we'll want to make
+                // sure they are shared with a reasonable filename.
                 if ShareViewController.itemMatchesSpecificUtiType(itemProvider:itemProvider,
-                                              utiType:kUTTypeVCard as String) {
+                                                                  utiType:kUTTypeVCard as String) {
                     customFileName = "Contact.vcf"
                 }
 
@@ -578,7 +575,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                 }
                 let fileUrl = URL(fileURLWithPath:tempFilePath)
                 fulfill((fileUrl, srcUtiType))
-            } else if let string = provider as? String {
+            } else if let string = value as? String {
                 Logger.debug("\(self.logTag) string provider: \(string)")
                 guard let data = string.data(using: String.Encoding.utf8) else {
                     let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
@@ -600,18 +597,32 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                 } else {
                     fulfill((fileUrl, kUTTypeText as String))
                 }
-            } else if let url = provider as? URL {
-                isConvertibleToTextMessage = !itemProvider.registeredTypeIdentifiers.contains(kUTTypeFileURL as String)
-                fulfill((url, srcUtiType))
+            } else if let url = value as? URL {
+                // If the share itself is a URL (e.g. a link from Safari), try to send this as a text message.
+                isConvertibleToTextMessage = (itemProvider.registeredTypeIdentifiers.contains(kUTTypeURL as String) &&
+                    !itemProvider.registeredTypeIdentifiers.contains(kUTTypeFileURL as String))
+                if isConvertibleToTextMessage {
+                    fulfill((url, kUTTypeURL as String))
+                } else {
+                    fulfill((url, srcUtiType))
+                }
             } else {
-                let unexpectedTypeError = ShareViewControllerError.assertionError(description: "unexpected item type: \(String(describing: provider))")
+                let unexpectedTypeError = ShareViewControllerError.assertionError(description: "unexpected value: \(String(describing: value))")
                 reject(unexpectedTypeError)
             }
-        })
+        }
 
-        // TODO accept other data types
-        // TODO whitelist attachment types
-        // TODO coerce when necessary and possible
+        // NSItemProvider.loadItem(forTypeIdentifier:...) is unsafe to call from Swift,
+        // since it can yield values of arbitrary type.  It has a highly unusual design
+        // in which its behavior depends on the _type_ of the completion handler.
+        // loadItem(forTypeIdentifier:...) tries to satisfy the expected type of the
+        // completion handler.  This "hinting" only works in Objective-C.  In Swift,
+        // The type of the completion handler must agree with the param type.
+        //
+        // Unfortunately, we have no alternative.  Therefore, we face the real possibility
+        // of receiving an "unexpected type" that we don't know how to handle.
+        itemProvider.loadItem(forTypeIdentifier: srcUtiType, options: nil, completionHandler: loadCompletion)
+
         return promise.then { (itemUrl: URL, utiType: String) -> Promise<SignalAttachment> in
 
             let url: URL = try {
