@@ -630,6 +630,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         //
         // Unfortunately, we have no alternative.  Therefore, we face the real possibility
         // of receiving an "unexpected type" that we don't know how to handle.
+        //
+        // See: https://developer.apple.com/documentation/foundation/nsitemprovider/1403900-loaditemfortypeidentifier
         itemProvider.loadItem(forTypeIdentifier: srcUtiType, options: nil, completionHandler: loadCompletion)
 
         return promise.then { (itemUrl: URL, utiType: String) -> Promise<SignalAttachment> in
