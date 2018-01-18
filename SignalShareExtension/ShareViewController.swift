@@ -15,7 +15,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     enum ShareViewControllerError: Error {
         case assertionError(description: String)
         case unsupportedMedia
-        case NotRegistered(description: String)
+        case notRegistered()
     }
 
     private var hasInitialRootViewController = false
@@ -372,7 +372,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             // If root view is an error view, do nothing.
             return
         }
-        throw ShareViewControllerError.NotRegistered(description: "User unregistered in \(#function)")
+        throw ShareViewControllerError.notRegistered()
     }
 
     // MARK: ShareViewDelegate, SAEFailedViewDelegate
