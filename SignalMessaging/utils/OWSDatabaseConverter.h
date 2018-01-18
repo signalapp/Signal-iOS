@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 + (void)convertDatabaseIfNecessary;
++ (void)convertDatabaseIfNecessary:(NSString *)databaseFilePath;
 
 @end
 

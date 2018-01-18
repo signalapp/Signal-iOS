@@ -10,9 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDatabaseConverter
 
-+ (BOOL)doesDatabaseNeedToBeConverted
++ (BOOL)doesDatabaseNeedToBeConverted:(NSString *)databaseFilePath
 {
-    NSString *databaseFilePath = [TSStorageManager legacyDatabaseFilePath];
     if (![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]) {
         DDLogVerbose(@"%@ Skipping database conversion; no legacy database found.", self.logTag);
         return NO;
@@ -50,7 +49,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)convertDatabaseIfNecessary
 {
-    if (![self doesDatabaseNeedToBeConverted]) {
+    NSString *databaseFilePath = [TSStorageManager legacyDatabaseFilePath];
+    [self convertDatabaseIfNecessary:databaseFilePath];
+}
+
++ (void)convertDatabaseIfNecessary:(NSString *)databaseFilePath
+{
+    if (![self doesDatabaseNeedToBeConverted:databaseFilePath]) {
         return;
     }
 
@@ -60,6 +65,162 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)convertDatabase
 {
     // TODO:
+
+    //    Hello Matthew,
+    //
+    //    I hope you're doing well. We've just pushed some changes out to the SQLCipher prerelease branch on GitHub that
+    //    implement the functionality we talked about that add a few new options:
+    //
+    //    1. PRAGMA cipher_plaintext_header_size - set or query the number of bytes to be left unencrypted on the start
+    //    of the first page. This pragma would be called after keying the database, but before use. In our testing 32
+    //    works for iOS
+    //        2. PRAGMA cipher_default_plaintext_header_size - set the "global" default to be used when opening database
+    //        connections
+    //        3. PRAGMA cipher_salt - set or query the salt for the database
+    //
+    //            When working with the SQLCipherVsSharedData application, there are two changes required. First, modify
+    //            the Podfile to reference SQLCipher with these changes:
+    //
+    //            pod 'SQLCipher', :git => 'https://github.com/sqlcipher/sqlcipher.git', :commit => 'd5c2bec'
+    //
+    //            Next, set the plaintext header size immediately after the key is provided:
+    //
+    //            int status = sqlite3_exec(db, "PRAGMA cipher_plaintext_header_size = 32;", NULL, NULL, NULL);
+    //
+    //
+    //    This should allow the demo app to background correctly.
+    //
+    //    In practice, for a real application, the other changes we talked about on the phone need occur, i.e. to
+    //    provide the salt to the application explicitly. The application can use a raw key spec, where the 96 hex are
+    //    provide (i.e. 64 hex for the 256 bit key, followed by 32 hex for the 128 bit salt) using explicit BLOB syntax,
+    //    e.g.
+    //
+    //        x'98483C6EB40B6C31A448C22A66DED3B5E5E8D5119CAC8327B655C8B5C483648101010101010101010101010101010101'
+    //
+    //        Alternately, the application can use the new cipher_salt PRAGMA to provide 32 hex to use as salt in
+    //        conjunction with a standard derived key, e.g.
+    //
+    //        PRAGMA cipher_salt = "x'01010101010101010101010101010101'";
+    //
+    //    Since you mentioned the Signal application is using a derived key, the second option might be easiest. You
+    //    could load the first 16 bytes of the existing file, or query the database using cipher_salt, and then store
+    //    that along side the key in the keychain. Then following migration you can provide both the key and the salt
+    //    explicitly.
+    //
+    //    With respect to migrating existing databases, it is possible to open a database, set the pragma, modify the
+    //    first page, then checkpoint to ensure that all WAL frames are written back to the main database. This allows
+    //    you to "decrypt" the first part of the header almost instantaneously, without having to re-encrypt all of the
+    //    content. Keep in mind that you'll need to record the salt separately in this case. There are a few examples of
+    //    this in the test cases we wrote up for this new functionality, starting here:
+    //
+    // https://github.com/sqlcipher/sqlcipher/blob/d5c2bec7688cef298292906c029d26b2c043219d/test/crypto.test#L2669
+    //
+    //    I was hoping you could take a look at this new functionality, provide feedback, and perform some initial
+    //    testing on your side. Please let us know if you have any questions, or would like to discuss the specifics of
+    //    implementation further. Thanks!
+    //
+    //        Cheers,
+    //        Stephen
+
+    //    - (BOOL)openDatabase
+    //    {
+    //        // Open the database connection.
+    //        //
+    //        // We use SQLITE_OPEN_NOMUTEX to use the multi-thread threading mode,
+    //        // as we will be serializing access to the connection externally.
+    //
+    //        int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
+    //
+    //        int status = sqlite3_open_v2([databasePath UTF8String], &db, flags, NULL);
+    //        if (status != SQLITE_OK)
+    //        {
+    //            // There are a few reasons why the database might not open.
+    //            // One possibility is if the database file has become corrupt.
+    //
+    //            // Sometimes the open function returns a db to allow us to query it for the error message.
+    //            // The openConfigCreate block will close it for us.
+    //            if (db) {
+    //                YDBLogError(@"Error opening database: %d %s", status, sqlite3_errmsg(db));
+    //            }
+    //            else {
+    //                YDBLogError(@"Error opening database: %d", status);
+    //            }
+    //
+    //            return NO;
+    //        }
+    //        // Add a busy handler if we are in multiprocess mode
+    //        if (options.enableMultiProcessSupport) {
+    //            sqlite3_busy_handler(db, connectionBusyHandler, (__bridge void *)(self));
+    //        }
+    //
+    //        return YES;
+    //    }
+    //
+    //
+    //
+    //#ifdef SQLITE_HAS_CODEC
+    //    /**
+    //     * Configures database encryption via SQLCipher.
+    //     **/
+    //    - (BOOL)configureEncryptionForDatabase:(sqlite3 *)sqlite
+    //    {
+    //        if (options.cipherKeyBlock)
+    //        {
+    //            NSData *keyData = options.cipherKeyBlock();
+    //
+    //            if (keyData == nil)
+    //            {
+    //                NSAssert(NO, @"YapDatabaseOptions.cipherKeyBlock cannot return nil!");
+    //                return NO;
+    //            }
+    //
+    //            //Setting the PBKDF2 default iteration number (this will have effect next time database is opened)
+    //            if (options.cipherDefaultkdfIterNumber > 0) {
+    //                char *errorMsg;
+    //                NSString *pragmaCommand = [NSString stringWithFormat:@"PRAGMA cipher_default_kdf_iter = %lu",
+    //                (unsigned long)options.cipherDefaultkdfIterNumber]; if (sqlite3_exec(sqlite, [pragmaCommand
+    //                UTF8String], NULL, NULL, &errorMsg) != SQLITE_OK)
+    //                {
+    //                    YDBLogError(@"failed to set database cipher_default_kdf_iter: %s", errorMsg);
+    //                    return NO;
+    //                }
+    //            }
+    //
+    //            //Setting the PBKDF2 iteration number
+    //            if (options.kdfIterNumber > 0) {
+    //                char *errorMsg;
+    //                NSString *pragmaCommand = [NSString stringWithFormat:@"PRAGMA kdf_iter = %lu", (unsigned
+    //                long)options.kdfIterNumber]; if (sqlite3_exec(sqlite, [pragmaCommand UTF8String], NULL, NULL,
+    //                &errorMsg) != SQLITE_OK)
+    //                {
+    //                    YDBLogError(@"failed to set database kdf_iter: %s", errorMsg);
+    //                    return NO;
+    //                }
+    //            }
+    //
+    //            //Setting the encrypted database page size
+    //            if (options.cipherPageSize > 0) {
+    //                char *errorMsg;
+    //                NSString *pragmaCommand = [NSString stringWithFormat:@"PRAGMA cipher_page_size = %lu", (unsigned
+    //                long)options.cipherPageSize]; if (sqlite3_exec(sqlite, [pragmaCommand UTF8String], NULL, NULL,
+    //                &errorMsg) != SQLITE_OK)
+    //                {
+    //                    YDBLogError(@"failed to set database cipher_page_size: %s", errorMsg);
+    //                    return NO;
+    //                }
+    //            }
+    //
+    //            int status = sqlite3_key(sqlite, [keyData bytes], (int)[keyData length]);
+    //            if (status != SQLITE_OK)
+    //            {
+    //                YDBLogError(@"Error setting SQLCipher key: %d %s", status, sqlite3_errmsg(sqlite));
+    //                return NO;
+    //            }
+    //        }
+    //
+    //        return YES;
+    //    }
+    //#endif
 }
 
 @end
