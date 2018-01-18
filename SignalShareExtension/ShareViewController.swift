@@ -259,7 +259,10 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             // is has already saved their local profile key in the main app.
             showNotReadyView()
         } else {
-            presentConversationPicker()
+            DispatchQueue.main.async { [weak self] in
+                guard let strongSelf = self else { return }
+                strongSelf.presentConversationPicker()
+            }
         }
 
         // We don't use the AppUpdateNag in the SAE.
