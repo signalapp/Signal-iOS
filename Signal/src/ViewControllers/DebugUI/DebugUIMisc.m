@@ -12,7 +12,9 @@
 #import "ThreadUtil.h"
 #import <AFNetworking/AFNetworking.h>
 #import <AxolotlKit/PreKeyBundle.h>
+#import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalMessaging/UIImage+OWS.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
@@ -95,15 +97,24 @@ NS_ASSUME_NONNULL_BEGIN
                                              [DebugUIMisc sendUnencryptedDatabase:thread];
                                          }]];
     }
-    [items addObject:[OWSTableItem
-                         subPageItemWithText:@"Export Backup w/o Password"
-                                 actionBlock:^(UIViewController *viewController) {
-                                     OWSBackupExportViewController *backupViewController =
-                                         [OWSBackupExportViewController new];
-                                     [backupViewController exportBackup:thread skipPassword:YES];
-                                     [viewController.navigationController pushViewController:backupViewController
-                                                                                    animated:YES];
-                                 }]];
+    [items addObject:[OWSTableItem subPageItemWithText:@"Export Backup w/o Password"
+                                           actionBlock:^(UIViewController *viewController) {
+                                               OWSBackupExportViewController *backupViewController =
+                                                   [OWSBackupExportViewController new];
+                                               [backupViewController exportBackup:thread skipPassword:YES];
+                                               [viewController.navigationController
+                                                   pushViewController:backupViewController
+                                                             animated:YES];
+                                           }]];
+
+#ifdef DEBUG
+    [items addObject:[OWSTableItem subPageItemWithText:@"Share UIImage"
+                                           actionBlock:^(UIViewController *viewController) {
+                                               UIImage *image =
+                                                   [UIImage imageWithColor:UIColor.redColor size:CGSizeMake(1.f, 1.f)];
+                                               [AttachmentSharing showShareUIForUIImage:image];
+                                           }]];
+#endif
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
