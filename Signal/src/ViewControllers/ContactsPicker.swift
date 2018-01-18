@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 //  Originally based on EPContacts
@@ -161,7 +161,7 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
                 })
                 alert.addAction(cancelAction)
 
-                let settingsText = NSLocalizedString("OPEN_SETTINGS_BUTTON", comment:"Button text which opens the settings app")
+                let settingsText = CommonStrings.openSettingsButton
                 let openSettingsAction = UIAlertAction(title: settingsText, style: .default, handler: { (_) in
                     UIApplication.shared.openSystemSettings()
                 })
