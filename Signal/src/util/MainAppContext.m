@@ -120,6 +120,11 @@ NS_ASSUME_NONNULL_BEGIN
     [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle];
 }
 
+- (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated
+{
+    [[UIApplication sharedApplication] setStatusBarHidden:isHidden animated:isAnimated];
+}
+
 - (BOOL)isInBackground
 {
     return [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;

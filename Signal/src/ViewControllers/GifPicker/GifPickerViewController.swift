@@ -372,11 +372,12 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                 owsFail("\(strongSelf.TAG) couldn't load asset.")
                 return
             }
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: asset.rendition.utiType)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: asset.rendition.utiType, imageQuality: .original)
 
-            strongSelf.delegate?.gifPickerDidSelect(attachment: attachment)
-
-            strongSelf.dismiss(animated: true, completion: nil)
+            strongSelf.dismiss(animated: true) {
+                // Delegate presents view controllers, so it's important that *this* controller be dismissed before that occurs.
+                strongSelf.delegate?.gifPickerDidSelect(attachment: attachment)
+            }
         }.catch { [weak self] error in
             guard let strongSelf = self else {
                 Logger.info("\(GifPickerViewController.TAG) ignoring failure, since VC was dismissed before fetching finished.")

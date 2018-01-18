@@ -78,6 +78,8 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         Logger.debug("\(logTag) in \(#function)")
         super.viewWillAppear(animated)
 
+        CurrentAppContext().setStatusBarHidden(true, animated: animated)
+
         mediaMessageView.viewWillAppear(animated)
     }
 
@@ -91,6 +93,10 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         super.viewWillDisappear(animated)
 
         mediaMessageView.viewWillDisappear(animated)
+
+        // Since this VC is being dismissed, the "show status bar" animation would feel like
+        // it's occuring on the presenting view controller - it's better not to animate at all.
+        CurrentAppContext().setStatusBarHidden(false, animated: false)
     }
 
     // MARK: - Create Views

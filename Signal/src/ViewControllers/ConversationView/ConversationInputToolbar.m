@@ -44,12 +44,6 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 @property (nonatomic) BOOL isRecordingVoiceMemo;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
 
-#pragma mark - Attachment Approval
-
-@property (nonatomic, nullable) MediaMessageView *attachmentView;
-@property (nonatomic, nullable) UIView *cancelAttachmentWrapper;
-@property (nonatomic, nullable) SignalAttachment *attachmentToApprove;
-
 @end
 
 #pragma mark -
@@ -264,58 +258,9 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     self.textViewHeight = textViewHeight;
     self.toolbarHeight = textViewHeight + textViewVInset * 2;
 
-    if (self.attachmentToApprove) {
-        OWSAssert(self.attachmentView);
-
-        self.leftButtonWrapper.hidden = YES;
-        self.inputTextView.hidden = YES;
-        self.voiceMemoButton.hidden = YES;
-        UIButton *rightButton = self.sendButton;
-        rightButton.enabled = YES;
-        rightButton.hidden = NO;
-
-        [rightButton setContentHuggingHigh];
-        [rightButton setCompressionResistanceHigh];
-        [self.attachmentView setContentHuggingLow];
-
-        OWSAssert(rightButton.superview == self.rightButtonWrapper);
-
-        self.contentContraints = @[
-            [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textViewVInset],
-            [self.attachmentView autoPinBottomToSuperviewWithMargin:textViewVInset],
-            [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:contentHInset],
-            [self.attachmentView autoSetDimension:ALDimensionHeight toSize:150.f],
-
-            [self.rightButtonWrapper autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.attachmentView],
-            [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeRight],
-            [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
-            [self.rightButtonWrapper autoPinBottomToSuperviewWithMargin:0],
-
-            [rightButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
-            [rightButton autoPinLeadingToSuperviewWithMargin:contentHSpacing],
-            [rightButton autoPinTrailingToSuperviewWithMargin:contentHInset],
-            [rightButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
-        ];
-
-        [self setNeedsLayout];
-        [self layoutIfNeeded];
-
-        // Ensure the keyboard is dismissed.
-        //
-        // NOTE: We need to do this _last_ or the layout changes in the input toolbar
-        //       will be inadvertently animated.
-        [self.inputTextView resignFirstResponder];
-
-        return;
-    }
-
     self.leftButtonWrapper.hidden = NO;
     self.inputTextView.hidden = NO;
     self.voiceMemoButton.hidden = NO;
-    [self.attachmentView removeFromSuperview];
-    self.attachmentView = nil;
-    [self.cancelAttachmentWrapper removeFromSuperview];
-    self.cancelAttachmentWrapper = nil;
 
     UIButton *leftButton = self.attachmentButton;
     UIButton *rightButton = (self.shouldShowVoiceMemoButton ? self.voiceMemoButton : self.sendButton);
@@ -382,7 +327,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
 - (void)ensureShouldShowVoiceMemoButton
 {
-    self.shouldShowVoiceMemoButton = (self.attachmentToApprove == nil && self.inputTextView.trimmedText.length < 1);
+    self.shouldShowVoiceMemoButton = self.inputTextView.trimmedText.length < 1;
 }
 
 - (void)handleLongPress:(UIGestureRecognizer *)sender
@@ -680,11 +625,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 {
     OWSAssert(self.inputToolbarDelegate);
 
-    if (self.attachmentToApprove) {
-        [self attachmentApprovalSendPressed];
-    } else {
-        [self.inputToolbarDelegate sendButtonPressed];
-    }
+    [self.inputToolbarDelegate sendButtonPressed];
 }
 
 - (void)attachmentButtonPressed
@@ -748,105 +689,6 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
             }
         }
     }
-}
-
-#pragma mark - Attachment Approval
-
-- (void)showApprovalUIForAttachment:(SignalAttachment *)attachment
-{
-    OWSAssert(attachment);
-
-    self.attachmentToApprove = attachment;
-
-    MediaMessageView *attachmentView =
-        [[MediaMessageView alloc] initWithAttachment:attachment mode:MediaMessageViewModeSmall];
-    self.attachmentView = attachmentView;
-    [self.contentView addSubview:attachmentView];
-
-    UIView *cancelAttachmentWrapper = [UIView containerView];
-    self.cancelAttachmentWrapper = cancelAttachmentWrapper;
-    [cancelAttachmentWrapper
-        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                     action:@selector(cancelAttachmentWrapperTapped:)]];
-    UIView *_Nullable attachmentContentView = [self.attachmentView contentView];
-    // Place the cancel button inside the attachment view's content area,
-    // if possible.  If not, just place it inside the attachment view.
-    UIView *cancelButtonReferenceView = attachmentContentView;
-    if (attachmentContentView) {
-        attachmentContentView.layer.borderColor = self.inputTextView.layer.borderColor;
-        attachmentContentView.layer.borderWidth = self.inputTextView.layer.borderWidth;
-        attachmentContentView.layer.cornerRadius = self.inputTextView.layer.cornerRadius;
-        attachmentContentView.clipsToBounds = YES;
-    } else {
-        cancelButtonReferenceView = self.attachmentView;
-    }
-    [self.contentView addSubview:cancelAttachmentWrapper];
-    [cancelAttachmentWrapper autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:cancelButtonReferenceView];
-    [cancelAttachmentWrapper autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:cancelButtonReferenceView];
-
-    UIImage *cancelIcon = [UIImage imageNamed:@"cancel-cross-white"];
-    OWSAssert(cancelIcon);
-    UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [cancelButton setImage:cancelIcon forState:UIControlStateNormal];
-    [cancelButton setBackgroundColor:[UIColor ows_materialBlueColor]];
-    OWSAssert(cancelIcon.size.width == cancelIcon.size.height);
-    CGFloat cancelIconSize = MIN(cancelIcon.size.width, cancelIcon.size.height);
-    CGFloat cancelIconInset = round(cancelIconSize * 0.35f);
-    [cancelButton
-        setContentEdgeInsets:UIEdgeInsetsMake(cancelIconInset, cancelIconInset, cancelIconInset, cancelIconInset)];
-    CGFloat cancelButtonRadius = cancelIconInset + cancelIconSize * 0.5f;
-    cancelButton.layer.cornerRadius = cancelButtonRadius;
-    CGFloat cancelButtonInset = 10.f;
-    [cancelButton addTarget:self
-                     action:@selector(attachmentApprovalCancelPressed)
-           forControlEvents:UIControlEventTouchUpInside];
-    [cancelAttachmentWrapper addSubview:cancelButton];
-    [cancelButton autoPinWidthToSuperviewWithMargin:cancelButtonInset];
-    [cancelButton autoPinHeightToSuperviewWithMargin:cancelButtonInset];
-    CGFloat cancelButtonSize = cancelIconSize + 2 * cancelIconInset;
-    [cancelButton autoSetDimension:ALDimensionWidth toSize:cancelButtonSize];
-    [cancelButton autoSetDimension:ALDimensionHeight toSize:cancelButtonSize];
-
-    [self ensureContentConstraints];
-    [self ensureShouldShowVoiceMemoButton];
-}
-
-- (void)cancelAttachmentWrapperTapped:(UIGestureRecognizer *)sender
-{
-    if (sender.state == UIGestureRecognizerStateRecognized) {
-        [self attachmentApprovalCancelPressed];
-    }
-}
-
-- (void)attachmentApprovalCancelPressed
-{
-    self.attachmentToApprove = nil;
-
-    [self ensureContentConstraints];
-    [self ensureShouldShowVoiceMemoButton];
-}
-
-- (void)attachmentApprovalSendPressed
-{
-    SignalAttachment *attachment = self.attachmentToApprove;
-    self.attachmentToApprove = nil;
-
-    if (attachment) {
-        [self.inputToolbarDelegate didApproveAttachment:attachment];
-    }
-
-    [self ensureContentConstraints];
-    [self ensureShouldShowVoiceMemoButton];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [self.attachmentView viewWillAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [self.attachmentView viewWillDisappear:animated];
 }
 
 @end

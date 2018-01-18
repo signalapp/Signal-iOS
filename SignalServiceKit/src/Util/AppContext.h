@@ -55,8 +55,8 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 // Should only be called if isMainApp is YES.
 - (void)setMainAppBadgeNumber:(NSInteger)value;
 
-
 - (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle;
+- (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated;
 
 // Returns the VC that should be used to present alerts, modals, etc.
 - (nullable UIViewController *)frontmostViewController;
