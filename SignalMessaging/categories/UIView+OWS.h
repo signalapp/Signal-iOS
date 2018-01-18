@@ -117,9 +117,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 // Add red border to self, and all subviews recursively.
 - (void)addRedBorderRecursively;
 
+#ifdef DEBUG
 - (void)logFrameLater;
 - (void)logFrameLaterWithLabel:(NSString *)label;
 - (void)logHierarchyUpwardLaterWithLabel:(NSString *)label;
+#endif
 
 @end
 
