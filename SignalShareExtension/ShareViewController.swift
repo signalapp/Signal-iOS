@@ -79,7 +79,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         self.loadViewController = loadViewController
 
         // Don't display load screen immediately, in hopes that we can avoid it altogether.
-        after(seconds: 0.25).then { () -> Void in
+        after(seconds: 0.5).then { () -> Void in
             guard self.presentedViewController == nil else {
                 Logger.debug("\(self.logTag) setup completed quickly, no need to present load view controller.")
                 return
@@ -463,16 +463,6 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                                           utiType:kUTTypeContact as String)
     }
 
-    private class func isSpecialItem(itemProvider: NSItemProvider) -> Bool {
-        if isUrlItem(itemProvider:itemProvider) {
-            return true
-        } else if isContactItem(itemProvider:itemProvider) {
-            return true
-        } else {
-            return false
-        }
-    }
-
     private class func utiTypeForItem(itemProvider: NSItemProvider) -> String? {
         Logger.info("\(self.logTag) utiTypeForItem: \(itemProvider.registeredTypeIdentifiers)")
 
@@ -718,9 +708,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     // Perhaps the AVFoundation APIs require some extra file system permssion we don't have in the
     // passed through URL.
     private func isVideoNeedingRelocation(itemProvider: NSItemProvider, itemUrl: URL) -> Bool {
-        if ShareViewController.isSpecialItem(itemProvider:itemProvider) {
-            return false
-        }
+        Logger.info("\(self.logTag) isVideoNeedingRelocation: \(itemProvider.registeredTypeIdentifiers), itemUrl: \(itemUrl)")
 
         let pathExtension = itemUrl.pathExtension
         guard pathExtension.count > 0 else {
@@ -731,6 +719,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             Logger.verbose("\(self.logTag) in \(#function): item has unknown UTI type: \(itemUrl).")
             return false
         }
+        Logger.verbose("\(self.logTag) utiTypeForURL: \(utiTypeForURL)")
         guard utiTypeForURL == kUTTypeMPEG4 as String else {
             // Either it's not a video or it was a video which was not auto-converted to mp4.
             // Not affected by the issue.
