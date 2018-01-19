@@ -46,6 +46,10 @@ NS_ASSUME_NONNULL_BEGIN
     };
     options.enableMultiProcessSupport = YES;
 
+    OWSAssert(options.cipherDefaultkdfIterNumber == 0);
+    OWSAssert(options.kdfIterNumber == 0);
+    OWSAssert(options.cipherPageSize == 0);
+
     YapDatabase *database = [[YapDatabase alloc] initWithPath:databaseFilePath
                                                    serializer:nil
                                                  deserializer:[OWSStorage logOnFailureDeserializer]

@@ -3,15 +3,22 @@
 //
 
 #import "OWSDatabaseConverter.h"
+#import "sqlite3.h"
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/TSStorageManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const OWSOWSDatabaseConverterErrorDomain = @"OWSOWSDatabaseConverterErrorDomain";
+const int kCouldNotOpenDatabase = 1;
+const int kCouldNotLoadDatabasePassword = 2;
+
 @implementation OWSDatabaseConverter
 
 + (BOOL)doesDatabaseNeedToBeConverted:(NSString *)databaseFilePath
 {
+    OWSAssert(databaseFilePath.length > 0);
+
     if (![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]) {
         DDLogVerbose(@"%@ Skipping database conversion; no legacy database found.", self.logTag);
         return NO;
@@ -59,11 +66,22 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [self convertDatabase];
+    [self convertDatabase:(NSString *)databaseFilePath];
 }
 
-+ (void)convertDatabase
++ (nullable NSError *)convertDatabase:(NSString *)databaseFilePath
 {
+    OWSAssert(databaseFilePath.length > 0);
+
+    NSError *error;
+    NSData *_Nullable databasePassword = [OWSStorage tryToLoadDatabasePassword:&error];
+    if (!databasePassword || error) {
+        return (error
+                ?: [NSError errorWithDomain:OWSOWSDatabaseConverterErrorDomain
+                                       code:kCouldNotLoadDatabasePassword
+                                   userInfo:nil]);
+    }
+
     // TODO:
 
     //    Hello Matthew,
@@ -129,98 +147,69 @@ NS_ASSUME_NONNULL_BEGIN
     //        // We use SQLITE_OPEN_NOMUTEX to use the multi-thread threading mode,
     //        // as we will be serializing access to the connection externally.
     //
-    //        int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
+
+
+    // -----------------------------------------------------------
     //
-    //        int status = sqlite3_open_v2([databasePath UTF8String], &db, flags, NULL);
-    //        if (status != SQLITE_OK)
-    //        {
-    //            // There are a few reasons why the database might not open.
-    //            // One possibility is if the database file has become corrupt.
+    // This block was derived from [Yapdatabase openDatabase].
+    int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
+    sqlite3 *db;
+    int status = sqlite3_open_v2([databaseFilePath UTF8String], &db, flags, NULL);
+    if (status != SQLITE_OK) {
+        // There are a few reasons why the database might not open.
+        // One possibility is if the database file has become corrupt.
+
+        // Sometimes the open function returns a db to allow us to query it for the error message.
+        // The openConfigCreate block will close it for us.
+        if (db) {
+            DDLogError(@"Error opening database: %d %s", status, sqlite3_errmsg(db));
+        } else {
+            DDLogError(@"Error opening database: %d", status);
+        }
+
+        return [NSError errorWithDomain:OWSOWSDatabaseConverterErrorDomain code:kCouldNotOpenDatabase userInfo:nil];
+    }
+
+    // -----------------------------------------------------------
     //
-    //            // Sometimes the open function returns a db to allow us to query it for the error message.
-    //            // The openConfigCreate block will close it for us.
-    //            if (db) {
-    //                YDBLogError(@"Error opening database: %d %s", status, sqlite3_errmsg(db));
-    //            }
-    //            else {
-    //                YDBLogError(@"Error opening database: %d", status);
-    //            }
-    //
-    //            return NO;
-    //        }
-    //        // Add a busy handler if we are in multiprocess mode
-    //        if (options.enableMultiProcessSupport) {
-    //            sqlite3_busy_handler(db, connectionBusyHandler, (__bridge void *)(self));
-    //        }
-    //
-    //        return YES;
+    // This block was derived from [Yapdatabase configureEncryptionForDatabase].
+    NSData *keyData = databasePassword;
+
+    //    //Setting the encrypted database page size
+    //    if (options.cipherPageSize > 0) {
+    //        char *errorMsg;
+    //        NSString *pragmaCommand = [NSString stringWithFormat:@"PRAGMA cipher_page_size = %lu", (unsigned
+    //                                                                                                long)options.cipherPageSize];
+    //                                                                                                if
+    //                                                                                                (sqlite3_exec(sqlite,
+    //                                                                                                [pragmaCommand
+    //                                                                                                UTF8String], NULL,
+    //                                                                                                NULL,
+    //                                                                                                                                               &errorMsg) != SQLITE_OK)
+    //                                                                                                {
+    //                                                                                                    YDBLogError(@"failed
+    //                                                                                                    to set
+    //                                                                                                    database
+    //                                                                                                    cipher_page_size:
+    //                                                                                                    %s",
+    //                                                                                                    errorMsg);
+    //                                                                                                    return NO;
+    //                                                                                                }
     //    }
     //
-    //
-    //
-    //#ifdef SQLITE_HAS_CODEC
-    //    /**
-    //     * Configures database encryption via SQLCipher.
-    //     **/
-    //    - (BOOL)configureEncryptionForDatabase:(sqlite3 *)sqlite
+    //    int status = sqlite3_key(sqlite, [keyData bytes], (int)[keyData length]);
+    //    if (status != SQLITE_OK)
     //    {
-    //        if (options.cipherKeyBlock)
-    //        {
-    //            NSData *keyData = options.cipherKeyBlock();
-    //
-    //            if (keyData == nil)
-    //            {
-    //                NSAssert(NO, @"YapDatabaseOptions.cipherKeyBlock cannot return nil!");
-    //                return NO;
-    //            }
-    //
-    //            //Setting the PBKDF2 default iteration number (this will have effect next time database is opened)
-    //            if (options.cipherDefaultkdfIterNumber > 0) {
-    //                char *errorMsg;
-    //                NSString *pragmaCommand = [NSString stringWithFormat:@"PRAGMA cipher_default_kdf_iter = %lu",
-    //                (unsigned long)options.cipherDefaultkdfIterNumber]; if (sqlite3_exec(sqlite, [pragmaCommand
-    //                UTF8String], NULL, NULL, &errorMsg) != SQLITE_OK)
-    //                {
-    //                    YDBLogError(@"failed to set database cipher_default_kdf_iter: %s", errorMsg);
-    //                    return NO;
-    //                }
-    //            }
-    //
-    //            //Setting the PBKDF2 iteration number
-    //            if (options.kdfIterNumber > 0) {
-    //                char *errorMsg;
-    //                NSString *pragmaCommand = [NSString stringWithFormat:@"PRAGMA kdf_iter = %lu", (unsigned
-    //                long)options.kdfIterNumber]; if (sqlite3_exec(sqlite, [pragmaCommand UTF8String], NULL, NULL,
-    //                &errorMsg) != SQLITE_OK)
-    //                {
-    //                    YDBLogError(@"failed to set database kdf_iter: %s", errorMsg);
-    //                    return NO;
-    //                }
-    //            }
-    //
-    //            //Setting the encrypted database page size
-    //            if (options.cipherPageSize > 0) {
-    //                char *errorMsg;
-    //                NSString *pragmaCommand = [NSString stringWithFormat:@"PRAGMA cipher_page_size = %lu", (unsigned
-    //                long)options.cipherPageSize]; if (sqlite3_exec(sqlite, [pragmaCommand UTF8String], NULL, NULL,
-    //                &errorMsg) != SQLITE_OK)
-    //                {
-    //                    YDBLogError(@"failed to set database cipher_page_size: %s", errorMsg);
-    //                    return NO;
-    //                }
-    //            }
-    //
-    //            int status = sqlite3_key(sqlite, [keyData bytes], (int)[keyData length]);
-    //            if (status != SQLITE_OK)
-    //            {
-    //                YDBLogError(@"Error setting SQLCipher key: %d %s", status, sqlite3_errmsg(sqlite));
-    //                return NO;
-    //            }
-    //        }
-    //
-    //        return YES;
+    //        YDBLogError(@"Error setting SQLCipher key: %d %s", status, sqlite3_errmsg(sqlite));
+    //        return NO;
     //    }
-    //#endif
+    //}
+    //
+    // return YES;
+    //        }
+    //    #endif
+
+    return nil;
 }
 
 @end

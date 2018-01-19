@@ -510,13 +510,21 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     return NO;
 }
 
-- (NSData *)databasePassword
++ (nullable NSData *)tryToLoadDatabasePassword:(NSError **)errorHandle
 {
+    OWSAssert(errorHandle);
+
     [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
 
+    NSData *_Nullable passwordData =
+        [SAMKeychain passwordDataForService:keychainService account:keychainDBPassAccount error:errorHandle];
+    return passwordData;
+}
+
+- (NSData *)databasePassword
+{
     NSError *keyFetchError;
-    NSString *dbPassword =
-        [SAMKeychain passwordForService:keychainService account:keychainDBPassAccount error:&keyFetchError];
+    NSData *_Nullable passwordData = [OWSStorage tryToLoadDatabasePassword:&keyFetchError];
 
     if (keyFetchError) {
         NSString *errorDescription =
@@ -554,15 +562,16 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         // Try to reset app by deleting database.
         [OWSStorage resetAllStorage];
 
-        dbPassword = [self createAndSetNewDatabasePassword];
+        passwordData = [self createAndSetNewDatabasePassword];
     }
 
-    return [dbPassword dataUsingEncoding:NSUTF8StringEncoding];
+    return passwordData;
 }
 
-- (NSString *)createAndSetNewDatabasePassword
+- (NSData *)createAndSetNewDatabasePassword
 {
-    NSString *password = [[Randomness generateRandomBytes:30] base64EncodedString];
+    NSData *password =
+        [[[Randomness generateRandomBytes:30] base64EncodedString] dataUsingEncoding:NSUTF8StringEncoding];
 
     [OWSStorage storeDatabasePassword:password];
 
@@ -602,12 +611,14 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     return fileSize;
 }
 
-+ (void)storeDatabasePassword:(NSString *)password
++ (void)storeDatabasePassword:(NSData *)passwordData
 {
     NSError *error;
     [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
-    BOOL success =
-        [SAMKeychain setPassword:password forService:keychainService account:keychainDBPassAccount error:&error];
+    BOOL success = [SAMKeychain setPasswordData:passwordData
+                                     forService:keychainService
+                                        account:keychainDBPassAccount
+                                          error:&error];
     if (!success || error) {
         OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotStoreDatabasePassword]);
 
