@@ -118,6 +118,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *filename = [NSUUID UUID].UUIDString;
     NSString *databaseFilePath = [temporaryDirectory stringByAppendingPathComponent:filename];
 
+    DDLogInfo(@"%@ databaseFilePath: %@", self.logTag, databaseFilePath);
+
     [self openYapDatabase:databaseFilePath
          databasePassword:databasePassword
             databaseBlock:^(YapDatabase *database) {

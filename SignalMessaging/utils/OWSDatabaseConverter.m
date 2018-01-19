@@ -8,6 +8,7 @@
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/TSStorageManager.h>
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -106,12 +107,15 @@ const NSUInteger kSqliteHeaderLength = 32;
     OWSAssert(databaseFilePath.length > 0);
     OWSAssert(databasePassword.length > 0);
 
-    NSData *headerData = [self readFirstNBytesOfDatabaseFile:databaseFilePath byteCount:kSqliteHeaderLength];
-    OWSAssert(headerData);
+    NSData *sqlCipherSaltData;
+    {
+        NSData *headerData = [self readFirstNBytesOfDatabaseFile:databaseFilePath byteCount:kSqliteHeaderLength];
+        OWSAssert(headerData);
 
-    const NSUInteger kSQLCipherSaltLength = 16;
-    OWSAssert(headerData.length >= kSQLCipherSaltLength);
-    NSData *sqlCipherSaltData = [headerData subdataWithRange:NSMakeRange(0, kSQLCipherSaltLength)];
+        const NSUInteger kSQLCipherSaltLength = 16;
+        OWSAssert(headerData.length >= kSQLCipherSaltLength);
+        sqlCipherSaltData = [headerData subdataWithRange:NSMakeRange(0, kSQLCipherSaltLength)];
+    }
 
     // TODO: Write salt to keychain.
 
@@ -171,89 +175,54 @@ const NSUInteger kSqliteHeaderLength = 32;
     //        Cheers,
     //        Stephen
 
-    //    - (BOOL)openDatabase
-    //    {
-    //        // Open the database connection.
-    //        //
-    //        // We use SQLITE_OPEN_NOMUTEX to use the multi-thread threading mode,
-    //        // as we will be serializing access to the connection externally.
-    //
-
-
     // -----------------------------------------------------------
     //
     // This block was derived from [Yapdatabase openDatabase].
-    int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
     sqlite3 *db;
-    int status = sqlite3_open_v2([databaseFilePath UTF8String], &db, flags, NULL);
-    if (status != SQLITE_OK) {
-        // There are a few reasons why the database might not open.
-        // One possibility is if the database file has become corrupt.
+    int status;
+    {
+        int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
+        status = sqlite3_open_v2([databaseFilePath UTF8String], &db, flags, NULL);
+        if (status != SQLITE_OK) {
+            // There are a few reasons why the database might not open.
+            // One possibility is if the database file has become corrupt.
 
-        // Sometimes the open function returns a db to allow us to query it for the error message.
-        // The openConfigCreate block will close it for us.
-        if (db) {
-            DDLogError(@"Error opening database: %d %s", status, sqlite3_errmsg(db));
-        } else {
-            DDLogError(@"Error opening database: %d", status);
+            // Sometimes the open function returns a db to allow us to query it for the error message.
+            // The openConfigCreate block will close it for us.
+            if (db) {
+                DDLogError(@"Error opening database: %d %s", status, sqlite3_errmsg(db));
+            } else {
+                DDLogError(@"Error opening database: %d", status);
+            }
+
+            return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Failed to open database");
         }
-
-        return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Failed to open database");
     }
 
     // -----------------------------------------------------------
     //
     // This block was derived from [Yapdatabase configureEncryptionForDatabase].
-    NSData *keyData = databasePassword;
+    {
+        NSData *keyData = databasePassword;
 
-    // Setting the encrypted database page size
-    status = sqlite3_key(db, [keyData bytes], (int)[keyData length]);
-    if (status != SQLITE_OK) {
-        DDLogError(@"Error setting SQLCipher key: %d %s", status, sqlite3_errmsg(db));
-        return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Failed to set SQLCipher key");
+        // Setting the encrypted database page size
+        status = sqlite3_key(db, [keyData bytes], (int)[keyData length]);
+        if (status != SQLITE_OK) {
+            DDLogError(@"Error setting SQLCipher key: %d %s", status, sqlite3_errmsg(db));
+            return OWSErrorWithCodeDescription(
+                OWSErrorCodeDatabaseConversionFatalError, @"Failed to set SQLCipher key");
+        }
     }
 
     // -----------------------------------------------------------
     //
     // This block was derived from [Yapdatabase configureDatabase].
     {
-        //
-        //    {
-        //        int status;
-        //
-        //        // Set mandatory pragmas
-        //
-
-        // MJK: this isn't relevant since we only migrate existing databses and never set a pageSize option.
-        //        if (isNewDatabaseFile && (options.pragmaPageSize > 0))
-        //        {
-        //            NSString *pragma_page_size =
-        //            [NSString stringWithFormat:@"PRAGMA page_size = %ld;", (long)options.pragmaPageSize];
-        //
-        //            status = sqlite3_exec(db, [pragma_page_size UTF8String], NULL, NULL, NULL);
-        //            if (status != SQLITE_OK)
-        //            {
-        //                YDBLogError(@"Error setting PRAGMA page_size: %d %s", status, sqlite3_errmsg(db));
-        //            }
-        //        }
-
-        //
         status = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
         if (status != SQLITE_OK) {
             DDLogError(@"Error setting PRAGMA journal_mode: %d %s", status, sqlite3_errmsg(db));
             return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Failed to set WAL mode");
         }
-
-        // MJK: this isn't relevant since we only migrate existing databses
-        //        if (isNewDatabaseFile)
-        //        {
-        //            status = sqlite3_exec(db, "PRAGMA auto_vacuum = FULL; VACUUM;", NULL, NULL, NULL);
-        //            if (status != SQLITE_OK)
-        //            {
-        //                YDBLogError(@"Error setting PRAGMA auto_vacuum: %d %s", status, sqlite3_errmsg(db));
-        //            }
-        //        }
-        //
 
         // TODO verify we need to do this.
         // Set synchronous to normal for THIS sqlite instance.
@@ -289,24 +258,7 @@ const NSUInteger kSqliteHeaderLength = 32;
             DDLogError(@"Error setting PRAGMA journal_size_limit: %d %s", status, sqlite3_errmsg(db));
             // This isn't critical, so we can continue.
         }
-        //
-        //        // Set mmap_size (if needed).
-        //        //
-        //        // This configures memory mapped I/O.
-        //        // OWS: we currently don't set options.pragmaMMapSize, so we can ignore this code.
-        //        if (options.pragmaMMapSize > 0)
-        //        {
-        //            NSString *pragma_mmap_size =
-        //            [NSString stringWithFormat:@"PRAGMA mmap_size = %ld;", (long)options.pragmaMMapSize];
-        //
-        //            status = sqlite3_exec(db, [pragma_mmap_size UTF8String], NULL, NULL, NULL);
-        //            if (status != SQLITE_OK)
-        //            {
-        //                YDBLogError(@"Error setting PRAGMA mmap_size: %d %s", status, sqlite3_errmsg(db));
-        //                // This isn't critical, so we can continue.
-        //            }
-        //        }
-        //
+
         // Disable autocheckpointing.
         //
         // YapDatabase has its own optimized checkpointing algorithm built-in.
@@ -322,47 +274,39 @@ const NSUInteger kSqliteHeaderLength = 32;
     // -----------------------------------------------------------
     //
     // SQLCipher migration
+    {
+        NSString *setPlainTextHeaderPragma =
+            [NSString stringWithFormat:@"PRAGMA cipher_plaintext_header_size = %zd;", kSqliteHeaderLength];
 
-    //    if (NO)
-    //    {
-    //
-    //    NSString *setPlainTextHeaderPragma =
-    //    [NSString stringWithFormat:@"PRAGMA cipher_plaintext_header_size = %zd;", kSqliteHeaderLength];
-    //
-    //    status = sqlite3_exec(db, [setPlainTextHeaderPragma UTF8String], NULL, NULL, NULL);
-    //    if (status != SQLITE_OK) {
-    //        DDLogError(@"Error setting PRAGMA cipher_plaintext_header_size = %zd: status: %d, error: %s",
-    //                   kSqliteHeaderLength,
-    //                   status,
-    //                   sqlite3_errmsg(db));
-    //        return OWSErrorWithCodeDescription(
-    //                                           OWSErrorCodeDatabaseConversionFatalError, @"Failed to set PRAGMA
-    //                                           cipher_plaintext_header_size");
-    //    }
-    //
-    //    // Modify the first page, so that SQLCipher will overwrite, respecting our new cipher_plaintext_header_size
-    //    NSString *tableName = [NSString stringWithFormat:@"signal-migration-%@", [NSUUID new].UUIDString];
-    //    NSString *modificationSQL =
-    //    [NSString stringWithFormat:@"CREATE TABLE %@(int a); INSERT INTO %@(a) VALUES (1);", tableName, tableName];
-    //    status = sqlite3_exec(db, [modificationSQL UTF8String], NULL, NULL, NULL);
-    //    if (status != SQLITE_OK) {
-    //        DDLogError(@"%@ Error modifying first page: %d, error: %s", self.logTag, status, sqlite3_errmsg(db));
-    //        return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Error modifying first
-    //        page");
-    //    }
-    //
-    //    // Force a checkpoint so that the plaintext is written to the actual DB file, not just living in the WAL.
-    //    // TODO do we need/want the earlier checkpoint if we're checkpointing here?
-    //    sqlite3_wal_autocheckpoint(db, 0);
-    //
-    //
-    //    sqlite3_close(db);
-    //    return nil;
-    //    }
+        status = sqlite3_exec(db, [setPlainTextHeaderPragma UTF8String], NULL, NULL, NULL);
+        if (status != SQLITE_OK) {
+            DDLogError(@"Error setting PRAGMA cipher_plaintext_header_size = %zd: status: %d, error: %s",
+                kSqliteHeaderLength,
+                status,
+                sqlite3_errmsg(db));
+            return OWSErrorWithCodeDescription(
+                OWSErrorCodeDatabaseConversionFatalError, @"Failed to set PRAGMA cipher_plaintext_header_size");
+        }
 
-    // TODO set plaintext pragma
-    // TODO modify first page
-    // TODO force checkpoint
+        // Modify the first page, so that SQLCipher will overwrite, respecting our new cipher_plaintext_header_size
+        NSString *tableName = [NSString stringWithFormat:@"signal-migration-%@", [NSUUID new].UUIDString];
+        NSString *modificationSQL =
+            [NSString stringWithFormat:@"CREATE TABLE \"%@\"(a integer); INSERT INTO \"%@\"(a) VALUES (1);",
+                      tableName,
+                      tableName];
+        DDLogInfo(@"%@ modificationSQL: %@", self.logTag, modificationSQL);
+        status = sqlite3_exec(db, [modificationSQL UTF8String], NULL, NULL, NULL);
+        if (status != SQLITE_OK) {
+            DDLogError(@"%@ Error modifying first page: %d, error: %s", self.logTag, status, sqlite3_errmsg(db));
+            return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Error modifying first page");
+        }
+
+        // Force a checkpoint so that the plaintext is written to the actual DB file, not just living in the WAL.
+        // TODO do we need/want the earlier checkpoint if we're checkpointing here?
+        sqlite3_wal_autocheckpoint(db, 0);
+
+        sqlite3_close(db);
+    }
 
     return nil;
 }
