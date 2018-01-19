@@ -124,13 +124,13 @@ const NSUInteger kSqliteHeaderLength = 32;
         OWSAssert(headerData.length >= kSQLCipherSaltLength);
         sqlCipherSaltData = [headerData subdataWithRange:NSMakeRange(0, kSQLCipherSaltLength)];
 
+        DDLogVerbose(@"%@ sqlCipherSaltData: %@", self.logTag, sqlCipherSaltData.hexadecimalString);
+
         // Make sure we successfully persist the salt (persumably in the keychain) before
         // proceeding with the database conversion or we could leave the app in an
         // unrecoverable state.
         saltBlock(sqlCipherSaltData);
     }
-
-    // TODO: Write salt to keychain.
 
     //    Hello Matthew,
     //
@@ -283,6 +283,43 @@ const NSUInteger kSqliteHeaderLength = 32;
         // BEGIN SQLCipher migration
     }
 
+#ifdef DEBUG
+    // We can obtain the database salt in two ways: by reading the first 16 bytes of the encrypted
+    // header OR by using "PRAGMA cipher_salt".  In DEBUG builds, we verify that these two values
+    // match.
+    {
+        sqlite3_stmt *statement;
+
+        char *stmt = "PRAGMA cipher_salt;";
+
+        status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt) + 1, &statement, NULL);
+        if (status != SQLITE_OK) {
+            DDLogError(@"%@ Error extracting database salt: %d, error: %s", self.logTag, status, sqlite3_errmsg(db));
+            return OWSErrorWithCodeDescription(
+                OWSErrorCodeDatabaseConversionFatalError, @"Error extracting database salt");
+        }
+
+        status = sqlite3_step(statement);
+        if (status != SQLITE_ROW) {
+            DDLogError(@"%@ Missing database salt: %d, error: %s", self.logTag, status, sqlite3_errmsg(db));
+            return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Missing database salt");
+        }
+
+        const unsigned char *valueBytes = sqlite3_column_text(statement, 0);
+        int valueLength = sqlite3_column_bytes(statement, 0);
+        DDLogVerbose(@"%@ value: %d %d", self.logTag, valueLength, valueBytes != NULL);
+
+        NSString *saltString =
+            [[NSString alloc] initWithBytes:valueBytes length:valueLength encoding:NSUTF8StringEncoding];
+
+        sqlite3_finalize(statement);
+        statement = NULL;
+
+        DDLogVerbose(@"%@ saltString: %@", self.logTag, saltString);
+
+        OWSAssert([sqlCipherSaltData.hexadecimalString isEqualToString:saltString]);
+    }
+#endif
 
     // -----------------------------------------------------------
     //
