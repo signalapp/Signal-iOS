@@ -112,9 +112,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.logTag);
 
-    // We need to do this _after_ we set up logging but _before_ we do
-    // anything else.
-    [self ensureIsReadyForAppExtensions];
+    SetRandFunctionSeed();
+
+    // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
+    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
 #if RELEASE
     // ensureIsReadyForAppExtensions may have changed the state of the logging
@@ -125,14 +126,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 #endif
 
+    // We need to do this _after_ we set up logging, when the keychain is unlocked,
+    // but before we access YapDatabase, files on disk, or NSUserDefaults
+    [self ensureIsReadyForAppExtensions];
+
     [AppVersion instance];
 
     [self startupLogging];
 
-    SetRandFunctionSeed();
-
-    // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
-    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
     // If a backup restore is in progress, try to complete it.
     // Otherwise, cleanup backup state.
