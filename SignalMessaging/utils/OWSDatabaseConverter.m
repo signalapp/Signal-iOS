@@ -10,6 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const int kSqliteHeaderLength = 32;
 
 @implementation OWSDatabaseConverter
 
@@ -34,7 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
         [NSException raise:@"Couldn't read legacy database file header" format:@""];
     }
     // Pull this constant out so that we can use it in our YapDatabase fork.
-    const int kSqliteHeaderLength = 32;
     NSData *_Nullable headerData = [data subdataWithRange:NSMakeRange(0, kSqliteHeaderLength)];
     if (!headerData || headerData.length != kSqliteHeaderLength) {
         [NSException raise:@"Database database file header has unexpected length"
@@ -283,6 +283,36 @@ NS_ASSUME_NONNULL_BEGIN
     // YapDatabase has its own optimized checkpointing algorithm built-in.
     // It knows the state of every active connection for the database,
     // so it can invoke the checkpoint methods at the precise time in which a checkpoint can be most effective.
+    sqlite3_wal_autocheckpoint(db, 0);
+
+    // END DB setup copied from YapDatabase
+    // BEGIN SQLCipher migration
+
+    NSString *setPlainTextHeaderPragma =
+        [NSString stringWithFormat:@"PRAGMA cipher_plaintext_header_size = %d;", kSqliteHeaderLength];
+
+    status = sqlite3_exec(db, [setPlainTextHeaderPragma UTF8String], NULL, NULL, NULL);
+    if (status != SQLITE_OK) {
+        DDLogError(@"Error setting PRAGMA cipher_plaintext_header_size = %d: status: %d, error: %s",
+            kSqliteHeaderLength,
+            status,
+            sqlite3_errmsg(db));
+        return OWSErrorWithCodeDescription(
+            OWSErrorCodeDatabaseConversionFatalError, @"Failed to set PRAGMA cipher_plaintext_header_size");
+    }
+
+    // Modify the first page, so that SQLCipher will overwrite, respecting our new cipher_plaintext_header_size
+    NSString *tableName = [NSString stringWithFormat:@"signal-migration-%@", [NSUUID new].UUIDString];
+    NSString *modificationSQL =
+        [NSString stringWithFormat:@"CREATE TABLE %@(int a); INSERT INTO %@(a) VALUES (1);", tableName, tableName];
+    status = sqlite3_exec(db, [modificationSQL UTF8String], NULL, NULL, NULL);
+    if (status != SQLITE_OK) {
+        DDLogError(@"%@ Error modifying first page: %d, error: %s", self.logTag, status, sqlite3_errmsg(db));
+        return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Error modifying first page");
+    }
+
+    // Force a checkpoint so that the plaintext is written to the actual DB file, not just living in the WAL.
+    // TODO do we need/want the earlier checkpoint if we're checkpointing here?
     sqlite3_wal_autocheckpoint(db, 0);
 
     return nil;

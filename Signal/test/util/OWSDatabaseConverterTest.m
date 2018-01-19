@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *passwordData = [self randomDatabasePassword];
     NSString *_Nullable databaseFilePath = [self createUnconvertedDatabase:passwordData];
     XCTAssertTrue([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
-    [OWSDatabaseConverter convertDatabaseIfNecessary];
+    [OWSDatabaseConverter convertDatabaseIfNecessary:databaseFilePath];
     XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
 }
 
