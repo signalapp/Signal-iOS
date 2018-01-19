@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSConversationSettingsViewController.h"
@@ -343,7 +343,7 @@ NS_ASSUME_NONNULL_BEGIN
             [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
             [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
-            UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_hourglass"];
+            UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_timer"];
             [topView addSubview:iconView];
             [iconView autoVCenterInSuperview];
             [iconView autoPinLeadingToSuperview];
@@ -402,7 +402,7 @@ NS_ASSUME_NONNULL_BEGIN
                             [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
                             [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
-                            UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_hourglass"];
+                            UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_timer"];
                             [topView addSubview:iconView];
                             [iconView autoVCenterInSuperview];
                             [iconView autoPinLeadingToSuperview];
