@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewItem.h"
@@ -275,7 +275,7 @@
     XCTAssertNil(UIPasteboard.generalPasteboard.string);
 
     ConversationViewItem *viewItem = self.textViewItem;
-    [viewItem copyAction];
+    [viewItem copyTextAction];
     XCTAssertEqualObjects(self.fakeTextMessageText, UIPasteboard.generalPasteboard.string);
 }
 
@@ -287,7 +287,7 @@
     XCTAssertNil([UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeJPEG]);
 
     ConversationViewItem *viewItem = self.stillImageViewItem;
-    [viewItem copyAction];
+    [viewItem copyMediaAction];
     NSData *_Nullable copiedData = [UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeJPEG];
     XCTAssertTrue(copiedData.length > 0);
 }
@@ -300,7 +300,7 @@
     XCTAssertNil([UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeGIF]);
 
     ConversationViewItem *viewItem = self.animatedImageViewItem;
-    [viewItem copyAction];
+    [viewItem copyMediaAction];
     NSData *_Nullable copiedData = [UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeGIF];
     XCTAssertTrue(copiedData.length > 0);
 }
@@ -312,7 +312,7 @@
     XCTAssertNil([UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeMPEG4]);
 
     ConversationViewItem *viewItem = self.videoViewItem;
-    [viewItem copyAction];
+    [viewItem copyMediaAction];
     NSData *_Nullable copiedData = [UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeMPEG4];
     XCTAssertTrue(copiedData.length > 0);
 }
@@ -324,7 +324,7 @@
     XCTAssertNil([UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeMP3]);
 
     ConversationViewItem *viewItem = self.audioViewItem;
-    [viewItem copyAction];
+    [viewItem copyMediaAction];
     NSData *_Nullable copiedData = [UIPasteboard.generalPasteboard dataForPasteboardType:(NSString *)kUTTypeMP3];
     XCTAssertTrue(copiedData.length > 0);
 }
