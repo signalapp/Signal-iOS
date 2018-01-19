@@ -1021,6 +1021,26 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     self.isViewCompletelyAppeared = YES;
     self.viewHasEverAppeared = YES;
+
+    // HACK: Because the inputToolbar is the inputAccessoryView, we make some special considertations WRT it's firstResponder status.
+    //
+    // When a view controller is presented, it is first responder. However if we resign first responder
+    // and the view re-appears, without being presented, the inputToolbar can become invisible.
+    // e.g. specifically works around the scenario:
+    // - Present this VC
+    // - Longpress on a message to show edit menu, which entails making the pressed view the first responder.
+    // - Begin presenting another view, e.g. swipe-left for details or swipe-right to go back, but quit part way, so that you remain on the conversation view
+    // - toolbar will be not be visible unless we reaquire first responder.
+    if (!self.isFirstResponder) {
+        
+        // We don't have to worry about the input toolbar being visible if the inputToolbar.textView is first responder
+        // In fact doing so would unnecessarily dismiss the keyboard which is probably not desirable and at least
+        // a distracting animation.
+        if (!self.inputToolbar.isInputTextViewFirstResponder) {
+            DDLogDebug(@"%@ reclaiming first responder to ensure toolbar is shown.", self.logTag);
+            [self becomeFirstResponder];
+        }
+    }
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,
