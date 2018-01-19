@@ -27,6 +27,7 @@ NSString *const OWSResetStorageNotification = @"OWSResetStorageNotification";
 
 static NSString *keychainService = @"TSKeyChainService";
 static NSString *keychainDBPassAccount = @"TSDatabasePass";
+static NSString *keychainDBSalt = @"OWSDatabaseSalt";
 
 #pragma mark -
 
@@ -500,7 +501,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     return @"";
 }
 
-#pragma mark - Password
+#pragma mark - Keychain
 
 + (BOOL)isDatabasePasswordAccessible
 {
@@ -519,15 +520,24 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     return NO;
 }
 
-+ (nullable NSData *)tryToLoadDatabasePassword:(NSError **)errorHandle
++ (nullable NSData *)tryToLoadKeyChainValue:(NSString *)keychainKey errorHandle:(NSError **)errorHandle
 {
+    OWSAssert(keychainKey.length > 0);
     OWSAssert(errorHandle);
 
     [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
 
-    NSData *_Nullable passwordData =
-        [SAMKeychain passwordDataForService:keychainService account:keychainDBPassAccount error:errorHandle];
-    return passwordData;
+    return [SAMKeychain passwordDataForService:keychainService account:keychainKey error:errorHandle];
+}
+
++ (nullable NSData *)tryToLoadDatabasePassword:(NSError **)errorHandle
+{
+    return [self tryToLoadKeyChainValue:keychainDBPassAccount errorHandle:errorHandle];
+}
+
++ (nullable NSData *)tryToLoadDatabaseSalt:(NSError **)errorHandle
+{
+    return [self tryToLoadKeyChainValue:keychainDBSalt errorHandle:errorHandle];
 }
 
 - (NSData *)databasePassword
@@ -604,6 +614,7 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
 + (void)deletePasswordFromKeychain
 {
     [SAMKeychain deletePasswordForService:keychainService account:keychainDBPassAccount];
+    [SAMKeychain deletePasswordForService:keychainService account:keychainDBSalt];
 }
 
 - (unsigned long long)databaseFileSize
@@ -620,16 +631,16 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     return fileSize;
 }
 
-+ (void)storeDatabasePassword:(NSData *)passwordData
++ (void)storeKeyChainValue:(NSData *)data keychainKey:(NSString *)keychainKey
 {
+    OWSAssert(keychainKey.length > 0);
+    OWSAssert(data.length > 0);
+
     NSError *error;
     [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
-    BOOL success = [SAMKeychain setPasswordData:passwordData
-                                     forService:keychainService
-                                        account:keychainDBPassAccount
-                                          error:&error];
+    BOOL success = [SAMKeychain setPasswordData:data forService:keychainService account:keychainKey error:&error];
     if (!success || error) {
-        OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotStoreDatabasePassword]);
+        OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotStoreKeychainValue]);
 
         [OWSStorage deletePasswordFromKeychain];
 
@@ -637,10 +648,20 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
         [NSThread sleepForTimeInterval:15.0f];
 
         [NSException raise:OWSStorageExceptionName_DatabasePasswordUnwritable
-                    format:@"Setting DB password failed with error: %@", error];
+                    format:@"Setting keychain value failed with error: %@", error];
     } else {
-        DDLogWarn(@"Succesfully set new DB password.");
+        DDLogWarn(@"Succesfully set new keychain value.");
     }
+}
+
++ (void)storeDatabasePassword:(NSData *)passwordData
+{
+    [self storeKeyChainValue:passwordData keychainKey:keychainDBPassAccount];
+}
+
++ (void)storeDatabaseSalt:(NSData *)saltData
+{
+    [self storeKeyChainValue:saltData keychainKey:keychainDBSalt];
 }
 
 @end

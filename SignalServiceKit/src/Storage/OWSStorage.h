@@ -57,6 +57,9 @@ extern NSString *const StorageIsReadyNotification;
 
 + (nullable NSData *)tryToLoadDatabasePassword:(NSError **)errorHandle;
 
++ (nullable NSData *)tryToLoadDatabaseSalt:(NSError **)errorHandle;
++ (void)storeDatabaseSalt:(NSData *)saltData;
+
 @end
 
 NS_ASSUME_NONNULL_END

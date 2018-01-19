@@ -87,25 +87,33 @@ const NSUInteger kSqliteHeaderLength = 32;
                        OWSErrorCodeDatabaseConversionFatalError, @"Failed to load database password"));
     }
 
-    return [self convertDatabaseIfNecessary:databaseFilePath databasePassword:databasePassword];
+    OWSDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+        [OWSStorage storeDatabaseSalt:saltData];
+    };
+
+    return [self convertDatabaseIfNecessary:databaseFilePath databasePassword:databasePassword saltBlock:saltBlock];
 }
 
 // TODO upon failure show user error UI
 // TODO upon failure anything we need to do "back out" partial migration
 + (nullable NSError *)convertDatabaseIfNecessary:(NSString *)databaseFilePath
                                 databasePassword:(NSData *)databasePassword
+                                       saltBlock:(OWSDatabaseSaltBlock)saltBlock
 {
     if (![self doesDatabaseNeedToBeConverted:databaseFilePath]) {
         return nil;
     }
 
-    return [self convertDatabase:(NSString *)databaseFilePath databasePassword:databasePassword];
+    return [self convertDatabase:(NSString *)databaseFilePath databasePassword:databasePassword saltBlock:saltBlock];
 }
 
-+ (nullable NSError *)convertDatabase:(NSString *)databaseFilePath databasePassword:(NSData *)databasePassword
++ (nullable NSError *)convertDatabase:(NSString *)databaseFilePath
+                     databasePassword:(NSData *)databasePassword
+                            saltBlock:(OWSDatabaseSaltBlock)saltBlock
 {
     OWSAssert(databaseFilePath.length > 0);
     OWSAssert(databasePassword.length > 0);
+    OWSAssert(saltBlock);
 
     NSData *sqlCipherSaltData;
     {
@@ -115,6 +123,11 @@ const NSUInteger kSqliteHeaderLength = 32;
         const NSUInteger kSQLCipherSaltLength = 16;
         OWSAssert(headerData.length >= kSQLCipherSaltLength);
         sqlCipherSaltData = [headerData subdataWithRange:NSMakeRange(0, kSQLCipherSaltLength)];
+
+        // Make sure we successfully persist the salt (persumably in the keychain) before
+        // proceeding with the database conversion or we could leave the app in an
+        // unrecoverable state.
+        saltBlock(sqlCipherSaltData);
     }
 
     // TODO: Write salt to keychain.

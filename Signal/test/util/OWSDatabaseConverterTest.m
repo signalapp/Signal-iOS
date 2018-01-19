@@ -35,8 +35,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [Randomness generateRandomBytes:30];
 }
 
+// * Open a YapDatabase.
+// * Do some work with a block.
+// * Close the database.
+// * Verify that the database is closed.
 - (void)openYapDatabase:(NSString *)databaseFilePath
        databasePassword:(NSData *)databasePassword
+           databaseSalt:(NSData *_Nullable)databaseSalt
           databaseBlock:(void (^_Nonnull)(YapDatabase *))databaseBlock
 {
     OWSAssert(databaseFilePath.length > 0);
@@ -56,6 +61,14 @@ NS_ASSUME_NONNULL_BEGIN
             return databasePassword;
         };
         options.enableMultiProcessSupport = YES;
+
+        if (databaseSalt) {
+            DDLogInfo(@"%@ Using salt & unencrypted header.", self.logTag);
+            options.cipherSaltBlock = ^{
+                return databaseSalt;
+            };
+            options.cipherUnencryptedHeaderLength = kSqliteHeaderLength;
+        }
 
         OWSAssert(options.cipherDefaultkdfIterNumber == 0);
         OWSAssert(options.kdfIterNumber == 0);
@@ -112,30 +125,20 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(!strongDatabase);
 }
 
-- (nullable NSString *)createUnconvertedDatabase:(NSData *)databasePassword
+- (void)createTestDatabase:(NSString *)databaseFilePath databasePassword:(NSData *)databasePassword
 {
-    NSString *temporaryDirectory = NSTemporaryDirectory();
-    NSString *filename = [NSUUID UUID].UUIDString;
-    NSString *databaseFilePath = [temporaryDirectory stringByAppendingPathComponent:filename];
+    OWSAssert(databaseFilePath.length > 0);
+    OWSAssert(databasePassword.length > 0);
 
-    DDLogInfo(@"%@ databaseFilePath: %@", self.logTag, databaseFilePath);
+    OWSAssert(![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]);
 
     [self openYapDatabase:databaseFilePath
          databasePassword:databasePassword
+             databaseSalt:nil
             databaseBlock:^(YapDatabase *database) {
                 YapDatabaseConnection *dbConnection = database.newConnection;
                 [dbConnection setObject:@(YES) forKey:@"test_key_name" inCollection:@"test_collection_name"];
                 [dbConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:nil];
-            }];
-
-    OWSAssert([[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]);
-
-    [self openYapDatabase:databaseFilePath
-         databasePassword:databasePassword
-            databaseBlock:^(YapDatabase *database) {
-                YapDatabaseConnection *dbConnection = database.newConnection;
-                id _Nullable value = [dbConnection objectForKey:@"test_key_name" inCollection:@"test_collection_name"];
-                OWSAssert([@(YES) isEqual:value]);
             }];
 
     OWSAssert([[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]);
@@ -145,6 +148,44 @@ NS_ASSUME_NONNULL_BEGIN
         [[NSFileManager defaultManager] attributesOfItemAtPath:databaseFilePath error:&error];
     OWSAssert(fileAttributes && !error);
     DDLogVerbose(@"%@ test database file size: %@", self.logTag, fileAttributes[NSFileSize]);
+}
+
+- (BOOL)verifyTestDatabase:(NSString *)databaseFilePath
+          databasePassword:(NSData *)databasePassword
+              databaseSalt:(NSData *_Nullable)databaseSalt
+{
+    OWSAssert(databaseFilePath.length > 0);
+    OWSAssert(databasePassword.length > 0);
+
+    OWSAssert([[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]);
+
+    __block BOOL isValid = NO;
+    [self openYapDatabase:databaseFilePath
+         databasePassword:databasePassword
+             databaseSalt:databaseSalt
+            databaseBlock:^(YapDatabase *database) {
+                YapDatabaseConnection *dbConnection = database.newConnection;
+                id _Nullable value = [dbConnection objectForKey:@"test_key_name" inCollection:@"test_collection_name"];
+                isValid = [@(YES) isEqual:value];
+            }];
+
+    OWSAssert([[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]);
+
+    return isValid;
+}
+
+- (nullable NSString *)createUnconvertedDatabase:(NSData *)databasePassword
+{
+    NSString *temporaryDirectory = NSTemporaryDirectory();
+    NSString *filename = [[NSUUID UUID].UUIDString stringByAppendingString:@".sqlite"];
+    NSString *databaseFilePath = [temporaryDirectory stringByAppendingPathComponent:filename];
+
+    DDLogInfo(@"%@ databaseFilePath: %@", self.logTag, databaseFilePath);
+
+    [self createTestDatabase:databaseFilePath databasePassword:databasePassword];
+
+    BOOL isValid = [self verifyTestDatabase:databaseFilePath databasePassword:databasePassword databaseSalt:nil];
+    OWSAssert(isValid);
 
     return databaseFilePath;
 }
@@ -166,13 +207,26 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *databasePassword = [self randomDatabasePassword];
     NSString *_Nullable databaseFilePath = [self createUnconvertedDatabase:databasePassword];
     XCTAssertTrue([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
-    NSError *_Nullable error =
-        [OWSDatabaseConverter convertDatabaseIfNecessary:databaseFilePath databasePassword:databasePassword];
+
+    __block NSData *_Nullable databaseSalt = nil;
+    OWSDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+        OWSAssert(!databaseSalt);
+        OWSAssert(saltData);
+
+        databaseSalt = saltData;
+    };
+    NSError *_Nullable error = [OWSDatabaseConverter convertDatabaseIfNecessary:databaseFilePath
+                                                               databasePassword:databasePassword
+                                                                      saltBlock:saltBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
     XCTAssertNil(error);
     XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+
+    BOOL isValid =
+        [self verifyTestDatabase:databaseFilePath databasePassword:databasePassword databaseSalt:databaseSalt];
+    XCTAssertTrue(isValid);
 }
 
 @end
