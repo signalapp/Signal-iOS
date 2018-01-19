@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,6 +27,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeContactsUpdaterRateLimit = 777408,
     OWSErrorCodeCouldNotWriteAttachmentData = 777409,
     OWSErrorCodeMessageDeletedBeforeSent = 777410,
+    OWSErrorCodeDatabaseConversionFatalError = 777411
 };
 
 extern NSString *const OWSErrorRecipientIdentifierKey;

@@ -4,14 +4,12 @@
 
 #import "OWSDatabaseConverter.h"
 #import "sqlite3.h"
+#import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/TSStorageManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const OWSOWSDatabaseConverterErrorDomain = @"OWSOWSDatabaseConverterErrorDomain";
-const int kCouldNotOpenDatabase = 1;
-const int kCouldNotLoadDatabasePassword = 2;
 
 @implementation OWSDatabaseConverter
 
@@ -60,6 +58,8 @@ const int kCouldNotLoadDatabasePassword = 2;
     [self convertDatabaseIfNecessary:databaseFilePath];
 }
 
+// TODO upon failure show user error UI
+// TODO upon failure anything we need to do "back out" partial migration
 + (void)convertDatabaseIfNecessary:(NSString *)databaseFilePath
 {
     if (![self doesDatabaseNeedToBeConverted:databaseFilePath]) {
@@ -77,9 +77,8 @@ const int kCouldNotLoadDatabasePassword = 2;
     NSData *_Nullable databasePassword = [OWSStorage tryToLoadDatabasePassword:&error];
     if (!databasePassword || error) {
         return (error
-                ?: [NSError errorWithDomain:OWSOWSDatabaseConverterErrorDomain
-                                       code:kCouldNotLoadDatabasePassword
-                                   userInfo:nil]);
+                ?: OWSErrorWithCodeDescription(
+                       OWSErrorCodeDatabaseConversionFatalError, @"Failed to load database password"));
     }
 
     // TODO:
@@ -167,7 +166,7 @@ const int kCouldNotLoadDatabasePassword = 2;
             DDLogError(@"Error opening database: %d", status);
         }
 
-        return [NSError errorWithDomain:OWSOWSDatabaseConverterErrorDomain code:kCouldNotOpenDatabase userInfo:nil];
+        return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Failed to open database");
     }
 
     // -----------------------------------------------------------
@@ -175,39 +174,116 @@ const int kCouldNotLoadDatabasePassword = 2;
     // This block was derived from [Yapdatabase configureEncryptionForDatabase].
     NSData *keyData = databasePassword;
 
-    //    //Setting the encrypted database page size
-    //    if (options.cipherPageSize > 0) {
-    //        char *errorMsg;
-    //        NSString *pragmaCommand = [NSString stringWithFormat:@"PRAGMA cipher_page_size = %lu", (unsigned
-    //                                                                                                long)options.cipherPageSize];
-    //                                                                                                if
-    //                                                                                                (sqlite3_exec(sqlite,
-    //                                                                                                [pragmaCommand
-    //                                                                                                UTF8String], NULL,
-    //                                                                                                NULL,
-    //                                                                                                                                               &errorMsg) != SQLITE_OK)
-    //                                                                                                {
-    //                                                                                                    YDBLogError(@"failed
-    //                                                                                                    to set
-    //                                                                                                    database
-    //                                                                                                    cipher_page_size:
-    //                                                                                                    %s",
-    //                                                                                                    errorMsg);
-    //                                                                                                    return NO;
-    //                                                                                                }
-    //    }
+    // Setting the encrypted database page size
+    status = sqlite3_key(db, [keyData bytes], (int)[keyData length]);
+    if (status != SQLITE_OK) {
+        DDLogError(@"Error setting SQLCipher key: %d %s", status, sqlite3_errmsg(db));
+        return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Failed to set SQLCipher key");
+    }
+
+    // TODO set plaintext pragma
+    // TODO modify first page
+    // TODO force checkpoint
+
+    // -----------------------------------------------------------
     //
-    //    int status = sqlite3_key(sqlite, [keyData bytes], (int)[keyData length]);
-    //    if (status != SQLITE_OK)
+    // This block was derived from [Yapdatabase configureDatabase].
+    //
     //    {
-    //        YDBLogError(@"Error setting SQLCipher key: %d %s", status, sqlite3_errmsg(sqlite));
-    //        return NO;
-    //    }
-    //}
+    //        int status;
     //
-    // return YES;
+    //        // Set mandatory pragmas
+    //
+
+    // MJK: this isn't relevant since we only migrate existing databses and never set a pageSize option.
+    //        if (isNewDatabaseFile && (options.pragmaPageSize > 0))
+    //        {
+    //            NSString *pragma_page_size =
+    //            [NSString stringWithFormat:@"PRAGMA page_size = %ld;", (long)options.pragmaPageSize];
+    //
+    //            status = sqlite3_exec(db, [pragma_page_size UTF8String], NULL, NULL, NULL);
+    //            if (status != SQLITE_OK)
+    //            {
+    //                YDBLogError(@"Error setting PRAGMA page_size: %d %s", status, sqlite3_errmsg(db));
+    //            }
     //        }
-    //    #endif
+
+    //
+    status = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
+    if (status != SQLITE_OK) {
+        DDLogError(@"Error setting PRAGMA journal_mode: %d %s", status, sqlite3_errmsg(db));
+        return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Failed to set WAL mode");
+    }
+
+    // MJK: this isn't relevant since we only migrate existing databses
+    //        if (isNewDatabaseFile)
+    //        {
+    //            status = sqlite3_exec(db, "PRAGMA auto_vacuum = FULL; VACUUM;", NULL, NULL, NULL);
+    //            if (status != SQLITE_OK)
+    //            {
+    //                YDBLogError(@"Error setting PRAGMA auto_vacuum: %d %s", status, sqlite3_errmsg(db));
+    //            }
+    //        }
+    //
+
+    // TODO verify we need to do this.
+    // Set synchronous to normal for THIS sqlite instance.
+    //
+    // This does NOT affect normal connections.
+    // That is, this does NOT affect YapDatabaseConnection instances.
+    // The sqlite connections of normal YapDatabaseConnection instances will follow the set pragmaSynchronous value.
+    //
+    // The reason we hardcode normal for this sqlite instance is because
+    // it's only used to write the initial snapshot value.
+    // And this doesn't need to be durable, as it is initialized to zero everytime.
+    //
+    // (This sqlite db is also used to perform checkpoints.
+    //  But a normal value won't affect these operations,
+    //  as they will perform sync operations whether the connection is normal or full.)
+    status = sqlite3_exec(db, "PRAGMA synchronous = NORMAL;", NULL, NULL, NULL);
+    if (status != SQLITE_OK) {
+        DDLogError(@"Error setting PRAGMA synchronous: %d %s", status, sqlite3_errmsg(db));
+        // This isn't critical, so we can continue.
+    }
+
+    // Set journal_size_imit.
+    //
+    // We only need to do set this pragma for THIS connection,
+    // because it is the only connection that performs checkpoints.
+
+    NSInteger defaultPragmaJournalSizeLimit = 0;
+    NSString *pragma_journal_size_limit =
+        [NSString stringWithFormat:@"PRAGMA journal_size_limit = %ld;", (long)defaultPragmaJournalSizeLimit];
+
+    status = sqlite3_exec(db, [pragma_journal_size_limit UTF8String], NULL, NULL, NULL);
+    if (status != SQLITE_OK) {
+        DDLogError(@"Error setting PRAGMA journal_size_limit: %d %s", status, sqlite3_errmsg(db));
+        // This isn't critical, so we can continue.
+    }
+    //
+    //        // Set mmap_size (if needed).
+    //        //
+    //        // This configures memory mapped I/O.
+    //        // OWS: we currently don't set options.pragmaMMapSize, so we can ignore this code.
+    //        if (options.pragmaMMapSize > 0)
+    //        {
+    //            NSString *pragma_mmap_size =
+    //            [NSString stringWithFormat:@"PRAGMA mmap_size = %ld;", (long)options.pragmaMMapSize];
+    //
+    //            status = sqlite3_exec(db, [pragma_mmap_size UTF8String], NULL, NULL, NULL);
+    //            if (status != SQLITE_OK)
+    //            {
+    //                YDBLogError(@"Error setting PRAGMA mmap_size: %d %s", status, sqlite3_errmsg(db));
+    //                // This isn't critical, so we can continue.
+    //            }
+    //        }
+    //
+    // Disable autocheckpointing.
+    //
+    // YapDatabase has its own optimized checkpointing algorithm built-in.
+    // It knows the state of every active connection for the database,
+    // so it can invoke the checkpoint methods at the precise time in which a checkpoint can be most effective.
+    sqlite3_wal_autocheckpoint(db, 0);
 
     return nil;
 }

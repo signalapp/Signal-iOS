@@ -49,6 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(options.cipherDefaultkdfIterNumber == 0);
     OWSAssert(options.kdfIterNumber == 0);
     OWSAssert(options.cipherPageSize == 0);
+    OWSAssert(options.pragmaPageSize == 0);
+    OWSAssert(options.pragmaJournalSizeLimit == 0);
 
     YapDatabase *database = [[YapDatabase alloc] initWithPath:databaseFilePath
                                                    serializer:nil

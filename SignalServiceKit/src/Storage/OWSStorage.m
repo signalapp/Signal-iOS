@@ -386,6 +386,15 @@ static NSString *keychainDBPassAccount = @"TSDatabasePass";
     };
     options.enableMultiProcessSupport = YES;
 
+    // If any of these asserts fails, we need to verify and update
+    // OWSDatabaseConverter which assumes the values of these options.
+    OWSAssert(options.cipherDefaultkdfIterNumber == 0);
+    OWSAssert(options.kdfIterNumber == 0);
+    OWSAssert(options.cipherPageSize == 0);
+    OWSAssert(options.pragmaPageSize == 0);
+    OWSAssert(options.pragmaJournalSizeLimit == 0);
+    OWSAssert(options.pragmaMMapSize == 0);
+
     OWSDatabase *database = [[OWSDatabase alloc] initWithPath:[self databaseFilePath]
                                                    serializer:nil
                                                  deserializer:[[self class] logOnFailureDeserializer]
