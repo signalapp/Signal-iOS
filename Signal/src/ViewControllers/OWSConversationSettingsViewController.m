@@ -343,7 +343,7 @@ NS_ASSUME_NONNULL_BEGIN
             [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
             [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
-            UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_timer"];
+            UIImageView *iconView = [strongSelf viewForIconWithName:@"ic_timer"];
             [topView addSubview:iconView];
             [iconView autoVCenterInSuperview];
             [iconView autoPinLeadingToSuperview];
@@ -402,7 +402,7 @@ NS_ASSUME_NONNULL_BEGIN
                             [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
                             [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
-                            UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_timer"];
+                            UIImageView *iconView = [strongSelf viewForIconWithName:@"ic_timer"];
                             [topView addSubview:iconView];
                             [iconView autoVCenterInSuperview];
                             [iconView autoPinLeadingToSuperview];
@@ -731,11 +731,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIImageView *)viewForIconWithName:(NSString *)iconName
 {
     UIImage *icon = [UIImage imageNamed:iconName];
+
     OWSAssert(icon);
     UIImageView *iconView = [UIImageView new];
     iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    iconView.tintColor = [UIColor colorWithRGBHex:0x505050];
-    iconView.contentMode = UIViewContentModeScaleToFill;
+    iconView.tintColor = [UIColor ows_blackIconColor];
+    iconView.contentMode = UIViewContentModeScaleAspectFit;
+    iconView.layer.minificationFilter = kCAFilterTrilinear;
+    iconView.layer.magnificationFilter = kCAFilterTrilinear;
+
     [iconView autoSetDimension:ALDimensionWidth toSize:24.f];
     [iconView autoSetDimension:ALDimensionHeight toSize:24.f];
     return iconView;

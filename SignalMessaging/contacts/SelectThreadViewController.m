@@ -217,17 +217,14 @@ NS_ASSUME_NONNULL_BEGIN
                 }];
 
                 if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
-                    UIImage *icon = [UIImage imageNamed:@"table_ic_hourglass"];
-                    OWSAssert(icon);
-                    UIImageView *iconView = [UIImageView new];
-                    iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                    iconView.tintColor = [UIColor colorWithWhite:0.5f alpha:1.f];
-                    iconView.contentMode = UIViewContentModeScaleAspectFit;
-                    // Default size of this icon is a too large for the thread picker context
-                    // so we specify a bit smaller.
-                    iconView.frame = CGRectMake(0, 0, 20, 20);
+                    DisappearingTimerConfigurationView *disappearingTimerConfigurationView =
+                        [[DisappearingTimerConfigurationView alloc]
+                            initWithDurationSeconds:disappearingMessagesConfiguration.durationSeconds];
 
-                    cell.accessoryView = iconView;
+                    disappearingTimerConfigurationView.frame = CGRectMake(0, 0, 44, 44);
+                    disappearingTimerConfigurationView.tintColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+
+                    cell.accessoryView = disappearingTimerConfigurationView;
                 }
             }
 

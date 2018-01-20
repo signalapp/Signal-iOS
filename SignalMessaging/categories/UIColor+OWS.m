@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMath.h"
@@ -25,6 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // black: #080A00
     return [UIColor colorWithRed:8.f / 255.f green:10.f / 255.f blue:0. / 255.f alpha:1.f];
+}
+
++ (UIColor *)ows_blackIconColor
+{
+    return [UIColor colorWithRGBHex:0x505050];
 }
 
 + (UIColor *)ows_darkGrayColor
