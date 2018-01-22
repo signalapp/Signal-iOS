@@ -1107,7 +1107,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if (extraDevices && extraDevices.count > 0) {
             DDLogInfo(@"%@ removing extra devices: %@", self.logTag, extraDevices);
             for (NSNumber *extraDeviceId in extraDevices) {
-                [self.storageManager deleteSessionForContact:recipient.uniqueId deviceId:extraDeviceId.intValue];
+                [self.storageManager deleteSessionForContact:recipient.uniqueId
+                                                    deviceId:extraDeviceId.intValue
+                                             protocolContext:protocolContext];
             }
 
             [recipient removeDevices:[NSSet setWithArray:extraDevices]];
@@ -1292,7 +1294,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssert(deviceNumber);
     OWSAssert(storage);
 
-    if (![storage containsSession:identifier deviceId:[deviceNumber intValue]]) {
+    if (![storage containsSession:identifier deviceId:[deviceNumber intValue] protocolContext:protocolContext]) {
         __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         __block PreKeyBundle *_Nullable bundle;
         __block NSException *_Nullable exception;
@@ -1427,7 +1429,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         dispatch_async([OWSDispatch sessionStoreQueue], ^{
             for (NSUInteger i = 0; i < [devices count]; i++) {
                 int deviceNumber = [devices[i] intValue];
-                [[TSStorageManager sharedManager] deleteSessionForContact:identifier deviceId:deviceNumber];
+                [[TSStorageManager sharedManager] deleteSessionForContact:identifier
+                                                                 deviceId:deviceNumber
+                                                          protocolContext:protocolContext];
             }
             completionHandler();
         });

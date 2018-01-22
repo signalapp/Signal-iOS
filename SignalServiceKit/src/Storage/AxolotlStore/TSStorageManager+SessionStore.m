@@ -8,17 +8,10 @@
 #import <AxolotlKit/SessionRecord.h>
 #import <YapDatabase/YapDatabase.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 NSString *const TSStorageManagerSessionStoreCollection = @"TSStorageManagerSessionStoreCollection";
 NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
-
-void AssertIsOnSessionStoreQueue()
-{
-#ifdef DEBUG
-    if (@available(iOS 10.0, *)) {
-        dispatch_assert_queue([OWSDispatch sessionStoreQueue]);
-    } // else, skip assert as it's a development convenience.
-#endif
-}
 
 @implementation TSStorageManager (SessionStore)
 
@@ -27,36 +20,39 @@ void AssertIsOnSessionStoreQueue()
  * Note that it's still technically possible to access this collection from a different collection,
  * but that should be considered a bug.
  */
-+ (YapDatabaseConnection *)sessionDBConnection
++ (YapDatabaseConnection *)protocolStoreDBConnection
 {
     static dispatch_once_t onceToken;
-    static YapDatabaseConnection *sessionDBConnection;
+    static YapDatabaseConnection *protocolStoreDBConnection;
     dispatch_once(&onceToken, ^{
-        sessionDBConnection = [TSStorageManager sharedManager].newDatabaseConnection;
-        sessionDBConnection.objectCacheEnabled = NO;
+        protocolStoreDBConnection = [TSStorageManager sharedManager].newDatabaseConnection;
+        protocolStoreDBConnection.objectCacheEnabled = NO;
 #if DEBUG
-        sessionDBConnection.permittedTransactions = YDB_AnySyncTransaction;
+        protocolStoreDBConnection.permittedTransactions = YDB_AnySyncTransaction;
 #endif
     });
 
-    return sessionDBConnection;
+    return protocolStoreDBConnection;
 }
 
-- (YapDatabaseConnection *)sessionDBConnection
+// TODO: Audit usage of this connection.
+- (YapDatabaseConnection *)protocolStoreDBConnection
 {
-    return [[self class] sessionDBConnection];
+    return [[self class] protocolStoreDBConnection];
 }
 
 #pragma mark - SessionStore
 
-- (SessionRecord *)loadSession:(NSString *)contactIdentifier deviceId:(int)deviceId
+- (SessionRecord *)loadSession:(NSString *)contactIdentifier deviceId:(int)deviceId protocolContext:(id)protocolContext
 {
-    AssertIsOnSessionStoreQueue();
+    OWSAssert(contactIdentifier.length > 0);
+    OWSAssert(deviceId >= 0);
+    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
-    __block NSDictionary *dictionary;
-    [self.sessionDBConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        dictionary = [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
-    }];
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
+
+    NSDictionary *_Nullable dictionary =
+        [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
 
     SessionRecord *record;
 
@@ -71,24 +67,33 @@ void AssertIsOnSessionStoreQueue()
     return record;
 }
 
-- (NSArray *)subDevicesSessions:(NSString *)contactIdentifier
+- (NSArray *)subDevicesSessions:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext
 {
+    OWSAssert(contactIdentifier.length > 0);
+    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+
     // Deprecated. We aren't currently using this anywhere, but it's "required" by the SessionStore protocol.
     // If we are going to start using it I'd want to re-verify it works as intended.
     OWSFail(@"%@ subDevicesSessions is deprecated", self.logTag);
-    AssertIsOnSessionStoreQueue();
 
-    __block NSDictionary *dictionary;
-    [self.sessionDBConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        dictionary = [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
-    }];
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
+
+    NSDictionary *_Nullable dictionary =
+        [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
 
     return dictionary ? dictionary.allKeys : @[];
 }
 
-- (void)storeSession:(NSString *)contactIdentifier deviceId:(int)deviceId session:(SessionRecord *)session
+- (void)storeSession:(NSString *)contactIdentifier
+            deviceId:(int)deviceId
+             session:(SessionRecord *)session
+     protocolContext:protocolContext
 {
-    AssertIsOnSessionStoreQueue();
+    OWSAssert(contactIdentifier.length > 0);
+    OWSAssert(deviceId >= 0);
+    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
     // We need to ensure subsequent usage of this SessionRecord does not consider this session as "fresh". Normally this
     // is achieved by marking things as "not fresh" at the point of deserialization - when we fetch a SessionRecord from
@@ -98,68 +103,65 @@ void AssertIsOnSessionStoreQueue()
     // NOTE: this may no longer be necessary now that we have a non-caching session db connection.
     [session markAsUnFresh];
 
-    __block NSDictionary *immutableDictionary;
-    [self.sessionDBConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        immutableDictionary =
-            [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
-    }];
+    NSDictionary *immutableDictionary =
+        [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
 
-    NSMutableDictionary *dictionary = [immutableDictionary mutableCopy];
-
-    if (!dictionary) {
-        dictionary = [NSMutableDictionary dictionary];
-    }
+    NSMutableDictionary *dictionary
+        = (immutableDictionary ? [immutableDictionary mutableCopy] : [NSMutableDictionary new]);
 
     [dictionary setObject:session forKey:@(deviceId)];
 
-    [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction setObject:[dictionary copy]
-                        forKey:contactIdentifier
-                  inCollection:TSStorageManagerSessionStoreCollection];
-    }];
+    [transaction setObject:[dictionary copy]
+                    forKey:contactIdentifier
+              inCollection:TSStorageManagerSessionStoreCollection];
 }
 
-- (BOOL)containsSession:(NSString *)contactIdentifier deviceId:(int)deviceId
+- (BOOL)containsSession:(NSString *)contactIdentifier deviceId:(int)deviceId protocolContext:(id)protocolContext
 {
-    AssertIsOnSessionStoreQueue();
+    OWSAssert(contactIdentifier.length > 0);
+    OWSAssert(deviceId >= 0);
+    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
-    return [self loadSession:contactIdentifier deviceId:deviceId].sessionState.hasSenderChain;
+    return [self loadSession:contactIdentifier deviceId:deviceId protocolContext:protocolContext]
+        .sessionState.hasSenderChain;
 }
 
-- (void)deleteSessionForContact:(NSString *)contactIdentifier deviceId:(int)deviceId
+- (void)deleteSessionForContact:(NSString *)contactIdentifier
+                       deviceId:(int)deviceId
+                protocolContext:(nullable id)protocolContext
 {
-    AssertIsOnSessionStoreQueue();
+    OWSAssert(contactIdentifier.length > 0);
+    OWSAssert(deviceId >= 0);
+    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
+
     DDLogInfo(
         @"[TSStorageManager (SessionStore)] deleting session for contact: %@ device: %d", contactIdentifier, deviceId);
 
-    __block NSDictionary *immutableDictionary;
-    [self.sessionDBConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        immutableDictionary =
-            [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
-    }];
-    NSMutableDictionary *dictionary = [immutableDictionary mutableCopy];
+    NSDictionary *immutableDictionary =
+        [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
 
-    if (!dictionary) {
-        dictionary = [NSMutableDictionary dictionary];
-    }
+    NSMutableDictionary *dictionary
+        = (immutableDictionary ? [immutableDictionary mutableCopy] : [NSMutableDictionary new]);
 
     [dictionary removeObjectForKey:@(deviceId)];
 
-    [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction setObject:[dictionary copy]
-                        forKey:contactIdentifier
-                  inCollection:TSStorageManagerSessionStoreCollection];
-    }];
+    [transaction setObject:[dictionary copy]
+                    forKey:contactIdentifier
+              inCollection:TSStorageManagerSessionStoreCollection];
 }
 
-- (void)deleteAllSessionsForContact:(NSString *)contactIdentifier
+- (void)deleteAllSessionsForContact:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext
 {
-    AssertIsOnSessionStoreQueue();
+    OWSAssert(contactIdentifier.length > 0);
+    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
+
     DDLogInfo(@"[TSStorageManager (SessionStore)] deleting all sessions for contact:%@", contactIdentifier);
 
-    [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction removeObjectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
-    }];
+    [transaction removeObjectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
 }
 
 - (void)archiveAllSessionsForContact:(NSString *)contactIdentifier
@@ -272,3 +274,5 @@ void AssertIsOnSessionStoreQueue()
 #endif
 
 @end
+
+NS_ASSUME_NONNULL_END

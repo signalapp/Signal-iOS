@@ -55,7 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
                             actionBlock:^{
                                 dispatch_async([OWSDispatch sessionStoreQueue], ^{
                                     [[TSStorageManager sharedManager]
-                                        deleteAllSessionsForContact:thread.contactIdentifier];
+                                        deleteAllSessionsForContact:thread.contactIdentifier
+                                                    protocolContext:protocolContext];
                                 });
                             }],
             [OWSTableItem itemWithTitle:@"Archive all sessions"

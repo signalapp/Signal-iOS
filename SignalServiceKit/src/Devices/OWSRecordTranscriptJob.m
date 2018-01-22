@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRecordTranscriptJob.h"
@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (transcript.isEndSessionMessage) {
         DDLogInfo(@"%@ EndSession was sent to recipient: %@.", self.logTag, transcript.recipientId);
         dispatch_async([OWSDispatch sessionStoreQueue], ^{
-            [self.storageManager deleteAllSessionsForContact:transcript.recipientId];
+            [self.storageManager deleteAllSessionsForContact:transcript.recipientId protocolContext:protocolContext];
         });
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
                                          inThread:thread
