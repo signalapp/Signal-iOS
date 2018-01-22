@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSExpirationTimerView.h"
@@ -141,6 +141,7 @@ const CGFloat kExpirationTimerViewSize = 16.f;
     self.fullHourglassImageView.hidden = NO;
 
     CAGradientLayer *maskLayer = [CAGradientLayer new];
+    maskLayer.anchorPoint = CGPointZero;
     maskLayer.frame = self.fullHourglassImageView.bounds;
     self.maskLayer = maskLayer;
     self.fullHourglassImageView.layer.mask = maskLayer;
@@ -154,13 +155,20 @@ const CGFloat kExpirationTimerViewSize = 16.f;
     
     NSTimeInterval timeUntilFlashing = MAX(0, secondsLeft - kBlinkAnimationDurationSeconds);
     
-    CGFloat ratioRemaining = MAX(0.f, (timeUntilFlashing / (CGFloat)self.initialDurationSeconds));
-    CGFloat alpha = 1.f - ratioRemaining;
-    CGFloat maskRange = self.fullHourglassImageView.height;
-    CGPoint startPosition = maskLayer.position;
-    startPosition.y += CGFloatLerp(maskRange * -kMaskEdgeFraction, maskRange, alpha);
-    CGPoint endPosition = maskLayer.position;
-    endPosition.y += maskRange;
+    if (self.initialDurationSeconds == 0) {
+        OWSFail(@"initialDurationSeconds was unexpectedly 0");
+        return;
+    }
+    
+    CGFloat ratioRemaining = (CGFloat)timeUntilFlashing / (CGFloat)self.initialDurationSeconds;
+    CGFloat ratioComplete = Clamp((CGFloat)1.0 - ratioRemaining, 0, 1.0);
+    CGPoint startPosition = CGPointMake(0, self.fullHourglassImageView.height * ratioComplete);
+    
+    // We offset the bottom slightly to make sure the duration of the perceived animation is correct.
+    // We're accounting for:
+    // - the bottom pixel of the two images is the outline of the hourglass. Because the outline is identical in the full vs empty hourglass this wouldn't be perceptible.
+    // - the top pixel is not visible due to our softening gradient layer.
+    CGPoint endPosition = CGPointMake(0, self.fullHourglassImageView.height - 2);
 
     maskLayer.position = startPosition;
     [CATransaction begin];
