@@ -134,62 +134,6 @@ const NSUInteger kSqliteHeaderLength = 32;
         saltBlock(sqlCipherSaltData);
     }
 
-    //    Hello Matthew,
-    //
-    //    I hope you're doing well. We've just pushed some changes out to the SQLCipher prerelease branch on GitHub that
-    //    implement the functionality we talked about that add a few new options:
-    //
-    //    1. PRAGMA cipher_plaintext_header_size - set or query the number of bytes to be left unencrypted on the start
-    //    of the first page. This pragma would be called after keying the database, but before use. In our testing 32
-    //    works for iOS
-    //        2. PRAGMA cipher_default_plaintext_header_size - set the "global" default to be used when opening database
-    //        connections
-    //        3. PRAGMA cipher_salt - set or query the salt for the database
-    //
-    //            When working with the SQLCipherVsSharedData application, there are two changes required. First, modify
-    //            the Podfile to reference SQLCipher with these changes:
-    //
-    //            pod 'SQLCipher', :git => 'https://github.com/sqlcipher/sqlcipher.git', :commit => 'd5c2bec'
-    //
-    //            Next, set the plaintext header size immediately after the key is provided:
-    //
-    //            int status = sqlite3_exec(db, "PRAGMA cipher_plaintext_header_size = 32;", NULL, NULL, NULL);
-    //
-    //
-    //    This should allow the demo app to background correctly.
-    //
-    //    In practice, for a real application, the other changes we talked about on the phone need occur, i.e. to
-    //    provide the salt to the application explicitly. The application can use a raw key spec, where the 96 hex are
-    //    provide (i.e. 64 hex for the 256 bit key, followed by 32 hex for the 128 bit salt) using explicit BLOB syntax,
-    //    e.g.
-    //
-    //        x'98483C6EB40B6C31A448C22A66DED3B5E5E8D5119CAC8327B655C8B5C483648101010101010101010101010101010101'
-    //
-    //        Alternately, the application can use the new cipher_salt PRAGMA to provide 32 hex to use as salt in
-    //        conjunction with a standard derived key, e.g.
-    //
-    //        PRAGMA cipher_salt = "x'01010101010101010101010101010101'";
-    //
-    //    Since you mentioned the Signal application is using a derived key, the second option might be easiest. You
-    //    could load the first 16 bytes of the existing file, or query the database using cipher_salt, and then store
-    //    that along side the key in the keychain. Then following migration you can provide both the key and the salt
-    //    explicitly.
-    //
-    //    With respect to migrating existing databases, it is possible to open a database, set the pragma, modify the
-    //    first page, then checkpoint to ensure that all WAL frames are written back to the main database. This allows
-    //    you to "decrypt" the first part of the header almost instantaneously, without having to re-encrypt all of the
-    //    content. Keep in mind that you'll need to record the salt separately in this case. There are a few examples of
-    //    this in the test cases we wrote up for this new functionality, starting here:
-    //
-    // https://github.com/sqlcipher/sqlcipher/blob/d5c2bec7688cef298292906c029d26b2c043219d/test/crypto.test#L2669
-    //
-    //    I was hoping you could take a look at this new functionality, provide feedback, and perform some initial
-    //    testing on your side. Please let us know if you have any questions, or would like to discuss the specifics of
-    //    implementation further. Thanks!
-    //
-    //        Cheers,
-    //        Stephen
-
     // -----------------------------------------------------------
     //
     // This block was derived from [Yapdatabase openDatabase].
