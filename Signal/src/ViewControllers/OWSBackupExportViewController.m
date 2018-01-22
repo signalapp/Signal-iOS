@@ -260,7 +260,27 @@ NS_ASSUME_NONNULL_BEGIN
                           [ThreadUtil
                               sendMessageWithAttachment:attachment
                                                inThread:self.backup.currentThread
-                                          messageSender:messageSender];
+                           messageSender:messageSender
+                           completion:^(NSError *_Nullable error) {
+                               
+                               OWSAssertIsOnMainThread();
+                               [modalActivityIndicator dismissWithCompletion:^{
+                                   if (error) {
+                                       DDLogError(@"%@ send backup failed: %@", self.logTag, error);
+                                       [OWSAlerts
+                                        showAlertWithTitle:NSLocalizedString(
+                                                                             @"BACKUP_EXPORT_SEND_BACKUP_FAILED",
+                                                                             @"Message indicating that sending "
+                                                                             @"the backup failed.")];
+                                   } else {
+                                       [OWSAlerts
+                                        showAlertWithTitle:
+                                        NSLocalizedString(@"BACKUP_EXPORT_SEND_BACKUP_SUCCESS",
+                                                          @"Message indicating that sending the backup "
+                                                          @"succeeded.")];
+                                   }
+                               }];
+                           }];
                       });
                   }];
 }
