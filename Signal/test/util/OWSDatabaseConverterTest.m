@@ -49,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(databaseBlock);
 
     DDLogVerbose(@"openYapDatabase: %@", databaseFilePath);
+    [DDLog flushLog];
 
     __weak YapDatabase *_Nullable weakDatabase = nil;
     dispatch_queue_t snapshotQueue;
@@ -121,6 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      }];
     }
 
+    // Verify that the database is indeed closed.
     YapDatabase *_Nullable strongDatabase = weakDatabase;
     OWSAssert(!strongDatabase);
 }

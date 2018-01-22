@@ -68,7 +68,7 @@ const NSUInteger kSqliteHeaderLength = 32;
     BOOL isUnencrypted = [unencryptedHeaderData
         isEqualToData:[headerData subdataWithRange:NSMakeRange(0, unencryptedHeaderData.length)]];
     if (isUnencrypted) {
-        DDLogVerbose(@"%@ Skipping database conversion; legacy database header already decrypted.", self.logTag);
+        DDLogVerbose(@"%@ doesDatabaseNeedToBeConverted; legacy database header already decrypted.", self.logTag);
         return NO;
     }
 
@@ -114,6 +114,8 @@ const NSUInteger kSqliteHeaderLength = 32;
     OWSAssert(databaseFilePath.length > 0);
     OWSAssert(databasePassword.length > 0);
     OWSAssert(saltBlock);
+
+    DDLogVerbose(@"%@ databasePassword: %@", self.logTag, databasePassword.hexadecimalString);
 
     NSData *sqlCipherSaltData;
     {
@@ -307,7 +309,8 @@ const NSUInteger kSqliteHeaderLength = 32;
 
         const unsigned char *valueBytes = sqlite3_column_text(statement, 0);
         int valueLength = sqlite3_column_bytes(statement, 0);
-        DDLogVerbose(@"%@ value: %d %d", self.logTag, valueLength, valueBytes != NULL);
+        OWSAssert(valueLength == kSqliteHeaderLength);
+        OWSAssert(valueBytes != NULL);
 
         NSString *saltString =
             [[NSString alloc] initWithBytes:valueBytes length:valueLength encoding:NSUTF8StringEncoding];
