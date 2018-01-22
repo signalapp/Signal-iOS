@@ -735,7 +735,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(icon);
     UIImageView *iconView = [UIImageView new];
     iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    iconView.tintColor = [UIColor ows_blackIconColor];
+    iconView.tintColor = [UIColor ows_darkIconColor];
     iconView.contentMode = UIViewContentModeScaleAspectFit;
     iconView.layer.minificationFilter = kCAFilterTrilinear;
     iconView.layer.magnificationFilter = kCAFilterTrilinear;

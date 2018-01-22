@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIColor colorWithRed:8.f / 255.f green:10.f / 255.f blue:0. / 255.f alpha:1.f];
 }
 
-+ (UIColor *)ows_blackIconColor
++ (UIColor *)ows_darkIconColor
 {
     return [UIColor colorWithRGBHex:0x505050];
 }
