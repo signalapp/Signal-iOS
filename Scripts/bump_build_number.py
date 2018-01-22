@@ -192,9 +192,6 @@ if __name__ == '__main__':
         new_release_version = old_release_version
         new_build_version = old_release_version + "." + new_build_number
 
-    if args.internal:
-        new_build_version = new_build_version + "i"
-
     print 'new_release_version:', new_release_version
     print 'new_build_version:', new_build_version
 
