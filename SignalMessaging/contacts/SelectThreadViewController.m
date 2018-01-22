@@ -21,6 +21,7 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSThread.h>
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) ConversationSearcher *conversationSearcher;
 @property (nonatomic, readonly) ThreadViewHelper *threadViewHelper;
+@property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 
@@ -59,6 +61,18 @@ NS_ASSUME_NONNULL_BEGIN
     _conversationSearcher = ConversationSearcher.shared;
     _threadViewHelper = [ThreadViewHelper new];
     _threadViewHelper.delegate = self;
+
+    _uiDatabaseConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
+    _uiDatabaseConnection.permittedTransactions = YDB_AnyReadTransaction;
+    [_uiDatabaseConnection beginLongLivedReadTransaction];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(yapDatabaseModified:)
+                                                 name:YapDatabaseModifiedNotification
+                                               object:TSStorageManager.sharedManager.dbNotificationObject];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(yapDatabaseModifiedExternally:)
+                                                 name:YapDatabaseModifiedExternallyNotification
+                                               object:nil];
 
     [self createViews];
 
@@ -102,6 +116,24 @@ NS_ASSUME_NONNULL_BEGIN
     [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:header];
 
     [self autoPinViewToBottomGuideOrKeyboard:self.tableViewController.view];
+}
+
+- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+    
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    
+    [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    [self updateTableContents];
+}
+
+- (void)yapDatabaseModified:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+    
+    [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    [self updateTableContents];
 }
 
 #pragma mark - UISearchBarDelegate
@@ -165,7 +197,37 @@ NS_ASSUME_NONNULL_BEGIN
             // To be consistent with the threads (above), we use ContactTableViewCell
             // instead of InboxTableViewCell to present contacts and threads.
             ContactTableViewCell *cell = [ContactTableViewCell new];
+            
+            if ([thread isKindOfClass:[TSContactThread class]]) {
+                BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
+                if (isBlocked) {
+                    cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                }
+            }
+            
             [cell configureWithThread:thread contactsManager:helper.contactsManager];
+
+            if (cell.accessoryView == nil) {
+                // Don't add a disappearing messages indicator if we've already added a "blocked" label.
+                __block OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
+                [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+                    disappearingMessagesConfiguration =
+                        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId
+                                                                          transaction:transaction];
+                }];
+
+                if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
+                    DisappearingTimerConfigurationView *disappearingTimerConfigurationView =
+                        [[DisappearingTimerConfigurationView alloc]
+                            initWithDurationSeconds:disappearingMessagesConfiguration.durationSeconds];
+
+                    disappearingTimerConfigurationView.frame = CGRectMake(0, 0, 44, 44);
+                    disappearingTimerConfigurationView.tintColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+
+                    cell.accessoryView = disappearingTimerConfigurationView;
+                }
+            }
+
             return cell;
         }
                                         customRowHeight:[ContactTableViewCell rowHeight]

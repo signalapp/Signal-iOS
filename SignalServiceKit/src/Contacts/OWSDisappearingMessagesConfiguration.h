@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 9/23/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 #import "TSYapDatabaseObject.h"
 
@@ -24,7 +25,7 @@ extern const uint32_t OWSDisappearingMessagesConfigurationDefaultExpirationDurat
 
 + (NSArray<NSNumber *> *)validDurationsSeconds;
 
-+ (NSString *)stringForDurationSeconds:(uint32_t)durationSeconds;
++ (NSString *)stringForDurationSeconds:(uint32_t)durationSeconds useShortFormat:(BOOL)useShortFormat;
 
 @end
 

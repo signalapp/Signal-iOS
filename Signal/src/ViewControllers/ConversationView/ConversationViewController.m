@@ -128,6 +128,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     ContactsViewHelperDelegate,
     ContactEditingDelegate,
     CNContactViewControllerDelegate,
+    DisappearingTimerConfigurationViewDelegate,
     OWSConversationSettingsViewDelegate,
     ConversationViewLayoutDelegate,
     ConversationViewCellDelegate,
@@ -1240,34 +1241,22 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 
     if (self.disappearingMessagesConfiguration.isEnabled) {
-        UIButton *timerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *image = [UIImage imageNamed:@"button_timer_white"];
-        [timerButton setImage:image forState:UIControlStateNormal];
-        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
-        // We normally would want to use left and right insets that ensure the button
-        // is square and the icon is centered.  However UINavigationBar doesn't offer us
-        // control over the margins and spacing of its content, and the buttons end up
-        // too far apart and too far from the edge of the screen. So we use a smaller
-        // right inset tighten up the layout.
-        imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
-        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
-        imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
-        imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
-        timerButton.imageEdgeInsets = imageEdgeInsets;
-        timerButton.accessibilityLabel
-            = NSLocalizedString(@"DISAPPEARING_MESSAGES_LABEL", @"Accessibility label for disappearing messages");
-        NSString *formatString = NSLocalizedString(
-            @"DISAPPEARING_MESSAGES_HINT", @"Accessibility hint that contains current timeout information");
-        timerButton.accessibilityHint =
-            [NSString stringWithFormat:formatString, self.disappearingMessagesConfiguration.durationString];
-        [timerButton addTarget:self
-                        action:@selector(didTapTimerInNavbar:)
-              forControlEvents:UIControlEventTouchUpInside];
-        timerButton.frame = CGRectMake(0,
-            0,
-            round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
-            round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
-        [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:timerButton]];
+        DisappearingTimerConfigurationView *timerView = [[DisappearingTimerConfigurationView alloc]
+            initWithDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds];
+        timerView.delegate = self;
+        timerView.tintColor = UIColor.whiteColor;
+
+        // As of iOS11, we can size barButton item custom views with autoLayout.
+        // Before that, though we can still use autoLayout *within* the customView,
+        // setting the view's size with constraints causes the customView to be temporarily
+        // laid out with a misplaced origin.
+        if (@available(iOS 11.0, *)) {
+            [timerView autoSetDimensionsToSize:CGSizeMake(36, 44)];
+        } else {
+            timerView.frame = CGRectMake(0, 0, 36, 44);
+        }
+
+        [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:timerView]];
     }
 
     self.navigationItem.rightBarButtonItems = [barButtons copy];
@@ -1453,7 +1442,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.navigationController pushViewController:settingsVC animated:YES];
 }
 
-- (void)didTapTimerInNavbar:(id)sender
+#pragma mark - DisappearingTimerConfigurationViewDelegate
+
+- (void)disappearingTimerConfigurationViewWasTapped:(DisappearingTimerConfigurationView *)disappearingTimerView
 {
     DDLogDebug(@"%@ Tapped timer in navbar", self.logTag);
     [self showConversationSettings];
