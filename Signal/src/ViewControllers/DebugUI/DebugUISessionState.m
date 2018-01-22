@@ -49,7 +49,9 @@ NS_ASSUME_NONNULL_BEGIN
                                     [flippedKey appendBytes:&xorByte length:1];
                                 }
                                 OWSAssert(flippedKey.length == currentKey.length);
-                                [identityManager saveRemoteIdentity:flippedKey recipientId:recipientId];
+                                [identityManager saveRemoteIdentity:flippedKey
+                                                        recipientId:recipientId
+                                                    protocolContext:protocolContext];
                             }],
             [OWSTableItem itemWithTitle:@"Delete all sessions"
                             actionBlock:^{
@@ -63,7 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
                             actionBlock:^{
                                 dispatch_async([OWSDispatch sessionStoreQueue], ^{
                                     [[TSStorageManager sharedManager]
-                                        archiveAllSessionsForContact:thread.contactIdentifier];
+                                        archiveAllSessionsForContact:thread.contactIdentifier
+                                                     protocolContext:protocolContext];
                                 });
                             }],
             [OWSTableItem itemWithTitle:@"Send session reset"

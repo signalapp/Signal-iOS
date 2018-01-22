@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSStorageManager (SessionStore) <SessionStore>
 
-- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier;
+- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext;
 
 #pragma mark - debug
 

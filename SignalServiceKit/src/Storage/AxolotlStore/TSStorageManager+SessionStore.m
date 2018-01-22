@@ -164,32 +164,32 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     [transaction removeObjectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
 }
 
-- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier
+- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext
 {
-    AssertIsOnSessionStoreQueue();
+    OWSAssert(contactIdentifier.length > 0);
+    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
     DDLogInfo(@"[TSStorageManager (SessionStore)] archiving all sessions for contact: %@", contactIdentifier);
 
-    __block NSDictionary<NSNumber *, SessionRecord *> *sessionRecords;
-    [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        sessionRecords =
-            [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+    __block NSDictionary<NSNumber *, SessionRecord *> *sessionRecords =
+        [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
 
-        for (id deviceId in sessionRecords) {
-            id object = sessionRecords[deviceId];
-            if (![object isKindOfClass:[SessionRecord class]]) {
-                OWSFail(@"Unexpected object in session dict: %@", object);
-                continue;
-            }
+    for (id deviceId in sessionRecords) {
+        id object = sessionRecords[deviceId];
+        if (![object isKindOfClass:[SessionRecord class]]) {
+            OWSFail(@"Unexpected object in session dict: %@", object);
+            continue;
+        }
 
-            SessionRecord *sessionRecord = (SessionRecord *)object;
-            [sessionRecord archiveCurrentState];
+        SessionRecord *sessionRecord = (SessionRecord *)object;
+        [sessionRecord archiveCurrentState];
         }
 
         [transaction setObject:sessionRecords
                         forKey:contactIdentifier
                   inCollection:TSStorageManagerSessionStoreCollection];
-    }];
 }
 
 #pragma mark - debug

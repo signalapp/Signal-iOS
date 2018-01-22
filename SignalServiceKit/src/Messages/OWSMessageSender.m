@@ -904,7 +904,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             NSData *newIdentityKey = [newIdentityKeyWithVersion removeKeyType];
 
-            [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey recipientId:recipient.recipientId];
+            [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey
+                                                       recipientId:recipient.recipientId
+                                                   protocolContext:protocolContext];
 
             failureHandler(error);
             return;

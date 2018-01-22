@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
@@ -58,7 +58,9 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
     }
 
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey recipientId:self.recipientId];
+        [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey
+                                                   recipientId:self.recipientId
+                                               protocolContext:protocolContext];
     });
 }
 

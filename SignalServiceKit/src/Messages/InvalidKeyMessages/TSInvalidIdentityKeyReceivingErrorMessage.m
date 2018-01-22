@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
@@ -81,7 +81,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Saving a new identity mutates the session store so it must happen on the sessionStoreQueue
     dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[OWSIdentityManager sharedManager] saveRemoteIdentity:newKey recipientId:self.envelope.source];
+        [[OWSIdentityManager sharedManager] saveRemoteIdentity:newKey
+                                                   recipientId:self.envelope.source
+                                               protocolContext:protocolContext];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             // Decrypt this and any old messages for the newly accepted key

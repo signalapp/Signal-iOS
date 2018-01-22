@@ -19,6 +19,7 @@ extern const NSUInteger kIdentityKeyLength;
 @class OWSRecipientIdentity;
 @class OWSSignalServiceProtosVerified;
 @class OWSStorage;
+@class OWSStorage;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSIdentityManager : NSObject <IdentityKeyStore>
@@ -29,7 +30,7 @@ extern const NSUInteger kIdentityKeyLength;
 
 - (void)generateNewIdentityKey;
 
-- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId;
+- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId protocolContext:(nullable id)protocolContext;
 
 - (void)setVerificationState:(OWSVerificationState)verificationState
                  identityKey:(NSData *)identityKey
@@ -51,6 +52,8 @@ extern const NSUInteger kIdentityKeyLength;
 - (void)processIncomingSyncMessage:(OWSSignalServiceProtosVerified *)verified;
 
 #pragma mark - Debug
+
+- (nullable ECKeyPair *)identityKeyPairWithoutProtocolContext;
 
 #if DEBUG
 // Clears everything except the local identity key.
