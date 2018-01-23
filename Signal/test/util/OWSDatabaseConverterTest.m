@@ -298,7 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue(isValid);
 }
 
-// Simulates a legacy user who needs to convert their database.
+// Simulates a legacy user who needs to convert their    database.
 - (void)testConversionWithoutYapDatabase
 {
     sqlite3 *db;
