@@ -279,25 +279,24 @@ const NSUInteger kSQLCipherSaltLength = 16;
             return error;
         }
 
-
-        // MJK TODO: If possible, I think we want to avoid setting the default plain text header size.
-        //
-        // Ultimately it sets a static variable in the SQLCipher framework which will affect subsequent
-        // setups of SQLCipher DB's. In particular, unless we're careful to clean up after ourselves, this
-        // piece of global state will cause some tests to fail depending on the order in which they're called.
-        // Similarly, this global state could be a liability when trying to reason about our migration process.
-        // if the code that sets this global default ends up getting called earlier than we intend.
-        //
-        // IMO it's better to explicitly set the plaintext_header_size each time we open the db (which entails
-        // setting up the YapDatabase instance and for each newConnection.)
-        NSString *setDefaultPlainTextHeaderPragma =
-        [NSString stringWithFormat:@"PRAGMA cipher_default_plaintext_header_size = %zd;", kSqliteHeaderLength];
-        error = [self executeSql:setDefaultPlainTextHeaderPragma
-                                                 db:db
-                                              label:setDefaultPlainTextHeaderPragma];
-        if (error) {
-            return error;
-        }
+//        // MJK TODO: If possible, I think we want to avoid setting the default plain text header size.
+//        //
+//        // Ultimately it sets a static variable in the SQLCipher framework which will affect subsequent
+//        // setups of SQLCipher DB's. In particular, unless we're careful to clean up after ourselves, this
+//        // piece of global state will cause some tests to fail depending on the order in which they're called.
+//        // Similarly, this global state could be a liability when trying to reason about our migration process.
+//        // if the code that sets this global default ends up getting called earlier than we intend.
+//        //
+//        // IMO it's better to explicitly set the plaintext_header_size each time we open the db (which entails
+//        // setting up the YapDatabase instance and for each newConnection.)
+//        NSString *setDefaultPlainTextHeaderPragma =
+//        [NSString stringWithFormat:@"PRAGMA cipher_default_plaintext_header_size = %zd;", kSqliteHeaderLength];
+//        error = [self executeSql:setDefaultPlainTextHeaderPragma
+//                                                 db:db
+//                                              label:setDefaultPlainTextHeaderPragma];
+//        if (error) {
+//            return error;
+//        }
 
         // Modify the first page, so that SQLCipher will overwrite, respecting our new cipher_plaintext_header_size
         NSString *tableName = [NSString stringWithFormat:@"signal-migration-%@", [NSUUID new].UUIDString];
