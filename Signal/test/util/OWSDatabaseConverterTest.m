@@ -206,6 +206,8 @@ NS_ASSUME_NONNULL_BEGIN
     return databaseFilePath;
 }
 
+#pragma  mark - Tests
+
 - (void)testDoesDatabaseNeedToBeConverted_Unconverted
 {
     NSData *databasePassword = [self randomDatabasePassword];

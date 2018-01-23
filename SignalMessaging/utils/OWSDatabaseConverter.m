@@ -302,8 +302,13 @@ const NSUInteger kSQLCipherSaltLength = 16;
         }
 
         // Force a checkpoint so that the plaintext is written to the actual DB file, not just living in the WAL.
-        // TODO do we need/want the earlier checkpoint if we're checkpointing here?
-        sqlite3_wal_autocheckpoint(db, 0);
+        int log, ckpt;
+        status = sqlite3_wal_checkpoint_v2(db, NULL, SQLITE_CHECKPOINT_FULL, &log, &ckpt);
+        if (status != SQLITE_OK) {
+            DDLogError(@"%@ Error forcing checkpoint. status: %d, log: %d, ckpt: %d, error: %s", self.logTag, status, log, ckpt, sqlite3_errmsg(db));
+            return OWSErrorWithCodeDescription(
+                                               OWSErrorCodeDatabaseConversionFatalError, @"Error forcing checkpoint.");
+        }
 
         sqlite3_close(db);
     }
