@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern const NSUInteger kSqliteHeaderLength;
+extern const NSUInteger kSQLCipherSaltLength;
 
 typedef void (^OWSDatabaseSaltBlock)(NSData *saltData);
 

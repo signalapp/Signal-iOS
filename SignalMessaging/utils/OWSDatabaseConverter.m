@@ -13,6 +13,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 const NSUInteger kSqliteHeaderLength = 32;
+const NSUInteger kSQLCipherSaltLength = 16;
 
 @interface OWSStorage (OWSDatabaseConverter)
 
@@ -122,7 +123,6 @@ const NSUInteger kSqliteHeaderLength = 32;
         NSData *headerData = [self readFirstNBytesOfDatabaseFile:databaseFilePath byteCount:kSqliteHeaderLength];
         OWSAssert(headerData);
 
-        const NSUInteger kSQLCipherSaltLength = 16;
         OWSAssert(headerData.length >= kSQLCipherSaltLength);
         sqlCipherSaltData = [headerData subdataWithRange:NSMakeRange(0, kSQLCipherSaltLength)];
 

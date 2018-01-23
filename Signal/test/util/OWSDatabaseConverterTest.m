@@ -35,6 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [Randomness generateRandomBytes:30];
 }
 
+- (NSData *)randomDatabaseSalt
+{
+    return [Randomness generateRandomBytes:kSQLCipherSaltLength];
+}
+
 // * Open a YapDatabase.
 // * Do some work with a block.
 // * Close the database.
@@ -178,6 +183,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)createUnconvertedDatabase:(NSData *)databasePassword
 {
+    return [self createDatabase:databasePassword
+                   databaseSalt:nil];
+}
+
+// If databaseSalt is nil, creates a non-converted database.
+// Otherwise creates a pre-converted database.
+- (nullable NSString *)createDatabase:(NSData *)databasePassword
+                         databaseSalt:(NSData *_Nullable)databaseSalt
+{
     NSString *temporaryDirectory = NSTemporaryDirectory();
     NSString *filename = [[NSUUID UUID].UUIDString stringByAppendingString:@".sqlite"];
     NSString *databaseFilePath = [temporaryDirectory stringByAppendingPathComponent:filename];
@@ -186,7 +200,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self createTestDatabase:databaseFilePath databasePassword:databasePassword];
 
-    BOOL isValid = [self verifyTestDatabase:databaseFilePath databasePassword:databasePassword databaseSalt:nil];
+    BOOL isValid = [self verifyTestDatabase:databaseFilePath databasePassword:databasePassword databaseSalt:databaseSalt];
     OWSAssert(isValid);
 
     return databaseFilePath;
@@ -204,17 +218,18 @@ NS_ASSUME_NONNULL_BEGIN
     // TODO: When we can create converted databases.
 }
 
+// Verifies that legacy users with non-converted databases can convert.
 - (void)testDatabaseConversion
 {
     NSData *databasePassword = [self randomDatabasePassword];
     NSString *_Nullable databaseFilePath = [self createUnconvertedDatabase:databasePassword];
     XCTAssertTrue([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
-
+    
     __block NSData *_Nullable databaseSalt = nil;
     OWSDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
         OWSAssert(!databaseSalt);
         OWSAssert(saltData);
-
+        
         databaseSalt = saltData;
     };
     NSError *_Nullable error = [OWSDatabaseConverter convertDatabaseIfNecessary:databaseFilePath
@@ -225,9 +240,37 @@ NS_ASSUME_NONNULL_BEGIN
     }
     XCTAssertNil(error);
     XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
-
+    
     BOOL isValid =
-        [self verifyTestDatabase:databaseFilePath databasePassword:databasePassword databaseSalt:databaseSalt];
+    [self verifyTestDatabase:databaseFilePath databasePassword:databasePassword databaseSalt:databaseSalt];
+    XCTAssertTrue(isValid);
+}
+
+// Verifies new users who create new pre-converted databases.
+- (void)testDatabaseCreation
+{
+    NSData *databasePassword = [self randomDatabasePassword];
+    NSData *databaseSalt = [self randomDatabaseSalt];
+    NSString *_Nullable databaseFilePath = [self createDatabase:databasePassword
+                                                   databaseSalt:databaseSalt];
+    XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+    
+    OWSDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+        OWSAssert(saltData);
+        
+        XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
+    };
+    NSError *_Nullable error = [OWSDatabaseConverter convertDatabaseIfNecessary:databaseFilePath
+                                                               databasePassword:databasePassword
+                                                                      saltBlock:saltBlock];
+    if (error) {
+        DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
+    }
+    XCTAssertNil(error);
+    XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+    
+    BOOL isValid =
+    [self verifyTestDatabase:databaseFilePath databasePassword:databasePassword databaseSalt:databaseSalt];
     XCTAssertTrue(isValid);
 }
 
