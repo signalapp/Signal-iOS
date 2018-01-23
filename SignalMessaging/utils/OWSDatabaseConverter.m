@@ -164,7 +164,6 @@ const NSUInteger kSqliteHeaderLength = 32;
     {
         NSData *keyData = databasePassword;
 
-        // Setting the encrypted database page size
         status = sqlite3_key(db, [keyData bytes], (int)[keyData length]);
         if (status != SQLITE_OK) {
             DDLogError(@"Error setting SQLCipher key: %d %s", status, sqlite3_errmsg(db));
@@ -177,10 +176,11 @@ const NSUInteger kSqliteHeaderLength = 32;
     //
     // This block was derived from [Yapdatabase configureDatabase].
     {
-        status = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
-        if (status != SQLITE_OK) {
-            DDLogError(@"Error setting PRAGMA journal_mode: %d %s", status, sqlite3_errmsg(db));
-            return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Failed to set WAL mode");
+        NSError *_Nullable error = [self executeSql:@"PRAGMA journal_mode = WAL;"
+                                                 db:db
+                                              label:@"PRAGMA journal_mode = WAL"];
+        if (error) {
+            return error;
         }
 
         // TODO verify we need to do this.
@@ -197,11 +197,11 @@ const NSUInteger kSqliteHeaderLength = 32;
         // (This sqlite db is also used to perform checkpoints.
         //  But a normal value won't affect these operations,
         //  as they will perform sync operations whether the connection is normal or full.)
-        status = sqlite3_exec(db, "PRAGMA synchronous = NORMAL;", NULL, NULL, NULL);
-        if (status != SQLITE_OK) {
-            DDLogError(@"Error setting PRAGMA synchronous: %d %s", status, sqlite3_errmsg(db));
-            // This isn't critical, so we can continue.
-        }
+        
+        error = [self executeSql:@"PRAGMA synchronous = NORMAL;"
+                              db:db
+                           label:@"PRAGMA synchronous = NORMAL"];
+        // Any error isn't critical, so we can continue.
 
         // Set journal_size_imit.
         //
@@ -211,12 +211,10 @@ const NSUInteger kSqliteHeaderLength = 32;
         NSInteger defaultPragmaJournalSizeLimit = 0;
         NSString *pragma_journal_size_limit =
             [NSString stringWithFormat:@"PRAGMA journal_size_limit = %ld;", (long)defaultPragmaJournalSizeLimit];
-
-        status = sqlite3_exec(db, [pragma_journal_size_limit UTF8String], NULL, NULL, NULL);
-        if (status != SQLITE_OK) {
-            DDLogError(@"Error setting PRAGMA journal_size_limit: %d %s", status, sqlite3_errmsg(db));
-            // This isn't critical, so we can continue.
-        }
+        error = [self executeSql:pragma_journal_size_limit
+                                                 db:db
+                                              label:@"PRAGMA journal_size_limit"];
+        // Any error isn't critical, so we can continue.
 
         // Disable autocheckpointing.
         //
@@ -257,7 +255,7 @@ const NSUInteger kSqliteHeaderLength = 32;
         OWSAssert(valueBytes != NULL);
 
         NSString *saltString =
-            [[NSString alloc] initWithBytes:valueBytes length:valueLength encoding:NSUTF8StringEncoding];
+            [[NSString alloc] initWithBytes:valueBytes length:(NSUInteger) valueLength encoding:NSUTF8StringEncoding];
 
         sqlite3_finalize(statement);
         statement = NULL;
@@ -273,29 +271,34 @@ const NSUInteger kSqliteHeaderLength = 32;
     // SQLCipher migration
     {
         NSString *setPlainTextHeaderPragma =
-            [NSString stringWithFormat:@"PRAGMA cipher_plaintext_header_size = %zd;", kSqliteHeaderLength];
+        [NSString stringWithFormat:@"PRAGMA cipher_plaintext_header_size = %zd;", kSqliteHeaderLength];
+        NSError *_Nullable error = [self executeSql:setPlainTextHeaderPragma
+                                                 db:db
+                                              label:setPlainTextHeaderPragma];
+        if (error) {
+            return error;
+        }
 
-        status = sqlite3_exec(db, [setPlainTextHeaderPragma UTF8String], NULL, NULL, NULL);
-        if (status != SQLITE_OK) {
-            DDLogError(@"Error setting PRAGMA cipher_plaintext_header_size = %zd: status: %d, error: %s",
-                kSqliteHeaderLength,
-                status,
-                sqlite3_errmsg(db));
-            return OWSErrorWithCodeDescription(
-                OWSErrorCodeDatabaseConversionFatalError, @"Failed to set PRAGMA cipher_plaintext_header_size");
+        NSString *setDefaultPlainTextHeaderPragma =
+        [NSString stringWithFormat:@"PRAGMA cipher_default_plaintext_header_size = %zd;", kSqliteHeaderLength];
+        error = [self executeSql:setDefaultPlainTextHeaderPragma
+                                                 db:db
+                                              label:setDefaultPlainTextHeaderPragma];
+        if (error) {
+            return error;
         }
 
         // Modify the first page, so that SQLCipher will overwrite, respecting our new cipher_plaintext_header_size
         NSString *tableName = [NSString stringWithFormat:@"signal-migration-%@", [NSUUID new].UUIDString];
         NSString *modificationSQL =
-            [NSString stringWithFormat:@"CREATE TABLE \"%@\"(a integer); INSERT INTO \"%@\"(a) VALUES (1);",
-                      tableName,
-                      tableName];
-        DDLogInfo(@"%@ modificationSQL: %@", self.logTag, modificationSQL);
-        status = sqlite3_exec(db, [modificationSQL UTF8String], NULL, NULL, NULL);
-        if (status != SQLITE_OK) {
-            DDLogError(@"%@ Error modifying first page: %d, error: %s", self.logTag, status, sqlite3_errmsg(db));
-            return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Error modifying first page");
+        [NSString stringWithFormat:@"CREATE TABLE \"%@\"(a integer); INSERT INTO \"%@\"(a) VALUES (1);",
+         tableName,
+         tableName];
+        error = [self executeSql:modificationSQL
+                              db:db
+                           label:modificationSQL];
+        if (error) {
+            return error;
         }
 
         // Force a checkpoint so that the plaintext is written to the actual DB file, not just living in the WAL.
@@ -305,6 +308,27 @@ const NSUInteger kSqliteHeaderLength = 32;
         sqlite3_close(db);
     }
 
+    return nil;
+}
+
++ (nullable NSError *)executeSql:(NSString *)sql
+                              db:(sqlite3 *)db
+                           label:(NSString *)label
+{
+    OWSAssert(db);
+    OWSAssert(sql.length > 0);
+    
+    DDLogVerbose(@"%@ %@", self.logTag, sql);
+    
+    int status = sqlite3_exec(db, [sql UTF8String], NULL, NULL, NULL);
+    if (status != SQLITE_OK) {
+        DDLogError(@"Error %@: status: %d, error: %s",
+                   label,
+                   status,
+                   sqlite3_errmsg(db));
+        return OWSErrorWithCodeDescription(
+                                           OWSErrorCodeDatabaseConversionFatalError, [NSString stringWithFormat:@"Failed to set %@", label]);
+    }
     return nil;
 }
 
