@@ -80,13 +80,35 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
 }
 
 - (void)updateWithVerificationState:(OWSVerificationState)verificationState
+                        transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssert(transaction);
+
     // Ensure changes are persisted without clobbering any work done on another thread or instance.
     [self updateWithChangeBlock:^(OWSRecipientIdentity *_Nonnull obj) {
         obj.verificationState = verificationState;
-    }];
+    }
+                    transaction:transaction];
 }
 
+- (void)updateWithChangeBlock:(void (^)(OWSRecipientIdentity *obj))changeBlock
+                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+
+    changeBlock(self);
+
+    OWSRecipientIdentity *latest = [[self class] fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
+    if (latest == nil) {
+        [self saveWithTransaction:transaction];
+        return;
+    }
+
+    changeBlock(latest);
+    [latest saveWithTransaction:transaction];
+}
+
+// TODO: Is this method obsolete?
 - (void)updateWithChangeBlock:(void (^)(OWSRecipientIdentity *obj))changeBlock
 {
     changeBlock(self);
@@ -97,7 +119,7 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
             [self saveWithTransaction:transaction];
             return;
         }
-
+        
         changeBlock(latest);
         [latest saveWithTransaction:transaction];
     }];
@@ -139,6 +161,7 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
     return self.dbReadWriteConnection;
 }
 
+// TODO: Replace with protocol connection?
 /**
  * Override to disable the object cache to better enforce transaction semantics on the store.
  * Note that it's still technically possible to access this collection from a different collection,

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSConstants.h"
@@ -13,6 +13,7 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 @class TSNetworkManager;
 @class TSStorageManager;
+@class YapDatabaseReadWriteTransaction;
 
 @interface TSAccountManager : NSObject
 
@@ -65,6 +66,7 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
  */
 
 + (uint32_t)getOrGenerateRegistrationId;
++ (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - Register with phone number
 

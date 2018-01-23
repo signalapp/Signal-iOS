@@ -194,21 +194,32 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     return [[self sharedInstance] getOrGenerateRegistrationId];
 }
 
++ (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction
+{
+    return [[self sharedInstance] getOrGenerateRegistrationId:transaction];
+}
+
 - (uint32_t)getOrGenerateRegistrationId
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self getOrGenerateRegistrationId:transaction];
+    }];
+}
+
+- (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction
 {
     @synchronized(self)
     {
-        uint32_t registrationID =
-            [[self.dbConnection objectForKey:TSAccountManager_LocalRegistrationIdKey
-                                inCollection:TSAccountManager_UserAccountCollection] unsignedIntValue];
+        uint32_t registrationID = [[transaction objectForKey:TSAccountManager_LocalRegistrationIdKey
+                                                inCollection:TSAccountManager_UserAccountCollection] unsignedIntValue];
 
         if (registrationID == 0) {
             registrationID = (uint32_t)arc4random_uniform(16380) + 1;
             DDLogWarn(@"%@ Generated a new registrationID: %u", self.logTag, registrationID);
 
-            [self.dbConnection setObject:[NSNumber numberWithUnsignedInteger:registrationID]
-                                  forKey:TSAccountManager_LocalRegistrationIdKey
-                            inCollection:TSAccountManager_UserAccountCollection];
+            [transaction setObject:[NSNumber numberWithUnsignedInteger:registrationID]
+                            forKey:TSAccountManager_LocalRegistrationIdKey
+                      inCollection:TSAccountManager_UserAccountCollection];
         }
         return registrationID;
     }

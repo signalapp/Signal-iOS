@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSignalServiceProtos.pb.h"
@@ -27,7 +27,8 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
 
 @property (atomic, readonly) OWSVerificationState verificationState;
 
-- (void)updateWithVerificationState:(OWSVerificationState)verificationState;
+- (void)updateWithVerificationState:(OWSVerificationState)verificationState
+                        transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - Initializers
 

@@ -23,6 +23,7 @@
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 #import "YapDatabaseConnection+OWS.h"
+#import "YapDatabaseReadTransaction+OWS.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <Curve25519Kit/Curve25519.h>
 #import <YapDatabase/YapDatabase.h>
@@ -55,8 +56,10 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 @interface OWSIdentityManager ()
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
+
+// TODO: Should we get rid of this property?
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
 
@@ -136,12 +139,12 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
-    return [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId].identityKey;
+    return [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction].identityKey;
 }
 
 - (nullable ECKeyPair *)identityKeyPairWithoutProtocolContext
 {
-    ECKeyPair *_Nullable identityKeyPair = nil;
+    __block ECKeyPair *_Nullable identityKeyPair = nil;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         identityKeyPair = [self identityKeyPair:transaction];
     }];
@@ -154,15 +157,19 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
-    ECKeyPair *_Nullable identityKeyPair = [self.dbConnection keyPairForKey:TSStorageManagerIdentityKeyStoreIdentityKey
-                                                               inCollection:TSStorageManagerIdentityKeyStoreCollection];
+    ECKeyPair *_Nullable identityKeyPair = [transaction keyPairForKey:TSStorageManagerIdentityKeyStoreIdentityKey
+                                                         inCollection:TSStorageManagerIdentityKeyStoreCollection];
     return identityKeyPair;
 }
 
-//- (int)localRegistrationId
-//{
-//    return (int)[TSAccountManager getOrGenerateRegistrationId];
-//}
+- (int)localRegistrationId:(nullable id)protocolContext
+{
+    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
+
+    return (int)[TSAccountManager getOrGenerateRegistrationId:transaction];
+}
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey
                recipientId:(NSString *)recipientId
@@ -228,7 +235,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [self.storageManager archiveAllSessionsForContact:recipientId protocolContext:protocolContext];
 
         // Cancel any pending verification state sync messages for this recipient.
-        [self clearSyncMessageForRecipientId:recipientId];
+        [self clearSyncMessageForRecipientId:recipientId transaction:transaction];
 
         [self fireIdentityStateChangeNotification];
 
@@ -242,42 +249,48 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                  identityKey:(NSData *)identityKey
                  recipientId:(NSString *)recipientId
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
+             protocolContext:(nullable id)protocolContext
 {
     OWSAssert(identityKey.length == kStoredIdentityKeyLength);
     OWSAssert(recipientId.length > 0);
+    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
-    @synchronized(self)
-    {
-        // Ensure a remote identity exists for this key. We may be learning about
-        // it for the first time.
-        [self saveRemoteIdentity:identityKey recipientId:recipientId protocolContext:protocolContext];
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
-        OWSRecipientIdentity *recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+    // TODO: Remove all @synchronized
+    // Ensure a remote identity exists for this key. We may be learning about
+    // it for the first time.
+    [self saveRemoteIdentity:identityKey recipientId:recipientId protocolContext:protocolContext];
 
-        if (recipientIdentity == nil) {
-            OWSFail(@"Missing expected identity: %@", recipientId);
-            return;
-        }
+    OWSRecipientIdentity *recipientIdentity =
+        [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
 
-        if (recipientIdentity.verificationState == verificationState) {
-            return;
-        }
+    if (recipientIdentity == nil) {
+        OWSFail(@"Missing expected identity: %@", recipientId);
+        return;
+    }
 
-        DDLogInfo(@"%@ setVerificationState: %@ (%@ -> %@)",
-            self.logTag,
-            recipientId,
-            OWSVerificationStateToString(recipientIdentity.verificationState),
-            OWSVerificationStateToString(verificationState));
+    if (recipientIdentity.verificationState == verificationState) {
+        return;
+    }
 
-        [recipientIdentity updateWithVerificationState:verificationState];
+    DDLogInfo(@"%@ setVerificationState: %@ (%@ -> %@)",
+        self.logTag,
+        recipientId,
+        OWSVerificationStateToString(recipientIdentity.verificationState),
+        OWSVerificationStateToString(verificationState));
 
-        if (isUserInitiatedChange) {
-            [self saveChangeMessagesForRecipientId:recipientId verificationState:verificationState isLocalChange:YES];
-            [self enqueueSyncMessageForVerificationStateForRecipientId:recipientId];
-        } else {
-            // Cancel any pending verification state sync messages for this recipient.
-            [self clearSyncMessageForRecipientId:recipientId];
-        }
+    [recipientIdentity updateWithVerificationState:verificationState transaction:transaction];
+
+    if (isUserInitiatedChange) {
+        [self saveChangeMessagesForRecipientId:recipientId
+                             verificationState:verificationState
+                                 isLocalChange:YES
+                                   transaction:transaction];
+        [self enqueueSyncMessageForVerificationStateForRecipientId:recipientId transaction:transaction];
+    } else {
+        // Cancel any pending verification state sync messages for this recipient.
+        [self clearSyncMessageForRecipientId:recipientId transaction:transaction];
     }
 
     [self fireIdentityStateChangeNotification];
@@ -285,29 +298,41 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
 {
+    __block OWSVerificationState result;
+    // Use a read/write transaction to block on latest.
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        result = [self verificationStateForRecipientId:recipientId transaction:transaction];
+    }];
+    return result;
+}
+
+- (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
+                                            transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
     OWSAssert(recipientId.length > 0);
+    OWSAssert(transaction);
 
-    @synchronized(self)
-    {
-        OWSRecipientIdentity *_Nullable currentIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+    OWSRecipientIdentity *_Nullable currentIdentity =
+        [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
 
-        if (!currentIdentity) {
-            // We might not know the identity for this recipient yet.
-            return OWSVerificationStateDefault;
-        }
-
-        return currentIdentity.verificationState;
+    if (!currentIdentity) {
+        // We might not know the identity for this recipient yet.
+        return OWSVerificationStateDefault;
     }
+
+    return currentIdentity.verificationState;
 }
 
 - (nullable OWSRecipientIdentity *)recipientIdentityForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
-    @synchronized(self)
-    {
-        return [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
-    }
+    __block OWSRecipientIdentity *_Nullable result;
+    // Use a read/write transaction to block on latest.
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        result = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
+    }];
+    return result;
 }
 
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId
@@ -318,24 +343,22 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
-    @synchronized(self)
-    {
-        OWSRecipientIdentity *_Nullable recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+    OWSRecipientIdentity *_Nullable recipientIdentity =
+        [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
 
-        if (recipientIdentity == nil) {
-            // trust on first use
-            return nil;
-        }
+    if (recipientIdentity == nil) {
+        // trust on first use
+        return nil;
+    }
 
-        BOOL isTrusted = [self isTrustedIdentityKey:recipientIdentity.identityKey
-                                        recipientId:recipientId
-                                          direction:TSMessageDirectionOutgoing
-                                    protocolContext:protocolContext];
-        if (isTrusted) {
-            return nil;
-        } else {
-            return recipientIdentity;
-        }
+    BOOL isTrusted = [self isTrustedIdentityKey:recipientIdentity.identityKey
+                                    recipientId:recipientId
+                                      direction:TSMessageDirectionOutgoing
+                                protocolContext:protocolContext];
+    if (isTrusted) {
+        return nil;
+    } else {
+        return recipientIdentity;
     }
 }
 
@@ -361,13 +384,15 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     @synchronized(self)
     {
         if ([[TSAccountManager localNumber] isEqualToString:recipientId]) {
-            if ([[self identityKeyPair].publicKey isEqualToData:identityKey]) {
+            ECKeyPair *_Nullable localIdentityKeyPair = [self identityKeyPair:protocolContext];
+
+            if ([localIdentityKeyPair.publicKey isEqualToData:identityKey]) {
                 return YES;
             } else {
                 OWSFail(@"%@ Wrong identity: %@ for local key: %@, recipientId: %@",
                     self.logTag,
                     identityKey,
-                    [self identityKeyPair].publicKey,
+                    localIdentityKeyPair.publicKey,
                     recipientId);
                 return NO;
             }
@@ -378,7 +403,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 return YES;
             }
             case TSMessageDirectionOutgoing: {
-                OWSRecipientIdentity *existingIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+                OWSRecipientIdentity *existingIdentity =
+                    [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
                 return [self isTrustedKey:identityKey forSendingToIdentity:existingIdentity];
             }
             default: {
@@ -393,42 +419,39 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     OWSAssert(identityKey.length == kStoredIdentityKeyLength);
 
-    @synchronized(self)
-    {
-        if (recipientIdentity == nil) {
-            return YES;
-        }
+    if (recipientIdentity == nil) {
+        return YES;
+    }
 
-        OWSAssert(recipientIdentity.identityKey.length == kStoredIdentityKeyLength);
-        if (![recipientIdentity.identityKey isEqualToData:identityKey]) {
-            DDLogWarn(@"%@ key mismatch for recipient: %@", self.logTag, recipientIdentity.recipientId);
-            return NO;
-        }
+    OWSAssert(recipientIdentity.identityKey.length == kStoredIdentityKeyLength);
+    if (![recipientIdentity.identityKey isEqualToData:identityKey]) {
+        DDLogWarn(@"%@ key mismatch for recipient: %@", self.logTag, recipientIdentity.recipientId);
+        return NO;
+    }
 
-        if ([recipientIdentity isFirstKnownKey]) {
-            return YES;
-        }
+    if ([recipientIdentity isFirstKnownKey]) {
+        return YES;
+    }
 
-        switch (recipientIdentity.verificationState) {
-            case OWSVerificationStateDefault: {
-                BOOL isNew = (fabs([recipientIdentity.createdAt timeIntervalSinceNow])
-                    < kIdentityKeyStoreNonBlockingSecondsThreshold);
-                if (isNew) {
-                    DDLogWarn(
-                        @"%@ not trusting new identity for recipient: %@", self.logTag, recipientIdentity.recipientId);
-                    return NO;
-                } else {
-                    return YES;
-                }
-            }
-            case OWSVerificationStateVerified:
-                return YES;
-            case OWSVerificationStateNoLongerVerified:
-                DDLogWarn(@"%@ not trusting no longer verified identity for recipient: %@",
-                    self.logTag,
-                    recipientIdentity.recipientId);
+    switch (recipientIdentity.verificationState) {
+        case OWSVerificationStateDefault: {
+            BOOL isNew = (fabs([recipientIdentity.createdAt timeIntervalSinceNow])
+                < kIdentityKeyStoreNonBlockingSecondsThreshold);
+            if (isNew) {
+                DDLogWarn(
+                    @"%@ not trusting new identity for recipient: %@", self.logTag, recipientIdentity.recipientId);
                 return NO;
+            } else {
+                return YES;
+            }
         }
+        case OWSVerificationStateVerified:
+            return YES;
+        case OWSVerificationStateNoLongerVerified:
+            DDLogWarn(@"%@ not trusting no longer verified identity for recipient: %@",
+                self.logTag,
+                recipientIdentity.recipientId);
+            return NO;
     }
 }
 
@@ -460,20 +483,17 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 }
 
 - (void)enqueueSyncMessageForVerificationStateForRecipientId:(NSString *)recipientId
+                                                 transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(recipientId.length > 0);
+    OWSAssert(transaction);
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        @synchronized(self)
-        {
-            [self.dbConnection setObject:recipientId
-                                  forKey:recipientId
-                            inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
-        }
+    [transaction setObject:recipientId
+                    forKey:recipientId
+              inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
 
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self tryToSyncQueuedVerificationStates];
-        });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self tryToSyncQueuedVerificationStates];
     });
 }
 
@@ -544,10 +564,12 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     });
 }
 
+// TODO: Keep converting.
 - (void)sendSyncVerificationStateMessage:(OWSVerificationStateSyncMessage *)message
 {
     OWSAssert(message);
     OWSAssert(message.verificationForRecipientId.length > 0);
+    OWSAssertIsOnMainThread();
 
     TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:message.verificationForRecipientId];
     
@@ -738,7 +760,10 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
             [recipientIdentity updateWithVerificationState:verificationState];
 
-            [self saveChangeMessagesForRecipientId:recipientId verificationState:verificationState isLocalChange:NO];
+            [self saveChangeMessagesForRecipientId:recipientId
+                                 verificationState:verificationState
+                                     isLocalChange:NO
+                                       transaction:transaction];
         }
     }
 }
@@ -748,12 +773,15 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)saveChangeMessagesForRecipientId:(NSString *)recipientId
                        verificationState:(OWSVerificationState)verificationState
                            isLocalChange:(BOOL)isLocalChange
+                             transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(recipientId.length > 0);
+    OWSAssert(transaction);
 
     NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
 
-    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+    TSContactThread *contactThread =
+        [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
     OWSAssert(contactThread);
     [messages addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                               thread:contactThread
@@ -761,7 +789,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                                    verificationState:verificationState
                                                                        isLocalChange:isLocalChange]];
 
-    for (TSGroupThread *groupThread in [TSGroupThread groupThreadsWithRecipientId:recipientId]) {
+    for (TSGroupThread *groupThread in
+        [TSGroupThread groupThreadsWithRecipientId:recipientId transaction:transaction]) {
         [messages
             addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                             thread:groupThread
@@ -770,11 +799,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                                      isLocalChange:isLocalChange]];
     }
 
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        for (TSMessage *message in messages) {
-            [message saveWithTransaction:transaction];
-        }
-    }];
+    for (TSMessage *message in messages) {
+        [message saveWithTransaction:transaction];
+    }
 }
 
 #pragma mark - Debug

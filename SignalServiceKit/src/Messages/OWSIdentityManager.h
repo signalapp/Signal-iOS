@@ -35,7 +35,8 @@ extern const NSUInteger kIdentityKeyLength;
 - (void)setVerificationState:(OWSVerificationState)verificationState
                  identityKey:(NSData *)identityKey
                  recipientId:(NSString *)recipientId
-       isUserInitiatedChange:(BOOL)isUserInitiatedChange;
+       isUserInitiatedChange:(BOOL)isUserInitiatedChange
+             protocolContext:(nullable id)protocolContext;
 
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId;
 
@@ -46,7 +47,8 @@ extern const NSUInteger kIdentityKeyLength;
  * @returns nil if the recipient does not exist, or is trusted for sending
  *          else returns the untrusted recipient.
  */
-- (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId;
+- (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId
+                                                            protocolContext:(nullable id)protocolContext;
 
 // This method can be called from any thread.
 - (void)processIncomingSyncMessage:(OWSSignalServiceProtosVerified *)verified;
