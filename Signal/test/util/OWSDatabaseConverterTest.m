@@ -5,11 +5,11 @@
 #import "OWSDatabaseConverterTest.h"
 #import "OWSDatabaseConverter.h"
 #import <Curve25519Kit/Randomness.h>
+#import <SignalServiceKit/NSData+hexString.h>
 #import <SignalServiceKit/OWSStorage.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabasePrivate.h>
-#import <SignalServiceKit/NSData+hexString.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSData *)randomDatabaseSalt
 {
-    return [Randomness generateRandomBytes:kSQLCipherSaltLength];
+    return [Randomness generateRandomBytes:(int)kSQLCipherSaltLength];
 }
 
 // * Open a YapDatabase.
@@ -218,8 +218,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self logHeaderOfDatabaseFile:databaseFilePath
                             label:@"created"];
 
-    [DDLog flushLog];
-
     BOOL isValid = [self verifyTestDatabase:databaseFilePath databasePassword:databasePassword databaseSalt:databaseSalt];
     OWSAssert(isValid);
 
@@ -300,6 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue(isValid);
 }
 
+// Simulates a legacy user who needs to convert their database.
 - (void)testConversionWithoutYapDatabase
 {
     sqlite3 *db;
@@ -456,6 +455,7 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
+// Simulates a new user who makes a new, pre-converted database.
 - (void)testNewUserWithoutYapDatabase
 {
     sqlite3 *db;
@@ -548,68 +548,8 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue(rc == SQLITE_OK);
 }
 
-- (void)testCreatePreconvertedDatabaseWithoutYapDatabase
-{
-    sqlite3 *db;
-    sqlite3_stmt *stmt;
-    const int ROWSTOINSERT = 3;
-    
-    NSString *databaseFilePath = [self createTempDatabaseFilePath];
-    
-    OWSAssert(![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]);
-    
-    NSData *keyData = [self randomDatabasePassword];
-    NSData *databaseSalt = [self randomDatabaseSalt];
-    NSString *salt = databaseSalt.hexadecimalString;
-    
-    /* Step 1. Create a new encrypted database. */
-    
-    int openFlags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
-    
-    int rc = sqlite3_open_v2([databaseFilePath UTF8String], &db, openFlags, NULL);
-    XCTAssertTrue(rc == SQLITE_OK);
-    
-    rc = sqlite3_key(db, [keyData bytes], (int)[keyData length]);
-    XCTAssertTrue(rc == SQLITE_OK);
-    
-    NSString *saltPragma = [NSString stringWithFormat:@"PRAGMA cipher_salt = \"x'%@'\";", salt];
-    DDLogInfo(@"salt pragma = %@", saltPragma);
-    rc = sqlite3_exec(db, [saltPragma UTF8String], NULL, NULL, NULL);
-    XCTAssertTrue(rc == SQLITE_OK);
-    
-    rc = sqlite3_exec(db, "PRAGMA cipher_plaintext_header_size = 32;", NULL, NULL, NULL);
-    XCTAssertTrue(rc == SQLITE_OK);
-    
-    rc = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
-    XCTAssertTrue(rc == SQLITE_OK);
-    
-    rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS t1 (a INTEGER PRIMARY KEY AUTOINCREMENT, b TEXT);", NULL, NULL, NULL);
-    XCTAssertTrue(rc == SQLITE_OK);
-    
-    rc = sqlite3_exec(db, "BEGIN;", NULL, NULL, NULL);
-    XCTAssertTrue(rc == SQLITE_OK);
-    
-    rc = sqlite3_prepare_v2(db, "INSERT INTO t1(b) VALUES (?);", -1, &stmt, NULL);
-    XCTAssertTrue(rc == SQLITE_OK);
-    
-    for(int row = 0; row < ROWSTOINSERT; row++) {
-        rc = sqlite3_bind_text(stmt, 1, [[NSString stringWithFormat:@"%d", (int) arc4random()] UTF8String], -1, SQLITE_TRANSIENT);
-        XCTAssertTrue(rc == SQLITE_OK);
-        rc = sqlite3_step(stmt);
-        XCTAssertTrue(rc == SQLITE_DONE);
-        rc = sqlite3_reset(stmt);
-        XCTAssertTrue(rc == SQLITE_OK);
-    }
-    rc = sqlite3_finalize(stmt);
-    XCTAssertTrue(rc == SQLITE_OK);
-    
-    rc = sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
-    XCTAssertTrue(rc == SQLITE_OK);
-    
-    rc = sqlite3_close(db);
-    XCTAssertTrue(rc == SQLITE_OK);
-}
-
+// Similar to testNewUserWithoutYapDatabase, but does more of the
+// database configuration that YapDatabase does.
 - (void)testNewUserLikeYapDatabase
 {
     sqlite3 *db;
@@ -676,24 +616,6 @@ NS_ASSUME_NONNULL_BEGIN
         
         status = sqlite3_exec(db, [pragma_journal_size_limit UTF8String], NULL, NULL, NULL);
         XCTAssertEqual(status, SQLITE_OK);
-
-        
-//        // Set mmap_size (if needed).
-//        //
-//        // This configures memory mapped I/O.
-//
-//        if (options.pragmaMMapSize > 0)
-//        {
-//            NSString *pragma_mmap_size =
-//            [NSString stringWithFormat:@"PRAGMA mmap_size = %ld;", (long)options.pragmaMMapSize];
-//
-//            status = sqlite3_exec(db, [pragma_mmap_size UTF8String], NULL, NULL, NULL);
-//            if (status != SQLITE_OK)
-//            {
-//                YDBLogError(@"Error setting PRAGMA mmap_size: %d %s", status, sqlite3_errmsg(db));
-//                // This isn't critical, so we can continue.
-//            }
-//        }
         
         // Disable autocheckpointing.
         //
@@ -704,15 +626,6 @@ NS_ASSUME_NONNULL_BEGIN
         status = sqlite3_wal_autocheckpoint(db, 0);
         XCTAssertEqual(status, SQLITE_OK);
     }
-    
-//    PRAGMA auto_vacuum = FULL; VACUUM;
-//    PRAGMA synchronous = NORMAL;
-//    PRAGMA journal_size_limit = 0;
-//    sqlite3_wal_autocheckpoint(db, 0);
-//    yap_vfs_shim_name = [NSString stringWithFormat:@"yap_vfs_shim_%@", [[NSUUID UUID] UUIDString]];
-//    yap_vfs_shim_register([yap_vfs_shim_name UTF8String], NULL, &yap_vfs_shim);
-//
-//
     
     rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS t1 (a INTEGER PRIMARY KEY AUTOINCREMENT, b TEXT);", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
@@ -748,8 +661,6 @@ NS_ASSUME_NONNULL_BEGIN
     rc = sqlite3_key(db, [keyData bytes], (int)[keyData length]);
     XCTAssertTrue(rc == SQLITE_OK);
     
-    //    NSString *saltPragma = [NSString stringWithFormat:@"PRAGMA cipher_salt = \"x'%@'\";", salt];
-    //    DDLogInfo(@"salt pragma = %@", saltPragma);
     rc = sqlite3_exec(db, [saltPragma UTF8String], NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
     
@@ -803,4 +714,3 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
-
