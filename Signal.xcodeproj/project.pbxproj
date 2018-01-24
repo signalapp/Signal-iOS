@@ -3196,6 +3196,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 					HAVE_CONFIG_H,
+					"INTERNAL=1",
 				);
 				GCC_STRICT_ALIASING = NO;
 				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO;
@@ -3851,6 +3852,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 					HAVE_CONFIG_H,
+					"INTERNAL=1",
 				);
 				GCC_STRICT_ALIASING = NO;
 				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO;
@@ -3912,6 +3914,8 @@
 					"$(inherited)",
 					HAVE_CONFIG_H,
 					"RELEASE=1",
+					"INTERNAL=1",
+					"DEBUG=1",
 				);
 				GCC_STRICT_ALIASING = NO;
 				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO;
