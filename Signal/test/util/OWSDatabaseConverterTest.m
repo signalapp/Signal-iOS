@@ -31,6 +31,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface YapDatabase (OWSDatabaseConverterTest)
+
+- (void)flushInternalQueue;
+- (void)flushCheckpointQueue;
+
+@end
+
+#pragma mark -
+
 @implementation OWSDatabaseConverterTest
 
 - (NSData *)randomDatabasePassword
@@ -96,6 +105,9 @@ NS_ASSUME_NONNULL_BEGIN
         writeQueue = database->writeQueue;
 
         databaseBlock(database);
+
+        [database flushInternalQueue];
+        [database flushCheckpointQueue];
 
         // Close the database.
         database = nil;
