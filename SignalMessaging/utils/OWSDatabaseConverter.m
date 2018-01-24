@@ -232,37 +232,77 @@ const NSUInteger kSQLCipherSaltLength = 16;
     // header OR by using "PRAGMA cipher_salt".  In DEBUG builds, we verify that these two values
     // match.
     {
-        sqlite3_stmt *statement;
-
-        char *stmt = "PRAGMA cipher_salt;";
-
-        status = sqlite3_prepare_v2(db, stmt, (int)strlen(stmt) + 1, &statement, NULL);
-        if (status != SQLITE_OK) {
-            DDLogError(@"%@ Error extracting database salt: %d, error: %s", self.logTag, status, sqlite3_errmsg(db));
-            return OWSErrorWithCodeDescription(
-                OWSErrorCodeDatabaseConversionFatalError, @"Error extracting database salt");
-        }
-
-        status = sqlite3_step(statement);
-        if (status != SQLITE_ROW) {
-            DDLogError(@"%@ Missing database salt: %d, error: %s", self.logTag, status, sqlite3_errmsg(db));
-            return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Missing database salt");
-        }
-
-        const unsigned char *valueBytes = sqlite3_column_text(statement, 0);
-        int valueLength = sqlite3_column_bytes(statement, 0);
-        OWSAssert(valueLength == kSqliteHeaderLength);
-        OWSAssert(valueBytes != NULL);
-
-        NSString *saltString =
-            [[NSString alloc] initWithBytes:valueBytes length:(NSUInteger) valueLength encoding:NSUTF8StringEncoding];
-
-        sqlite3_finalize(statement);
-        statement = NULL;
+        NSString *_Nullable saltString =
+            [self executeSingleStringQuery:@"PRAGMA cipher_salt;" db:db label:@"extracting database salt"];
 
         DDLogVerbose(@"%@ saltString: %@", self.logTag, saltString);
 
         OWSAssert([sqlCipherSaltData.hexadecimalString isEqualToString:saltString]);
+    }
+    // We can obtain the database salt in two ways: by reading the first 16 bytes of the encrypted
+    // header OR by using "PRAGMA cipher_salt".  In DEBUG builds, we verify that these two values
+    // match.
+    {
+
+        //
+        //        In practice, for a real application, the other changes we talked about on the phone need occur, i.e.
+        //        to provide the salt to the application explicitly. The application can use a raw key spec, where the
+        //        96 hex are provide (i.e. 64 hex for the 256 bit key, followed by 32 hex for the 128 bit salt) using
+        //        explicit BLOB syntax, e.g.
+        //
+        //            x'98483C6EB40B6C31A448C22A66DED3B5E5E8D5119CAC8327B655C8B5C483648101010101010101010101010101010101'
+        extern void sqlite3CodecGetKey(sqlite3 * db, int nDb, void **zKey, int *nKey);
+        char *keySpecBytes = NULL;
+        int keySpecLength = 0;
+        sqlite3CodecGetKey(db, 0, (void **)&keySpecBytes, &keySpecLength);
+        if (!keySpecBytes || keySpecLength < 1) {
+            DDLogError(@"Error extracting key spec.");
+            return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Failed to extract key spec");
+        }
+        NSData *_Nullable keySpecData = [NSData dataWithBytes:keySpecBytes length:keySpecLength];
+        if (!keySpecData) {
+            DDLogError(@"Invalid key spec.");
+            return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Invalid key spec");
+        }
+        DDLogInfo(@"keySpecData: %@", keySpecData.hexadecimalString);
+
+
+        //        SQLITE_PRIVATE void sqlite3CodecGetKey(sqlite3* db, int nDb, void **zKey, int *nKey) {
+        //            struct Db *pDb = &db->aDb[nDb];
+        //            CODEC_TRACE("sqlite3CodecGetKey: entered db=%p, nDb=%d\n", db, nDb);
+        //            if( pDb->pBt ) {
+        //                codec_ctx *ctx;
+        //                sqlite3pager_get_codec(pDb->pBt->pBt->pPager, (void **) &ctx);
+        //                if(ctx) {
+        //                    if(sqlcipher_codec_get_store_pass(ctx) == 1) {
+        //                        sqlcipher_codec_get_pass(ctx, zKey, nKey);
+        //                    } else {
+        //                        sqlcipher_codec_get_keyspec(ctx, zKey, nKey);
+        //                    }
+        //                } else {
+        //                    *zKey = NULL;
+        //                    *nKey = 0;
+        //                }
+        //            }
+        //        }
+        //
+        //        codec_ctx *ctx;
+        //
+        //        char *keySpecBytes = NULL;
+        //        int keySpecLength = 0;
+        ////        extern void sqlite3CodecGetKey(sqlite3*, int, void**, int*);
+        //        sqlcipher_codec_get_keyspec(ctx, (void**)&keySpecBytes, &keySpecLength);
+
+        //        NSString *saltString =
+        //        [[NSString alloc] initWithBytes:valueBytes length:(NSUInteger) valueLength
+        //        encoding:NSUTF8StringEncoding];
+        //
+        //        sqlite3_finalize(statement);
+        //        statement = NULL;
+        //
+        //        DDLogVerbose(@"%@ saltString: %@", self.logTag, saltString);
+        //
+        //        OWSAssert([sqlCipherSaltData.hexadecimalString isEqualToString:saltString]);
     }
 #endif
 
@@ -326,6 +366,36 @@ const NSUInteger kSQLCipherSaltLength = 16;
                                            OWSErrorCodeDatabaseConversionFatalError, [NSString stringWithFormat:@"Failed to set %@", label]);
     }
     return nil;
+}
+
++ (nullable NSString *)executeSingleStringQuery:(NSString *)sql db:(sqlite3 *)db label:(NSString *)label
+{
+    sqlite3_stmt *statement;
+
+    int status = sqlite3_prepare_v2(db, sql.UTF8String, -1, &statement, NULL);
+    if (status != SQLITE_OK) {
+        DDLogError(@"%@ Error %@: %d, error: %s", self.logTag, label, status, sqlite3_errmsg(db));
+        return nil;
+    }
+
+    status = sqlite3_step(statement);
+    if (status != SQLITE_ROW) {
+        DDLogError(@"%@ Missing %@: %d, error: %s", self.logTag, label, status, sqlite3_errmsg(db));
+        return nil;
+    }
+
+    const unsigned char *valueBytes = sqlite3_column_text(statement, 0);
+    int valueLength = sqlite3_column_bytes(statement, 0);
+    OWSAssert(valueLength == kSqliteHeaderLength);
+    OWSAssert(valueBytes != NULL);
+
+    NSString *result =
+        [[NSString alloc] initWithBytes:valueBytes length:(NSUInteger)valueLength encoding:NSUTF8StringEncoding];
+
+    sqlite3_finalize(statement);
+    statement = NULL;
+
+    return result;
 }
 
 @end
