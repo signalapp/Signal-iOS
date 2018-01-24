@@ -29,6 +29,14 @@ static NSString *keychainService = @"TSKeyChainService";
 static NSString *keychainDBPassAccount = @"TSDatabasePass";
 static NSString *keychainDBSalt = @"OWSDatabaseSalt";
 
+// TODO: Move this to YapDatabase.
+const NSUInteger kSqliteHeaderLength = 32;
+const NSUInteger kSQLCipherSaltLength = 16;
+const NSUInteger kDatabasePasswordLength = 30;
+
+typedef NSData *_Nullable (^LoadDatabaseMetadataBlock)(NSError **_Nullable);
+typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
+
 #pragma mark -
 
 @protocol OWSDatabaseConnectionDelegate <NSObject>
@@ -379,6 +387,9 @@ static NSString *keychainDBSalt = @"OWSDatabaseSalt";
     // this can be deleting any existing database file (if we're recovering
     // from a corrupt keychain).
     NSData *databasePassword = [self databasePassword];
+    OWSAssert(databasePassword.length > 0);
+    NSData *databaseSalt = [self databaseSalt];
+    OWSAssert(databaseSalt.length > 0);
 
     YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
     options.corruptAction = YapDatabaseCorruptAction_Fail;
@@ -386,6 +397,10 @@ static NSString *keychainDBSalt = @"OWSDatabaseSalt";
         return databasePassword;
     };
     options.enableMultiProcessSupport = YES;
+    options.cipherSaltBlock = ^{
+        return databaseSalt;
+    };
+    options.cipherUnencryptedHeaderLength = kSqliteHeaderLength;
 
     // If any of these asserts fails, we need to verify and update
     // OWSDatabaseConverter which assumes the values of these options.
@@ -542,13 +557,45 @@ static NSString *keychainDBSalt = @"OWSDatabaseSalt";
 
 - (NSData *)databasePassword
 {
-    NSError *keyFetchError;
-    NSData *_Nullable passwordData = [OWSStorage tryToLoadDatabasePassword:&keyFetchError];
+    return [self loadMetadataOrClearDatabase:^(NSError **_Nullable errorHandle) {
+        return [OWSStorage tryToLoadDatabasePassword:errorHandle];
+    }
+        createDataBlock:^{
+            return [self createAndSetNewDatabasePassword];
+        }
+        label:@"Database password"];
+}
 
-    if (keyFetchError) {
+- (NSData *)databaseSalt
+{
+    return [self loadMetadataOrClearDatabase:^(NSError **_Nullable errorHandle) {
+        return [OWSStorage tryToLoadDatabaseSalt:errorHandle];
+    }
+        createDataBlock:^{
+            return [self createAndSetNewDatabaseSalt];
+        }
+        label:@"Database salt"];
+}
+
+- (NSData *)loadMetadataOrClearDatabase:(LoadDatabaseMetadataBlock)loadDataBlock
+                        createDataBlock:(CreateDatabaseMetadataBlock)createDataBlock
+                                  label:(NSString *)label
+{
+    OWSAssert(loadDataBlock);
+    OWSAssert(createDataBlock);
+
+    NSError *error;
+    NSData *_Nullable data = loadDataBlock(&error);
+
+    if (error) {
+        // Because we use kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
+        // the keychain will be inaccessible after device restart until
+        // device is unlocked for the first time.  If the app receives
+        // a push notification, we won't be able to access the keychain to
+        // process that notification, so we should just terminate by throwing
+        // an uncaught exception.
         NSString *errorDescription =
-            [NSString stringWithFormat:@"Database password inaccessible. No unlock since device restart? Error: %@",
-                      keyFetchError];
+            [NSString stringWithFormat:@"%@ inaccessible. No unlock since device restart? Error: %@", label, error];
         if (CurrentAppContext().isMainApp) {
             UIApplicationState applicationState = CurrentAppContext().mainApplicationState;
             errorDescription =
@@ -566,35 +613,44 @@ static NSString *keychainDBSalt = @"OWSDatabaseSalt";
             }
         } else {
             [self backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:
-                      @"Password inaccessible; not main app."];
+                      [NSString stringWithFormat:@"%@ inaccessible; not main app.", label]];
         }
 
         // At this point, either this is a new install so there's no existing password to retrieve
         // or the keychain has become corrupt.  Either way, we want to get back to a
         // "known good state" and behave like a new install.
 
-        BOOL shouldHavePassword = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
-        if (shouldHavePassword) {
+        BOOL shouldHaveDatabaseMetadata = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
+        if (shouldHaveDatabaseMetadata) {
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
         }
 
         // Try to reset app by deleting database.
         [OWSStorage resetAllStorage];
 
-        passwordData = [self createAndSetNewDatabasePassword];
+        data = createDataBlock();
     }
 
-    return passwordData;
+    return data;
 }
 
 - (NSData *)createAndSetNewDatabasePassword
 {
-    NSData *password =
-        [[[Randomness generateRandomBytes:30] base64EncodedString] dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *password = [[[Randomness generateRandomBytes:kDatabasePasswordLength] base64EncodedString]
+        dataUsingEncoding:NSUTF8StringEncoding];
 
     [OWSStorage storeDatabasePassword:password];
 
     return password;
+}
+
+- (NSData *)createAndSetNewDatabaseSalt
+{
+    NSData *saltData = [Randomness generateRandomBytes:kSQLCipherSaltLength];
+
+    [OWSStorage storeDatabaseSalt:saltData];
+
+    return saltData;
 }
 
 - (void)backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:(NSString *)errorDescription
@@ -661,6 +717,8 @@ static NSString *keychainDBSalt = @"OWSDatabaseSalt";
 
 + (void)storeDatabaseSalt:(NSData *)saltData
 {
+    OWSAssert(saltData.length == kSQLCipherSaltLength);
+
     [self storeKeyChainValue:saltData keychainKey:keychainDBSalt];
 }
 
