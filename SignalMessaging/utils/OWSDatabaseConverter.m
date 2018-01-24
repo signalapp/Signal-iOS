@@ -4,6 +4,7 @@
 
 #import "OWSDatabaseConverter.h"
 #import "sqlite3.h"
+#import <CommonCrypto/CommonCrypto.h>
 #import <SignalServiceKit/NSData+hexString.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
@@ -14,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 const NSUInteger kSqliteHeaderLength = 32;
 const NSUInteger kSQLCipherSaltLength = 16;
+const NSUInteger kSQLCipherDerivedKeyLength = 32;
+const NSUInteger kSQLCipherKeySpecLength = 48;
 
 @interface OWSStorage (OWSDatabaseConverter)
 
@@ -91,8 +94,14 @@ const NSUInteger kSQLCipherSaltLength = 16;
     OWSDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
         [OWSStorage storeDatabaseSalt:saltData];
     };
+    OWSDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
+        [OWSStorage storeDatabaseKeySpec:keySpecData];
+    };
 
-    return [self convertDatabaseIfNecessary:databaseFilePath databasePassword:databasePassword saltBlock:saltBlock];
+    return [self convertDatabaseIfNecessary:databaseFilePath
+                           databasePassword:databasePassword
+                                  saltBlock:saltBlock
+                               keySpecBlock:keySpecBlock];
 }
 
 // TODO upon failure show user error UI
@@ -100,38 +109,61 @@ const NSUInteger kSQLCipherSaltLength = 16;
 + (nullable NSError *)convertDatabaseIfNecessary:(NSString *)databaseFilePath
                                 databasePassword:(NSData *)databasePassword
                                        saltBlock:(OWSDatabaseSaltBlock)saltBlock
+                                    keySpecBlock:(OWSDatabaseKeySpecBlock)keySpecBlock
 {
     if (![self doesDatabaseNeedToBeConverted:databaseFilePath]) {
         return nil;
     }
 
-    return [self convertDatabase:(NSString *)databaseFilePath databasePassword:databasePassword saltBlock:saltBlock];
+    return [self convertDatabase:databaseFilePath
+                databasePassword:databasePassword
+                       saltBlock:saltBlock
+                    keySpecBlock:keySpecBlock];
 }
 
 + (nullable NSError *)convertDatabase:(NSString *)databaseFilePath
                      databasePassword:(NSData *)databasePassword
                             saltBlock:(OWSDatabaseSaltBlock)saltBlock
+                         keySpecBlock:(OWSDatabaseKeySpecBlock)keySpecBlock
 {
     OWSAssert(databaseFilePath.length > 0);
     OWSAssert(databasePassword.length > 0);
     OWSAssert(saltBlock);
+    OWSAssert(keySpecBlock);
 
     DDLogVerbose(@"%@ databasePassword: %@", self.logTag, databasePassword.hexadecimalString);
 
-    NSData *sqlCipherSaltData;
+    NSData *saltData;
     {
         NSData *headerData = [self readFirstNBytesOfDatabaseFile:databaseFilePath byteCount:kSqliteHeaderLength];
         OWSAssert(headerData);
 
         OWSAssert(headerData.length >= kSQLCipherSaltLength);
-        sqlCipherSaltData = [headerData subdataWithRange:NSMakeRange(0, kSQLCipherSaltLength)];
+        saltData = [headerData subdataWithRange:NSMakeRange(0, kSQLCipherSaltLength)];
 
-        DDLogVerbose(@"%@ sqlCipherSaltData: %@", self.logTag, sqlCipherSaltData.hexadecimalString);
+        DDLogVerbose(@"%@ saltData: %@", self.logTag, saltData.hexadecimalString);
 
         // Make sure we successfully persist the salt (persumably in the keychain) before
         // proceeding with the database conversion or we could leave the app in an
         // unrecoverable state.
-        saltBlock(sqlCipherSaltData);
+        saltBlock(saltData);
+    }
+
+    {
+        NSData *_Nullable keySpecData = [self databaseKeySpecForPassword:databasePassword saltData:saltData];
+        if (!keySpecData || keySpecData.length != kSQLCipherKeySpecLength) {
+            DDLogError(@"Error deriving key spec");
+            return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Invalid key spec");
+        }
+
+        DDLogVerbose(@"%@ keySpecData: %@", self.logTag, keySpecData.hexadecimalString);
+
+        OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
+
+        // Make sure we successfully persist the key spec (persumably in the keychain) before
+        // proceeding with the database conversion or we could leave the app in an
+        // unrecoverable state.
+        keySpecBlock(keySpecData);
     }
 
     // -----------------------------------------------------------
@@ -237,72 +269,7 @@ const NSUInteger kSQLCipherSaltLength = 16;
 
         DDLogVerbose(@"%@ saltString: %@", self.logTag, saltString);
 
-        OWSAssert([sqlCipherSaltData.hexadecimalString isEqualToString:saltString]);
-    }
-    // We can obtain the database salt in two ways: by reading the first 16 bytes of the encrypted
-    // header OR by using "PRAGMA cipher_salt".  In DEBUG builds, we verify that these two values
-    // match.
-    {
-
-        //
-        //        In practice, for a real application, the other changes we talked about on the phone need occur, i.e.
-        //        to provide the salt to the application explicitly. The application can use a raw key spec, where the
-        //        96 hex are provide (i.e. 64 hex for the 256 bit key, followed by 32 hex for the 128 bit salt) using
-        //        explicit BLOB syntax, e.g.
-        //
-        //            x'98483C6EB40B6C31A448C22A66DED3B5E5E8D5119CAC8327B655C8B5C483648101010101010101010101010101010101'
-        extern void sqlite3CodecGetKey(sqlite3 * db, int nDb, void **zKey, int *nKey);
-        char *keySpecBytes = NULL;
-        int keySpecLength = 0;
-        sqlite3CodecGetKey(db, 0, (void **)&keySpecBytes, &keySpecLength);
-        if (!keySpecBytes || keySpecLength < 1) {
-            DDLogError(@"Error extracting key spec.");
-            return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Failed to extract key spec");
-        }
-        NSData *_Nullable keySpecData = [NSData dataWithBytes:keySpecBytes length:keySpecLength];
-        if (!keySpecData) {
-            DDLogError(@"Invalid key spec.");
-            return OWSErrorWithCodeDescription(OWSErrorCodeDatabaseConversionFatalError, @"Invalid key spec");
-        }
-        DDLogInfo(@"keySpecData: %@", keySpecData.hexadecimalString);
-
-
-        //        SQLITE_PRIVATE void sqlite3CodecGetKey(sqlite3* db, int nDb, void **zKey, int *nKey) {
-        //            struct Db *pDb = &db->aDb[nDb];
-        //            CODEC_TRACE("sqlite3CodecGetKey: entered db=%p, nDb=%d\n", db, nDb);
-        //            if( pDb->pBt ) {
-        //                codec_ctx *ctx;
-        //                sqlite3pager_get_codec(pDb->pBt->pBt->pPager, (void **) &ctx);
-        //                if(ctx) {
-        //                    if(sqlcipher_codec_get_store_pass(ctx) == 1) {
-        //                        sqlcipher_codec_get_pass(ctx, zKey, nKey);
-        //                    } else {
-        //                        sqlcipher_codec_get_keyspec(ctx, zKey, nKey);
-        //                    }
-        //                } else {
-        //                    *zKey = NULL;
-        //                    *nKey = 0;
-        //                }
-        //            }
-        //        }
-        //
-        //        codec_ctx *ctx;
-        //
-        //        char *keySpecBytes = NULL;
-        //        int keySpecLength = 0;
-        ////        extern void sqlite3CodecGetKey(sqlite3*, int, void**, int*);
-        //        sqlcipher_codec_get_keyspec(ctx, (void**)&keySpecBytes, &keySpecLength);
-
-        //        NSString *saltString =
-        //        [[NSString alloc] initWithBytes:valueBytes length:(NSUInteger) valueLength
-        //        encoding:NSUTF8StringEncoding];
-        //
-        //        sqlite3_finalize(statement);
-        //        statement = NULL;
-        //
-        //        DDLogVerbose(@"%@ saltString: %@", self.logTag, saltString);
-        //
-        //        OWSAssert([sqlCipherSaltData.hexadecimalString isEqualToString:saltString]);
+        OWSAssert([saltData.hexadecimalString isEqualToString:saltString]);
     }
 #endif
 
@@ -396,6 +363,63 @@ const NSUInteger kSQLCipherSaltLength = 16;
     statement = NULL;
 
     return result;
+}
+
++ (nullable NSData *)deriveDatabaseKeyForPassword:(NSData *)passwordData saltData:(NSData *)saltData
+{
+    OWSAssert(passwordData.length > 0);
+    OWSAssert(saltData.length == kSQLCipherSaltLength);
+
+    unsigned char *derivedKeyBytes = malloc((size_t)kSQLCipherDerivedKeyLength);
+    OWSAssert(derivedKeyBytes);
+    // See: PBKDF2_ITER.
+    const unsigned int workfactor = 64000;
+
+    int result = CCKeyDerivationPBKDF(kCCPBKDF2,
+        passwordData.bytes,
+        (size_t)passwordData.length,
+        saltData.bytes,
+        (size_t)saltData.length,
+        kCCPRFHmacAlgSHA1,
+        workfactor,
+        derivedKeyBytes,
+        kSQLCipherDerivedKeyLength);
+    if (result != kCCSuccess) {
+        DDLogError(@"Error deriving key: %d", result);
+        return nil;
+    }
+
+    NSData *_Nullable derivedKeyData = [NSData dataWithBytes:derivedKeyBytes length:kSQLCipherDerivedKeyLength];
+    if (!derivedKeyData || derivedKeyData.length != kSQLCipherDerivedKeyLength) {
+        DDLogError(@"Invalid derived key: %d", result);
+        return nil;
+    }
+    DDLogVerbose(@"%@ derivedKeyData: %@", self.logTag, derivedKeyData.hexadecimalString);
+
+    return derivedKeyData;
+}
+
++ (nullable NSData *)databaseKeySpecForPassword:(NSData *)passwordData saltData:(NSData *)saltData
+{
+    OWSAssert(passwordData.length > 0);
+    OWSAssert(saltData.length == kSQLCipherSaltLength);
+
+    NSData *_Nullable derivedKeyData = [self deriveDatabaseKeyForPassword:passwordData saltData:saltData];
+    if (!derivedKeyData || derivedKeyData.length != kSQLCipherDerivedKeyLength) {
+        DDLogError(@"Error deriving key");
+        return nil;
+    }
+    DDLogVerbose(@"%@ derivedKeyData: %@", self.logTag, derivedKeyData.hexadecimalString);
+
+    NSMutableData *keySpecData = [NSMutableData new];
+    [keySpecData appendData:derivedKeyData];
+    [keySpecData appendData:saltData];
+
+    DDLogVerbose(@"%@ keySpecData: %@", self.logTag, keySpecData.hexadecimalString);
+
+    OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
+
+    return keySpecData;
 }
 
 @end

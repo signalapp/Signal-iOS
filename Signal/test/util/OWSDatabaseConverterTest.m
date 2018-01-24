@@ -52,17 +52,23 @@ NS_ASSUME_NONNULL_BEGIN
     return [Randomness generateRandomBytes:(int)kSQLCipherSaltLength];
 }
 
+- (NSData *)randomDatabaseKeySpec
+{
+    return [Randomness generateRandomBytes:(int)kSQLCipherKeySpecLength];
+}
+
 // * Open a YapDatabase.
 // * Do some work with a block.
 // * Close the database.
 // * Verify that the database is closed.
 - (void)openYapDatabase:(NSString *)databaseFilePath
-       databasePassword:(NSData *)databasePassword
+       databasePassword:(NSData *_Nullable)databasePassword
            databaseSalt:(NSData *_Nullable)databaseSalt
+        databaseKeySpec:(NSData *_Nullable)databaseKeySpec
           databaseBlock:(void (^_Nonnull)(YapDatabase *))databaseBlock
 {
     OWSAssert(databaseFilePath.length > 0);
-    OWSAssert(databasePassword.length > 0);
+    OWSAssert(databasePassword.length > 0 || databaseKeySpec.length > 0);
     OWSAssert(databaseBlock);
 
     DDLogVerbose(@"openYapDatabase: %@", databaseFilePath);
@@ -75,15 +81,24 @@ NS_ASSUME_NONNULL_BEGIN
     @autoreleasepool {
         YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
         options.corruptAction = YapDatabaseCorruptAction_Fail;
-        options.cipherKeyBlock = ^{
-            return databasePassword;
-        };
+        if (databasePassword) {
+            DDLogInfo(@"%@ Using password.", self.logTag);
+            options.cipherKeyBlock = ^{
+                return databasePassword;
+            };
+        }
         options.enableMultiProcessSupport = YES;
 
         if (databaseSalt) {
             DDLogInfo(@"%@ Using salt & unencrypted header.", self.logTag);
             options.cipherSaltBlock = ^{
                 return databaseSalt;
+            };
+            options.cipherUnencryptedHeaderLength = kSqliteHeaderLength;
+        } else if (databaseKeySpec) {
+            DDLogInfo(@"%@ Using key spec & unencrypted header.", self.logTag);
+            options.cipherKeySpecBlock = ^{
+                return databaseKeySpec;
             };
             options.cipherUnencryptedHeaderLength = kSqliteHeaderLength;
         }
@@ -147,17 +162,20 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(!strongDatabase);
 }
 
-- (void)createTestDatabase:(NSString *)databaseFilePath databasePassword:(NSData *)databasePassword
+- (void)createTestDatabase:(NSString *)databaseFilePath
+          databasePassword:(NSData *_Nullable)databasePassword
               databaseSalt:(NSData *_Nullable)databaseSalt
+           databaseKeySpec:(NSData *_Nullable)databaseKeySpec
 {
     OWSAssert(databaseFilePath.length > 0);
-    OWSAssert(databasePassword.length > 0);
+    OWSAssert(databasePassword.length > 0 || databaseKeySpec.length > 0);
 
     OWSAssert(![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]);
 
     [self openYapDatabase:databaseFilePath
          databasePassword:databasePassword
              databaseSalt:databaseSalt
+          databaseKeySpec:databaseKeySpec
             databaseBlock:^(YapDatabase *database) {
                 [self logHeaderOfDatabaseFile:databaseFilePath
                                         label:@"mid-creation"];
@@ -177,11 +195,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (BOOL)verifyTestDatabase:(NSString *)databaseFilePath
-          databasePassword:(NSData *)databasePassword
+          databasePassword:(NSData *_Nullable)databasePassword
               databaseSalt:(NSData *_Nullable)databaseSalt
+           databaseKeySpec:(NSData *_Nullable)databaseKeySpec
 {
     OWSAssert(databaseFilePath.length > 0);
-    OWSAssert(databasePassword.length > 0);
+    OWSAssert(databasePassword.length > 0 || databaseKeySpec.length > 0);
 
     OWSAssert([[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]);
 
@@ -189,6 +208,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self openYapDatabase:databaseFilePath
          databasePassword:databasePassword
              databaseSalt:databaseSalt
+          databaseKeySpec:databaseKeySpec
             databaseBlock:^(YapDatabase *database) {
                 YapDatabaseConnection *dbConnection = database.newConnection;
                 id _Nullable value = [dbConnection objectForKey:@"test_key_name" inCollection:@"test_collection_name"];
@@ -202,8 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)createUnconvertedDatabase:(NSData *)databasePassword
 {
-    return [self createDatabase:databasePassword
-                   databaseSalt:nil];
+    return [self createDatabase:databasePassword databaseSalt:nil databaseKeySpec:nil];
 }
 
 - (NSString *)createTempDatabaseFilePath
@@ -218,19 +237,28 @@ NS_ASSUME_NONNULL_BEGIN
     return databaseFilePath;
 }
 
-// If databaseSalt is nil, creates a non-converted database.
+// If databaseSalt and databaseKeySpec are both nil, creates a non-converted database.
 // Otherwise creates a pre-converted database.
-- (nullable NSString *)createDatabase:(NSData *)databasePassword
+- (nullable NSString *)createDatabase:(NSData *_Nullable)databasePassword
                          databaseSalt:(NSData *_Nullable)databaseSalt
+                      databaseKeySpec:(NSData *_Nullable)databaseKeySpec
 {
+    OWSAssert(databasePassword.length > 0 || databaseKeySpec.length > 0);
+
     NSString *databaseFilePath = [self createTempDatabaseFilePath];
 
-    [self createTestDatabase:databaseFilePath databasePassword:databasePassword databaseSalt:databaseSalt];
+    [self createTestDatabase:databaseFilePath
+            databasePassword:databasePassword
+                databaseSalt:databaseSalt
+             databaseKeySpec:databaseKeySpec];
 
     [self logHeaderOfDatabaseFile:databaseFilePath
                             label:@"created"];
 
-    BOOL isValid = [self verifyTestDatabase:databaseFilePath databasePassword:databasePassword databaseSalt:databaseSalt];
+    BOOL isValid = [self verifyTestDatabase:databaseFilePath
+                           databasePassword:databasePassword
+                               databaseSalt:databaseSalt
+                            databaseKeySpec:databaseKeySpec];
     OWSAssert(isValid);
 
     return databaseFilePath;
@@ -245,17 +273,70 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
 }
 
-- (void)testDoesDatabaseNeedToBeConverted_Converted
+- (void)testDoesDatabaseNeedToBeConverted_ConvertedWithoutKeyspec
 {
     NSData *databasePassword = [self randomDatabasePassword];
     NSData *databaseSalt = [self randomDatabaseSalt];
-    NSString *_Nullable databaseFilePath = [self createDatabase:databasePassword
-                                                   databaseSalt:databaseSalt];
+    NSData *_Nullable databaseKeySpec = nil;
+    NSString *_Nullable databaseFilePath =
+        [self createDatabase:databasePassword databaseSalt:databaseSalt databaseKeySpec:databaseKeySpec];
+    XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+}
+
+- (void)testDoesDatabaseNeedToBeConverted_ConvertedWithKeyspec
+{
+    NSData *_Nullable databasePassword = nil;
+    NSData *_Nullable databaseSalt = nil;
+    NSData *databaseKeySpec = [self randomDatabaseKeySpec];
+    NSString *_Nullable databaseFilePath =
+        [self createDatabase:databasePassword databaseSalt:databaseSalt databaseKeySpec:databaseKeySpec];
     XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
 }
 
 // Verifies that legacy users with non-converted databases can convert.
-- (void)testDatabaseConversion
+- (void)testDatabaseConversion_WithoutKeyspec
+{
+    NSData *databasePassword = [self randomDatabasePassword];
+    NSString *_Nullable databaseFilePath = [self createUnconvertedDatabase:databasePassword];
+    XCTAssertTrue([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+
+    __block NSData *_Nullable databaseSalt = nil;
+    OWSDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+        OWSAssert(!databaseSalt);
+        OWSAssert(saltData);
+
+        databaseSalt = saltData;
+    };
+    __block NSData *_Nullable databaseKeySpec = nil;
+    OWSDatabaseSaltBlock keySpecBlock = ^(NSData *keySpecData) {
+        OWSAssert(!databaseKeySpec);
+        OWSAssert(keySpecData);
+
+        databaseKeySpec = keySpecData;
+    };
+    NSError *_Nullable error = [OWSDatabaseConverter convertDatabaseIfNecessary:databaseFilePath
+                                                               databasePassword:databasePassword
+                                                                      saltBlock:saltBlock
+                                                                   keySpecBlock:keySpecBlock];
+    if (error) {
+        DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
+    }
+    XCTAssertNil(error);
+    XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+    XCTAssertNotNil(databaseSalt);
+    XCTAssertEqual(databaseSalt.length, kSQLCipherSaltLength);
+    XCTAssertNotNil(databaseKeySpec);
+    XCTAssertEqual(databaseKeySpec.length, kSQLCipherKeySpecLength);
+
+    BOOL isValid = [self verifyTestDatabase:databaseFilePath
+                           databasePassword:databasePassword
+                               databaseSalt:databaseSalt
+                            databaseKeySpec:nil];
+    XCTAssertTrue(isValid);
+}
+
+// Verifies that legacy users with non-converted databases can convert.
+- (void)testDatabaseConversion_WithKeyspec
 {
     NSData *databasePassword = [self randomDatabasePassword];
     NSString *_Nullable databaseFilePath = [self createUnconvertedDatabase:databasePassword];
@@ -268,27 +349,80 @@ NS_ASSUME_NONNULL_BEGIN
         
         databaseSalt = saltData;
     };
+    __block NSData *_Nullable databaseKeySpec = nil;
+    OWSDatabaseSaltBlock keySpecBlock = ^(NSData *keySpecData) {
+        OWSAssert(!databaseKeySpec);
+        OWSAssert(keySpecData);
+
+        databaseKeySpec = keySpecData;
+    };
     NSError *_Nullable error = [OWSDatabaseConverter convertDatabaseIfNecessary:databaseFilePath
                                                                databasePassword:databasePassword
-                                                                      saltBlock:saltBlock];
+                                                                      saltBlock:saltBlock
+                                                                   keySpecBlock:keySpecBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
     XCTAssertNil(error);
     XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
-    
-    BOOL isValid =
-    [self verifyTestDatabase:databaseFilePath databasePassword:databasePassword databaseSalt:databaseSalt];
+    XCTAssertNotNil(databaseSalt);
+    XCTAssertEqual(databaseSalt.length, kSQLCipherSaltLength);
+    XCTAssertNotNil(databaseKeySpec);
+    XCTAssertEqual(databaseKeySpec.length, kSQLCipherKeySpecLength);
+
+    BOOL isValid = [self verifyTestDatabase:databaseFilePath
+                           databasePassword:nil
+                               databaseSalt:nil
+                            databaseKeySpec:databaseKeySpec];
     XCTAssertTrue(isValid);
 }
 
 // Verifies new users who create new pre-converted databases.
-- (void)testDatabaseCreation
+- (void)testDatabaseCreation_WithoutKeySpec
 {
     NSData *databasePassword = [self randomDatabasePassword];
     NSData *databaseSalt = [self randomDatabaseSalt];
-    NSString *_Nullable databaseFilePath = [self createDatabase:databasePassword
-                                                   databaseSalt:databaseSalt];
+    NSData *_Nullable databaseKeySpec = nil;
+    NSString *_Nullable databaseFilePath =
+        [self createDatabase:databasePassword databaseSalt:databaseSalt databaseKeySpec:databaseKeySpec];
+    XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+
+    OWSDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+        OWSAssert(saltData);
+
+        XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
+    };
+    OWSDatabaseSaltBlock keySpecBlock = ^(NSData *keySpecData) {
+        OWSAssert(keySpecData);
+
+        XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
+    };
+
+    NSError *_Nullable error = [OWSDatabaseConverter convertDatabaseIfNecessary:databaseFilePath
+                                                               databasePassword:databasePassword
+                                                                      saltBlock:saltBlock
+                                                                   keySpecBlock:keySpecBlock];
+    if (error) {
+        DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
+    }
+    XCTAssertNil(error);
+    XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+
+    BOOL isValid = [self verifyTestDatabase:databaseFilePath
+                           databasePassword:databasePassword
+                               databaseSalt:databaseSalt
+                            databaseKeySpec:databaseKeySpec];
+    XCTAssertTrue(isValid);
+}
+
+// Verifies new users who create new pre-converted databases.
+- (void)testDatabaseCreation_WithKeySpec
+{
+    NSData *_Nullable databasePassword = nil;
+    NSData *_Nullable databaseSalt = nil;
+    NSData *databaseKeySpec = [self randomDatabaseKeySpec];
+    NSString *_Nullable databaseFilePath =
+        [self createDatabase:databasePassword databaseSalt:databaseSalt databaseKeySpec:databaseKeySpec];
     XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
     
     OWSDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
@@ -296,17 +430,26 @@ NS_ASSUME_NONNULL_BEGIN
         
         XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
     };
+    OWSDatabaseSaltBlock keySpecBlock = ^(NSData *keySpecData) {
+        OWSAssert(keySpecData);
+
+        XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
+    };
+
     NSError *_Nullable error = [OWSDatabaseConverter convertDatabaseIfNecessary:databaseFilePath
                                                                databasePassword:databasePassword
-                                                                      saltBlock:saltBlock];
+                                                                      saltBlock:saltBlock
+                                                                   keySpecBlock:keySpecBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
     XCTAssertNil(error);
     XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
-    
-    BOOL isValid =
-    [self verifyTestDatabase:databaseFilePath databasePassword:databasePassword databaseSalt:databaseSalt];
+
+    BOOL isValid = [self verifyTestDatabase:databaseFilePath
+                           databasePassword:databasePassword
+                               databaseSalt:databaseSalt
+                            databaseKeySpec:databaseKeySpec];
     XCTAssertTrue(isValid);
 }
 

@@ -28,10 +28,13 @@ NSString *const OWSResetStorageNotification = @"OWSResetStorageNotification";
 static NSString *keychainService = @"TSKeyChainService";
 static NSString *keychainDBPassAccount = @"TSDatabasePass";
 static NSString *keychainDBSalt = @"OWSDatabaseSalt";
+static NSString *keychainDBKeySpec = @"OWSDatabaseKeySpec";
 
-// TODO: Move this to YapDatabase.
+// TODO: Move these constants to YapDatabase.
 const NSUInteger kSqliteHeaderLength = 32;
 const NSUInteger kSQLCipherSaltLength = 16;
+const NSUInteger kSQLCipherKeySpecLength = 48;
+
 const NSUInteger kDatabasePasswordLength = 30;
 
 typedef NSData *_Nullable (^LoadDatabaseMetadataBlock)(NSError **_Nullable);
@@ -382,23 +385,17 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 - (BOOL)tryToLoadDatabase
 {
-
-    // We determine the database password first, since a side effect of
+    // We determine the database password / key spec first, since a side effect of
     // this can be deleting any existing database file (if we're recovering
     // from a corrupt keychain).
-    NSData *databasePassword = [self databasePassword];
-    OWSAssert(databasePassword.length > 0);
-    NSData *databaseSalt = [self databaseSalt];
-    OWSAssert(databaseSalt.length > 0);
+    NSData *databaseKeySpec = [self databaseKeySpec];
+    OWSAssert(databaseKeySpec.length == kSQLCipherKeySpecLength);
 
     YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
     options.corruptAction = YapDatabaseCorruptAction_Fail;
-    options.cipherKeyBlock = ^{
-        return databasePassword;
-    };
     options.enableMultiProcessSupport = YES;
-    options.cipherSaltBlock = ^{
-        return databaseSalt;
+    options.cipherKeySpecBlock = ^{
+        return databaseKeySpec;
     };
     options.cipherUnencryptedHeaderLength = kSqliteHeaderLength;
 
@@ -555,6 +552,11 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     return [self tryToLoadKeyChainValue:keychainDBSalt errorHandle:errorHandle];
 }
 
++ (nullable NSData *)tryToLoadDatabaseKeySpec:(NSError **)errorHandle
+{
+    return [self tryToLoadKeyChainValue:keychainDBKeySpec errorHandle:errorHandle];
+}
+
 - (NSData *)databasePassword
 {
     return [self loadMetadataOrClearDatabase:^(NSError **_Nullable errorHandle) {
@@ -575,6 +577,17 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
             return [self createAndSetNewDatabaseSalt];
         }
         label:@"Database salt"];
+}
+
+- (NSData *)databaseKeySpec
+{
+    return [self loadMetadataOrClearDatabase:^(NSError **_Nullable errorHandle) {
+        return [OWSStorage tryToLoadDatabaseKeySpec:errorHandle];
+    }
+        createDataBlock:^{
+            return [self createAndSetNewDatabaseKeySpec];
+        }
+        label:@"Database key spec"];
 }
 
 - (NSData *)loadMetadataOrClearDatabase:(LoadDatabaseMetadataBlock)loadDataBlock
@@ -653,6 +666,21 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     return saltData;
 }
 
+- (NSData *)createAndSetNewDatabaseKeySpec
+{
+    NSData *databasePassword = [self databasePassword];
+    OWSAssert(databasePassword.length > 0);
+    NSData *databaseSalt = [self databaseSalt];
+    OWSAssert(databaseSalt.length == kSQLCipherSaltLength);
+
+    NSData *keySpecData = [OWSDatabaseConverter databaseKeySpecForPassword:databasePassword saltData:databaseSalt];
+    OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
+
+    [OWSStorage storeDatabaseKeySpec:keySpecData];
+
+    return keySpecData;
+}
+
 - (void)backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:(NSString *)errorDescription
 {
     OWSAssert(CurrentAppContext().isMainApp && CurrentAppContext().isInBackground);
@@ -720,6 +748,13 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     OWSAssert(saltData.length == kSQLCipherSaltLength);
 
     [self storeKeyChainValue:saltData keychainKey:keychainDBSalt];
+}
+
++ (void)storeDatabaseKeySpec:(NSData *)keySpecData
+{
+    OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
+
+    [self storeKeyChainValue:keySpecData keychainKey:keychainDBKeySpec];
 }
 
 @end
