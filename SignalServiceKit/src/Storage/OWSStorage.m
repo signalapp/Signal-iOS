@@ -13,6 +13,7 @@
 #import <Curve25519Kit/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
 #import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseCryptoUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,11 +30,6 @@ static NSString *keychainService = @"TSKeyChainService";
 static NSString *keychainDBPassAccount = @"TSDatabasePass";
 static NSString *keychainDBSalt = @"OWSDatabaseSalt";
 static NSString *keychainDBKeySpec = @"OWSDatabaseKeySpec";
-
-// TODO: Move these constants to YapDatabase.
-const NSUInteger kSqliteHeaderLength = 32;
-const NSUInteger kSQLCipherSaltLength = 16;
-const NSUInteger kSQLCipherKeySpecLength = 48;
 
 const NSUInteger kDatabasePasswordLength = 30;
 
@@ -385,9 +381,13 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 - (BOOL)tryToLoadDatabase
 {
-    // We determine the database password / key spec first, since a side effect of
+    // We determine the database password, salt and key spec first, since a side effect of
     // this can be deleting any existing database file (if we're recovering
     // from a corrupt keychain).
+    NSData *databasePassword = [self databasePassword];
+    OWSAssert(databasePassword.length > 0);
+    NSData *databaseSalt = [self databaseSalt];
+    OWSAssert(databaseSalt.length > 0);
     NSData *databaseKeySpec = [self databaseKeySpec];
     OWSAssert(databaseKeySpec.length == kSQLCipherKeySpecLength);
 
@@ -555,6 +555,32 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 + (nullable NSData *)tryToLoadDatabaseKeySpec:(NSError **)errorHandle
 {
     return [self tryToLoadKeyChainValue:keychainDBKeySpec errorHandle:errorHandle];
+
+    //    NSData *_Nullable keySpecData = [self tryToLoadKeyChainValue:keychainDBKeySpec errorHandle:errorHandle];
+    //
+    //    if (!keySpecData) {
+    //        DDLogInfo(@"%@ Trying to derive database key spec.", self.logTag);
+    //        NSData *_Nullable passwordData = [self tryToLoadDatabasePassword:errorHandle];
+    //        if (passwordData && !*errorHandle) {
+    //            NSData *_Nullable saltData = [self tryToLoadDatabaseSalt:errorHandle];
+    //            if (saltData && !*errorHandle) {
+    //                OWSAssert(passwordData.length > 0);
+    //                OWSAssert(saltData.length == kSQLCipherSaltLength);
+    //
+    //                keySpecData = [YapDatabaseCryptoUtils databaseKeySpecForPassword:passwordData saltData:saltData];
+    //                OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
+    //
+    //                if (keySpecData) {
+    //                    DDLogInfo(@"%@ database key spec derived.", self.logTag);
+    //                    [self storeDatabaseKeySpec:keySpecData];
+    //                }
+    //            }
+    //        }
+    //    }
+    //
+    //    OWSAssert(keySpecData);
+    //
+    //    return keySpecData;
 }
 
 - (NSData *)databasePassword
@@ -563,7 +589,15 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
         return [OWSStorage tryToLoadDatabasePassword:errorHandle];
     }
         createDataBlock:^{
-            return [self createAndSetNewDatabasePassword];
+            NSData *passwordData = [self createAndSetNewDatabasePassword];
+            NSData *saltData = [self createAndSetNewDatabaseSalt];
+            NSData *keySpecData = [self createAndSetNewDatabaseKeySpec];
+
+            OWSAssert(passwordData.length > 0);
+            OWSAssert(saltData.length == kSQLCipherSaltLength);
+            OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
+
+            return passwordData;
         }
         label:@"Database password"];
 }
@@ -574,7 +608,15 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
         return [OWSStorage tryToLoadDatabaseSalt:errorHandle];
     }
         createDataBlock:^{
-            return [self createAndSetNewDatabaseSalt];
+            NSData *passwordData = [self createAndSetNewDatabasePassword];
+            NSData *saltData = [self createAndSetNewDatabaseSalt];
+            NSData *keySpecData = [self createAndSetNewDatabaseKeySpec];
+
+            OWSAssert(passwordData.length > 0);
+            OWSAssert(saltData.length == kSQLCipherSaltLength);
+            OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
+
+            return saltData;
         }
         label:@"Database salt"];
 }
@@ -585,7 +627,17 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
         return [OWSStorage tryToLoadDatabaseKeySpec:errorHandle];
     }
         createDataBlock:^{
-            return [self createAndSetNewDatabaseKeySpec];
+            OWSFail(@"%@ It should never be necessary to generate a random key spec.", self.logTag);
+
+            NSData *passwordData = [self createAndSetNewDatabasePassword];
+            NSData *saltData = [self createAndSetNewDatabaseSalt];
+            NSData *keySpecData = [self createAndSetNewDatabaseKeySpec];
+
+            OWSAssert(passwordData.length > 0);
+            OWSAssert(saltData.length == kSQLCipherSaltLength);
+            OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
+
+            return keySpecData;
         }
         label:@"Database key spec"];
 }
@@ -659,7 +711,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 - (NSData *)createAndSetNewDatabaseSalt
 {
-    NSData *saltData = [Randomness generateRandomBytes:kSQLCipherSaltLength];
+    NSData *saltData = [Randomness generateRandomBytes:(int)kSQLCipherSaltLength];
 
     [OWSStorage storeDatabaseSalt:saltData];
 
@@ -673,7 +725,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     NSData *databaseSalt = [self databaseSalt];
     OWSAssert(databaseSalt.length == kSQLCipherSaltLength);
 
-    NSData *keySpecData = [OWSDatabaseConverter databaseKeySpecForPassword:databasePassword saltData:databaseSalt];
+    NSData *keySpecData = [YapDatabaseCryptoUtils databaseKeySpecForPassword:databasePassword saltData:databaseSalt];
     OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
 
     [OWSStorage storeDatabaseKeySpec:keySpecData];
@@ -699,6 +751,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 {
     [SAMKeychain deletePasswordForService:keychainService account:keychainDBPassAccount];
     [SAMKeychain deletePasswordForService:keychainService account:keychainDBSalt];
+    [SAMKeychain deletePasswordForService:keychainService account:keychainDBKeySpec];
 }
 
 - (unsigned long long)databaseFileSize

@@ -3,12 +3,12 @@
 //
 
 #import "OWSDatabaseConverterTest.h"
-#import "OWSDatabaseConverter.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SignalServiceKit/NSData+hexString.h>
 #import <SignalServiceKit/OWSStorage.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <YapDatabase/YapDatabasePrivate.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,9 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSDatabaseConverter (OWSDatabaseConverterTest)
-
-+ (BOOL)doesDatabaseNeedToBeConverted:(NSString *)databaseFilePath;
+@interface YapDatabaseCryptoUtils (OWSDatabaseConverterTest)
 
 + (NSData *)readFirstNBytesOfDatabaseFile:(NSString *)filePath byteCount:(NSUInteger)byteCount;
 
@@ -230,7 +228,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *temporaryDirectory = NSTemporaryDirectory();
     NSString *filename = [[NSUUID UUID].UUIDString stringByAppendingString:@".sqlite"];
     NSString *databaseFilePath = [temporaryDirectory stringByAppendingPathComponent:filename];
-    
+
     DDLogInfo(@"%@ databaseFilePath: %@", self.logTag, databaseFilePath);
     [DDLog flushLog];
 
@@ -270,7 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSData *databasePassword = [self randomDatabasePassword];
     NSString *_Nullable databaseFilePath = [self createUnconvertedDatabase:databasePassword];
-    XCTAssertTrue([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+    XCTAssertTrue([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 }
 
 - (void)testDoesDatabaseNeedToBeConverted_ConvertedWithoutKeyspec
@@ -280,7 +278,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *_Nullable databaseKeySpec = nil;
     NSString *_Nullable databaseFilePath =
         [self createDatabase:databasePassword databaseSalt:databaseSalt databaseKeySpec:databaseKeySpec];
-    XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+    XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 }
 
 - (void)testDoesDatabaseNeedToBeConverted_ConvertedWithKeyspec
@@ -290,7 +288,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *databaseKeySpec = [self randomDatabaseKeySpec];
     NSString *_Nullable databaseFilePath =
         [self createDatabase:databasePassword databaseSalt:databaseSalt databaseKeySpec:databaseKeySpec];
-    XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+    XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 }
 
 // Verifies that legacy users with non-converted databases can convert.
@@ -298,31 +296,31 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSData *databasePassword = [self randomDatabasePassword];
     NSString *_Nullable databaseFilePath = [self createUnconvertedDatabase:databasePassword];
-    XCTAssertTrue([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+    XCTAssertTrue([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
     __block NSData *_Nullable databaseSalt = nil;
-    OWSDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
         OWSAssert(!databaseSalt);
         OWSAssert(saltData);
 
         databaseSalt = saltData;
     };
     __block NSData *_Nullable databaseKeySpec = nil;
-    OWSDatabaseSaltBlock keySpecBlock = ^(NSData *keySpecData) {
+    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
         OWSAssert(!databaseKeySpec);
         OWSAssert(keySpecData);
 
         databaseKeySpec = keySpecData;
     };
-    NSError *_Nullable error = [OWSDatabaseConverter convertDatabaseIfNecessary:databaseFilePath
-                                                               databasePassword:databasePassword
-                                                                      saltBlock:saltBlock
-                                                                   keySpecBlock:keySpecBlock];
+    NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
+                                                                 databasePassword:databasePassword
+                                                                        saltBlock:saltBlock
+                                                                     keySpecBlock:keySpecBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
     XCTAssertNil(error);
-    XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+    XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
     XCTAssertNotNil(databaseSalt);
     XCTAssertEqual(databaseSalt.length, kSQLCipherSaltLength);
     XCTAssertNotNil(databaseKeySpec);
@@ -340,31 +338,31 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSData *databasePassword = [self randomDatabasePassword];
     NSString *_Nullable databaseFilePath = [self createUnconvertedDatabase:databasePassword];
-    XCTAssertTrue([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
-    
+    XCTAssertTrue([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
+
     __block NSData *_Nullable databaseSalt = nil;
-    OWSDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
         OWSAssert(!databaseSalt);
         OWSAssert(saltData);
-        
+
         databaseSalt = saltData;
     };
     __block NSData *_Nullable databaseKeySpec = nil;
-    OWSDatabaseSaltBlock keySpecBlock = ^(NSData *keySpecData) {
+    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
         OWSAssert(!databaseKeySpec);
         OWSAssert(keySpecData);
 
         databaseKeySpec = keySpecData;
     };
-    NSError *_Nullable error = [OWSDatabaseConverter convertDatabaseIfNecessary:databaseFilePath
-                                                               databasePassword:databasePassword
-                                                                      saltBlock:saltBlock
-                                                                   keySpecBlock:keySpecBlock];
+    NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
+                                                                 databasePassword:databasePassword
+                                                                        saltBlock:saltBlock
+                                                                     keySpecBlock:keySpecBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
     XCTAssertNil(error);
-    XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+    XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
     XCTAssertNotNil(databaseSalt);
     XCTAssertEqual(databaseSalt.length, kSQLCipherSaltLength);
     XCTAssertNotNil(databaseKeySpec);
@@ -385,28 +383,28 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *_Nullable databaseKeySpec = nil;
     NSString *_Nullable databaseFilePath =
         [self createDatabase:databasePassword databaseSalt:databaseSalt databaseKeySpec:databaseKeySpec];
-    XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+    XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
-    OWSDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
         OWSAssert(saltData);
 
         XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
     };
-    OWSDatabaseSaltBlock keySpecBlock = ^(NSData *keySpecData) {
+    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
         OWSAssert(keySpecData);
 
         XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
     };
 
-    NSError *_Nullable error = [OWSDatabaseConverter convertDatabaseIfNecessary:databaseFilePath
-                                                               databasePassword:databasePassword
-                                                                      saltBlock:saltBlock
-                                                                   keySpecBlock:keySpecBlock];
+    NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
+                                                                 databasePassword:databasePassword
+                                                                        saltBlock:saltBlock
+                                                                     keySpecBlock:keySpecBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
     XCTAssertNil(error);
-    XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+    XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
     BOOL isValid = [self verifyTestDatabase:databaseFilePath
                            databasePassword:databasePassword
@@ -423,28 +421,28 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *databaseKeySpec = [self randomDatabaseKeySpec];
     NSString *_Nullable databaseFilePath =
         [self createDatabase:databasePassword databaseSalt:databaseSalt databaseKeySpec:databaseKeySpec];
-    XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
-    
-    OWSDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+    XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
+
+    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
         OWSAssert(saltData);
-        
+
         XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
     };
-    OWSDatabaseSaltBlock keySpecBlock = ^(NSData *keySpecData) {
+    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
         OWSAssert(keySpecData);
 
         XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
     };
 
-    NSError *_Nullable error = [OWSDatabaseConverter convertDatabaseIfNecessary:databaseFilePath
-                                                               databasePassword:databasePassword
-                                                                      saltBlock:saltBlock
-                                                                   keySpecBlock:keySpecBlock];
+    NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
+                                                                 databasePassword:databasePassword
+                                                                        saltBlock:saltBlock
+                                                                     keySpecBlock:keySpecBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
     XCTAssertNil(error);
-    XCTAssertFalse([OWSDatabaseConverter doesDatabaseNeedToBeConverted:databaseFilePath]);
+    XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
     BOOL isValid = [self verifyTestDatabase:databaseFilePath
                            databasePassword:databasePassword
@@ -459,35 +457,35 @@ NS_ASSUME_NONNULL_BEGIN
     sqlite3 *db;
     sqlite3_stmt *stmt;
     const int ROWSTOINSERT = 3;
-    
+
     NSString *databaseFilePath = [self createTempDatabaseFilePath];
-    
+
     OWSAssert(![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]);
-    
+
     NSData *keyData = [self randomDatabasePassword];
-    
+
     /* Step 1. Create a new encrypted database. */
-    
+
     int openFlags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
-    
+
     int rc = sqlite3_open_v2([databaseFilePath UTF8String], &db, openFlags, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_key(db, [keyData bytes], (int)[keyData length]);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS t1 (a INTEGER PRIMARY KEY AUTOINCREMENT, b TEXT);", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "BEGIN;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_prepare_v2(db, "INSERT INTO t1(b) VALUES (?);", -1, &stmt, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     for(int row = 0; row < ROWSTOINSERT; row++) {
         rc = sqlite3_bind_text(stmt, 1, [[NSString stringWithFormat:@"%d", (int) arc4random()] UTF8String], -1, SQLITE_TRANSIENT);
         XCTAssertTrue(rc == SQLITE_OK);
@@ -498,78 +496,78 @@ NS_ASSUME_NONNULL_BEGIN
     }
     rc = sqlite3_finalize(stmt);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     NSString *salt = [self executeSingleStringQuery:@"PRAGMA cipher_salt;"
                                                  db:db];
-    
+
     rc = sqlite3_close(db);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     [self logHeaderOfDatabaseFile:databaseFilePath
                             label:@"Unconverted header"];
 
     /* Step 2. Rewrite header */
-    
+
     rc = sqlite3_open_v2([databaseFilePath UTF8String], &db, openFlags, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_key(db, [keyData bytes], (int)[keyData length]);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
     rc = sqlite3_exec(db, "PRAGMA synchronous = NORMAL;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
     rc = sqlite3_exec(db, "PRAGMA journal_size_limit = 1048576;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "PRAGMA cipher_plaintext_header_size = 32;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "PRAGMA user_version = 2;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     int log, ckpt;
     rc = sqlite3_wal_checkpoint_v2(db, NULL, SQLITE_CHECKPOINT_FULL, &log, &ckpt);
     XCTAssertTrue(rc == SQLITE_OK);
     DDLogInfo(@"log = %d, ckpt = %d", log, ckpt);
-    
+
     rc = sqlite3_close(db);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     [self logHeaderOfDatabaseFile:databaseFilePath
                             label:@"Converted header"];
 
     /* Step 3. Open the database and query it */
-    
+
     rc = sqlite3_open_v2([databaseFilePath UTF8String], &db, openFlags, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_key(db, [keyData bytes], (int)[keyData length]);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     NSString *saltPragma = [NSString stringWithFormat:@"PRAGMA cipher_salt = \"x'%@'\";", salt];
     DDLogInfo(@"salt pragma = %@", saltPragma);
     rc = sqlite3_exec(db, [saltPragma UTF8String], NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "PRAGMA cipher_plaintext_header_size = 32;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
     rc = sqlite3_exec(db, "PRAGMA synchronous = NORMAL;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
     rc = sqlite3_exec(db, "PRAGMA journal_size_limit = 1048576;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     XCTAssertEqual(2, [self executeSingleIntQuery:@"SELECT count(*) FROM sqlite_master;" db:db]);
 
     XCTAssertEqual(ROWSTOINSERT, [self executeSingleIntQuery:@"SELECT count(*) FROM t1;" db:db]);
-    
+
     rc = sqlite3_close(db);
     XCTAssertTrue(rc == SQLITE_OK);
 }
@@ -578,18 +576,18 @@ NS_ASSUME_NONNULL_BEGIN
                           db:(sqlite3 *)db
 {
     sqlite3_stmt *stmt;
-    
+
     int rc = sqlite3_prepare_v2(db, sql.UTF8String, -1, &stmt, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_step(stmt);
     XCTAssertTrue(rc = SQLITE_ROW);
-    
+
     int result = sqlite3_column_int(stmt, 0);
-    
+
     rc = sqlite3_finalize(stmt);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     return result;
 }
 
@@ -597,16 +595,16 @@ NS_ASSUME_NONNULL_BEGIN
                                     db:(sqlite3 *)db
 {
     sqlite3_stmt *stmt;
-    
+
     int rc = sqlite3_prepare_v2(db, sql.UTF8String, -1, &stmt, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
     rc = sqlite3_step(stmt);
     XCTAssertTrue(rc = SQLITE_ROW);
     NSString *result = [NSString stringWithFormat:@"%s", sqlite3_column_text(stmt, 0)];
-    
+
     rc = sqlite3_finalize(stmt);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     return result;
 }
 
@@ -616,45 +614,45 @@ NS_ASSUME_NONNULL_BEGIN
     sqlite3 *db;
     sqlite3_stmt *stmt;
     const int ROWSTOINSERT = 3;
-    
+
     NSString *databaseFilePath = [self createTempDatabaseFilePath];
-    
+
     OWSAssert(![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]);
-    
+
     NSData *keyData = [self randomDatabasePassword];
     NSData *databaseSalt = [self randomDatabaseSalt];
     NSString *salt = databaseSalt.hexadecimalString;
-    
+
     /* Step 1. Create a new encrypted database. */
-    
+
     int openFlags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
-    
+
     int rc = sqlite3_open_v2([databaseFilePath UTF8String], &db, openFlags, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_key(db, [keyData bytes], (int)[keyData length]);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     NSString *saltPragma = [NSString stringWithFormat:@"PRAGMA cipher_salt = \"x'%@'\";", salt];
     DDLogInfo(@"salt pragma = %@", saltPragma);
     rc = sqlite3_exec(db, [saltPragma UTF8String], NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "PRAGMA cipher_plaintext_header_size = 32;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS t1 (a INTEGER PRIMARY KEY AUTOINCREMENT, b TEXT);", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "BEGIN;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_prepare_v2(db, "INSERT INTO t1(b) VALUES (?);", -1, &stmt, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     for(int row = 0; row < ROWSTOINSERT; row++) {
         rc = sqlite3_bind_text(stmt, 1, [[NSString stringWithFormat:@"%d", (int) arc4random()] UTF8String], -1, SQLITE_TRANSIENT);
         XCTAssertTrue(rc == SQLITE_OK);
@@ -665,40 +663,40 @@ NS_ASSUME_NONNULL_BEGIN
     }
     rc = sqlite3_finalize(stmt);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_close(db);
     XCTAssertTrue(rc == SQLITE_OK);
 
     /* Step 2. Open the database and query it */
-    
+
     rc = sqlite3_open_v2([databaseFilePath UTF8String], &db, openFlags, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_key(db, [keyData bytes], (int)[keyData length]);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     //    NSString *saltPragma = [NSString stringWithFormat:@"PRAGMA cipher_salt = \"x'%@'\";", salt];
     //    DDLogInfo(@"salt pragma = %@", saltPragma);
     rc = sqlite3_exec(db, [saltPragma UTF8String], NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "PRAGMA cipher_plaintext_header_size = 32;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
     rc = sqlite3_exec(db, "PRAGMA synchronous = NORMAL;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
     rc = sqlite3_exec(db, "PRAGMA journal_size_limit = 1048576;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     XCTAssertEqual(2, [self executeSingleIntQuery:@"SELECT count(*) FROM sqlite_master;" db:db]);
-    
+
     XCTAssertEqual(ROWSTOINSERT, [self executeSingleIntQuery:@"SELECT count(*) FROM t1;" db:db]);
-    
+
     rc = sqlite3_close(db);
     XCTAssertTrue(rc == SQLITE_OK);
 }
@@ -710,40 +708,40 @@ NS_ASSUME_NONNULL_BEGIN
     sqlite3 *db;
     sqlite3_stmt *stmt;
     const int ROWSTOINSERT = 3;
-    
+
     NSString *databaseFilePath = [self createTempDatabaseFilePath];
-    
+
     OWSAssert(![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]);
-    
+
     NSData *keyData = [self randomDatabasePassword];
     NSData *databaseSalt = [self randomDatabaseSalt];
     NSString *salt = databaseSalt.hexadecimalString;
-    
+
     /* Step 1. Create a new encrypted database. */
-    
+
     int openFlags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE;
-    
+
     int rc = sqlite3_open_v2([databaseFilePath UTF8String], &db, openFlags, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_key(db, [keyData bytes], (int)[keyData length]);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     NSString *saltPragma = [NSString stringWithFormat:@"PRAGMA cipher_salt = \"x'%@'\";", salt];
     DDLogInfo(@"salt pragma = %@", saltPragma);
     rc = sqlite3_exec(db, [saltPragma UTF8String], NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "PRAGMA cipher_plaintext_header_size = 32;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
 
     {
         int status = sqlite3_exec(db, "PRAGMA auto_vacuum = FULL; VACUUM;", NULL, NULL, NULL);
         XCTAssertEqual(status, SQLITE_OK);
-        
+
         // Set synchronous to normal for THIS sqlite instance.
         //
         // This does NOT affect normal connections.
@@ -757,7 +755,7 @@ NS_ASSUME_NONNULL_BEGIN
         // (This sqlite db is also used to perform checkpoints.
         //  But a normal value won't affect these operations,
         //  as they will perform sync operations whether the connection is normal or full.)
-        
+
         status = sqlite3_exec(db, "PRAGMA synchronous = NORMAL;", NULL, NULL, NULL);
         XCTAssertEqual(status, SQLITE_OK);
 
@@ -765,32 +763,32 @@ NS_ASSUME_NONNULL_BEGIN
         //
         // We only need to do set this pragma for THIS connection,
         // because it is the only connection that performs checkpoints.
-        
+
         NSString *pragma_journal_size_limit =
         [NSString stringWithFormat:@"PRAGMA journal_size_limit = %d;", 0];
-        
+
         status = sqlite3_exec(db, [pragma_journal_size_limit UTF8String], NULL, NULL, NULL);
         XCTAssertEqual(status, SQLITE_OK);
-        
+
         // Disable autocheckpointing.
         //
         // YapDatabase has its own optimized checkpointing algorithm built-in.
         // It knows the state of every active connection for the database,
         // so it can invoke the checkpoint methods at the precise time in which a checkpoint can be most effective.
-        
+
         status = sqlite3_wal_autocheckpoint(db, 0);
         XCTAssertEqual(status, SQLITE_OK);
     }
-    
+
     rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS t1 (a INTEGER PRIMARY KEY AUTOINCREMENT, b TEXT);", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "BEGIN;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_prepare_v2(db, "INSERT INTO t1(b) VALUES (?);", -1, &stmt, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     for(int row = 0; row < ROWSTOINSERT; row++) {
         rc = sqlite3_bind_text(stmt, 1, [[NSString stringWithFormat:@"%d", (int) arc4random()] UTF8String], -1, SQLITE_TRANSIENT);
         XCTAssertTrue(rc == SQLITE_OK);
@@ -801,38 +799,38 @@ NS_ASSUME_NONNULL_BEGIN
     }
     rc = sqlite3_finalize(stmt);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_close(db);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     /* Step 2. Open the database and query it */
-    
+
     rc = sqlite3_open_v2([databaseFilePath UTF8String], &db, openFlags, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_key(db, [keyData bytes], (int)[keyData length]);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, [saltPragma UTF8String], NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "PRAGMA cipher_plaintext_header_size = 32;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     rc = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
     rc = sqlite3_exec(db, "PRAGMA synchronous = NORMAL;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
     rc = sqlite3_exec(db, "PRAGMA journal_size_limit = 1048576;", NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
-    
+
     XCTAssertEqual(2, [self executeSingleIntQuery:@"SELECT count(*) FROM sqlite_master;" db:db]);
-    
+
     XCTAssertEqual(ROWSTOINSERT, [self executeSingleIntQuery:@"SELECT count(*) FROM t1;" db:db]);
-    
+
     rc = sqlite3_close(db);
     XCTAssertTrue(rc == SQLITE_OK);
 }
@@ -843,7 +841,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(databaseFilePath.length > 0);
     OWSAssert(label.length > 0);
 
-    NSData *headerData = [OWSDatabaseConverter readFirstNBytesOfDatabaseFile:databaseFilePath byteCount:kSqliteHeaderLength];
+    NSData *headerData =
+        [YapDatabaseCryptoUtils readFirstNBytesOfDatabaseFile:databaseFilePath byteCount:kSqliteHeaderLength];
     OWSAssert(headerData);
     NSMutableString *output = [NSMutableString new];
     [output appendFormat:@"Hex: %@, ", headerData.hexadecimalString];

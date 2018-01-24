@@ -23,7 +23,6 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSContactsSyncing.h>
-#import <SignalMessaging/OWSDatabaseConverter.h>
 #import <SignalMessaging/OWSMath.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
@@ -45,6 +44,7 @@
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSStorageManager+Calling.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
+#import <YapDatabase/YapDatabaseCryptoUtils.h>
 
 @import WebRTC;
 @import Intents;
@@ -221,13 +221,42 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return;
     }
 
-    [OWSDatabaseConverter convertDatabaseIfNecessary];
+    NSError *_Nullable error = [self convertDatabaseIfNecessary];
+    // TODO: Handle this error.
+    OWSAssert(!error);
 
     [NSUserDefaults migrateToSharedUserDefaults];
 
     [TSStorageManager migrateToSharedData];
     [OWSProfileManager migrateToSharedData];
     [TSAttachmentStream migrateToSharedData];
+}
+
+- (nullable NSError *)convertDatabaseIfNecessary
+{
+    NSString *databaseFilePath = [TSStorageManager legacyDatabaseFilePath];
+
+    NSError *error;
+    NSData *_Nullable databasePassword = [OWSStorage tryToLoadDatabasePassword:&error];
+    if (!databasePassword || error) {
+        return (error
+                ?: OWSErrorWithCodeDescription(
+                       OWSErrorCodeDatabaseConversionFatalError, @"Failed to load database password"));
+    }
+
+    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+        DDLogVerbose(@"%@ saltData: %@", self.logTag, saltData.hexadecimalString);
+        [OWSStorage storeDatabaseSalt:saltData];
+    };
+    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
+        DDLogVerbose(@"%@ keySpecData: %@", self.logTag, keySpecData.hexadecimalString);
+        [OWSStorage storeDatabaseKeySpec:keySpecData];
+    };
+
+    return [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
+                                             databasePassword:databasePassword
+                                                    saltBlock:saltBlock
+                                                 keySpecBlock:keySpecBlock];
 }
 
 - (void)startupLogging
