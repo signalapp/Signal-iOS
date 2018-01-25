@@ -166,16 +166,28 @@ NS_ASSUME_NONNULL_BEGIN
     return filePaths;
 }
 
-+ (nullable NSString *)writeDataToTemporaryFile:(NSData *)data fileExtension:(NSString *_Nullable)fileExtension
++ (NSString *)temporaryFilePath
 {
-    OWSAssert(data);
+    return [self temporaryFilePathWithFileExtension:nil];
+}
 
++ (NSString *)temporaryFilePathWithFileExtension:(NSString *_Nullable)fileExtension
+{
     NSString *temporaryDirectory = NSTemporaryDirectory();
     NSString *tempFileName = NSUUID.UUID.UUIDString;
     if (fileExtension.length > 0) {
         tempFileName = [[tempFileName stringByAppendingString:@"."] stringByAppendingString:fileExtension];
     }
     NSString *tempFilePath = [temporaryDirectory stringByAppendingPathComponent:tempFileName];
+
+    return tempFilePath;
+}
+
++ (nullable NSString *)writeDataToTemporaryFile:(NSData *)data fileExtension:(NSString *_Nullable)fileExtension
+{
+    OWSAssert(data);
+
+    NSString *tempFilePath = [self temporaryFilePathWithFileExtension:fileExtension];
     NSError *error;
     BOOL success = [data writeToFile:tempFilePath options:NSDataWritingAtomic error:&error];
     if (!success || error) {
