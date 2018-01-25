@@ -1,13 +1,9 @@
 //
-//  TSRequestVerificationCodeRequest.m
-//  Signal
-//
-//  Created by Frederic Jacobs on 02/12/15.
-//  Copyright © 2015 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSConstants.h"
 #import "TSRequestVerificationCodeRequest.h"
+#import "TSConstants.h"
 
 @implementation TSRequestVerificationCodeRequest
 
@@ -30,10 +26,7 @@
         case TSVerificationTransportVoice:
             return @"voice";
         default:
-            @throw [NSException
-                exceptionWithName:@"Unsupported transport exception"
-                           reason:[NSString stringWithFormat:@"Transport %u in enum is not supported.", transport]
-                         userInfo:nil];
+            OWSRaiseException(@"Unsupported transport exception", @"Transport %u in enum is not supported.", transport);
     }
 }
 

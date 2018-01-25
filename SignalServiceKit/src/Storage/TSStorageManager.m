@@ -161,8 +161,8 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     NSString *databaseDirPath = [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"database"];
 
     if (![OWSFileSystem ensureDirectoryExists:databaseDirPath]) {
-        [NSException raise:TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
-                    format:@"Could not create new database directory"];
+        OWSRaiseException(
+            TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory, @"Could not create new database directory");
     }
     return databaseDirPath;
 }

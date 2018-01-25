@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewItem.h"
@@ -427,11 +427,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     if (self.messageCellType == OWSMessageCellType_Unknown) {
-        DDLogVerbose(@"%@ message: %@", self.logTag, message.description);
-        OWSFail(@"%@ Unknown cell type", self.logTag);
         // Messages of unknown type (including messages with missing attachments)
         // are rendered like empty text messages, but without any interactivity.
-        self.messageCellType = OWSMessageCellType_Unknown;
+        DDLogWarn(@"%@ Treating unknown message as empty text message: %@", self.logTag, message.description);
+        self.messageCellType = OWSMessageCellType_TextMessage;
+        self.hasText = YES;
         self.displayableText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAvatarBuilder.h"
@@ -8,6 +8,7 @@
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "UIColor+OWS.h"
+
 // SHARINGEXTENSION FIXME
 // intern or reimplement this so that SignalMessaging doesn't depend on JSQ
 #import <JSQMessagesViewController/JSQMessagesAvatarImageFactory.h>
@@ -85,18 +86,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildSavedImage
 {
-    @throw [NSException
-        exceptionWithName:NSInternalInconsistencyException
-                   reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
-                 userInfo:nil];
+    OWSRaiseException(
+        NSInternalInconsistencyException, @"You must override %@ in a subclass", NSStringFromSelector(_cmd));
 }
 
 - (UIImage *)buildDefaultImage
 {
-    @throw [NSException
-        exceptionWithName:NSInternalInconsistencyException
-                   reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
-                 userInfo:nil];
+    OWSRaiseException(
+        NSInternalInconsistencyException, @"You must override %@ in a subclass", NSStringFromSelector(_cmd));
 }
 
 @end

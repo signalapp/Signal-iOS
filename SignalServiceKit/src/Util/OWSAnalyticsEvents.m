@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAnalyticsEvents.h"
@@ -517,9 +517,9 @@ NS_ASSUME_NONNULL_BEGIN
     return @"storage_error_could_not_load_database_second_attempt";
 }
 
-+ (NSString *)storageErrorCouldNotStoreDatabasePassword
++ (NSString *)storageErrorCouldNotStoreKeychainValue
 {
-    return @"storage_error_could_not_store_database_password";
+    return @"storage_error_could_not_store_keychain_value";
 }
 
 + (NSString *)storageErrorDeserialization

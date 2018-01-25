@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSignalService.h"
@@ -310,16 +310,12 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
             NSData *certData = [self certificateDataWithName:certName error:&error];
             if (error) {
                 DDLogError(@"%@ Failed to get %@ certificate data with error: %@", self.logTag, certName, error);
-                @throw [NSException exceptionWithName:@"OWSSignalService_UnableToReadCertificate"
-                                               reason:error.description
-                                             userInfo:nil];
+                OWSRaiseException(@"OWSSignalService_UnableToReadCertificate", error.description);
             }
 
             if (!certData) {
                 DDLogError(@"%@ No data for certificate: %@", self.logTag, certName);
-                @throw [NSException exceptionWithName:@"OWSSignalService_UnableToReadCertificate"
-                                               reason:error.description
-                                             userInfo:nil];
+                OWSRaiseException(@"OWSSignalService_UnableToReadCertificate", error.description);
             }
             [certificates addObject:certData];
         }

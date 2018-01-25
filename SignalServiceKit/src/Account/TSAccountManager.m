@@ -122,7 +122,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     NSString *phoneNumber = self.phoneNumberAwaitingVerification;
 
     if (!phoneNumber) {
-        @throw [NSException exceptionWithName:@"RegistrationFail" reason:@"Internal Corrupted State" userInfo:nil];
+        OWSRaiseException(@"RegistrationFail", @"Internal Corrupted State");
     }
 
     [self storeLocalNumber:phoneNumber];

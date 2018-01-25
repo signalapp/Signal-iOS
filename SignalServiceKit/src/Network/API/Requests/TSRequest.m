@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSRequest.h"
@@ -19,7 +19,7 @@
 }
 
 - (id)init {
-    [NSException raise:NSInternalInconsistencyException format:@"You must use the initWithURL: method"];
+    OWSRaiseException(NSInternalInconsistencyException, @"You must use the initWithURL: method");
     return nil;
 }
 
@@ -29,7 +29,7 @@
 - (id)initWithURL:(NSURL *)URL
       cachePolicy:(NSURLRequestCachePolicy)cachePolicy
   timeoutInterval:(NSTimeInterval)timeoutInterval {
-    [NSException raise:NSInternalInconsistencyException format:@"You must use the initWithURL method"];
+    OWSRaiseException(NSInternalInconsistencyException, @"You must use the initWithURL method");
     return nil;
 }
 

@@ -44,6 +44,7 @@
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSStorageManager+Calling.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
+#import <YapDatabase/YapDatabaseCryptoUtils.h>
 
 @import WebRTC;
 @import Intents;
@@ -111,9 +112,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.logTag);
 
-    // We need to do this _after_ we set up logging but _before_ we do
-    // anything else.
-    [self ensureIsReadyForAppExtensions];
+    SetRandFunctionSeed();
+
+    // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
+    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
 #if RELEASE
     // ensureIsReadyForAppExtensions may have changed the state of the logging
@@ -124,14 +126,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 #endif
 
+    // We need to do this _after_ we set up logging, when the keychain is unlocked,
+    // but before we access YapDatabase, files on disk, or NSUserDefaults
+    [self ensureIsReadyForAppExtensions];
+
     [AppVersion instance];
 
     [self startupLogging];
 
-    SetRandFunctionSeed();
-
-    // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
-    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
     // If a backup restore is in progress, try to complete it.
     // Otherwise, cleanup backup state.
@@ -219,11 +221,42 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return;
     }
 
+    NSError *_Nullable error = [self convertDatabaseIfNecessary];
+    // TODO: Handle this error.
+    OWSAssert(!error);
+
     [NSUserDefaults migrateToSharedUserDefaults];
 
     [TSStorageManager migrateToSharedData];
     [OWSProfileManager migrateToSharedData];
     [TSAttachmentStream migrateToSharedData];
+}
+
+- (nullable NSError *)convertDatabaseIfNecessary
+{
+    NSString *databaseFilePath = [TSStorageManager legacyDatabaseFilePath];
+
+    NSError *error;
+    NSData *_Nullable databasePassword = [OWSStorage tryToLoadDatabasePassword:&error];
+    if (!databasePassword || error) {
+        return (error
+                ?: OWSErrorWithCodeDescription(
+                       OWSErrorCodeDatabaseConversionFatalError, @"Failed to load database password"));
+    }
+
+    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+        DDLogVerbose(@"%@ saltData: %@", self.logTag, saltData.hexadecimalString);
+        [OWSStorage storeDatabaseSalt:saltData];
+    };
+    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
+        DDLogVerbose(@"%@ keySpecData: %@", self.logTag, keySpecData.hexadecimalString);
+        [OWSStorage storeDatabaseKeySpec:keySpecData];
+    };
+
+    return [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
+                                             databasePassword:databasePassword
+                                                    saltBlock:saltBlock
+                                                 keySpecBlock:keySpecBlock];
 }
 
 - (void)startupLogging
