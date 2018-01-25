@@ -131,10 +131,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         bottomBorder.autoPinBottomToSuperview()
         bottomBorder.autoSetDimension(.height, toSize: borderThickness)
 
-        guard let font = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(14.0, 18.0)) else {
-            owsFail("Can't load font")
-            return recipientRow
-        }
+        let font = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(14.0, 18.0))
         let hSpacing = CGFloat(10)
         let hMargin = CGFloat(15)
         let vSpacing = CGFloat(5)

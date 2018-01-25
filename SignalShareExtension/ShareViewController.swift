@@ -540,7 +540,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         }
         Logger.debug("\(logTag) matched utiType: \(srcUtiType)")
 
-        let (promise, fulfill, reject) = Promise<(URL, String)>.pending()
+        let (promise, fulfill, reject) = Promise<(itemUrl: URL, utiType: String)>.pending()
 
         var customFileName: String?
         var isConvertibleToTextMessage = false
@@ -576,7 +576,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                     return
                 }
                 let fileUrl = URL(fileURLWithPath:tempFilePath)
-                fulfill((fileUrl, srcUtiType))
+                fulfill((itemUrl: fileUrl, utiType: srcUtiType))
             } else if let string = value as? String {
                 Logger.debug("\(self.logTag) string provider: \(string)")
                 guard let data = string.data(using: String.Encoding.utf8) else {
@@ -595,18 +595,18 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                 isConvertibleToTextMessage = !itemProvider.registeredTypeIdentifiers.contains(kUTTypeFileURL as String)
 
                 if UTTypeConformsTo(srcUtiType as CFString, kUTTypeText) {
-                    fulfill((fileUrl, srcUtiType))
+                    fulfill((itemUrl: fileUrl, utiType: srcUtiType))
                 } else {
-                    fulfill((fileUrl, kUTTypeText as String))
+                    fulfill((itemUrl: fileUrl, utiType:  kUTTypeText as String))
                 }
             } else if let url = value as? URL {
                 // If the share itself is a URL (e.g. a link from Safari), try to send this as a text message.
                 isConvertibleToTextMessage = (itemProvider.registeredTypeIdentifiers.contains(kUTTypeURL as String) &&
                     !itemProvider.registeredTypeIdentifiers.contains(kUTTypeFileURL as String))
                 if isConvertibleToTextMessage {
-                    fulfill((url, kUTTypeURL as String))
+                    fulfill((itemUrl: url, utiType: kUTTypeURL as String))
                 } else {
-                    fulfill((url, srcUtiType))
+                    fulfill((itemUrl: url, utiType: srcUtiType))
                 }
             } else {
                 // It's unavoidable that we may sometimes receives data types that we
@@ -633,7 +633,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
             Logger.debug("\(self.logTag) building DataSource with url: \(url), utiType: \(utiType)")
 
-            guard let dataSource = ShareViewController.createDataSource(utiType : utiType, url : url, customFileName : customFileName) else {
+            guard let dataSource = ShareViewController.createDataSource(utiType: utiType, url: url, customFileName: customFileName) else {
                 throw ShareViewControllerError.assertionError(description: "Unable to read attachment data")
             }
 

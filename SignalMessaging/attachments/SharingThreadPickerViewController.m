@@ -183,6 +183,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 {
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
+        OWSAssertIsOnMainThread();
+
         __block TSOutgoingMessage *outgoingMessage = nil;
         outgoingMessage = [ThreadUtil sendMessageWithAttachment:attachment
                                                        inThread:self.thread
@@ -190,6 +192,9 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                                                      completion:^(NSError *_Nullable error) {
                                                          sendCompletion(error, outgoingMessage);
                                                      }];
+
+        // This is necessary to show progress.
+        self.outgoingMessage = outgoingMessage;
     }
                  fromViewController:approvalViewController];
 }
@@ -209,6 +214,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
+        OWSAssertIsOnMainThread();
+
         __block TSOutgoingMessage *outgoingMessage = nil;
         outgoingMessage = [ThreadUtil sendMessageWithText:messageText
             inThread:self.thread
@@ -219,6 +226,9 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             failure:^(NSError *_Nonnull error) {
                 sendCompletion(error, outgoingMessage);
             }];
+
+        // This is necessary to show progress.
+        self.outgoingMessage = outgoingMessage;
     }
                  fromViewController:approvalViewController];
 }
@@ -229,7 +239,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 }
 
 #pragma mark - Helpers
-typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 - (void)tryToSendMessageWithBlock:(SendMessageBlock)sendMessageBlock
                fromViewController:(UIViewController *)fromViewController
