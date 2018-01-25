@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL success = [ressourceURL setResourceValues:resourcesAttrs error:&error];
 
     if (error || !success) {
+        OWSFail(@"Could not protect file or folder: %@", error);
         OWSProdCritical([OWSAnalyticsEvents storageErrorFileProtection]);
         return NO;
     }

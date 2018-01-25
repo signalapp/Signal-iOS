@@ -263,6 +263,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
             //
             // The best we can try to do is to discard the current database
             // and behave like a clean install.
+            OWSFail(@"%@ Could not load database", self.logTag);
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
 
             // Try to reset app by deleting all databases.
@@ -271,6 +272,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
             //            [OWSStorage deleteDatabaseFiles];
 
             if (![self tryToLoadDatabase]) {
+                OWSFail(@"%@ Could not load database (second try)", self.logTag);
                 OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
 
                 // Sleep to give analytics events time to be delivered.
@@ -665,6 +667,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
         BOOL shouldHaveDatabaseMetadata = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
         if (shouldHaveDatabaseMetadata) {
+            OWSFail(@"%@ Could not load database metadata", self.logTag);
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
         }
 
@@ -754,6 +757,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
     BOOL success = [SAMKeychain setPasswordData:data forService:keychainService account:keychainKey error:&error];
     if (!success || error) {
+        OWSFail(@"%@ Could not store database metadata", self.logTag);
         OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotStoreKeychainValue]);
 
         [OWSStorage deletePasswordFromKeychain];
