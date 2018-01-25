@@ -77,7 +77,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 {
     self.layoutMargins = UIEdgeInsetsZero;
 
-    self.backgroundColor = [UIColor ows_inputToolbarBackgroundColor];
+    self.backgroundColor = [UIColor ows_toolbarBackgroundColor];
     self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
 
     UIView *borderView = [UIView new];

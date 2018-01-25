@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -148,14 +148,14 @@ extension String {
     }
 }
 
-@objc class DisplayableText: NSObject {
+@objc public class DisplayableText: NSObject {
 
     static let TAG = "[DisplayableText]"
 
-    let fullText: String
-    let displayText: String
-    let isTextTruncated: Bool
-    let jumbomojiCount: UInt
+    public let fullText: String
+    public let displayText: String
+    public let isTextTruncated: Bool
+    public let jumbomojiCount: UInt
 
     static let kMaxJumbomojiCount: UInt = 5
     // This value is a bit arbitrary since we don't need to be 100% correct about 
@@ -201,7 +201,7 @@ extension String {
     // MARK: Filter Methods
 
     @objc
-    class func displayableText(_ text: String?) -> String? {
+    public class func filterText(_ text: String?) -> String? {
         guard let text = text?.ows_stripped() else {
             return nil
         }
@@ -217,7 +217,7 @@ extension String {
 
     private class func hasExcessiveDiacriticals(text: String) -> Bool {
         // discard any zalgo style text, by detecting maximum number of glyphs per character
-        for char in text.characters.enumerated() {
+        for char in text.enumerated() {
             let scalarCount = String(char.element).unicodeScalars.count
             if scalarCount > 4 {
                 Logger.warn("\(TAG) detected excessive diacriticals at \(char.element) scalarCount: \(scalarCount)")
@@ -226,5 +226,26 @@ extension String {
         }
 
         return false
+    }
+
+    @objc
+    public class func displayableText(_ rawText: String) -> DisplayableText {
+        // Only show up to N characters of text.
+        let kMaxTextDisplayLength = 1024
+        let filteredText = filterText(rawText)
+        let fullText = filteredText != nil ? filteredText! : ""
+        var isTextTruncated = false
+        var displayText = fullText
+        if displayText.count > kMaxTextDisplayLength {
+            // Trim whitespace before _AND_ after slicing the snipper from the string.
+            let snippet = String(displayText.prefix(kMaxTextDisplayLength)).ows_stripped()
+            displayText = String(format:NSLocalizedString("OVERSIZE_TEXT_DISPLAY_FORMAT", comment:
+                "A display format for oversize text messages."),
+                snippet)
+            isTextTruncated = true
+        }
+
+        let displayableText = DisplayableText(fullText: fullText, displayText: displayText, isTextTruncated:isTextTruncated)
+        return displayableText
     }
 }

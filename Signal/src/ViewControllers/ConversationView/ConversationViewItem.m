@@ -309,30 +309,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     DisplayableText *_Nullable displayableText = [[self displayableTextCache] objectForKey:interactionId];
     if (!displayableText) {
         NSString *text = textBlock();
-
-        // Only show up to N characters of text.
-        const NSUInteger kMaxTextDisplayLength = 1024;
-        NSString *_Nullable fullText = [DisplayableText displayableText:text];
-        BOOL isTextTruncated = NO;
-        if (!fullText) {
-            fullText = @"";
-        }
-        NSString *_Nullable displayText = fullText;
-        if (displayText.length > kMaxTextDisplayLength) {
-            // Trim whitespace before _AND_ after slicing the snipper from the string.
-            NSString *snippet = [[displayText substringWithRange:NSMakeRange(0, kMaxTextDisplayLength)] ows_stripped];
-            displayText = [NSString stringWithFormat:NSLocalizedString(@"OVERSIZE_TEXT_DISPLAY_FORMAT",
-                                                         @"A display format for oversize text messages."),
-                                    snippet];
-            isTextTruncated = YES;
-        }
-        if (!displayText) {
-            displayText = @"";
-        }
-
-        displayableText =
-            [[DisplayableText alloc] initWithFullText:fullText displayText:displayText isTextTruncated:isTextTruncated];
-
+        displayableText = [DisplayableText displayableText:text];
         [[self displayableTextCache] setObject:displayableText forKey:interactionId];
     }
     return displayableText;

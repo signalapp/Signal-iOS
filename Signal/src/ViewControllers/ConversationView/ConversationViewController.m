@@ -499,7 +499,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     [super loadView];
 
-    self.view.backgroundColor = [UIColor ows_inputToolbarBackgroundColor];
+    self.view.backgroundColor = [UIColor ows_toolbarBackgroundColor];
 }
 
 - (void)createContents
@@ -3893,7 +3893,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     //
     // We convert large text messages to attachments
     // which are presented as normal text messages.
-    const NSUInteger kOversizeTextMessageSizeThreshold = 16 * 1024;
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message;
     if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {

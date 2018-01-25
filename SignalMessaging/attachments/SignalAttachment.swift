@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -137,6 +137,10 @@ public class SignalAttachment: NSObject {
     public var isValidImage: Bool {
         return dataSource.isValidImage()
     }
+
+    // This flag should be set for text attachments that can be sent as text messages.
+    @objc
+    public var isConvertibleToTextMessage = false
 
     // Attachment types are identified using UTIs.
     //
@@ -290,7 +294,7 @@ public class SignalAttachment: NSObject {
                 }
             }
         }
-        if dataUTI == kOversizeTextAttachmentUTI {
+        if isOversizeText {
             return OWSMimeTypeOversizeTextMessage
         }
         if dataUTI == kUnknownTestAttachmentUTI {
@@ -334,7 +338,7 @@ public class SignalAttachment: NSObject {
                 return fileExtension
             }
         }
-        if dataUTI == kOversizeTextAttachmentUTI {
+        if isOversizeText {
             return kOversizeTextAttachmentFileExtension
         }
         if dataUTI == kUnknownTestAttachmentUTI {
@@ -412,6 +416,21 @@ public class SignalAttachment: NSObject {
     @objc
     public var isAudio: Bool {
         return SignalAttachment.audioUTISet.contains(dataUTI)
+    }
+
+    @objc
+    public var isOversizeText: Bool {
+        return dataUTI == kOversizeTextAttachmentUTI
+    }
+
+    @objc
+    public var isText: Bool {
+        return UTTypeConformsTo(dataUTI as CFString, kUTTypeText) || isOversizeText
+    }
+
+    @objc
+    public var isUrl: Bool {
+        return UTTypeConformsTo(dataUTI as CFString, kUTTypeURL)
     }
 
     @objc

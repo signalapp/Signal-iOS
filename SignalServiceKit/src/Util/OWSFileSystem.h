@@ -29,6 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSArray<NSString *> *_Nullable)allFilesInDirectoryRecursive:(NSString *)dirPath error:(NSError **)error;
 
+// Returns nil on failure.
++ (nullable NSString *)writeDataToTemporaryFile:(NSData *)data fileExtension:(NSString *_Nullable)fileExtension;
+
 @end
 
 NS_ASSUME_NONNULL_END

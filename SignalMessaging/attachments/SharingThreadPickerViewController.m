@@ -18,8 +18,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^SendCompletionBlock)(NSError *_Nullable, TSOutgoingMessage *);
+typedef void (^SendMessageBlock)(SendCompletionBlock completion);
+
 @interface SharingThreadPickerViewController () <SelectThreadViewControllerDelegate,
-    AttachmentApprovalViewControllerDelegate>
+    AttachmentApprovalViewControllerDelegate,
+    MessageApprovalViewControllerDelegate>
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
@@ -120,16 +124,45 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - SelectThreadViewControllerDelegate
 
+// If the attachment is textual (e.g. text or URL), returns the message text
+// for the attachment.  Returns nil otherwise.
+- (nullable NSString *)convertAttachmentToMessageTextIfPossible
+{
+    if (!self.attachment.isConvertibleToTextMessage) {
+        return nil;
+    }
+    if (self.attachment.dataLength >= kOversizeTextMessageSizeThreshold) {
+        return nil;
+    }
+    NSData *data = self.attachment.data;
+    OWSAssert(data.length < kOversizeTextMessageSizeThreshold);
+    NSString *_Nullable messageText = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    DDLogVerbose(@"%@ messageTextForAttachment: %@", self.logTag, messageText);
+    return messageText;
+}
+
 - (void)threadWasSelected:(TSThread *)thread
 {
     OWSAssert(self.attachment);
     OWSAssert(thread);
     self.thread = thread;
 
-    AttachmentApprovalViewController *approvalVC =
-        [[AttachmentApprovalViewController alloc] initWithAttachment:self.attachment delegate:self];
+    NSString *_Nullable messageText = [self convertAttachmentToMessageTextIfPossible];
 
-    [self.navigationController pushViewController:approvalVC animated:YES];
+    if (messageText) {
+        MessageApprovalViewController *approvalVC =
+            [[MessageApprovalViewController alloc] initWithMessageText:messageText
+                                                                thread:thread
+                                                       contactsManager:self.contactsManager
+                                                              delegate:self];
+
+        [self.navigationController pushViewController:approvalVC animated:YES];
+    } else {
+        AttachmentApprovalViewController *approvalVC =
+            [[AttachmentApprovalViewController alloc] initWithAttachment:self.attachment delegate:self];
+
+        [self.navigationController pushViewController:approvalVC animated:YES];
+    }
 }
 
 - (void)didTapCancelShareButton
@@ -145,11 +178,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - AttachmentApprovalViewControllerDelegate
 
-- (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
+- (void)attachmentApproval:(AttachmentApprovalViewController *)approvalViewController
       didApproveAttachment:(SignalAttachment *)attachment
 {
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-    [self tryToSendAttachment:attachment fromViewController:attachmentApproval];
+    [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
+        OWSAssertIsOnMainThread();
+
+        __block TSOutgoingMessage *outgoingMessage = nil;
+        outgoingMessage = [ThreadUtil sendMessageWithAttachment:attachment
+                                                       inThread:self.thread
+                                                  messageSender:self.messageSender
+                                                     completion:^(NSError *_Nullable error) {
+                                                         sendCompletion(error, outgoingMessage);
+                                                     }];
+
+        // This is necessary to show progress.
+        self.outgoingMessage = outgoingMessage;
+    }
+                 fromViewController:approvalViewController];
 }
 
 - (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
@@ -158,14 +205,46 @@ NS_ASSUME_NONNULL_BEGIN
     [self cancelShareExperience];
 }
 
+#pragma mark - MessageApprovalViewControllerDelegate
+
+- (void)messageApproval:(MessageApprovalViewController *)approvalViewController
+      didApproveMessage:(NSString *)messageText
+{
+    OWSAssert(messageText.length > 0);
+
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
+        OWSAssertIsOnMainThread();
+
+        __block TSOutgoingMessage *outgoingMessage = nil;
+        outgoingMessage = [ThreadUtil sendMessageWithText:messageText
+            inThread:self.thread
+            messageSender:self.messageSender
+            success:^{
+                sendCompletion(nil, outgoingMessage);
+            }
+            failure:^(NSError *_Nonnull error) {
+                sendCompletion(error, outgoingMessage);
+            }];
+
+        // This is necessary to show progress.
+        self.outgoingMessage = outgoingMessage;
+    }
+                 fromViewController:approvalViewController];
+}
+
+- (void)messageApprovalDidCancel:(MessageApprovalViewController *)approvalViewController
+{
+    [self cancelShareExperience];
+}
+
 #pragma mark - Helpers
 
-- (void)tryToSendAttachment:(SignalAttachment *)attachment fromViewController:(UIViewController *)fromViewController
+- (void)tryToSendMessageWithBlock:(SendMessageBlock)sendMessageBlock
+               fromViewController:(UIViewController *)fromViewController
 {
     // Reset progress in case we're retrying
     self.progressView.progress = 0;
-
-    self.attachment = attachment;
 
     NSString *progressTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", @"Alert title");
     UIAlertController *progressAlert = [UIAlertController alertControllerWithTitle:progressTitle
@@ -193,38 +272,30 @@ NS_ASSUME_NONNULL_BEGIN
     }
 #endif
 
-    void (^sendCompletion)(NSError *_Nullable, TSOutgoingMessage *message) = ^(
-        NSError *_Nullable error, TSOutgoingMessage *message) {
-        AssertIsOnMainThread();
+    SendCompletionBlock sendCompletion = ^(NSError *_Nullable error, TSOutgoingMessage *message) {
 
-        if (error) {
-            [fromViewController
-                dismissViewControllerAnimated:YES
-                                   completion:^(void) {
-                                       DDLogInfo(@"%@ Sending attachment failed with error: %@", self.logTag, error);
-                                       [self showSendFailureAlertWithError:error
-                                                                   message:message
-                                                        fromViewController:fromViewController];
-                                   }];
-            return;
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error) {
+                [fromViewController
+                    dismissViewControllerAnimated:YES
+                                       completion:^(void) {
+                                           DDLogInfo(@"%@ Sending message failed with error: %@", self.logTag, error);
+                                           [self showSendFailureAlertWithError:error
+                                                                       message:message
+                                                            fromViewController:fromViewController];
+                                       }];
+                return;
+            }
 
-        DDLogInfo(@"%@ Sending attachment succeeded.", self.logTag);
-        [self.shareViewDelegate shareViewWasCompleted];
+            DDLogInfo(@"%@ Sending message succeeded.", self.logTag);
+            [self.shareViewDelegate shareViewWasCompleted];
+        });
     };
 
     [fromViewController presentViewController:progressAlert
                                      animated:YES
                                    completion:^(void) {
-                                       __block TSOutgoingMessage *outgoingMessage =
-                                           [ThreadUtil sendMessageWithAttachment:self.attachment
-                                                                        inThread:self.thread
-                                                                   messageSender:self.messageSender
-                                                                      completion:^(NSError *_Nullable error) {
-                                                                          sendCompletion(error, outgoingMessage);
-                                                                      }];
-
-                                       self.outgoingMessage = outgoingMessage;
+                                       sendMessageBlock(sendCompletion);
                                    }];
 }
 
