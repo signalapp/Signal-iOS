@@ -225,9 +225,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)createTempDatabaseFilePath
 {
-    NSString *temporaryDirectory = NSTemporaryDirectory();
-    NSString *filename = [[NSUUID UUID].UUIDString stringByAppendingString:@".sqlite"];
-    NSString *databaseFilePath = [temporaryDirectory stringByAppendingPathComponent:filename];
+    NSString *databaseFilePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"sqlite"];
 
     DDLogInfo(@"%@ databaseFilePath: %@", self.logTag, databaseFilePath);
     [DDLog flushLog];

@@ -186,9 +186,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendEncryptedDatabase:(TSThread *)thread
 {
-    NSString *temporaryDirectory = NSTemporaryDirectory();
-    NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingString:@".sqlite"];
-    NSString *filePath = [temporaryDirectory stringByAppendingPathComponent:fileName];
+    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"sqlite"];
+    NSString *fileName = filePath.lastPathComponent;
 
     __block BOOL success;
     [TSStorageManager.sharedManager.newDatabaseConnection
@@ -223,9 +222,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendUnencryptedDatabase:(TSThread *)thread
 {
-    NSString *temporaryDirectory = NSTemporaryDirectory();
-    NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingString:@".sqlite"];
-    NSString *filePath = [temporaryDirectory stringByAppendingPathComponent:fileName];
+    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"sqlite"];
+    NSString *fileName = filePath.lastPathComponent;
 
     NSError *error = [TSStorageManager.sharedManager.newDatabaseConnection backupToPath:filePath];
     if (error) {
