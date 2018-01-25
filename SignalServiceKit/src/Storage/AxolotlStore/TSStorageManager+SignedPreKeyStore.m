@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSIdentityManager.h"
@@ -41,9 +41,7 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
                                            inCollection:TSStorageManagerSignedPreKeyStoreCollection];
 
     if (!preKeyRecord) {
-        @throw [NSException exceptionWithName:InvalidKeyIdException
-                                       reason:@"No signed pre key found matching key id"
-                                     userInfo:@{}];
+        OWSRaiseException(InvalidKeyIdException, @"No signed pre key found matching key id");
     } else {
         return preKeyRecord;
     }

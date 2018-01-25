@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSStorageKeys.h"
@@ -61,9 +61,7 @@
                                                               inCollection:TSStorageManagerPreKeyStoreCollection];
 
     if (!preKeyRecord) {
-        @throw [NSException exceptionWithName:InvalidKeyIdException
-                                       reason:@"No pre key found matching key id"
-                                     userInfo:@{}];
+        OWSRaiseException(InvalidKeyIdException, @"No pre key found matching key id");
     } else {
         return preKeyRecord;
     }

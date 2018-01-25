@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIImage+OWS.h"
@@ -98,7 +98,7 @@
             break;
 
         default:
-            [NSException raise:NSInternalInconsistencyException format:@"Invalid image orientation"];
+            OWSRaiseException(NSInternalInconsistencyException, @"Invalid image orientation");
     }
 
     /////////////////////////////////////////////////////////////////////////////

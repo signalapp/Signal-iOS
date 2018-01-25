@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -123,5 +123,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This function is intended for use in Swift.
 void AssertIsOnMainThread(void);
+
+#define OWSRaiseException(name, formatParam, ...)                                                                      \
+    {                                                                                                                  \
+        [DDLog flushLog];                                                                                              \
+        @throw [NSException exceptionWithName:name                                                                     \
+                                       reason:[NSString stringWithFormat:formatParam, ##__VA_ARGS__]                   \
+                                     userInfo:nil];                                                                    \
+    }
+
+#define OWSRaiseExceptionWithUserInfo(name, userInfoParam, formatParam, ...)                                           \
+    {                                                                                                                  \
+        [DDLog flushLog];                                                                                              \
+        @throw [NSException exceptionWithName:name                                                                     \
+                                       reason:[NSString stringWithFormat:formatParam, ##__VA_ARGS__]                   \
+                                     userInfo:userInfoParam];                                                          \
+    }
 
 NS_ASSUME_NONNULL_END

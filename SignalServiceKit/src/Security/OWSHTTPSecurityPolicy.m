@@ -1,9 +1,8 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSHTTPSecurityPolicy.h"
-
 #import <AssertMacros.h>
 
 @implementation OWSHTTPSecurityPolicy
@@ -44,10 +43,7 @@
     NSString *path = [bundle pathForResource:service ofType:@"cer"];
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-        @throw [NSException
-            exceptionWithName:@"Missing server certificate"
-                       reason:[NSString stringWithFormat:@"Missing signing certificate for service %@", service]
-                     userInfo:nil];
+        OWSRaiseException(@"Missing server certificate", @"Missing signing certificate for service %@", service);
     }
 
     NSData *certificateData = [NSData dataWithContentsOfFile:path];

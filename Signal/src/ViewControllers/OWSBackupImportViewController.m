@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DDLogInfo(@"%@ %s.", self.logTag, __PRETTY_FUNCTION__);
 
-    [NSException raise:@"OWSBackup_RestartAppToCompleteBackupRestore" format:@"Killing app to complete backup restore"];
+    OWSRaiseException(@"OWSBackup_RestartAppToCompleteBackupRestore", @"Killing app to complete backup restore");
 }
 
 #pragma mark - OWSBackupDelegate

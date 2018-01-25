@@ -276,7 +276,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
                 // Sleep to give analytics events time to be delivered.
                 [NSThread sleepForTimeInterval:15.0f];
 
-                [NSException raise:OWSStorageExceptionName_NoDatabase format:@"Failed to initialize database."];
+                OWSRaiseException(OWSStorageExceptionName_NoDatabase, @"Failed to initialize database.");
             }
         }
 
@@ -384,6 +384,10 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     // We determine the database password, salt and key spec first, since a side effect of
     // this can be deleting any existing database file (if we're recovering
     // from a corrupt keychain).
+    //
+    // Although we don't use databasePassword or databaseSalt in this method,
+    // we use their accessors to ensure that all three exist in the keychain
+    // and can be loaded or that we reset the database & keychain.
     NSData *databasePassword = [self databasePassword];
     OWSAssert(databasePassword.length > 0);
     NSData *databaseSalt = [self databaseSalt];
@@ -555,32 +559,6 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 + (nullable NSData *)tryToLoadDatabaseKeySpec:(NSError **)errorHandle
 {
     return [self tryToLoadKeyChainValue:keychainDBKeySpec errorHandle:errorHandle];
-
-    //    NSData *_Nullable keySpecData = [self tryToLoadKeyChainValue:keychainDBKeySpec errorHandle:errorHandle];
-    //
-    //    if (!keySpecData) {
-    //        DDLogInfo(@"%@ Trying to derive database key spec.", self.logTag);
-    //        NSData *_Nullable passwordData = [self tryToLoadDatabasePassword:errorHandle];
-    //        if (passwordData && !*errorHandle) {
-    //            NSData *_Nullable saltData = [self tryToLoadDatabaseSalt:errorHandle];
-    //            if (saltData && !*errorHandle) {
-    //                OWSAssert(passwordData.length > 0);
-    //                OWSAssert(saltData.length == kSQLCipherSaltLength);
-    //
-    //                keySpecData = [YapDatabaseCryptoUtils databaseKeySpecForPassword:passwordData saltData:saltData];
-    //                OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
-    //
-    //                if (keySpecData) {
-    //                    DDLogInfo(@"%@ database key spec derived.", self.logTag);
-    //                    [self storeDatabaseKeySpec:keySpecData];
-    //                }
-    //            }
-    //        }
-    //    }
-    //
-    //    OWSAssert(keySpecData);
-    //
-    //    return keySpecData;
 }
 
 - (NSData *)databasePassword
@@ -743,8 +721,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     // Presumably this happened in response to a push notification. It's possible that the keychain is corrupted
     // but it could also just be that the user hasn't yet unlocked their device since our password is
     // kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
-    [NSException raise:OWSStorageExceptionName_DatabasePasswordInaccessibleWhileBackgrounded
-                format:@"%@", errorDescription];
+    OWSRaiseException(OWSStorageExceptionName_DatabasePasswordInaccessibleWhileBackgrounded, @"%@", errorDescription);
 }
 
 + (void)deletePasswordFromKeychain
@@ -784,8 +761,8 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
         // Sleep to give analytics events time to be delivered.
         [NSThread sleepForTimeInterval:15.0f];
 
-        [NSException raise:OWSStorageExceptionName_DatabasePasswordUnwritable
-                    format:@"Setting keychain value failed with error: %@", error];
+        OWSRaiseException(
+            OWSStorageExceptionName_DatabasePasswordUnwritable, @"Setting keychain value failed with error: %@", error);
     } else {
         DDLogWarn(@"Succesfully set new keychain value.");
     }

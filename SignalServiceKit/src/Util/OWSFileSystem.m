@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
                       newFilePath,
                       error];
         OWSFail(@"%@", errorDescription);
-        [NSException raise:exceptionName format:@"%@", errorDescription];
+        OWSRaiseException(exceptionName, @"%@", errorDescription);
     }
 
     DDLogInfo(@"%@ Moved file or directory from: %@ to: %@ in: %f",

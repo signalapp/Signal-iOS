@@ -1262,9 +1262,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             if (messageDict) {
                 [messagesArray addObject:messageDict];
             } else {
-                @throw [NSException exceptionWithName:InvalidMessageException
-                                               reason:@"Failed to encrypt message"
-                                             userInfo:nil];
+                OWSRaiseException(InvalidMessageException, @"Failed to encrypt message");
             }
         } @catch (NSException *exception) {
             if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
@@ -1324,9 +1322,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
 
         if (!bundle) {
-            @throw [NSException exceptionWithName:InvalidVersionException
-                                           reason:@"Can't get a prekey bundle from the server with required information"
-                                         userInfo:nil];
+            OWSRaiseException(
+                InvalidVersionException, @"Can't get a prekey bundle from the server with required information");
         } else {
             SessionBuilder *builder = [[SessionBuilder alloc] initWithSessionStore:storage
                                                                        preKeyStore:storage
@@ -1341,10 +1338,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 }
             } @catch (NSException *exception) {
                 if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
-                    @throw [NSException
-                        exceptionWithName:UntrustedIdentityKeyException
-                                   reason:nil
-                                 userInfo:@{ TSInvalidPreKeyBundleKey : bundle, TSInvalidRecipientKey : identifier }];
+                    OWSRaiseExceptionWithUserInfo(UntrustedIdentityKeyException,
+                        (@{ TSInvalidPreKeyBundleKey : bundle, TSInvalidRecipientKey : identifier }),
+                        @"");
                 }
                 @throw exception;
             }
