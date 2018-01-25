@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>2.20.0</string>
 	<key>CFBundleVersion</key>
-	<string>2.20.0.3</string>
+	<string>2.20.0.4</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>
@@ -53,8 +53,8 @@
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
-            <key>NSExtensionActivationRule</key>
-            <string>SUBQUERY (
+			<key>NSExtensionActivationRule</key>
+			<string>SUBQUERY (
                 extensionItems,
                 $extensionItem,
                 SUBQUERY (
