@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -11,6 +11,12 @@ import PromiseKit
 
 @objc
 public class ShareViewController: UINavigationController, ShareViewDelegate, SAEFailedViewDelegate {
+
+    enum ShareViewControllerError: Error {
+        case assertionError(description: String)
+        case unsupportedMedia
+        case notRegistered()
+    }
 
     private var hasInitialRootViewController = false
     private var isReadyForAppExtensions = false
@@ -108,6 +114,10 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(registrationStateDidChange),
                                                name: .RegistrationStateDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(owsApplicationWillEnterForeground),
+                                               name: .OWSApplicationWillEnterForeground,
                                                object: nil)
 
         Logger.info("\(self.logTag) application: didFinishLaunchingWithOptions completed.")
@@ -342,6 +352,29 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         Logger.flush()
     }
 
+    @objc
+    func owsApplicationWillEnterForeground() throws {
+        AssertIsOnMainThread()
+
+        Logger.debug("\(self.logTag) \(#function)")
+
+        // If a user unregisters in the main app, the SAE should shut down
+        // immediately.
+        guard !TSAccountManager.isRegistered() else {
+            // If user is registered, do nothing.
+            return
+        }
+        guard let firstViewController = shareViewNavigationController.viewControllers.first else {
+            // If no view has been presented yet, do nothing.
+            return
+        }
+        if let _ = firstViewController as? SAEFailedViewController {
+            // If root view is an error view, do nothing.
+            return
+        }
+        throw ShareViewControllerError.notRegistered()
+    }
+
     // MARK: ShareViewDelegate, SAEFailedViewDelegate
 
     public func shareViewWasCompleted() {
@@ -406,12 +439,6 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             }
             owsFail("\(self.logTag) building attachment failed with error: \(error)")
         }.retainUntilComplete()
-    }
-
-    enum ShareViewControllerError: Error {
-        case assertionError(description: String)
-        case unsupportedMedia
-
     }
 
     private func buildAttachment() -> Promise<SignalAttachment> {
