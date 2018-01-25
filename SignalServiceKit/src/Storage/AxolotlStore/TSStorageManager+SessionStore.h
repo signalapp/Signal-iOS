@@ -9,6 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSStorageManager (SessionStore) <SessionStore>
 
++ (YapDatabaseConnection *)protocolStoreDBConnection;
+
 - (void)archiveAllSessionsForContact:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext;
 
 #pragma mark - debug

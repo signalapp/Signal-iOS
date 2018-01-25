@@ -196,20 +196,16 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
 - (void)resetSessionStore
 {
-    AssertIsOnSessionStoreQueue();
-
     DDLogWarn(@"%@ resetting session store", self.logTag);
-    [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.protocolStoreDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [transaction removeAllObjectsInCollection:TSStorageManagerSessionStoreCollection];
     }];
 }
 
 - (void)printAllSessions
 {
-    AssertIsOnSessionStoreQueue();
-
     NSString *tag = @"[TSStorageManager (SessionStore)]";
-    [self.sessionDBConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.protocolStoreDBConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         DDLogDebug(@"%@ All Sessions:", tag);
         [transaction
             enumerateKeysAndObjectsInCollection:TSStorageManagerSessionStoreCollection
@@ -258,18 +254,14 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
 - (void)snapshotSessionStore
 {
-    AssertIsOnSessionStoreQueue();
-
-    [self.sessionDBConnection snapshotCollection:TSStorageManagerSessionStoreCollection
-                                snapshotFilePath:self.snapshotFilePath];
+    [self.protocolStoreDBConnection snapshotCollection:TSStorageManagerSessionStoreCollection
+                                      snapshotFilePath:self.snapshotFilePath];
 }
 
 - (void)restoreSessionStore
 {
-    AssertIsOnSessionStoreQueue();
-
-    [self.sessionDBConnection restoreSnapshotOfCollection:TSStorageManagerSessionStoreCollection
-                                         snapshotFilePath:self.snapshotFilePath];
+    [self.protocolStoreDBConnection restoreSnapshotOfCollection:TSStorageManagerSessionStoreCollection
+                                               snapshotFilePath:self.snapshotFilePath];
 }
 #endif
 
