@@ -52,8 +52,7 @@ def is_valid_release_version(value):
         
         
 def is_valid_build_version(value):
-    # Internal builds have an option "i" suffix.
-    regex = re.compile(r'^(\d+)\.(\d+)\.(\d+)\.(\d+)i?$')
+    regex = re.compile(r'^(\d+)\.(\d+)\.(\d+)\.(\d+)$')
     match = regex.search(value)
     return match is not None
         
@@ -72,8 +71,6 @@ def set_versions(plist_file_path, release_version, build_version):
     #
     # <key>CFBundleShortVersionString</key>
     # <string>2.20.0</string>
-    #
-    # Internal builds have an option "i" suffix.
     file_regex = re.compile(r'<key>CFBundleShortVersionString</key>\s*<string>([\d\.]+)</string>', re.MULTILINE)
     file_match = file_regex.search(text)
     # print 'match', match
@@ -85,9 +82,7 @@ def set_versions(plist_file_path, release_version, build_version):
     #
     # <key>CFBundleVersion</key>
     # <string>2.20.0.3</string>
-    #
-    # Internal builds have an option "i" suffix.
-    file_regex = re.compile(r'<key>CFBundleVersion</key>\s*<string>([\d\.]+i?)</string>', re.MULTILINE)
+    file_regex = re.compile(r'<key>CFBundleVersion</key>\s*<string>([\d\.]+)</string>', re.MULTILINE)
     file_match = file_regex.search(text)
     # print 'match', match
     if not file_match:   
@@ -105,9 +100,7 @@ def get_versions(plist_file_path):
 
     # <key>CFBundleVersion</key>
     # <string>2.13.0.13</string>
-    #
-    # Internal builds have an option "i" suffix.
-    file_regex = re.compile(r'<key>CFBundleVersion</key>\s*<string>([\d\.]+i?)</string>', re.MULTILINE)
+    file_regex = re.compile(r'<key>CFBundleVersion</key>\s*<string>([\d\.]+)</string>', re.MULTILINE)
     file_match = file_regex.search(text)
     # print 'match', match
     if not file_match:   
@@ -120,8 +113,7 @@ def get_versions(plist_file_path):
     if not is_valid_build_version(old_build_version):
         fail('Invalid build version: %s' % old_build_version)
     
-    # Internal builds have an option "i" suffix.
-    build_number_regex = re.compile(r'\.(\d+)i?$')
+    build_number_regex = re.compile(r'\.(\d+)$')
     build_number_match = build_number_regex.search(old_build_version)
     if not build_number_match:   
         fail('Could not parse .plist version')
@@ -130,8 +122,7 @@ def get_versions(plist_file_path):
     old_build_number = build_number_match.group(1)
     print 'old_build_number:', old_build_number
     
-    # Internal builds have an option "i" suffix.
-    release_number_regex = re.compile(r'^(.+)\.\d+i?$')
+    release_number_regex = re.compile(r'^(.+)\.\d+$')
     release_number_match = release_number_regex.search(old_build_version)
     if not release_number_match:   
         fail('Could not parse .plist')
@@ -146,7 +137,6 @@ def get_versions(plist_file_path):
         
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Precommit cleanup script.')
-    parser.add_argument('--internal', action='store_true', help='flags internal builds by adding an "i" suffix to the build number.')
     parser.add_argument('--version', help='used for starting a new version.')
 
     args = parser.parse_args()
@@ -191,9 +181,6 @@ if __name__ == '__main__':
     
         new_release_version = old_release_version
         new_build_version = old_release_version + "." + new_build_number
-
-    if args.internal:
-        new_build_version = new_build_version + "i"
 
     print 'new_release_version:', new_release_version
     print 'new_build_version:', new_build_version
