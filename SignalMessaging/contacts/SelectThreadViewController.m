@@ -63,7 +63,9 @@ NS_ASSUME_NONNULL_BEGIN
     _threadViewHelper.delegate = self;
 
     _uiDatabaseConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
+#ifdef DEBUG
     _uiDatabaseConnection.permittedTransactions = YDB_AnyReadTransaction;
+#endif
     [_uiDatabaseConnection beginLongLivedReadTransaction];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
