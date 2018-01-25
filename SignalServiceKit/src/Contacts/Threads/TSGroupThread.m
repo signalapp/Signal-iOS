@@ -144,27 +144,21 @@ NS_ASSUME_NONNULL_BEGIN
     return [groupMemberIds copy];
 }
 
-// Group and Contact threads share a collection, this is a convenient way to enumerate *just* the group threads
-+ (void)enumerateGroupThreadsUsingBlock:(void (^)(TSGroupThread *groupThread, BOOL *stop))block
-{
-    [self enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
-        if ([obj isKindOfClass:[TSGroupThread class]]) {
-            block((TSGroupThread *)obj, stop);
-        }
-    }];
-}
-
 // @returns all threads to which the recipient is a member.
 //
 // @note If this becomes a hotspot we can extract into a YapDB View.
 // As is, the number of groups should be small (dozens, *maybe* hundreds), and we only enumerate them upon SN changes.
 + (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId
-{
+                                              transaction:(YapDatabaseReadWriteTransaction *)transaction {
+
     NSMutableArray<TSGroupThread *> *groupThreads = [NSMutableArray new];
 
-    [self enumerateGroupThreadsUsingBlock:^(TSGroupThread *_Nonnull groupThread, BOOL *_Nonnull stop) {
-        if ([groupThread.groupModel.groupMemberIds containsObject:recipientId]) {
-            [groupThreads addObject:groupThread];
+    [self enumerateCollectionObjectsWithTransaction:transaction usingBlock:^(id obj, BOOL *stop) {
+        if ([obj isKindOfClass:[TSGroupThread class]]) {
+            TSGroupThread *groupThread = (TSGroupThread *)obj;
+            if ([groupThread.groupModel.groupMemberIds containsObject:recipientId]) {
+                [groupThreads addObject:groupThread];
+            }
         }
     }];
 
