@@ -8,7 +8,8 @@ import SignalServiceKit
 
 // A modal view that be used during blocking interactions (e.g. waiting on response from
 // service or on the completion of a long-running local operation).
-class ModalActivityIndicatorViewController: OWSViewController {
+@objc
+public class ModalActivityIndicatorViewController: OWSViewController {
 
     let TAG = "[ModalActivityIndicatorViewController]"
 
@@ -25,11 +26,11 @@ class ModalActivityIndicatorViewController: OWSViewController {
     // MARK: Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("\(#function) is unimplemented.")
     }
 
-    required init(canCancel: Bool) {
+    public required init(canCancel: Bool) {
         self.canCancel = canCancel
         super.init(nibName: nil, bundle: nil)
     }
@@ -64,7 +65,7 @@ class ModalActivityIndicatorViewController: OWSViewController {
         }
     }
 
-    override func loadView() {
+    public override func loadView() {
         super.loadView()
 
         self.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.25)
@@ -97,7 +98,7 @@ class ModalActivityIndicatorViewController: OWSViewController {
         self.view.layer.opacity = 0.0
     }
 
-    override func viewWillAppear(_ animated: Bool) {
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         self.activityIndicator?.startAnimating()
@@ -112,13 +113,13 @@ class ModalActivityIndicatorViewController: OWSViewController {
         self.presentTimer = Timer.weakScheduledTimer(withTimeInterval: kPresentationDelaySeconds, target: self, selector: #selector(presentTimerFired), userInfo: nil, repeats: false)
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
+    public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         clearTimer()
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
+    public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
         self.activityIndicator?.stopAnimating()
