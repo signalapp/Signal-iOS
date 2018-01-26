@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSMessageReceiver : NSObject
 
 + (instancetype)sharedInstance;
-+ (void)syncRegisterDatabaseExtension:(OWSStorage *)storage;
++ (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage;
 
 - (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope;
 - (void)handleAnyUnprocessedEnvelopesAsync;

@@ -127,24 +127,18 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
     return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
 }
 
+#ifdef DEBUG
 // Useful for tests, don't use in app startup path because it's slow.
 - (void)blockingRegisterDatabaseExtensions
 {
     [self.storageManager registerExtension:[self.class indexDatabaseExtension]
                                   withName:OWSFailedMessagesJobMessageStateIndex];
 }
+#endif
 
 + (void)asyncRegisterDatabaseExtensionsWithStorageManager:(OWSStorage *)storage
 {
-    [storage asyncRegisterExtension:[self indexDatabaseExtension]
-                           withName:OWSFailedMessagesJobMessageStateIndex
-                    completionBlock:^(BOOL ready) {
-                        if (ready) {
-                            DDLogDebug(@"%@ completed registering extension async.", self.logTag);
-                        } else {
-                            DDLogError(@"%@ failed registering extension async.", self.logTag);
-                        }
-                    }];
+    [storage asyncRegisterExtension:[self indexDatabaseExtension] withName:OWSFailedMessagesJobMessageStateIndex];
 }
 
 @end

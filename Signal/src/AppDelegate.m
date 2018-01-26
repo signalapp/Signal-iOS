@@ -29,6 +29,7 @@
 #import <SignalMessaging/Release.h>
 #import <SignalMessaging/SignalMessaging.h>
 #import <SignalMessaging/VersionMigrations.h>
+#import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -134,7 +135,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [self startupLogging];
 
-
     // If a backup restore is in progress, try to complete it.
     // Otherwise, cleanup backup state.
     [OWSBackup applicationDidFinishLaunching];
@@ -196,7 +196,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     return YES;
 }
-
 
 /**
  *  The user must unlock the device once after reboot before the database encryption key can be accessed.
@@ -394,7 +393,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     DDLogWarn(@"%@ applicationDidBecomeActive.", self.logTag);
-
     if (CurrentAppContext().isRunningTests) {
         return;
     }
@@ -402,6 +400,19 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [self removeScreenProtection];
 
     [self ensureRootViewController];
+
+    [AppReadiness.sharedManager runNowOrWhenAppIsReady:^{
+        [self handleActivation];
+    }];
+
+    DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.logTag);
+}
+
+- (void)handleActivation
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogWarn(@"%@ handleActivation.", self.logTag);
 
     // Always check prekeys after app launches, and sometimes check on app activation.
     [TSPreKeyManager checkPreKeysIfNecessary];
@@ -472,10 +483,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                                     preferences:[Environment preferences]];
             }
         });
-        
     }
 
-    DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.logTag);
+    DDLogInfo(@"%@ handleActivation completed.", self.logTag);
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -753,9 +763,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)storageIsReady
 {
+    OWSAssertIsOnMainThread();
     DDLogInfo(@"%@ storageIsReady", self.logTag);
 
     [OWSPreferences setIsRegistered:[TSAccountManager isRegistered]];
+
+    [AppReadiness.sharedManager setAppIsReady];
 
     if ([TSAccountManager isRegistered]) {
         DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
@@ -833,6 +846,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)ensureRootViewController
 {
+    OWSAssertIsOnMainThread();
+
     DDLogInfo(@"%@ ensureRootViewController", self.logTag);
 
     if (![OWSStorage isStorageReady] || self.hasInitialRootViewController) {

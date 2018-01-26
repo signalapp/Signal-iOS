@@ -117,24 +117,19 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
     return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
 }
 
+#ifdef DEBUG
 // Useful for tests, don't use in app startup path because it's slow.
 - (void)blockingRegisterDatabaseExtensions
 {
     [self.storageManager registerExtension:[self.class indexDatabaseExtension]
                                   withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex];
 }
+#endif
 
 + (void)asyncRegisterDatabaseExtensionsWithStorageManager:(OWSStorage *)storage
 {
     [storage asyncRegisterExtension:[self indexDatabaseExtension]
-                           withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex
-                    completionBlock:^(BOOL ready) {
-                        if (ready) {
-                            DDLogDebug(@"%@ completed registering extension async.", self.logTag);
-                        } else {
-                            DDLogError(@"%@ failed registering extension async.", self.logTag);
-                        }
-                    }];
+                           withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex];
 }
 
 @end

@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSBatchMessageProcessor : NSObject
 
 + (instancetype)sharedInstance;
-+ (void)syncRegisterDatabaseExtension:(OWSStorage *)storage;
++ (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage;
 
 - (void)enqueueEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData;
 - (void)handleAnyUnprocessedEnvelopesAsync;
