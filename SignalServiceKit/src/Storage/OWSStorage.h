@@ -10,6 +10,30 @@ extern NSString *const StorageIsReadyNotification;
 
 @class YapDatabaseExtension;
 
+@protocol OWSDatabaseConnectionDelegate <NSObject>
+
+- (BOOL)areAllRegistrationsComplete;
+
+@end
+
+#pragma mark -
+
+@interface OWSDatabaseConnection : YapDatabaseConnection
+
+@property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
+
+#ifdef DEBUG
+@property (atomic) BOOL canWriteBeforeStorageReady;
+#endif
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithDatabase:(YapDatabase *)database
+                        delegate:(id<OWSDatabaseConnectionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
+
+@end
+
+#pragma mark -
+
 @interface OWSStorage : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -37,13 +61,15 @@ extern NSString *const StorageIsReadyNotification;
 // TODO: Deprecate?
 - (nullable YapDatabaseConnection *)newDatabaseConnection;
 
+#ifdef DEBUG
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
-- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
-                      withName:(NSString *)extensionName
-               completionBlock:(nullable void (^)(BOOL ready))completionBlock;
+#endif
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
 - (nullable id)registeredExtension:(NSString *)extensionName;
 
 - (unsigned long long)databaseFileSize;
+
+- (YapDatabaseConnection *)registrationConnection;
 
 #pragma mark - Password
 

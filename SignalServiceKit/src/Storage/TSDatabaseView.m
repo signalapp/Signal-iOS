@@ -72,19 +72,13 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
                                                                   options:options];
 
     if (async) {
-        [storage asyncRegisterExtension:view
-                               withName:viewName
-                        completionBlock:^(BOOL ready) {
-                            OWSCAssert(ready);
-
-                            DDLogInfo(@"%@ asyncRegisterExtension: %@ -> %d", self.logTag, viewName, ready);
-                        }];
+        [storage asyncRegisterExtension:view withName:viewName];
     } else {
         [storage registerExtension:view withName:viewName];
     }
 }
 
-+ (void)registerUnreadDatabaseView:(OWSStorage *)storage
++ (void)asyncRegisterUnreadDatabaseView:(OWSStorage *)storage
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
@@ -100,7 +94,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     [self registerMessageDatabaseViewWithName:TSUnreadDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"1"
-                                        async:NO
+                                        async:YES
                                       storage:storage];
 }
 
@@ -152,7 +146,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
                                       storage:storage];
 }
 
-+ (void)registerThreadInteractionsDatabaseView:(OWSStorage *)storage
++ (void)asyncRegisterThreadInteractionsDatabaseView:(OWSStorage *)storage
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
@@ -165,7 +159,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     [self registerMessageDatabaseViewWithName:TSMessageDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"1"
-                                        async:NO
+                                        async:YES
                                       storage:storage];
 }
 
@@ -186,7 +180,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
                                       storage:storage];
 }
 
-+ (void)registerThreadDatabaseView:(OWSStorage *)storage
++ (void)asyncRegisterThreadDatabaseView:(OWSStorage *)storage
 {
     YapDatabaseView *threadView = [storage registeredExtension:TSThreadDatabaseViewExtensionName];
     if (threadView) {
@@ -234,7 +228,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     YapDatabaseView *databaseView =
         [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
 
-    [storage registerExtension:databaseView withName:TSThreadDatabaseViewExtensionName];
+    [storage asyncRegisterExtension:databaseView withName:TSThreadDatabaseViewExtensionName];
 }
 
 /**
@@ -347,15 +341,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     YapDatabaseView *view =
         [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
 
-    [storage asyncRegisterExtension:view
-                           withName:TSSecondaryDevicesDatabaseViewExtensionName
-                    completionBlock:^(BOOL ready) {
-                        if (ready) {
-                            DDLogDebug(@"%@ Successfully set up extension: %@", self.logTag, TSSecondaryDevicesGroup);
-                        } else {
-                            DDLogError(@"%@ Unable to setup extension: %@", self.logTag, TSSecondaryDevicesGroup);
-                        }
-                    }];
+    [storage asyncRegisterExtension:view withName:TSSecondaryDevicesDatabaseViewExtensionName];
 }
 
 + (id)unseenDatabaseViewExtension:(YapDatabaseReadTransaction *)transaction

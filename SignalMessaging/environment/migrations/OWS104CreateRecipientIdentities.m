@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS104CreateRecipientIdentities.h"
@@ -24,42 +24,36 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
     return OWS104CreateRecipientIdentitiesMigrationId;
 }
 
-// Overriding runUp instead of runUpWithTransaction in order to implement a blocking migration.
-- (void)runUp
+- (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [[OWSRecipientIdentity dbReadWriteConnection] readWriteWithBlock:^(
-        YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        NSMutableDictionary<NSString *, NSData *> *identityKeys = [NSMutableDictionary new];
+    NSMutableDictionary<NSString *, NSData *> *identityKeys = [NSMutableDictionary new];
 
-        [transaction
-            enumerateKeysAndObjectsInCollection:TSStorageManagerTrustedKeysCollection
-                                     usingBlock:^(
-                                         NSString *_Nonnull recipientId, id _Nonnull object, BOOL *_Nonnull stop) {
-                                         if (![object isKindOfClass:[NSData class]]) {
-                                             OWSFail(
-                                                 @"%@ Unexpected object in trusted keys collection key: %@ object: %@",
-                                                 self.logTag,
-                                                 recipientId,
-                                                 object);
-                                             return;
-                                         }
-                                         NSData *identityKey = (NSData *)object;
-                                         [identityKeys setObject:identityKey forKey:recipientId];
-                                     }];
+    [transaction
+        enumerateKeysAndObjectsInCollection:TSStorageManagerTrustedKeysCollection
+                                 usingBlock:^(NSString *_Nonnull recipientId, id _Nonnull object, BOOL *_Nonnull stop) {
+                                     if (![object isKindOfClass:[NSData class]]) {
+                                         OWSFail(@"%@ Unexpected object in trusted keys collection key: %@ object: %@",
+                                             self.logTag,
+                                             recipientId,
+                                             object);
+                                         return;
+                                     }
+                                     NSData *identityKey = (NSData *)object;
+                                     [identityKeys setObject:identityKey forKey:recipientId];
+                                 }];
 
-        [identityKeys enumerateKeysAndObjectsUsingBlock:^(
-            NSString *_Nonnull recipientId, NSData *_Nonnull identityKey, BOOL *_Nonnull stop) {
-            DDLogInfo(@"%@ Migrating identity key for recipient: %@", self.logTag, recipientId);
-            [[[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
-                                                   identityKey:identityKey
-                                               isFirstKnownKey:NO
-                                                     createdAt:[NSDate dateWithTimeIntervalSince1970:0]
-                                             verificationState:OWSVerificationStateDefault]
-                saveWithTransaction:transaction];
-        }];
-
-        [self saveWithTransaction:transaction];
+    [identityKeys enumerateKeysAndObjectsUsingBlock:^(
+        NSString *_Nonnull recipientId, NSData *_Nonnull identityKey, BOOL *_Nonnull stop) {
+        DDLogInfo(@"%@ Migrating identity key for recipient: %@", self.logTag, recipientId);
+        [[[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
+                                               identityKey:identityKey
+                                           isFirstKnownKey:NO
+                                                 createdAt:[NSDate dateWithTimeIntervalSince1970:0]
+                                         verificationState:OWSVerificationStateDefault]
+            saveWithTransaction:transaction];
     }];
+
+    [self saveWithTransaction:transaction];
 }
 
 @end
