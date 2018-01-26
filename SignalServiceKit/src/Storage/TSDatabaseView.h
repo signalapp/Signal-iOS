@@ -23,16 +23,16 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 
 + (void)registerCrossProcessNotifier:(OWSStorage *)storage;
 
-// This method must be called _AFTER_ registerThreadInteractionsDatabaseView.
-+ (void)registerThreadDatabaseView:(OWSStorage *)storage;
+// This method must be called _AFTER_ asyncRegisterThreadInteractionsDatabaseView.
++ (void)asyncRegisterThreadDatabaseView:(OWSStorage *)storage;
 
-+ (void)registerThreadInteractionsDatabaseView:(OWSStorage *)storage;
++ (void)asyncRegisterThreadInteractionsDatabaseView:(OWSStorage *)storage;
 + (void)asyncRegisterThreadOutgoingMessagesDatabaseView:(OWSStorage *)storage;
 
 // Instances of OWSReadTracking for wasRead is NO and shouldAffectUnreadCounts is YES.
 //
 // Should be used for "unread message counts".
-+ (void)registerUnreadDatabaseView:(OWSStorage *)storage;
++ (void)asyncRegisterUnreadDatabaseView:(OWSStorage *)storage;
 
 // Should be used for "unread indicator".
 //

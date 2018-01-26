@@ -58,6 +58,42 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
+#pragma mark - Database Connections
+
+#ifdef DEBUG
++ (YapDatabaseConnection *)dbReadConnection
+{
+    return self.dbReadWriteConnection;
+}
+
+// Database migrations need to occur _before_ storage is ready (by definition),
+// so we need to use a connection with canWriteBeforeStorageReady set in
+// debug builds.
++ (YapDatabaseConnection *)dbReadWriteConnection
+{
+    static dispatch_once_t onceToken;
+    static YapDatabaseConnection *sharedDBConnection;
+    dispatch_once(&onceToken, ^{
+        sharedDBConnection = [TSStorageManager sharedManager].newDatabaseConnection;
+
+        OWSAssert([sharedDBConnection isKindOfClass:[OWSDatabaseConnection class]]);
+        ((OWSDatabaseConnection *)sharedDBConnection).canWriteBeforeStorageReady = YES;
+    });
+
+    return sharedDBConnection;
+}
+
+- (YapDatabaseConnection *)dbReadConnection
+{
+    return OWSDatabaseMigration.dbReadConnection;
+}
+
+- (YapDatabaseConnection *)dbReadWriteConnection
+{
+    return OWSDatabaseMigration.dbReadWriteConnection;
+}
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END

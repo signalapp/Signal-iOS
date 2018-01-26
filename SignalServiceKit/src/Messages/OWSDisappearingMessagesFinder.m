@@ -188,23 +188,17 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
     return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
 }
 
+#ifdef DEBUG
 // Useful for tests, don't use in app startup path because it's slow.
 + (void)blockingRegisterDatabaseExtensions:(OWSStorage *)storage
 {
     [storage registerExtension:[self indexDatabaseExtension] withName:OWSDisappearingMessageFinderExpiresAtIndex];
 }
+#endif
 
 + (void)asyncRegisterDatabaseExtensions:(OWSStorage *)storage
 {
-    [storage asyncRegisterExtension:[self indexDatabaseExtension]
-                           withName:OWSDisappearingMessageFinderExpiresAtIndex
-                    completionBlock:^(BOOL ready) {
-                        if (ready) {
-                            DDLogDebug(@"%@ completed registering extension async.", self.logTag);
-                        } else {
-                            DDLogError(@"%@ failed registering extension async.", self.logTag);
-                        }
-                    }];
+    [storage asyncRegisterExtension:[self indexDatabaseExtension] withName:OWSDisappearingMessageFinderExpiresAtIndex];
 }
 
 @end

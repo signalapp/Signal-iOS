@@ -342,6 +342,65 @@ NS_ASSUME_NONNULL_BEGIN
     YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
         OWSAssert(!databaseSalt);
         OWSAssert(saltData);
+        
+        databaseSalt = saltData;
+    };
+    __block NSData *_Nullable databaseKeySpec = nil;
+    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
+        OWSAssert(!databaseKeySpec);
+        OWSAssert(keySpecData);
+        
+        databaseKeySpec = keySpecData;
+    };
+    NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
+                                                                 databasePassword:databasePassword
+                                                                        saltBlock:saltBlock
+                                                                     keySpecBlock:keySpecBlock];
+    if (error) {
+        DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
+    }
+    XCTAssertNil(error);
+    XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
+    XCTAssertNotNil(databaseSalt);
+    XCTAssertEqual(databaseSalt.length, kSQLCipherSaltLength);
+    XCTAssertNotNil(databaseKeySpec);
+    XCTAssertEqual(databaseKeySpec.length, kSQLCipherKeySpecLength);
+
+    BOOL isValid = [self verifyTestDatabase:databaseFilePath
+                           databasePassword:nil
+                               databaseSalt:nil
+                            databaseKeySpec:databaseKeySpec];
+    XCTAssertTrue(isValid);
+}
+
+// Verifies that legacy users with non-converted databases can convert.
+- (void)testDatabaseConversionPerformance_WithKeyspec
+{
+    NSData *databasePassword = [self randomDatabasePassword];
+    NSString *databaseFilePath = [self createTempDatabaseFilePath];
+
+    const int kItemCount = 50 * 1000;
+
+    // Create an populate the unconverted database.
+    [self openYapDatabase:databaseFilePath
+         databasePassword:databasePassword
+             databaseSalt:nil
+          databaseKeySpec:nil
+            databaseBlock:^(YapDatabase *database) {
+                YapDatabaseConnection *dbConnection = database.newConnection;
+                [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                    for (int i = 0; i < kItemCount; i++) {
+                        [transaction setObject:@(i) forKey:@"test_key_name" inCollection:@"test_collection_name"];
+                    }
+                }];
+            }];
+
+    XCTAssertTrue([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
+
+    __block NSData *_Nullable databaseSalt = nil;
+    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+        OWSAssert(!databaseSalt);
+        OWSAssert(saltData);
 
         databaseSalt = saltData;
     };
@@ -366,10 +425,16 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertNotNil(databaseKeySpec);
     XCTAssertEqual(databaseKeySpec.length, kSQLCipherKeySpecLength);
 
-    BOOL isValid = [self verifyTestDatabase:databaseFilePath
-                           databasePassword:nil
-                               databaseSalt:nil
-                            databaseKeySpec:databaseKeySpec];
+    // Verify the contents of the unconverted database.
+    __block BOOL isValid = NO;
+    [self openYapDatabase:databaseFilePath
+         databasePassword:databasePassword
+             databaseSalt:nil
+          databaseKeySpec:nil
+            databaseBlock:^(YapDatabase *database) {
+                YapDatabaseConnection *dbConnection = database.newConnection;
+                isValid = [dbConnection numberOfKeysInCollection:@"test_collection_name"] == kItemCount;
+            }];
     XCTAssertTrue(isValid);
 }
 

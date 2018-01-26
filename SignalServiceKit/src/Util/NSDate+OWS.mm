@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSDate+OWS.h"
@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation NSDate (millisecondTimeStamp)
+@implementation NSDate (OWS)
 
 + (uint64_t)ows_millisecondTimeStamp
 {
@@ -24,6 +24,31 @@ NS_ASSUME_NONNULL_BEGIN
 + (uint64_t)ows_millisecondsSince1970ForDate:(NSDate *)date
 {
     return (uint64_t)(date.timeIntervalSince1970 * 1000);
+}
+
+#pragma mark - Debugging
+
++ (NSDateFormatter *)dateFormatterForDebugTimestamps
+{
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS"];
+    });
+    return formatter;
+}
+
++ (NSString *)debugTimestamp
+{
+    // We use ows_millisecondTimeStamp for its higher precision.
+    return [[NSDate ows_dateWithMillisecondsSince1970:[NSDate ows_millisecondTimeStamp]] formattedAsDebugTimestamp];
+}
+
+- (NSString *)formattedAsDebugTimestamp
+{
+    return [[NSDate dateFormatterForDebugTimestamps] stringFromDate:self];
 }
 
 @end

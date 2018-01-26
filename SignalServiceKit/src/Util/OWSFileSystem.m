@@ -58,12 +58,13 @@ NS_ASSUME_NONNULL_BEGIN
      sharedDataFilePath:(NSString *)newFilePath
           exceptionName:(NSString *)exceptionName
 {
-    DDLogInfo(@"%@ Moving file or directory from: %@ to: %@", self.logTag, oldFilePath, newFilePath);
-
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:oldFilePath]) {
         return;
     }
+
+    DDLogInfo(@"%@ Moving file or directory from: %@ to: %@", self.logTag, oldFilePath, newFilePath);
+
     if ([fileManager fileExistsAtPath:newFilePath]) {
         OWSFail(@"%@ Can't move file or directory from: %@ to: %@; destination already exists.",
             self.logTag,

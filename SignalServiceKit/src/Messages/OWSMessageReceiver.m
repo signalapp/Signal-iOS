@@ -190,7 +190,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     });
 }
 
-+ (void)syncRegisterDatabaseExtension:(OWSStorage *)storage
++ (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage
 {
     [self registerLegacyClasses];
 
@@ -200,7 +200,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         // already initialized
         return;
     }
-    [storage registerExtension:[self databaseExtension] withName:OWSMessageDecryptJobFinderExtensionName];
+    [storage asyncRegisterExtension:[self databaseExtension] withName:OWSMessageDecryptJobFinderExtensionName];
 }
 
 @end
@@ -422,9 +422,9 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 #pragma mark - class methods
 
-+ (void)syncRegisterDatabaseExtension:(OWSStorage *)storage
++ (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage
 {
-    [OWSMessageDecryptJobFinder syncRegisterDatabaseExtension:storage];
+    [OWSMessageDecryptJobFinder asyncRegisterDatabaseExtension:storage];
 }
 
 #pragma mark - instance methods

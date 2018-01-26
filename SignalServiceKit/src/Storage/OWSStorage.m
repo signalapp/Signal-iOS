@@ -38,29 +38,9 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 #pragma mark -
 
-@protocol OWSDatabaseConnectionDelegate <NSObject>
-
-- (BOOL)areSyncRegistrationsComplete;
-
-@end
-
-#pragma mark -
-
 @interface YapDatabaseConnection ()
 
 - (id)initWithDatabase:(YapDatabase *)database;
-
-@end
-
-#pragma mark -
-
-@interface OWSDatabaseConnection : YapDatabaseConnection
-
-@property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
-
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithDatabase:(YapDatabase *)database
-                        delegate:(id<OWSDatabaseConnectionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -94,28 +74,20 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 {
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
+    OWSAssert(delegate.areAllRegistrationsComplete || self.canWriteBeforeStorageReady);
 
     [super readWriteWithBlock:block];
 }
 
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [super asyncReadWriteWithBlock:block];
+    [self asyncReadWriteWithBlock:block completionQueue:NULL completionBlock:NULL];
 }
 
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
                 completionBlock:(nullable dispatch_block_t)completionBlock
 {
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
-
-    [super asyncReadWriteWithBlock:block completionBlock:completionBlock];
+    [self asyncReadWriteWithBlock:block completionQueue:NULL completionBlock:completionBlock];
 }
 
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
@@ -124,7 +96,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 {
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssert(delegate);
-    OWSAssert(delegate.areSyncRegistrationsComplete);
+    OWSAssert(delegate.areAllRegistrationsComplete || self.canWriteBeforeStorageReady);
 
     [super asyncReadWriteWithBlock:block completionQueue:completionQueue completionBlock:completionBlock];
 }
@@ -138,6 +110,8 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 - (void)addConnection:(YapDatabaseConnection *)connection;
 
+- (YapDatabaseConnection *)registrationConnection;
+
 @end
 
 #pragma mark -
@@ -145,6 +119,8 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 @interface OWSDatabase : YapDatabase
 
 @property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
+
+@property (atomic, nullable) YapDatabaseConnection *registrationConnectionCached;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (id)initWithPath:(NSString *)inPath
@@ -190,6 +166,25 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     OWSDatabaseConnection *connection = [[OWSDatabaseConnection alloc] initWithDatabase:self delegate:delegate];
     [self addConnection:connection];
     return connection;
+}
+
+- (YapDatabaseConnection *)registrationConnection
+{
+    @synchronized(self)
+    {
+        if (!self.registrationConnectionCached) {
+            YapDatabaseConnection *connection = [super registrationConnection];
+
+#ifdef DEBUG
+            // Flag the registration connection as such.
+            OWSAssert([connection isKindOfClass:[OWSDatabaseConnection class]]);
+            ((OWSDatabaseConnection *)connection).canWriteBeforeStorageReady = YES;
+#endif
+
+            self.registrationConnectionCached = connection;
+        }
+        return self.registrationConnectionCached;
+    }
 }
 
 @end
@@ -317,6 +312,16 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     return NO;
 }
 
+- (BOOL)areAllRegistrationsComplete
+{
+    DDLogInfo(@"%@ areAllRegistrationsComplete: %d %d = %d",
+        self.logTag,
+        self.areSyncRegistrationsComplete,
+        self.areAsyncRegistrationsComplete,
+        self.areSyncRegistrationsComplete && self.areAsyncRegistrationsComplete);
+    return self.areSyncRegistrationsComplete && self.areAsyncRegistrationsComplete;
+}
+
 - (void)runSyncRegistrations
 {
     OWS_ABSTRACT_METHOD();
@@ -352,9 +357,17 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
     for (OWSStorage *storage in self.allStorages) {
         [storage runAsyncRegistrationsWithCompletion:^{
+            
             [self postRegistrationCompleteNotificationIfPossible];
         }];
+
+        ((OWSDatabase *)storage.database).registrationConnectionCached = nil;
     }
+}
+
+- (YapDatabaseConnection *)registrationConnection
+{
+    return self.database.registrationConnection;
 }
 
 + (void)postRegistrationCompleteNotificationIfPossible
@@ -374,7 +387,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 + (BOOL)isStorageReady
 {
     for (OWSStorage *storage in self.allStorages) {
-        if (!storage.areAsyncRegistrationsComplete) {
+        if (!storage.areAllRegistrationsComplete) {
             return NO;
         }
     }
@@ -458,16 +471,25 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     return self.database.newConnection;
 }
 
+#ifdef DEBUG
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName
 {
     return [self.database registerExtension:extension withName:extensionName];
 }
+#endif
 
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName
-               completionBlock:(nullable void (^)(BOOL ready))completionBlock
 {
-    [self.database asyncRegisterExtension:extension withName:extensionName completionBlock:completionBlock];
+    [self.database asyncRegisterExtension:extension
+                                 withName:extensionName
+                          completionBlock:^(BOOL ready) {
+                              if (!ready) {
+                                  OWSFail(@"%@ asyncRegisterExtension failed: %@", self.logTag, extensionName);
+                              } else {
+                                  DDLogVerbose(@"%@ asyncRegisterExtension succeeded: %@", self.logTag, extensionName);
+                              }
+                          }];
 }
 
 - (nullable id)registeredExtension:(NSString *)extensionName

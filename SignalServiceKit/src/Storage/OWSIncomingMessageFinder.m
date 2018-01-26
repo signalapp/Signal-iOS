@@ -95,11 +95,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 + (void)asyncRegisterExtensionWithStorageManager:(OWSStorage *)storage
 {
     DDLogInfo(@"%@ registering async.", self.logTag);
-    [storage asyncRegisterExtension:self.indexExtension
-                           withName:OWSIncomingMessageFinderExtensionName
-                    completionBlock:^(BOOL ready) {
-                        DDLogInfo(@"%@ finished registering async.", self.logTag);
-                    }];
+    [storage asyncRegisterExtension:self.indexExtension withName:OWSIncomingMessageFinderExtensionName];
 }
 
 // We should not normally hit this, as we should have prefer registering async, but it is useful for testing.

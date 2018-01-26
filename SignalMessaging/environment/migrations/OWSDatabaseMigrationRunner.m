@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDatabaseMigrationRunner.h"
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWS100RemoveTSRecipientsMigration alloc] initWithStorageManager:storageManager],
         [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithStorageManager:storageManager],
         [[OWS103EnableVideoCalling alloc] initWithStorageManager:storageManager],
-        // OWS104CreateRecipientIdentities is run separately. See runSafeBlockingMigrations.
+        [[OWS104CreateRecipientIdentities alloc] initWithStorageManager:storageManager],
         [[OWS105AttachmentFilePaths alloc] initWithStorageManager:storageManager],
         [[OWS106EnsureProfileComplete alloc] initWithStorageManager:storageManager]
     ];
@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     TSStorageManager *storageManager = TSStorageManager.sharedManager;
     return @[
-        [[OWS104CreateRecipientIdentities alloc] initWithStorageManager:storageManager],
+        //        [[OWS104CreateRecipientIdentities alloc] initWithStorageManager:storageManager],
     ];
 }
 

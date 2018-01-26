@@ -4,6 +4,7 @@
 
 #import "OWSIdentityManager.h"
 #import "AppContext.h"
+#import "AppReadiness.h"
 #import "NSDate+OWS.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NotificationsProtocol.h"
@@ -448,13 +449,13 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     OWSAssertIsOnMainThread();
 
-    if (!CurrentAppContext().isMainAppAndActive) {
-        // Only try to sync if the main app is active to avoid interfering with startup.
-        //
-        // applicationDidBecomeActive: will try to sync again when the main app becomes active.
-        return;
-    }
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [self syncQueuedVerificationStates];
+    }];
+}
 
+- (void)syncQueuedVerificationStates
+{
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
