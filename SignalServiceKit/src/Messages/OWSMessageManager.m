@@ -4,6 +4,7 @@
 
 #import "OWSMessageManager.h"
 #import "AppContext.h"
+#import "AppReadiness.h"
 #import "ContactsManagerProtocol.h"
 #import "Cryptography.h"
 #import "MimeTypeUtil.h"
@@ -135,7 +136,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
-    [self updateApplicationBadgeCount];
+    if (AppReadiness.isAppReady) {
+        [self updateApplicationBadgeCount];
+    }
 }
 
 #pragma mark - Blocking
