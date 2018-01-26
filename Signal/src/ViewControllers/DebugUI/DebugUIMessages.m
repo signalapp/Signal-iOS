@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMessages.h"
@@ -123,6 +123,10 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Create 10k fake messages"
                         actionBlock:^{
                             [DebugUIMessages sendFakeMessages:10 * 1000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 100k fake messages"
+                        actionBlock:^{
+                            [DebugUIMessages sendFakeMessages:100 * 1000 thread:thread];
                         }],
         [OWSTableItem itemWithTitle:@"Create 1 fake unread messages"
                         actionBlock:^{
@@ -282,7 +286,22 @@ NS_ASSUME_NONNULL_BEGIN
                                              [DebugUIMessages createNewGroups:1000 recipientId:recipientId];
                                          }]];
     }
+    if ([thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        [items addObject:[OWSTableItem itemWithTitle:@"Send message to all members"
+                                         actionBlock:^{
+                                             [DebugUIMessages sendMessages:1 toAllMembersOfGroup:groupThread];
+                                         }]];
+    }
     return [OWSTableSection sectionWithTitle:self.name items:items];
+}
+
++ (void)sendMessages:(int)counter toAllMembersOfGroup:(TSGroupThread *)groupThread
+{
+    for (NSString *recipientId in groupThread.groupModel.groupMemberIds) {
+        TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+        [DebugUIMessages sendTextMessages:counter thread:contactThread];
+    }
 }
 
 + (void)sendTextMessageInThread:(TSThread *)thread counter:(int)counter
@@ -964,9 +983,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendFakeMessages:(NSUInteger)counter thread:(TSThread *)thread
 {
-    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self sendFakeMessages:counter thread:thread transaction:transaction];
-    }];
+    NSUInteger remainder = counter;
+    while (remainder > 0) {
+        NSUInteger batchSize = MIN((NSUInteger)2500, remainder);
+        [TSStorageManager.dbReadWriteConnection
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [self sendFakeMessages:counter thread:thread transaction:transaction];
+            }];
+        remainder -= batchSize;
+    }
 }
 
 + (void)sendFakeMessages:(NSUInteger)counter

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalsNavigationController.h"
@@ -36,7 +36,11 @@ static double const STALLED_PROGRESS = 0.9;
     CGRect bar                          = self.navigationBar.frame;
     _socketStatusView.frame             = CGRectMake(0, bar.size.height - 1.0f, self.view.frame.size.width, 1.0f);
     _socketStatusView.progress          = 0.0f;
+#ifdef INTERNAL
+    _socketStatusView.progressTintColor = [UIColor ows_destructiveRedColor];
+#else
     _socketStatusView.progressTintColor = [UIColor ows_fadedBlueColor];
+#endif
 
     if (![_socketStatusView superview]) {
         [self.navigationBar addSubview:_socketStatusView];
