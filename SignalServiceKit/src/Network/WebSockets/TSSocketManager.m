@@ -4,6 +4,7 @@
 
 #import "TSSocketManager.h"
 #import "AppContext.h"
+#import "AppReadiness.h"
 #import "Cryptography.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NSTimer+OWS.h"
@@ -607,6 +608,10 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 - (void)applyDesiredSocketState
 {
     OWSAssertIsOnMainThread();
+
+    if (!AppReadiness.isAppReady) {
+        return;
+    }
 
     if ([self shouldSocketBeOpen]) {
         if (self.state != SocketManagerStateOpen) {

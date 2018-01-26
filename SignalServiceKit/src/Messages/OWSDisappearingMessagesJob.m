@@ -4,6 +4,7 @@
 
 #import "OWSDisappearingMessagesJob.h"
 #import "AppContext.h"
+#import "AppReadiness.h"
 #import "ContactsManagerProtocol.h"
 #import "NSDate+OWS.h"
 #import "NSTimer+OWS.h"
@@ -393,7 +394,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    [self runNow];
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [self runNow];
+    }];
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
