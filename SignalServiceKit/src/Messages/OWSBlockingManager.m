@@ -4,6 +4,7 @@
 
 #import "OWSBlockingManager.h"
 #import "AppContext.h"
+#import "AppReadiness.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBlockedPhoneNumbersMessage.h"
 #import "OWSMessageSender.h"
@@ -288,10 +289,12 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 {
     OWSAssertIsOnMainThread();
 
-    @synchronized(self)
-    {
-        [self syncBlockedPhoneNumbersIfNecessary];
-    }
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        @synchronized(self)
+        {
+            [self syncBlockedPhoneNumbersIfNecessary];
+        }
+    }];
 }
 
 @end
