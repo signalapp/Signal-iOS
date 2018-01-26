@@ -314,11 +314,6 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 - (BOOL)areAllRegistrationsComplete
 {
-    DDLogInfo(@"%@ areAllRegistrationsComplete: %d %d = %d",
-        self.logTag,
-        self.areSyncRegistrationsComplete,
-        self.areAsyncRegistrationsComplete,
-        self.areSyncRegistrationsComplete && self.areAsyncRegistrationsComplete);
     return self.areSyncRegistrationsComplete && self.areAsyncRegistrationsComplete;
 }
 

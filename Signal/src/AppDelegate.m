@@ -401,7 +401,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [self ensureRootViewController];
 
-    [AppReadiness.sharedManager runNowOrWhenAppIsReady:^{
+    [AppReadiness runNowOrWhenAppIsReady:^{
         [self handleActivation];
     }];
 
@@ -768,7 +768,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [OWSPreferences setIsRegistered:[TSAccountManager isRegistered]];
 
-    [AppReadiness.sharedManager setAppIsReady];
+    [AppReadiness setAppIsReady];
 
     if ([TSAccountManager isRegistered]) {
         DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
