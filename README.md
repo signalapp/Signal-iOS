@@ -6,13 +6,13 @@
 </p>
 <p align="center">Free, worldwide, encrypted text messages, phone calls, & video chat</p>
 <p align="center">
-  <a href="https://travis-ci.org/WhisperSystems/Signal-iOS"><img src="https://img.shields.io/travis/WhisperSystems/Signal-iOS.svg"></a>
-  <a href="https://github.com/WhisperSystems/Signal-iOS/releases" title="Signal iOS releases"><img src="https://img.shields.io/github/release/whispersystems/signal-ios.svg?colorB=55acee" alt="Signal iOS releases"></a>
-  <a href="https://travis-ci.org/WhisperSystems/Signal-iOS" title="License"><img src="https://img.shields.io/badge/license-GPLv3-55acee.svg" alt="License"></a>
+  <a href="https://travis-ci.org/signalapp/signal-ios"><img src="https://img.shields.io/travis/signalapp/signal-ios.svg"></a>
+  <a href="https://github.com/signalapp/signal-ios/releases" title="Signal iOS releases"><img src="https://img.shields.io/github/release/signalapp/signal-ios.svg?colorB=55acee" alt="Signal iOS releases"></a>
+  <a href="https://github.com/signalapp/signal-ios/blob/master/LICENSE" title="License"><img src="https://img.shields.io/badge/license-GPLv3-55acee.svg" alt="License"></a>
   <br>
-  <a href="https://twitter.com/whispersystems" title="@whispersystems on Twitter"><img src="https://img.shields.io/badge/twitter-@whispersystems-55acee.svg" alt="@whispersystems on Twitter"></a>
+  <a href="https://twitter.com/signalapp" title="@signalapp on Twitter"><img src="https://img.shields.io/badge/twitter-@signalapp-55acee.svg" alt="@signalapp on Twitter"></a>
   <a href="https://whispersystems.discoursehosting.net" title="Whisper Systems Forum"><img src="https://img.shields.io/badge/community-forum-55acee.svg" alt="Whisper Systems Forum"></a>
-  <a href="https://github.com/WhisperSystems/Signal-iOS" title="Signal iOS stars on Github"><img src="https://img.shields.io/github/stars/whispersystems/signal-ios.svg?style=social&label=Stars" alt="Github stars"></a>
+  <a href="https://github.com/signalapp/signal-ios" title="Signal iOS stars on Github"><img src="https://img.shields.io/github/stars/signalapp/signal-ios.svg?style=social&label=Stars" alt="Github stars"></a>
 </p>
 <p align="center">
   <a href="https://itunes.apple.com/app/id874139669" title="Download on the iOS AppStore"><img src="https://gist.githubusercontent.com/anonymous/eeb218a4d3b22ea5a7b3b7a2b295371f/raw/49c83f7a7bb2ea528cf269ebecd56c25667cfdc3/download_on_app_store.svg?sanitize=true" alt="Download from iOS AppStore" width="133px"></a>
@@ -20,15 +20,15 @@
 
 ---
 
-Signal for iOS is a free, open source, [iOS messaging app](https://itunes.apple.com/app/id874139669) for simple private communication with friends. Also available as [Signal for Android](https://github.com/whispersystems/signal-android) and [Signal Desktop](https://github.com/whispersystems/signal-desktop).
+Signal for iOS is a free, open source, [iOS messaging app](https://itunes.apple.com/app/id874139669) for simple private communication with friends. Also available as [Signal for Android](https://github.com/signalapp/signal-android) and [Signal Desktop](https://github.com/signalapp/signal-desktop).
 
 ## Questions?
 
-For troubleshooting and questions, please visit our [support center](https://support.whispersystems.org/) or [unofficial community forum](https://whispersystems.discoursehosting.net).
+For troubleshooting and questions, please visit our [support center](https://support.signal.org/) or [unofficial community forum](https://whispersystems.discoursehosting.net).
 
 ## Contributing Bug Reports
 
-We use GitHub for bug tracking. Please search [existing issues](https://github.com/whispersystems/signal-ios/issues) and create a new one if the issue is not yet tracked. For Android users, please use the [Signal for Android issue tracker](https://github.com/whispersystems/signal-android/issues).
+We use GitHub for bug tracking. Please search [existing issues](https://github.com/signalapp/signal-ios/issues) and create a new one if the issue is not yet tracked. For Android users, please use the [Signal for Android issue tracker](https://github.com/signalapp/signal-android/issues).
 
 ## Contributing Translations
 
@@ -36,9 +36,9 @@ Help us translate Signal! The translation effort happens on [Transifex](https://
 
 ## Contributing Code
 
-Instructions on how to setup your development environment and build Signal-iOS can be found in  [BUILDING.md](https://github.com/WhisperSystems/Signal-iOS/blob/master/BUILDING.md). Other useful instructions for development can be found in the [Development Guide wiki page](https://github.com/WhisperSystems/Signal-iOS/wiki/Development-Guide).
+Instructions on how to setup your development environment and build Signal-iOS can be found in  [BUILDING.md](https://github.com/signalapp/signal-ios/blob/master/BUILDING.md). Other useful instructions for development can be found in the [Development Guide wiki page](https://github.com/signalapp/signal-ios/wiki/Development-Guide).
 
-We recommend going through our issues and picking out something with the [help wanted](https://github.com/WhisperSystems/Signal-iOS/labels/help%20wanted) label.
+We recommend going through our issues and picking out something with the [help wanted](https://github.com/signalapp/signal-ios/labels/help%20wanted) label.
 
 For larger changes and feature ideas, we ask that you propose it on the [unofficial community forum](https://whispersystems.discoursehosting.net) for a high-level discussion with the wider community before implementation.
 
@@ -63,6 +63,6 @@ The form and manner of this distribution makes it eligible for export under the 
 
 Licensed under [GPLv3](http://www.gnu.org/licenses/gpl-3.0.html)
 
-Copyright 2014-2017 Open Whisper Systems
+Copyright 2014-2018 Open Whisper Systems
 
 _Apple and the Apple logo are trademarks of Apple Inc., registered in the U.S. and other countries. App Store is a service mark of Apple Inc., registered in the U.S. and other countries._
