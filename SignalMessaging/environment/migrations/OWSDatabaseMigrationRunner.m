@@ -42,30 +42,12 @@ NS_ASSUME_NONNULL_BEGIN
     ];
 }
 
-// This should only include migrations which:
-//
-// a) Do read/write database transactions and therefore would block on the async database
-//    view registration.
-// b) Will not affect any of the data used by the async database views.
-- (NSArray<OWSDatabaseMigration *> *)safeBlockingMigrations
-{
-    TSStorageManager *storageManager = TSStorageManager.sharedManager;
-    return @[
-        //        [[OWS104CreateRecipientIdentities alloc] initWithStorageManager:storageManager],
-    ];
-}
-
 - (void)assumeAllExistingMigrationsRun
 {
     for (OWSDatabaseMigration *migration in self.allMigrations) {
         DDLogInfo(@"%@ Skipping migration on new install: %@", self.logTag, migration);
         [migration save];
     }
-}
-
-- (void)runSafeBlockingMigrations
-{
-    [self runMigrations:self.safeBlockingMigrations];
 }
 
 - (void)runAllOutstanding

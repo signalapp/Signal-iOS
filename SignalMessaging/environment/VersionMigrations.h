@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #define RECENT_CALLS_DEFAULT_KEY @"RPRecentCallsDefaultKey"
@@ -7,8 +7,6 @@
 @interface VersionMigrations : NSObject
 
 + (void)performUpdateCheck;
-
-+ (void)runSafeBlockingMigrations;
 
 + (BOOL)isVersion:(NSString *)thisVersionString
           atLeast:(NSString *)openLowerBoundVersionString

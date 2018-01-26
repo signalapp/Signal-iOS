@@ -46,15 +46,7 @@ extern NSString *const StorageIsReadyNotification;
 // This object can be used to filter database notifications.
 @property (nonatomic, readonly, nullable) id dbNotificationObject;
 
-/**
- * The safeBlockingMigrationsBlock block will
- * run any outstanding version migrations that are a) blocking and b) safe
- * to be run before the environment and storage is completely configured.
- *
- * Specifically, these migration should not depend on or affect the data
- * of any database view.
- */
-+ (void)setupWithSafeBlockingMigrations:(void (^_Nonnull)(void))safeBlockingMigrationsBlock;
++ (void)setupStorage;
 
 + (void)resetAllStorage;
 
