@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "PushManager.h"
@@ -9,6 +9,7 @@
 #import "SignalApp.h"
 #import "ThreadUtil.h"
 #import <SignalMessaging/OWSContactsManager.h>
+#import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
@@ -108,11 +109,15 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 {
     DDLogInfo(@"%@ received remote notification", self.logTag);
 
-    [self.messageFetcherJob run];
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [self.messageFetcherJob run];
+    }];
 }
 
 - (void)applicationDidBecomeActive {
-    [self.messageFetcherJob run];
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [self.messageFetcherJob run];
+    }];
 }
 
 /**
