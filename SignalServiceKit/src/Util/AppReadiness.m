@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)isAppReady
 {
-    return self.sharedManager.isAppReady;
+    return [self.sharedManager isAppReady];
 }
 
 + (void)runNowOrWhenAppIsReady:(AppReadyBlock)block
