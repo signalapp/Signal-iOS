@@ -21,6 +21,20 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+#pragma mark - Views
+
+// Returns the "unseen" database view if it is ready;
+// otherwise it returns the "unread" database view.
++ (id)unseenDatabaseViewExtension:(YapDatabaseReadTransaction *)transaction;
+
+// NOTE: It is not safe to call this method while hasPendingViewRegistrations is YES.
++ (id)threadOutgoingMessageDatabaseView:(YapDatabaseReadTransaction *)transaction;
+
+// NOTE: It is not safe to call this method while hasPendingViewRegistrations is YES.
++ (id)threadSpecialMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
+
+#pragma mark - Registration
+
 + (void)registerCrossProcessNotifier:(OWSStorage *)storage;
 
 // This method must be called _AFTER_ asyncRegisterThreadInteractionsDatabaseView.
@@ -42,15 +56,5 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 + (void)asyncRegisterThreadSpecialMessagesDatabaseView:(OWSStorage *)storage;
 
 + (void)asyncRegisterSecondaryDevicesDatabaseView:(OWSStorage *)storage;
-
-// Returns the "unseen" database view if it is ready;
-// otherwise it returns the "unread" database view.
-+ (id)unseenDatabaseViewExtension:(YapDatabaseReadTransaction *)transaction;
-
-// NOTE: It is not safe to call this method while hasPendingViewRegistrations is YES.
-+ (id)threadOutgoingMessageDatabaseView:(YapDatabaseReadTransaction *)transaction;
-
-// NOTE: It is not safe to call this method while hasPendingViewRegistrations is YES.
-+ (id)threadSpecialMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
 
 @end

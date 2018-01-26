@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSThread.h"
@@ -207,24 +207,6 @@ NS_ASSUME_NONNULL_BEGIN
 
                       if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
                           OWSFail(@"%@ Unexpected object in unseen messages: %@", self.logTag, object);
-                          return;
-                      }
-                      [messages addObject:(id<OWSReadTracking>)object];
-                  }];
-
-    return [messages copy];
-}
-
-- (NSArray<id<OWSReadTracking> > *)unreadMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    NSMutableArray<id<OWSReadTracking> > *messages = [NSMutableArray new];
-    [[transaction ext:TSUnreadDatabaseViewExtensionName]
-        enumerateRowsInGroup:self.uniqueId
-                  usingBlock:^(
-                      NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-
-                      if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                          OWSFail(@"%@ Unexpected object in unread messages: %@", self.logTag, object);
                           return;
                       }
                       [messages addObject:(id<OWSReadTracking>)object];
