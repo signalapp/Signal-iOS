@@ -134,15 +134,6 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     // Block until all async registrations are complete.
     YapDatabaseConnection *dbConnection = self.registrationConnection;
     OWSAssert(self.registrationConnection);
-    //    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
-    //        OWSAssert(!self.areAsyncRegistrationsComplete);
-    //
-    //        DDLogVerbose(@"%@ async registrations flushed.", self.logTag);
-    //
-    //        self.areAsyncRegistrationsComplete = YES;
-    //
-    //        completion();
-    //    }];
     [dbConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue()
                                        completionBlock:^{
                                            OWSAssert(!self.areAsyncRegistrationsComplete);

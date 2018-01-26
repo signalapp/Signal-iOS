@@ -334,29 +334,19 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     ];
 }
 
-+ (void)setupWithSafeBlockingMigrations:(void (^_Nonnull)(void))safeBlockingMigrationsBlock
++ (void)setupStorage
 {
-    OWSAssert(safeBlockingMigrationsBlock);
-
     for (OWSStorage *storage in self.allStorages) {
         [storage runSyncRegistrations];
     }
-
-    // Run the blocking migrations.
-    //
-    // These need to run _before_ the async registered database views or
-    // they will block on them, which (in the upgrade case) can block
-    // return of appDidFinishLaunching... which in term can cause the
-    // app to crash on launch.
-    safeBlockingMigrationsBlock();
 
     for (OWSStorage *storage in self.allStorages) {
         [storage runAsyncRegistrationsWithCompletion:^{
             
             [self postRegistrationCompleteNotificationIfPossible];
-        }];
 
-        ((OWSDatabase *)storage.database).registrationConnectionCached = nil;
+            ((OWSDatabase *)storage.database).registrationConnectionCached = nil;
+        }];
     }
 }
 

@@ -45,9 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
 
-        [OWSStorage setupWithSafeBlockingMigrations:^{
-            [VersionMigrations runSafeBlockingMigrations];
-        }];
+        [OWSStorage setupStorage];
         [[Environment current].contactsManager startObserving];
     });
 }
