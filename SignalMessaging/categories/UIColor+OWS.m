@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMath.h"
@@ -25,6 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // black: #080A00
     return [UIColor colorWithRed:8.f / 255.f green:10.f / 255.f blue:0. / 255.f alpha:1.f];
+}
+
++ (UIColor *)ows_darkIconColor
+{
+    return [UIColor colorWithRGBHex:0x505050];
 }
 
 + (UIColor *)ows_darkGrayColor
@@ -86,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIColor colorWithRed:239.f / 255.f green:189.f / 255.f blue:88.f / 255.f alpha:1.0f];
 }
 
-+ (UIColor *)ows_inputToolbarBackgroundColor
++ (UIColor *)ows_toolbarBackgroundColor
 {
     return [self colorWithWhite:245 / 255.f alpha:1.f];
 }
@@ -94,6 +99,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIColor *)ows_lightBackgroundColor
 {
     return [UIColor colorWithRed:242.f / 255.f green:242.f / 255.f blue:242.f / 255.f alpha:1.f];
+}
+
++ (UIColor *)ows_systemPrimaryButtonColor
+{
+    static UIColor *sharedColor;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^(void) {
+        sharedColor = [UIView new].tintColor;
+    });
+    return sharedColor;
 }
 
 + (UIColor *)backgroundColorForContact:(NSString *)contactIdentifier

@@ -29,7 +29,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    return self;
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -200,8 +205,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Update With...
 
-// This method does the work for the "updateWith..." methods.  Please see
-// the header for a discussion of those methods.
 - (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
                            changeBlock:(void (^)(id))changeBlock
 {

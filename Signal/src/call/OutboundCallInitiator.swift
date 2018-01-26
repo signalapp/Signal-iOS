@@ -20,6 +20,8 @@ import SignalMessaging
         self.contactsUpdater = contactsUpdater
 
         super.init()
+
+        SwiftSingletons.register(self)
     }
 
     /**

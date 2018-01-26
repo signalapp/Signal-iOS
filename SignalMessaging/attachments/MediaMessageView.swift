@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,6 +11,12 @@ import SignalServiceKit
 public enum MediaMessageViewMode: UInt {
     case large
     case small
+    case attachmentApproval
+}
+
+@objc
+public protocol MediaDetailPresenter: class {
+    func presentDetails(mediaMessageView: MediaMessageView, fromView: UIView)
 }
 
 @objc
@@ -27,13 +33,13 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     public let attachment: SignalAttachment
 
     @objc
-    public var videoPlayer: MPMoviePlayerController?
-
-    @objc
     public var audioPlayer: OWSAudioAttachmentPlayer?
 
     @objc
     public var audioPlayButton: UIButton?
+
+    @objc
+    public var videoPlayButton: UIImageView?
 
     @objc
     public var playbackState = AudioPlaybackState.stopped {
@@ -53,6 +59,8 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     @objc
     public var contentView: UIView?
 
+    private let mediaDetailPresenter: MediaDetailPresenter?
+
     // MARK: Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
@@ -61,10 +69,15 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     }
 
     @objc
-    public required init(attachment: SignalAttachment, mode: MediaMessageViewMode) {
+    public convenience init(attachment: SignalAttachment, mode: MediaMessageViewMode) {
+        self.init(attachment: attachment, mode: mode, mediaDetailPresenter: nil)
+    }
+
+    public required init(attachment: SignalAttachment, mode: MediaMessageViewMode, mediaDetailPresenter: MediaDetailPresenter?) {
         assert(!attachment.hasError)
-        self.mode = mode
         self.attachment = attachment
+        self.mode = mode
+        self.mediaDetailPresenter = mediaDetailPresenter
         super.init(frame: CGRect.zero)
 
         createViews()
@@ -129,7 +142,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     private func stackSpacing() -> CGFloat {
         switch mode {
-        case .large:
+        case .large, .attachmentApproval:
             return CGFloat(10)
         case .small:
             return CGFloat(5)
@@ -168,8 +181,16 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         let stackView = wrapViewsInVerticalStack(subviews: subviews)
         self.addSubview(stackView)
         fileNameLabel?.autoPinWidthToSuperview(withMargin: 32)
+
+        // We want to center the stackView in it's superview while also ensuring
+        // it's superview is big enough to contain it.
         stackView.autoPinWidthToSuperview()
         stackView.autoVCenterInSuperview()
+        NSLayoutConstraint.autoSetPriority(UILayoutPriorityDefaultLow) {
+            stackView.autoPinHeightToSuperview()
+        }
+        stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+        stackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
     }
 
     private func createAnimatedPreview() {
@@ -250,13 +271,19 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         addSubviewWithScaleAspectFitLayout(view:imageView, aspectRatio:aspectRatio)
         contentView = imageView
 
-        let videoPlayIcon = UIImage(named:"play_button")
-        let videoPlayButton = UIImageView(image:videoPlayIcon)
-        imageView.addSubview(videoPlayButton)
-        videoPlayButton.autoCenterInSuperview()
+        // attachment approval provides it's own play button to keep it
+        // at the proper zoom scale.
+        if mode != .attachmentApproval {
+            let videoPlayIcon = UIImage(named:"play_button")!
+            let videoPlayButton = UIImageView(image: videoPlayIcon)
+            self.videoPlayButton = videoPlayButton
+            videoPlayButton.contentMode = .scaleAspectFit
+            self.addSubview(videoPlayButton)
+            videoPlayButton.autoCenterInSuperview()
 
-        imageView.isUserInteractionEnabled = true
-        imageView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(videoTapped)))
+            imageView.isUserInteractionEnabled = true
+            imageView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(videoTapped)))
+        }
     }
 
     private func createGenericPreview() {
@@ -276,14 +303,24 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         let stackView = wrapViewsInVerticalStack(subviews: subviews)
         self.addSubview(stackView)
         fileNameLabel?.autoPinWidthToSuperview(withMargin: 32)
+
+        // We want to center the stackView in it's superview while also ensuring
+        // it's superview is big enough to contain it.
         stackView.autoPinWidthToSuperview()
         stackView.autoVCenterInSuperview()
+        NSLayoutConstraint.autoSetPriority(UILayoutPriorityDefaultLow) {
+            stackView.autoPinHeightToSuperview()
+        }
+        stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+        stackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
     }
 
     private func createHeroViewSize() -> CGFloat {
         switch mode {
         case .large:
             return ScaleFromIPhone5To7Plus(175, 225)
+        case .attachmentApproval:
+            return ScaleFromIPhone5(100)
         case .small:
             return ScaleFromIPhone5To7Plus(80, 80)
         }
@@ -310,10 +347,19 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     private func labelFont() -> UIFont {
         switch mode {
-        case .large:
+        case .large, .attachmentApproval:
             return UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(18, 24))
         case .small:
             return UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(14, 14))
+        }
+    }
+
+    private var controlTintColor: UIColor {
+        switch mode {
+        case .small, .large:
+            return UIColor.ows_materialBlue
+        case .attachmentApproval:
+            return UIColor.white
         }
     }
 
@@ -347,7 +393,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
         let label = UILabel()
         label.text = filename
-        label.textColor = UIColor.ows_materialBlue()
+        label.textColor = controlTintColor
         label.font = labelFont()
         label.textAlignment = .center
         label.lineBreakMode = .byTruncatingMiddle
@@ -361,7 +407,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
                                                      comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}."),
                             OWSFormat.formatFileSize(UInt(fileSize)))
 
-        label.textColor = UIColor.ows_materialBlue()
+        label.textColor = controlTintColor
         label.font = labelFont()
         label.textAlignment = .center
 
@@ -402,82 +448,53 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         let image = UIImage(named: "audio_play_black_large")?.withRenderingMode(.alwaysTemplate)
         assert(image != nil)
         audioPlayButton?.setImage(image, for: .normal)
-        audioPlayButton?.imageView?.tintColor = UIColor.ows_materialBlue()
+        audioPlayButton?.imageView?.tintColor = controlTintColor
     }
 
     private func setAudioIconToPause() {
         let image = UIImage(named: "audio_pause_black_large")?.withRenderingMode(.alwaysTemplate)
         assert(image != nil)
         audioPlayButton?.setImage(image, for: .normal)
-        audioPlayButton?.imageView?.tintColor = UIColor.ows_materialBlue()
+        audioPlayButton?.imageView?.tintColor = controlTintColor
     }
 
     // MARK: - Full Screen Image
 
     @objc
     func imageTapped(sender: UIGestureRecognizer) {
+        // Approval view handles it's own zooming gesture
+        guard mode != .attachmentApproval else {
+            return
+        }
         guard sender.state == .recognized else {
             return
         }
         guard let fromView = sender.view else {
             return
         }
-        guard let fromViewController = CurrentAppContext().frontmostViewController() else {
-            return
-        }
 
-        let window = CurrentAppContext().rootReferenceView
-        let convertedRect = fromView.convert(fromView.bounds, to:window)
-        let viewController = FullImageViewController(attachment:attachment, from:convertedRect)
-        viewController.present(from:fromViewController)
-        Logger.error("\(TAG) FIXME. image tapped.")
+        showMediaDetailViewController(fromView: fromView)
     }
 
     // MARK: - Video Playback
 
     @objc
     func videoTapped(sender: UIGestureRecognizer) {
+        // Approval view handles it's own play gesture
+        guard mode != .attachmentApproval else {
+            return
+        }
         guard sender.state == .recognized else {
             return
         }
-        guard let dataUrl = attachment.dataUrl else {
+        guard let fromView = sender.view else {
             return
         }
-        guard let videoPlayer = MPMoviePlayerController(contentURL: dataUrl) else {
-            return
-        }
-        videoPlayer.prepareToPlay()
 
-        NotificationCenter.default.addObserver(forName: .MPMoviePlayerWillExitFullscreen, object: nil, queue: nil) { [weak self] _ in
-            self?.moviePlayerWillExitFullscreen()
-        }
-        NotificationCenter.default.addObserver(forName: .MPMoviePlayerDidExitFullscreen, object: nil, queue: nil) { [weak self] _ in
-            self?.moviePlayerDidExitFullscreen()
-        }
-
-        videoPlayer.controlStyle = .default
-        videoPlayer.shouldAutoplay = true
-
-        self.addSubview(videoPlayer.view)
-        videoPlayer.view.frame = self.bounds
-        self.videoPlayer = videoPlayer
-        videoPlayer.view.autoPinToSuperviewEdges()
-        OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(true)
-        videoPlayer.setFullscreen(true, animated:false)
+        showMediaDetailViewController(fromView: fromView)
     }
 
-    private func moviePlayerWillExitFullscreen() {
-        clearVideoPlayer()
-    }
-
-    private func moviePlayerDidExitFullscreen() {
-        clearVideoPlayer()
-    }
-
-    private func clearVideoPlayer() {
-        videoPlayer?.stop()
-        videoPlayer?.view.removeFromSuperview()
-        videoPlayer = nil
-        OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(false)
+    func showMediaDetailViewController(fromView: UIView) {
+        self.mediaDetailPresenter?.presentDetails(mediaMessageView: self, fromView: fromView)
     }
 }

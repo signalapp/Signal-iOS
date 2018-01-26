@@ -1,13 +1,16 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAnalytics.h"
 #import "AppContext.h"
+#import "OWSBackgroundTask.h"
 #import "OWSQueues.h"
 #import "TSStorageManager.h"
+#import "YapDatabaseConnection+OWS.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Reachability/Reachability.h>
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -98,7 +101,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive)
-                                                 name:UIApplicationDidBecomeActiveNotification
+                                                 name:OWSApplicationDidBecomeActiveNotification
                                                object:nil];
 }
 
@@ -109,14 +112,14 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 
 - (void)reachabilityChanged
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self tryToSyncEvents];
 }
 
 - (void)applicationDidBecomeActive
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self tryToSyncEvents];
 }
@@ -231,22 +234,19 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 
     DDLogDebug(@"%@ submitting: %@", self.logTag, eventKey);
 
-    __block UIBackgroundTaskIdentifier task;
-    task = [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
-        failureBlock();
-
-        [CurrentAppContext() endBackgroundTask:task];
-    }];
+    __block OWSBackgroundTask *backgroundTask =
+        [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__
+                                      completionBlock:^(BackgroundTaskState backgroundTaskState) {
+                                          if (backgroundTaskState == BackgroundTaskState_Success) {
+                                              successBlock();
+                                          } else {
+                                              failureBlock();
+                                          }
+                                      }];
 
     // Until we integrate with an analytics platform, behave as though all event delivery succeeds.
     dispatch_async(self.serialQueue, ^{
-        BOOL success = YES;
-        if (success) {
-            successBlock();
-        } else {
-            failureBlock();
-        }
-        [CurrentAppContext() endBackgroundTask:task];
+        backgroundTask = nil;
     });
 }
 

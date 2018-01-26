@@ -1,15 +1,17 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ShareAppExtensionContext.h"
 #import <SignalMessaging/UIViewController+OWS.h>
+#import <SignalServiceKit/OWSStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ShareAppExtensionContext ()
 
 @property (nonatomic) UIViewController *rootViewController;
+@property (atomic) BOOL isSAEInBackground;
 
 @end
 
@@ -29,10 +31,78 @@ NS_ASSUME_NONNULL_BEGIN
 
     _rootViewController = rootViewController;
 
-    OWSSingletonAssert();
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(extensionHostDidBecomeActive:)
+                                                 name:NSExtensionHostDidBecomeActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(extensionHostWillResignActive:)
+                                                 name:NSExtensionHostWillResignActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(extensionHostDidEnterBackground:)
+                                                 name:NSExtensionHostDidEnterBackgroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(extensionHostWillEnterForeground:)
+                                                 name:NSExtensionHostWillEnterForegroundNotification
+                                               object:nil];
 
     return self;
 }
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - Notifications
+
+- (void)extensionHostDidBecomeActive:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    self.isSAEInBackground = NO;
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidBecomeActiveNotification object:nil];
+}
+
+- (void)extensionHostWillResignActive:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    [DDLog flushLog];
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillResignActiveNotification object:nil];
+}
+
+- (void)extensionHostDidEnterBackground:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    [DDLog flushLog];
+
+    self.isSAEInBackground = YES;
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidEnterBackgroundNotification object:nil];
+}
+
+- (void)extensionHostWillEnterForeground:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    self.isSAEInBackground = NO;
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillEnterForegroundNotification object:nil];
+}
+
+#pragma mark -
 
 - (BOOL)isMainApp
 {
@@ -56,6 +126,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle
 {
     DDLogInfo(@"Ignoring request to set status bar style since we're in an app extension");
+}
+
+- (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated
+{
+    DDLogInfo(@"Ignoring request to show/hide status bar style since we're in an app extension");
+}
+
+- (BOOL)isInBackground
+{
+    return self.isSAEInBackground;
 }
 
 - (UIApplicationState)mainApplicationState

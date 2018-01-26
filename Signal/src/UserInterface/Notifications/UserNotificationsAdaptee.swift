@@ -72,7 +72,10 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
 
     override init() {
         self.center = UNUserNotificationCenter.current()
+
         super.init()
+
+        SwiftSingletons.register(self)
 
         center.delegate = self
 

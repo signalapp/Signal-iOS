@@ -76,11 +76,17 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Liite";
 
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Liitetiedosto";
+
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tiedoston tyyppi: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Koko: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Lähetä";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Liitetiedosto";
@@ -421,6 +427,36 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Päivitetään tietokantaa";
 
+/* Message indicating that the debug log is being uploaded. */
+"DEBUG_LOG_ACTIVITY_INDICATOR" = "Lähetetään virheenkorjausloki...";
+
+/* Message of the debug log alert. */
+"DEBUG_LOG_ALERT_MESSAGE" = "Mitä haluat tehdä virheenkorjauslokisi linkillä?";
+
+/* Label for the 'Open a Bug Report' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Avaa virheraportti";
+
+/* Label for the 'copy link' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Kopioi linkki";
+
+/* Label for the 'email debug log' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Lähetä sähköposti tukitiimille";
+
+/* Label for the 'send to self' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Lähetä itselle";
+
+/* Title of the debug log alert. */
+"DEBUG_LOG_ALERT_TITLE" = "Yksi askel lisää";
+
+/* Title of the alert indicating the debug log upload failed. */
+"DEBUG_LOG_FAILURE_ALERT_TITLE" = "Virheenkorjauslokin lähettäminen epäonnistui";
+
+/* Message of the alert before redirecting to Github Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist -linkki on nyt kopioitu leikepöydällesi. Sinut ohjataan nyt GitHubissa olevaan virheluetteloon.";
+
+/* Title of the alert before redirecting to Github Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Ohjaus GitHubiin";
+
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Viimeksi käytetty: %@";
 
@@ -629,7 +665,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Merkitse varmennetuksi";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Alusta tämä istunto.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Alusta tämä istunto";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Päätä ryhmän luonti";
@@ -1238,12 +1274,6 @@
 "RATING_TITLE" = "Tue Signalia!";
 
 /* No comment provided by engineer. */
-"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE" = "Syötä kelvollinen maatunnus.";
-
-/* No comment provided by engineer. */
-"REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "Virhe maatunnuksessa";
-
-/* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Tervetuloa!";
 
 /* No comment provided by engineer. */
@@ -1341,6 +1371,12 @@
 
 /* Label for 'select gif to attach' action sheet button */
 "SELECT_GIF_BUTTON" = "GIF";
+
+/* Table section header for conversations you haven't recently used. */
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Muut yhteystiedot";
+
+/* Table section header for recently active conversations */
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Äskeiset keskustelut";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Lähetä uudelleen";
@@ -1512,6 +1548,24 @@
 
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
+
+/* Indicates that the share extension is still loading. */
+"SHARE_EXTENSION_LOADING" = "Ladataan...";
+
+/* Message indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Avaa Signal ohjelma rekisteröityäksesi.";
+
+/* Title indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Ei rekisteröity";
+
+/* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Avaa Signal ohjelma päivittääksesi.";
+
+/* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Ei valmis";
+
+/* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Liitteen valmistelu epäonnistui";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Näytä uusi turvanumero";

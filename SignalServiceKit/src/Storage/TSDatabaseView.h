@@ -1,10 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSStorage.h"
 #import <YapDatabase/YapDatabaseViewTransaction.h>
-
-extern NSString *const DatabaseViewRegistrationCompleteNotification;
 
 extern NSString *const TSInboxGroup;
 extern NSString *const TSArchiveGroup;
@@ -22,30 +21,27 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// This method can be called from any thread.
-+ (BOOL)hasPendingViewRegistrations;
-
-+ (void)registerCrossProcessNotifier;
++ (void)registerCrossProcessNotifier:(OWSStorage *)storage;
 
 // This method must be called _AFTER_ registerThreadInteractionsDatabaseView.
-+ (void)registerThreadDatabaseView;
++ (void)registerThreadDatabaseView:(OWSStorage *)storage;
 
-+ (void)registerThreadInteractionsDatabaseView;
-+ (void)asyncRegisterThreadOutgoingMessagesDatabaseView;
++ (void)registerThreadInteractionsDatabaseView:(OWSStorage *)storage;
++ (void)asyncRegisterThreadOutgoingMessagesDatabaseView:(OWSStorage *)storage;
 
 // Instances of OWSReadTracking for wasRead is NO and shouldAffectUnreadCounts is YES.
 //
 // Should be used for "unread message counts".
-+ (void)registerUnreadDatabaseView;
++ (void)registerUnreadDatabaseView:(OWSStorage *)storage;
 
 // Should be used for "unread indicator".
 //
 // Instances of OWSReadTracking for wasRead is NO.
-+ (void)asyncRegisterUnseenDatabaseView;
++ (void)asyncRegisterUnseenDatabaseView:(OWSStorage *)storage;
 
-+ (void)asyncRegisterThreadSpecialMessagesDatabaseView;
++ (void)asyncRegisterThreadSpecialMessagesDatabaseView:(OWSStorage *)storage;
 
-+ (void)asyncRegisterSecondaryDevicesDatabaseView;
++ (void)asyncRegisterSecondaryDevicesDatabaseView:(OWSStorage *)storage;
 
 // Returns the "unseen" database view if it is ready;
 // otherwise it returns the "unread" database view.
@@ -56,8 +52,5 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 
 // NOTE: It is not safe to call this method while hasPendingViewRegistrations is YES.
 + (id)threadSpecialMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
-
-// This method should be called _after_ all async database registrations have been started.
-+ (void)asyncRegistrationCompletion;
 
 @end

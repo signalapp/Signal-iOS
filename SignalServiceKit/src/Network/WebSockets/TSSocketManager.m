@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSSocketManager.h"
@@ -7,6 +7,7 @@
 #import "Cryptography.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NSTimer+OWS.h"
+#import "OWSBackgroundTask.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
 #import "OWSSignalService.h"
@@ -72,7 +73,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 @property (nonatomic) NSTimer *backgroundKeepAliveTimer;
 // This is used to manage the iOS "background task" used to
 // keep the app alive in the background.
-@property (nonatomic) UIBackgroundTaskIdentifier fetchingTaskIdentifier;
+@property (nonatomic) OWSBackgroundTask *backgroundTask;
 
 // We cache this value instead of consulting [UIApplication sharedApplication].applicationState,
 // because UIKit only provides a "will resign active" notification, not a "did resign active"
@@ -94,13 +95,12 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     if (!self) {
         return self;
     }
-    
-    OWSAssert([NSThread isMainThread]);
+
+    OWSAssertIsOnMainThread();
 
     _signalService = [OWSSignalService sharedInstance];
     _messageReceiver = [OWSMessageReceiver sharedInstance];
     _state = SocketManagerStateClosed;
-    _fetchingTaskIdentifier = UIBackgroundTaskInvalid;
 
     OWSSingletonAssert();
 
@@ -125,11 +125,11 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
-                                                 name:UIApplicationDidBecomeActiveNotification
+                                                 name:OWSApplicationDidBecomeActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillResignActive:)
-                                                 name:UIApplicationWillResignActiveNotification
+                                                 name:OWSApplicationWillResignActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
@@ -154,7 +154,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
 - (void)ensureWebsocketIsOpen
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(!self.signalService.isCensorshipCircumventionActive);
 
     // Try to reuse the existing socket (if any) if it is in a valid state.
@@ -215,7 +215,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 // websocket state and class state.
 - (void)setState:(SocketManagerState)state
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     // If this state update is redundant, verify that
     // class state and socket state are aligned.
@@ -305,7 +305,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 #pragma mark -
 
 - (void)resetSocket {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     self.websocket.delegate = nil;
     [self.websocket close];
@@ -316,7 +316,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
 - (void)closeWebSocket
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (self.websocket) {
         DDLogWarn(@"%@ closeWebSocket.", self.logTag);
@@ -328,7 +328,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 #pragma mark - Delegate methods
 
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(webSocket);
     if (webSocket != self.websocket) {
         // Ignore events from obsolete web sockets.
@@ -339,7 +339,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(webSocket);
     if (webSocket != self.websocket) {
         // Ignore events from obsolete web sockets.
@@ -352,7 +352,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(NSData *)data {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(webSocket);
     if (webSocket != self.websocket) {
         // Ignore events from obsolete web sockets.
@@ -371,7 +371,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 }
 
 - (void)processWebSocketRequestMessage:(WebSocketRequestMessage *)message {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"%@ Got message with verb: %@ and path: %@", self.logTag, message.verb, message.path);
 
@@ -381,6 +381,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]) {
 
+        __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
             NSData *decryptedPayload =
@@ -389,6 +391,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             if (!decryptedPayload) {
                 DDLogWarn(@"%@ Failed to decrypt incoming payload or bad HMAC", self.logTag);
                 [self sendWebSocketMessageAcknowledgement:message];
+                backgroundTask = nil;
                 return;
             }
 
@@ -398,6 +401,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self sendWebSocketMessageAcknowledgement:message];
+                backgroundTask = nil;
             });
         });
     } else {
@@ -408,13 +412,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 }
 
 - (void)processWebSocketResponseMessage:(WebSocketResponseMessage *)message {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogWarn(@"Client should not receive WebSocket Respond messages");
 }
 
 - (void)sendWebSocketMessageAcknowledgement:(WebSocketRequestMessage *)request {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     WebSocketResponseMessageBuilder *response = [WebSocketResponseMessage builder];
     [response setStatus:200];
@@ -435,7 +439,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
 - (void)handleSocketFailure
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self closeWebSocket];
 
@@ -453,7 +457,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
  didCloseWithCode:(NSInteger)code
            reason:(NSString *)reason
          wasClean:(BOOL)wasClean {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(webSocket);
     if (webSocket != self.websocket) {
         // Ignore events from obsolete web sockets.
@@ -466,7 +470,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 }
 
 - (void)webSocketHeartBeat {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if ([self shouldSocketBeOpen]) {
         NSError *error;
@@ -492,7 +496,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
 - (BOOL)shouldSocketBeOpen
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     // Don't open socket in app extensions.
     if (!CurrentAppContext().isMainApp) {
@@ -513,7 +517,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         return YES;
     } else if (self.backgroundKeepAliveUntilDate && [self.backgroundKeepAliveUntilDate timeIntervalSinceNow] > 0.f) {
         OWSAssert(self.backgroundKeepAliveTimer);
-        OWSAssert(self.fetchingTaskIdentifier != UIBackgroundTaskInvalid);
         // If app is doing any work in the background, keep web socket alive.
         return YES;
     } else {
@@ -523,7 +526,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
 - (void)requestSocketAliveForAtLeastSeconds:(CGFloat)durationSeconds
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(durationSeconds > 0.f);
 
     if (self.appIsActive) {
@@ -532,7 +535,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     } else if (!self.backgroundKeepAliveUntilDate) {
         OWSAssert(!self.backgroundKeepAliveUntilDate);
         OWSAssert(!self.backgroundKeepAliveTimer);
-        OWSAssert(self.fetchingTaskIdentifier == UIBackgroundTaskInvalid);
 
         DDLogInfo(@"%s activating socket in the background", __PRETTY_FUNCTION__);
 
@@ -551,19 +553,25 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         // Additionally, we want the reconnect timer to work in the background too.
         [[NSRunLoop mainRunLoop] addTimer:self.backgroundKeepAliveTimer forMode:NSDefaultRunLoopMode];
 
-        self.fetchingTaskIdentifier = [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
-            OWSAssert([NSThread isMainThread]);
+        __weak typeof(self) weakSelf = self;
+        self.backgroundTask =
+            [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__
+                                          completionBlock:^(BackgroundTaskState backgroundTaskState) {
+                                              OWSAssertIsOnMainThread();
+                                              __strong typeof(self) strongSelf = weakSelf;
+                                              if (!strongSelf) {
+                                                  return;
+                                              }
 
-            DDLogInfo(@"%s background task expired", __PRETTY_FUNCTION__);
-
-            [self clearBackgroundState];
-            [self applyDesiredSocketState];
-        }];
+                                              if (backgroundTaskState == BackgroundTaskState_Expired) {
+                                                  [strongSelf clearBackgroundState];
+                                              }
+                                              [strongSelf applyDesiredSocketState];
+                                          }];
     } else {
         OWSAssert(self.backgroundKeepAliveUntilDate);
         OWSAssert(self.backgroundKeepAliveTimer);
         OWSAssert([self.backgroundKeepAliveTimer isValid]);
-        OWSAssert(self.fetchingTaskIdentifier != UIBackgroundTaskInvalid);
 
         if ([self.backgroundKeepAliveUntilDate timeIntervalSinceNow] < durationSeconds) {
             // Update state used to keep socket alive in background.
@@ -576,7 +584,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
 - (void)backgroundKeepAliveFired
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self applyDesiredSocketState];
 }
@@ -598,7 +606,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 // This method aligns the socket state with the "desired" socket state.
 - (void)applyDesiredSocketState
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if ([self shouldSocketBeOpen]) {
         if (self.state != SocketManagerStateOpen) {
@@ -618,23 +626,19 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
 - (void)clearBackgroundState
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     self.backgroundKeepAliveUntilDate = nil;
     [self.backgroundKeepAliveTimer invalidate];
     self.backgroundKeepAliveTimer = nil;
-
-    if (self.fetchingTaskIdentifier != UIBackgroundTaskInvalid) {
-        [CurrentAppContext() endBackgroundTask:self.fetchingTaskIdentifier];
-        self.fetchingTaskIdentifier = UIBackgroundTaskInvalid;
-    }
+    self.backgroundTask = nil;
 }
 
 #pragma mark - Reconnect
 
 - (void)ensureReconnect
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert([self shouldSocketBeOpen]);
 
     if (self.reconnectTimer) {
@@ -653,7 +657,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
 - (void)clearReconnect
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self.reconnectTimer invalidate];
     self.reconnectTimer = nil;
@@ -663,7 +667,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     self.appIsActive = YES;
     [self applyDesiredSocketState];
@@ -671,7 +675,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     self.appIsActive = NO;
     // TODO: It might be nice to use `requestSocketAliveForAtLeastSeconds:` to
@@ -682,14 +686,14 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
 - (void)registrationStateDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self applyDesiredSocketState];
 }
 
 - (void)isCensorshipCircumventionActiveDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self applyDesiredSocketState];
 }

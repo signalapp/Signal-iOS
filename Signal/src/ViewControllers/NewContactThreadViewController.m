@@ -5,16 +5,16 @@
 #import "NewContactThreadViewController.h"
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
-#import "Environment.h"
 #import "NewGroupViewController.h"
 #import "NewNonContactConversationViewController.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "UIColor+OWS.h"
-#import "UIUtil.h"
 #import "UIView+OWS.h"
 #import <MessageUI/MessageUI.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalServiceKit/SignalAccount.h>
@@ -147,11 +147,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
-    [self.contactsViewHelper.contactsManager fetchSystemContactsIfAlreadyAuthorizedAndAlwaysNotify];
-
-    [refreshControl endRefreshing];
+    [self.contactsViewHelper.contactsManager
+        userRequestedSystemContactsRefreshWithCompletion:^(NSError *_Nullable error) {
+            if (error) {
+                DDLogError(@"%@ refreshing contacts failed with error: %@", self.logTag, error);
+            }
+            [refreshControl endRefreshing];
+        }];
 }
 
 - (void)showContactsPermissionReminder:(BOOL)isVisible
@@ -398,14 +402,34 @@ NS_ASSUME_NONNULL_BEGIN
         // No Contacts
         OWSTableSection *contactsSection = [OWSTableSection new];
 
-        if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized
-            && self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
-            
-            [contactsSection
-             addItem:[OWSTableItem
-                      softCenterLabelItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
-                                                                    @"A label that indicates the user has no Signal contacts.")
-                      customRowHeight:self.actionCellHeight]];
+        if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
+            if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
+
+                [contactsSection
+                    addItem:[OWSTableItem softCenterLabelItemWithText:
+                                              NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
+                                                  @"A label that indicates the user has no Signal contacts.")
+                                                      customRowHeight:self.actionCellHeight]];
+            } else {
+                UITableViewCell *loadingCell = [UITableViewCell new];
+                OWSAssert(loadingCell.contentView);
+
+                UIActivityIndicatorView *activityIndicatorView =
+                    [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                [loadingCell.contentView addSubview:activityIndicatorView];
+                [activityIndicatorView startAnimating];
+
+                [activityIndicatorView autoCenterInSuperview];
+                [activityIndicatorView setCompressionResistanceHigh];
+                [activityIndicatorView setContentHuggingHigh];
+
+                // hide separator for loading cell. The loading cell doesn't really feel like a cell
+                loadingCell.backgroundView = [UIView new];
+
+                OWSTableItem *loadingItem =
+                    [OWSTableItem itemWithCustomCell:loadingCell customRowHeight:40 actionBlock:nil];
+                [contactsSection addItem:loadingItem];
+            }
         }
         
         return @[ contactsSection ];

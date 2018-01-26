@@ -9,7 +9,7 @@ import SignalMessaging
 /**
  * Manage call related UI in a pre-CallKit world.
  */
-class NonCallKitCallUIAdaptee: CallUIAdaptee {
+class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
 
     let TAG = "[NonCallKitCallUIAdaptee]"
 
@@ -20,8 +20,14 @@ class NonCallKitCallUIAdaptee: CallUIAdaptee {
     let hasManualRinger = true
 
     required init(callService: CallService, notificationsAdapter: CallNotificationsAdapter) {
+        AssertIsOnMainThread()
+
         self.callService = callService
         self.notificationsAdapter = notificationsAdapter
+
+        super.init()
+
+        SwiftSingletons.register(self)
     }
 
     func startOutgoingCall(handle: String) -> SignalCall {

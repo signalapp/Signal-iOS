@@ -8,7 +8,7 @@ import PureLayout
 
 // All Observer methods will be invoked from the main thread.
 protocol SAEFailedViewDelegate: class {
-    func shareExtensionWasCancelled()
+    func shareViewWasCancelled()
 }
 
 class SAEFailedViewController: UIViewController {
@@ -40,7 +40,7 @@ class SAEFailedViewController: UIViewController {
                                                                 action: #selector(cancelPressed))
         self.navigationItem.title = "Signal"
 
-        self.view.backgroundColor = UIColor.ows_signalBrandBlue()
+        self.view.backgroundColor = UIColor.ows_signalBrandBlue
 
         let logoImage = UIImage(named: "logoSignal")
         let logoImageView = UIImageView(image: logoImage)
@@ -92,6 +92,6 @@ class SAEFailedViewController: UIViewController {
             owsFail("\(self.logTag) missing delegate")
             return
         }
-        delegate.shareExtensionWasCancelled()
+        delegate.shareViewWasCancelled()
     }
 }

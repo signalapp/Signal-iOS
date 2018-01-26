@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppVersion.h"
@@ -32,6 +32,7 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
     return instance;
 }
 
+// TODO: Modify these NSUserDefaults keys for SAE.
 - (void)configure {
     self.currentAppVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
     
@@ -56,7 +57,11 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
 
     DDLogInfo(@"%@ firstAppVersion: %@", self.logTag, self.firstAppVersion);
     DDLogInfo(@"%@ lastAppVersion: %@", self.logTag, self.lastAppVersion);
-    DDLogInfo(@"%@ currentAppVersion: %@", self.logTag, self.currentAppVersion);
+    DDLogInfo(@"%@ currentAppVersion: %@ (%@)",
+        self.logTag,
+        self.currentAppVersion,
+        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]);
+
     DDLogInfo(@"%@ lastCompletedLaunchAppVersion: %@", self.logTag, self.lastCompletedLaunchAppVersion);
 }
 

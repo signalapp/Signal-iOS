@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    success:(void (^)(void))successHandler
                                    failure:(void (^)(NSError *error))failureHandler
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(text.length > 0);
     OWSAssert(thread);
     OWSAssert(messageSender);
@@ -97,16 +97,22 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
                                    messageSender:(OWSMessageSender *)messageSender
+                                      completion:(void (^_Nullable)(NSError *_Nullable error))completion
 {
-    return [self sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender ignoreErrors:NO];
+    return [self sendMessageWithAttachment:attachment
+                                  inThread:thread
+                             messageSender:messageSender
+                              ignoreErrors:NO
+                                completion:completion];
 }
 
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
                                    messageSender:(OWSMessageSender *)messageSender
                                     ignoreErrors:(BOOL)ignoreErrors
+                                      completion:(void (^_Nullable)(NSError *_Nullable error))completion
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(attachment);
     OWSAssert(ignoreErrors || ![attachment hasError]);
     OWSAssert([attachment mimeType].length > 0);
@@ -118,17 +124,29 @@ NS_ASSUME_NONNULL_BEGIN
     TSOutgoingMessage *message =
         [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                             inThread:thread
+                                         messageBody:attachment.captionText
                                       isVoiceMessage:[attachment isVoiceMessage]
                                     expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
+    
     [messageSender enqueueAttachment:attachment.dataSource
         contentType:attachment.mimeType
         sourceFilename:attachment.filenameOrDefault
         inMessage:message
         success:^{
             DDLogDebug(@"%@ Successfully sent message attachment.", self.logTag);
+            if (completion) {
+                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                    completion(nil);
+                });
+            }
         }
         failure:^(NSError *error) {
             DDLogError(@"%@ Failed to send message attachment with error: %@", self.logTag, error);
+            if (completion) {
+                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                    completion(error);
+                });
+            }
         }];
 
     return message;
@@ -391,8 +409,7 @@ NS_ASSUME_NONNULL_BEGIN
                     shouldHaveAddToProfileWhitelistOffer = NO;
                 }
 
-                BOOL isContact = [contactsManager.lastKnownContactRecipientIds containsObject:recipientId];
-                if (isContact) {
+                if ([contactsManager hasSignalAccountForRecipientId:recipientId]) {
                     // Only create "add to contacts" offers for non-contacts.
                     shouldHaveAddToContactsOffer = NO;
                     // Only create block offers for non-contacts.

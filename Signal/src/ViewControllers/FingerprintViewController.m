@@ -3,15 +3,15 @@
 //
 
 #import "FingerprintViewController.h"
-#import "Environment.h"
 #import "FingerprintViewScanController.h"
 #import "OWSBezierPathView.h"
-#import "OWSContactsManager.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
-#import "UIUtil.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSContactsManager.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFingerprint.h>
@@ -530,7 +530,7 @@ typedef void (^CustomLayoutBlock)(void);
 
 - (void)identityStateDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateVerificationStateLabel];
 }

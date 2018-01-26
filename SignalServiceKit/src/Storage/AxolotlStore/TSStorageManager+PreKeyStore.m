@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSStorageKeys.h"
 #import "TSStorageManager+PreKeyStore.h"
 #import "TSStorageManager+keyFromIntLong.h"
+#import "YapDatabaseConnection+OWS.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionBuilder.h>
 
@@ -39,46 +41,52 @@
             preKeyId++;
         }
 
-        [self setInt:preKeyId forKey:TSNextPrekeyIdKey inCollection:TSStorageInternalSettingsCollection];
+        [self.dbReadWriteConnection setInt:preKeyId
+                                    forKey:TSNextPrekeyIdKey
+                              inCollection:TSStorageInternalSettingsCollection];
     }
     return preKeyRecords;
 }
 
 - (void)storePreKeyRecords:(NSArray *)preKeyRecords {
     for (PreKeyRecord *record in preKeyRecords) {
-        [self setObject:record forKey:[self keyFromInt:record.Id] inCollection:TSStorageManagerPreKeyStoreCollection];
+        [self.dbReadWriteConnection setObject:record
+                                       forKey:[self keyFromInt:record.Id]
+                                 inCollection:TSStorageManagerPreKeyStoreCollection];
     }
 }
 
 - (PreKeyRecord *)loadPreKey:(int)preKeyId {
-    PreKeyRecord *preKeyRecord =
-        [self preKeyRecordForKey:[self keyFromInt:preKeyId] inCollection:TSStorageManagerPreKeyStoreCollection];
+    PreKeyRecord *preKeyRecord = [self.dbReadConnection preKeyRecordForKey:[self keyFromInt:preKeyId]
+                                                              inCollection:TSStorageManagerPreKeyStoreCollection];
 
     if (!preKeyRecord) {
-        @throw [NSException exceptionWithName:InvalidKeyIdException
-                                       reason:@"No pre key found matching key id"
-                                     userInfo:@{}];
+        OWSRaiseException(InvalidKeyIdException, @"No pre key found matching key id");
     } else {
         return preKeyRecord;
     }
 }
 
 - (void)storePreKey:(int)preKeyId preKeyRecord:(PreKeyRecord *)record {
-    [self setObject:record forKey:[self keyFromInt:preKeyId] inCollection:TSStorageManagerPreKeyStoreCollection];
+    [self.dbReadWriteConnection setObject:record
+                                   forKey:[self keyFromInt:preKeyId]
+                             inCollection:TSStorageManagerPreKeyStoreCollection];
 }
 
 - (BOOL)containsPreKey:(int)preKeyId {
-    PreKeyRecord *preKeyRecord =
-        [self preKeyRecordForKey:[self keyFromInt:preKeyId] inCollection:TSStorageManagerPreKeyStoreCollection];
+    PreKeyRecord *preKeyRecord = [self.dbReadConnection preKeyRecordForKey:[self keyFromInt:preKeyId]
+                                                              inCollection:TSStorageManagerPreKeyStoreCollection];
     return (preKeyRecord != nil);
 }
 
 - (void)removePreKey:(int)preKeyId {
-    [self removeObjectForKey:[self keyFromInt:preKeyId] inCollection:TSStorageManagerPreKeyStoreCollection];
+    [self.dbReadWriteConnection removeObjectForKey:[self keyFromInt:preKeyId]
+                                      inCollection:TSStorageManagerPreKeyStoreCollection];
 }
 
 - (int)nextPreKeyId {
-    int lastPreKeyId = [self intForKey:TSNextPrekeyIdKey inCollection:TSStorageInternalSettingsCollection];
+    int lastPreKeyId =
+        [self.dbReadConnection intForKey:TSNextPrekeyIdKey inCollection:TSStorageInternalSettingsCollection];
 
     if (lastPreKeyId < 1) {
         // One-time prekey ids must be > 0 and < kPreKeyOfLastResortId.

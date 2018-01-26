@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMath.h"
@@ -124,7 +124,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSLayoutConstraint *)autoPinToAspectRatio:(CGFloat)ratio
 {
     // Clamp to ensure view has reasonable aspect ratio.
-    CGFloat clampedRatio = Clamp(ratio, 0.5, 95.0);
+    CGFloat clampedRatio = Clamp(ratio, 0.05, 95.0);
     if (clampedRatio != ratio) {
         OWSFail(@"Invalid aspect ratio: %f for view: %@", ratio, self);
     }
@@ -268,6 +268,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinLeadingToSuperviewWithMargin:(CGFloat)margin
 {
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.leadingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.leadingAnchor
@@ -287,6 +289,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinTrailingToSuperviewWithMargin:(CGFloat)margin
 {
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.trailingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.trailingAnchor
@@ -296,6 +300,44 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     } else {
         margin += (self.isRTL ? self.superview.layoutMargins.left : self.superview.layoutMargins.right);
         return [self autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:margin];
+    }
+}
+
+- (NSLayoutConstraint *)autoPinBottomToSuperview
+{
+    return [self autoPinBottomToSuperviewWithMargin:0.f];
+}
+
+- (NSLayoutConstraint *)autoPinBottomToSuperviewWithMargin:(CGFloat)margin
+{
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
+    if (@available(iOS 9.0, *)) {
+        NSLayoutConstraint *constraint =
+            [self.bottomAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.bottomAnchor constant:-margin];
+        constraint.active = YES;
+        return constraint;
+    } else {
+        return [self autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:margin];
+    }
+}
+
+- (NSLayoutConstraint *)autoPinTopToSuperview
+{
+    return [self autoPinTopToSuperviewWithMargin:0.f];
+}
+
+- (NSLayoutConstraint *)autoPinTopToSuperviewWithMargin:(CGFloat)margin
+{
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
+    if (@available(iOS 9.0, *)) {
+        NSLayoutConstraint *constraint =
+            [self.topAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.topAnchor constant:margin];
+        constraint.active = YES;
+        return constraint;
+    } else {
+        return [self autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:margin];
     }
 }
 
@@ -309,6 +351,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin
 {
     OWSAssert(view);
+
+    self.translatesAutoresizingMaskIntoConstraints = NO;
 
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
@@ -331,6 +375,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(view);
 
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.trailingAnchor constraintEqualToAnchor:view.leadingAnchor constant:-margin];
@@ -351,6 +397,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view margin:(CGFloat)margin
 {
     OWSAssert(view);
+
+    self.translatesAutoresizingMaskIntoConstraints = NO;
 
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
@@ -373,6 +421,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(view);
 
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
     if (@available(iOS 9.0, *)) {
         NSLayoutConstraint *constraint =
             [self.trailingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
@@ -388,6 +438,16 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return (self.isRTL ? NSTextAlignmentLeft : NSTextAlignmentRight);
 }
 
+- (void)setHLayoutMargins:(CGFloat)value
+{
+    UIEdgeInsets layoutMargins = self.layoutMargins;
+    layoutMargins.left = value;
+    layoutMargins.right = value;
+    self.layoutMargins = layoutMargins;
+}
+
+#pragma mark - Containers
+
 + (UIView *)containerView
 {
     UIView *view = [UIView new];
@@ -397,12 +457,22 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return view;
 }
 
-- (void)setHLayoutMargins:(CGFloat)value
++ (UIView *)verticalStackWithSubviews:(NSArray<UIView *> *)subviews spacing:(int)spacing
 {
-    UIEdgeInsets layoutMargins = self.layoutMargins;
-    layoutMargins.left = value;
-    layoutMargins.right = value;
-    self.layoutMargins = layoutMargins;
+    UIView *container = [UIView containerView];
+    UIView *_Nullable lastSubview = nil;
+    for (UIView *subview in subviews) {
+        [container addSubview:subview];
+        [subview autoPinWidthToSuperview];
+        if (lastSubview) {
+            [subview autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview withOffset:spacing];
+        } else {
+            [subview autoPinEdgeToSuperviewEdge:ALEdgeTop];
+        }
+        lastSubview = subview;
+    }
+    [lastSubview autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    return container;
 }
 
 #pragma mark - Debugging
@@ -423,6 +493,39 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     [self addRedBorder];
     for (UIView *subview in self.subviews) {
         [subview addRedBorderRecursively];
+    }
+}
+
+- (void)logFrameLater
+{
+    [self logFrameLaterWithLabel:@""];
+}
+
+- (void)logFrameLaterWithLabel:(NSString *)label
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        DDLogVerbose(@"%@ %@ frame: %@, hidden: %d, opacity: %f",
+            self.logTag,
+            label,
+            NSStringFromCGRect(self.frame),
+            self.hidden,
+            self.layer.opacity);
+    });
+}
+
+- (void)logHierarchyUpwardLaterWithLabel:(NSString *)label
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        DDLogVerbose(@"%@ %@ ----", self.logTag, label);
+    });
+
+    UIResponder *responder = self;
+    while (responder) {
+        if ([responder isKindOfClass:[UIView class]]) {
+            UIView *view = (UIView *)responder;
+            [view logFrameLaterWithLabel:@"\t"];
+        }
+        responder = responder.nextResponder;
     }
 }
 

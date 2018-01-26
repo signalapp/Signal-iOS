@@ -3,9 +3,11 @@
 //
 
 #import "OWSAttachmentsProcessor.h"
+#import "AppContext.h"
 #import "Cryptography.h"
 #import "MIMETypeUtil.h"
 #import "NSNotificationCenter+OWS.h"
+#import "OWSBackgroundTask.h"
 #import "OWSError.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachmentPointer.h"
@@ -155,6 +157,8 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 {
     OWSAssert(transaction);
 
+    __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
     [self setAttachment:attachment isDownloadingInMessage:message transaction:transaction];
 
     void (^markAndHandleFailure)(NSError *) = ^(NSError *error) {
@@ -162,6 +166,8 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [self setAttachment:attachment didFailInMessage:message error:error];
             failureHandler(error);
+
+            backgroundTask = nil;
         });
     };
 
@@ -172,6 +178,8 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
             if (message) {
                 [message touch];
             }
+
+            backgroundTask = nil;
         });
     };
 

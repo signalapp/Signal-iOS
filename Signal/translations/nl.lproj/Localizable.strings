@@ -76,11 +76,17 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Bijlage";
 
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Bijlage";
+
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Bestandstype: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Grootte: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Stuur";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Bijlage";
@@ -421,6 +427,36 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Database wordt bijgewerkt";
 
+/* Message indicating that the debug log is being uploaded. */
+"DEBUG_LOG_ACTIVITY_INDICATOR" = "Debuglog sturen...";
+
+/* Message of the debug log alert. */
+"DEBUG_LOG_ALERT_MESSAGE" = "Wat wil je doen met de verwijzing naar je debuglog?";
+
+/* Label for the 'Open a Bug Report' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Een fout melden";
+
+/* Label for the 'copy link' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Verwijzing kopiëren";
+
+/* Label for the 'email debug log' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Helpdesk e-mailen";
+
+/* Label for the 'send to self' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Sturen naar mezelf";
+
+/* Title of the debug log alert. */
+"DEBUG_LOG_ALERT_TITLE" = "Nog één stap";
+
+/* Title of the alert indicating the debug log upload failed. */
+"DEBUG_LOG_FAILURE_ALERT_TITLE" = "Indienen van debuglog mislukt";
+
+/* Message of the alert before redirecting to Github Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "De gist-verwijzing is gekopieerd naar je klembord. Je wordt zo dadelijk doorverwezen naar GitHub.";
+
+/* Title of the alert before redirecting to Github Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub-doorverwijzing";
+
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Laatst gezien: %@";
 
@@ -629,7 +665,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Markeren als geverifieerd";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Deze sessie opnieuw instellen.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Deze sessie opnieuw instellen";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Voltooi aanmaken van groep";
@@ -1238,12 +1274,6 @@
 "RATING_TITLE" = "Steun Signal!";
 
 /* No comment provided by engineer. */
-"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE" = "Vul een geldige landcode in";
-
-/* No comment provided by engineer. */
-"REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "Landcode fout";
-
-/* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Welkom!";
 
 /* No comment provided by engineer. */
@@ -1341,6 +1371,12 @@
 
 /* Label for 'select gif to attach' action sheet button */
 "SELECT_GIF_BUTTON" = "GIF";
+
+/* Table section header for conversations you haven't recently used. */
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Overige contacten";
+
+/* Table section header for recently active conversations */
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Recente gesprekken";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Opnieuw sturen";
@@ -1512,6 +1548,24 @@
 
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
+
+/* Indicates that the share extension is still loading. */
+"SHARE_EXTENSION_LOADING" = "Laden...";
+
+/* Message indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Start de Signal-app om te registreren.";
+
+/* Title indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Niet geregistreerd";
+
+/* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Start de Signal-app om bij te werken.";
+
+/* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Niet klaar";
+
+/* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Kan bijlage niet voorbereiden";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Nieuw veiligheidsnummer tonen";

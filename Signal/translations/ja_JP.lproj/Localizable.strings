@@ -76,11 +76,17 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "添付ファイル";
 
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "添付ファイル";
+
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ファイルの種類：%@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "サイズ：%@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "送信";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "添付ファイル";
@@ -420,6 +426,36 @@
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "データベースを更新しています";
+
+/* Message indicating that the debug log is being uploaded. */
+"DEBUG_LOG_ACTIVITY_INDICATOR" = "デバッグ・ログを送っています";
+
+/* Message of the debug log alert. */
+"DEBUG_LOG_ALERT_MESSAGE" = "デバッグ・ログをどうしますか？";
+
+/* Label for the 'Open a Bug Report' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "バグ報告を開く";
+
+/* Label for the 'copy link' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "リンクをコピーする";
+
+/* Label for the 'email debug log' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "メールでのサポート";
+
+/* Label for the 'send to self' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "自分に送る";
+
+/* Title of the debug log alert. */
+"DEBUG_LOG_ALERT_TITLE" = "あと１つ";
+
+/* Title of the alert indicating the debug log upload failed. */
+"DEBUG_LOG_FAILURE_ALERT_TITLE" = "デバッグ・ログの送信に失敗";
+
+/* Message of the alert before redirecting to Github Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "リンクをクリップボードにコピーしました。まもなくGItHubの問題欄に誘導します。";
+
+/* Title of the alert before redirecting to Github Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHubへの転送";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "最終活動：%@";
@@ -1238,12 +1274,6 @@
 "RATING_TITLE" = "Signalを支援する";
 
 /* No comment provided by engineer. */
-"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE" = "正しい国番号を入力してください";
-
-/* No comment provided by engineer. */
-"REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "国番号エラー";
-
-/* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "ようこそ！";
 
 /* No comment provided by engineer. */
@@ -1341,6 +1371,12 @@
 
 /* Label for 'select gif to attach' action sheet button */
 "SELECT_GIF_BUTTON" = "GIF";
+
+/* Table section header for conversations you haven't recently used. */
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "他の連絡先";
+
+/* Table section header for recently active conversations */
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "最近の会話";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "再送する";
@@ -1512,6 +1548,24 @@
 
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "ツイッター";
+
+/* Indicates that the share extension is still loading. */
+"SHARE_EXTENSION_LOADING" = "読み込み中";
+
+/* Message indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "ユーザー登録を行うためにSignalを起動します";
+
+/* Title indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "ユーザー未登録";
+
+/* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Signalを起動して更新します";
+
+/* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "準備不足";
+
+/* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "添付ファイル作成に失敗";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "新しい安全番号を表示する";

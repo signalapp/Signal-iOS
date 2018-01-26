@@ -12,7 +12,6 @@
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
 #import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -75,8 +74,9 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark To be subclassed.
 
 - (BOOL)isGroupThread {
-    NSAssert(false, @"An abstract method on TSThread was called.");
-    return FALSE;
+    OWS_ABSTRACT_METHOD();
+
+    return NO;
 }
 
 // Override in ContactThread
@@ -86,13 +86,15 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSString *)name {
-    NSAssert(FALSE, @"Should be implemented in subclasses");
+    OWS_ABSTRACT_METHOD();
+
     return nil;
 }
 
 - (NSArray<NSString *> *)recipientIdentifiers
 {
-    NSAssert(FALSE, @"Should be implemented in subclasses");
+    OWS_ABSTRACT_METHOD();
+
     return @[];
 }
 
@@ -243,7 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (TSInteraction *) lastInteraction {
     __block TSInteraction *last;
-    [TSStorageManager.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [TSStorageManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         last = [[transaction ext:TSMessageDatabaseViewExtensionName] lastObjectInGroup:self.uniqueId];
     }];
     return last;
@@ -252,7 +254,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (TSInteraction *)lastInteractionForInbox
 {
     __block TSInteraction *last = nil;
-    [TSStorageManager.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [TSStorageManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [[transaction ext:TSMessageDatabaseViewExtensionName]
             enumerateRowsInGroup:self.uniqueId
                      withOptions:NSEnumerationReverse

@@ -76,11 +76,17 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "첨부";
 
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Size: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Attachment";
@@ -420,6 +426,36 @@
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Updating Database";
+
+/* Message indicating that the debug log is being uploaded. */
+"DEBUG_LOG_ACTIVITY_INDICATOR" = "Sending Debug Log...";
+
+/* Message of the debug log alert. */
+"DEBUG_LOG_ALERT_MESSAGE" = "What would you like to do with the link to your debug log?";
+
+/* Label for the 'Open a Bug Report' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Open a Bug Report";
+
+/* Label for the 'copy link' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copy Link";
+
+/* Label for the 'email debug log' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email Support";
+
+/* Label for the 'send to self' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Send to Self";
+
+/* Title of the debug log alert. */
+"DEBUG_LOG_ALERT_TITLE" = "One More Step";
+
+/* Title of the alert indicating the debug log upload failed. */
+"DEBUG_LOG_FAILURE_ALERT_TITLE" = "Failed to Submit Debug Log";
+
+/* Message of the alert before redirecting to Github Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "The gist link was copied in your clipboard. You are about to be redirected to the GitHub issue list.";
+
+/* Title of the alert before redirecting to Github Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Redirection";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active: %@";
@@ -1238,12 +1274,6 @@
 "RATING_TITLE" = "Support Signal!";
 
 /* No comment provided by engineer. */
-"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE" = "유효한 국가 코드를 입력하세요.";
-
-/* No comment provided by engineer. */
-"REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "국가 코드 틀림";
-
-/* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "환영합니다!";
 
 /* No comment provided by engineer. */
@@ -1341,6 +1371,12 @@
 
 /* Label for 'select gif to attach' action sheet button */
 "SELECT_GIF_BUTTON" = "GIF";
+
+/* Table section header for conversations you haven't recently used. */
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Other Contacts";
+
+/* Table section header for recently active conversations */
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Recent Chats";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Send Again";
@@ -1512,6 +1548,24 @@
 
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
+
+/* Indicates that the share extension is still loading. */
+"SHARE_EXTENSION_LOADING" = "Loading...";
+
+/* Message indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Launch the Signal app to register.";
+
+/* Title indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Not Registered";
+
+/* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update.";
+
+/* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Not Ready";
+
+/* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Unable to Prepare Attachment";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Show New Safety Number";

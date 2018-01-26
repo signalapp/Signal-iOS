@@ -30,33 +30,12 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 @property (atomic, readonly) NSDictionary<NSString *, Contact *> *allContactsMap;
 
-// signalAccountMap and signalAccounts hold the same data.
-// signalAccountMap is for lookup. signalAccounts contains the accounts
-// ordered by display order.
-@property (atomic, readonly) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
+// order of the signalAccounts array respects the systems contact sorting preference
 @property (atomic, readonly) NSArray<SignalAccount *> *signalAccounts;
-
-// This value is cached and is available immediately, before system contacts
-// fetch or contacts intersection.
-//
-// In some cases, its better if our UI reflects these values
-// which haven't been updated yet rather than assume that
-// we have no contacts until the first contacts intersection
-// successfully completes.
-//
-// This significantly improves the user experience when:
-//
-// * No contacts intersection has completed because the app has just launched.
-// * Contacts intersection can't complete due to an unreliable connection or
-//   the contacts intersection rate limit.
-@property (atomic, readonly) NSArray<NSString *> *lastKnownContactRecipientIds;
-
 - (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId;
+- (BOOL)hasSignalAccountForRecipientId:(NSString *)recipientId;
 
-- (Contact *)getOrBuildContactForPhoneIdentifier:(NSString *)identifier;
-
-- (void)loadLastKnownContactRecipientIds;
-
+- (void)loadSignalAccountsFromCache;
 #pragma mark - System Contact Fetching
 
 // Must call `requestSystemContactsOnce` before accessing this method
@@ -73,9 +52,11 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 // Ensure's the app has the latest contacts, but won't prompt the user for contact
 // access if they haven't granted it.
 - (void)fetchSystemContactsOnceIfAlreadyAuthorized;
+
 // This variant will fetch system contacts if contact access has already been granted,
-// but not prompt for contact access. Also, it will always fire a notification.
-- (void)fetchSystemContactsIfAlreadyAuthorizedAndAlwaysNotify;
+// but not prompt for contact access. Also, it will always notify delegates, even if
+// contacts haven't changed, and will clear out any stale cached SignalAccounts
+- (void)userRequestedSystemContactsRefreshWithCompletion:(void (^)(NSError *_Nullable error))completionHandler;
 
 #pragma mark - Util
 

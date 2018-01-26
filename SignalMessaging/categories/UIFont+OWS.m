@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIFont+OWS.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 @implementation UIFont (OWS)
 
@@ -105,3 +107,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

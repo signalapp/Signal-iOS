@@ -103,6 +103,8 @@ extension CallUIAdaptee {
 
         super.init()
 
+        SwiftSingletons.register(self)
+
         callService.addObserverAndSyncState(observer: self)
     }
 

@@ -1,8 +1,19 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
+
+// These are fired whenever the corresponding "main app" or "app extension"
+// notification is fired.
+//
+// 1. This saves you the work of observing both.
+// 2. This allows us to ensure that any critical work (e.g. re-opening
+//    databases) has been done before app re-enters foreground, etc.
+extern NSString *const OWSApplicationDidEnterBackgroundNotification;
+extern NSString *const OWSApplicationWillEnterForegroundNotification;
+extern NSString *const OWSApplicationWillResignActiveNotification;
+extern NSString *const OWSApplicationDidBecomeActiveNotification;
 
 typedef void (^BackgroundTaskExpirationHandler)(void);
 
@@ -23,8 +34,12 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 
 // Should only be called if isMainApp is YES.
 //
-// In general, isMainAppAndActive will probably yield more readable code.
+// Wherever possible, use isMainAppAndActive or isInBackground instead.
+// This should only be used by debugging/logging code.
 - (UIApplicationState)mainApplicationState;
+
+// Similar to UIApplicationStateBackground, but works in SAE.
+- (BOOL)isInBackground;
 
 // Should start a background task if isMainApp is YES.
 // Should just return UIBackgroundTaskInvalid if isMainApp is NO.
@@ -40,8 +55,8 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 // Should only be called if isMainApp is YES.
 - (void)setMainAppBadgeNumber:(NSInteger)value;
 
-
 - (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle;
+- (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated;
 
 // Returns the VC that should be used to present alerts, modals, etc.
 - (nullable UIViewController *)frontmostViewController;

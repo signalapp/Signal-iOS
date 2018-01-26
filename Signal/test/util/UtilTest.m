@@ -3,9 +3,9 @@
 //
 
 #import "UtilTest.h"
-#import "NSString+OWS.h"
 #import "NumberUtil.h"
 #import "TestUtil.h"
+#import <SignalMessaging/NSString+OWS.h>
 
 @interface NSString (OWS_Test)
 

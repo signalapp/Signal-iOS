@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -450,6 +450,8 @@ extension URLSessionTask {
 
         super.init()
 
+        SwiftSingletons.register(self)
+
         ensureGifFolder()
     }
 
@@ -846,7 +848,7 @@ extension URLSessionTask {
             }
 
             // Don't back up Giphy downloads.
-            OWSFileSystem.protectFolder(atPath:dirPath)
+            OWSFileSystem.protectFileOrFolder(atPath:dirPath)
         } catch let error as NSError {
             owsFail("\(GiphyAsset.TAG) ensureTempFolder failed: \(dirPath), \(error)")
             gifFolderPath = tempDirPath

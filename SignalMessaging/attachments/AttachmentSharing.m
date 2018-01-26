@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "AttachmentSharing.h"
-#import "TSAttachmentStream.h"
 #import "UIUtil.h"
 #import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/Threading.h>
 
 @implementation AttachmentSharing
@@ -34,6 +34,17 @@
         text,
     ]];
 }
+
+#ifdef DEBUG
++ (void)showShareUIForUIImage:(UIImage *)image
+{
+    OWSAssert(image);
+
+    [AttachmentSharing showShareUIForActivityItems:@[
+        image,
+    ]];
+}
+#endif
 
 + (void)showShareUIForActivityItems:(NSArray *)activityItems
 {

@@ -3,13 +3,13 @@
 //
 
 #import "NotificationsManager.h"
-#import "Environment.h"
-#import "NSString+OWS.h"
-#import "OWSContactsManager.h"
-#import "OWSPreferences.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
 #import <AudioToolbox/AudioServices.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/NSString+OWS.h>
+#import <SignalMessaging/OWSContactsManager.h>
+#import <SignalMessaging/OWSPreferences.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSErrorMessage.h>
@@ -424,7 +424,7 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
 
 - (void)clearAllNotifications
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self.currentNotifications removeAllObjects];
 }

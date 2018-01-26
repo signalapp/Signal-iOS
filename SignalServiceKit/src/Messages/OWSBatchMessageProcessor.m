@@ -1,20 +1,23 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBatchMessageProcessor.h"
 #import "AppContext.h"
 #import "NSArray+OWS.h"
+#import "OWSBackgroundTask.h"
 #import "OWSMessageManager.h"
 #import "OWSQueues.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "OWSStorage.h"
 #import "TSDatabaseView.h"
 #import "TSStorageManager.h"
 #import "TSYapDatabaseObject.h"
 #import "Threading.h"
+#import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
-#import <YapDatabase/YapDatabaseView.h>
+#import <YapDatabase/YapDatabaseViewTypes.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -193,19 +196,19 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     options.allowedCollections =
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[OWSMessageContentJob collection]]];
 
-    return [[YapDatabaseView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"1" options:options];
+    return [[YapDatabaseAutoView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"1" options:options];
 }
 
 
-+ (void)syncRegisterDatabaseExtension:(YapDatabase *)database
++ (void)syncRegisterDatabaseExtension:(OWSStorage *)storage
 {
-    YapDatabaseView *existingView = [database registeredExtension:OWSMessageContentJobFinderExtensionName];
+    YapDatabaseView *existingView = [storage registeredExtension:OWSMessageContentJobFinderExtensionName];
     if (existingView) {
         OWSFail(@"%@ was already initialized.", OWSMessageContentJobFinderExtensionName);
         // already initialized
         return;
     }
-    [database registerExtension:[self databaseExtension] withName:OWSMessageContentJobFinderExtensionName];
+    [storage registerExtension:[self databaseExtension] withName:OWSMessageContentJobFinderExtensionName];
 }
 
 #pragma mark Logging
@@ -259,8 +262,8 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     _isDrainingQueue = NO;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(databaseViewRegistrationComplete)
-                                                 name:DatabaseViewRegistrationCompleteNotification
+                                             selector:@selector(storageIsReady)
+                                                 name:StorageIsReadyNotification
                                                object:nil];
 
     return self;
@@ -271,7 +274,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)databaseViewRegistrationComplete
+- (void)storageIsReady
 {
     [self drainQueue];
 }
@@ -304,9 +307,8 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     }
 
     dispatch_async(self.serialQueue, ^{
-        if ([TSDatabaseView hasPendingViewRegistrations]) {
-            // We don't want to process incoming messages until database
-            // view registration is complete.
+        if (![OWSStorage isStorageReady]) {
+            // We don't want to process incoming messages until storage is ready.
             return;
         }
 
@@ -334,9 +336,13 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
         return;
     }
 
+    OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
     [self processJobs:jobs];
 
     [self.finder removeJobsWithIds:jobs.uniqueIds];
+
+    backgroundTask = nil;
 
     DDLogVerbose(@"%@ completed %zd jobs. %zd jobs left.",
         self.logTag,
@@ -416,7 +422,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 - (instancetype)initDefault
 {
     // For concurrency coherency we use the same dbConnection to persist and read the unprocessed envelopes
-    YapDatabaseConnection *dbConnection = [[TSStorageManager sharedManager].database newConnection];
+    YapDatabaseConnection *dbConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
     OWSMessageManager *messagesManager = [OWSMessageManager sharedManager];
     TSStorageManager *storageManager = [TSStorageManager sharedManager];
 
@@ -437,9 +443,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 #pragma mark - class methods
 
-+ (void)syncRegisterDatabaseExtension:(YapDatabase *)database
++ (void)syncRegisterDatabaseExtension:(OWSStorage *)storage
 {
-    [OWSMessageContentJobFinder syncRegisterDatabaseExtension:database];
+    [OWSMessageContentJobFinder syncRegisterDatabaseExtension:storage];
 }
 
 #pragma mark - instance methods

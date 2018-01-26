@@ -13,7 +13,17 @@ enum ExperienceUpgradeId: String {
 }
 
 class ExperienceUpgradeFinder: NSObject {
-    public let TAG = "[ExperienceUpgradeFinder]"
+
+    // MARK - Singleton class
+
+    @objc(sharedManager)
+    public static let shared = ExperienceUpgradeFinder()
+
+    private override init() {
+        super.init()
+
+        SwiftSingletons.register(self)
+    }
 
     var videoCalling: ExperienceUpgrade {
         return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.videoCalling.rawValue,
@@ -64,7 +74,7 @@ class ExperienceUpgradeFinder: NSObject {
     }
 
     public func markAllAsSeen(transaction: YapDatabaseReadWriteTransaction) {
-        Logger.info("\(TAG) marking experience upgrades as seen")
+        Logger.info("\(logTag) marking experience upgrades as seen")
         allExperienceUpgrades.forEach { $0.save(with: transaction) }
     }
 }

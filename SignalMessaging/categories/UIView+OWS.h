@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <PureLayout/PureLayout.h>
@@ -83,6 +83,12 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (NSLayoutConstraint *)autoPinLeadingToSuperviewWithMargin:(CGFloat)margin;
 - (NSLayoutConstraint *)autoPinTrailingToSuperview;
 - (NSLayoutConstraint *)autoPinTrailingToSuperviewWithMargin:(CGFloat)margin;
+
+- (NSLayoutConstraint *)autoPinTopToSuperview;
+- (NSLayoutConstraint *)autoPinTopToSuperviewWithMargin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinBottomToSuperview;
+- (NSLayoutConstraint *)autoPinBottomToSuperviewWithMargin:(CGFloat)margin;
+
 - (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view;
 - (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin;
 - (NSLayoutConstraint *)autoPinTrailingToLeadingOfView:(UIView *)view;
@@ -95,8 +101,13 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (NSTextAlignment)textAlignmentUnnatural;
 // Leading and trailing anchors honor layout margins.
 // When using a UIView as a "div" to structure layout, we don't want it to have margins.
-+ (UIView *)containerView;
 - (void)setHLayoutMargins:(CGFloat)value;
+
+#pragma mark - Containers
+
++ (UIView *)containerView;
+
++ (UIView *)verticalStackWithSubviews:(NSArray<UIView *> *)subviews spacing:(int)spacing;
 
 #pragma mark - Debugging
 
@@ -105,6 +116,12 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 // Add red border to self, and all subviews recursively.
 - (void)addRedBorderRecursively;
+
+#ifdef DEBUG
+- (void)logFrameLater;
+- (void)logFrameLaterWithLabel:(NSString *)label;
+- (void)logHierarchyUpwardLaterWithLabel:(NSString *)label;
+#endif
 
 @end
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -7,26 +7,19 @@
 
 // Separate iOS Frameworks from other imports.
 #import "AppSettingsViewController.h"
-#import "AttachmentSharing.h"
-#import "ContactTableViewCell.h"
 #import "ConversationViewItem.h"
 #import "DateUtil.h"
 #import "DebugUIPage.h"
 #import "FingerprintViewController.h"
-#import "FullImageViewController.h"
 #import "HomeViewController.h"
-#import "NSString+OWS.h"
+#import "MediaDetailViewController.h"
 #import "NotificationsManager.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSBezierPathView.h"
 #import "OWSCallNotificationsAdaptee.h"
-#import "OWSContactAvatarBuilder.h"
-#import "OWSContactsManager.h"
 #import "OWSDatabaseMigration.h"
-#import "OWSLogger.h"
 #import "OWSNavigationController.h"
-#import "OWSPreferences.h"
 #import "OWSProgressView.h"
 #import "OWSViewController.h"
 #import "OWSWebRTCDataProtos.pb.h"
@@ -35,12 +28,6 @@
 #import "PushManager.h"
 #import "RemoteVideoView.h"
 #import "SignalApp.h"
-#import "ThreadUtil.h"
-#import "UIColor+OWS.h"
-#import "UIFont+OWS.h"
-#import "UIImage+OWS.h"
-#import "UIUtil.h"
-#import "UIView+OWS.h"
 #import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
@@ -52,13 +39,25 @@
 #import <JSQSystemSoundPlayer/JSQSystemSoundPlayer.h>
 #import <PureLayout/PureLayout.h>
 #import <Reachability/Reachability.h>
+#import <SignalMessaging/AttachmentSharing.h>
+#import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalMessaging/NSString+OWS.h>
+#import <SignalMessaging/OWSContactAvatarBuilder.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/OWSLogger.h>
+#import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/Release.h>
+#import <SignalMessaging/ThreadUtil.h>
+#import <SignalMessaging/UIColor+OWS.h>
+#import <SignalMessaging/UIFont+OWS.h>
+#import <SignalMessaging/UIImage+OWS.h>
+#import <SignalMessaging/UIUtil.h>
+#import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/AppVersion.h>
-#import <SignalServiceKit/Asserts.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/Cryptography.h>
@@ -72,7 +71,9 @@
 #import <SignalServiceKit/OWSAcknowledgeMessageDeliveryRequest.h>
 #import <SignalServiceKit/OWSAnalytics.h>
 #import <SignalServiceKit/OWSAnalyticsEvents.h>
+#import <SignalServiceKit/OWSAsserts.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
+#import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSCallAnswerMessage.h>
 #import <SignalServiceKit/OWSCallBusyMessage.h>
 #import <SignalServiceKit/OWSCallHangupMessage.h>

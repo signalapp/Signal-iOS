@@ -148,6 +148,8 @@ struct AudioSource: Hashable {
 
         super.init()
 
+        SwiftSingletons.register(self)
+
         // Configure audio session so we don't prompt user with Record permission until call is connected.
         audioSession.configure()
     }

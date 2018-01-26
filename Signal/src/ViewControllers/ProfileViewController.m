@@ -6,7 +6,6 @@
 #import "AppDelegate.h"
 #import "AvatarViewHelper.h"
 #import "HomeViewController.h"
-#import "NSString+OWS.h"
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
 #import "SignalsNavigationController.h"
@@ -14,6 +13,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
+#import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/TSStorageManager.h>
@@ -475,7 +475,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)setAvatar:(nullable UIImage *)avatar
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     _avatar = avatar;
 
@@ -577,6 +577,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)avatarDidChange:(UIImage *)image
 {
+    OWSAssertIsOnMainThread();
     OWSAssert(image);
 
     self.avatar = [image resizedImageToFillPixelSize:CGSizeMake(kOWSProfileManager_MaxAvatarDiameter,

@@ -1,9 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSFileSystem.h"
 #import "TSStorageManager+SessionStore.h"
+#import "YapDatabaseConnection+OWS.h"
 #import <AxolotlKit/SessionRecord.h>
+#import <YapDatabase/YapDatabase.h>
 
 NSString *const TSStorageManagerSessionStoreCollection = @"TSStorageManagerSessionStoreCollection";
 NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
@@ -191,6 +194,8 @@ void AssertIsOnSessionStoreQueue()
 
 - (void)resetSessionStore
 {
+    AssertIsOnSessionStoreQueue();
+
     DDLogWarn(@"%@ resetting session store", self.logTag);
     [self.sessionDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [transaction removeAllObjectsInCollection:TSStorageManagerSessionStoreCollection];
@@ -240,5 +245,30 @@ void AssertIsOnSessionStoreQueue()
                                      }];
     }];
 }
+
+#if DEBUG
+- (NSString *)snapshotFilePath
+{
+    // Prefix name with period "." so that backups will ignore these snapshots.
+    NSString *dirPath = [OWSFileSystem appDocumentDirectoryPath];
+    return [dirPath stringByAppendingPathComponent:@".session-snapshot"];
+}
+
+- (void)snapshotSessionStore
+{
+    AssertIsOnSessionStoreQueue();
+
+    [self.sessionDBConnection snapshotCollection:TSStorageManagerSessionStoreCollection
+                                snapshotFilePath:self.snapshotFilePath];
+}
+
+- (void)restoreSessionStore
+{
+    AssertIsOnSessionStoreQueue();
+
+    [self.sessionDBConnection restoreSnapshotOfCollection:TSStorageManagerSessionStoreCollection
+                                         snapshotFilePath:self.snapshotFilePath];
+}
+#endif
 
 @end

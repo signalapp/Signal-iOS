@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSLinkedDevicesTableViewController.h"
@@ -12,7 +12,7 @@
 #import <SignalServiceKit/OWSDevicesService.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSStorageManager.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
+#import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 #import <YapDatabase/YapDatabaseViewMappings.h>
 
@@ -65,11 +65,11 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
-                                               object:self.dbConnection.database];
+                                               object:TSStorageManager.sharedManager.dbNotificationObject];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
+                                             selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification
-                                               object:self.dbConnection.database];
+                                               object:nil];
 
     self.refreshControl = [UIRefreshControl new];
     [self.refreshControl addTarget:self action:@selector(refreshDevices) forControlEvents:UIControlEventValueChanged];
@@ -146,9 +146,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
             if (devices.count > 1) {
                 // Setting this flag here shouldn't be necessary, but we do so
                 // because the "cost" is low and it will improve robustness.
-                [OWSDeviceManager.sharedManager
-                    setMayHaveLinkedDevices:YES
-                               dbConnection:[[TSStorageManager sharedManager] newDatabaseConnection]];
+                [OWSDeviceManager.sharedManager setMayHaveLinkedDevices];
             }
 
             if (devices.count > [OWSDevice numberOfKeysInCollection]) {
@@ -200,8 +198,29 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
 #pragma mark - Table view data source
 
+- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    // External database modifications can't be converted into incremental updates,
+    // so rebuild everything.  This is expensive and usually isn't necessary, but
+    // there's no alternative.
+    [self.dbConnection beginLongLivedReadTransaction];
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.deviceMappings updateWithTransaction:transaction];
+    }];
+
+    [self.tableView reloadData];
+}
+
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
+    OWSAssertIsOnMainThread();
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
     NSArray *notifications = [self.dbConnection beginLongLivedReadTransaction];
     [self setupEditButton];
 

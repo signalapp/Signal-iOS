@@ -1,13 +1,13 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "AvatarViewHelper.h"
-#import "OWSContactsManager.h"
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
-#import "UIUtil.h"
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <SignalMessaging/OWSContactsManager.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSGroupThread.h>
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showChangeAvatarUI
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.delegate);
 
     UIAlertController *actionSheetController =
@@ -66,37 +66,47 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)takePicture
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.delegate);
 
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.allowsEditing = NO;
-    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    [self.delegate.fromViewController ows_askForCameraPermissions:^(BOOL granted) {
+        if (!granted) {
+            DDLogWarn(@"%@ Camera permission denied.", self.logTag);
+            return;
+        }
 
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        picker.mediaTypes = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeImage, nil];
+        UIImagePickerController *picker = [UIImagePickerController new];
+        picker.delegate = self;
+        picker.allowsEditing = NO;
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage ];
+
         [self.delegate.fromViewController presentViewController:picker
                                                        animated:YES
                                                      completion:[UIUtil modalCompletionBlock]];
-    }
+    }];
 }
 
 - (void)chooseFromLibrary
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.delegate);
 
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    [self.delegate.fromViewController ows_askForMediaLibraryPermissions:^(BOOL granted) {
+        if (!granted) {
+            DDLogWarn(@"%@ Media Library permission denied.", self.logTag);
+            return;
+        }
 
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-        picker.mediaTypes = [[NSArray alloc] initWithObjects:(NSString *)kUTTypeImage, nil];
+        UIImagePickerController *picker = [UIImagePickerController new];
+        picker.delegate = self;
+        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage ];
+
         [self.delegate.fromViewController presentViewController:picker
                                                        animated:YES
                                                      completion:[UIUtil modalCompletionBlock]];
-    }
+    }];
 }
 
 /*
@@ -105,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.delegate);
 
     [self.delegate.fromViewController dismissViewControllerAnimated:YES completion:nil];
@@ -116,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(self.delegate);
 
     UIImage *rawAvatar = [info objectForKey:UIImagePickerControllerOriginalImage];
@@ -125,12 +135,14 @@ NS_ASSUME_NONNULL_BEGIN
         dismissViewControllerAnimated:YES
                            completion:^{
                                if (rawAvatar) {
-                                   OWSAssert([NSThread isMainThread]);
+                                   OWSAssertIsOnMainThread();
 
                                    CropScaleImageViewController *vc = [[CropScaleImageViewController alloc]
                                         initWithSrcImage:rawAvatar
                                        successCompletion:^(UIImage *_Nonnull dstImage) {
-                                           [self.delegate avatarDidChange:dstImage];
+                                           dispatch_async(dispatch_get_main_queue(), ^{
+                                               [self.delegate avatarDidChange:dstImage];
+                                           });
                                        }];
                                    [self.delegate.fromViewController
                                        presentViewController:vc

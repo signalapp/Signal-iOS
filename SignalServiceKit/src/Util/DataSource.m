@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "DataSource.h"
 #import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "OWSFileSystem.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -173,9 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
     @synchronized(self)
     {
         if (!self.cachedFilePath) {
-            NSString *dirPath = NSTemporaryDirectory();
-            NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingPathExtension:self.fileExtension];
-            NSString *filePath = [dirPath stringByAppendingPathComponent:fileName];
+            NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:self.fileExtension];
             if ([self writeToPath:filePath]) {
                 self.cachedFilePath = filePath;
             } else {

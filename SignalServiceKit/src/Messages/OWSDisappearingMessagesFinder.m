@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesFinder.h"
@@ -8,7 +8,7 @@
 #import "TSOutgoingMessage.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
-#import <YapDatabase/YapDatabaseConnection.h>
+#import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
 
@@ -189,23 +189,22 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
 }
 
 // Useful for tests, don't use in app startup path because it's slow.
-+ (void)blockingRegisterDatabaseExtensions:(TSStorageManager *)storageManager
++ (void)blockingRegisterDatabaseExtensions:(OWSStorage *)storage
 {
-    [storageManager.database registerExtension:[self indexDatabaseExtension]
-                                      withName:OWSDisappearingMessageFinderExpiresAtIndex];
+    [storage registerExtension:[self indexDatabaseExtension] withName:OWSDisappearingMessageFinderExpiresAtIndex];
 }
 
-+ (void)asyncRegisterDatabaseExtensions:(TSStorageManager *)storageManager
++ (void)asyncRegisterDatabaseExtensions:(OWSStorage *)storage
 {
-    [storageManager.database asyncRegisterExtension:[self indexDatabaseExtension]
-                                           withName:OWSDisappearingMessageFinderExpiresAtIndex
-                                    completionBlock:^(BOOL ready) {
-                                        if (ready) {
-                                            DDLogDebug(@"%@ completed registering extension async.", self.logTag);
-                                        } else {
-                                            DDLogError(@"%@ failed registering extension async.", self.logTag);
-                                        }
-                                    }];
+    [storage asyncRegisterExtension:[self indexDatabaseExtension]
+                           withName:OWSDisappearingMessageFinderExpiresAtIndex
+                    completionBlock:^(BOOL ready) {
+                        if (ready) {
+                            DDLogDebug(@"%@ completed registering extension async.", self.logTag);
+                        } else {
+                            DDLogError(@"%@ failed registering extension async.", self.logTag);
+                        }
+                    }];
 }
 
 @end

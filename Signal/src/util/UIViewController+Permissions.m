@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "Signal-Swift.h"
-#import "UIUtil.h"
 #import "UIViewController+Permissions.h"
 #import <AVFoundation/AVFoundation.h>
+#import <Photos/Photos.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -42,10 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
                              message:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_MESSAGE", @"Alert body")
                       preferredStyle:UIAlertControllerStyleAlert];
 
-        NSString *settingsTitle
-            = NSLocalizedString(@"OPEN_SETTINGS_BUTTON", @"Button text which opens the settings app");
         UIAlertAction *openSettingsAction =
-            [UIAlertAction actionWithTitle:settingsTitle
+            [UIAlertAction actionWithTitle:CommonStrings.openSettingsButton
                                      style:UIAlertActionStyleDefault
                                    handler:^(UIAlertAction *_Nonnull action) {
                                        [[UIApplication sharedApplication] openSystemSettings];
@@ -69,6 +68,84 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         DDLogError(@"Unknown AVAuthorizationStatus: %ld", (long)status);
         callback(NO);
+    }
+}
+
+- (void)ows_askForMediaLibraryPermissions:(void (^)(BOOL granted))callbackParam
+{
+    DDLogVerbose(@"[%@] ows_askForMediaLibraryPermissions", NSStringFromClass(self.class));
+
+    // Ensure callback is invoked on main thread.
+    void (^completionCallback)(BOOL) = ^(BOOL granted) {
+        DispatchMainThreadSafe(^{
+            callbackParam(granted);
+        });
+    };
+
+    void (^presentSettingsDialog)(void) = ^(void) {
+        UIAlertController *alert = [UIAlertController
+            alertControllerWithTitle:NSLocalizedString(@"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE",
+                                         @"Alert title when user has previously denied media library access")
+                             message:NSLocalizedString(@"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE",
+                                         @"Alert body when user has previously denied media library access")
+                      preferredStyle:UIAlertControllerStyleAlert];
+
+        UIAlertAction *openSettingsAction =
+            [UIAlertAction actionWithTitle:CommonStrings.openSettingsButton
+                                     style:UIAlertActionStyleDefault
+                                   handler:^(UIAlertAction *_Nonnull action) {
+                                       [[UIApplication sharedApplication] openSystemSettings];
+                                       completionCallback(NO);
+                                   }];
+        [alert addAction:openSettingsAction];
+
+        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
+                                                                style:UIAlertActionStyleCancel
+                                                              handler:^(UIAlertAction *action) {
+                                                                  completionCallback(NO);
+                                                              }];
+        [alert addAction:dismissAction];
+
+        [self presentViewController:alert animated:YES completion:nil];
+    };
+
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        DDLogError(@"Skipping media library permissions request when app is in background.");
+        completionCallback(NO);
+        return;
+    }
+
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+        DDLogError(@"%@ PhotoLibrary ImagePicker source not available", self.logTag);
+        completionCallback(NO);
+    }
+
+    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+
+    switch (status) {
+        case PHAuthorizationStatusAuthorized: {
+            completionCallback(YES);
+            return;
+        }
+        case PHAuthorizationStatusDenied: {
+            presentSettingsDialog();
+            return;
+        }
+        case PHAuthorizationStatusNotDetermined: {
+            [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus newStatus) {
+                if (newStatus == PHAuthorizationStatusAuthorized) {
+                    completionCallback(YES);
+                } else {
+                    presentSettingsDialog();
+                }
+            }];
+            return;
+        }
+        case PHAuthorizationStatusRestricted: {
+            // when does this happen?
+            OWSFail(@"PHAuthorizationStatusRestricted");
+            return;
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactsViewHelper.h"
@@ -86,14 +86,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)signalAccountsDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateContacts];
 }
 
 - (void)blockedPhoneNumbersDidChange:(id)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     self.blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
 
@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(recipientId.length > 0);
 
     return self.signalAccountMap[recipientId];
@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isSignalAccountHidden:(SignalAccount *)signalAccount
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if ([self.delegate respondsToSelector:@selector(shouldHideLocalNumber)] && [self.delegate shouldHideLocalNumber] &&
         [self isCurrentUser:signalAccount]) {
@@ -125,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isCurrentUser:(SignalAccount *)signalAccount
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSString *localNumber = [TSAccountManager localNumber];
     if ([signalAccount.recipientId isEqualToString:localNumber]) {
@@ -148,14 +148,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     return [_blockedPhoneNumbers containsObject:recipientId];
 }
 
 - (void)updateContacts
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
     NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
@@ -244,7 +244,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (!_nonSignalContacts) {
         NSMutableSet<Contact *> *nonSignalContacts = [NSMutableSet new];
-        [[TSStorageManager sharedManager].dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [TSStorageManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             for (Contact *contact in self.contactsManager.allContactsMap.allValues) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 if (signalRecipients.count < 1) {
@@ -282,8 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
                                            style:UIAlertActionStyleCancel
                                          handler:nil]];
 
-    [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OPEN_SETTINGS_BUTTON",
-                                                                  @"Button text which opens the settings app")
+    [alertController addAction:[UIAlertAction actionWithTitle:CommonStrings.openSettingsButton
                                                         style:UIAlertActionStyleDefault
                                                       handler:^(UIAlertAction *_Nonnull action) {
                                                           [CurrentAppContext() openSystemSettings];

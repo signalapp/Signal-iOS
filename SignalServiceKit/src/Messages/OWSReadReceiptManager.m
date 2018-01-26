@@ -9,6 +9,7 @@
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReadReceiptsForSenderMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "OWSStorage.h"
 #import "OWSSyncConfigurationMessage.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
@@ -16,6 +17,8 @@
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 #import "Threading.h"
+#import "YapDatabaseConnection+OWS.h"
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -174,8 +177,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSSingletonAssert();
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(databaseViewRegistrationComplete)
-                                                 name:DatabaseViewRegistrationCompleteNotification
+                                             selector:@selector(storageIsReady)
+                                                 name:StorageIsReadyNotification
                                                object:nil];
 
     // Try to start processing.
@@ -189,7 +192,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)databaseViewRegistrationComplete
+- (void)storageIsReady
 {
     [self scheduleProcessing];
 }
@@ -200,9 +203,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
-            if ([TSDatabaseView hasPendingViewRegistrations]) {
-                DDLogInfo(
-                    @"%@ Deferring read receipt processing due to pending database view registrations.", self.logTag);
+            if (![OWSStorage isStorageReady]) {
+                DDLogInfo(@"%@ Deferring read receipt processing; storage not yet ready.", self.logTag);
                 return;
             }
             if (self.isProcessing) {

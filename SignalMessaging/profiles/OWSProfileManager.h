@@ -6,12 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const kNSNotificationName_LocalProfileDidChange;
-extern NSString *const kNSNotificationName_OtherUsersProfileWillChange;
-extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 extern NSString *const kNSNotificationName_ProfileWhitelistDidChange;
-extern NSString *const kNSNotificationKey_ProfileRecipientId;
-extern NSString *const kNSNotificationKey_ProfileGroupId;
 
 extern const NSUInteger kOWSProfileManager_NameDataLength;
 extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
@@ -35,6 +30,9 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 // These two methods should only be called from the main thread.
 - (OWSAES256Key *)localProfileKey;
+// localUserProfileExists is true if there is _ANY_ local profile.
+- (BOOL)localProfileExists;
+// hasLocalProfile is true if there is a local profile with a name or avatar.
 - (BOOL)hasLocalProfile;
 - (nullable NSString *)localProfileName;
 - (nullable UIImage *)localProfileAvatarImage;
@@ -77,8 +75,6 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;
 
 - (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId;
-
-- (void)refreshProfileForRecipientId:(NSString *)recipientId;
 
 - (void)updateProfileForRecipientId:(NSString *)recipientId
                profileNameEncrypted:(nullable NSData *)profileNameEncrypted

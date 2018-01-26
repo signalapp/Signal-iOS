@@ -172,7 +172,7 @@
 
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
-        [[TSStorageManager sharedManager].dbReadWriteConnection
+        [TSStorageManager.dbReadWriteConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
             }];
@@ -242,7 +242,7 @@
     DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
 
-    [[TSStorageManager sharedManager] resetSignalStorage];
+    [OWSStorage resetAllStorage];
     [[OWSProfileManager sharedManager] resetProfileStorage];
     [Environment.preferences clear];
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];

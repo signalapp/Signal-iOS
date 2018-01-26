@@ -3,7 +3,7 @@
 //
 
 #import "SignalsNavigationController.h"
-#import "UIUtil.h"
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/TSSocketManager.h>
@@ -63,19 +63,19 @@ static double const STALLED_PROGRESS = 0.9;
 
 - (void)isCensorshipCircumventionActiveDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateSocketStatusView];
 }
 
 - (void)socketManagerStateDidChange {
-    OWSAssert([NSThread isMainThread]);
-    
+    OWSAssertIsOnMainThread();
+
     [self updateSocketStatusView];
 }
 
 - (void)updateSocketStatusView {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if ([OWSSignalService sharedInstance].isCensorshipCircumventionActive) {
         [_updateStatusTimer invalidate];

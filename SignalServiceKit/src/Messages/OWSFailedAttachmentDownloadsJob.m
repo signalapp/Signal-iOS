@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFailedAttachmentDownloadsJob.h"
 #import "TSAttachmentPointer.h"
 #import "TSStorageManager.h"
-#import <YapDatabase/YapDatabaseConnection.h>
+#import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
 
@@ -82,7 +82,6 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
             [self enumerateAttemptingOutAttachmentsWithBlock:^(TSAttachmentPointer *attachment) {
                 // sanity check
                 if (attachment.state != TSAttachmentPointerStateFailed) {
-                    DDLogDebug(@"%@ marking attachment as failed", self.logTag);
                     attachment.state = TSAttachmentPointerStateFailed;
                     [attachment saveWithTransaction:transaction];
                     count++;
@@ -96,7 +95,7 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 
 #pragma mark - YapDatabaseExtension
 
-- (YapDatabaseSecondaryIndex *)indexDatabaseExtension
++ (YapDatabaseSecondaryIndex *)indexDatabaseExtension
 {
     YapDatabaseSecondaryIndexSetup *setup = [YapDatabaseSecondaryIndexSetup new];
     [setup addColumn:OWSFailedAttachmentDownloadsJobAttachmentStateColumn
@@ -121,21 +120,21 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 // Useful for tests, don't use in app startup path because it's slow.
 - (void)blockingRegisterDatabaseExtensions
 {
-    [self.storageManager.database registerExtension:[self indexDatabaseExtension]
-                                           withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex];
+    [self.storageManager registerExtension:[self.class indexDatabaseExtension]
+                                  withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex];
 }
 
-- (void)asyncRegisterDatabaseExtensions
++ (void)asyncRegisterDatabaseExtensionsWithStorageManager:(OWSStorage *)storage
 {
-    [self.storageManager.database asyncRegisterExtension:[self indexDatabaseExtension]
-                                                withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex
-                                         completionBlock:^(BOOL ready) {
-                                             if (ready) {
-                                                 DDLogDebug(@"%@ completed registering extension async.", self.logTag);
-                                             } else {
-                                                 DDLogError(@"%@ failed registering extension async.", self.logTag);
-                                             }
-                                         }];
+    [storage asyncRegisterExtension:[self indexDatabaseExtension]
+                           withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex
+                    completionBlock:^(BOOL ready) {
+                        if (ready) {
+                            DDLogDebug(@"%@ completed registering extension async.", self.logTag);
+                        } else {
+                            DDLogError(@"%@ failed registering extension async.", self.logTag);
+                        }
+                    }];
 }
 
 @end

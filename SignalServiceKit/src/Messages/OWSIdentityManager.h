@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRecipientIdentity.h"
@@ -18,6 +18,7 @@ extern const NSUInteger kIdentityKeyLength;
 
 @class OWSRecipientIdentity;
 @class OWSSignalServiceProtosVerified;
+@class OWSStorage;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSIdentityManager : NSObject <IdentityKeyStore>
@@ -48,6 +49,16 @@ extern const NSUInteger kIdentityKeyLength;
 
 // This method can be called from any thread.
 - (void)processIncomingSyncMessage:(OWSSignalServiceProtosVerified *)verified;
+
+#pragma mark - Debug
+
+#if DEBUG
+// Clears everything except the local identity key.
+- (void)clearIdentityState;
+
+- (void)snapshotIdentityState;
+- (void)restoreIdentityState;
+#endif
 
 @end
 

@@ -1,21 +1,21 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppSettingsViewController.h"
 #import "AboutTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"
 #import "DebugUITableViewController.h"
-#import "Environment.h"
 #import "NotificationSettingsViewController.h"
-#import "OWSContactsManager.h"
 #import "OWSLinkedDevicesTableViewController.h"
 #import "OWSNavigationController.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
-#import "UIUtil.h"
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSContactsManager.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
 
@@ -405,7 +405,7 @@
 
 - (void)socketStateDidChange
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateTableContents];
 }

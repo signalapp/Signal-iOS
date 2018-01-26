@@ -5,27 +5,27 @@
 #import "UpdateGroupViewController.h"
 #import "AddToGroupViewController.h"
 #import "AvatarViewHelper.h"
-#import "BlockListUIUtils.h"
-#import "ContactTableViewCell.h"
-#import "ContactsViewHelper.h"
-#import "Environment.h"
-#import "NSString+OWS.h"
-#import "OWSContactsManager.h"
 #import "OWSNavigationController.h"
-#import "OWSTableViewController.h"
 #import "Signal-Swift.h"
-#import "SignalKeyingStorage.h"
-#import "TSOutgoingMessage.h"
-#import "UIUtil.h"
-#import "UIView+OWS.h"
-#import "UIViewController+OWS.h"
 #import "ViewControllerUtils.h"
+#import <SignalMessaging/BlockListUIUtils.h>
+#import <SignalMessaging/ContactTableViewCell.h>
+#import <SignalMessaging/ContactsViewHelper.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/NSString+OWS.h>
+#import <SignalMessaging/OWSContactsManager.h>
+#import <SignalMessaging/OWSTableViewController.h>
+#import <SignalMessaging/SignalKeyingStorage.h>
+#import <SignalMessaging/UIUtil.h>
+#import <SignalMessaging/UIView+OWS.h>
+#import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSGroupThread.h>
+#import <SignalServiceKit/TSOutgoingMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -392,7 +392,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setGroupAvatar:(nullable UIImage *)groupAvatar
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     _groupAvatar = groupAvatar;
 
@@ -496,6 +496,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)avatarDidChange:(UIImage *)image
 {
+    OWSAssertIsOnMainThread();
     OWSAssert(image);
 
     self.groupAvatar = image;

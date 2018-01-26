@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -146,7 +146,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
     func observeNotifications() {
         NotificationCenter.default.addObserver(self,
                                                selector:#selector(didBecomeActive),
-                                               name:NSNotification.Name.UIApplicationDidBecomeActive,
+                                               name:NSNotification.Name.OWSApplicationDidBecomeActive,
                                                object:nil)
 
         NotificationCenter.default.addObserver(forName: CallAudioServiceSessionChanged, object: nil, queue: nil) { [weak self] _ in
@@ -307,7 +307,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
                                                                               comment: "Label for button that shows the privacy settings."),
                                                       font:OWSFlatButton.fontForHeight(buttonHeight),
                                                       titleColor:UIColor.white,
-                                                      backgroundColor:UIColor.ows_signalBrandBlue(),
+                                                      backgroundColor:UIColor.ows_signalBrandBlue,
                                                       target:self,
                                                       selector:#selector(didPressShowCallSettings))
         viewStack.addSubview(callSettingsButton)
@@ -319,7 +319,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
                                                                         comment: "Label for button that dismiss the call view's settings nag."),
                                                 font:OWSFlatButton.fontForHeight(buttonHeight),
                                                 titleColor:UIColor.white,
-                                                backgroundColor:UIColor.ows_signalBrandBlue(),
+                                                backgroundColor:UIColor.ows_signalBrandBlue,
                                                 target:self,
                                                 selector:#selector(didPressDismissNag))
         viewStack.addSubview(notNowButton)

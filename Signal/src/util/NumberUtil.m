@@ -30,7 +30,7 @@
 }
 
 + (NSUInteger)largestIntegerThatIsAtMost:(NSUInteger)value andIsAMultipleOf:(NSUInteger)multiple {
-    ows_require(multiple != 0);
+    OWSAssert(multiple != 0);
     NSUInteger d = value / multiple;
     d *= multiple;
     if (d > value)
@@ -39,7 +39,7 @@
 }
 
 + (NSUInteger)smallestIntegerThatIsAtLeast:(NSUInteger)value andIsAMultipleOf:(NSUInteger)multiple {
-    ows_require(multiple != 0);
+    OWSAssert(multiple != 0);
     NSUInteger d = value / multiple;
     d *= multiple;
     if (d < value)
@@ -48,7 +48,7 @@
 }
 
 + (double)clamp:(double)value toMin:(double)min andMax:(double)max {
-    ows_require(min <= max);
+    OWSAssert(min <= max);
     if (isnan(value)) {
         return max;
     }
@@ -69,8 +69,8 @@
 }
 
 + (uint8_t)uint8FromLowUInt4:(uint8_t)low4UInt4 andHighUInt4:(uint8_t)highUInt4 {
-    ows_require(low4UInt4 < 0x10);
-    ows_require(highUInt4 < 0x10);
+    OWSAssert(low4UInt4 < 0x10);
+    OWSAssert(highUInt4 < 0x10);
     return low4UInt4 | (uint8_t)(highUInt4 << 4);
 }
 

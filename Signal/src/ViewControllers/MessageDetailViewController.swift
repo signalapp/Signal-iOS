@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,7 +12,7 @@ enum MessageMetadataViewMode: UInt {
     case focusOnMetadata
 }
 
-class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
+class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, MediaDetailPresenter {
 
     static let TAG = "[MessageDetailViewController]"
     let TAG = "[MessageDetailViewController]"
@@ -82,7 +82,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         NotificationCenter.default.addObserver(self,
             selector: #selector(yapDatabaseModified),
             name: NSNotification.Name.YapDatabaseModified,
-            object: nil)
+            object: TSStorageManager.shared().dbNotificationObject)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -148,11 +148,9 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         contentView.autoPinEdge(toSuperviewEdge: .bottom)
         scrollView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
-        let hasAttachment = message.attachmentIds.count > 0
-
-        if hasAttachment {
+        if hasMediaAttachment {
             let footer = UIToolbar()
-            footer.barTintColor = UIColor.ows_materialBlue()
+            footer.barTintColor = UIColor.ows_materialBlue
             view.addSubview(footer)
             footer.autoPinWidthToSuperview(withMargin: 0)
             footer.autoPinEdge(.top, to: .bottom, of: scrollView)
@@ -241,7 +239,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
                     cell.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
                     let statusLabel = UILabel()
                     statusLabel.text = statusMessage
-                    statusLabel.textColor = UIColor.ows_darkGray()
+                    statusLabel.textColor = UIColor.ows_darkGray
                     statusLabel.font = UIFont.ows_footnote()
                     statusLabel.sizeToFit()
                     cell.accessoryView = statusLabel
@@ -300,14 +298,12 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         }
 
         if let mediaMessageView = mediaMessageView {
-            mediaMessageView.autoPinToSquareAspectRatio()
+            mediaMessageView.autoMatch(.height, to: .width, of: mediaMessageView, withOffset:0, relation: .lessThanOrEqual)
         }
     }
 
     private func displayableTextIfText() -> String? {
-        let messageCellType = viewItem.messageCellType()
-        guard messageCellType == .textMessage ||
-            messageCellType == .oversizeTextMessage else {
+        guard viewItem.hasText else {
                 return nil
         }
         guard let displayableText = viewItem.displayableText() else {
@@ -327,6 +323,10 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
     private func contentRows() -> [UIView] {
         var rows = [UIView]()
 
+        if hasMediaAttachment {
+            rows += addAttachmentRows()
+        }
+
         if let messageBody = displayableTextIfText() {
 
             self.messageBody = messageBody
@@ -334,10 +334,10 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
             let isIncoming = self.message as? TSIncomingMessage != nil
 
             // UITextView can't render extremely long text due to constraints
-            // on the size of its backing buffer, especially when we're 
+            // on the size of its backing buffer, especially when we're
             // embedding it "full-size' within a UIScrollView as we do in this view.
             //
-            // Therefore we're doing something unusual here.  
+            // Therefore we're doing something unusual here.
             // See comments on updateTextLayout.
             let messageTextView = UITextView()
             self.messageTextView = messageTextView
@@ -382,9 +382,9 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
             bubbleView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing, withInset: bubbleViewHMargin)
             self.bubbleViewWidthConstraint = bubbleView.autoSetDimension(.width, toSize:0)
             rows.append(row)
-        } else if message.attachmentIds.count > 0 {
-            rows += addAttachmentRows()
-        } else {
+        }
+
+        if rows.count == 0 {
             // Neither attachment nor body.
             owsFail("\(self.TAG) Message has neither attachment nor body.")
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY",
@@ -399,19 +399,26 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         return rows
     }
 
+    private func fetchAttachment(transaction: YapDatabaseReadTransaction) -> TSAttachment? {
+        guard let attachmentId = message.attachmentIds.firstObject as? String else {
+            return nil
+        }
+
+        guard let attachment = TSAttachment.fetch(uniqueId: attachmentId, transaction: transaction) else {
+            Logger.warn("\(TAG) Missing attachment. Was it deleted?")
+            return nil
+        }
+
+        return attachment
+    }
+
     private func addAttachmentRows() -> [UIView] {
         var rows = [UIView]()
 
-        guard let attachmentId = message.attachmentIds[0] as? String else {
-            owsFail("Invalid attachment")
+        guard let attachment = self.attachment else {
+            Logger.warn("\(TAG) Missing attachment. Was it deleted?")
             return rows
         }
-
-        guard let attachment = TSAttachment.fetch(uniqueId: attachmentId) else {
-            owsFail("Missing attachment")
-            return rows
-        }
-        self.attachment = attachment
 
         guard let attachmentStream = attachment as? TSAttachmentStream else {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED",
@@ -434,8 +441,9 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
 
         let contentType = attachment.contentType
         if let dataUTI = MIMETypeUtil.utiType(forMIMEType: contentType) {
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
-            let mediaMessageView = MediaMessageView(attachment: attachment, mode: .small)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
+            let mediaMessageView = MediaMessageView(attachment: attachment, mode: .small, mediaDetailPresenter: self)
+
             mediaMessageView.backgroundColor = UIColor.white
             self.mediaMessageView = mediaMessageView
             rows.append(mediaMessageView)
@@ -443,7 +451,25 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         return rows
     }
 
+    var hasMediaAttachment: Bool {
+        guard let attachment = self.attachment else {
+            return false
+        }
+
+        guard attachment.contentType != OWSMimeTypeOversizeTextMessage else {
+            // to the user, oversized text attachments should behave
+            // just like regular text messages.
+            return false
+        }
+
+        return true
+    }
+
     private func addAttachmentMetadataRows() -> [UIView] {
+        guard hasMediaAttachment else {
+            return []
+        }
+
         var rows = [UIView]()
 
         if let attachment = self.attachment {
@@ -504,7 +530,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
 
         if subtitle.count > 0 {
             let subtitleLabel = self.valueLabel(text: subtitle)
-            subtitleLabel.textColor = UIColor.ows_darkGray()
+            subtitleLabel.textColor = UIColor.ows_darkGray
             row.addSubview(subtitleLabel)
             subtitleLabel.autoPinTrailingToSuperview()
             subtitleLabel.autoPinLeading(toTrailingOf: nameLabel, margin: 10)
@@ -573,6 +599,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
                 return
             }
             self.message = newMessage
+            self.attachment = self.fetchAttachment(transaction: transaction)
         }
     }
 
@@ -724,5 +751,19 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         Logger.verbose("\(TAG) scrollViewDidScroll")
 
         updateTextLayout()
+    }
+
+    // MARK: MediaDetailPresenter
+
+    public func presentDetails(mediaMessageView: MediaMessageView, fromView: UIView) {
+        let window = UIApplication.shared.keyWindow
+        let convertedRect = fromView.convert(fromView.bounds, to:window)
+        guard let attachmentStream = self.attachmentStream else {
+            owsFail("attachment stream unexpectedly nil")
+            return
+        }
+
+        let mediaDetailViewController = MediaDetailViewController(attachmentStream: attachmentStream, from: convertedRect, viewItem: self.viewItem)
+        mediaDetailViewController.present(from: self, replacing: fromView)
     }
 }

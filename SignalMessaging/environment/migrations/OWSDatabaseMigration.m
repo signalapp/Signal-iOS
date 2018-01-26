@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDatabaseMigration.h"
@@ -32,10 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)migrationId
 {
-    @throw [NSException
-        exceptionWithName:NSInternalInconsistencyException
-                   reason:[NSString stringWithFormat:@"Must override %@ in subclass", NSStringFromSelector(_cmd)]
-                 userInfo:nil];
+    OWSRaiseException(NSInternalInconsistencyException, @"Must override %@ in subclass", NSStringFromSelector(_cmd));
 }
 
 + (NSString *)collection
@@ -46,10 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    @throw [NSException
-        exceptionWithName:NSInternalInconsistencyException
-                   reason:[NSString stringWithFormat:@"Must override %@ in subclass", NSStringFromSelector(_cmd)]
-                 userInfo:nil];
+    OWSRaiseException(NSInternalInconsistencyException, @"Must override %@ in subclass", NSStringFromSelector(_cmd));
 }
 
 - (void)runUp

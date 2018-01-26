@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewController.h"
@@ -17,16 +17,12 @@
 #import "ConversationViewLayout.h"
 #import "DateUtil.h"
 #import "DebugUITableViewController.h"
-#import "Environment.h"
 #import "FingerprintViewController.h"
-#import "FullImageViewController.h"
+#import "MediaDetailViewController.h"
 #import "NSAttributedString+OWS.h"
-#import "NSString+OWS.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioAttachmentPlayer.h"
 #import "OWSContactOffersCell.h"
-#import "OWSContactOffersInteraction.h"
-#import "OWSContactsManager.h"
 #import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -45,10 +41,7 @@
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
-#import "TSUnreadIndicatorInteraction.h"
-#import "ThreadUtil.h"
 #import "UIFont+OWS.h"
-#import "UIUtil.h"
 #import "UIViewController+OWS.h"
 #import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"
@@ -64,9 +57,17 @@
 #import <JSQMessagesViewController/JSQSystemSoundPlayer+JSQMessages.h>
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
 #import <JSQSystemSoundPlayer/JSQSystemSoundPlayer.h>
-#import <MediaPlayer/MediaPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <PromiseKit/AnyPromise.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/NSString+OWS.h>
+#import <SignalMessaging/OWSContactOffersInteraction.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/OWSUserProfile.h>
+#import <SignalMessaging/TSUnreadIndicatorInteraction.h>
+#import <SignalMessaging/ThreadUtil.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
@@ -87,7 +88,9 @@
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/Threading.h>
-#import <YapDatabase/YapDatabaseView.h>
+#import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseViewChange.h>
+#import <YapDatabase/YapDatabaseViewConnection.h>
 
 @import Photos;
 
@@ -120,10 +123,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 #pragma mark -
 
-@interface ConversationViewController () <AVAudioPlayerDelegate,
+@interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
+    AVAudioPlayerDelegate,
     ContactsViewHelperDelegate,
     ContactEditingDelegate,
     CNContactViewControllerDelegate,
+    DisappearingTimerConfigurationViewDelegate,
     OWSConversationSettingsViewDelegate,
     ConversationViewLayoutDelegate,
     ConversationViewCellDelegate,
@@ -171,7 +176,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic) NSArray<ConversationViewItem *> *viewItems;
 @property (nonatomic) NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache;
 
-@property (nonatomic, nullable) MPMoviePlayerController *videoPlayer;
 @property (nonatomic, nullable) AVAudioRecorder *audioRecorder;
 @property (nonatomic, nullable) OWSAudioAttachmentPlayer *audioAttachmentPlayer;
 @property (nonatomic, nullable) NSUUID *voiceMessageUUID;
@@ -216,17 +220,18 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic, readonly) BOOL isGroupConversation;
 @property (nonatomic) BOOL isUserScrolling;
 
+@property (nonatomic) NSLayoutConstraint *scrollDownButtonButtomConstraint;
+
 @property (nonatomic) ConversationScrollButton *scrollDownButton;
 #ifdef DEBUG
 @property (nonatomic) ConversationScrollButton *scrollUpButton;
 #endif
 
+@property (nonatomic) BOOL isViewCompletelyAppeared;
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL isAppInBackground;
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL viewHasEverAppeared;
-@property (nonatomic) BOOL wasScrolledToBottomBeforeKeyboardShow;
-@property (nonatomic) BOOL wasScrolledToBottomBeforeLayoutChange;
 @property (nonatomic) BOOL hasUnreadMessages;
 
 @end
@@ -291,26 +296,26 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
-                                               object:nil];
+                                               object:TSStorageManager.sharedManager.dbNotificationObject];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
+                                             selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillEnterForeground:)
-                                                 name:UIApplicationWillEnterForegroundNotification
+                                                 name:OWSApplicationWillEnterForegroundNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidEnterBackground:)
-                                                 name:UIApplicationDidEnterBackgroundNotification
+                                                 name:OWSApplicationDidEnterBackgroundNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillResignActive:)
-                                                 name:UIApplicationWillResignActiveNotification
+                                                 name:OWSApplicationWillResignActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(cancelReadTimer)
-                                                 name:UIApplicationDidEnterBackgroundNotification
+                                                 name:OWSApplicationDidEnterBackgroundNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
@@ -324,18 +329,22 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                              selector:@selector(signalAccountsDidChange:)
                                                  name:OWSContactsManagerSignalAccountsDidChangeNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillChangeFrame:)
+                                                 name:UIKeyboardWillChangeFrameNotification
+                                               object:nil];
 }
 
 - (void)signalAccountsDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self ensureDynamicInteractions];
 }
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     OWSAssert(recipientId.length > 0);
@@ -355,7 +364,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)profileWhitelistDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     // If profile whitelist just changed, we may want to hide a profile whitelist offer.
     NSString *_Nullable recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
@@ -373,14 +382,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)blockedPhoneNumbersDidChange:(id)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self ensureBannerState];
 }
 
 - (void)identityStateDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateNavigationBarSubtitleLabel];
     [self ensureBannerState];
@@ -457,13 +466,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     if (_peek) {
         self.inputToolbar.hidden = YES;
-        [self.inputToolbar endEditing:TRUE];
+        [self dismissKeyBoard];
         return;
     }
 
     if (self.userLeftGroup) {
         self.inputToolbar.hidden = YES; // user has requested they leave the group. further sends disallowed
-        [self.inputToolbar endEditing:TRUE];
+        [self dismissKeyBoard];
     } else {
         self.inputToolbar.hidden = NO;
     }
@@ -490,7 +499,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     [super loadView];
 
-    self.view.backgroundColor = [UIColor ows_inputToolbarBackgroundColor];
+    self.view.backgroundColor = [UIColor ows_toolbarBackgroundColor];
 }
 
 - (void)createContents
@@ -506,6 +515,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     self.collectionView.dataSource = self;
     self.collectionView.showsVerticalScrollIndicator = YES;
     self.collectionView.showsHorizontalScrollIndicator = NO;
+    self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.collectionView];
     [self.collectionView autoPinWidthToSuperview];
@@ -522,10 +532,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _inputToolbar = [ConversationInputToolbar new];
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
-    [self.view addSubview:self.inputToolbar];
-    [self.inputToolbar autoPinWidthToSuperview];
-    [self.inputToolbar autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.collectionView];
-    [self autoPinViewToBottomGuideOrKeyboard:self.inputToolbar];
+    [self.collectionView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
@@ -537,6 +544,16 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.loadMoreHeader autoPinWidthToWidthOfView:self.view];
     [self.loadMoreHeader autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.loadMoreHeader autoSetDimension:ALDimensionHeight toSize:kLoadMoreHeaderHeight];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (nullable UIView *)inputAccessoryView
+{
+    return self.inputToolbar;
 }
 
 - (void)registerCellClasses
@@ -591,8 +608,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // We need to recheck on every appearance, since the user may have left the group in the settings VC,
     // or on another device.
     [self hideInputIfNeeded];
-
-    [self.inputToolbar viewWillAppear:animated];
 
     self.isViewVisible = YES;
 
@@ -888,13 +903,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                               }];
         [actionSheetController addAction:dismissAction];
 
+        [self dismissKeyBoard];
         [self presentViewController:actionSheetController animated:YES completion:nil];
     }
 }
 
 - (void)resetVerificationStateToDefault
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
     for (NSString *recipientId in noLongerVerifiedRecipientIds) {
@@ -1004,6 +1020,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         _callOnOpen = NO;
     }
 
+    self.isViewCompletelyAppeared = YES;
     self.viewHasEverAppeared = YES;
 }
 
@@ -1017,7 +1034,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [super viewWillDisappear:animated];
 
-    [self.inputToolbar viewWillDisappear:animated];
+    self.isViewCompletelyAppeared = NO;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -1034,7 +1051,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self markVisibleMessagesAsRead];
     [self cancelVoiceMemo];
     [self.cellMediaCache removeAllObjects];
-    [self.inputToolbar endEditingTextMessage];
 
     self.isUserScrolling = NO;
 }
@@ -1225,34 +1241,22 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 
     if (self.disappearingMessagesConfiguration.isEnabled) {
-        UIButton *timerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *image = [UIImage imageNamed:@"button_timer_white"];
-        [timerButton setImage:image forState:UIControlStateNormal];
-        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
-        // We normally would want to use left and right insets that ensure the button
-        // is square and the icon is centered.  However UINavigationBar doesn't offer us
-        // control over the margins and spacing of its content, and the buttons end up
-        // too far apart and too far from the edge of the screen. So we use a smaller
-        // right inset tighten up the layout.
-        imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
-        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
-        imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
-        imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
-        timerButton.imageEdgeInsets = imageEdgeInsets;
-        timerButton.accessibilityLabel
-            = NSLocalizedString(@"DISAPPEARING_MESSAGES_LABEL", @"Accessibility label for disappearing messages");
-        NSString *formatString = NSLocalizedString(
-            @"DISAPPEARING_MESSAGES_HINT", @"Accessibility hint that contains current timeout information");
-        timerButton.accessibilityHint =
-            [NSString stringWithFormat:formatString, self.disappearingMessagesConfiguration.durationString];
-        [timerButton addTarget:self
-                        action:@selector(didTapTimerInNavbar:)
-              forControlEvents:UIControlEventTouchUpInside];
-        timerButton.frame = CGRectMake(0,
-            0,
-            round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
-            round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
-        [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:timerButton]];
+        DisappearingTimerConfigurationView *timerView = [[DisappearingTimerConfigurationView alloc]
+            initWithDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds];
+        timerView.delegate = self;
+        timerView.tintColor = UIColor.whiteColor;
+
+        // As of iOS11, we can size barButton item custom views with autoLayout.
+        // Before that, though we can still use autoLayout *within* the customView,
+        // setting the view's size with constraints causes the customView to be temporarily
+        // laid out with a misplaced origin.
+        if (@available(iOS 11.0, *)) {
+            [timerView autoSetDimensionsToSize:CGSizeMake(36, 44)];
+        } else {
+            timerView.frame = CGRectMake(0, 0, 36, 44);
+        }
+
+        [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:timerView]];
     }
 
     self.navigationItem.rightBarButtonItems = [barButtons copy];
@@ -1386,20 +1390,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 #pragma mark - JSQMessagesViewController method overrides
 
-- (void)toggleDefaultKeyboard
-{
-    // Primary language is nil for the emoji keyboard & we want to stay on it after sending
-    if (!self.inputToolbar.textInputPrimaryLanguage) {
-        return;
-    }
-
-    // The JSQ event listeners cause a bounce animation, so we temporarily disable them.
-    [self setShouldIgnoreKeyboardChanges:YES];
-    [self dismissKeyBoard];
-    [self popKeyBoard];
-    [self setShouldIgnoreKeyboardChanges:NO];
-}
-
 #pragma mark - Dynamic Text
 
 /**
@@ -1452,7 +1442,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.navigationController pushViewController:settingsVC animated:YES];
 }
 
-- (void)didTapTimerInNavbar:(id)sender
+#pragma mark - DisappearingTimerConfigurationViewDelegate
+
+- (void)disappearingTimerConfigurationViewWasTapped:(DisappearingTimerConfigurationView *)disappearingTimerView
 {
     DDLogDebug(@"%@ Tapped timer in navbar", self.logTag);
     [self showConversationSettings];
@@ -1640,6 +1632,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [actionSheetController addAction:resendMessageAction];
 
+    [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
@@ -1674,6 +1667,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     [actionSheetController addAction:resendMessageAction];
 
+    [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
@@ -1801,6 +1795,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 }];
     [alertController addAction:resetSessionAction];
 
+    [self dismissKeyBoard];
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -1841,6 +1836,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                }];
     [actionSheetController addAction:acceptSafetyNumberAction];
 
+    [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
@@ -1870,16 +1866,15 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [alertController addAction:callAction];
     [alertController addAction:[OWSAlerts cancelAction]];
 
-    [[UIApplication sharedApplication].frontmostViewController presentViewController:alertController
-                                                                            animated:YES
-                                                                          completion:nil];
+    [self dismissKeyBoard];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 #pragma mark - ConversationViewCellDelegate
 
 - (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(recipientId.length > 0);
 
     return [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:recipientId];
@@ -1921,6 +1916,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                 }];
     [actionSheetController addAction:blockAction];
 
+    [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
@@ -1979,56 +1975,42 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
            attachmentStream:(TSAttachmentStream *)attachmentStream
                   imageView:(UIView *)imageView
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewItem);
     OWSAssert(attachmentStream);
     OWSAssert(imageView);
 
+    [self dismissKeyBoard];
+
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     CGRect convertedRect = [imageView convertRect:imageView.bounds toView:window];
-    FullImageViewController *vc = [[FullImageViewController alloc] initWithAttachmentStream:attachmentStream
-                                                                                   fromRect:convertedRect
-                                                                                   viewItem:viewItem];
-    [vc presentFromViewController:self];
+    MediaDetailViewController *vc = [[MediaDetailViewController alloc] initWithAttachmentStream:attachmentStream
+                                                                                       fromRect:convertedRect
+                                                                                       viewItem:viewItem];
+    [vc presentFromViewController:self replacingView:imageView];
 }
 
-- (void)didTapVideoViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
+- (void)didTapVideoViewItem:(ConversationViewItem *)viewItem
+           attachmentStream:(TSAttachmentStream *)attachmentStream
+                  imageView:(UIImageView *)imageView
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewItem);
     OWSAssert(attachmentStream);
 
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:[attachmentStream.mediaURL path]]) {
-        OWSFail(@"%@ Missing video file: %@", self.logTag, attachmentStream.mediaURL);
-    }
-
     [self dismissKeyBoard];
-    self.videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL:attachmentStream.mediaURL];
-    [_videoPlayer prepareToPlay];
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    CGRect convertedRect = [imageView convertRect:imageView.bounds toView:window];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(moviePlayerWillExitFullscreen:)
-                                                 name:MPMoviePlayerWillExitFullscreenNotification
-                                               object:_videoPlayer];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(moviePlayerDidExitFullscreen:)
-                                                 name:MPMoviePlayerDidExitFullscreenNotification
-                                               object:_videoPlayer];
-
-    _videoPlayer.controlStyle = MPMovieControlStyleDefault;
-    _videoPlayer.shouldAutoplay = YES;
-    [self.view addSubview:_videoPlayer.view];
-    // We can't animate from the cell media frame;
-    // MPMoviePlayerController will animate a crop of its
-    // contents rather than scaling them.
-    _videoPlayer.view.frame = self.view.bounds;
-    [_videoPlayer setFullscreen:YES animated:NO];
+    MediaDetailViewController *vc = [[MediaDetailViewController alloc] initWithAttachmentStream:attachmentStream
+                                                                                       fromRect:convertedRect
+                                                                                       viewItem:viewItem];
+    [vc presentFromViewController:self replacingView:imageView];
 }
 
 - (void)didTapAudioViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewItem);
     OWSAssert(attachmentStream);
 
@@ -2058,7 +2040,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)didTapTruncatedTextMessage:(ConversationViewItem *)conversationItem
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(conversationItem);
     OWSAssert([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
@@ -2073,7 +2055,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem
                      attachmentPointer:(TSAttachmentPointer *)attachmentPointer
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewItem);
     OWSAssert(attachmentPointer);
 
@@ -2084,7 +2066,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(message);
 
     [self handleUnsentMessageTap:message];
@@ -2092,7 +2074,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)showMetadataViewForViewItem:(ConversationViewItem *)conversationItem
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(conversationItem);
     OWSAssert([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
@@ -2104,47 +2086,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.navigationController pushViewController:view animated:YES];
 }
 
-#pragma mark - Video Playback
-
-// There's more than one way to exit the fullscreen video playback.
-// There's a done button, a "toggle fullscreen" button and I think
-// there's some gestures too.  These fire slightly different notifications.
-// We want to hide & clean up the video player immediately in all of
-// these cases.
-- (void)moviePlayerWillExitFullscreen:(id)sender
-{
-    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    [self clearVideoPlayer];
-}
-
-// See comment on moviePlayerWillExitFullscreen:
-- (void)moviePlayerDidExitFullscreen:(id)sender
-{
-    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    [self clearVideoPlayer];
-}
-
-- (void)clearVideoPlayer
-{
-    [_videoPlayer stop];
-    [_videoPlayer.view removeFromSuperview];
-    self.videoPlayer = nil;
-}
-
-- (void)setVideoPlayer:(MPMoviePlayerController *_Nullable)videoPlayer
-{
-    _videoPlayer = videoPlayer;
-
-    [ViewControllerUtils setAudioIgnoresHardwareMuteSwitch:videoPlayer != nil];
-}
-
 #pragma mark - System Messages
 
 - (void)didTapSystemMessageWithInteraction:(TSInteraction *)interaction
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(interaction);
 
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
@@ -2193,7 +2139,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)ensureDynamicInteractions
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     const int currentMaxRangeSize = (int)(self.page + 1) * kYapDatabasePageSize;
     const int maxRangeSize = MAX(kConversationInitialMaxRangeSize, currentMaxRangeSize);
@@ -2212,7 +2158,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)clearUnreadMessagesIndicator
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (self.hasClearedUnreadMessagesIndicator) {
         // ensureDynamicInteractionsForThread is somewhat expensive
@@ -2240,7 +2186,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.view addSubview:self.scrollDownButton];
     [self.scrollDownButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
     [self.scrollDownButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
-    [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.inputToolbar];
+
+    self.scrollDownButtonButtomConstraint =
+        [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.collectionView];
     [self.scrollDownButton autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
 
 #ifdef DEBUG
@@ -2304,7 +2252,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)ensureScrollDownButton
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     BOOL shouldShowScrollDownButton = NO;
     CGFloat scrollSpaceToBottom = (self.safeContentHeight + self.collectionView.contentInset.bottom
@@ -2356,6 +2304,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [[UIDocumentMenuViewController alloc] initWithDocumentTypes:documentTypes inMode:pickerMode];
     menuController.delegate = self;
 
+    [self dismissKeyBoard];
     [self presentViewController:menuController animated:YES completion:nil];
 }
 
@@ -2367,6 +2316,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         [[GifPickerViewController alloc] initWithThread:self.thread messageSender:self.messageSender];
     view.delegate = self;
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:view];
+
+    [self dismissKeyBoard];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
@@ -2384,7 +2335,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)messageWasSent:(TSOutgoingMessage *)message
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(message);
 
     [self updateLastVisibleTimestamp:message.timestampForSorting];
@@ -2406,6 +2357,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         // post iOS11, document picker has no blue header.
         [UIUtil applyDefaultSystemAppearence];
     }
+
+    [self dismissKeyBoard];
     [self presentViewController:documentPicker animated:YES completion:nil];
 }
 
@@ -2481,7 +2434,17 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 
     [dataSource setSourceFilename:filename];
-    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:type];
+
+    // Although we want to be able to send higher quality attachments throught the document picker
+    // it's more imporant that we ensure the sent format is one all clients can accept (e.g. *not* quicktime .mov)
+    if ([SignalAttachment isInvalidVideoWithDataSource:dataSource dataUTI:type]) {
+        [self sendQualityAdjustedAttachmentForVideo:url filename:filename skipApprovalDialog:NO];
+        return;
+    }
+
+    // "Document picker" attachments _SHOULD NOT_ be resized, if possible.
+    SignalAttachment *attachment =
+        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:type imageQuality:TSImageQualityOriginal];
     [self tryToSendAttachmentIfApproved:attachment];
 }
 
@@ -2490,40 +2453,43 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 /*
  *  Presenting UIImagePickerController
  */
-
 - (void)takePictureOrVideo
 {
     [self ows_askForCameraPermissions:^(BOOL granted) {
         if (!granted) {
+            DDLogWarn(@"%@ camera permission denied.", self.logTag);
             return;
         }
-        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+
+        UIImagePickerController *picker = [UIImagePickerController new];
         picker.sourceType = UIImagePickerControllerSourceTypeCamera;
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
         picker.allowsEditing = NO;
         picker.delegate = self;
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
-        });
+
+        [self dismissKeyBoard];
+        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
     }];
 }
 
 - (void)chooseFromLibrary
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
-    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-        DDLogError(@"PhotoLibrary ImagePicker source not available");
-        return;
-    }
+    [self ows_askForMediaLibraryPermissions:^(BOOL granted) {
+        if (!granted) {
+            DDLogWarn(@"%@ Media Library permission denied.", self.logTag);
+            return;
+        }
 
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    picker.delegate = self;
-    picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
+        UIImagePickerController *picker = [UIImagePickerController new];
+        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        picker.delegate = self;
+        picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
 
-    [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+        [self dismissKeyBoard];
+        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+    }];
 }
 
 /*
@@ -2577,7 +2543,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
                          filename:(NSString *_Nullable)filename
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     void (^failedToPickAttachment)(NSError *error) = ^void(NSError *error) {
         DDLogError(@"failed to pick attachment with error: %@", error);
@@ -2587,13 +2553,12 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeMovie]) {
         // Video picked from library or captured with camera
 
-        BOOL isFromCamera = picker.sourceType == UIImagePickerControllerSourceTypeCamera;
         NSURL *videoURL = info[UIImagePickerControllerMediaURL];
         [self dismissViewControllerAnimated:YES
                                  completion:^{
                                      [self sendQualityAdjustedAttachmentForVideo:videoURL
                                                                         filename:filename
-                                                              skipApprovalDialog:isFromCamera];
+                                                              skipApprovalDialog:NO];
                                  }];
     } else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
         // Static Image captured from camera
@@ -2602,13 +2567,15 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
         [self dismissViewControllerAnimated:YES
                                  completion:^{
-                                     OWSAssert([NSThread isMainThread]);
+                                     OWSAssertIsOnMainThread();
 
                                      if (imageFromCamera) {
+                                         // "Camera" attachments _SHOULD_ be resized, if possible.
                                          SignalAttachment *attachment =
                                              [SignalAttachment imageAttachmentWithImage:imageFromCamera
                                                                                 dataUTI:(NSString *)kUTTypeJPEG
-                                                                               filename:filename];
+                                                                               filename:filename
+                                                                           imageQuality:TSImageQualityCompact];
                                          if (!attachment || [attachment hasError]) {
                                              DDLogWarn(@"%@ %s Invalid attachment: %@.",
                                                  self.logTag,
@@ -2617,7 +2584,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                              [self showErrorAlertForAttachment:attachment];
                                              failedToPickAttachment(nil);
                                          } else {
-                                             [self tryToSendAttachmentIfApproved:attachment skipApprovalDialog:YES];
+                                             [self tryToSendAttachmentIfApproved:attachment skipApprovalDialog:NO];
                                          }
                                      } else {
                                          failedToPickAttachment(nil);
@@ -2650,16 +2617,19 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                            if (assetFetchingError || !imageData) {
                                return failedToPickAttachment(assetFetchingError);
                            }
-                           OWSAssert([NSThread isMainThread]);
+                           OWSAssertIsOnMainThread();
 
                            DataSource *_Nullable dataSource =
                                [DataSourceValue dataSourceWithData:imageData utiType:dataUTI];
                            [dataSource setSourceFilename:filename];
+                           // "Camera Roll" attachments _SHOULD_ be resized, if possible.
                            SignalAttachment *attachment =
-                               [SignalAttachment attachmentWithDataSource:dataSource dataUTI:dataUTI];
+                               [SignalAttachment attachmentWithDataSource:dataSource
+                                                                  dataUTI:dataUTI
+                                                             imageQuality:TSImageQualityMedium];
                            [self dismissViewControllerAnimated:YES
                                                     completion:^{
-                                                        OWSAssert([NSThread isMainThread]);
+                                                        OWSAssertIsOnMainThread();
                                                         if (!attachment || [attachment hasError]) {
                                                             DDLogWarn(@"%@ %s Invalid attachment: %@.",
                                                                 self.logTag,
@@ -2677,7 +2647,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)sendMessageAttachment:(SignalAttachment *)attachment
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     // TODO: Should we assume non-nil or should we check for non-nil?
     OWSAssert(attachment != nil);
     OWSAssert(![attachment hasError]);
@@ -2687,8 +2657,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         (unsigned long)[attachment dataLength],
         [attachment mimeType]);
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-    TSOutgoingMessage *message =
-        [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
+    TSOutgoingMessage *message = [ThreadUtil sendMessageWithAttachment:attachment
+                                                              inThread:self.thread
+                                                         messageSender:self.messageSender
+                                                            completion:nil];
 
     [self messageWasSent:message];
 
@@ -2709,56 +2681,39 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                      filename:(NSString *)filename
                            skipApprovalDialog:(BOOL)skipApprovalDialog
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [ModalActivityIndicatorViewController
         presentFromViewController:self
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      AVAsset *video = [AVAsset assetWithURL:movieURL];
-                      AVAssetExportSession *exportSession =
-                          [AVAssetExportSession exportSessionWithAsset:video
-                                                            presetName:AVAssetExportPresetMediumQuality];
-                      exportSession.shouldOptimizeForNetworkUse = YES;
-                      exportSession.outputFileType = AVFileTypeMPEG4;
-                      NSURL *compressedVideoUrl = [[self videoTempFolder]
-                          URLByAppendingPathComponent:[[[NSUUID UUID] UUIDString]
-                                                          stringByAppendingPathExtension:@"mp4"]];
-                      exportSession.outputURL = compressedVideoUrl;
-                      [exportSession exportAsynchronouslyWithCompletionHandler:^{
-                          dispatch_async(dispatch_get_main_queue(), ^{
-                              OWSAssert([NSThread isMainThread]);
+                      DataSource *dataSource = [DataSourcePath dataSourceWithURL:movieURL];
+                      dataSource.sourceFilename = filename;
+                      VideoCompressionResult *compressionResult =
+                          [SignalAttachment compressVideoAsMp4WithDataSource:dataSource
+                                                                     dataUTI:(NSString *)kUTTypeMPEG4];
+                      [compressionResult.attachmentPromise retainUntilComplete];
 
-                              if (modalActivityIndicator.wasCancelled) {
-                                  return;
+                      compressionResult.attachmentPromise.then(^(SignalAttachment *attachment) {
+                          OWSAssertIsOnMainThread();
+                          OWSAssert([attachment isKindOfClass:[SignalAttachment class]]);
+
+                          if (modalActivityIndicator.wasCancelled) {
+                              return;
+                          }
+
+                          [modalActivityIndicator dismissWithCompletion:^{
+                              if (!attachment || [attachment hasError]) {
+                                  DDLogError(@"%@ %s Invalid attachment: %@.",
+                                      self.logTag,
+                                      __PRETTY_FUNCTION__,
+                                      attachment ? [attachment errorName] : @"Missing data");
+                                  [self showErrorAlertForAttachment:attachment];
+                              } else {
+                                  [self tryToSendAttachmentIfApproved:attachment skipApprovalDialog:skipApprovalDialog];
                               }
-
-                              [modalActivityIndicator dismissWithCompletion:^{
-                                  
-                                  NSString *baseFilename = filename.stringByDeletingPathExtension;
-                                  NSString *mp4Filename = [baseFilename stringByAppendingPathExtension:@"mp4"];
-                                  DataSource *_Nullable dataSource =
-                                      [DataSourcePath dataSourceWithURL:compressedVideoUrl];
-                                  [dataSource setSourceFilename:mp4Filename];
-                                  
-                                  // Remove temporary file when complete.
-                                  [dataSource setShouldDeleteOnDeallocation];
-                                  SignalAttachment *attachment =
-                                      [SignalAttachment attachmentWithDataSource:dataSource
-                                                                         dataUTI:(NSString *)kUTTypeMPEG4];
-                                  if (!attachment || [attachment hasError]) {
-                                      DDLogError(@"%@ %s Invalid attachment: %@.",
-                                          self.logTag,
-                                          __PRETTY_FUNCTION__,
-                                          attachment ? [attachment errorName] : @"Missing data");
-                                      [self showErrorAlertForAttachment:attachment];
-                                  } else {
-                                      [self tryToSendAttachmentIfApproved:attachment
-                                                       skipApprovalDialog:skipApprovalDialog];
-                                  }
-                              }];
-                          });
-                      }];
+                          }];
+                      });
                   }];
 }
 
@@ -2783,9 +2738,21 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     return _editingDatabaseConnection;
 }
 
+- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    // External database modifications can't be converted into incremental updates,
+    // so rebuild everything.  This is expensive and usually isn't necessary, but
+    // there's no alternative.
+    [self resetMappings];
+}
+
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     // Currently, we update thread and message state every time
     // the database is modified.  That doesn't seem optimal, but
@@ -2794,6 +2761,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     if (!self.shouldObserveDBModifications) {
         return;
     }
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     // HACK to work around radar #28167779
     // "UICollectionView performBatchUpdates can trigger a crash if the collection view is flagged for layout"
@@ -2977,7 +2946,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
     void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
-        OWSAssert([NSThread isMainThread]);
+        OWSAssertIsOnMainThread();
 
 
         if (!finished) {
@@ -3081,8 +3050,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     const CGFloat kIsAtBottomTolerancePts = 5;
     // Note the usage of MAX() to handle the case where there isn't enough
     // content to fill the collection view at its current size.
-    CGFloat contentOffsetYBottom = MAX(0.f, contentHeight - self.collectionView.bounds.size.height);
-    BOOL isScrolledToBottom = (self.collectionView.contentOffset.y > contentOffsetYBottom - kIsAtBottomTolerancePts);
+    CGFloat contentOffsetYBottom
+        = MAX(0.f, contentHeight + self.collectionView.contentInset.bottom - self.collectionView.bounds.size.height);
+
+    CGFloat distanceFromBottom = contentOffsetYBottom - self.collectionView.contentOffset.y;
+    BOOL isScrolledToBottom = distanceFromBottom <= kIsAtBottomTolerancePts;
 
     return isScrolledToBottom;
 }
@@ -3091,7 +3063,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)requestRecordingVoiceMemo
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSUUID *voiceMessageUUID = [NSUUID UUID];
     self.voiceMessageUUID = voiceMessageUUID;
@@ -3121,7 +3093,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)startRecordingVoiceMemo
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"startRecordingVoiceMemo");
 
@@ -3178,7 +3150,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)endRecordingVoiceMemo
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"endRecordingVoiceMemo");
 
@@ -3242,7 +3214,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)cancelRecordingVoiceMemo
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogDebug(@"cancelRecordingVoiceMemo");
 
@@ -3251,7 +3223,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)resetRecordingVoiceMemo
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self.audioRecorder stop];
     self.audioRecorder = nil;
@@ -3274,6 +3246,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)attachmentButtonPressed
 {
+    [self dismissKeyBoard];
 
     __weak ConversationViewController *weakSelf = self;
     if ([self isBlockedContactConversation]) {
@@ -3349,6 +3322,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [gifAction setValue:gifImage forKey:@"image"];
     [actionSheetController addAction:gifAction];
 
+    [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:true completion:nil];
 }
 
@@ -3516,7 +3490,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)loadDraftInCompose
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     __block NSString *draft;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -3549,13 +3523,13 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)updateBackButtonUnreadCount
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
     self.backButtonUnreadCount = [self.messagesManager unreadMessagesCountExcept:self.thread];
 }
 
 - (void)setBackButtonUnreadCount:(NSUInteger)unreadCount
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
     if (_backButtonUnreadCount == unreadCount) {
         // No need to re-render same count.
         return;
@@ -3653,16 +3627,110 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         } else if (skipApprovalDialog) {
             [self sendMessageAttachment:attachment];
         } else {
-            [self.inputToolbar showApprovalUIForAttachment:attachment];
+            AttachmentApprovalViewController *approvalVC = [[AttachmentApprovalViewController alloc] initWithAttachment:attachment delegate:self];
+            [self presentViewController:approvalVC animated:YES completion:nil];
         }
     });
 }
 
-- (void)didApproveAttachment:(SignalAttachment *)attachment
+- (void)keyboardWillChangeFrame:(NSNotification *)notification
 {
-    OWSAssert(attachment);
+    // `willChange` is the correct keyboard notifiation to observe when adjusting contentInset
+    // in lockstep with the keyboard presentation animation. `didChange` results in the contentInset
+    // not adjusting until after the keyboard is fully up.
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    [self handleKeyboardNotification:notification];
+}
 
+- (void)handleKeyboardNotification:(NSNotification *)notification
+{
+    AssertIsOnMainThread();
+
+    NSDictionary *userInfo = [notification userInfo];
+
+    NSValue *_Nullable keyboardBeginFrameValue = userInfo[UIKeyboardFrameBeginUserInfoKey];
+    if (!keyboardBeginFrameValue) {
+        OWSFail(@"%@ Missing keyboard begin frame", self.logTag);
+        return;
+    }
+
+    NSValue *_Nullable keyboardEndFrameValue = userInfo[UIKeyboardFrameEndUserInfoKey];
+    if (!keyboardEndFrameValue) {
+        OWSFail(@"%@ Missing keyboard end frame", self.logTag);
+        return;
+    }
+    CGRect keyboardEndFrame = [keyboardEndFrameValue CGRectValue];
+
+    UIEdgeInsets oldInsets = self.collectionView.contentInset;
+    UIEdgeInsets newInsets = oldInsets;
+
+    // bottomLayoutGuide accounts for extra offset needed on iPhoneX
+    newInsets.bottom = keyboardEndFrame.size.height - self.bottomLayoutGuide.length;
+
+    BOOL wasScrolledToBottom = [self isScrolledToBottom];
+
+    void (^adjustInsets)(void) = ^(void) {
+        self.collectionView.contentInset = newInsets;
+        self.collectionView.scrollIndicatorInsets = newInsets;
+
+        // Note there is a bug in iOS11.2 which where switching to the emoji keyboard
+        // does not fire a UIKeyboardFrameWillChange notification. In that case, the scroll
+        // down button gets mostly obscured by the keyboard.
+        // RADAR: #36297652
+        self.scrollDownButtonButtomConstraint.constant = -1 * newInsets.bottom;
+        [self.scrollDownButton setNeedsLayout];
+        [self.scrollDownButton layoutIfNeeded];
+        // HACK: I've made the assumption that we are already in the context of an animation, in which case the
+        // above should be sufficient to smoothly move the scrollDown button in step with the keyboard presentation
+        // animation. Yet, setting the constraint doesn't animate the movement of the button - it "jumps" to it's final
+        // position. So here we manually lay out the scroll down button frame (seemingly redundantly), which allows it
+        // to be smoothly animated.
+        CGRect newButtonFrame = self.scrollDownButton.frame;
+        newButtonFrame.origin.y
+            = self.scrollDownButton.superview.height - (newInsets.bottom + self.scrollDownButton.height);
+        self.scrollDownButton.frame = newButtonFrame;
+
+        // Adjust content offset to prevent the presented keyboard from obscuring content.
+        if (wasScrolledToBottom) {
+            // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
+            [self scrollToBottomAnimated:NO];
+        } else {
+            // If we were scrolled away from the bottom, shift the content in lockstep with the
+            // keyboard, up to the limits of the content bounds.
+            CGFloat insetChange = newInsets.bottom - oldInsets.bottom;
+            CGFloat oldYOffset = self.collectionView.contentOffset.y;
+            CGFloat newYOffset = Clamp(oldYOffset + insetChange, 0, self.safeContentHeight);
+            CGPoint newOffset = CGPointMake(0, newYOffset);
+
+            // If the user is dismissing the keyboard via interactive scrolling, any additional conset offset feels
+            // redundant, so we only adjust content offset when *presenting* the keyboard (i.e. when insetChange > 0).
+            if (insetChange > 0 && newYOffset > keyboardEndFrame.origin.y) {
+                [self.collectionView setContentOffset:newOffset animated:NO];
+            }
+        }
+    };
+
+    if (self.isViewCompletelyAppeared) {
+        adjustInsets();
+    } else {
+        // Even though we are scrolling without explicitly animating, the notification seems to occur within the context
+        // of a system animation, which is desirable when the view is visible, because the user sees the content rise
+        // in sync with the keyboard. However, when the view hasn't yet been presented, the animation conflicts and the
+        // result is that initial load causes the collection cells to visably "animate" to their final position once the
+        // view appears.
+        [UIView performWithoutAnimation:adjustInsets];
+    }
+}
+
+- (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval didApproveAttachment:(SignalAttachment * _Nonnull)attachment
+{
     [self sendMessageAttachment:attachment];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval didCancelAttachment:(SignalAttachment * _Nonnull)attachment
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)showErrorAlertForAttachment:(SignalAttachment *_Nullable)attachment
@@ -3690,25 +3758,24 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     return [self.collectionView.collectionViewLayout collectionViewContentSize].height;
 }
 
-- (void)scrollToBottomImmediately
-{
-    OWSAssert([NSThread isMainThread]);
-
-    [self scrollToBottomAnimated:NO];
-}
-
 - (void)scrollToBottomAnimated:(BOOL)animated
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (self.isUserScrolling) {
         return;
     }
 
-    CGFloat contentHeight = self.safeContentHeight;
-    CGFloat dstY = MAX(0, contentHeight - self.collectionView.height);
-    [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:animated];
+    // Ensure the view is fully layed out before we try to scroll to the bottom, since
+    // we use the collectionView bounds to determine where the "bottom" is.
+    [self.view layoutIfNeeded];
 
+    CGFloat contentHeight = self.safeContentHeight;
+
+    CGFloat dstY
+        = MAX(0, contentHeight + self.collectionView.contentInset.bottom - self.collectionView.bounds.size.height);
+
+    [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:NO];
     [self didScrollToBottom];
 }
 
@@ -3718,22 +3785,6 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     [self updateLastVisibleTimestamp];
     [self autoLoadMoreIfNecessary];
-
-    if (self.isUserScrolling && [self isScrolledAwayFromBottom]) {
-        [self.inputToolbar endEditingTextMessage];
-    }
-}
-
-// See the comments on isScrolledToBottom.
-- (BOOL)isScrolledAwayFromBottom
-{
-    CGFloat contentHeight = self.safeContentHeight;
-    // Note the usage of MAX() to handle the case where there isn't enough
-    // content to fill the collection view at its current size.
-    CGFloat contentOffsetYBottom = MAX(0.f, contentHeight - self.collectionView.bounds.size.height);
-    const CGFloat kThreshold = 250;
-    BOOL isScrolledAwayFromBottom = (self.collectionView.contentOffset.y < contentOffsetYBottom - kThreshold);
-    return isScrolledAwayFromBottom;
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
@@ -3751,7 +3802,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)resendGroupUpdateForErrorMessage:(TSErrorMessage *)message
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert([_thread isKindOfClass:[TSGroupThread class]]);
     OWSAssert(message);
 
@@ -3842,15 +3893,16 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     //
     // We convert large text messages to attachments
     // which are presented as normal text messages.
-    const NSUInteger kOversizeTextMessageSizeThreshold = 16 * 1024;
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message;
     if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
-        message =
-            [ThreadUtil sendMessageWithAttachment:attachment inThread:self.thread messageSender:self.messageSender];
+        message = [ThreadUtil sendMessageWithAttachment:attachment
+                                               inThread:self.thread
+                                          messageSender:self.messageSender
+                                             completion:nil];
     } else {
         message = [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
     }
@@ -3858,10 +3910,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self messageWasSent:message];
 
     if (updateKeyboardState) {
-        [self toggleDefaultKeyboard];
+        [self.inputToolbar toggleDefaultKeyboard];
     }
-    [self clearDraft];
     [self.inputToolbar clearTextMessage];
+    [self clearDraft];
     if (didAddToProfileWhitelist) {
         [self ensureDynamicInteractions];
     }
@@ -3869,7 +3921,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)voiceMemoGestureDidStart
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"voiceMemoGestureDidStart");
 
@@ -3891,7 +3943,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)voiceMemoGestureDidEnd
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"voiceMemoGestureDidEnd");
 
@@ -3902,7 +3954,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)voiceMemoGestureDidCancel
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"voiceMemoGestureDidCancel");
 
@@ -3913,14 +3965,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)voiceMemoGestureDidChange:(CGFloat)cancelAlpha
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self.inputToolbar setVoiceMemoUICancelAlpha:cancelAlpha];
 }
 
 - (void)cancelVoiceMemo
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self.inputToolbar cancelVoiceMemoIfNecessary];
     [self.inputToolbar hideVoiceMemoUI:NO];
@@ -4033,25 +4085,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)collectionViewWillChangeLayout
 {
-    OWSAssert([NSThread isMainThread]);
-
-    self.wasScrolledToBottomBeforeLayoutChange = [self isScrolledToBottom];
+    OWSAssertIsOnMainThread();
 }
 
 - (void)collectionViewDidChangeLayout
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateLastVisibleTimestamp];
-
-    // JSQMessageView has glitchy behavior. When presenting/dismissing view
-    // controllers, the size of the input toolbar and/or collection view can
-    // repeatedly change, leaving scroll state in an invalid state.  The
-    // simplest fix that covers most cases is to ensure that we remain
-    // "scrolled to bottom" across these changes.
-    if (self.wasScrolledToBottomBeforeLayoutChange) {
-        [self scrollToBottomImmediately];
-    }
 }
 
 #pragma mark - View Items
@@ -4188,7 +4229,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 // and update the corresponding view item.
 - (void)reloadInteractionForViewItem:(ConversationViewItem *)viewItem
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewItem);
 
     // This should never happen, but don't crash in production if we have a bug.

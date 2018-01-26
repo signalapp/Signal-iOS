@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppDelegate.h"
@@ -7,27 +7,28 @@
 #import "AppUpdateNag.h"
 #import "CodeVerificationViewController.h"
 #import "DebugLogger.h"
-#import "Environment.h"
 #import "MainAppContext.h"
 #import "NotificationsManager.h"
-#import "OWSContactsManager.h"
-#import "OWSContactsSyncing.h"
+#import "OWSBackup.h"
 #import "OWSNavigationController.h"
-#import "OWSPreferences.h"
 #import "Pastelog.h"
 #import "PushManager.h"
 #import "RegistrationViewController.h"
-#import "Release.h"
-#import "SendExternalFileViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "SignalsNavigationController.h"
-#import "VersionMigrations.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
+#import <SignalMessaging/AppSetup.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSContactsManager.h>
+#import <SignalMessaging/OWSContactsSyncing.h>
 #import <SignalMessaging/OWSMath.h>
+#import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/Release.h>
 #import <SignalMessaging/SignalMessaging.h>
+#import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -43,6 +44,7 @@
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSStorageManager+Calling.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
+#import <YapDatabase/YapDatabaseCryptoUtils.h>
 
 @import WebRTC;
 @import Intents;
@@ -56,7 +58,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 @interface AppDelegate ()
 
 @property (nonatomic) UIWindow *screenProtectionWindow;
-@property (nonatomic) OWSContactsSyncing *contactsSyncing;
 @property (nonatomic) BOOL hasInitialRootViewController;
 
 @end
@@ -111,9 +112,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.logTag);
 
-    // We need to do this _after_ we set up logging but _before_ we do
-    // anything else.
-    [self ensureIsReadyForAppExtensions];
+    SetRandFunctionSeed();
+
+    // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
+    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
 #if RELEASE
     // ensureIsReadyForAppExtensions may have changed the state of the logging
@@ -124,22 +126,31 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 #endif
 
+    // We need to do this _after_ we set up logging, when the keychain is unlocked,
+    // but before we access YapDatabase, files on disk, or NSUserDefaults
+    [self ensureIsReadyForAppExtensions];
+
     [AppVersion instance];
 
     [self startupLogging];
 
-    SetRandFunctionSeed();
 
-    // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
-    [self verifyDBKeysAvailableBeforeBackgroundLaunch];
+    // If a backup restore is in progress, try to complete it.
+    // Otherwise, cleanup backup state.
+    [OWSBackup applicationDidFinishLaunching];
 
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).
     //
-    // This block will be cleared in databaseViewRegistrationComplete.
+    // This block will be cleared in storageIsReady.
     [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 
-    [self setupEnvironment];
+    [AppSetup setupEnvironment:^{
+        return SignalApp.sharedApp.callMessageHandler;
+    }
+        notificationsProtocolBlock:^{
+            return SignalApp.sharedApp.notificationsManager;
+        }];
 
     [UIUtil applySignalAppearence];
 
@@ -167,14 +178,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [self prepareScreenProtection];
 
-    self.contactsSyncing = [[OWSContactsSyncing alloc] initWithContactsManager:[Environment current].contactsManager
-                                                               identityManager:[OWSIdentityManager sharedManager]
-                                                                 messageSender:[Environment current].messageSender
-                                                                profileManager:[OWSProfileManager sharedManager]];
+    // Ensure OWSContactsSyncing is instantiated.
+    [OWSContactsSyncing sharedManager];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(databaseViewRegistrationComplete)
-                                                 name:DatabaseViewRegistrationCompleteNotification
+                                             selector:@selector(storageIsReady)
+                                                 name:StorageIsReadyNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange)
@@ -212,13 +221,42 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return;
     }
 
+    NSError *_Nullable error = [self convertDatabaseIfNecessary];
+    // TODO: Handle this error.
+    OWSAssert(!error);
+
     [NSUserDefaults migrateToSharedUserDefaults];
 
     [TSStorageManager migrateToSharedData];
     [OWSProfileManager migrateToSharedData];
     [TSAttachmentStream migrateToSharedData];
+}
 
-    [OWSPreferences setIsReadyForAppExtensions:YES];
+- (nullable NSError *)convertDatabaseIfNecessary
+{
+    NSString *databaseFilePath = [TSStorageManager legacyDatabaseFilePath];
+
+    NSError *error;
+    NSData *_Nullable databasePassword = [OWSStorage tryToLoadDatabasePassword:&error];
+    if (!databasePassword || error) {
+        return (error
+                ?: OWSErrorWithCodeDescription(
+                       OWSErrorCodeDatabaseConversionFatalError, @"Failed to load database password"));
+    }
+
+    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+        DDLogVerbose(@"%@ saltData: %@", self.logTag, saltData.hexadecimalString);
+        [OWSStorage storeDatabaseSalt:saltData];
+    };
+    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
+        DDLogVerbose(@"%@ keySpecData: %@", self.logTag, keySpecData.hexadecimalString);
+        [OWSStorage storeDatabaseKeySpec:keySpecData];
+    };
+
+    return [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
+                                             databasePassword:databasePassword
+                                                    saltBlock:saltBlock
+                                                 keySpecBlock:keySpecBlock];
 }
 
 - (void)startupLogging
@@ -249,8 +287,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // Every time we change or add a database view in such a way that
     // might cause a delay on launch, we need to bump this constant.
     //
-    // We added a number of database views in v2.13.0.
-    NSString *kLastVersionWithDatabaseViewChange = @"2.13.0";
+    // We upgraded YapDatabase in v2.20.0 and need to regenerate all database views.
+    NSString *kLastVersionWithDatabaseViewChange = @"2.20.0";
     BOOL mayNeedUpgrade = ([TSAccountManager isRegistered] && lastLaunchedAppVersion
         && (!lastCompletedLaunchAppVersion ||
                [VersionMigrations isVersion:lastCompletedLaunchAppVersion
@@ -298,27 +336,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     return viewController;
 }
 
-- (void)setupEnvironment
-{
-    [Environment setCurrent:[Release releaseEnvironment]];
-
-    // Encryption/Decryption mutates session state and must be synchronized on a serial queue.
-    [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionStoreQueue]];
-
-    TextSecureKitEnv *sharedEnv =
-        [[TextSecureKitEnv alloc] initWithCallMessageHandler:SignalApp.sharedApp.callMessageHandler
-                                             contactsManager:[Environment current].contactsManager
-                                               messageSender:[Environment current].messageSender
-                                        notificationsManager:SignalApp.sharedApp.notificationsManager
-                                              profileManager:OWSProfileManager.sharedManager];
-    [TextSecureKitEnv setSharedEnv:sharedEnv];
-
-    [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{
-        [VersionMigrations runSafeBlockingMigrations];
-    }];
-    [[Environment current].contactsManager startObserving];
-}
-
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     DDLogInfo(@"%@ registered vanilla push token: %@", self.logTag, deviceToken);
@@ -346,9 +363,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation {
+              openURL:(NSURL *)url
+    sourceApplication:(NSString *)sourceApplication
+           annotation:(id)annotation
+{
     if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![TSAccountManager isRegistered]) {
             id signupController = SignalApp.sharedApp.signUpFlowNavigationController;
@@ -359,159 +377,19 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                     CodeVerificationViewController *cvvc = (CodeVerificationViewController *)controller;
                     NSString *verificationCode           = [url.path substringFromIndex:1];
                     [cvvc setVerificationCodeAndTryToVerify:verificationCode];
+                    return YES;
                 } else {
                     DDLogWarn(@"Not the verification view controller we expected. Got %@ instead",
                               NSStringFromClass(controller.class));
                 }
             }
         } else {
-            DDLogWarn(@"Application opened with an unknown URL action: %@", url.host);
+            OWSFail(@"Application opened with an unknown URL action: %@", url.host);
         }
-    } else if ([url.scheme.lowercaseString isEqualToString:@"file"]) {
-
-        if (SignalApp.sharedApp.callService.call != nil) {
-            DDLogWarn(@"%@ ignoring 'open with Signal' due to ongoing WebRTC call.", self.logTag);
-            return NO;
-        }
-
-        NSString *filename = url.lastPathComponent;
-        if ([filename stringByDeletingPathExtension].length < 1) {
-            DDLogError(@"Application opened with URL invalid filename: %@", url);
-            [OWSAlerts showAlertWithTitle:
-                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME",
-                                              @"Message for the alert indicating the 'export with signal' file had an "
-                                              @"invalid filename.")];
-            return NO;
-        }
-        NSString *fileExtension = [filename pathExtension];
-        if (fileExtension.length < 1) {
-            DDLogError(@"Application opened with URL missing file extension: %@", url);
-            [OWSAlerts showAlertWithTitle:
-                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE",
-                                              @"Message for the alert indicating the 'export with signal' file had "
-                                              @"unknown type.")];
-            return NO;
-        }
-        
-        
-        NSString *utiType;
-        NSError *typeError;
-        [url getResourceValue:&utiType forKey:NSURLTypeIdentifierKey error:&typeError];
-        if (typeError) {
-            OWSFail(@"%@ Determining type of picked document at url: %@ failed with error: %@",
-                self.logTag,
-                url,
-                typeError);
-            return NO;
-        }
-        if (!utiType) {
-            OWSFail(@"%@ falling back to default filetype for picked document at url: %@", self.logTag, url);
-            utiType = (__bridge NSString *)kUTTypeData;
-            return NO;
-        }
-        
-        NSNumber *isDirectory;
-        NSError *isDirectoryError;
-        [url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:&isDirectoryError];
-        if (isDirectoryError) {
-            OWSFail(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
-                self.logTag,
-                url,
-                isDirectoryError);
-            return NO;
-        } else if ([isDirectory boolValue]) {
-            DDLogInfo(@"%@ User picked directory at url: %@", self.logTag, url);
-            DDLogError(@"Application opened with URL of unknown UTI type: %@", url);
-            [OWSAlerts
-                showAlertWithTitle:
-                    NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE",
-                        @"Alert title when picking a document fails because user picked a directory/bundle")
-                           message:
-                               NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY",
-                                   @"Alert body when picking a document fails because user picked a directory/bundle")];
-            return NO;
-        }
-
-        DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
-        if (!dataSource) {
-            DDLogError(@"Application opened with URL with unloadable content: %@", url);
-            [OWSAlerts showAlertWithTitle:
-                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA",
-                                              @"Message for the alert indicating the 'export with signal' data "
-                                              @"couldn't be loaded.")];
-            return NO;
-        }
-        [dataSource setSourceFilename:filename];
-
-        SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
-        if (!attachment) {
-            DDLogError(@"Application opened with URL with invalid content: %@", url);
-            [OWSAlerts showAlertWithTitle:
-                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT",
-                                              @"Message for the alert indicating the 'export with signal' attachment "
-                                              @"couldn't be loaded.")];
-            return NO;
-        }
-        if ([attachment hasError]) {
-            DDLogError(@"Application opened with URL with content error: %@ %@", url, [attachment errorName]);
-            [OWSAlerts showAlertWithTitle:
-                           NSLocalizedString(@"EXPORT_WITH_SIGNAL_ERROR_TITLE",
-                               @"Title for the alert indicating the 'export with signal' attachment had an error.")
-                                  message:[attachment errorName]];
-            return NO;
-        }
-        DDLogInfo(@"Application opened with URL: %@", url);
-
-        if ([TSAccountManager isRegistered]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // Wait up to N seconds for database view registrations to
-                // complete.
-                [self showImportUIForAttachment:attachment remainingRetries:5];
-            });
-        }
-
-        return YES;
     } else {
-        DDLogWarn(@"Application opened with an unknown URL scheme: %@", url.scheme);
+        OWSFail(@"Application opened with an unknown URL scheme: %@", url.scheme);
     }
     return NO;
-}
-
-- (void)showImportUIForAttachment:(SignalAttachment *)attachment remainingRetries:(int)remainingRetries
-{
-    OWSAssert([NSThread isMainThread]);
-    OWSAssert(attachment);
-    OWSAssert(remainingRetries > 0);
-
-    if ([TSDatabaseView hasPendingViewRegistrations]) {
-        if (remainingRetries < 1) {
-            DDLogInfo(@"Ignoring 'Import with Signal...' due to pending view registrations.");
-        } else {
-            DDLogInfo(@"Delaying 'Import with Signal...' due to pending view registrations.");
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                if (![TSDatabaseView hasPendingViewRegistrations]) {
-                    [self showImportUIForAttachment:attachment remainingRetries:remainingRetries - 1];
-                }
-            });
-        }
-        return;
-    }
-
-    SendExternalFileViewController *viewController = [SendExternalFileViewController new];
-    viewController.attachment = attachment;
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:viewController];
-    [SignalApp.sharedApp.homeViewController presentTopLevelModalViewController:navigationController
-                                                              animateDismissal:NO
-                                                           animatePresentation:YES];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -603,7 +481,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)applicationWillResignActive:(UIApplication *)application {
     DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
 
-    UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:nil];
+    __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if ([TSAccountManager isRegistered]) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -612,8 +491,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                     [self showScreenProtection];
                 }
                 [SignalApp.sharedApp.homeViewController updateInboxCountLabel];
-                [application endBackgroundTask:bgTask];
+
+                backgroundTask = nil;
             });
+        } else {
+            backgroundTask = nil;
         }
     });
 
@@ -820,7 +702,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if (!self.isEnvironmentSetup) {
         OWSFail(@"%@ ignoring %s because environment is not yet set up: %@.",
@@ -869,9 +751,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                            completionHandler:completionHandler];
 }
 
-- (void)databaseViewRegistrationComplete
+- (void)storageIsReady
 {
-    DDLogInfo(@"%@ databaseViewRegistrationComplete", self.logTag);
+    DDLogInfo(@"%@ storageIsReady", self.logTag);
 
     [OWSPreferences setIsRegistered:[TSAccountManager isRegistered]];
 
@@ -893,7 +775,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [AppVersion.instance appLaunchDidComplete];
 
-    [self ensureRootViewController];
+    [Environment.current.contactsManager loadSignalAccountsFromCache];
 
     // If there were any messages in our local queue which we hadn't yet processed.
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
@@ -916,12 +798,17 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [OWSProfileManager.sharedManager fetchLocalUsersProfile];
     [[OWSReadReceiptManager sharedManager] prepareCachedValues];
-    [[Environment current].contactsManager loadLastKnownContactRecipientIds];
+
+    // Disable the SAE until the main app has successfully completed launch process
+    // at least once in the post-SAE world.
+    [OWSPreferences setIsReadyForAppExtensions];
+
+    [self ensureRootViewController];
 }
 
 - (void)registrationStateDidChange
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"registrationStateDidChange");
 
@@ -932,7 +819,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
         [[TSStorageManager sharedManager].newDatabaseConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                [[ExperienceUpgradeFinder new] markAllAsSeenWithTransaction:transaction];
+                [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
             }];
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
@@ -948,7 +835,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 {
     DDLogInfo(@"%@ ensureRootViewController", self.logTag);
 
-    if ([TSDatabaseView hasPendingViewRegistrations] || self.hasInitialRootViewController) {
+    if (![OWSStorage isStorageReady] || self.hasInitialRootViewController) {
         return;
     }
     self.hasInitialRootViewController = YES;

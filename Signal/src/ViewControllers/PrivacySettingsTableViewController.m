@@ -4,9 +4,9 @@
 
 #import "PrivacySettingsTableViewController.h"
 #import "BlockListViewController.h"
-#import "Environment.h"
-#import "OWSPreferences.h"
 #import "Signal-Swift.h"
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSPreferences.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -134,11 +134,22 @@ NS_ASSUME_NONNULL_BEGIN
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON", @"")
                                  style:UIAlertActionStyleDestructive
                                handler:^(UIAlertAction *_Nonnull action) {
-                                   [[TSStorageManager sharedManager] deleteThreadsAndMessages];
+                                   [self deleteThreadsAndMessages];
                                }];
     [alertController addAction:deleteAction];
 
     [self presentViewController:alertController animated:true completion:nil];
+}
+
+- (void)deleteThreadsAndMessages
+{
+    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction removeAllObjectsInCollection:[TSThread collection]];
+        [transaction removeAllObjectsInCollection:[SignalRecipient collection]];
+        [transaction removeAllObjectsInCollection:[TSInteraction collection]];
+        [transaction removeAllObjectsInCollection:[TSAttachment collection]];
+    }];
+    [TSAttachmentStream deleteAttachments];
 }
 
 - (void)didToggleScreenSecuritySwitch:(UISwitch *)sender

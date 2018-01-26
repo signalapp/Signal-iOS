@@ -3,7 +3,7 @@
 //
 
 #import "NotificationSettingsOptionsViewController.h"
-#import "Environment.h"
+#import <SignalMessaging/Environment.h>
 
 @implementation NotificationSettingsOptionsViewController
 

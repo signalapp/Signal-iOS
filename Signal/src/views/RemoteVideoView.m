@@ -151,7 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)videoView:(RTCEAGLVideoView *)videoView didChangeVideoSize:(CGSize)remoteVideoSize
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
     if (remoteVideoSize.height <= 0) {
         OWSFail(@"Illegal video height: %f", remoteVideoSize.height);
         return;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -51,7 +51,7 @@ public class OWSFlatButton: UIView {
                              backgroundColor: UIColor,
                              width: CGFloat,
                              height: CGFloat,
-                             target:Any,
+                             target: Any,
                              selector: Selector) -> OWSFlatButton {
         let button = OWSFlatButton()
         button.setTitle(title:title,
@@ -70,7 +70,7 @@ public class OWSFlatButton: UIView {
                              backgroundColor: UIColor,
                              width: CGFloat,
                              height: CGFloat,
-                             target:Any,
+                             target: Any,
                              selector: Selector) -> OWSFlatButton {
         return OWSFlatButton.button(title:title,
                                     font:fontForHeight(height),
@@ -87,7 +87,7 @@ public class OWSFlatButton: UIView {
                              font: UIFont,
                              titleColor: UIColor,
                              backgroundColor: UIColor,
-                             target:Any,
+                             target: Any,
                              selector: Selector) -> OWSFlatButton {
         let button = OWSFlatButton()
         button.setTitle(title:title,
@@ -104,7 +104,7 @@ public class OWSFlatButton: UIView {
         // Cap the "button height" at 40pt or button text can look
         // excessively large.
         let fontPointSize = round(min(40, height) * 0.45)
-        return UIFont.ows_mediumFont(withSize:fontPointSize)!
+        return UIFont.ows_mediumFont(withSize:fontPointSize)
     }
 
     // MARK: Methods
@@ -150,7 +150,7 @@ public class OWSFlatButton: UIView {
     }
 
     @objc
-    public func addTarget(target:Any,
+    public func addTarget(target: Any,
                           selector: Selector) {
         button.addTarget(target, action:selector, for:.touchUpInside)
     }

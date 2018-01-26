@@ -3,17 +3,13 @@
 //
 
 #import "SecurityUtils.h"
+#import <Curve25519Kit/Randomness.h>
 
 @implementation SecurityUtils
 
 + (NSData *)generateRandomBytes:(NSUInteger)length
 {
-    NSMutableData *d = [NSMutableData dataWithLength:length];
-    OSStatus status = SecRandomCopyBytes(kSecRandomDefault, length, [d mutableBytes]);
-    if (status != noErr) {
-        [SecurityFailure raise:@"SecRandomCopyBytes failed"];
-    }
-    return [d copy];
+    return [Randomness generateRandomBytes:length];
 }
 
 @end

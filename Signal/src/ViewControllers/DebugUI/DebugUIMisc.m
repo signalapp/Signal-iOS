@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMisc.h"
-#import "Environment.h"
+#import "OWSBackup.h"
+#import "OWSBackupExportViewController.h"
 #import "OWSCountryMetadata.h"
 #import "OWSTableViewController.h"
 #import "RegistrationViewController.h"
@@ -11,6 +12,9 @@
 #import "ThreadUtil.h"
 #import <AFNetworking/AFNetworking.h>
 #import <AxolotlKit/PreKeyBundle.h>
+#import <SignalMessaging/AttachmentSharing.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/UIImage+OWS.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
@@ -22,11 +26,21 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSAccountManager (Debug)
+@interface TSAccountManager (DebugUI)
 
 - (void)resetForRegistration;
 
 @end
+
+#pragma mark -
+
+@interface OWSStorage (DebugUI)
+
+- (NSData *)databasePassword;
+
+@end
+
+#pragma mark -
 
 @implementation DebugUIMisc
 
@@ -71,6 +85,36 @@ NS_ASSUME_NONNULL_BEGIN
                                                         [self reregister];
                                                     }];
                            }]];
+
+
+    if (thread) {
+        [items addObject:[OWSTableItem itemWithTitle:@"Send Encrypted Database"
+                                         actionBlock:^{
+                                             [DebugUIMisc sendEncryptedDatabase:thread];
+                                         }]];
+        [items addObject:[OWSTableItem itemWithTitle:@"Send Unencrypted Database"
+                                         actionBlock:^{
+                                             [DebugUIMisc sendUnencryptedDatabase:thread];
+                                         }]];
+    }
+    [items addObject:[OWSTableItem subPageItemWithText:@"Export Backup w/o Password"
+                                           actionBlock:^(UIViewController *viewController) {
+                                               OWSBackupExportViewController *backupViewController =
+                                                   [OWSBackupExportViewController new];
+                                               [backupViewController exportBackup:thread skipPassword:YES];
+                                               [viewController.navigationController
+                                                   pushViewController:backupViewController
+                                                             animated:YES];
+                                           }]];
+
+#ifdef DEBUG
+    [items addObject:[OWSTableItem subPageItemWithText:@"Share UIImage"
+                                           actionBlock:^(UIViewController *viewController) {
+                                               UIImage *image =
+                                                   [UIImage imageWithColor:UIColor.redColor size:CGSizeMake(1.f, 1.f)];
+                                               [AttachmentSharing showShareUIForUIImage:image];
+                                           }]];
+#endif
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
@@ -118,7 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearHasDismissedOffers
 {
-    [TSStorageManager.sharedManager.dbReadWriteConnection
+    [TSStorageManager.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             NSMutableArray<TSContactThread *> *contactThreads = [NSMutableArray new];
             [transaction
@@ -138,6 +182,65 @@ NS_ASSUME_NONNULL_BEGIN
                 }
             }
         }];
+}
+
++ (void)sendEncryptedDatabase:(TSThread *)thread
+{
+    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"sqlite"];
+    NSString *fileName = filePath.lastPathComponent;
+
+    __block BOOL success;
+    [TSStorageManager.sharedManager.newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            NSError *error;
+            success = [[NSFileManager defaultManager] copyItemAtPath:TSStorageManager.databaseFilePath
+                                                              toPath:filePath
+                                                               error:&error];
+            if (!success || error) {
+                OWSFail(@"%@ Could not copy database file: %@.", self.logTag, error);
+                success = NO;
+            }
+        }];
+
+    if (!success) {
+        return;
+    }
+
+    OWSMessageSender *messageSender = [Environment current].messageSender;
+    NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileName.pathExtension];
+    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
+    [dataSource setSourceFilename:fileName];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
+    NSData *databasePassword = [TSStorageManager.sharedManager databasePassword];
+    attachment.captionText = [databasePassword hexadecimalString];
+    if (!attachment || [attachment hasError]) {
+        OWSFail(@"%@ attachment[%@]: %@", self.logTag, [attachment sourceFilename], [attachment errorName]);
+        return;
+    }
+    [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender completion:nil];
+}
+
++ (void)sendUnencryptedDatabase:(TSThread *)thread
+{
+    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"sqlite"];
+    NSString *fileName = filePath.lastPathComponent;
+
+    NSError *error = [TSStorageManager.sharedManager.newDatabaseConnection backupToPath:filePath];
+    if (error) {
+        OWSFail(@"%@ Could not copy database file: %@.", self.logTag, error);
+        return;
+    }
+
+    OWSMessageSender *messageSender = [Environment current].messageSender;
+    NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileName.pathExtension];
+    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
+    [dataSource setSourceFilename:fileName];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
+    if (!attachment || [attachment hasError]) {
+        OWSFail(@"%@ attachment[%@]: %@", self.logTag, [attachment sourceFilename], [attachment errorName]);
+        return;
+    }
+    [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender completion:nil];
 }
 
 @end

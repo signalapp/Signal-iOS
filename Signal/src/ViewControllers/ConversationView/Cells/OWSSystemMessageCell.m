@@ -1,16 +1,16 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSystemMessageCell.h"
 #import "ConversationViewItem.h"
-#import "Environment.h"
 #import "NSBundle+JSQMessages.h"
-#import "OWSContactsManager.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <JSQMessagesViewController/UIView+JSQMessages.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSErrorMessage.h>
@@ -154,7 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
                 result = [UIImage imageNamed:@"system_message_group"];
                 break;
             case TSInfoMessageTypeDisappearingMessagesUpdate:
-                result = [UIImage imageNamed:@"system_message_timer"];
+                result = [UIImage imageNamed:@"ic_timer"];
                 break;
             case TSInfoMessageVerificationStateChange:
                 result = [UIImage imageNamed:@"system_message_verified"];
@@ -304,7 +304,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showMenuController
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     DDLogDebug(@"%@ long pressed system message cell: %@", self.logTag, self.viewItem.interaction.debugDescription);
 

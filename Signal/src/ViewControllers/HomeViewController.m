@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "HomeViewController.h"
@@ -8,7 +8,6 @@
 #import "ConversationViewController.h"
 #import "InboxTableViewCell.h"
 #import "NewContactThreadViewController.h"
-#import "OWSContactsManager.h"
 #import "OWSNavigationController.h"
 #import "ProfileViewController.h"
 #import "PushManager.h"
@@ -18,15 +17,17 @@
 #import "TSDatabaseView.h"
 #import "TSGroupThread.h"
 #import "TSStorageManager.h"
-#import "UIUtil.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/Threading.h>
+#import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 
@@ -56,7 +57,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 @property (nonatomic, readonly) AccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) ExperienceUpgradeFinder *experienceUpgradeFinder;
 @property (nonatomic, readonly) OWSMessageManager *messagesManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
@@ -111,7 +111,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
 
-    _experienceUpgradeFinder = [ExperienceUpgradeFinder new];
+    // Ensure ExperienceUpgradeFinder has been initialized.
+    [ExperienceUpgradeFinder sharedManager];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockedPhoneNumbersDidChange:)
@@ -123,22 +124,22 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillEnterForeground:)
-                                                 name:UIApplicationWillEnterForegroundNotification
+                                                 name:OWSApplicationWillEnterForegroundNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidEnterBackground:)
-                                                 name:UIApplicationDidEnterBackgroundNotification
+                                                 name:OWSApplicationDidEnterBackgroundNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
-                                                 name:UIApplicationDidBecomeActiveNotification
+                                                 name:OWSApplicationDidBecomeActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
-                                               object:nil];
+                                               object:TSStorageManager.sharedManager.dbNotificationObject];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
+                                             selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification
                                                object:nil];
 }
@@ -152,7 +153,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)blockedPhoneNumbersDidChange:(id)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
 
@@ -161,7 +162,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)signalAccountsDidChange:(id)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self.tableView reloadData];
 }
@@ -313,8 +314,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
     imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
     button.imageEdgeInsets = imageEdgeInsets;
-    button.accessibilityLabel
-        = NSLocalizedString(@"OPEN_SETTINGS_BUTTON", "Label for button which opens the settings UI");
+    button.accessibilityLabel = CommonStrings.openSettingsButton;
+
     [button addTarget:self action:@selector(settingsButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     button.frame = CGRectMake(0,
         0,
@@ -526,27 +527,27 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (NSArray<ExperienceUpgrade *> *)unseenUpgradeExperiences
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     __block NSArray<ExperienceUpgrade *> *unseenUpgrades;
     [self.editingDbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        unseenUpgrades = [self.experienceUpgradeFinder allUnseenWithTransaction:transaction];
+        unseenUpgrades = [ExperienceUpgradeFinder.sharedManager allUnseenWithTransaction:transaction];
     }];
     return unseenUpgrades;
 }
 
 - (void)markAllUpgradeExperiencesAsSeen
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.experienceUpgradeFinder markAllAsSeenWithTransaction:transaction];
+        [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
     }];
 }
 
 - (void)displayAnyUnseenUpgradeExperience
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     NSArray<ExperienceUpgrade *> *unseenUpgrades = [self unseenUpgradeExperiences];
 
@@ -626,7 +627,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     DDLogInfo(@"%@ beggining refreshing.", self.logTag);
     [SignalApp.sharedApp.messageFetcherJob run].always(^{
         DDLogInfo(@"%@ ending refreshing.", self.logTag);
@@ -798,7 +799,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                           animateDismissal:(BOOL)animateDismissal
                        animatePresentation:(BOOL)animatePresentation
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewController);
 
     [self presentViewControllerWithBlock:^{
@@ -811,7 +812,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                   animateDismissal:(BOOL)animateDismissal
                animatePresentation:(BOOL)animatePresentation
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(viewController);
 
     [self presentViewControllerWithBlock:^{
@@ -822,7 +823,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)presentViewControllerWithBlock:(void (^)(void))presentationBlock animateDismissal:(BOOL)animateDismissal
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(presentationBlock);
 
     // Presenting a "top level" view controller has three steps:
@@ -897,7 +898,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)updateMappings
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ self.currentGrouping ]
                                                                      view:TSThreadDatabaseViewExtensionName];
@@ -914,20 +915,36 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (YapDatabaseConnection *)uiDatabaseConnection
 {
-    NSAssert([NSThread isMainThread], @"Must access uiDatabaseConnection on main thread!");
+    OWSAssertIsOnMainThread();
+
     if (!_uiDatabaseConnection) {
-        YapDatabase *database = TSStorageManager.sharedManager.database;
-        _uiDatabaseConnection = [database newConnection];
+        _uiDatabaseConnection = [TSStorageManager.sharedManager newDatabaseConnection];
         [_uiDatabaseConnection beginLongLivedReadTransaction];
     }
     return _uiDatabaseConnection;
 }
 
+- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    // External database modifications can't be converted into incremental updates,
+    // so rebuild everything.  This is expensive and usually isn't necessary, but
+    // there's no alternative.
+    [self resetMappings];
+}
+
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
+    OWSAssertIsOnMainThread();
+
     if (!self.shouldObserveDBModifications) {
         return;
     }
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
 

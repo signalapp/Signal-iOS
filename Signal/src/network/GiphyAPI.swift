@@ -271,7 +271,11 @@ extension GiphyError: LocalizedError {
     static let sharedInstance = GiphyAPI()
 
     // Force usage as a singleton
-    override private init() {}
+    override private init() {
+        super.init()
+
+        SwiftSingletons.register(self)
+    }
 
     deinit {
         NotificationCenter.default.removeObserver(self)

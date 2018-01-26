@@ -76,11 +76,17 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Priedas";
 
+/* Title for the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Priedas";
+
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Failo tipas: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Dydis: %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Siųsti";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Priedas";
@@ -421,6 +427,36 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Atnaujinamos duomenų bazės";
 
+/* Message indicating that the debug log is being uploaded. */
+"DEBUG_LOG_ACTIVITY_INDICATOR" = "Siunčiamas derinimo žurnalas...";
+
+/* Message of the debug log alert. */
+"DEBUG_LOG_ALERT_MESSAGE" = "Ką norėtumėte daryti su nuorodą į jūsų derinimo žurnalą?";
+
+/* Label for the 'Open a Bug Report' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Rašyti pranešimą apie klaidą";
+
+/* Label for the 'copy link' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Kopijuoti nuorodą";
+
+/* Label for the 'email debug log' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Siųsti el. laišką palaikymo grupei";
+
+/* Label for the 'send to self' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Siųsti sau";
+
+/* Title of the debug log alert. */
+"DEBUG_LOG_ALERT_TITLE" = "Dar vienas žingsnis";
+
+/* Title of the alert indicating the debug log upload failed. */
+"DEBUG_LOG_FAILURE_ALERT_TITLE" = "Nepavyko pateikti derinimo žurnalą";
+
+/* Message of the alert before redirecting to Github Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist nuoroda buvo nukopijuota į jūsų iškarpinę. Netrukus būsite peradresuoti į GitHub klaidų sąrašą.";
+
+/* Title of the alert before redirecting to Github Issues. */
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub peradresavimas";
+
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Paskutinį kartą aktyvus: %@";
 
@@ -629,7 +665,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Žymėti kaip patvirtintą";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Atstatyti šį seansą.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Atstatyti šį seansą";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Užbaigti grupės kūrimą";
@@ -1238,12 +1274,6 @@
 "RATING_TITLE" = "Palaikykite Signal!";
 
 /* No comment provided by engineer. */
-"REGISTER_CC_ERR_ALERT_VIEW_MESSAGE" = "Įveskite teisingą šalies kodą";
-
-/* No comment provided by engineer. */
-"REGISTER_CC_ERR_ALERT_VIEW_TITLE" = "Šalies kodo klaida";
-
-/* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Sveiki!";
 
 /* No comment provided by engineer. */
@@ -1341,6 +1371,12 @@
 
 /* Label for 'select gif to attach' action sheet button */
 "SELECT_GIF_BUTTON" = "GIF";
+
+/* Table section header for conversations you haven't recently used. */
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Kiti kontaktai";
+
+/* Table section header for recently active conversations */
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Paskiausi pokalbiai";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Siųsti dar kartą";
@@ -1512,6 +1548,24 @@
 
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
+
+/* Indicates that the share extension is still loading. */
+"SHARE_EXTENSION_LOADING" = "Įkeliama...";
+
+/* Message indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Norėdami registruoti, paleiskite Signal programėlę.";
+
+/* Title indicating that the share extension cannot be used until the user has registered in the main app. */
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Neregistruota";
+
+/* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Norėdami atnaujinti, paleiskite Signal programėlę.";
+
+/* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Nepasiruošę";
+
+/* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Nepavyko paruošti priedo";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Rodyti naują saugumo numerį";

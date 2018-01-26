@@ -5,10 +5,10 @@
 #import "PushManager.h"
 #import "AppDelegate.h"
 #import "NotificationsManager.h"
-#import "OWSContactsManager.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "ThreadUtil.h"
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
@@ -92,7 +92,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 - (void)handleMessageRead:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     if ([notification.object isKindOfClass:[TSIncomingMessage class]]) {
         TSIncomingMessage *message = (TSIncomingMessage *)notification.object;
@@ -136,7 +136,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     DDLogInfo(@"%@ launched from local notification", self.logTag);
 
     NSString *_Nullable threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
@@ -269,7 +269,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     NSString *threadId = userInfo[Signal_Thread_UserInfo_Key];
 
     TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
-    [[TSStorageManager sharedManager].dbReadWriteConnection
+    [TSStorageManager.dbReadWriteConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             // TODO: I suspect we only want to mark the message in
             // question as read.

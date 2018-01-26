@@ -5,6 +5,7 @@
 #import "Environment.h"
 #import "DebugLogger.h"
 #import "SignalKeyingStorage.h"
+#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSSignalService.h>
@@ -37,7 +38,11 @@ static Environment *sharedEnvironment = nil;
 
 + (void)setCurrent:(Environment *)environment
 {
-    OWSAssert(!sharedEnvironment);
+    // The main app environment should only be set once.
+    //
+    // App extensions may be opened multiple times in the same process,
+    // so statics will persist.
+    OWSAssert(!sharedEnvironment || !CurrentAppContext().isMainApp);
     OWSAssert(environment);
 
     sharedEnvironment = environment;

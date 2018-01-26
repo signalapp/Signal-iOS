@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactTableViewCell.h"
 #import "Environment.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSContactsManager.h"
+#import "OWSUserProfile.h"
 #import "UIFont+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
@@ -181,6 +182,17 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
                                                          diameter:kContactTableViewCellAvatarSize
                                                   contactsManager:contactsManager];
 
+    if (self.accessoryMessage) {
+        UILabel *blockedLabel = [[UILabel alloc] init];
+        blockedLabel.textAlignment = NSTextAlignmentRight;
+        blockedLabel.text = self.accessoryMessage;
+        blockedLabel.font = [UIFont ows_mediumFontWithSize:13.f];
+        blockedLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+        [blockedLabel sizeToFit];
+        
+        self.accessoryView = blockedLabel;
+    }
+    
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
 }
@@ -265,7 +277,7 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     OWSAssert(recipientId.length > 0);

@@ -1,25 +1,26 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSConversationSettingsViewController.h"
 #import "BlockListUIUtils.h"
 #import "ContactsViewHelper.h"
-#import "Environment.h"
 #import "FingerprintViewController.h"
 #import "OWSAddToContactViewController.h"
-#import "OWSAvatarBuilder.h"
 #import "OWSBlockingManager.h"
-#import "OWSContactsManager.h"
 #import "PhoneNumber.h"
 #import "ShowGroupMembersViewController.h"
 #import "Signal-Swift.h"
 #import "UIFont+OWS.h"
-#import "UIUtil.h"
 #import "UIView+OWS.h"
 #import "UpdateGroupViewController.h"
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSAvatarBuilder.h>
+#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/OWSUserProfile.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -171,7 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
     TSContactThread *contactThread = (TSContactThread *)self.thread;
     NSString *recipientId = contactThread.contactIdentifier;
-    return [self.contactsManager.lastKnownContactRecipientIds containsObject:recipientId];
+    return [self.contactsManager hasSignalAccountForRecipientId:recipientId];
 }
 
 #pragma mark - ContactEditingDelegate
@@ -342,7 +343,7 @@ NS_ASSUME_NONNULL_BEGIN
             [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
             [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
-            UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_hourglass"];
+            UIImageView *iconView = [strongSelf viewForIconWithName:@"ic_timer"];
             [topView addSubview:iconView];
             [iconView autoVCenterInSuperview];
             [iconView autoPinLeadingToSuperview];
@@ -401,7 +402,7 @@ NS_ASSUME_NONNULL_BEGIN
                             [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
                             [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
-                            UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_hourglass"];
+                            UIImageView *iconView = [strongSelf viewForIconWithName:@"ic_timer"];
                             [topView addSubview:iconView];
                             [iconView autoVCenterInSuperview];
                             [iconView autoPinLeadingToSuperview];
@@ -730,11 +731,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIImageView *)viewForIconWithName:(NSString *)iconName
 {
     UIImage *icon = [UIImage imageNamed:iconName];
+
     OWSAssert(icon);
     UIImageView *iconView = [UIImageView new];
     iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    iconView.tintColor = [UIColor colorWithRGBHex:0x505050];
-    iconView.contentMode = UIViewContentModeScaleToFill;
+    iconView.tintColor = [UIColor ows_darkIconColor];
+    iconView.contentMode = UIViewContentModeScaleAspectFit;
+    iconView.layer.minificationFilter = kCAFilterTrilinear;
+    iconView.layer.magnificationFilter = kCAFilterTrilinear;
+
     [iconView autoSetDimension:ALDimensionWidth toSize:24.f];
     [iconView autoSetDimension:ALDimensionHeight toSize:24.f];
     return iconView;
@@ -1111,14 +1116,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)identityStateDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateTableContents];
 }
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     OWSAssert(recipientId.length > 0);

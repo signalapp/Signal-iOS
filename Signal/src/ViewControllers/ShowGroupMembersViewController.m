@@ -3,17 +3,17 @@
 //
 
 #import "ShowGroupMembersViewController.h"
-#import "BlockListUIUtils.h"
-#import "ContactTableViewCell.h"
-#import "ContactsViewHelper.h"
-#import "Environment.h"
 #import "HomeViewController.h"
-#import "OWSContactsManager.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
-#import "UIUtil.h"
 #import "ViewControllerUtils.h"
 #import <AddressBookUI/AddressBookUI.h>
+#import <SignalMessaging/BlockListUIUtils.h>
+#import <SignalMessaging/ContactTableViewCell.h>
+#import <SignalMessaging/ContactsViewHelper.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSContactsManager.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSGroupModel.h>
@@ -216,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)offerResetAllNoLongerVerified
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     UIAlertController *actionSheetController = [UIAlertController
         alertControllerWithTitle:nil
@@ -239,7 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)resetAllNoLongerVerified
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     OWSIdentityManager *identityManger = [OWSIdentityManager sharedManager];
     NSArray<NSString *> *recipientIds = [self noLongerVerifiedRecipientIds];
@@ -457,7 +457,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)identityStateDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateTableContents];
 }

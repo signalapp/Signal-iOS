@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "InboxTableViewCell.h"
@@ -7,6 +7,7 @@
 #import "Signal-Swift.h"
 #import "ViewControllerUtils.h"
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/OWSUserProfile.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
@@ -154,7 +155,7 @@ const NSUInteger kAvatarViewDiameter = 52;
             contactsManager:(OWSContactsManager *)contactsManager
       blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(thread);
     OWSAssert(contactsManager);
     OWSAssert(blockedPhoneNumberSet);
@@ -188,7 +189,7 @@ const NSUInteger kAvatarViewDiameter = 52;
                                                                                                 : [UIColor lightGrayColor]),
                                                               }]];
         }
-        NSString *displayableText = [DisplayableText displayableText:thread.lastMessageLabel];
+        NSString *displayableText = [DisplayableText filterText:thread.lastMessageLabel];
         if (displayableText) {
             [snippetText appendAttributedString:[[NSAttributedString alloc]
                                                     initWithString:displayableText
@@ -288,8 +289,8 @@ const NSUInteger kAvatarViewDiameter = 52;
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
 {
-    OWSAssert([NSThread isMainThread]);
-    
+    OWSAssertIsOnMainThread();
+
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     if (recipientId.length == 0) {
         return;
@@ -309,8 +310,8 @@ const NSUInteger kAvatarViewDiameter = 52;
 
 -(void)updateNameLabel
 {
-    AssertIsOnMainThread();
-    
+    OWSAssertIsOnMainThread();
+
     TSThread *thread = self.thread;
     if (thread == nil) {
         OWSFail(@"%@ thread should not be nil", self.logTag);

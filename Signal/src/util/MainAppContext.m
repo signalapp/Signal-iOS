@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "MainAppContext.h"
@@ -11,6 +11,93 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation MainAppContext
+
+- (instancetype)init
+{
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillEnterForeground:)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidEnterBackground:)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillTerminate:)
+                                                 name:UIApplicationWillTerminateNotification
+                                               object:nil];
+
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - Notifications
+
+- (void)applicationWillEnterForeground:(NSNotification *)notification
+{
+    AssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillEnterForegroundNotification object:nil];
+}
+
+- (void)applicationDidEnterBackground:(NSNotification *)notification
+{
+    AssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    [DDLog flushLog];
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidEnterBackgroundNotification object:nil];
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification
+{
+    AssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    [DDLog flushLog];
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillResignActiveNotification object:nil];
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+    AssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidBecomeActiveNotification object:nil];
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notification
+{
+    AssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    [DDLog flushLog];
+}
+
+#pragma mark -
 
 - (BOOL)isMainApp
 {
@@ -31,6 +118,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle
 {
     [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle];
+}
+
+- (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated
+{
+    [[UIApplication sharedApplication] setStatusBarHidden:isHidden animated:isAnimated];
+}
+
+- (BOOL)isInBackground
+{
+    return [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;
 }
 
 - (UIApplicationState)mainApplicationState

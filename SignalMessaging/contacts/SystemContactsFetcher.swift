@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -57,7 +57,7 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
         self.changeHandler = changeHandler
         self.lastSortOrder = CNContactsUserDefaults.shared().sortOrder
         NotificationCenter.default.addObserver(self, selector: #selector(runChangeHandler), name: .CNContactStoreDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: .UIApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: .OWSApplicationDidBecomeActive, object: nil)
     }
 
     @objc
@@ -186,11 +186,11 @@ class AddressBookContactStoreAdaptee: ContactStoreAdaptee {
             }
         }
 
-        return Contact(contactWithFirstName: firstName,
-                       andLastName: lastName,
-                       andUserTextPhoneNumbers: phoneNumbers,
-                       andImage: addressBookRecord.image,
-                       andContactID: addressBookRecord.recordId)
+        return Contact(firstName: firstName,
+                       lastName: lastName,
+                       userTextPhoneNumbers: phoneNumbers,
+                       imageData: addressBookRecord.imageData,
+                       contactID: addressBookRecord.recordId)
     }
 }
 
@@ -244,14 +244,14 @@ struct OWSABRecord {
         }
     }
 
-    var image: UIImage? {
+    var imageData: Data? {
         guard ABPersonHasImageData(abRecord) else {
             return nil
         }
         guard let data = ABPersonCopyImageData(abRecord)?.takeRetainedValue() else {
             return nil
         }
-        return UIImage(data: data as Data)
+        return data as Data
     }
 
     private func extractProperty<T>(_ propertyName: ABPropertyID) -> T? {
@@ -317,7 +317,7 @@ class ContactStoreAdapter: ContactStoreAdaptee {
 }
 
 @objc public protocol SystemContactsFetcherDelegate: class {
-    func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, updatedContacts contacts: [Contact])
+    func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, updatedContacts contacts: [Contact], isUserRequested: Bool)
 }
 
 @objc
@@ -351,6 +351,10 @@ public class SystemContactsFetcher: NSObject {
 
     override init() {
         self.contactStoreAdapter = ContactStoreAdapter()
+
+        super.init()
+
+        SwiftSingletons.register(self)
     }
 
     @objc
@@ -366,7 +370,7 @@ public class SystemContactsFetcher: NSObject {
         hasSetupObservation = true
         self.contactStoreAdapter.startObservingChanges { [weak self] in
             DispatchQueue.main.async {
-                self?.updateContacts(completion: nil, alwaysNotify: false)
+                self?.updateContacts(completion: nil, isUserRequested: false)
             }
         }
     }
@@ -397,12 +401,10 @@ public class SystemContactsFetcher: NSObject {
 
         switch authorizationStatus {
         case .notDetermined:
-            if CurrentAppContext().isMainApp {
-               if CurrentAppContext().mainApplicationState() == .background {
-                    Logger.error("\(self.TAG) do not request contacts permission when app is in background")
-                    completion(nil)
-                    return
-                }
+            if CurrentAppContext().isInBackground() {
+                Logger.error("\(self.TAG) do not request contacts permission when app is in background")
+                completion(nil)
+                return
             }
             self.contactStoreAdapter.requestAccess { (granted, error) in
                 if let error = error {
@@ -440,20 +442,21 @@ public class SystemContactsFetcher: NSObject {
             return
         }
 
-        updateContacts(completion: nil, alwaysNotify: false)
+        updateContacts(completion: nil, isUserRequested: false)
     }
 
     @objc
-    public func fetchIfAlreadyAuthorizedAndAlwaysNotify() {
+    public func userRequestedRefresh(completion: @escaping (Error?) -> Void) {
         AssertIsOnMainThread()
         guard authorizationStatus == .authorized else {
+            owsFail("should have already requested contact access")
             return
         }
 
-        updateContacts(completion: nil, alwaysNotify: true)
+        updateContacts(completion: completion, isUserRequested: true)
     }
 
-    private func updateContacts(completion completionParam: ((Error?) -> Void)?, alwaysNotify: Bool = false) {
+    private func updateContacts(completion completionParam: ((Error?) -> Void)?, isUserRequested: Bool = false) {
         AssertIsOnMainThread()
 
         // Ensure completion is invoked on main thread.
@@ -484,6 +487,7 @@ public class SystemContactsFetcher: NSObject {
                 completion(nil)
             }
 
+            Logger.info("\(self.TAG) fetched \(contacts.count) contacts.")
             let contactsHash  = HashableArray(contacts).hashValue
 
             DispatchQueue.main.async {
@@ -492,8 +496,8 @@ public class SystemContactsFetcher: NSObject {
                 if self.lastContactUpdateHash != contactsHash {
                     Logger.info("\(self.TAG) contact hash changed. new contactsHash: \(contactsHash)")
                     shouldNotifyDelegate = true
-                } else if alwaysNotify {
-                    Logger.info("\(self.TAG) ignoring debounce.")
+                } else if isUserRequested {
+                    Logger.info("\(self.TAG) ignoring debounce due to user request")
                     shouldNotifyDelegate = true
                 } else {
 
@@ -525,7 +529,7 @@ public class SystemContactsFetcher: NSObject {
                 self.lastDelegateNotificationDate = Date()
                 self.lastContactUpdateHash = contactsHash
 
-                self.delegate?.systemContactsFetcher(self, updatedContacts: contacts)
+                self.delegate?.systemContactsFetcher(self, updatedContacts: contacts, isUserRequested: isUserRequested)
                 completion(nil)
             }
         }

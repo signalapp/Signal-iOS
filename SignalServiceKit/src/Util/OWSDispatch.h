@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,7 +23,5 @@ NS_ASSUME_NONNULL_BEGIN
 + (dispatch_queue_t)sendingQueue;
 
 @end
-
-void AssertIsOnMainThread(void);
 
 NS_ASSUME_NONNULL_END

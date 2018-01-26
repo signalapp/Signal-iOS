@@ -5,15 +5,15 @@
 #import "AdvancedSettingsTableViewController.h"
 #import "DebugLogger.h"
 #import "DomainFrontingCountryViewController.h"
-#import "Environment.h"
 #import "OWSCountryMetadata.h"
-#import "OWSPreferences.h"
 #import "Pastelog.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
 #import <PromiseKit/AnyPromise.h>
 #import <Reachability/Reachability.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSPreferences.h>
 #import <SignalServiceKit/OWSSignalService.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -60,14 +60,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)socketStateDidChange
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateTableContents];
 }
 
 - (void)reachabilityChanged
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     [self updateTableContents];
 }
@@ -206,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSCountryMetadata *)ensureManualCensorshipCircumventionCountry
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     OWSCountryMetadata *countryMetadata = nil;
     NSString *countryCode = OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputToolbar.h"
@@ -16,7 +16,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
-
+static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 @interface ConversationInputToolbar () <UIGestureRecognizerDelegate, ConversationTextViewToolbarDelegate>
 
 @property (nonatomic, readonly) UIView *contentView;
@@ -31,6 +31,8 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 @property (nonatomic) NSArray<NSLayoutConstraint *> *contentContraints;
 @property (nonatomic) NSValue *lastTextContentSize;
+@property (nonatomic) CGFloat toolbarHeight;
+@property (nonatomic) CGFloat textViewHeight;
 
 #pragma mark - Voice Memo Recording UI
 
@@ -41,12 +43,6 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 @property (nonatomic, nullable) UILabel *recordingLabel;
 @property (nonatomic) BOOL isRecordingVoiceMemo;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
-
-#pragma mark - Attachment Approval
-
-@property (nonatomic, nullable) MediaMessageView *attachmentView;
-@property (nonatomic, nullable) UIView *cancelAttachmentWrapper;
-@property (nonatomic, nullable) SignalAttachment *attachmentToApprove;
 
 @end
 
@@ -69,18 +65,27 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [self removeKVOObservers];
 }
 
+- (CGSize)intrinsicContentSize
+{
+    // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, the intrinsicContentSize is used
+    // to determine the height of the rendered inputAccessoryView.
+    CGSize newSize = CGSizeMake(self.bounds.size.width, self.toolbarHeight + ConversationInputToolbarBorderViewHeight);
+    return newSize;
+}
+
 - (void)createContents
 {
     self.layoutMargins = UIEdgeInsetsZero;
 
-    self.backgroundColor = [UIColor ows_inputToolbarBackgroundColor];
+    self.backgroundColor = [UIColor ows_toolbarBackgroundColor];
+    self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
 
     UIView *borderView = [UIView new];
     borderView.backgroundColor = [UIColor colorWithWhite:238 / 255.f alpha:1.f];
     [self addSubview:borderView];
     [borderView autoPinWidthToSuperview];
     [borderView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [borderView autoSetDimension:ALDimensionHeight toSize:0.5f];
+    [borderView autoSetDimension:ALDimensionHeight toSize:ConversationInputToolbarBorderViewHeight];
 
     _contentView = [UIView containerView];
     [self addSubview:self.contentView];
@@ -123,7 +128,6 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
         setTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"Label for the send button in the conversation view.")
         forState:UIControlStateNormal];
     [self.sendButton setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
-    self.sendButton.titleLabel.font = [UIFont ows_regularFontWithSize:17.0f];
     self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:16.f];
     [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
@@ -191,6 +195,26 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [self.inputTextView.undoManager removeAllActions];
 }
 
+- (void)toggleDefaultKeyboard
+{
+    // Primary language is nil for the emoji keyboard.
+    if (!self.inputTextView.textInputMode.primaryLanguage) {
+        // Stay on emoji keyboard after sending
+        return;
+    }
+
+    // Otherwise, we want to toggle back to default keyboard if the user had the numeric keyboard present.
+
+    // Momentarily switch to a non-default keyboard, else reloadInputViews
+    // will not affect the displayed keyboard. In practice this isn't perceptable to the user.
+    // The alternative would be to dismiss-and-pop the keyboard, but that can cause a more pronounced animation.
+    self.inputTextView.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+    [self.inputTextView reloadInputViews];
+
+    self.inputTextView.keyboardType = UIKeyboardTypeDefault;
+    [self.inputTextView reloadInputViews];
+}
+
 - (void)setShouldShowVoiceMemoButton:(BOOL)shouldShowVoiceMemoButton
 {
     if (_shouldShowVoiceMemoButton == shouldShowVoiceMemoButton) {
@@ -224,64 +248,19 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     const CGFloat kMinTextViewHeight = ceil(self.inputTextView.font.lineHeight
         + self.inputTextView.textContainerInset.top + self.inputTextView.textContainerInset.bottom
         + self.inputTextView.contentInset.top + self.inputTextView.contentInset.bottom);
-    const CGFloat kMaxTextViewHeight = 100.f;
+    // Exactly 4 lines of text with default sizing.
+    const CGFloat kMaxTextViewHeight = 98.f;
     const CGFloat textViewDesiredHeight = (self.inputTextView.contentSize.height + self.inputTextView.contentInset.top
         + self.inputTextView.contentInset.bottom);
     const CGFloat textViewHeight = ceil(Clamp(textViewDesiredHeight, kMinTextViewHeight, kMaxTextViewHeight));
     const CGFloat kMinContentHeight = kMinTextViewHeight + textViewVInset * 2;
 
-    if (self.attachmentToApprove) {
-        OWSAssert(self.attachmentView);
-
-        self.leftButtonWrapper.hidden = YES;
-        self.inputTextView.hidden = YES;
-        self.voiceMemoButton.hidden = YES;
-        UIButton *rightButton = self.sendButton;
-        rightButton.enabled = YES;
-        rightButton.hidden = NO;
-
-        [rightButton setContentHuggingHigh];
-        [rightButton setCompressionResistanceHigh];
-        [self.attachmentView setContentHuggingLow];
-
-        OWSAssert(rightButton.superview == self.rightButtonWrapper);
-
-        self.contentContraints = @[
-            [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textViewVInset],
-            [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:textViewVInset],
-            [self.attachmentView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:contentHInset],
-            [self.attachmentView autoSetDimension:ALDimensionHeight toSize:150.f],
-
-            [self.rightButtonWrapper autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.attachmentView],
-            [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeRight],
-            [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
-            [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
-
-            [rightButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
-            [rightButton autoPinLeadingToSuperviewWithMargin:contentHSpacing],
-            [rightButton autoPinTrailingToSuperviewWithMargin:contentHInset],
-            [rightButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
-        ];
-
-        [self setNeedsLayout];
-        [self layoutIfNeeded];
-
-        // Ensure the keyboard is dismissed.
-        //
-        // NOTE: We need to do this _last_ or the layout changes in the input toolbar
-        //       will be inadvertently animated.
-        [self.inputTextView resignFirstResponder];
-
-        return;
-    }
+    self.textViewHeight = textViewHeight;
+    self.toolbarHeight = textViewHeight + textViewVInset * 2;
 
     self.leftButtonWrapper.hidden = NO;
     self.inputTextView.hidden = NO;
     self.voiceMemoButton.hidden = NO;
-    [self.attachmentView removeFromSuperview];
-    self.attachmentView = nil;
-    [self.cancelAttachmentWrapper removeFromSuperview];
-    self.cancelAttachmentWrapper = nil;
 
     UIButton *leftButton = self.attachmentButton;
     UIButton *rightButton = (self.shouldShowVoiceMemoButton ? self.voiceMemoButton : self.sendButton);
@@ -317,7 +296,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     self.contentContraints = @[
         [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeLeft],
         [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+        [self.leftButtonWrapper autoPinBottomToSuperviewWithMargin:0],
 
         [leftButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
         [leftButton autoPinLeadingToSuperviewWithMargin:contentHInset],
@@ -326,18 +305,18 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
         [self.inputTextView autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.leftButtonWrapper],
         [self.inputTextView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textViewVInset],
-        [self.inputTextView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:textViewVInset],
+        [self.inputTextView autoPinBottomToSuperviewWithMargin:textViewVInset],
         [self.inputTextView autoSetDimension:ALDimensionHeight toSize:textViewHeight],
 
         [self.rightButtonWrapper autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.inputTextView],
         [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeRight],
         [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+        [self.rightButtonWrapper autoPinBottomToSuperviewWithMargin:0],
 
         [rightButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
         [rightButton autoPinLeadingToSuperviewWithMargin:contentHSpacing],
         [rightButton autoPinTrailingToSuperviewWithMargin:contentHInset],
-        [rightButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+        [rightButton autoPinEdgeToSuperviewEdge:ALEdgeBottom]
     ];
 
     // Layout immediately, unless the input toolbar hasn't even been laid out yet.
@@ -348,7 +327,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 - (void)ensureShouldShowVoiceMemoButton
 {
-    self.shouldShowVoiceMemoButton = (self.attachmentToApprove == nil && self.inputTextView.trimmedText.length < 1);
+    self.shouldShowVoiceMemoButton = self.inputTextView.trimmedText.length < 1;
 }
 
 - (void)handleLongPress:(UIGestureRecognizer *)sender
@@ -424,7 +403,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 - (void)showVoiceMemoUI
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     self.voiceMemoStartTime = [NSDate date];
 
@@ -573,7 +552,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 - (void)hideVoiceMemoUI:(BOOL)animated
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     UIView *oldVoiceMemoUI = self.voiceMemoUI;
     self.voiceMemoUI = nil;
@@ -601,7 +580,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 - (void)setVoiceMemoUICancelAlpha:(CGFloat)cancelAlpha
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     // Fade out the voice message views as the cancel gesture
     // proceeds as feedback.
@@ -610,7 +589,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 - (void)updateVoiceMemo
 {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
 
     NSTimeInterval durationSeconds = fabs([self.voiceMemoStartTime timeIntervalSinceNow]);
     self.recordingLabel.text = [OWSFormat formatDurationSeconds:(long)round(durationSeconds)];
@@ -646,11 +625,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 {
     OWSAssert(self.inputToolbarDelegate);
 
-    if (self.attachmentToApprove) {
-        [self attachmentApprovalSendPressed];
-    } else {
-        [self.inputToolbarDelegate sendButtonPressed];
-    }
+    [self.inputToolbarDelegate sendButtonPressed];
 }
 
 - (void)attachmentButtonPressed
@@ -710,115 +685,10 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
             if (!lastTextContentSize || fabs(lastTextContentSize.CGSizeValue.width - textContentSize.width) > 0.1f
                 || fabs(lastTextContentSize.CGSizeValue.height - textContentSize.height) > 0.1f) {
                 [self ensureContentConstraints];
+                [self invalidateIntrinsicContentSize];
             }
         }
     }
-}
-
-#pragma mark - Attachment Approval
-
-- (void)showApprovalUIForAttachment:(SignalAttachment *)attachment
-{
-    OWSAssert(attachment);
-
-    self.attachmentToApprove = attachment;
-
-    MediaMessageView *attachmentView =
-        [[MediaMessageView alloc] initWithAttachment:attachment mode:MediaMessageViewModeSmall];
-    self.attachmentView = attachmentView;
-    [self.contentView addSubview:attachmentView];
-
-    UIView *cancelAttachmentWrapper = [UIView containerView];
-    self.cancelAttachmentWrapper = cancelAttachmentWrapper;
-    [cancelAttachmentWrapper
-        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                     action:@selector(cancelAttachmentWrapperTapped:)]];
-    UIView *_Nullable attachmentContentView = [self.attachmentView contentView];
-    // Place the cancel button inside the attachment view's content area,
-    // if possible.  If not, just place it inside the attachment view.
-    UIView *cancelButtonReferenceView = attachmentContentView;
-    if (attachmentContentView) {
-        attachmentContentView.layer.borderColor = self.inputTextView.layer.borderColor;
-        attachmentContentView.layer.borderWidth = self.inputTextView.layer.borderWidth;
-        attachmentContentView.layer.cornerRadius = self.inputTextView.layer.cornerRadius;
-        attachmentContentView.clipsToBounds = YES;
-    } else {
-        cancelButtonReferenceView = self.attachmentView;
-    }
-    [self.contentView addSubview:cancelAttachmentWrapper];
-    [cancelAttachmentWrapper autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:cancelButtonReferenceView];
-    [cancelAttachmentWrapper autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:cancelButtonReferenceView];
-
-    UIImage *cancelIcon = [UIImage imageNamed:@"cancel-cross-white"];
-    OWSAssert(cancelIcon);
-    UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [cancelButton setImage:cancelIcon forState:UIControlStateNormal];
-    [cancelButton setBackgroundColor:[UIColor ows_materialBlueColor]];
-    OWSAssert(cancelIcon.size.width == cancelIcon.size.height);
-    CGFloat cancelIconSize = MIN(cancelIcon.size.width, cancelIcon.size.height);
-    CGFloat cancelIconInset = round(cancelIconSize * 0.35f);
-    [cancelButton
-        setContentEdgeInsets:UIEdgeInsetsMake(cancelIconInset, cancelIconInset, cancelIconInset, cancelIconInset)];
-    CGFloat cancelButtonRadius = cancelIconInset + cancelIconSize * 0.5f;
-    cancelButton.layer.cornerRadius = cancelButtonRadius;
-    CGFloat cancelButtonInset = 10.f;
-    [cancelButton addTarget:self
-                     action:@selector(attachmentApprovalCancelPressed)
-           forControlEvents:UIControlEventTouchUpInside];
-    [cancelAttachmentWrapper addSubview:cancelButton];
-    [cancelButton autoPinWidthToSuperviewWithMargin:cancelButtonInset];
-    [cancelButton autoPinHeightToSuperviewWithMargin:cancelButtonInset];
-    CGFloat cancelButtonSize = cancelIconSize + 2 * cancelIconInset;
-    [cancelButton autoSetDimension:ALDimensionWidth toSize:cancelButtonSize];
-    [cancelButton autoSetDimension:ALDimensionHeight toSize:cancelButtonSize];
-
-    [self ensureContentConstraints];
-    [self ensureShouldShowVoiceMemoButton];
-}
-
-- (void)cancelAttachmentWrapperTapped:(UIGestureRecognizer *)sender
-{
-    if (sender.state == UIGestureRecognizerStateRecognized) {
-        [self attachmentApprovalCancelPressed];
-    }
-}
-
-- (void)attachmentApprovalCancelPressed
-{
-    self.attachmentToApprove = nil;
-
-    [self ensureContentConstraints];
-    [self ensureShouldShowVoiceMemoButton];
-}
-
-- (void)attachmentApprovalSendPressed
-{
-    SignalAttachment *attachment = self.attachmentToApprove;
-    self.attachmentToApprove = nil;
-
-    if (attachment) {
-        [self.inputToolbarDelegate didApproveAttachment:attachment];
-    }
-
-    [self ensureContentConstraints];
-    [self ensureShouldShowVoiceMemoButton];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [self.attachmentView viewWillAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [self.attachmentView viewWillDisappear:animated];
-
-    [self endEditingTextMessage];
-}
-
-- (nullable NSString *)textInputPrimaryLanguage
-{
-    return self.inputTextView.textInputMode.primaryLanguage;
 }
 
 @end

@@ -377,4 +377,14 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return [self.toE164 compare:other.toE164];
 }
 
+- (BOOL)isEqual:(id)other
+{
+    if (![other isMemberOfClass:[self class]]) {
+        return NO;
+    }
+    PhoneNumber *otherPhoneNumber = (PhoneNumber *)other;
+
+    return [self.phoneNumber isEqual:otherPhoneNumber.phoneNumber];
+}
+
 @end

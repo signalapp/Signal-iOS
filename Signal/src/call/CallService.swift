@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -224,15 +224,17 @@ protocol CallServiceObserver: class {
 
         super.init()
 
+        SwiftSingletons.register(self)
+
         self.createCallUIAdapter()
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didEnterBackground),
-                                               name: NSNotification.Name.UIApplicationDidEnterBackground,
+                                               name: NSNotification.Name.OWSApplicationDidEnterBackground,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
-                                               name: NSNotification.Name.UIApplicationDidBecomeActive,
+                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
                                                object: nil)
     }
 
@@ -582,16 +584,19 @@ protocol CallServiceObserver: class {
 
         self.call = newCall
 
-        let backgroundTask = UIApplication.shared.beginBackgroundTask {
-            let timeout = CallError.timeout(description: "background task time ran out before call connected.")
-            DispatchQueue.main.async {
-                guard self.call == newCall else {
-                    Logger.warn("\(self.logTag) ignoring obsolete call in \(#function)")
-                    return
-                }
-                self.handleFailedCall(failedCall: newCall, error: timeout)
+        var backgroundTask = OWSBackgroundTask(label:"\(#function)", completionBlock: { [weak self] _ in
+            AssertIsOnMainThread()
+            guard let strongSelf = self else {
+                return
             }
-        }
+            let timeout = CallError.timeout(description: "background task time ran out before call connected.")
+
+            guard strongSelf.call == newCall else {
+                Logger.warn("\(strongSelf.logTag) ignoring obsolete call in \(#function)")
+                return
+            }
+            strongSelf.handleFailedCall(failedCall: newCall, error: timeout)
+        })
 
         let incomingCallPromise = firstly {
             return getIceServers()
@@ -672,7 +677,8 @@ protocol CallServiceObserver: class {
             }
         }.always {
             Logger.debug("\(self.logTag) ending background task awaiting inbound call connection")
-            UIApplication.shared.endBackgroundTask(backgroundTask)
+
+            backgroundTask = nil
         }
         incomingCallPromise.retainUntilComplete()
     }

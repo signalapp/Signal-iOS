@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDevice.h"
 #import "NSDate+OWS.h"
 #import "OWSError.h"
 #import "TSStorageManager.h"
+#import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"
 #import <Mantle/MTLValueTransformer.h>
@@ -18,7 +19,9 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 
 @interface OWSDeviceManager ()
 
+// This property should only be accessed while synchronized on self.
 @property (atomic, nullable) NSNumber *mayHaveLinkedDevicesCached;
+
 @property (atomic) NSDate *lastReceivedSyncMessage;
 
 @end
@@ -58,20 +61,25 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
     }
 }
 
-- (void)setMayHaveLinkedDevices:(BOOL)value dbConnection:(YapDatabaseConnection *)dbConnection
+- (void)setMayHaveLinkedDevices
 {
-    OWSAssert(dbConnection);
-
     @synchronized(self)
     {
-        self.mayHaveLinkedDevicesCached = @(value);
+        if (self.mayHaveLinkedDevicesCached != nil && self.mayHaveLinkedDevicesCached.boolValue) {
+            // Skip redundant writes.
+            return;
+        }
 
-        [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [transaction setObject:@(value)
+        self.mayHaveLinkedDevicesCached = @(YES);
+    }
+
+    // Note that we write async to avoid opening transactions within transactions.
+    [TSStorageManager.sharedManager.newDatabaseConnection
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [transaction setObject:@(YES)
                             forKey:kTSStorageManager_MayHaveLinkedDevices
                       inCollection:kTSStorageManager_OWSDeviceCollection];
         }];
-    }
 }
 
 - (BOOL)hasReceivedSyncMessageInLastSeconds:(NSTimeInterval)intervalSeconds
@@ -82,6 +90,8 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 - (void)setHasReceivedSyncMessage
 {
     self.lastReceivedSyncMessage = [NSDate new];
+
+    [self setMayHaveLinkedDevices];
 }
 
 @end

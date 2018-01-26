@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOrphanedDataCleaner.h"
@@ -9,6 +9,7 @@
 #import "TSMessage.h"
 #import "TSStorageManager.h"
 #import "TSThread.h"
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

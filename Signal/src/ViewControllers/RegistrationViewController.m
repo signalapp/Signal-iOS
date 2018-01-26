@@ -1,11 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "RegistrationViewController.h"
 #import "CodeVerificationViewController.h"
 #import "CountryCodeViewController.h"
-#import "NSString+OWS.h"
 #import "PhoneNumber.h"
 #import "PhoneNumberUtil.h"
 #import "Signal-Swift.h"
@@ -14,6 +13,7 @@
 #import "ViewControllerUtils.h"
 #import <SAMKeychain/SAMKeychain.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalMessaging/NSString+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -262,7 +262,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 - (void)updateCountryWithName:(NSString *)countryName
                   callingCode:(NSString *)callingCode
                   countryCode:(NSString *)countryCode {
-    OWSAssert([NSThread isMainThread]);
+    OWSAssertIsOnMainThread();
     OWSAssert(countryName.length > 0);
     OWSAssert(callingCode.length > 0);
     OWSAssert(countryCode.length > 0);
@@ -439,8 +439,9 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     OWSCAssert(value.length > 0);
 
     NSError *error;
-    [SAMKeychain setPassword:value forService:kKeychainService_LastRegistered account:key error:&error];
-    if (error) {
+    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
+    BOOL success = [SAMKeychain setPassword:value forService:kKeychainService_LastRegistered account:key error:&error];
+    if (!success || error) {
         DDLogError(@"%@ Error persisting 'last registered' value in keychain: %@", self.logTag, error);
     }
 }
