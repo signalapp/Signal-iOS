@@ -192,6 +192,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
         Logger.debug("\(self.logTag) \(#function)")
 
+        AppReadiness.setAppIsReady()
+
         if TSAccountManager.isRegistered() {
             Logger.info("\(self.logTag) localNumber: \(TSAccountManager.localNumber)")
 
@@ -219,7 +221,6 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         // We don't need to fetch the local profile in the SAE
 
         OWSReadReceiptManager.shared().prepareCachedValues()
-
     }
 
     @objc
@@ -323,7 +324,9 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         Logger.debug("\(self.logTag) \(#function)")
 
         if isReadyForAppExtensions {
-            activate()
+            AppReadiness.runNowOr(whenAppIsReady: {
+                self.activate()
+            })
         }
     }
 
@@ -434,7 +437,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             self.showPrimaryViewController(conversationPicker)
             Logger.info("showing picker with attachment: \(attachment)")
         }.catch { error in
-            let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE", comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
+            let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE",
+                                               comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
             OWSAlerts.showAlert(withTitle: alertTitle,
                                 message: error.localizedDescription,
                                 buttonTitle: CommonStrings.cancelButton) { _ in
