@@ -53,8 +53,12 @@ extern NSString *const StorageIsReadyNotification;
 // TODO: Deprecate?
 - (nullable YapDatabaseConnection *)newDatabaseConnection;
 
+#ifdef DEBUG
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
+#endif
+
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
+
 - (nullable id)registeredExtension:(NSString *)extensionName;
 
 - (unsigned long long)databaseFileSize;
