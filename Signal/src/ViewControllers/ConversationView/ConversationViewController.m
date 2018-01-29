@@ -2834,23 +2834,26 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // We need to reload any modified interactions _before_ we call
     // reloadViewItems.
     BOOL hasDeletions = NO;
+    BOOL hasMalformedRowChange = NO;
     for (YapDatabaseViewRowChange *rowChange in rowChanges) {
         switch (rowChange.type) {
             case YapDatabaseViewChangeUpdate: {
                 YapCollectionKey *collectionKey = rowChange.collectionKey;
-                OWSAssert(collectionKey.key.length > 0);
                 if (collectionKey.key) {
                     ConversationViewItem *viewItem = self.viewItemCache[collectionKey.key];
                     [self reloadInteractionForViewItem:viewItem];
+                } else {
+                    hasMalformedRowChange = YES;
                 }
                 break;
             }
             case YapDatabaseViewChangeDelete: {
                 // Discard cached view items after deletes.
                 YapCollectionKey *collectionKey = rowChange.collectionKey;
-                OWSAssert(collectionKey.key.length > 0);
                 if (collectionKey.key) {
                     [self.viewItemCache removeObjectForKey:collectionKey.key];
+                } else {
+                    hasMalformedRowChange = YES;
                 }
                 hasDeletions = YES;
                 break;
@@ -2858,6 +2861,19 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             default:
                 break;
         }
+        if (hasMalformedRowChange) {
+            break;
+        }
+    }
+
+    if (hasMalformedRowChange) {
+        // These errors seems to be very rare; they can only be reproduced
+        // using the more extreme actions in the debug UI.
+        DDLogError(@"%@ hasMalformedRowChange", self.logTag);
+        [self.collectionView reloadData];
+        [self updateLastVisibleTimestamp];
+        [self cleanUpUnreadIndicatorIfNecessary];
+        return;
     }
 
     NSUInteger oldViewItemCount = self.viewItems.count;
