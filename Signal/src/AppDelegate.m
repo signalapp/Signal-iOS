@@ -347,12 +347,16 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
+    OWSAssertIsOnMainThread();
+
     DDLogInfo(@"%@ registered vanilla push token: %@", self.logTag, deviceToken);
     [PushRegistrationManager.sharedManager didReceiveVanillaPushToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
+    OWSAssertIsOnMainThread();
+
     DDLogError(@"%@ failed to register vanilla push token with error: %@", self.logTag, error);
 #ifdef DEBUG
     DDLogWarn(
@@ -367,6 +371,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application
     didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
+    OWSAssertIsOnMainThread();
+
     DDLogInfo(@"%@ registered user notification settings", self.logTag);
     [PushRegistrationManager.sharedManager didRegisterUserNotificationSettings];
 }
@@ -376,6 +382,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     sourceApplication:(NSString *)sourceApplication
            annotation:(id)annotation
 {
+    OWSAssertIsOnMainThread();
+
+    if (!AppReadiness.isAppReady) {
+        DDLogWarn(@"%@ Ignoring openURL: app not ready.", self.logTag);
+        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
+        return NO;
+    }
+
     if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![TSAccountManager isRegistered]) {
             id signupController = SignalApp.sharedApp.signUpFlowNavigationController;
@@ -402,6 +416,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    OWSAssertIsOnMainThread();
+
     DDLogWarn(@"%@ applicationDidBecomeActive.", self.logTag);
     if (CurrentAppContext().isRunningTests) {
         return;
@@ -499,6 +515,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
+    OWSAssertIsOnMainThread();
+
     DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
 
     __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
@@ -525,6 +543,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application
     performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler {
+    OWSAssertIsOnMainThread();
+
+    if (!AppReadiness.isAppReady) {
+        DDLogWarn(@"%@ Ignoring performActionForShortcutItem: app not ready.", self.logTag);
+        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
+        completionHandler(NO);
+    }
+
     if ([TSAccountManager isRegistered]) {
         [SignalApp.sharedApp.homeViewController showNewConversationView];
         completionHandler(YES);
@@ -551,8 +577,18 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 /**
  * Among other things, this is used by "call back" callkit dialog and calling from native contacts app.
  */
-- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
+- (BOOL)application:(UIApplication *)application
+    continueUserActivity:(nonnull NSUserActivity *)userActivity
+      restorationHandler:(nonnull void (^)(NSArray *_Nullable))restorationHandler
 {
+    OWSAssertIsOnMainThread();
+
+    if (!AppReadiness.isAppReady) {
+        DDLogWarn(@"%@ Ignoring continueUserActivity: app not ready.", self.logTag);
+        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
+        return NO;
+    }
+
     if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
         if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
             DDLogError(@"%@ unexpectedly received INStartVideoCallIntent pre iOS10", self.logTag);
@@ -678,12 +714,13 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     return NO;
 }
 
-
 /**
  * Screen protection obscures the app screen shown in the app switcher.
  */
 - (void)prepareScreenProtection
 {
+    OWSAssertIsOnMainThread();
+
     UIWindow *window = [[UIWindow alloc] initWithFrame:self.window.bounds];
     window.hidden = YES;
     window.opaque = YES;
@@ -698,24 +735,34 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)showScreenProtection
 {
+    OWSAssertIsOnMainThread();
+
     if (Environment.preferences.screenSecurityIsEnabled) {
         self.screenProtectionWindow.hidden = NO;
     }
 }
 
 - (void)removeScreenProtection {
+    OWSAssertIsOnMainThread();
+
     self.screenProtectionWindow.hidden = YES;
 }
 
 #pragma mark Push Notifications Delegate Methods
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    OWSAssertIsOnMainThread();
+
+    // It is safe to continue even if the app isn't ready.
     [[PushManager sharedManager] application:application didReceiveRemoteNotification:userInfo];
 }
 
 - (void)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    OWSAssertIsOnMainThread();
+
+    // It is safe to continue even if the app isn't ready.
     [[PushManager sharedManager] application:application
                 didReceiveRemoteNotification:userInfo
                       fetchCompletionHandler:completionHandler];
@@ -724,17 +771,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
     OWSAssertIsOnMainThread();
 
-    if (!self.isEnvironmentSetup) {
-        OWSFail(@"%@ ignoring %s because environment is not yet set up: %@.",
-            self.logTag,
-            __PRETTY_FUNCTION__,
-            notification);
-        return;
-    }
     DDLogInfo(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, notification);
 
     [AppStoreRating preventPromptAtNextTest];
-    [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
+    }];
 }
 
 - (void)application:(UIApplication *)application
@@ -742,8 +784,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
           forLocalNotification:(UILocalNotification *)notification
              completionHandler:(void (^)())completionHandler
 {
-    if (!self.isEnvironmentSetup) {
-        OWSFail(@"%@ ignoring %s because environment is not yet set up.", self.logTag, __PRETTY_FUNCTION__);
+    OWSAssertIsOnMainThread();
+
+    if (!AppReadiness.isAppReady) {
+        DDLogWarn(@"%@ Ignoring handleActionWithIdentifier: app not ready.", self.logTag);
+        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
         return;
     }
 
@@ -759,8 +804,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
               withResponseInfo:(NSDictionary *)responseInfo
              completionHandler:(void (^)())completionHandler
 {
-    if (!self.isEnvironmentSetup) {
-        OWSFail(@"%@ ignoring %s because environment is not yet set up.", self.logTag, __PRETTY_FUNCTION__);
+    OWSAssertIsOnMainThread();
+
+    if (!AppReadiness.isAppReady) {
+        DDLogWarn(@"%@ Ignoring handleActionWithIdentifier: app not ready.", self.logTag);
+        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
         return;
     }
 
@@ -805,8 +853,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [[OWSBatchMessageProcessor sharedInstance] handleAnyUnprocessedEnvelopesAsync];
 
     [[OWSProfileManager sharedManager] ensureLocalProfileCached];
-
-    self.isEnvironmentSetup = YES;
 
 //#ifdef DEBUG
 //    // A bug in orphan cleanup could be disastrous so let's only

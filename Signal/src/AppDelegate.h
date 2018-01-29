@@ -1,15 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 #import "HomeViewController.h"
+#import <UIKit/UIKit.h>
 
 extern NSString *const AppDelegateStoryboardMain;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
-
-@property (atomic) BOOL isEnvironmentSetup;
 
 @end
