@@ -234,7 +234,31 @@ NS_ASSUME_NONNULL_BEGIN
         }
                                         customRowHeight:[ContactTableViewCell rowHeight]
                                         actionBlock:^{
-                                            [weakSelf.selectThreadViewDelegate threadWasSelected:thread];
+                                            typeof(self) strongSelf = weakSelf;
+                                            if (!strongSelf) {
+                                                return;
+                                            }
+
+                                            if ([thread isKindOfClass:[TSContactThread class]]) {
+                                                BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
+                                                if (isBlocked
+                                                    && ![strongSelf.selectThreadViewDelegate canSelectBlockedContact]) {
+                                                    [BlockListUIUtils
+                                                        showUnblockPhoneNumberActionSheet:thread.contactIdentifier
+                                                                       fromViewController:strongSelf
+                                                                          blockingManager:helper.blockingManager
+                                                                          contactsManager:helper.contactsManager
+                                                                          completionBlock:^(BOOL isStillBlocked) {
+                                                                              if (!isStillBlocked) {
+                                                                                  [strongSelf.selectThreadViewDelegate
+                                                                                      threadWasSelected:thread];
+                                                                              }
+                                                                          }];
+                                                    return;
+                                                }
+                                            }
+
+                                            [strongSelf.selectThreadViewDelegate threadWasSelected:thread];
                                         }]];
     }
 
