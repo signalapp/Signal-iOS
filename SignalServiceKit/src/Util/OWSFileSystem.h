@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns nil on failure.
 + (nullable NSString *)writeDataToTemporaryFile:(NSData *)data fileExtension:(NSString *_Nullable)fileExtension;
 
++ (nullable NSNumber *)fileSizeOfPath:(NSString *)filePath;
+
 @end
 
 NS_ASSUME_NONNULL_END

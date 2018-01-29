@@ -200,6 +200,20 @@ NS_ASSUME_NONNULL_BEGIN
     return tempFilePath;
 }
 
++ (nullable NSNumber *)fileSizeOfPath:(NSString *)filePath
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *_Nullable error;
+    unsigned long long fileSize =
+        [[fileManager attributesOfItemAtPath:filePath error:&error][NSFileSize] unsignedLongLongValue];
+    if (error) {
+        DDLogError(@"%@ Couldn't fetch file size[%@]: %@", self.logTag, filePath, error);
+        return nil;
+    } else {
+        return @(fileSize);
+    }
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
