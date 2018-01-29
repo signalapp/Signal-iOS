@@ -456,12 +456,10 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     return self.database.newConnection;
 }
 
-#ifdef DEBUG
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName
 {
     return [self.database registerExtension:extension withName:extensionName];
 }
-#endif
 
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName

@@ -26,6 +26,8 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage);
 + (NSString *)databaseFilePath;
 
 + (NSString *)legacyDatabaseFilePath;
++ (NSString *)legacyDatabaseFilePath_SHM;
++ (NSString *)legacyDatabaseFilePath_WAL;
 
 @end
 
