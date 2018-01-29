@@ -233,6 +233,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic) BOOL hasUnreadMessages;
+@property (nonatomic) BOOL isPickingMediaAsDocument;
 
 @end
 
@@ -2300,9 +2301,21 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // UIDocumentPickerModeImport copies to a temp file within our container.
     // It uses more memory than "open" but lets us avoid working with security scoped URLs.
     UIDocumentPickerMode pickerMode = UIDocumentPickerModeImport;
+    // TODO: UIDocumentMenuViewController is deprecated; we should use UIDocumentPickerViewController
+    //       instead.
     UIDocumentMenuViewController *menuController =
         [[UIDocumentMenuViewController alloc] initWithDocumentTypes:documentTypes inMode:pickerMode];
     menuController.delegate = self;
+
+    UIImage *takeMediaImage = [UIImage imageNamed:@"actionsheet_camera_black"];
+    OWSAssert(takeMediaImage);
+    [menuController addOptionWithTitle:NSLocalizedString(
+                                           @"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
+                                 image:takeMediaImage
+                                 order:UIDocumentMenuOrderFirst
+                               handler:^{
+                                   [self chooseFromLibraryAsDocument];
+                               }];
 
     [self dismissKeyBoard];
     [self presentViewController:menuController animated:YES completion:nil];
@@ -2472,9 +2485,25 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }];
 }
 
-- (void)chooseFromLibrary
+- (void)chooseFromLibraryAsDocument
 {
     OWSAssertIsOnMainThread();
+
+    [self chooseFromLibrary:YES];
+}
+
+- (void)chooseFromLibraryAsMedia
+{
+    OWSAssertIsOnMainThread();
+
+    [self chooseFromLibrary:NO];
+}
+
+- (void)chooseFromLibrary:(BOOL)shouldTreatAsDocument
+{
+    OWSAssertIsOnMainThread();
+
+    self.isPickingMediaAsDocument = shouldTreatAsDocument;
 
     [self ows_askForMediaLibraryPermissions:^(BOOL granted) {
         if (!granted) {
@@ -2601,6 +2630,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             return failedToPickAttachment(nil);
         }
 
+        // Images chosen from the "attach document" UI should be sent as originals;
+        // images chosen from the "attach media" UI should be resized to "medium" size;
+        TSImageQuality imageQuality = (self.isPickingMediaAsDocument ? TSImageQualityOriginal : TSImageQualityMedium);
+
         PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
         options.synchronous = YES; // We're only fetching one asset.
         options.networkAccessAllowed = YES; // iCloud OK
@@ -2622,11 +2655,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                            DataSource *_Nullable dataSource =
                                [DataSourceValue dataSourceWithData:imageData utiType:dataUTI];
                            [dataSource setSourceFilename:filename];
-                           // "Camera Roll" attachments _SHOULD_ be resized, if possible.
-                           SignalAttachment *attachment =
-                               [SignalAttachment attachmentWithDataSource:dataSource
-                                                                  dataUTI:dataUTI
-                                                             imageQuality:TSImageQualityMedium];
+                           SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
+                                                                                             dataUTI:dataUTI
+                                                                                        imageQuality:imageQuality];
                            [self dismissViewControllerAnimated:YES
                                                     completion:^{
                                                         OWSAssertIsOnMainThread();
@@ -3307,7 +3338,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         actionWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
                   style:UIAlertActionStyleDefault
                 handler:^(UIAlertAction *_Nonnull action) {
-                    [self chooseFromLibrary];
+                    [self chooseFromLibraryAsMedia];
                 }];
     UIImage *chooseMediaImage = [UIImage imageNamed:@"actionsheet_camera_roll_black"];
     OWSAssert(chooseMediaImage);
