@@ -192,6 +192,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
         Logger.debug("\(self.logTag) \(#function)")
 
+        // Note that this does much more than set a flag;
+        // it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
 
         if TSAccountManager.isRegistered() {

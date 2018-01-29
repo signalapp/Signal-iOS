@@ -826,6 +826,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [OWSPreferences setIsRegistered:[TSAccountManager isRegistered]];
 
+    // Note that this does much more than set a flag;
+    // it will also run all deferred blocks.
     [AppReadiness setAppIsReady];
 
     if ([TSAccountManager isRegistered]) {

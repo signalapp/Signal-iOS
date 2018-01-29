@@ -24,10 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDate *)ows_dateWithMillisecondsSince1970:(uint64_t)milliseconds;
 + (uint64_t)ows_millisecondsSince1970ForDate:(NSDate *)date;
 
-#pragma mark - Debugging
-
-+ (NSString *)debugTimestamp;
-
 @end
 
 NS_ASSUME_NONNULL_END
