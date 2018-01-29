@@ -1030,8 +1030,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                         authorId:@"+19174054215"
                                                   sourceDeviceId:0
                                                      messageBody:randomText];
-                //                DDLogError(@"%@ sendFakeMessages incoming timestamp: %llu.", self.logTag,
-                //                message.timestamp);
                 [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
                 break;
             }
@@ -1040,8 +1038,6 @@ NS_ASSUME_NONNULL_BEGIN
                     [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                         inThread:thread
                                                      messageBody:randomText];
-                //                DDLogError(@"%@ sendFakeMessages outgoing timestamp: %llu.", self.logTag,
-                //                message.timestamp);
                 [message saveWithTransaction:transaction];
                 [message updateWithMessageState:TSOutgoingMessageStateUnsent transaction:transaction];
                 break;
@@ -1069,8 +1065,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                        pointer.uniqueId,
                                                    ]
                                                 expiresInSeconds:0];
-                //                DDLogError(@"%@ sendFakeMessages incoming attachment timestamp: %llu.", self.logTag,
-                //                message.timestamp);
                 [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
                 break;
             }
@@ -1081,8 +1075,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                      messageBody:nil
                                                   isVoiceMessage:NO
                                                 expiresInSeconds:0];
-                //                DDLogError(@"%@ sendFakeMessages outgoing attachment timestamp: %llu.", self.logTag,
-                //                message.timestamp);
 
                 NSString *filename = @"test.mp3";
                 UInt32 filesize = 16;
