@@ -613,7 +613,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
                     let tempFilePath = OWSFileSystem.temporaryFilePath(withFileExtension:"png")
                     do {
                         let url = NSURL.fileURL(withPath:tempFilePath)
-                        try data.write(to: url, options: .atomicWrite)
+                        try data.write(to: url)
                         fulfill((url, srcUtiType))
                     } catch {
                         reject(ShareViewControllerError.assertionError(description: "couldn't write UIImage: \(String(describing: error))"))
