@@ -27,10 +27,8 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 // otherwise it returns the "unread" database view.
 + (id)unseenDatabaseViewExtension:(YapDatabaseReadTransaction *)transaction;
 
-// NOTE: It is not safe to call this method while hasPendingViewRegistrations is YES.
 + (id)threadOutgoingMessageDatabaseView:(YapDatabaseReadTransaction *)transaction;
 
-// NOTE: It is not safe to call this method while hasPendingViewRegistrations is YES.
 + (id)threadSpecialMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
 
 #pragma mark - Registration
