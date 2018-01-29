@@ -151,6 +151,10 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 
 + (void)protectFiles
 {
+    DDLogInfo(@"%@ Database file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.legacyDatabaseFilePath]);
+    DDLogInfo(@"%@ \t SHM file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.legacyDatabaseFilePath_SHM]);
+    DDLogInfo(@"%@ \t WAL file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.legacyDatabaseFilePath_WAL]);
+
     // The old database location was in the Document directory,
     // so protect the database files individually.
     [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath];

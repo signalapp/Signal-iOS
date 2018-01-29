@@ -126,6 +126,7 @@ void AssertIsOnMainThread(void);
 
 #define OWSRaiseException(name, formatParam, ...)                                                                      \
     {                                                                                                                  \
+        DDLogError(@"Exception: %@ %@", name, [NSString stringWithFormat:formatParam, ##__VA_ARGS__]);                 \
         [DDLog flushLog];                                                                                              \
         @throw [NSException exceptionWithName:name                                                                     \
                                        reason:[NSString stringWithFormat:formatParam, ##__VA_ARGS__]                   \
@@ -134,6 +135,8 @@ void AssertIsOnMainThread(void);
 
 #define OWSRaiseExceptionWithUserInfo(name, userInfoParam, formatParam, ...)                                           \
     {                                                                                                                  \
+        DDLogError(                                                                                                    \
+            @"Exception: %@ %@ %@", name, userInfoParam, [NSString stringWithFormat:formatParam, ##__VA_ARGS__]);      \
         [DDLog flushLog];                                                                                              \
         @throw [NSException exceptionWithName:name                                                                     \
                                        reason:[NSString stringWithFormat:formatParam, ##__VA_ARGS__]                   \
