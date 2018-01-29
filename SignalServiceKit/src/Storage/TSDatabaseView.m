@@ -29,6 +29,14 @@ NSString *const TSUnseenDatabaseViewExtensionName = @"TSUnseenDatabaseViewExtens
 NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName = @"TSThreadSpecialMessagesDatabaseViewExtensionName";
 NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesDatabaseViewExtensionName";
 
+@interface OWSStorage (TSDatabaseView)
+
+- (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
+
+@end
+
+#pragma mark -
+
 @implementation TSDatabaseView
 
 + (void)registerCrossProcessNotifier:(OWSStorage *)storage
