@@ -150,7 +150,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     switch (self.interaction.interactionType) {
         case OWSInteractionType_Unknown:
-            OWSFail(@"%@ Unknown interaction type: %@", self.logTag, self.interaction.debugDescription);
+            OWSFail(@"%@ Unknown interaction type: %@", self.logTag, self.interaction.description);
             return ConversationViewLayoutAlignment_Center;
         case OWSInteractionType_IncomingMessage:
             return ConversationViewLayoutAlignment_Incoming;

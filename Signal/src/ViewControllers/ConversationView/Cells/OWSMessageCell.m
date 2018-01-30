@@ -1251,7 +1251,7 @@ const CGFloat OWSMessageCellCornerRadius = 17;
     OWSAssert(self.delegate);
 
     if (sender.state != UIGestureRecognizerStateRecognized) {
-        DDLogInfo(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.debugDescription);
+        DDLogInfo(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.description);
         return;
     }
 
@@ -1277,7 +1277,7 @@ const CGFloat OWSMessageCellCornerRadius = 17;
     OWSAssert(self.delegate);
 
     if (sender.state != UIGestureRecognizerStateRecognized) {
-        DDLogInfo(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.debugDescription);
+        DDLogInfo(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.description);
         return;
     }
 
