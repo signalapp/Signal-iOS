@@ -682,6 +682,12 @@ public class SignalAttachment: NSObject {
     private class func compressImageAsJPEG(image: UIImage, attachment: SignalAttachment, filename: String?, imageQuality: TSImageQuality) -> SignalAttachment {
         assert(attachment.error == nil)
 
+        if imageQuality == .original &&
+            attachment.dataLength < kMaxFileSizeGeneric {
+            // We should avoid resizing images attached "as documents" if possible.
+            return attachment
+        }
+
         var imageUploadQuality = imageQuality.imageQualityTier()
 
         while true {
