@@ -2489,17 +2489,17 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     OWSAssertIsOnMainThread();
 
-    [self chooseFromLibrary:YES];
+    [self chooseFromLibraryAsDocument:YES];
 }
 
 - (void)chooseFromLibraryAsMedia
 {
     OWSAssertIsOnMainThread();
 
-    [self chooseFromLibrary:NO];
+    [self chooseFromLibraryAsDocument:NO];
 }
 
-- (void)chooseFromLibrary:(BOOL)shouldTreatAsDocument
+- (void)chooseFromLibraryAsDocument:(BOOL)shouldTreatAsDocument
 {
     OWSAssertIsOnMainThread();
 
