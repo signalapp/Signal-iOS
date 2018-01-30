@@ -338,8 +338,7 @@ typedef void (^CustomLayoutBlock)(void);
 {
     OWSAssert(self.recipientId.length > 0);
 
-    BOOL isVerified =
-        [[OWSIdentityManager sharedManager] verificationStateForRecipientIdWithoutTransaction:self.recipientId]
+    BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId]
         == OWSVerificationStateVerified;
 
     if (isVerified) {

@@ -27,9 +27,6 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     dispatch_once(&onceToken, ^{
         protocolStoreDBConnection = [TSStorageManager sharedManager].newDatabaseConnection;
         protocolStoreDBConnection.objectCacheEnabled = NO;
-#if DEBUG
-        protocolStoreDBConnection.permittedTransactions = YDB_AnySyncTransaction;
-#endif
     });
 
     return protocolStoreDBConnection;

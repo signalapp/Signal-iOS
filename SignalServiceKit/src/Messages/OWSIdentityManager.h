@@ -30,8 +30,7 @@ extern const NSUInteger kIdentityKeyLength;
 
 - (void)generateNewIdentityKey;
 
-// TODO: Rename to identityKeyForRecipientId.
-- (nullable NSData *)identityKeyForRecipientIdWOT:(NSString *)recipientId;
+- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId;
 
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId protocolContext:(nullable id)protocolContext;
 
@@ -41,7 +40,7 @@ extern const NSUInteger kIdentityKeyLength;
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
              protocolContext:(nullable id)protocolContext;
 
-- (OWSVerificationState)verificationStateForRecipientIdWithoutTransaction:(NSString *)recipientId;
+- (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId;
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
                                             transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
@@ -59,8 +58,7 @@ extern const NSUInteger kIdentityKeyLength;
 
 #pragma mark - Debug
 
-// TODO:
-- (nullable ECKeyPair *)identityKeyPairWithoutProtocolContext;
+- (nullable ECKeyPair *)identityKeyPair;
 
 #if DEBUG
 // Clears everything except the local identity key.

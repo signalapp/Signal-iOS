@@ -132,7 +132,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                     inCollection:TSStorageManagerIdentityKeyStoreCollection];
 }
 
-- (nullable NSData *)identityKeyForRecipientIdWOT:(NSString *)recipientId
+- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
 {
     __block NSData *_Nullable result = nil;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
@@ -151,7 +151,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     return [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction].identityKey;
 }
 
-- (nullable ECKeyPair *)identityKeyPairWithoutProtocolContext
+- (nullable ECKeyPair *)identityKeyPair
 {
     __block ECKeyPair *_Nullable identityKeyPair = nil;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
@@ -305,7 +305,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     [self fireIdentityStateChangeNotification];
 }
 
-- (OWSVerificationState)verificationStateForRecipientIdWithoutTransaction:(NSString *)recipientId
+- (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
 {
     __block OWSVerificationState result;
     // Use a read/write transaction to block on latest.

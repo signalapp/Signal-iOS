@@ -699,7 +699,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     NSMutableArray<NSString *> *result = [NSMutableArray new];
     for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientIdWithoutTransaction:recipientId]
+        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
             == OWSVerificationStateNoLongerVerified) {
             [result addObject:recipientId];
         }
@@ -1303,7 +1303,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     BOOL isVerified = YES;
     for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientIdWithoutTransaction:recipientId]
+        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
             != OWSVerificationStateVerified) {
             isVerified = NO;
             break;

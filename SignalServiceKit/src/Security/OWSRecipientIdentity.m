@@ -3,6 +3,7 @@
 //
 
 #import "OWSRecipientIdentity.h"
+#import "TSStorageManager+SessionStore.h"
 #import "TSStorageManager.h"
 #import <YapDatabase/YapDatabase.h>
 
@@ -127,21 +128,21 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction.connection == [OWSRecipientIdentity dbReadWriteConnection]);
+    OWSAssert(!transaction.connection.objectCacheEnabled);
 
     [super saveWithTransaction:transaction];
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction.connection == [OWSRecipientIdentity dbReadWriteConnection]);
+    OWSAssert(!transaction.connection.objectCacheEnabled);
 
     [super removeWithTransaction:transaction];
 }
 
 - (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction.connection == [OWSRecipientIdentity dbReadWriteConnection]);
+    OWSAssert(!transaction.connection.objectCacheEnabled);
 
     [super touchWithTransaction:transaction];
 }
@@ -149,7 +150,7 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
 + (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
                                      transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(transaction.connection == [OWSRecipientIdentity dbReadConnection]);
+    OWSAssert(!transaction.connection.objectCacheEnabled);
 
     return [super fetchObjectWithUniqueID:uniqueID transaction:transaction];
 }
@@ -161,25 +162,9 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
     return self.dbReadWriteConnection;
 }
 
-// TODO: Replace with protocol connection?
-/**
- * Override to disable the object cache to better enforce transaction semantics on the store.
- * Note that it's still technically possible to access this collection from a different collection,
- * but that should be considered a bug.
- */
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
-    static dispatch_once_t onceToken;
-    static YapDatabaseConnection *sharedDBConnection;
-    dispatch_once(&onceToken, ^{
-        sharedDBConnection = [TSStorageManager sharedManager].newDatabaseConnection;
-        sharedDBConnection.objectCacheEnabled = NO;
-#if DEBUG
-        sharedDBConnection.permittedTransactions = YDB_AnySyncTransaction;
-#endif
-    });
-
-    return sharedDBConnection;
+    return TSStorageManager.protocolStoreDBConnection;
 }
 
 - (YapDatabaseConnection *)dbReadConnection

@@ -177,7 +177,7 @@ NS_ASSUME_NONNULL_BEGIN
             ContactTableViewCell *cell = [ContactTableViewCell new];
             SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
             OWSVerificationState verificationState =
-                [[OWSIdentityManager sharedManager] verificationStateForRecipientIdWithoutTransaction:recipientId];
+                [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId];
             BOOL isVerified = verificationState == OWSVerificationStateVerified;
             BOOL isNoLongerVerified = verificationState == OWSVerificationStateNoLongerVerified;
             BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
@@ -244,10 +244,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSIdentityManager *identityManger = [OWSIdentityManager sharedManager];
     NSArray<NSString *> *recipientIds = [self noLongerVerifiedRecipientIds];
     for (NSString *recipientId in recipientIds) {
-        OWSVerificationState verificationState =
-            [identityManger verificationStateForRecipientIdWithoutTransaction:recipientId];
+        OWSVerificationState verificationState = [identityManger verificationStateForRecipientId:recipientId];
         if (verificationState == OWSVerificationStateNoLongerVerified) {
-            NSData *identityKey = [identityManger identityKeyForRecipientIdWOT:recipientId];
+            NSData *identityKey = [identityManger identityKeyForRecipientId:recipientId];
             if (identityKey.length < 1) {
                 OWSFail(@"Missing identity key for: %@", recipientId);
                 continue;
@@ -271,7 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableArray<NSString *> *result = [NSMutableArray new];
     for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientIdWithoutTransaction:recipientId]
+        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
             == OWSVerificationStateNoLongerVerified) {
             [result addObject:recipientId];
         }

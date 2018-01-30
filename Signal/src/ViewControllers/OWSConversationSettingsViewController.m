@@ -682,8 +682,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
-        BOOL isVerified =
-            [[OWSIdentityManager sharedManager] verificationStateForRecipientIdWithoutTransaction:recipientId]
+        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
             == OWSVerificationStateVerified;
         if (isVerified) {
             NSMutableAttributedString *subtitle = [NSMutableAttributedString new];

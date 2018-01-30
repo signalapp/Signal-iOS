@@ -291,8 +291,7 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
                     // "no longer verified".
                     BOOL isNoLongerVerified = NO;
                     for (NSString *recipientId in thread.recipientIdentifiers) {
-                        if ([OWSIdentityManager.sharedManager
-                                verificationStateForRecipientIdWithoutTransaction:recipientId]
+                        if ([OWSIdentityManager.sharedManager verificationStateForRecipientId:recipientId]
                             == OWSVerificationStateNoLongerVerified) {
                             isNoLongerVerified = YES;
                             break;

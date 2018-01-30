@@ -134,11 +134,11 @@ static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * 
 
         RefreshPreKeysMode modeCopy = mode;
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
-        ECKeyPair *identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPairWithoutProtocolContext];
+        ECKeyPair *identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
 
         if (!identityKeyPair) {
             [[OWSIdentityManager sharedManager] generateNewIdentityKey];
-            identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPairWithoutProtocolContext];
+            identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
 
             // Switch modes if necessary.
             modeCopy = RefreshPreKeysMode_SignedAndOneTime;
