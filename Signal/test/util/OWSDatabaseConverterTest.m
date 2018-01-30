@@ -298,7 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
     __block NSData *_Nullable databaseSalt = nil;
-    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+    YapDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(!databaseSalt);
         OWSAssert(saltData);
 
@@ -313,8 +313,7 @@ NS_ASSUME_NONNULL_BEGIN
     };
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
-                                                                        saltBlock:saltBlock
-                                                                     keySpecBlock:keySpecBlock];
+                                                                  recordSaltBlock:recordSaltBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
@@ -355,8 +354,7 @@ NS_ASSUME_NONNULL_BEGIN
     };
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
-                                                                        saltBlock:saltBlock
-                                                                     keySpecBlock:keySpecBlock];
+                                                                  recordSaltBlock:recordSaltBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
@@ -400,7 +398,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
     __block NSData *_Nullable databaseSalt = nil;
-    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+    YapDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(!databaseSalt);
         OWSAssert(saltData);
 
@@ -450,7 +448,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self createDatabase:databasePassword databaseSalt:databaseSalt databaseKeySpec:databaseKeySpec];
     XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
-    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+    YapDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(saltData);
 
         XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
@@ -463,8 +461,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
-                                                                        saltBlock:saltBlock
-                                                                     keySpecBlock:keySpecBlock];
+                                                                  recordSaltBlock:recordSaltBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
@@ -488,7 +485,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self createDatabase:databasePassword databaseSalt:databaseSalt databaseKeySpec:databaseKeySpec];
     XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
-    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+    YapDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(saltData);
 
         XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
@@ -501,8 +498,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
-                                                                        saltBlock:saltBlock
-                                                                     keySpecBlock:keySpecBlock];
+                                                                  recordSaltBlock:recordSaltBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }

@@ -251,6 +251,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (nullable NSError *)convertDatabaseIfNecessary
 {
     NSString *databaseFilePath = [TSStorageManager legacyDatabaseFilePath];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]) {
+        DDLogVerbose(@"%@ no legacy database file found", self.logTag);
+        return nil;
+    }
 
     NSError *error;
     NSData *_Nullable databasePassword = [OWSStorage tryToLoadDatabasePassword:&error];
@@ -260,7 +264,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                        OWSErrorCodeDatabaseConversionFatalError, @"Failed to load database password"));
     }
 
-    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+    YapDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         DDLogVerbose(@"%@ saltData: %@", self.logTag, saltData.hexadecimalString);
         [OWSStorage storeDatabaseSalt:saltData];
     };
@@ -271,8 +275,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     return [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                              databasePassword:databasePassword
-                                                    saltBlock:saltBlock
-                                                 keySpecBlock:keySpecBlock];
+                                              recordSaltBlock:recordSaltBlock];
 }
 
 - (void)startupLogging

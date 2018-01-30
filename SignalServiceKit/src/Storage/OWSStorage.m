@@ -388,10 +388,10 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     // Although we don't use databasePassword or databaseSalt in this method,
     // we use their accessors to ensure that all three exist in the keychain
     // and can be loaded or that we reset the database & keychain.
-    NSData *databasePassword = [self databasePassword];
-    OWSAssert(databasePassword.length > 0);
-    NSData *databaseSalt = [self databaseSalt];
-    OWSAssert(databaseSalt.length > 0);
+    //    NSData *databasePassword = [self databasePassword];
+    //    OWSAssert(databasePassword.length > 0);
+    //    NSData *databaseSalt = [self databaseSalt];
+    //    OWSAssert(databaseSalt.length > 0);
     NSData *databaseKeySpec = [self databaseKeySpec];
     OWSAssert(databaseKeySpec.length == kSQLCipherKeySpecLength);
 
@@ -608,6 +608,8 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 - (NSData *)databaseKeySpec
 {
+    // Get or generate salt and cipherKeyData
+
     return [self loadMetadataOrClearDatabase:^(NSError **_Nullable errorHandle) {
         return [OWSStorage tryToLoadDatabaseKeySpec:errorHandle];
     }
