@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -130,10 +130,10 @@ public class ProfileFetcherJob: NSObject {
     }
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
-        OWSDispatch.sessionStoreQueue().async {
-            if OWSIdentityManager.shared().saveRemoteIdentity(latestIdentityKey, recipientId: recipientId) {
+        TSStorageManager.protocolStoreDBConnection().asyncReadWrite { (transaction) in
+            if OWSIdentityManager.shared().saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, protocolContext: transaction) {
                 Logger.info("\(self.TAG) updated identity key with fetched profile for recipient: \(recipientId)")
-                self.storageManager.archiveAllSessions(forContact: recipientId)
+                self.storageManager.archiveAllSessions(forContact: recipientId, protocolContext: transaction)
             } else {
                 // no change in identity.
             }

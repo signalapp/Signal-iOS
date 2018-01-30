@@ -25,6 +25,7 @@
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSMessageUtils.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabase.h>
@@ -57,7 +58,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 @property (nonatomic, readonly) AccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) OWSMessageManager *messagesManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
@@ -106,7 +106,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 {
     _accountManager = SignalApp.sharedApp.accountManager;
     _contactsManager = [Environment current].contactsManager;
-    _messagesManager = [OWSMessageManager sharedManager];
     _messageSender = [Environment current].messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
@@ -752,7 +751,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)updateInboxCountLabel
 {
-    NSUInteger numberOfItems = [self.messagesManager unreadMessagesCount];
+    NSUInteger numberOfItems = [OWSMessageUtils.sharedManager unreadMessagesCount];
     NSString *unreadString = NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil);
 
     if (numberOfItems > 0) {

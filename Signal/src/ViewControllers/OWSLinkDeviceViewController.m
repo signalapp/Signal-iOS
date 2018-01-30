@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Optimistically set this flag.
     [OWSDeviceManager.sharedManager setMayHaveLinkedDevices];
 
-    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
+    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPairWithoutProtocolContext];
     OWSAssert(identityKeyPair);
     NSData *myPublicKey = identityKeyPair.publicKey;
     NSData *myPrivateKey = identityKeyPair.ows_privateKey;

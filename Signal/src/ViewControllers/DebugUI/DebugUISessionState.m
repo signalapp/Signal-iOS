@@ -30,9 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
                             }],
             [OWSTableItem itemWithTitle:@"Log All Sessions"
                             actionBlock:^{
-                                dispatch_async([OWSDispatch sessionStoreQueue], ^{
-                                    [[TSStorageManager sharedManager] printAllSessions];
-                                });
+                                [[TSStorageManager sharedManager] printAllSessions];
                             }],
             [OWSTableItem itemWithTitle:@"Toggle Key Change"
                             actionBlock:^{
@@ -41,33 +39,39 @@ NS_ASSUME_NONNULL_BEGIN
                                 OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
                                 NSString *recipientId = [thread contactIdentifier];
 
-                                NSData *currentKey = [identityManager identityKeyForRecipientIdWOT:recipientId];
-                                NSMutableData *flippedKey = [NSMutableData new];
-                                const char *currentKeyBytes = currentKey.bytes;
-                                for (NSUInteger i = 0; i < currentKey.length; i++) {
-                                    const char xorByte = currentKeyBytes[i] ^ 0xff;
-                                    [flippedKey appendBytes:&xorByte length:1];
-                                }
-                                OWSAssert(flippedKey.length == currentKey.length);
-                                [identityManager saveRemoteIdentity:flippedKey
-                                                        recipientId:recipientId
-                                                    protocolContext:protocolContext];
+                                [TSStorageManager.protocolStoreDBConnection
+                                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                        NSData *currentKey = [identityManager identityKeyForRecipientId:recipientId
+                                                                                        protocolContext:transaction];
+                                        NSMutableData *flippedKey = [NSMutableData new];
+                                        const char *currentKeyBytes = currentKey.bytes;
+                                        for (NSUInteger i = 0; i < currentKey.length; i++) {
+                                            const char xorByte = currentKeyBytes[i] ^ 0xff;
+                                            [flippedKey appendBytes:&xorByte length:1];
+                                        }
+                                        OWSAssert(flippedKey.length == currentKey.length);
+                                        [identityManager saveRemoteIdentity:flippedKey
+                                                                recipientId:recipientId
+                                                            protocolContext:transaction];
+                                    }];
                             }],
             [OWSTableItem itemWithTitle:@"Delete all sessions"
                             actionBlock:^{
-                                dispatch_async([OWSDispatch sessionStoreQueue], ^{
-                                    [[TSStorageManager sharedManager]
-                                        deleteAllSessionsForContact:thread.contactIdentifier
-                                                    protocolContext:protocolContext];
-                                });
+                                [TSStorageManager.protocolStoreDBConnection
+                                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                        [[TSStorageManager sharedManager]
+                                            deleteAllSessionsForContact:thread.contactIdentifier
+                                                        protocolContext:transaction];
+                                    }];
                             }],
             [OWSTableItem itemWithTitle:@"Archive all sessions"
                             actionBlock:^{
-                                dispatch_async([OWSDispatch sessionStoreQueue], ^{
-                                    [[TSStorageManager sharedManager]
-                                        archiveAllSessionsForContact:thread.contactIdentifier
-                                                     protocolContext:protocolContext];
-                                });
+                                [TSStorageManager.protocolStoreDBConnection
+                                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                        [[TSStorageManager sharedManager]
+                                            archiveAllSessionsForContact:thread.contactIdentifier
+                                                         protocolContext:transaction];
+                                    }];
                             }],
             [OWSTableItem itemWithTitle:@"Send session reset"
                             actionBlock:^{
@@ -101,32 +105,20 @@ NS_ASSUME_NONNULL_BEGIN
 #if DEBUG
 + (void)clearSessionAndIdentityStore
 {
-    dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[TSStorageManager sharedManager] resetSessionStore];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[OWSIdentityManager sharedManager] clearIdentityState];
-        });
-    });
+    [[TSStorageManager sharedManager] resetSessionStore];
+    [[OWSIdentityManager sharedManager] clearIdentityState];
 }
 
 + (void)snapshotSessionAndIdentityStore
 {
-    dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[TSStorageManager sharedManager] snapshotSessionStore];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[OWSIdentityManager sharedManager] snapshotIdentityState];
-        });
-    });
+    [[TSStorageManager sharedManager] snapshotSessionStore];
+    [[OWSIdentityManager sharedManager] snapshotIdentityState];
 }
 
 + (void)restoreSessionAndIdentityStore
 {
-    dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[TSStorageManager sharedManager] restoreSessionStore];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[OWSIdentityManager sharedManager] restoreIdentityState];
-        });
-    });
+    [[TSStorageManager sharedManager] restoreSessionStore];
+    [[OWSIdentityManager sharedManager] restoreIdentityState];
 }
 #endif
 

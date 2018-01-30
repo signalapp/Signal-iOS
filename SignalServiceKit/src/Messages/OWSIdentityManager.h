@@ -41,7 +41,9 @@ extern const NSUInteger kIdentityKeyLength;
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
              protocolContext:(nullable id)protocolContext;
 
-- (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId;
+- (OWSVerificationState)verificationStateForRecipientIdWithoutTransaction:(NSString *)recipientId;
+- (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
+                                            transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (nullable OWSRecipientIdentity *)recipientIdentityForRecipientId:(NSString *)recipientId;
 
@@ -50,8 +52,7 @@ extern const NSUInteger kIdentityKeyLength;
  * @returns nil if the recipient does not exist, or is trusted for sending
  *          else returns the untrusted recipient.
  */
-- (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId
-                                                            protocolContext:(nullable id)protocolContext;
+- (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId;
 
 // This method can be called from any thread.
 - (void)processIncomingSyncMessage:(OWSSignalServiceProtosVerified *)verified;

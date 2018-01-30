@@ -205,7 +205,7 @@ const NSUInteger kAvatarViewDiameter = 52;
     }
 
     NSAttributedString *attributedDate = [self dateAttributedString:thread.lastMessageDate];
-    NSUInteger unreadCount = [[OWSMessageManager sharedManager] unreadMessagesInThread:thread];
+    NSUInteger unreadCount = [[OWSMessageUtils sharedManager] unreadMessagesInThread:thread];
 
 
     [[NSNotificationCenter defaultCenter] addObserver:self

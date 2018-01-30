@@ -1258,7 +1258,11 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *envelopeData = [envelopeBuilder build].data;
     OWSAssert(envelopeData);
 
-    [[OWSBatchMessageProcessor sharedInstance] enqueueEnvelopeData:envelopeData plaintextData:plaintextData];
+    [TSStorageManager.protocolStoreDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [[OWSBatchMessageProcessor sharedInstance] enqueueEnvelopeData:envelopeData
+                                                         plaintextData:plaintextData
+                                                           transaction:transaction];
+    }];
 }
 
 + (void)performRandomActions:(int)counter thread:(TSThread *)thread

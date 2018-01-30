@@ -177,7 +177,7 @@ NS_ASSUME_NONNULL_BEGIN
             ContactTableViewCell *cell = [ContactTableViewCell new];
             SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
             OWSVerificationState verificationState =
-                [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId];
+                [[OWSIdentityManager sharedManager] verificationStateForRecipientIdWithoutTransaction:recipientId];
             BOOL isVerified = verificationState == OWSVerificationStateVerified;
             BOOL isNoLongerVerified = verificationState == OWSVerificationStateNoLongerVerified;
             BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
@@ -244,17 +244,22 @@ NS_ASSUME_NONNULL_BEGIN
     OWSIdentityManager *identityManger = [OWSIdentityManager sharedManager];
     NSArray<NSString *> *recipientIds = [self noLongerVerifiedRecipientIds];
     for (NSString *recipientId in recipientIds) {
-        OWSVerificationState verificationState = [identityManger verificationStateForRecipientId:recipientId];
+        OWSVerificationState verificationState =
+            [identityManger verificationStateForRecipientIdWithoutTransaction:recipientId];
         if (verificationState == OWSVerificationStateNoLongerVerified) {
             NSData *identityKey = [identityManger identityKeyForRecipientIdWOT:recipientId];
             if (identityKey.length < 1) {
                 OWSFail(@"Missing identity key for: %@", recipientId);
                 continue;
             }
-            [identityManger setVerificationState:OWSVerificationStateDefault
-                                     identityKey:identityKey
-                                     recipientId:recipientId
-                           isUserInitiatedChange:YES];
+            [TSStorageManager.protocolStoreDBConnection
+                asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [identityManger setVerificationState:OWSVerificationStateDefault
+                                             identityKey:identityKey
+                                             recipientId:recipientId
+                                   isUserInitiatedChange:YES
+                                         protocolContext:transaction];
+                }];
         }
     }
 
@@ -266,7 +271,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableArray<NSString *> *result = [NSMutableArray new];
     for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientIdWithoutTransaction:recipientId]
             == OWSVerificationStateNoLongerVerified) {
             [result addObject:recipientId];
         }

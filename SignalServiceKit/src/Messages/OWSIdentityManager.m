@@ -305,7 +305,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     [self fireIdentityStateChangeNotification];
 }
 
-- (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
+- (OWSVerificationState)verificationStateForRecipientIdWithoutTransaction:(NSString *)recipientId
 {
     __block OWSVerificationState result;
     // Use a read/write transaction to block on latest.
@@ -345,30 +345,31 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 }
 
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId
-                                                            protocolContext:(nullable id)protocolContext
 {
     OWSAssert(recipientId.length > 0);
-    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
-    YapDatabaseReadWriteTransaction *transaction = protocolContext;
+    __block OWSRecipientIdentity *_Nullable result;
+    // Use a read/write transaction to block on latest.
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        OWSRecipientIdentity *_Nullable recipientIdentity =
+            [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
 
-    OWSRecipientIdentity *_Nullable recipientIdentity =
-        [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
+        if (recipientIdentity == nil) {
+            // trust on first use
+            return;
+        }
 
-    if (recipientIdentity == nil) {
-        // trust on first use
-        return nil;
-    }
-
-    BOOL isTrusted = [self isTrustedIdentityKey:recipientIdentity.identityKey
-                                    recipientId:recipientId
-                                      direction:TSMessageDirectionOutgoing
-                                protocolContext:protocolContext];
-    if (isTrusted) {
-        return nil;
-    } else {
-        return recipientIdentity;
-    }
+        BOOL isTrusted = [self isTrustedIdentityKey:recipientIdentity.identityKey
+                                        recipientId:recipientId
+                                          direction:TSMessageDirectionOutgoing
+                                    protocolContext:transaction];
+        if (isTrusted) {
+            return;
+        } else {
+            result = recipientIdentity;
+        }
+    }];
+    return result;
 }
 
 - (void)fireIdentityStateChangeNotification

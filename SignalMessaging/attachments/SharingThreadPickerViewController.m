@@ -385,9 +385,10 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     DDLogDebug(@"%@ Confirming identity for recipient: %@", self.logTag, recipientId);
 
-    dispatch_async([OWSDispatch sessionStoreQueue], ^(void) {
+    [TSStorageManager.protocolStoreDBConnection asyncReadWriteWithBlock:^(
+        YapDatabaseReadWriteTransaction *transaction) {
         OWSVerificationState verificationState =
-            [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId];
+            [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId transaction:transaction];
         switch (verificationState) {
             case OWSVerificationStateVerified: {
                 OWSFail(@"%@ Shouldn't need to confirm identity if it was already verified", self.logTag);
@@ -404,12 +405,14 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             }
             case OWSVerificationStateNoLongerVerified: {
                 DDLogInfo(@"%@ marked recipient: %@ as default verification status.", self.logTag, recipientId);
-                NSData *identityKey = [[OWSIdentityManager sharedManager] identityKeyForRecipientIdWOT:recipientId];
+                NSData *identityKey = [[OWSIdentityManager sharedManager] identityKeyForRecipientId:recipientId
+                                                                                    protocolContext:transaction];
                 OWSAssert(identityKey);
                 [[OWSIdentityManager sharedManager] setVerificationState:OWSVerificationStateDefault
                                                              identityKey:identityKey
                                                              recipientId:recipientId
-                                                   isUserInitiatedChange:YES];
+                                                   isUserInitiatedChange:YES
+                                                         protocolContext:transaction];
                 break;
             }
         }
@@ -417,7 +420,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             [self resendMessage:message fromViewController:fromViewController];
         });
-    });
+    }];
 }
 
 - (void)resendMessage:(TSOutgoingMessage *)message fromViewController:(UIViewController *)fromViewController

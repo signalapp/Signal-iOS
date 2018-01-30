@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "FingerprintViewScanController.h"
@@ -200,10 +200,15 @@ NS_ASSUME_NONNULL_BEGIN
                                           @"Button that marks user as verified after a successful fingerprint scan.")
                                 style:UIAlertActionStyleDefault
                               handler:^(UIAlertAction *action) {
-                                  [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateVerified
-                                                                             identityKey:identityKey
-                                                                             recipientId:recipientId
-                                                                         isUserInitiatedChange:YES];
+                                  [TSStorageManager.protocolStoreDBConnection
+                                      asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                          [OWSIdentityManager.sharedManager
+                                               setVerificationState:OWSVerificationStateVerified
+                                                        identityKey:identityKey
+                                                        recipientId:recipientId
+                                              isUserInitiatedChange:YES
+                                                    protocolContext:transaction];
+                                      }];
                                   [viewController dismissViewControllerAnimated:true completion:nil];
                               }]];
     UIAlertAction *dismissAction =

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "NotificationsManager.h"
@@ -291,7 +291,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
                     // "no longer verified".
                     BOOL isNoLongerVerified = NO;
                     for (NSString *recipientId in thread.recipientIdentifiers) {
-                        if ([OWSIdentityManager.sharedManager verificationStateForRecipientId:recipientId]
+                        if ([OWSIdentityManager.sharedManager
+                                verificationStateForRecipientIdWithoutTransaction:recipientId]
                             == OWSVerificationStateNoLongerVerified) {
                             isNoLongerVerified = YES;
                             break;
