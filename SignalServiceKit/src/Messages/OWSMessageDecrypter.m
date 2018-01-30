@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageDecrypter.h"
@@ -89,20 +89,18 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Decryption
 
 - (void)decryptEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-           successBlock:(DecryptSuccessBlock)successBlockParameter
+           successBlock:(DecryptSuccessBlock)successBlock
            failureBlock:(DecryptFailureBlock)failureBlockParameter
 {
     OWSAssert(envelope);
-    OWSAssert(successBlockParameter);
+    OWSAssert(successBlock);
     OWSAssert(failureBlockParameter);
     OWSAssert([TSAccountManager isRegistered]);
 
-    // Ensure that successBlock and failureBlock are called on a worker queue.
-    DecryptSuccessBlock successBlock = ^(NSData *_Nullable plaintextData) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            successBlockParameter(plaintextData);
-        });
-    };
+    // successBlock is called synchronously so that we can avail ourselves of
+    // the transaction.
+    //
+    // Ensure that failureBlock is called on a worker queue.
     DecryptFailureBlock failureBlock = ^() {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             failureBlockParameter();
@@ -121,9 +119,9 @@ NS_ASSUME_NONNULL_BEGIN
         switch (envelope.type) {
             case OWSSignalServiceProtosEnvelopeTypeCiphertext: {
                 [self decryptSecureMessage:envelope
-                    successBlock:^(NSData *_Nullable plaintextData) {
+                    successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
                         DDLogDebug(@"%@ decrypted secure message.", self.logTag);
-                        successBlock(plaintextData);
+                        successBlock(plaintextData, transaction);
                     }
                     failureBlock:^(NSError *_Nullable error) {
                         DDLogError(@"%@ decrypting secure message from address: %@ failed with error: %@",
@@ -138,9 +136,9 @@ NS_ASSUME_NONNULL_BEGIN
             }
             case OWSSignalServiceProtosEnvelopeTypePrekeyBundle: {
                 [self decryptPreKeyBundle:envelope
-                    successBlock:^(NSData *_Nullable plaintextData) {
+                    successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
                         DDLogDebug(@"%@ decrypted pre-key whisper message", self.logTag);
-                        successBlock(plaintextData);
+                        successBlock(plaintextData, transaction);
                     }
                     failureBlock:^(NSError *_Nullable error) {
                         DDLogError(@"%@ decrypting pre-key whisper message from address: %@ failed "
@@ -157,10 +155,14 @@ NS_ASSUME_NONNULL_BEGIN
             // These message types don't have a payload to decrypt.
             case OWSSignalServiceProtosEnvelopeTypeReceipt:
             case OWSSignalServiceProtosEnvelopeTypeKeyExchange:
-            case OWSSignalServiceProtosEnvelopeTypeUnknown:
-                successBlock(nil);
+            case OWSSignalServiceProtosEnvelopeTypeUnknown: {
+                [TSStorageManager.protocolStoreDBConnection
+                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        successBlock(nil, transaction);
+                    }];
                 // Return to avoid double-acknowledging.
                 return;
+            }
             default:
                 DDLogWarn(@"Received unhandled envelope type: %d", (int)envelope.type);
                 break;
@@ -234,27 +236,30 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        @try {
-            id<CipherMessage> cipherMessage = cipherMessageBlock(encryptedData);
-            SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
-                                                                    preKeyStore:storageManager
-                                                              signedPreKeyStore:storageManager
-                                                               identityKeyStore:self.identityManager
-                                                                    recipientId:recipientId
-                                                                       deviceId:deviceId];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [TSStorageManager.protocolStoreDBConnection readWriteWithBlock:^(
+            YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            @try {
+                id<CipherMessage> cipherMessage = cipherMessageBlock(encryptedData);
+                SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
+                                                                        preKeyStore:storageManager
+                                                                  signedPreKeyStore:storageManager
+                                                                   identityKeyStore:self.identityManager
+                                                                        recipientId:recipientId
+                                                                           deviceId:deviceId];
 
-            NSData *plaintextData = [[cipher decrypt:cipherMessage] removePadding];
-            successBlock(plaintextData);
-        } @catch (NSException *exception) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self processException:exception envelope:envelope];
-                NSString *errorDescription = [NSString
-                    stringWithFormat:@"Exception while decrypting %@: %@", cipherTypeName, exception.description];
-                NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
-                failureBlock(error);
-            });
-        }
+                NSData *plaintextData = [[cipher decrypt:cipherMessage protocolContext:transaction] removePadding];
+                successBlock(plaintextData, transaction);
+            } @catch (NSException *exception) {
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    [self processException:exception envelope:envelope];
+                    NSString *errorDescription = [NSString
+                        stringWithFormat:@"Exception while decrypting %@: %@", cipherTypeName, exception.description];
+                    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
+                    failureBlock(error);
+                });
+            }
+        }];
     });
 }
 

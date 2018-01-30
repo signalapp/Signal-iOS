@@ -10,6 +10,7 @@
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import "TSOutgoingMessage.h"
+#import "TSStorageManager+SessionStore.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -57,11 +58,12 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
         return;
     }
 
-    dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey
-                                                   recipientId:self.recipientId
-                                               protocolContext:protocolContext];
-    });
+    [TSStorageManager.protocolStoreDBConnection
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey
+                                                       recipientId:self.recipientId
+                                                   protocolContext:transaction];
+        }];
 }
 
 - (nullable NSData *)newIdentityKey

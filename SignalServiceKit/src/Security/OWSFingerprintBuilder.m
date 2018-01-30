@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFingerprintBuilder.h"
@@ -36,7 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable OWSFingerprint *)fingerprintWithTheirSignalId:(NSString *)theirSignalId
 {
-    NSData *_Nullable theirIdentityKey = [[OWSIdentityManager sharedManager] identityKeyForRecipientId:theirSignalId];
+    NSData *_Nullable theirIdentityKey =
+        [[OWSIdentityManager sharedManager] identityKeyForRecipientIdWOT:theirSignalId];
 
     if (theirIdentityKey == nil) {
         OWSFail(@"%@ Missing their identity key", self.logTag);
@@ -51,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *theirName = [self.contactsManager displayNameForPhoneIdentifier:theirSignalId];
 
     NSString *mySignalId = [self.accountManager localNumber];
-    NSData *myIdentityKey = [[OWSIdentityManager sharedManager] identityKeyPair].publicKey;
+    NSData *myIdentityKey = [[OWSIdentityManager sharedManager] identityKeyPairWithoutProtocolContext].publicKey;
 
     return [OWSFingerprint fingerprintWithMyStableId:mySignalId
                                        myIdentityKey:myIdentityKey

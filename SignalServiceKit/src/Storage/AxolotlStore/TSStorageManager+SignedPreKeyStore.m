@@ -27,7 +27,7 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
 
     // Signed prekey ids must be > 0.
     int preKeyId = 1 + arc4random_uniform(INT32_MAX - 1);
-    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
+    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPairWithoutProtocolContext];
     return [[SignedPreKeyRecord alloc]
          initWithId:preKeyId
             keyPair:keyPair

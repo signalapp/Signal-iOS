@@ -331,11 +331,15 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     OWSSignalServiceProtosEnvelope *envelope = job.envelopeProto;
     [self.messageDecrypter decryptEnvelope:envelope
-        successBlock:^(NSData *_Nullable plaintextData) {
+        successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
+            OWSAssert(transaction);
 
-            // We can't decrypt the same message twice, so we need to persist
-            // the decrypted envelope data ASAP to prevent data loss.
-            [self.batchMessageProcessor enqueueEnvelopeData:job.envelopeData plaintextData:plaintextData];
+            // We persist the decrypted envelope data in the same transaction within which
+            // it was decrypted to prevent data loss.  If the new job isn't persisted,
+            // the session state side effects of its decryption are also rolled back.
+            [self.batchMessageProcessor enqueueEnvelopeData:job.envelopeData
+                                              plaintextData:plaintextData
+                                                transaction:transaction];
 
             dispatch_async(self.serialQueue, ^{
                 completion(YES);

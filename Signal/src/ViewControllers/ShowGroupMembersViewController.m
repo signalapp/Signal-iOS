@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ShowGroupMembersViewController.h"
@@ -246,7 +246,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSString *recipientId in recipientIds) {
         OWSVerificationState verificationState = [identityManger verificationStateForRecipientId:recipientId];
         if (verificationState == OWSVerificationStateNoLongerVerified) {
-            NSData *identityKey = [identityManger identityKeyForRecipientId:recipientId];
+            NSData *identityKey = [identityManger identityKeyForRecipientIdWOT:recipientId];
             if (identityKey.length < 1) {
                 OWSFail(@"Missing identity key for: %@", recipientId);
                 continue;

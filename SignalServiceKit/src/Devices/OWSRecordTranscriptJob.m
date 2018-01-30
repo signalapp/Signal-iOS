@@ -68,9 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSThread *thread = [transcript threadWithTransaction:transaction];
     if (transcript.isEndSessionMessage) {
         DDLogInfo(@"%@ EndSession was sent to recipient: %@.", self.logTag, transcript.recipientId);
-        dispatch_async([OWSDispatch sessionStoreQueue], ^{
-            [self.storageManager deleteAllSessionsForContact:transcript.recipientId protocolContext:protocolContext];
-        });
+        [self.storageManager deleteAllSessionsForContact:transcript.recipientId protocolContext:transaction];
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
                                          inThread:thread
                                       messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];

@@ -43,7 +43,9 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
 #pragma mark - SessionStore
 
-- (SessionRecord *)loadSession:(NSString *)contactIdentifier deviceId:(int)deviceId protocolContext:(id)protocolContext
+- (SessionRecord *)loadSession:(NSString *)contactIdentifier
+                      deviceId:(int)deviceId
+               protocolContext:(nullable id)protocolContext
 {
     OWSAssert(contactIdentifier.length > 0);
     OWSAssert(deviceId >= 0);
@@ -116,7 +118,9 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
               inCollection:TSStorageManagerSessionStoreCollection];
 }
 
-- (BOOL)containsSession:(NSString *)contactIdentifier deviceId:(int)deviceId protocolContext:(id)protocolContext
+- (BOOL)containsSession:(NSString *)contactIdentifier
+               deviceId:(int)deviceId
+        protocolContext:(nullable id)protocolContext
 {
     OWSAssert(contactIdentifier.length > 0);
     OWSAssert(deviceId >= 0);

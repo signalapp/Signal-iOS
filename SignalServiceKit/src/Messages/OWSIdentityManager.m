@@ -132,6 +132,15 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                     inCollection:TSStorageManagerIdentityKeyStoreCollection];
 }
 
+- (nullable NSData *)identityKeyForRecipientIdWOT:(NSString *)recipientId
+{
+    __block NSData *_Nullable result = nil;
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        result = [self identityKeyForRecipientId:recipientId protocolContext:transaction];
+    }];
+    return result;
+}
+
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId protocolContext:(nullable id)protocolContext
 {
     OWSAssert(recipientId.length > 0);

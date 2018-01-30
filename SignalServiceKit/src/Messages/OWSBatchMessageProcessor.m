@@ -136,14 +136,16 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     return [jobs copy];
 }
 
-- (void)addJobWithEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
+- (void)addJobWithEnvelopeData:(NSData *)envelopeData
+                 plaintextData:(NSData *_Nullable)plaintextData
+                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    // We need to persist the decrypted envelope data ASAP to prevent data loss.
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        OWSMessageContentJob *job =
-            [[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData plaintextData:plaintextData];
-        [job saveWithTransaction:transaction];
-    }];
+    OWSAssert(envelopeData);
+    OWSAssert(transaction);
+
+    OWSMessageContentJob *job =
+        [[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData plaintextData:plaintextData];
+    [job saveWithTransaction:transaction];
 }
 
 - (void)removeJobsWithIds:(NSArray<NSString *> *)uniqueIds
@@ -293,12 +295,15 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     return queue;
 }
 
-- (void)enqueueEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
+- (void)enqueueEnvelopeData:(NSData *)envelopeData
+              plaintextData:(NSData *_Nullable)plaintextData
+                transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(envelopeData);
+    OWSAssert(transaction);
 
     // We need to persist the decrypted envelope data ASAP to prevent data loss.
-    [self.finder addJobWithEnvelopeData:envelopeData plaintextData:plaintextData];
+    [self.finder addJobWithEnvelopeData:envelopeData plaintextData:plaintextData transaction:transaction];
 }
 
 - (void)drainQueue
@@ -459,12 +464,15 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     [self.processingQueue drainQueue];
 }
 
-- (void)enqueueEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
+- (void)enqueueEnvelopeData:(NSData *)envelopeData
+              plaintextData:(NSData *_Nullable)plaintextData
+                transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(envelopeData);
+    OWSAssert(transaction);
 
     // We need to persist the decrypted envelope data ASAP to prevent data loss.
-    [self.processingQueue enqueueEnvelopeData:envelopeData plaintextData:plaintextData];
+    [self.processingQueue enqueueEnvelopeData:envelopeData plaintextData:plaintextData transaction:transaction];
     [self.processingQueue drainQueue];
 }
 

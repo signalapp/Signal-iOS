@@ -30,6 +30,9 @@ extern const NSUInteger kIdentityKeyLength;
 
 - (void)generateNewIdentityKey;
 
+// TODO: Rename to identityKeyForRecipientId.
+- (nullable NSData *)identityKeyForRecipientIdWOT:(NSString *)recipientId;
+
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId protocolContext:(nullable id)protocolContext;
 
 - (void)setVerificationState:(OWSVerificationState)verificationState
@@ -55,6 +58,7 @@ extern const NSUInteger kIdentityKeyLength;
 
 #pragma mark - Debug
 
+// TODO:
 - (nullable ECKeyPair *)identityKeyPairWithoutProtocolContext;
 
 #if DEBUG

@@ -10,6 +10,7 @@
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage_privateConstructor.h"
+#import "TSStorageManager+SessionStore.h"
 #import "TSStorageManager.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/PreKeyWhisperMessage.h>
@@ -80,10 +81,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Saving a new identity mutates the session store so it must happen on the sessionStoreQueue
-    dispatch_async([OWSDispatch sessionStoreQueue], ^{
+    [TSStorageManager.protocolStoreDBConnection asyncReadWriteWithBlock:^(
+        YapDatabaseReadWriteTransaction *transaction) {
         [[OWSIdentityManager sharedManager] saveRemoteIdentity:newKey
                                                    recipientId:self.envelope.source
-                                               protocolContext:protocolContext];
+                                               protocolContext:transaction];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             // Decrypt this and any old messages for the newly accepted key
@@ -99,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [errorMessage remove];
             }
         });
-    });
+    }];
 }
 
 - (nullable NSData *)newIdentityKey

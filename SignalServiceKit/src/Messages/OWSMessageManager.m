@@ -21,6 +21,7 @@
 #import "OWSIncomingMessageFinder.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
+#import "OWSMessageUtils.h"
 #import "OWSReadReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
 #import "OWSSyncConfigurationMessage.h"
@@ -137,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
     if (AppReadiness.isAppReady) {
-        [self updateApplicationBadgeCount];
+        [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
     }
 }
 
@@ -1116,47 +1117,6 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         return [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
     }
-}
-
-- (NSUInteger)unreadMessagesCount
-{
-    __block NSUInteger numberOfItems;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
-    }];
-
-    return numberOfItems;
-}
-
-- (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread
-{
-    __block NSUInteger numberOfItems;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        id databaseView = [transaction ext:TSUnreadDatabaseViewExtensionName];
-        OWSAssert(databaseView);
-        numberOfItems = ([databaseView numberOfItemsInAllGroups] - [databaseView numberOfItemsInGroup:thread.uniqueId]);
-    }];
-
-    return numberOfItems;
-}
-
-- (void)updateApplicationBadgeCount
-{
-    if (!CurrentAppContext().isMainApp) {
-        return;
-    }
-
-    NSUInteger numberOfItems = [self unreadMessagesCount];
-    [CurrentAppContext() setMainAppBadgeNumber:numberOfItems];
-}
-
-- (NSUInteger)unreadMessagesInThread:(TSThread *)thread
-{
-    __block NSUInteger numberOfItems;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
-    }];
-    return numberOfItems;
 }
 
 @end

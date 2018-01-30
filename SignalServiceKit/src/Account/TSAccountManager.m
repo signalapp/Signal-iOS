@@ -106,9 +106,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
             [transaction removeAllObjectsInCollection:TSAccountManager_UserAccountCollection];
         }];
     }
-    dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[TSStorageManager sharedManager] resetSessionStore];
-    });
+    [[TSStorageManager sharedManager] resetSessionStore];
 }
 
 + (BOOL)isRegistered
@@ -201,9 +199,11 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 
 - (uint32_t)getOrGenerateRegistrationId
 {
+    __block uint32_t result;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self getOrGenerateRegistrationId:transaction];
+        result = [self getOrGenerateRegistrationId:transaction];
     }];
+    return result;
 }
 
 - (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction

@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
                                 NSString *recipientId = [thread contactIdentifier];
 
-                                NSData *currentKey = [identityManager identityKeyForRecipientId:recipientId];
+                                NSData *currentKey = [identityManager identityKeyForRecipientIdWOT:recipientId];
                                 NSMutableData *flippedKey = [NSMutableData new];
                                 const char *currentKeyBytes = currentKey.bytes;
                                 for (NSUInteger i = 0; i < currentKey.length; i++) {

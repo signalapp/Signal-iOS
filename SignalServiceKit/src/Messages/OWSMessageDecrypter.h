@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageHandler.h"
@@ -7,8 +7,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosEnvelope;
+@class YapDatabaseReadWriteTransaction;
 
-typedef void (^DecryptSuccessBlock)(NSData *_Nullable plaintextData);
+typedef void (^DecryptSuccessBlock)(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction);
 typedef void (^DecryptFailureBlock)(void);
 
 @interface OWSMessageDecrypter : OWSMessageHandler

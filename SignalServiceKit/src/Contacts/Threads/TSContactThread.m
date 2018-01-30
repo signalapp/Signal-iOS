@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasSafetyNumbers
 {
-    return !![[OWSIdentityManager sharedManager] identityKeyForRecipientId:self.contactIdentifier];
+    return !![[OWSIdentityManager sharedManager] identityKeyForRecipientIdWOT:self.contactIdentifier];
 }
 
 - (NSString *)name
