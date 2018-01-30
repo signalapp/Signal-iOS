@@ -108,10 +108,16 @@
 - (void)updateTableContents
 {
     OWSTableContents *contents = [OWSTableContents new];
-    OWSTableSection *section = [OWSTableSection new];
 
     __weak AppSettingsViewController *weakSelf = self;
 
+#ifdef INTERNAL
+    OWSTableSection *internalSection = [OWSTableSection new];
+    [section addItem:[OWSTableItem softCenterLabelItemWithText:@"Internal Build"]];
+    [contents addSection:internalSection];
+#endif
+
+    OWSTableSection *section = [OWSTableSection new];
     [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
         return [weakSelf profileHeaderCell];
     }

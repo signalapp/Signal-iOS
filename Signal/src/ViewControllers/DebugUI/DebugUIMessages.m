@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMessages.h"
@@ -123,6 +123,14 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Create 10k fake messages"
                         actionBlock:^{
                             [DebugUIMessages sendFakeMessages:10 * 1000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 100k fake messages"
+                        actionBlock:^{
+                            [DebugUIMessages sendFakeMessages:100 * 1000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create 100k fake text messages"
+                        actionBlock:^{
+                            [DebugUIMessages sendFakeMessages:100 * 1000 thread:thread isTextOnly:YES];
                         }],
         [OWSTableItem itemWithTitle:@"Create 1 fake unread messages"
                         actionBlock:^{
@@ -282,7 +290,22 @@ NS_ASSUME_NONNULL_BEGIN
                                              [DebugUIMessages createNewGroups:1000 recipientId:recipientId];
                                          }]];
     }
+    if ([thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        [items addObject:[OWSTableItem itemWithTitle:@"Send message to all members"
+                                         actionBlock:^{
+                                             [DebugUIMessages sendMessages:1 toAllMembersOfGroup:groupThread];
+                                         }]];
+    }
     return [OWSTableSection sectionWithTitle:self.name items:items];
+}
+
++ (void)sendMessages:(int)counter toAllMembersOfGroup:(TSGroupThread *)groupThread
+{
+    for (NSString *recipientId in groupThread.groupModel.groupMemberIds) {
+        TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+        [DebugUIMessages sendTextMessages:counter thread:contactThread];
+    }
 }
 
 + (void)sendTextMessageInThread:(TSThread *)thread counter:(int)counter
@@ -964,20 +987,42 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendFakeMessages:(NSUInteger)counter thread:(TSThread *)thread
 {
-    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self sendFakeMessages:counter thread:thread transaction:transaction];
-    }];
+    [self sendFakeMessages:counter thread:thread isTextOnly:NO];
+}
+
++ (void)sendFakeMessages:(NSUInteger)counter thread:(TSThread *)thread isTextOnly:(BOOL)isTextOnly
+{
+    const NSUInteger kMaxBatchSize = 2500;
+    if (counter < kMaxBatchSize) {
+        [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [self sendFakeMessages:counter thread:thread isTextOnly:isTextOnly transaction:transaction];
+        }];
+    } else {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSUInteger remainder = counter;
+            while (remainder > 0) {
+                NSUInteger batchSize = MIN(kMaxBatchSize, remainder);
+                [TSStorageManager.dbReadWriteConnection
+                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        [self sendFakeMessages:batchSize thread:thread isTextOnly:isTextOnly transaction:transaction];
+                    }];
+                remainder -= batchSize;
+                DDLogInfo(@"%@ sendFakeMessages %zd / %zd", self.logTag, counter - remainder, counter);
+            }
+        });
+    }
 }
 
 + (void)sendFakeMessages:(NSUInteger)counter
                   thread:(TSThread *)thread
+              isTextOnly:(BOOL)isTextOnly
              transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     DDLogInfo(@"%@ sendFakeMessages: %zd", self.logTag, counter);
 
     for (NSUInteger i = 0; i < counter; i++) {
         NSString *randomText = [self randomText];
-        switch (arc4random_uniform(4)) {
+        switch (arc4random_uniform(isTextOnly ? 2 : 4)) {
             case 0: {
                 TSIncomingMessage *message =
                     [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -985,7 +1030,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                         authorId:@"+19174054215"
                                                   sourceDeviceId:0
                                                      messageBody:randomText];
-                DDLogError(@"%@ sendFakeMessages incoming timestamp: %llu.", self.logTag, message.timestamp);
                 [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
                 break;
             }
@@ -994,8 +1038,8 @@ NS_ASSUME_NONNULL_BEGIN
                     [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                         inThread:thread
                                                      messageBody:randomText];
-                DDLogError(@"%@ sendFakeMessages outgoing timestamp: %llu.", self.logTag, message.timestamp);
                 [message saveWithTransaction:transaction];
+                [message updateWithMessageState:TSOutgoingMessageStateUnsent transaction:transaction];
                 break;
             }
             case 2: {
@@ -1009,6 +1053,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                             relay:@""
                                                    sourceFilename:@"test.mp3"
                                                    attachmentType:TSAttachmentTypeDefault];
+                pointer.state = TSAttachmentPointerStateFailed;
                 [pointer saveWithTransaction:transaction];
                 TSIncomingMessage *message =
                     [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -1020,7 +1065,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                        pointer.uniqueId,
                                                    ]
                                                 expiresInSeconds:0];
-                DDLogError(@"%@ sendFakeMessages incoming attachment timestamp: %llu.", self.logTag, message.timestamp);
                 [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
                 break;
             }
@@ -1031,7 +1075,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                      messageBody:nil
                                                   isVoiceMessage:NO
                                                 expiresInSeconds:0];
-                DDLogError(@"%@ sendFakeMessages outgoing attachment timestamp: %llu.", self.logTag, message.timestamp);
 
                 NSString *filename = @"test.mp3";
                 UInt32 filesize = 16;
@@ -1050,6 +1093,7 @@ NS_ASSUME_NONNULL_BEGIN
                     message.attachmentFilenameMap[attachmentStream.uniqueId] = filename;
                 }
                 [message saveWithTransaction:transaction];
+                [message updateWithMessageState:TSOutgoingMessageStateUnsent transaction:transaction];
                 break;
             }
         }
@@ -1248,7 +1292,7 @@ NS_ASSUME_NONNULL_BEGIN
         },
         ^(YapDatabaseReadWriteTransaction *transaction) {
             NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
-            [self sendFakeMessages:messageCount thread:thread transaction:transaction];
+            [self sendFakeMessages:messageCount thread:thread isTextOnly:NO transaction:transaction];
         },
         ^(YapDatabaseReadWriteTransaction *transaction) {
             NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
