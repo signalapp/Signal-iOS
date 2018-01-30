@@ -20,6 +20,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
     private var hasInitialRootViewController = false
     private var isReadyForAppExtensions = false
+    private var areVersionMigrationsComplete = false
 
     private var progressPoller: ProgressPoller?
     var loadViewController: SAELoadViewController?
@@ -98,7 +99,11 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
         // performUpdateCheck must be invoked after Environment has been initialized because
         // upgrade process may depend on Environment.
-        VersionMigrations.performUpdateCheck()
+        VersionMigrations.performUpdateCheck(completion: {
+            AssertIsOnMainThread()
+
+            self.versionMigrationsDidComplete()
+        })
 
         self.isNavigationBarHidden = true
 
@@ -187,8 +192,40 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     }
 
     @objc
+    func versionMigrationsDidComplete() {
+        AssertIsOnMainThread()
+
+        Logger.debug("\(self.logTag) \(#function)")
+
+        areVersionMigrationsComplete = true
+
+        checkIsAppReady()
+    }
+
+    @objc
     func storageIsReady() {
         AssertIsOnMainThread()
+
+        Logger.debug("\(self.logTag) \(#function)")
+
+        checkIsAppReady()
+    }
+
+    @objc
+    func checkIsAppReady() {
+        AssertIsOnMainThread()
+
+        // App isn't ready until storage is ready AND all version migrations are complete.
+        guard areVersionMigrationsComplete else {
+            return
+        }
+        guard OWSStorage.isStorageReady() else {
+            return
+        }
+        guard AppReadiness.isAppReady() else {
+            // Only mark the app as ready once.
+            return
+        }
 
         Logger.debug("\(self.logTag) \(#function)")
 

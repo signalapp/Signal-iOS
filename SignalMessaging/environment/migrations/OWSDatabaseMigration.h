@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/TSYapDatabaseObject.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+typedef void (^OWSDatabaseMigrationCompletion)(void);
 
 @class TSStorageManager;
 
@@ -18,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Blocking migrations running too long will crash the app, effectively bricking install
 // because the user will never get past it.
 // If you must write a launch-blocking migration, override runUp.
-- (void)runUp;
+- (void)runUpWithCompletion:(OWSDatabaseMigrationCompletion)completion;
 
 @end
 

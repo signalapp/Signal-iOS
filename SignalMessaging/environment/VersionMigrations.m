@@ -14,6 +14,8 @@
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <YapDatabase/YapDatabase.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 #define NEEDS_TO_REGISTER_PUSH_KEY @"Register For Push"
 #define NEEDS_TO_REGISTER_ATTRIBUTES @"Register Attributes"
 
@@ -28,11 +30,12 @@
 
 #pragma mark Utility methods
 
-+ (void)performUpdateCheck
++ (void)performUpdateCheckWithCompletion:(VersionMigrationCompletion)completion
 {
     // performUpdateCheck must be invoked after Environment has been initialized because
     // upgrade process may depend on Environment.
     OWSAssert([Environment current]);
+    OWSAssert(completion);
 
     NSString *previousVersion = AppVersion.instance.lastAppVersion;
     NSString *currentVersion = AppVersion.instance.currentAppVersion;
@@ -47,6 +50,9 @@
         OWSDatabaseMigrationRunner *runner =
             [[OWSDatabaseMigrationRunner alloc] initWithStorageManager:[TSStorageManager sharedManager]];
         [runner assumeAllExistingMigrationsRun];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion();
+        });
         return;
     }
 
@@ -79,7 +85,8 @@
         [self clearBloomFilterCache];
     }
 
-    [[[OWSDatabaseMigrationRunner alloc] initWithStorageManager:[TSStorageManager sharedManager]] runAllOutstanding];
+    [[[OWSDatabaseMigrationRunner alloc] initWithStorageManager:[TSStorageManager sharedManager]]
+        runAllOutstandingWithCompletion:completion];
 }
 
 + (BOOL)isVersion:(NSString *)thisVersionString
@@ -189,3 +196,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

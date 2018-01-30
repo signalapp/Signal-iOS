@@ -60,6 +60,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 @property (nonatomic) UIWindow *screenProtectionWindow;
 @property (nonatomic) BOOL hasInitialRootViewController;
+@property (nonatomic) BOOL areVersionMigrationsComplete;
 
 @end
 
@@ -167,7 +168,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // performUpdateCheck must be invoked after Environment has been initialized because
     // upgrade process may depend on Environment.
-    [VersionMigrations performUpdateCheck];
+    [VersionMigrations performUpdateCheckWithCompletion:^{
+        OWSAssertIsOnMainThread();
+
+        [self versionMigrationsDidComplete];
+    }];
 
     // Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
@@ -819,10 +824,42 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                            completionHandler:completionHandler];
 }
 
+- (void)versionMigrationsDidComplete
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ versionMigrationsDidComplete", self.logTag);
+
+    self.areVersionMigrationsComplete = YES;
+
+    [self checkIfAppIsReady];
+}
+
 - (void)storageIsReady
 {
     OWSAssertIsOnMainThread();
     DDLogInfo(@"%@ storageIsReady", self.logTag);
+
+    [self checkIfAppIsReady];
+}
+
+- (void)checkIfAppIsReady
+{
+    OWSAssertIsOnMainThread();
+
+    // App isn't ready until storage is ready AND all version migrations are complete.
+    if (!self.areVersionMigrationsComplete) {
+        return;
+    }
+    if (![OWSStorage isStorageReady]) {
+        return;
+    }
+    if ([AppReadiness isAppReady]) {
+        // Only mark the app as ready once.
+        return;
+    }
+
+    DDLogInfo(@"%@ checkIfAppIsReady", self.logTag);
 
     [OWSPreferences setIsRegistered:[TSAccountManager isRegistered]];
 

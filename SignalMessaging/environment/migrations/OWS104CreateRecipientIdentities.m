@@ -26,6 +26,8 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
 
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssert(transaction);
+
     NSMutableDictionary<NSString *, NSData *> *identityKeys = [NSMutableDictionary new];
 
     [transaction

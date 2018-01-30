@@ -4,6 +4,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^OWSDatabaseMigrationCompletion)(void);
+
 @class TSStorageManager;
 
 @interface OWSDatabaseMigrationRunner : NSObject
@@ -15,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Run any outstanding version migrations.
  */
-- (void)runAllOutstanding;
+- (void)runAllOutstandingWithCompletion:(OWSDatabaseMigrationCompletion)completion;
 
 /**
  * On new installations, no need to migrate anything.

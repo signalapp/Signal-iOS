@@ -46,8 +46,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSRaiseException(NSInternalInconsistencyException, @"Must override %@ in subclass", NSStringFromSelector(_cmd));
 }
 
-- (void)runUp
+- (void)runUpWithCompletion:(OWSDatabaseMigrationCompletion)completion
 {
+    OWSAssert(completion);
+
     [self.storageManager.newDatabaseConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [self runUpWithTransaction:transaction];
@@ -55,6 +57,8 @@ NS_ASSUME_NONNULL_BEGIN
         completionBlock:^{
             DDLogInfo(@"Completed migration %@", self.uniqueId);
             [self save];
+
+            completion();
         }];
 }
 

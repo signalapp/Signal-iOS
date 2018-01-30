@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS102MoveLoggingPreferenceToUserDefaults.h"
@@ -20,6 +20,8 @@ static NSString *const OWS102MoveLoggingPreferenceToUserDefaultsMigrationId = @"
 
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssert(transaction);
+
     DDLogWarn(@"[OWS102MoveLoggingPreferenceToUserDefaultsMigrationId] copying existing logging preference to "
               @"NSUserDefaults");
 

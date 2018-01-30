@@ -50,21 +50,54 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)runAllOutstanding
+- (void)runAllOutstandingWithCompletion:(OWSDatabaseMigrationCompletion)completion
 {
-    [self runMigrations:self.allMigrations];
+    [self runMigrations:self.allMigrations completion:completion];
 }
 
 - (void)runMigrations:(NSArray<OWSDatabaseMigration *> *)migrations
+           completion:(OWSDatabaseMigrationCompletion)completion
 {
     OWSAssert(migrations);
+    OWSAssert(completion);
 
+    NSMutableArray<OWSDatabaseMigration *> *migrationsToRun = [NSMutableArray new];
     for (OWSDatabaseMigration *migration in migrations) {
         if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId]) {
             DDLogDebug(@"%@ Skipping previously run migration: %@", self.logTag, migration);
         } else {
             DDLogWarn(@"%@ Running migration: %@", self.logTag, migration);
-            [migration runUp];
+            [migrationsToRun addObject:migration];
+        }
+    }
+
+    if (migrationsToRun.count < 1) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion();
+        });
+        return;
+    }
+
+    NSUInteger totalMigrationCount = migrationsToRun.count;
+    __block NSUInteger completedMigrationCount = 0;
+    void (^checkMigrationCompletion)(void) = ^{
+        @synchronized(self)
+        {
+            completedMigrationCount++;
+            if (completedMigrationCount == totalMigrationCount) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completion();
+                });
+            }
+        }
+    };
+
+    for (OWSDatabaseMigration *migration in migrationsToRun) {
+        if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId]) {
+            DDLogDebug(@"%@ Skipping previously run migration: %@", self.logTag, migration);
+        } else {
+            DDLogWarn(@"%@ Running migration: %@", self.logTag, migration);
+            [migration runUpWithCompletion:checkMigrationCompletion];
         }
     }
 }
