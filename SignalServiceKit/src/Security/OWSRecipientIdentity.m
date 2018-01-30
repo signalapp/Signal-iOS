@@ -128,6 +128,8 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    // For consistency, we should only access instances of this class on
+    // non-caching connections.
     OWSAssert(!transaction.connection.objectCacheEnabled);
 
     [super saveWithTransaction:transaction];
@@ -135,6 +137,8 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    // For consistency, we should only access instances of this class on
+    // non-caching connections.
     OWSAssert(!transaction.connection.objectCacheEnabled);
 
     [super removeWithTransaction:transaction];
@@ -142,6 +146,8 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
 
 - (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    // For consistency, we should only access instances of this class on
+    // non-caching connections.
     OWSAssert(!transaction.connection.objectCacheEnabled);
 
     [super touchWithTransaction:transaction];
@@ -150,6 +156,8 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
 + (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
                                      transaction:(YapDatabaseReadTransaction *)transaction
 {
+    // For consistency, we should only access instances of this class on
+    // non-caching connections.
     OWSAssert(!transaction.connection.objectCacheEnabled);
 
     return [super fetchObjectWithUniqueID:uniqueID transaction:transaction];

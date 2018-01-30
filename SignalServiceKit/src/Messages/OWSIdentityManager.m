@@ -578,7 +578,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     OWSAssert(message);
     OWSAssert(message.verificationForRecipientId.length > 0);
-    OWSAssertIsOnMainThread();
 
     TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:message.verificationForRecipientId];
     
