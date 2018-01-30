@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define kWeekInMs (kDayInMs * 7)
 #define kMonthInMs (kDayInMs * 30)
 
-@interface NSDate (millisecondTimeStamp)
+@interface NSDate (OWS)
 
 + (uint64_t)ows_millisecondTimeStamp;
 + (NSDate *)ows_dateWithMillisecondsSince1970:(uint64_t)milliseconds;

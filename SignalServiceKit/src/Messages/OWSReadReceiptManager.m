@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadReceiptManager.h"
+#import "AppReadiness.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSLinkedDeviceReadReceipt.h"
 #import "OWSMessageSender.h"
@@ -177,8 +178,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSSingletonAssert();
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(storageIsReady)
-                                                 name:StorageIsReadyNotification
+                                             selector:@selector(appIsReady)
+                                                 name:AppIsReadyNotification
                                                object:nil];
 
     // Try to start processing.
@@ -192,7 +193,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)storageIsReady
+- (void)appIsReady
 {
     [self scheduleProcessing];
 }
@@ -203,7 +204,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
-            if (![OWSStorage isStorageReady]) {
+            if (!AppReadiness.isAppReady) {
                 DDLogInfo(@"%@ Deferring read receipt processing; storage not yet ready.", self.logTag);
                 return;
             }

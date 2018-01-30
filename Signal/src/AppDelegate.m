@@ -29,6 +29,7 @@
 #import <SignalMessaging/Release.h>
 #import <SignalMessaging/SignalMessaging.h>
 #import <SignalMessaging/VersionMigrations.h>
+#import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -59,6 +60,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 @property (nonatomic) UIWindow *screenProtectionWindow;
 @property (nonatomic) BOOL hasInitialRootViewController;
+@property (nonatomic) BOOL areVersionMigrationsComplete;
 
 @end
 
@@ -134,7 +136,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [self startupLogging];
 
-
     // If a backup restore is in progress, try to complete it.
     // Otherwise, cleanup backup state.
     [OWSBackup applicationDidFinishLaunching];
@@ -167,7 +168,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // performUpdateCheck must be invoked after Environment has been initialized because
     // upgrade process may depend on Environment.
-    [VersionMigrations performUpdateCheck];
+    [VersionMigrations performUpdateCheckWithCompletion:^{
+        OWSAssertIsOnMainThread();
+
+        [self versionMigrationsDidComplete];
+    }];
 
     // Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
@@ -197,7 +202,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     return YES;
 }
 
-
 /**
  *  The user must unlock the device once after reboot before the database encryption key can be accessed.
  */
@@ -219,6 +223,18 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 {
     if ([OWSPreferences isReadyForAppExtensions]) {
         return;
+    }
+
+    if ([NSFileManager.defaultManager fileExistsAtPath:TSStorageManager.legacyDatabaseFilePath]) {
+        DDLogInfo(@"%@ Database file size: %@",
+            self.logTag,
+            [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath]);
+        DDLogInfo(@"%@ \t SHM file size: %@",
+            self.logTag,
+            [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath_SHM]);
+        DDLogInfo(@"%@ \t WAL file size: %@",
+            self.logTag,
+            [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath_WAL]);
     }
 
     NSError *_Nullable error = [self convertDatabaseIfNecessary];
@@ -338,12 +354,16 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
+    OWSAssertIsOnMainThread();
+
     DDLogInfo(@"%@ registered vanilla push token: %@", self.logTag, deviceToken);
     [PushRegistrationManager.sharedManager didReceiveVanillaPushToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
+    OWSAssertIsOnMainThread();
+
     DDLogError(@"%@ failed to register vanilla push token with error: %@", self.logTag, error);
 #ifdef DEBUG
     DDLogWarn(
@@ -358,6 +378,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application
     didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
+    OWSAssertIsOnMainThread();
+
     DDLogInfo(@"%@ registered user notification settings", self.logTag);
     [PushRegistrationManager.sharedManager didRegisterUserNotificationSettings];
 }
@@ -367,6 +389,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     sourceApplication:(NSString *)sourceApplication
            annotation:(id)annotation
 {
+    OWSAssertIsOnMainThread();
+
+    if (!AppReadiness.isAppReady) {
+        DDLogWarn(@"%@ Ignoring openURL: app not ready.", self.logTag);
+        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
+        return NO;
+    }
+
     if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![TSAccountManager isRegistered]) {
             id signupController = SignalApp.sharedApp.signUpFlowNavigationController;
@@ -393,8 +423,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    DDLogWarn(@"%@ applicationDidBecomeActive.", self.logTag);
+    OWSAssertIsOnMainThread();
 
+    DDLogWarn(@"%@ applicationDidBecomeActive.", self.logTag);
     if (CurrentAppContext().isRunningTests) {
         return;
     }
@@ -402,6 +433,19 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [self removeScreenProtection];
 
     [self ensureRootViewController];
+
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [self handleActivation];
+    }];
+
+    DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.logTag);
+}
+
+- (void)handleActivation
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogWarn(@"%@ handleActivation.", self.logTag);
 
     // Always check prekeys after app launches, and sometimes check on app activation.
     [TSPreKeyManager checkPreKeysIfNecessary];
@@ -472,13 +516,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                                                     preferences:[Environment preferences]];
             }
         });
-        
     }
 
-    DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.logTag);
+    DDLogInfo(@"%@ handleActivation completed.", self.logTag);
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
+    OWSAssertIsOnMainThread();
+
     DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
 
     __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
@@ -505,6 +550,14 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application
     performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler {
+    OWSAssertIsOnMainThread();
+
+    if (!AppReadiness.isAppReady) {
+        DDLogWarn(@"%@ Ignoring performActionForShortcutItem: app not ready.", self.logTag);
+        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
+        completionHandler(NO);
+    }
+
     if ([TSAccountManager isRegistered]) {
         [SignalApp.sharedApp.homeViewController showNewConversationView];
         completionHandler(YES);
@@ -531,8 +584,18 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 /**
  * Among other things, this is used by "call back" callkit dialog and calling from native contacts app.
  */
-- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
+- (BOOL)application:(UIApplication *)application
+    continueUserActivity:(nonnull NSUserActivity *)userActivity
+      restorationHandler:(nonnull void (^)(NSArray *_Nullable))restorationHandler
 {
+    OWSAssertIsOnMainThread();
+
+    if (!AppReadiness.isAppReady) {
+        DDLogWarn(@"%@ Ignoring continueUserActivity: app not ready.", self.logTag);
+        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
+        return NO;
+    }
+
     if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
         if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
             DDLogError(@"%@ unexpectedly received INStartVideoCallIntent pre iOS10", self.logTag);
@@ -658,12 +721,13 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     return NO;
 }
 
-
 /**
  * Screen protection obscures the app screen shown in the app switcher.
  */
 - (void)prepareScreenProtection
 {
+    OWSAssertIsOnMainThread();
+
     UIWindow *window = [[UIWindow alloc] initWithFrame:self.window.bounds];
     window.hidden = YES;
     window.opaque = YES;
@@ -678,24 +742,34 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)showScreenProtection
 {
+    OWSAssertIsOnMainThread();
+
     if (Environment.preferences.screenSecurityIsEnabled) {
         self.screenProtectionWindow.hidden = NO;
     }
 }
 
 - (void)removeScreenProtection {
+    OWSAssertIsOnMainThread();
+
     self.screenProtectionWindow.hidden = YES;
 }
 
 #pragma mark Push Notifications Delegate Methods
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    OWSAssertIsOnMainThread();
+
+    // It is safe to continue even if the app isn't ready.
     [[PushManager sharedManager] application:application didReceiveRemoteNotification:userInfo];
 }
 
 - (void)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    OWSAssertIsOnMainThread();
+
+    // It is safe to continue even if the app isn't ready.
     [[PushManager sharedManager] application:application
                 didReceiveRemoteNotification:userInfo
                       fetchCompletionHandler:completionHandler];
@@ -704,17 +778,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
     OWSAssertIsOnMainThread();
 
-    if (!self.isEnvironmentSetup) {
-        OWSFail(@"%@ ignoring %s because environment is not yet set up: %@.",
-            self.logTag,
-            __PRETTY_FUNCTION__,
-            notification);
-        return;
-    }
     DDLogInfo(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, notification);
 
     [AppStoreRating preventPromptAtNextTest];
-    [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
+    }];
 }
 
 - (void)application:(UIApplication *)application
@@ -722,8 +791,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
           forLocalNotification:(UILocalNotification *)notification
              completionHandler:(void (^)())completionHandler
 {
-    if (!self.isEnvironmentSetup) {
-        OWSFail(@"%@ ignoring %s because environment is not yet set up.", self.logTag, __PRETTY_FUNCTION__);
+    OWSAssertIsOnMainThread();
+
+    if (!AppReadiness.isAppReady) {
+        DDLogWarn(@"%@ Ignoring handleActionWithIdentifier: app not ready.", self.logTag);
+        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
         return;
     }
 
@@ -739,8 +811,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
               withResponseInfo:(NSDictionary *)responseInfo
              completionHandler:(void (^)())completionHandler
 {
-    if (!self.isEnvironmentSetup) {
-        OWSFail(@"%@ ignoring %s because environment is not yet set up.", self.logTag, __PRETTY_FUNCTION__);
+    OWSAssertIsOnMainThread();
+
+    if (!AppReadiness.isAppReady) {
+        DDLogWarn(@"%@ Ignoring handleActionWithIdentifier: app not ready.", self.logTag);
+        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
         return;
     }
 
@@ -751,11 +826,48 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                            completionHandler:completionHandler];
 }
 
+- (void)versionMigrationsDidComplete
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ versionMigrationsDidComplete", self.logTag);
+
+    self.areVersionMigrationsComplete = YES;
+
+    [self checkIfAppIsReady];
+}
+
 - (void)storageIsReady
 {
+    OWSAssertIsOnMainThread();
     DDLogInfo(@"%@ storageIsReady", self.logTag);
 
+    [self checkIfAppIsReady];
+}
+
+- (void)checkIfAppIsReady
+{
+    OWSAssertIsOnMainThread();
+
+    // App isn't ready until storage is ready AND all version migrations are complete.
+    if (!self.areVersionMigrationsComplete) {
+        return;
+    }
+    if (![OWSStorage isStorageReady]) {
+        return;
+    }
+    if ([AppReadiness isAppReady]) {
+        // Only mark the app as ready once.
+        return;
+    }
+
+    DDLogInfo(@"%@ checkIfAppIsReady", self.logTag);
+
     [OWSPreferences setIsRegistered:[TSAccountManager isRegistered]];
+
+    // Note that this does much more than set a flag;
+    // it will also run all deferred blocks.
+    [AppReadiness setAppIsReady];
 
     if ([TSAccountManager isRegistered]) {
         DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
@@ -783,7 +895,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [[OWSProfileManager sharedManager] ensureLocalProfileCached];
 
-    self.isEnvironmentSetup = YES;
 
 #ifdef DEBUG
     // A bug in orphan cleanup could be disastrous so let's only
@@ -833,9 +944,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)ensureRootViewController
 {
+    OWSAssertIsOnMainThread();
+
     DDLogInfo(@"%@ ensureRootViewController", self.logTag);
 
-    if (![OWSStorage isStorageReady] || self.hasInitialRootViewController) {
+    if (!AppReadiness.isAppReady || self.hasInitialRootViewController) {
         return;
     }
     self.hasInitialRootViewController = YES;

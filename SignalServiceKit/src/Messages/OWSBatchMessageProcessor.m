@@ -4,6 +4,7 @@
 
 #import "OWSBatchMessageProcessor.h"
 #import "AppContext.h"
+#import "AppReadiness.h"
 #import "NSArray+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSMessageManager.h"
@@ -200,7 +201,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 }
 
 
-+ (void)syncRegisterDatabaseExtension:(OWSStorage *)storage
++ (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage
 {
     YapDatabaseView *existingView = [storage registeredExtension:OWSMessageContentJobFinderExtensionName];
     if (existingView) {
@@ -208,7 +209,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
         // already initialized
         return;
     }
-    [storage registerExtension:[self databaseExtension] withName:OWSMessageContentJobFinderExtensionName];
+    [storage asyncRegisterExtension:[self databaseExtension] withName:OWSMessageContentJobFinderExtensionName];
 }
 
 #pragma mark Logging
@@ -262,8 +263,8 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     _isDrainingQueue = NO;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(storageIsReady)
-                                                 name:StorageIsReadyNotification
+                                             selector:@selector(appIsReady)
+                                                 name:AppIsReadyNotification
                                                object:nil];
 
     return self;
@@ -274,7 +275,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)storageIsReady
+- (void)appIsReady
 {
     [self drainQueue];
 }
@@ -307,7 +308,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     }
 
     dispatch_async(self.serialQueue, ^{
-        if (![OWSStorage isStorageReady]) {
+        if (!AppReadiness.isAppReady) {
             // We don't want to process incoming messages until storage is ready.
             return;
         }
@@ -443,9 +444,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 #pragma mark - class methods
 
-+ (void)syncRegisterDatabaseExtension:(OWSStorage *)storage
++ (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage
 {
-    [OWSMessageContentJobFinder syncRegisterDatabaseExtension:storage];
+    [OWSMessageContentJobFinder asyncRegisterDatabaseExtension:storage];
 }
 
 #pragma mark - instance methods

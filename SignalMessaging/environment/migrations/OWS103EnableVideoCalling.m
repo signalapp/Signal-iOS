@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS103EnableVideoCalling.h"
@@ -18,8 +18,10 @@ static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
 }
 
 // Override parent migration
-- (void)runUp
+- (void)runUpWithCompletion:(OWSDatabaseMigrationCompletion)completion
 {
+    OWSAssert(completion);
+
     DDLogWarn(@"%@ running migration...", self.logTag);
     if ([TSAccountManager isRegistered]) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -28,18 +30,24 @@ static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
                 success:^(NSURLSessionDataTask *task, id responseObject) {
                     DDLogInfo(@"%@ successfully ran", self.logTag);
                     [self save];
+
+                    completion();
                 }
                 failure:^(NSURLSessionDataTask *task, NSError *error) {
                     if (!IsNSErrorNetworkFailure(error)) {
                         OWSProdError([OWSAnalyticsEvents errorEnableVideoCallingRequestFailed]);
                     }
                     DDLogError(@"%@ failed with error: %@", self.logTag, error);
+
+                    completion();
                 }];
         });
     } else {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             DDLogInfo(@"%@ skipping; not registered", self.logTag);
             [self save];
+
+            completion();
         });
     }
 }

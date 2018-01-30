@@ -29,12 +29,6 @@ void runSyncRegistrationsForStorage(OWSStorage *storage)
 
     // Synchronously register extensions which are essential for views.
     [TSDatabaseView registerCrossProcessNotifier:storage];
-    [TSDatabaseView registerThreadInteractionsDatabaseView:storage];
-    [TSDatabaseView registerThreadDatabaseView:storage];
-    [TSDatabaseView registerUnreadDatabaseView:storage];
-    [storage registerExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
-    [OWSMessageReceiver syncRegisterDatabaseExtension:storage];
-    [OWSBatchMessageProcessor syncRegisterDatabaseExtension:storage];
 }
 
 void runAsyncRegistrationsForStorage(OWSStorage *storage)
@@ -45,6 +39,14 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     //
     // All sync registrations must be done before all async registrations,
     // or the sync registrations will block on the async registrations.
+
+    [TSDatabaseView asyncRegisterThreadInteractionsDatabaseView:storage];
+    [TSDatabaseView asyncRegisterThreadDatabaseView:storage];
+    [TSDatabaseView asyncRegisterUnreadDatabaseView:storage];
+    [storage asyncRegisterExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
+    [OWSMessageReceiver asyncRegisterDatabaseExtension:storage];
+    [OWSBatchMessageProcessor asyncRegisterDatabaseExtension:storage];
+
     [TSDatabaseView asyncRegisterUnseenDatabaseView:storage];
     [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:storage];
     [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:storage];
@@ -127,11 +129,19 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 
     runAsyncRegistrationsForStorage(self);
 
+    DDLogVerbose(@"%@ async registrations enqueued.", self.logTag);
+
     // Block until all async registrations are complete.
-    YapDatabaseConnection *dbConnection = self.newDatabaseConnection;
+    //
+    // NOTE: This has to happen on the "registration connection" for this
+    //       database.
+    YapDatabaseConnection *dbConnection = self.registrationConnection;
+    OWSAssert(self.registrationConnection);
     [dbConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue()
                                        completionBlock:^{
                                            OWSAssert(!self.areAsyncRegistrationsComplete);
+
+                                           DDLogVerbose(@"%@ async registrations complete.", self.logTag);
 
                                            self.areAsyncRegistrationsComplete = YES;
 

@@ -62,16 +62,18 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
 
     @objc
     func didBecomeActive() {
-        let currentSortOrder = CNContactsUserDefaults.shared().sortOrder
+        AppReadiness.runNowOrWhenAppIsReady {
+            let currentSortOrder = CNContactsUserDefaults.shared().sortOrder
 
-        guard currentSortOrder != self.lastSortOrder else {
-            // sort order unchanged
-            return
+            guard currentSortOrder != self.lastSortOrder else {
+                // sort order unchanged
+                return
+            }
+
+            Logger.info("\(self.TAG) sort order changed: \(String(describing: self.lastSortOrder)) -> \(String(describing: currentSortOrder))")
+            self.lastSortOrder = currentSortOrder
+            self.runChangeHandler()
         }
-
-        Logger.info("\(TAG) sort order changed: \(String(describing: self.lastSortOrder)) -> \(String(describing: currentSortOrder))")
-        self.lastSortOrder = currentSortOrder
-        self.runChangeHandler()
     }
 
     @objc

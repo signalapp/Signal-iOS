@@ -20,6 +20,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
     private var hasInitialRootViewController = false
     private var isReadyForAppExtensions = false
+    private var areVersionMigrationsComplete = false
 
     private var progressPoller: ProgressPoller?
     var loadViewController: SAELoadViewController?
@@ -98,7 +99,11 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
         // performUpdateCheck must be invoked after Environment has been initialized because
         // upgrade process may depend on Environment.
-        VersionMigrations.performUpdateCheck()
+        VersionMigrations.performUpdateCheck(completion: {
+            AssertIsOnMainThread()
+
+            self.versionMigrationsDidComplete()
+        })
 
         self.isNavigationBarHidden = true
 
@@ -187,10 +192,46 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     }
 
     @objc
+    func versionMigrationsDidComplete() {
+        AssertIsOnMainThread()
+
+        Logger.debug("\(self.logTag) \(#function)")
+
+        areVersionMigrationsComplete = true
+
+        checkIsAppReady()
+    }
+
+    @objc
     func storageIsReady() {
         AssertIsOnMainThread()
 
         Logger.debug("\(self.logTag) \(#function)")
+
+        checkIsAppReady()
+    }
+
+    @objc
+    func checkIsAppReady() {
+        AssertIsOnMainThread()
+
+        // App isn't ready until storage is ready AND all version migrations are complete.
+        guard areVersionMigrationsComplete else {
+            return
+        }
+        guard OWSStorage.isStorageReady() else {
+            return
+        }
+        guard AppReadiness.isAppReady() else {
+            // Only mark the app as ready once.
+            return
+        }
+
+        Logger.debug("\(self.logTag) \(#function)")
+
+        // Note that this does much more than set a flag;
+        // it will also run all deferred blocks.
+        AppReadiness.setAppIsReady()
 
         if TSAccountManager.isRegistered() {
             Logger.info("\(self.logTag) localNumber: \(TSAccountManager.localNumber)")
@@ -219,7 +260,6 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         // We don't need to fetch the local profile in the SAE
 
         OWSReadReceiptManager.shared().prepareCachedValues()
-
     }
 
     @objc
@@ -242,7 +282,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     private func ensureRootViewController() {
         Logger.debug("\(self.logTag) \(#function)")
 
-        guard OWSStorage.isStorageReady() else {
+        guard AppReadiness.isAppReady() else {
             return
         }
         guard !hasInitialRootViewController else {
@@ -323,7 +363,9 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         Logger.debug("\(self.logTag) \(#function)")
 
         if isReadyForAppExtensions {
-            activate()
+            AppReadiness.runNowOrWhenAppIsReady {
+                self.activate()
+            }
         }
     }
 
@@ -434,7 +476,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             self.showPrimaryViewController(conversationPicker)
             Logger.info("showing picker with attachment: \(attachment)")
         }.catch { error in
-            let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE", comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
+            let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE",
+                                               comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
             OWSAlerts.showAlert(withTitle: alertTitle,
                                 message: error.localizedDescription,
                                 buttonTitle: CommonStrings.cancelButton) { _ in

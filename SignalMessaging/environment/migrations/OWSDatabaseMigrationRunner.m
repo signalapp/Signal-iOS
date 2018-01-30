@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDatabaseMigrationRunner.h"
@@ -36,22 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWS100RemoveTSRecipientsMigration alloc] initWithStorageManager:storageManager],
         [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithStorageManager:storageManager],
         [[OWS103EnableVideoCalling alloc] initWithStorageManager:storageManager],
-        // OWS104CreateRecipientIdentities is run separately. See runSafeBlockingMigrations.
+        [[OWS104CreateRecipientIdentities alloc] initWithStorageManager:storageManager],
         [[OWS105AttachmentFilePaths alloc] initWithStorageManager:storageManager],
         [[OWS106EnsureProfileComplete alloc] initWithStorageManager:storageManager]
-    ];
-}
-
-// This should only include migrations which:
-//
-// a) Do read/write database transactions and therefore would block on the async database
-//    view registration.
-// b) Will not affect any of the data used by the async database views.
-- (NSArray<OWSDatabaseMigration *> *)safeBlockingMigrations
-{
-    TSStorageManager *storageManager = TSStorageManager.sharedManager;
-    return @[
-        [[OWS104CreateRecipientIdentities alloc] initWithStorageManager:storageManager],
     ];
 }
 
@@ -63,26 +50,55 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)runSafeBlockingMigrations
+- (void)runAllOutstandingWithCompletion:(OWSDatabaseMigrationCompletion)completion
 {
-    [self runMigrations:self.safeBlockingMigrations];
-}
-
-- (void)runAllOutstanding
-{
-    [self runMigrations:self.allMigrations];
+    [self runMigrations:self.allMigrations completion:completion];
 }
 
 - (void)runMigrations:(NSArray<OWSDatabaseMigration *> *)migrations
+           completion:(OWSDatabaseMigrationCompletion)completion
 {
     OWSAssert(migrations);
+    OWSAssert(completion);
 
+    NSMutableArray<OWSDatabaseMigration *> *migrationsToRun = [NSMutableArray new];
     for (OWSDatabaseMigration *migration in migrations) {
         if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId]) {
             DDLogDebug(@"%@ Skipping previously run migration: %@", self.logTag, migration);
         } else {
             DDLogWarn(@"%@ Running migration: %@", self.logTag, migration);
-            [migration runUp];
+            [migrationsToRun addObject:migration];
+        }
+    }
+
+    if (migrationsToRun.count < 1) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion();
+        });
+        return;
+    }
+
+    NSUInteger totalMigrationCount = migrationsToRun.count;
+    __block NSUInteger completedMigrationCount = 0;
+    // Call the completion exactly once, when the last migration completes.
+    void (^checkMigrationCompletion)(void) = ^{
+        @synchronized(self)
+        {
+            completedMigrationCount++;
+            if (completedMigrationCount == totalMigrationCount) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completion();
+                });
+            }
+        }
+    };
+
+    for (OWSDatabaseMigration *migration in migrationsToRun) {
+        if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId]) {
+            DDLogDebug(@"%@ Skipping previously run migration: %@", self.logTag, migration);
+        } else {
+            DDLogWarn(@"%@ Running migration: %@", self.logTag, migration);
+            [migration runUpWithCompletion:checkMigrationCompletion];
         }
     }
 }

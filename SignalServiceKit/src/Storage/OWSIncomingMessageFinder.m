@@ -95,19 +95,17 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 + (void)asyncRegisterExtensionWithStorageManager:(OWSStorage *)storage
 {
     DDLogInfo(@"%@ registering async.", self.logTag);
-    [storage asyncRegisterExtension:self.indexExtension
-                           withName:OWSIncomingMessageFinderExtensionName
-                    completionBlock:^(BOOL ready) {
-                        DDLogInfo(@"%@ finished registering async.", self.logTag);
-                    }];
+    [storage asyncRegisterExtension:self.indexExtension withName:OWSIncomingMessageFinderExtensionName];
 }
 
+#ifdef DEBUG
 // We should not normally hit this, as we should have prefer registering async, but it is useful for testing.
 - (void)registerExtension
 {
     DDLogError(@"%@ registering SYNC. We should prefer async when possible.", self.logTag);
     [self.storageManager registerExtension:self.class.indexExtension withName:OWSIncomingMessageFinderExtensionName];
 }
+#endif
 
 #pragma mark - instance methods
 
@@ -116,12 +114,14 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
                     sourceDeviceId:(uint32_t)sourceDeviceId
                        transaction:(YapDatabaseReadTransaction *)transaction
 {
+#ifdef DEBUG
     if (![self.storageManager registeredExtension:OWSIncomingMessageFinderExtensionName]) {
         OWSFail(@"%@ in %s but extension is not registered", self.logTag, __PRETTY_FUNCTION__);
 
         // we should be initializing this at startup rather than have an unexpectedly slow lazy setup at random.
         [self registerExtension];
     }
+#endif
 
     NSString *queryFormat = [NSString stringWithFormat:@"WHERE %@ = ? AND %@ = ? AND %@ = ?",
                                       OWSIncomingMessageFinderColumnTimestamp,

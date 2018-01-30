@@ -4,6 +4,7 @@
 
 #import "OWSMessageReceiver.h"
 #import "AppContext.h"
+#import "AppReadiness.h"
 #import "NSArray+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSBatchMessageProcessor.h"
@@ -190,7 +191,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     });
 }
 
-+ (void)syncRegisterDatabaseExtension:(OWSStorage *)storage
++ (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage
 {
     [self registerLegacyClasses];
 
@@ -200,7 +201,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         // already initialized
         return;
     }
-    [storage registerExtension:[self databaseExtension] withName:OWSMessageDecryptJobFinderExtensionName];
+    [storage asyncRegisterExtension:[self databaseExtension] withName:OWSMessageDecryptJobFinderExtensionName];
 }
 
 @end
@@ -242,8 +243,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     _isDrainingQueue = NO;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(storageIsReady)
-                                                 name:StorageIsReadyNotification
+                                             selector:@selector(appIsReady)
+                                                 name:AppIsReadyNotification
                                                object:nil];
 
     return self;
@@ -254,7 +255,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)storageIsReady
+- (void)appIsReady
 {
     [self drainQueue];
 }
@@ -284,7 +285,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     }
 
     dispatch_async(self.serialQueue, ^{
-        if (![OWSStorage isStorageReady]) {
+        if (!AppReadiness.isAppReady) {
             // We don't want to process incoming messages until storage is ready.
             return;
         }
@@ -422,9 +423,9 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 #pragma mark - class methods
 
-+ (void)syncRegisterDatabaseExtension:(OWSStorage *)storage
++ (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage
 {
-    [OWSMessageDecryptJobFinder syncRegisterDatabaseExtension:storage];
+    [OWSMessageDecryptJobFinder asyncRegisterDatabaseExtension:storage];
 }
 
 #pragma mark - instance methods

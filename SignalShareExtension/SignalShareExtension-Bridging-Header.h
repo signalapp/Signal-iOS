@@ -21,6 +21,7 @@
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/NSObject+OWS.h>
 #import <SignalServiceKit/OWSAsserts.h>

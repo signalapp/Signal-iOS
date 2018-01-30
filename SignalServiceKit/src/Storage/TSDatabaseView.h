@@ -21,18 +21,30 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+#pragma mark - Views
+
+// Returns the "unseen" database view if it is ready;
+// otherwise it returns the "unread" database view.
++ (id)unseenDatabaseViewExtension:(YapDatabaseReadTransaction *)transaction;
+
++ (id)threadOutgoingMessageDatabaseView:(YapDatabaseReadTransaction *)transaction;
+
++ (id)threadSpecialMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
+
+#pragma mark - Registration
+
 + (void)registerCrossProcessNotifier:(OWSStorage *)storage;
 
-// This method must be called _AFTER_ registerThreadInteractionsDatabaseView.
-+ (void)registerThreadDatabaseView:(OWSStorage *)storage;
+// This method must be called _AFTER_ asyncRegisterThreadInteractionsDatabaseView.
++ (void)asyncRegisterThreadDatabaseView:(OWSStorage *)storage;
 
-+ (void)registerThreadInteractionsDatabaseView:(OWSStorage *)storage;
++ (void)asyncRegisterThreadInteractionsDatabaseView:(OWSStorage *)storage;
 + (void)asyncRegisterThreadOutgoingMessagesDatabaseView:(OWSStorage *)storage;
 
 // Instances of OWSReadTracking for wasRead is NO and shouldAffectUnreadCounts is YES.
 //
 // Should be used for "unread message counts".
-+ (void)registerUnreadDatabaseView:(OWSStorage *)storage;
++ (void)asyncRegisterUnreadDatabaseView:(OWSStorage *)storage;
 
 // Should be used for "unread indicator".
 //
@@ -42,15 +54,5 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 + (void)asyncRegisterThreadSpecialMessagesDatabaseView:(OWSStorage *)storage;
 
 + (void)asyncRegisterSecondaryDevicesDatabaseView:(OWSStorage *)storage;
-
-// Returns the "unseen" database view if it is ready;
-// otherwise it returns the "unread" database view.
-+ (id)unseenDatabaseViewExtension:(YapDatabaseReadTransaction *)transaction;
-
-// NOTE: It is not safe to call this method while hasPendingViewRegistrations is YES.
-+ (id)threadOutgoingMessageDatabaseView:(YapDatabaseReadTransaction *)transaction;
-
-// NOTE: It is not safe to call this method while hasPendingViewRegistrations is YES.
-+ (id)threadSpecialMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
 
 @end
