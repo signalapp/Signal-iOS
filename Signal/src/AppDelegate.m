@@ -946,7 +946,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     DDLogInfo(@"%@ ensureRootViewController", self.logTag);
 
-    if (![OWSStorage isStorageReady] || self.hasInitialRootViewController) {
+    if (!AppReadiness.isAppReady || self.hasInitialRootViewController) {
         return;
     }
     self.hasInitialRootViewController = YES;

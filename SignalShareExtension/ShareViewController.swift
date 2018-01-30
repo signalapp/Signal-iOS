@@ -282,7 +282,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
     private func ensureRootViewController() {
         Logger.debug("\(self.logTag) \(#function)")
 
-        guard OWSStorage.isStorageReady() else {
+        guard AppReadiness.isAppReady() else {
             return
         }
         guard !hasInitialRootViewController else {
