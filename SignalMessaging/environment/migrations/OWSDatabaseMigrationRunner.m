@@ -80,6 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSUInteger totalMigrationCount = migrationsToRun.count;
     __block NSUInteger completedMigrationCount = 0;
+    // Call the completion exactly once, when the last migration completes.
     void (^checkMigrationCompletion)(void) = ^{
         @synchronized(self)
         {

@@ -62,7 +62,7 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
 
     @objc
     func didBecomeActive() {
-        AppReadiness.runNowOr {
+        AppReadiness.runNowOrWhenAppIsReady {
             let currentSortOrder = CNContactsUserDefaults.shared().sortOrder
 
             guard currentSortOrder != self.lastSortOrder else {

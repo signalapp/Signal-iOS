@@ -225,15 +225,17 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return;
     }
 
-    DDLogInfo(@"%@ Database file size: %@",
-        self.logTag,
-        [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath]);
-    DDLogInfo(@"%@ \t SHM file size: %@",
-        self.logTag,
-        [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath_SHM]);
-    DDLogInfo(@"%@ \t WAL file size: %@",
-        self.logTag,
-        [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath_WAL]);
+    if ([NSFileManager.defaultManager fileExistsAtPath:TSStorageManager.legacyDatabaseFilePath]) {
+        DDLogInfo(@"%@ Database file size: %@",
+            self.logTag,
+            [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath]);
+        DDLogInfo(@"%@ \t SHM file size: %@",
+            self.logTag,
+            [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath_SHM]);
+        DDLogInfo(@"%@ \t WAL file size: %@",
+            self.logTag,
+            [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath_WAL]);
+    }
 
     NSError *_Nullable error = [self convertDatabaseIfNecessary];
     // TODO: Handle this error.

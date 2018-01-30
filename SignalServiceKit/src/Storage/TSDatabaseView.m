@@ -53,7 +53,6 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
 + (void)registerMessageDatabaseViewWithName:(NSString *)viewName
                                viewGrouping:(YapDatabaseViewGrouping *)viewGrouping
                                     version:(NSString *)version
-                                      async:(BOOL)async
                                     storage:(OWSStorage *)storage
 {
     OWSAssertIsOnMainThread();
@@ -78,12 +77,7 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
                                                                   sorting:viewSorting
                                                                versionTag:version
                                                                   options:options];
-
-    if (async) {
-        [storage asyncRegisterExtension:view withName:viewName];
-    } else {
-        [storage registerExtension:view withName:viewName];
-    }
+    [storage asyncRegisterExtension:view withName:viewName];
 }
 
 + (void)asyncRegisterUnreadDatabaseView:(OWSStorage *)storage
@@ -102,7 +96,6 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     [self registerMessageDatabaseViewWithName:TSUnreadDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"1"
-                                        async:YES
                                       storage:storage];
 }
 
@@ -122,7 +115,6 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     [self registerMessageDatabaseViewWithName:TSUnseenDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"1"
-                                        async:YES
                                       storage:storage];
 }
 
@@ -150,7 +142,6 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     [self registerMessageDatabaseViewWithName:TSThreadSpecialMessagesDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"1"
-                                        async:YES
                                       storage:storage];
 }
 
@@ -167,7 +158,6 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     [self registerMessageDatabaseViewWithName:TSMessageDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"1"
-                                        async:YES
                                       storage:storage];
 }
 
@@ -184,7 +174,6 @@ NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevic
     [self registerMessageDatabaseViewWithName:TSThreadOutgoingMessageDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"2"
-                                        async:YES
                                       storage:storage];
 }
 

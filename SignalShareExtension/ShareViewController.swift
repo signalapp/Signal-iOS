@@ -363,9 +363,9 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         Logger.debug("\(self.logTag) \(#function)")
 
         if isReadyForAppExtensions {
-            AppReadiness.runNowOr(whenAppIsReady: {
+            AppReadiness.runNowOrWhenAppIsReady {
                 self.activate()
-            })
+            }
         }
     }
 

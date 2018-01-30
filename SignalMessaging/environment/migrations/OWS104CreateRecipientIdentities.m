@@ -54,8 +54,6 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
                                          verificationState:OWSVerificationStateDefault]
             saveWithTransaction:transaction];
     }];
-
-    [self saveWithTransaction:transaction];
 }
 
 @end
