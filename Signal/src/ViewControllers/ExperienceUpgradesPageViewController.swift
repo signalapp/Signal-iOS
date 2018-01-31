@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,7 +10,7 @@ private class IntroductingReadReceiptsExperienceUpgradeViewController: Experienc
     var buttonAction: ((UIButton) -> Void)?
 
     override func loadView() {
-        self.view = UIView()
+        self.view = UIView.container()
 
         /// Create Views
 
@@ -71,7 +71,7 @@ private class IntroductingReadReceiptsExperienceUpgradeViewController: Experienc
         // Title label layout
         titleLabel.autoSetDimension(.height, toSize: ScaleFromIPhone5(40))
         titleLabel.autoPinWidthToSuperview(withMargin: ScaleFromIPhone5To7Plus(16, 24))
-        titleLabel.autoPinEdge(toSuperviewEdge: .top)
+        titleLabel.autoPinTopToSuperview()
 
         // Body label layout
         bodyLabel.autoPinEdge(.top, to: .bottom, of: imageView, withOffset: ScaleFromIPhone5To7Plus(18, 28))
@@ -421,15 +421,21 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
     }
 
     override func loadView() {
-        self.view = UIView()
+        self.view = UIView.container()
         view.backgroundColor = UIColor.white
 
         //// Create Views
 
         // Header Background
-        let headerBackgroundView = UIView()
+        let statusBarBackgroundView = UIView.container()
+        view.addSubview(statusBarBackgroundView)
+        statusBarBackgroundView.backgroundColor = UIColor.ows_materialBlue
+        statusBarBackgroundView.addRedBorder()
+
+        let headerBackgroundView = UIView.container()
         view.addSubview(headerBackgroundView)
         headerBackgroundView.backgroundColor = UIColor.ows_materialBlue
+        headerBackgroundView.addRedBorder()
 
         // Dismiss button
         let dismissButton = UIButton()
@@ -451,21 +457,34 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
 
         //// Layout Views
 
+        // Status Bar Background layout
+        //
+        // We use a separate backgrounds for the "status bar" area (which has very
+        // different height on iPhone X) and the "header" (which has consistent
+        // height).
+        statusBarBackgroundView.autoPinWidthToSuperview()
+        statusBarBackgroundView.autoPinEdge(toSuperviewEdge: .top)
+        statusBarBackgroundView.autoPinEdge(.bottom, to: .top, of: headerBackgroundView)
+
         // Header Background layout
+        statusBarBackgroundView.autoPinWidthToSuperview()
+        statusBarBackgroundView.autoPinEdge(toSuperviewEdge: .top)
+        statusBarBackgroundView.autoPinEdge(.bottom, to: .top, of: headerBackgroundView)
+
         headerBackgroundView.autoPinWidthToSuperview()
-        headerBackgroundView.autoPinEdge(toSuperviewEdge: .top)
-        headerBackgroundView.autoSetDimension(.height, toSize: ScaleFromIPhone5(80))
+        headerBackgroundView.autoPinTopToSuperview()
+        headerBackgroundView.autoSetDimension(.height, toSize: ScaleFromIPhone5(60))
 
         // Dismiss button layout
         dismissButton.autoHCenterInSuperview()
-        dismissButton.autoPinEdge(toSuperviewEdge: .bottom, withInset: ScaleFromIPhone5(10))
+        dismissButton.autoPinBottomToSuperview(withMargin: ScaleFromIPhone5(10))
 
         // Carousel View layout
         carouselView.autoPinWidthToSuperview()
         // negative inset so as to overlay the header text in the carousel view with the header background which
         // lives outside of the carousel. We do this so that the user can't bounce past the page view controllers
         // width limits, exposing the edge of the header.
-        carouselView.autoPin(toTopLayoutGuideOf: self, withInset: ScaleFromIPhone5To7Plus(14, 24))
+        carouselView.autoPinTopToSuperview(withMargin: ScaleFromIPhone5To7Plus(14, 24))
         carouselView.autoPinEdge(.bottom, to: .top, of: dismissButton, withOffset: ScaleFromIPhone5(-10))
     }
 
