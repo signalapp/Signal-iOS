@@ -80,33 +80,32 @@
     DispatchMainThreadSafe(^{
         __weak typeof(self) weakSelf = self;
         self.backgroundTaskId = [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
-            // Note the usage of OWSCAssert() to avoid capturing a reference to self.
-            OWSCAssert([NSThread isMainThread]);
-
-            OWSBackgroundTask *strongSelf = weakSelf;
-            if (!strongSelf) {
-                return;
-            }
-
-            // Make a local copy of completionBlock to ensure that it is called
-            // exactly once.
-            BackgroundTaskCompletionBlock _Nullable completionBlock = nil;
-
-            @synchronized(strongSelf)
-            {
-                if (strongSelf.backgroundTaskId == UIBackgroundTaskInvalid) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                OWSBackgroundTask *strongSelf = weakSelf;
+                if (!strongSelf) {
                     return;
                 }
-                DDLogInfo(@"%@ %@ background task expired.", strongSelf.logTag, strongSelf.label);
-                strongSelf.backgroundTaskId = UIBackgroundTaskInvalid;
 
-                completionBlock = strongSelf.completionBlock;
-                strongSelf.completionBlock = nil;
-            }
+                // Make a local copy of completionBlock to ensure that it is called
+                // exactly once.
+                BackgroundTaskCompletionBlock _Nullable completionBlock = nil;
 
-            if (completionBlock) {
-                completionBlock(BackgroundTaskState_Expired);
-            }
+                @synchronized(strongSelf)
+                {
+                    if (strongSelf.backgroundTaskId == UIBackgroundTaskInvalid) {
+                        return;
+                    }
+                    DDLogInfo(@"%@ %@ background task expired.", strongSelf.logTag, strongSelf.label);
+                    strongSelf.backgroundTaskId = UIBackgroundTaskInvalid;
+
+                    completionBlock = strongSelf.completionBlock;
+                    strongSelf.completionBlock = nil;
+                }
+
+                if (completionBlock) {
+                    completionBlock(BackgroundTaskState_Expired);
+                }
+            });
         }];
 
         // If a background task could not be begun, call the completion block.

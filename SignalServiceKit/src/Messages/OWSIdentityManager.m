@@ -100,9 +100,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     _storageManager = storageManager;
     _dbConnection = storageManager.newDatabaseConnection;
     self.dbConnection.objectCacheEnabled = NO;
-#if DEBUG
-    self.dbConnection.permittedTransactions = YDB_AnySyncTransaction;
-#endif
     _messageSender = messageSender;
 
     OWSSingletonAssert();
