@@ -236,9 +236,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [TSStorageManager.protocolStoreDBConnection readWriteWithBlock:^(
-            YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [TSStorageManager.protocolStoreDBConnection
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             @try {
                 id<CipherMessage> cipherMessage = cipherMessageBlock(encryptedData);
                 SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
@@ -260,7 +259,6 @@ NS_ASSUME_NONNULL_BEGIN
                 });
             }
         }];
-    });
 }
 
 - (void)processException:(NSException *)exception envelope:(OWSSignalServiceProtosEnvelope *)envelope

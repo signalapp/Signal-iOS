@@ -1105,7 +1105,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     [TSStorageManager.protocolStoreDBConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             if (extraDevices.count < 1 && missingDevices.count < 1) {
                 OWSProdFail([OWSAnalyticsEvents messageSenderErrorNoMissingOrExtraDevices]);
             }
@@ -1436,7 +1436,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return;
         }
 
-        [TSStorageManager.protocolStoreDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [TSStorageManager.protocolStoreDBConnection asyncReadWriteWithBlock:^(
+            YapDatabaseReadWriteTransaction *transaction) {
             for (NSUInteger i = 0; i < [devices count]; i++) {
                 int deviceNumber = [devices[i] intValue];
                 [[TSStorageManager sharedManager] deleteSessionForContact:identifier
