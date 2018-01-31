@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSGroupModel.h"
@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
++ (nullable instancetype)threadWithGroupId:(NSData *)groupId;
 + (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(YapDatabaseReadTransaction *)transaction;
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
