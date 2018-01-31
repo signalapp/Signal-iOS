@@ -7,6 +7,7 @@
 #import "Cryptography.h"
 #import "MIMETypeUtil.h"
 #import "NSData+keyVersionByte.h"
+#import "OWSBlockingManager.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSRecipientIdentity.h"
 #import "OWSSignalServiceProtos.pb.h"
@@ -61,6 +62,10 @@ NS_ASSUME_NONNULL_BEGIN
         if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
             [contactBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];
         }
+    }
+
+    if ([OWSBlockingManager.sharedManager isRecipientIdBlocked:signalAccount.recipientId]) {
+        [contactBuilder setBlocked:YES];
     }
 
     NSData *contactData = [[contactBuilder build] data];
