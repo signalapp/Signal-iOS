@@ -5,6 +5,7 @@
 #import "OWSDatabaseConverterTest.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SignalServiceKit/NSData+hexString.h>
+#import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSStorage.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <YapDatabase/YapDatabase.h>
