@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSOutgoingMessage.h"
@@ -446,6 +446,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 {
     TSThread *thread = self.thread;
     OWSSignalServiceProtosDataMessageBuilder *builder = [OWSSignalServiceProtosDataMessageBuilder new];
+    [builder setTimestamp:self.timestamp];
     [builder setBody:self.body];
     BOOL attachmentWasGroupAvatar = NO;
     if ([thread isKindOfClass:[TSGroupThread class]]) {
@@ -495,6 +496,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     OWSAssert(self.thread);
 
     OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
+    [builder setTimestamp:self.timestamp];
     [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
     return [builder build];
 }
@@ -532,6 +534,17 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     [builder setKey:attachmentStream.encryptionKey];
     [builder setDigest:attachmentStream.digest];
     [builder setFlags:(self.isVoiceMessage ? OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage : 0)];
+
+    CGSize imageSize = [attachmentStream imageSize];
+    if (imageSize.width < NSIntegerMax && imageSize.height < NSIntegerMax) {
+        NSInteger imageWidth = (NSInteger)round(imageSize.width);
+        NSInteger imageHeight = (NSInteger)round(imageSize.height);
+        if (imageWidth > 0 && imageHeight > 0) {
+            [builder setWidth:(UInt32)imageWidth];
+            [builder setHeight:(UInt32)imageHeight];
+        }
+    }
+
     return [builder build];
 }
 

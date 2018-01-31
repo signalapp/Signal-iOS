@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSGroupThread.h"
@@ -56,6 +56,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return self;
+}
+
++ (nullable instancetype)threadWithGroupId:(NSData *)groupId;
+{
+    OWSAssert(groupId.length > 0);
+
+    __block TSGroupThread *thread;
+    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        thread = [self threadWithGroupId:groupId transaction:transaction];
+    }];
+    return thread;
 }
 
 + (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(YapDatabaseReadTransaction *)transaction

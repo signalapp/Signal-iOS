@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSContactThread.h"
@@ -78,6 +78,19 @@ NS_ASSUME_NONNULL_BEGIN
     __block TSContactThread *thread;
     [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [self getOrCreateThreadWithContactId:contactId transaction:transaction];
+    }];
+
+    return thread;
+}
+
++ (nullable instancetype)getThreadWithContactId:(NSString *)contactId
+{
+    OWSAssert(contactId.length > 0);
+
+    __block TSContactThread *_Nullable thread;
+    [[self dbReadWriteConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        thread =
+            [TSContactThread fetchObjectWithUniqueID:[self threadIdFromContactId:contactId] transaction:transaction];
     }];
 
     return thread;

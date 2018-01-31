@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSEndSessionMessage.h"
@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
 {
     OWSSignalServiceProtosDataMessageBuilder *builder = [super dataMessageBuilder];
+    [builder setTimestamp:self.timestamp];
     [builder setFlags:OWSSignalServiceProtosDataMessageFlagsEndSession];
 
     return builder;

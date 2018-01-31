@@ -2921,6 +2921,7 @@ static OWSSignalServiceProtosCallMessageHangup* defaultOWSSignalServiceProtosCal
 @property UInt32 flags;
 @property UInt32 expireTimer;
 @property (strong) NSData* profileKey;
+@property UInt64 timestamp;
 @end
 
 @implementation OWSSignalServiceProtosDataMessage
@@ -2962,6 +2963,13 @@ static OWSSignalServiceProtosCallMessageHangup* defaultOWSSignalServiceProtosCal
   hasProfileKey_ = !!_value_;
 }
 @synthesize profileKey;
+- (BOOL) hasTimestamp {
+  return !!hasTimestamp_;
+}
+- (void) setHasTimestamp:(BOOL) _value_ {
+  hasTimestamp_ = !!_value_;
+}
+@synthesize timestamp;
 - (instancetype) init {
   if ((self = [super init])) {
     self.body = @"";
@@ -2969,6 +2977,7 @@ static OWSSignalServiceProtosCallMessageHangup* defaultOWSSignalServiceProtosCal
     self.flags = 0;
     self.expireTimer = 0;
     self.profileKey = [NSData data];
+    self.timestamp = 0L;
   }
   return self;
 }
@@ -3012,6 +3021,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   if (self.hasProfileKey) {
     [output writeData:6 value:self.profileKey];
   }
+  if (self.hasTimestamp) {
+    [output writeUInt64:7 value:self.timestamp];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -3038,6 +3050,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   }
   if (self.hasProfileKey) {
     size_ += computeDataSize(6, self.profileKey);
+  }
+  if (self.hasTimestamp) {
+    size_ += computeUInt64Size(7, self.timestamp);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -3098,6 +3113,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   if (self.hasProfileKey) {
     [output appendFormat:@"%@%@: %@\n", indent, @"profileKey", self.profileKey];
   }
+  if (self.hasTimestamp) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"timestamp", [NSNumber numberWithLongLong:self.timestamp]];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -3123,6 +3141,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   if (self.hasProfileKey) {
     [dictionary setObject: self.profileKey forKey: @"profileKey"];
   }
+  if (self.hasTimestamp) {
+    [dictionary setObject: [NSNumber numberWithLongLong:self.timestamp] forKey: @"timestamp"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -3145,6 +3166,8 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
       (!self.hasExpireTimer || self.expireTimer == otherMessage.expireTimer) &&
       self.hasProfileKey == otherMessage.hasProfileKey &&
       (!self.hasProfileKey || [self.profileKey isEqual:otherMessage.profileKey]) &&
+      self.hasTimestamp == otherMessage.hasTimestamp &&
+      (!self.hasTimestamp || self.timestamp == otherMessage.timestamp) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -3166,6 +3189,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
   }
   if (self.hasProfileKey) {
     hashCode = hashCode * 31 + [self.profileKey hash];
+  }
+  if (self.hasTimestamp) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.timestamp] hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -3255,6 +3281,9 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
   if (other.hasProfileKey) {
     [self setProfileKey:other.profileKey];
   }
+  if (other.hasTimestamp) {
+    [self setTimestamp:other.timestamp];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -3305,6 +3334,10 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
       }
       case 50: {
         [self setProfileKey:[input readData]];
+        break;
+      }
+      case 56: {
+        [self setTimestamp:[input readUInt64]];
         break;
       }
     }
@@ -3423,6 +3456,22 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
 - (OWSSignalServiceProtosDataMessageBuilder*) clearProfileKey {
   resultDataMessage.hasProfileKey = NO;
   resultDataMessage.profileKey = [NSData data];
+  return self;
+}
+- (BOOL) hasTimestamp {
+  return resultDataMessage.hasTimestamp;
+}
+- (UInt64) timestamp {
+  return resultDataMessage.timestamp;
+}
+- (OWSSignalServiceProtosDataMessageBuilder*) setTimestamp:(UInt64) value {
+  resultDataMessage.hasTimestamp = YES;
+  resultDataMessage.timestamp = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageBuilder*) clearTimestamp {
+  resultDataMessage.hasTimestamp = NO;
+  resultDataMessage.timestamp = 0L;
   return self;
 }
 @end
@@ -6925,6 +6974,8 @@ static OWSSignalServiceProtosSyncMessageConfiguration* defaultOWSSignalServicePr
 @property (strong) NSData* digest;
 @property (strong) NSString* fileName;
 @property UInt32 flags;
+@property UInt32 width;
+@property UInt32 height;
 @end
 
 @implementation OWSSignalServiceProtosAttachmentPointer
@@ -6985,6 +7036,20 @@ static OWSSignalServiceProtosSyncMessageConfiguration* defaultOWSSignalServicePr
   hasFlags_ = !!_value_;
 }
 @synthesize flags;
+- (BOOL) hasWidth {
+  return !!hasWidth_;
+}
+- (void) setHasWidth:(BOOL) _value_ {
+  hasWidth_ = !!_value_;
+}
+@synthesize width;
+- (BOOL) hasHeight {
+  return !!hasHeight_;
+}
+- (void) setHasHeight:(BOOL) _value_ {
+  hasHeight_ = !!_value_;
+}
+@synthesize height;
 - (instancetype) init {
   if ((self = [super init])) {
     self.id = 0L;
@@ -6995,6 +7060,8 @@ static OWSSignalServiceProtosSyncMessageConfiguration* defaultOWSSignalServicePr
     self.digest = [NSData data];
     self.fileName = @"";
     self.flags = 0;
+    self.width = 0;
+    self.height = 0;
   }
   return self;
 }
@@ -7038,6 +7105,12 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   if (self.hasFlags) {
     [output writeUInt32:8 value:self.flags];
   }
+  if (self.hasWidth) {
+    [output writeUInt32:9 value:self.width];
+  }
+  if (self.hasHeight) {
+    [output writeUInt32:10 value:self.height];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -7070,6 +7143,12 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   }
   if (self.hasFlags) {
     size_ += computeUInt32Size(8, self.flags);
+  }
+  if (self.hasWidth) {
+    size_ += computeUInt32Size(9, self.width);
+  }
+  if (self.hasHeight) {
+    size_ += computeUInt32Size(10, self.height);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -7130,6 +7209,12 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   if (self.hasFlags) {
     [output appendFormat:@"%@%@: %@\n", indent, @"flags", [NSNumber numberWithInteger:self.flags]];
   }
+  if (self.hasWidth) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"width", [NSNumber numberWithInteger:self.width]];
+  }
+  if (self.hasHeight) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"height", [NSNumber numberWithInteger:self.height]];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -7156,6 +7241,12 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   }
   if (self.hasFlags) {
     [dictionary setObject: [NSNumber numberWithInteger:self.flags] forKey: @"flags"];
+  }
+  if (self.hasWidth) {
+    [dictionary setObject: [NSNumber numberWithInteger:self.width] forKey: @"width"];
+  }
+  if (self.hasHeight) {
+    [dictionary setObject: [NSNumber numberWithInteger:self.height] forKey: @"height"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -7184,6 +7275,10 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
       (!self.hasFileName || [self.fileName isEqual:otherMessage.fileName]) &&
       self.hasFlags == otherMessage.hasFlags &&
       (!self.hasFlags || self.flags == otherMessage.flags) &&
+      self.hasWidth == otherMessage.hasWidth &&
+      (!self.hasWidth || self.width == otherMessage.width) &&
+      self.hasHeight == otherMessage.hasHeight &&
+      (!self.hasHeight || self.height == otherMessage.height) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -7211,6 +7306,12 @@ static OWSSignalServiceProtosAttachmentPointer* defaultOWSSignalServiceProtosAtt
   }
   if (self.hasFlags) {
     hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.flags] hash];
+  }
+  if (self.hasWidth) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.width] hash];
+  }
+  if (self.hasHeight) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.height] hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -7296,6 +7397,12 @@ NSString *NSStringFromOWSSignalServiceProtosAttachmentPointerFlags(OWSSignalServ
   if (other.hasFlags) {
     [self setFlags:other.flags];
   }
+  if (other.hasWidth) {
+    [self setWidth:other.width];
+  }
+  if (other.hasHeight) {
+    [self setHeight:other.height];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -7347,6 +7454,14 @@ NSString *NSStringFromOWSSignalServiceProtosAttachmentPointerFlags(OWSSignalServ
       }
       case 64: {
         [self setFlags:[input readUInt32]];
+        break;
+      }
+      case 72: {
+        [self setWidth:[input readUInt32]];
+        break;
+      }
+      case 80: {
+        [self setHeight:[input readUInt32]];
         break;
       }
     }
@@ -7478,6 +7593,38 @@ NSString *NSStringFromOWSSignalServiceProtosAttachmentPointerFlags(OWSSignalServ
 - (OWSSignalServiceProtosAttachmentPointerBuilder*) clearFlags {
   resultAttachmentPointer.hasFlags = NO;
   resultAttachmentPointer.flags = 0;
+  return self;
+}
+- (BOOL) hasWidth {
+  return resultAttachmentPointer.hasWidth;
+}
+- (UInt32) width {
+  return resultAttachmentPointer.width;
+}
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) setWidth:(UInt32) value {
+  resultAttachmentPointer.hasWidth = YES;
+  resultAttachmentPointer.width = value;
+  return self;
+}
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) clearWidth {
+  resultAttachmentPointer.hasWidth = NO;
+  resultAttachmentPointer.width = 0;
+  return self;
+}
+- (BOOL) hasHeight {
+  return resultAttachmentPointer.hasHeight;
+}
+- (UInt32) height {
+  return resultAttachmentPointer.height;
+}
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) setHeight:(UInt32) value {
+  resultAttachmentPointer.hasHeight = YES;
+  resultAttachmentPointer.height = value;
+  return self;
+}
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) clearHeight {
+  resultAttachmentPointer.hasHeight = NO;
+  resultAttachmentPointer.height = 0;
   return self;
 }
 @end
@@ -7961,6 +8108,8 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @property (strong) NSString* color;
 @property (strong) OWSSignalServiceProtosVerified* verified;
 @property (strong) NSData* profileKey;
+@property BOOL blocked;
+@property UInt32 expireTimer;
 @end
 
 @implementation OWSSignalServiceProtosContactDetails
@@ -8007,6 +8156,25 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   hasProfileKey_ = !!_value_;
 }
 @synthesize profileKey;
+- (BOOL) hasBlocked {
+  return !!hasBlocked_;
+}
+- (void) setHasBlocked:(BOOL) _value_ {
+  hasBlocked_ = !!_value_;
+}
+- (BOOL) blocked {
+  return !!blocked_;
+}
+- (void) setBlocked:(BOOL) _value_ {
+  blocked_ = !!_value_;
+}
+- (BOOL) hasExpireTimer {
+  return !!hasExpireTimer_;
+}
+- (void) setHasExpireTimer:(BOOL) _value_ {
+  hasExpireTimer_ = !!_value_;
+}
+@synthesize expireTimer;
 - (instancetype) init {
   if ((self = [super init])) {
     self.number = @"";
@@ -8015,6 +8183,8 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
     self.color = @"";
     self.verified = [OWSSignalServiceProtosVerified defaultInstance];
     self.profileKey = [NSData data];
+    self.blocked = NO;
+    self.expireTimer = 0;
   }
   return self;
 }
@@ -8052,6 +8222,12 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
   if (self.hasProfileKey) {
     [output writeData:6 value:self.profileKey];
   }
+  if (self.hasBlocked) {
+    [output writeBool:7 value:self.blocked];
+  }
+  if (self.hasExpireTimer) {
+    [output writeUInt32:8 value:self.expireTimer];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -8078,6 +8254,12 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
   }
   if (self.hasProfileKey) {
     size_ += computeDataSize(6, self.profileKey);
+  }
+  if (self.hasBlocked) {
+    size_ += computeBoolSize(7, self.blocked);
+  }
+  if (self.hasExpireTimer) {
+    size_ += computeUInt32Size(8, self.expireTimer);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -8138,6 +8320,12 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
   if (self.hasProfileKey) {
     [output appendFormat:@"%@%@: %@\n", indent, @"profileKey", self.profileKey];
   }
+  if (self.hasBlocked) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"blocked", [NSNumber numberWithBool:self.blocked]];
+  }
+  if (self.hasExpireTimer) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"expireTimer", [NSNumber numberWithInteger:self.expireTimer]];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -8163,6 +8351,12 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
   if (self.hasProfileKey) {
     [dictionary setObject: self.profileKey forKey: @"profileKey"];
   }
+  if (self.hasBlocked) {
+    [dictionary setObject: [NSNumber numberWithBool:self.blocked] forKey: @"blocked"];
+  }
+  if (self.hasExpireTimer) {
+    [dictionary setObject: [NSNumber numberWithInteger:self.expireTimer] forKey: @"expireTimer"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -8186,6 +8380,10 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
       (!self.hasVerified || [self.verified isEqual:otherMessage.verified]) &&
       self.hasProfileKey == otherMessage.hasProfileKey &&
       (!self.hasProfileKey || [self.profileKey isEqual:otherMessage.profileKey]) &&
+      self.hasBlocked == otherMessage.hasBlocked &&
+      (!self.hasBlocked || self.blocked == otherMessage.blocked) &&
+      self.hasExpireTimer == otherMessage.hasExpireTimer &&
+      (!self.hasExpireTimer || self.expireTimer == otherMessage.expireTimer) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -8207,6 +8405,12 @@ static OWSSignalServiceProtosContactDetails* defaultOWSSignalServiceProtosContac
   }
   if (self.hasProfileKey) {
     hashCode = hashCode * 31 + [self.profileKey hash];
+  }
+  if (self.hasBlocked) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.blocked] hash];
+  }
+  if (self.hasExpireTimer) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.expireTimer] hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -8524,6 +8728,12 @@ static OWSSignalServiceProtosContactDetailsAvatar* defaultOWSSignalServiceProtos
   if (other.hasProfileKey) {
     [self setProfileKey:other.profileKey];
   }
+  if (other.hasBlocked) {
+    [self setBlocked:other.blocked];
+  }
+  if (other.hasExpireTimer) {
+    [self setExpireTimer:other.expireTimer];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -8577,6 +8787,14 @@ static OWSSignalServiceProtosContactDetailsAvatar* defaultOWSSignalServiceProtos
       }
       case 50: {
         [self setProfileKey:[input readData]];
+        break;
+      }
+      case 56: {
+        [self setBlocked:[input readBool]];
+        break;
+      }
+      case 64: {
+        [self setExpireTimer:[input readUInt32]];
         break;
       }
     }
@@ -8706,6 +8924,38 @@ static OWSSignalServiceProtosContactDetailsAvatar* defaultOWSSignalServiceProtos
   resultContactDetails.profileKey = [NSData data];
   return self;
 }
+- (BOOL) hasBlocked {
+  return resultContactDetails.hasBlocked;
+}
+- (BOOL) blocked {
+  return resultContactDetails.blocked;
+}
+- (OWSSignalServiceProtosContactDetailsBuilder*) setBlocked:(BOOL) value {
+  resultContactDetails.hasBlocked = YES;
+  resultContactDetails.blocked = value;
+  return self;
+}
+- (OWSSignalServiceProtosContactDetailsBuilder*) clearBlocked {
+  resultContactDetails.hasBlocked = NO;
+  resultContactDetails.blocked = NO;
+  return self;
+}
+- (BOOL) hasExpireTimer {
+  return resultContactDetails.hasExpireTimer;
+}
+- (UInt32) expireTimer {
+  return resultContactDetails.expireTimer;
+}
+- (OWSSignalServiceProtosContactDetailsBuilder*) setExpireTimer:(UInt32) value {
+  resultContactDetails.hasExpireTimer = YES;
+  resultContactDetails.expireTimer = value;
+  return self;
+}
+- (OWSSignalServiceProtosContactDetailsBuilder*) clearExpireTimer {
+  resultContactDetails.hasExpireTimer = NO;
+  resultContactDetails.expireTimer = 0;
+  return self;
+}
 @end
 
 @interface OWSSignalServiceProtosGroupDetails ()
@@ -8714,6 +8964,7 @@ static OWSSignalServiceProtosContactDetailsAvatar* defaultOWSSignalServiceProtos
 @property (strong) NSMutableArray * membersArray;
 @property (strong) OWSSignalServiceProtosGroupDetailsAvatar* avatar;
 @property BOOL active;
+@property UInt32 expireTimer;
 @end
 
 @implementation OWSSignalServiceProtosGroupDetails
@@ -8753,12 +9004,20 @@ static OWSSignalServiceProtosContactDetailsAvatar* defaultOWSSignalServiceProtos
 - (void) setActive:(BOOL) _value_ {
   active_ = !!_value_;
 }
+- (BOOL) hasExpireTimer {
+  return !!hasExpireTimer_;
+}
+- (void) setHasExpireTimer:(BOOL) _value_ {
+  hasExpireTimer_ = !!_value_;
+}
+@synthesize expireTimer;
 - (instancetype) init {
   if ((self = [super init])) {
     self.id = [NSData data];
     self.name = @"";
     self.avatar = [OWSSignalServiceProtosGroupDetailsAvatar defaultInstance];
     self.active = YES;
+    self.expireTimer = 0;
   }
   return self;
 }
@@ -8799,6 +9058,9 @@ static OWSSignalServiceProtosGroupDetails* defaultOWSSignalServiceProtosGroupDet
   if (self.hasActive) {
     [output writeBool:5 value:self.active];
   }
+  if (self.hasExpireTimer) {
+    [output writeUInt32:6 value:self.expireTimer];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -8828,6 +9090,9 @@ static OWSSignalServiceProtosGroupDetails* defaultOWSSignalServiceProtosGroupDet
   }
   if (self.hasActive) {
     size_ += computeBoolSize(5, self.active);
+  }
+  if (self.hasExpireTimer) {
+    size_ += computeUInt32Size(6, self.expireTimer);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -8882,6 +9147,9 @@ static OWSSignalServiceProtosGroupDetails* defaultOWSSignalServiceProtosGroupDet
   if (self.hasActive) {
     [output appendFormat:@"%@%@: %@\n", indent, @"active", [NSNumber numberWithBool:self.active]];
   }
+  if (self.hasExpireTimer) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"expireTimer", [NSNumber numberWithInteger:self.expireTimer]];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -8899,6 +9167,9 @@ static OWSSignalServiceProtosGroupDetails* defaultOWSSignalServiceProtosGroupDet
   }
   if (self.hasActive) {
     [dictionary setObject: [NSNumber numberWithBool:self.active] forKey: @"active"];
+  }
+  if (self.hasExpireTimer) {
+    [dictionary setObject: [NSNumber numberWithInteger:self.expireTimer] forKey: @"expireTimer"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -8920,6 +9191,8 @@ static OWSSignalServiceProtosGroupDetails* defaultOWSSignalServiceProtosGroupDet
       (!self.hasAvatar || [self.avatar isEqual:otherMessage.avatar]) &&
       self.hasActive == otherMessage.hasActive &&
       (!self.hasActive || self.active == otherMessage.active) &&
+      self.hasExpireTimer == otherMessage.hasExpireTimer &&
+      (!self.hasExpireTimer || self.expireTimer == otherMessage.expireTimer) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -8938,6 +9211,9 @@ static OWSSignalServiceProtosGroupDetails* defaultOWSSignalServiceProtosGroupDet
   }
   if (self.hasActive) {
     hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.active] hash];
+  }
+  if (self.hasExpireTimer) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.expireTimer] hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -9256,6 +9532,9 @@ static OWSSignalServiceProtosGroupDetailsAvatar* defaultOWSSignalServiceProtosGr
   if (other.hasActive) {
     [self setActive:other.active];
   }
+  if (other.hasExpireTimer) {
+    [self setExpireTimer:other.expireTimer];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -9300,6 +9579,10 @@ static OWSSignalServiceProtosGroupDetailsAvatar* defaultOWSSignalServiceProtosGr
       }
       case 40: {
         [self setActive:[input readBool]];
+        break;
+      }
+      case 48: {
+        [self setExpireTimer:[input readUInt32]];
         break;
       }
     }
@@ -9402,6 +9685,22 @@ static OWSSignalServiceProtosGroupDetailsAvatar* defaultOWSSignalServiceProtosGr
 - (OWSSignalServiceProtosGroupDetailsBuilder*) clearActive {
   resultGroupDetails.hasActive = NO;
   resultGroupDetails.active = YES;
+  return self;
+}
+- (BOOL) hasExpireTimer {
+  return resultGroupDetails.hasExpireTimer;
+}
+- (UInt32) expireTimer {
+  return resultGroupDetails.expireTimer;
+}
+- (OWSSignalServiceProtosGroupDetailsBuilder*) setExpireTimer:(UInt32) value {
+  resultGroupDetails.hasExpireTimer = YES;
+  resultGroupDetails.expireTimer = value;
+  return self;
+}
+- (OWSSignalServiceProtosGroupDetailsBuilder*) clearExpireTimer {
+  resultGroupDetails.hasExpireTimer = NO;
+  resultGroupDetails.expireTimer = 0;
   return self;
 }
 @end
