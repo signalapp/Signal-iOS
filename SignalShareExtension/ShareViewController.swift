@@ -222,7 +222,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         guard OWSStorage.isStorageReady() else {
             return
         }
-        guard AppReadiness.isAppReady() else {
+        guard !AppReadiness.isAppReady() else {
             // Only mark the app as ready once.
             return
         }
