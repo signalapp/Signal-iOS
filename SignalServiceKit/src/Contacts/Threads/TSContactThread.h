@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSThread.h"
@@ -18,6 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
                                          relay:(nullable NSString *)relay;
+
+// Unlike getOrCreateThreadWithContactId, this will _NOT_ create a thread if one does not already exist.
++ (nullable instancetype)getThreadWithContactId:(NSString *)contactId;
 
 - (NSString *)contactIdentifier;
 
