@@ -257,7 +257,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     NSError *error;
-    NSData *_Nullable databasePassword = [OWSStorage tryToLoadDatabasePassword:&error];
+    NSData *_Nullable databasePassword = [OWSStorage tryToLoadDatabaseLegacyPassphrase:&error];
     if (!databasePassword || error) {
         return (error
                 ?: OWSErrorWithCodeDescription(
@@ -266,11 +266,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     YapDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         DDLogVerbose(@"%@ saltData: %@", self.logTag, saltData.hexadecimalString);
-        [OWSStorage storeDatabaseSalt:saltData];
-    };
-    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
-        DDLogVerbose(@"%@ keySpecData: %@", self.logTag, keySpecData.hexadecimalString);
-        [OWSStorage storeDatabaseKeySpec:keySpecData];
+
+        // Derive and store the raw cipher key spec, to avoid the ongoing tax of future KDF
+        NSData *keySpecData =
+            [YapDatabaseCryptoUtils deriveDatabaseKeySpecForPassword:databasePassword saltData:saltData];
+        [OWSStorage storeDatabaseCipherKeySpec:keySpecData];
     };
 
     return [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath

@@ -298,19 +298,15 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
     __block NSData *_Nullable databaseSalt = nil;
+    __block NSData *_Nullable databaseKeySpec = nil;
     YapDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(!databaseSalt);
         OWSAssert(saltData);
 
         databaseSalt = saltData;
+        databaseKeySpec = [YapDatabaseCryptoUtils deriveDatabaseKeySpecForPassword:databasePassword saltData:saltData];
     };
-    __block NSData *_Nullable databaseKeySpec = nil;
-    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
-        OWSAssert(!databaseKeySpec);
-        OWSAssert(keySpecData);
 
-        databaseKeySpec = keySpecData;
-    };
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
                                                                   recordSaltBlock:recordSaltBlock];
@@ -339,19 +335,16 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
     __block NSData *_Nullable databaseSalt = nil;
-    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+
+    __block NSData *_Nullable databaseKeySpec = nil;
+    YapDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(!databaseSalt);
         OWSAssert(saltData);
         
         databaseSalt = saltData;
+        databaseKeySpec = [YapDatabaseCryptoUtils deriveDatabaseKeySpecForPassword:databasePassword saltData:saltData];
     };
-    __block NSData *_Nullable databaseKeySpec = nil;
-    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
-        OWSAssert(!databaseKeySpec);
-        OWSAssert(keySpecData);
-        
-        databaseKeySpec = keySpecData;
-    };
+
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
                                                                   recordSaltBlock:recordSaltBlock];
@@ -398,23 +391,19 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
     __block NSData *_Nullable databaseSalt = nil;
+    __block NSData *_Nullable databaseKeySpec = nil;
     YapDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(!databaseSalt);
         OWSAssert(saltData);
 
         databaseSalt = saltData;
+        databaseKeySpec = [YapDatabaseCryptoUtils deriveDatabaseKeySpecForPassword:databasePassword saltData:saltData];
     };
-    __block NSData *_Nullable databaseKeySpec = nil;
-    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
-        OWSAssert(!databaseKeySpec);
-        OWSAssert(keySpecData);
-
-        databaseKeySpec = keySpecData;
-    };
+    
+    
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
-                                                                        saltBlock:saltBlock
-                                                                     keySpecBlock:keySpecBlock];
+                                                                  recordSaltBlock:recordSaltBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
@@ -428,9 +417,9 @@ NS_ASSUME_NONNULL_BEGIN
     // Verify the contents of the unconverted database.
     __block BOOL isValid = NO;
     [self openYapDatabase:databaseFilePath
-         databasePassword:databasePassword
+         databasePassword:nil
              databaseSalt:nil
-          databaseKeySpec:nil
+          databaseKeySpec:databaseKeySpec
             databaseBlock:^(YapDatabase *database) {
                 YapDatabaseConnection *dbConnection = database.newConnection;
                 isValid = [dbConnection numberOfKeysInCollection:@"test_collection_name"] == kItemCount;
@@ -450,11 +439,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     YapDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(saltData);
-
-        XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
-    };
-    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
-        OWSAssert(keySpecData);
 
         XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
     };
@@ -487,11 +471,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     YapDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(saltData);
-
-        XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
-    };
-    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
-        OWSAssert(keySpecData);
 
         XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
     };
