@@ -446,6 +446,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 {
     TSThread *thread = self.thread;
     OWSSignalServiceProtosDataMessageBuilder *builder = [OWSSignalServiceProtosDataMessageBuilder new];
+    [builder setTimestamp:self.timestamp];
     [builder setBody:self.body];
     BOOL attachmentWasGroupAvatar = NO;
     if ([thread isKindOfClass:[TSGroupThread class]]) {
@@ -495,6 +496,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     OWSAssert(self.thread);
 
     OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
+    [builder setTimestamp:self.timestamp];
     [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
     return [builder build];
 }
