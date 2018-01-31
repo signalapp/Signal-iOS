@@ -382,7 +382,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     const int kItemCount = 50 * 1000;
 
-    // Create an populate the unconverted database.
+    // Create and populate an unconverted database.
     [self openYapDatabase:databaseFilePath
          databasePassword:databasePassword
              databaseSalt:nil
@@ -391,7 +391,8 @@ NS_ASSUME_NONNULL_BEGIN
                 YapDatabaseConnection *dbConnection = database.newConnection;
                 [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                     for (int i = 0; i < kItemCount; i++) {
-                        [transaction setObject:@(i) forKey:@"test_key_name" inCollection:@"test_collection_name"];
+                        NSString *key = [NSString stringWithFormat:@"key-%d", i];
+                        [transaction setObject:@"test-object" forKey:key inCollection:@"test_collection_name"];
                     }
                 }];
             }];
