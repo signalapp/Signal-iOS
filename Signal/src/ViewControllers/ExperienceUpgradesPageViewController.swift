@@ -430,12 +430,10 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
         let statusBarBackgroundView = UIView.container()
         view.addSubview(statusBarBackgroundView)
         statusBarBackgroundView.backgroundColor = UIColor.ows_materialBlue
-        statusBarBackgroundView.addRedBorder()
 
         let headerBackgroundView = UIView.container()
         view.addSubview(headerBackgroundView)
         headerBackgroundView.backgroundColor = UIColor.ows_materialBlue
-        headerBackgroundView.addRedBorder()
 
         // Dismiss button
         let dismissButton = UIButton()
