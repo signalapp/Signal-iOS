@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactsOutputStream.h"
@@ -7,9 +7,11 @@
 #import "Cryptography.h"
 #import "MIMETypeUtil.h"
 #import "NSData+keyVersionByte.h"
+#import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSRecipientIdentity.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "SignalAccount.h"
+#import "TSContactThread.h"
 #import <ProtocolBuffers/CodedOutputStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -49,6 +51,16 @@ NS_ASSUME_NONNULL_BEGIN
     if (profileKeyData) {
         OWSAssert(profileKeyData.length == kAES256_KeyByteLength);
         [contactBuilder setProfileKey:profileKeyData];
+    }
+
+    TSContactThread *_Nullable contactThread = [TSContactThread getThreadWithContactId:signalAccount.recipientId];
+    if (contactThread) {
+        OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration =
+            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:contactThread.uniqueId];
+
+        if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
+            [contactBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];
+        }
     }
 
     NSData *contactData = [[contactBuilder build] data];
