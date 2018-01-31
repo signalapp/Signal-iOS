@@ -538,8 +538,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
         NSInteger imageWidth = (NSInteger)round(imageSize.width);
         NSInteger imageHeight = (NSInteger)round(imageSize.height);
         if (imageWidth > 0 && imageHeight > 0) {
-            [builder setWidth:imageWidth];
-            [builder setHeight:imageHeight];
+            [builder setWidth:(UInt32)imageWidth];
+            [builder setHeight:(UInt32)imageHeight];
         }
     }
 
