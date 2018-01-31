@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSStorage (OWSDatabaseConverterTest)
 
 + (YapDatabaseDeserializer)logOnFailureDeserializer;
++ (void)storeKeyChainValue:(NSData *)data keychainKey:(NSString *)keychainKey;
++ (nullable NSData *)tryToLoadKeyChainValue:(NSString *)keychainKey errorHandle:(NSError **)errorHandle;
 
 @end
 
@@ -903,6 +905,199 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     DDLogInfo(@"%@: %@", label, output);
+}
+
+
+#pragma mark - keychain strategy benchmarks
+
+
+- (void)verifyTestDatabase:(NSString *)databaseFilePath
+      databaseKeySpecBlock:(NSData *_Nullable (^_Nullable)(void))databaseKeySpecBlock
+     databasePasswordBlock:(NSData *_Nullable (^_Nullable)(void))databasePasswordBlock
+         databaseSaltBlock:(NSData *_Nullable (^_Nullable)(void))databaseSaltBlock
+{
+    NSData *_Nullable databaseKeySpec = databaseKeySpecBlock ? databaseKeySpecBlock() : nil;
+    NSData *_Nullable databasePassword = databasePasswordBlock ? databasePasswordBlock() : nil;
+    NSData *_Nullable databaseSalt = databaseSaltBlock ? databaseSaltBlock() : nil;
+
+    [self verifyTestDatabase:databaseFilePath
+            databasePassword:databasePassword
+                databaseSalt:databaseSalt
+             databaseKeySpec:databaseKeySpec];
+}
+
+- (void)createTestDatabase:(NSString *)databaseFilePath
+      databaseKeySpecBlock:(NSData *_Nullable (^_Nullable)(void))databaseKeySpecBlock
+     databasePasswordBlock:(NSData *_Nullable (^_Nullable)(void))databasePasswordBlock
+         databaseSaltBlock:(NSData *_Nullable (^_Nullable)(void))databaseSaltBlock
+{
+    NSData *_Nullable databaseKeySpec = databaseKeySpecBlock ? databaseKeySpecBlock() : nil;
+    NSData *_Nullable databasePassword = databasePasswordBlock ? databasePasswordBlock() : nil;
+    NSData *_Nullable databaseSalt = databaseSaltBlock ? databaseSaltBlock() : nil;
+
+    [self createTestDatabase:databaseFilePath
+            databasePassword:databasePassword
+                databaseSalt:databaseSalt
+             databaseKeySpec:databaseKeySpec];
+}
+
+- (void)storeTestPasswordInKeychain:(NSData *)password
+{
+    // legacy password length
+    OWSAssert(password.length == 30);
+    [OWSStorage storeKeyChainValue:password keychainKey:@"_OWSTestingPassword"];
+}
+
+- (nullable NSData *)fetchTestPasswordFromKeychain
+{
+    NSError *error;
+    NSData *password = [OWSStorage tryToLoadKeyChainValue:@"_OWSTestingPassword" errorHandle:&error];
+    OWSAssert(password);
+    OWSAssert(!error);
+    // legacy password length
+    OWSAssert(password.length == 30);
+
+    return password;
+}
+
+- (void)storeTestSaltInKeychain:(NSData *)salt
+{
+    OWSAssert(salt.length == kSQLCipherSaltLength);
+    [OWSStorage storeKeyChainValue:salt keychainKey:@"_OWSTestingSalt"];
+}
+
+- (nullable NSData *)fetchTestSaltFromKeychain
+{
+    NSError *error;
+    NSData *salt = [OWSStorage tryToLoadKeyChainValue:@"_OWSTestingSalt" errorHandle:&error];
+    OWSAssert(salt);
+    OWSAssert(!error);
+    OWSAssert(salt.length == kSQLCipherSaltLength);
+    return salt;
+}
+
+- (void)storeTestKeySpecInKeychain:(NSData *)keySpec
+{
+    OWSAssert(keySpec.length == kSQLCipherKeySpecLength);
+    [OWSStorage storeKeyChainValue:keySpec keychainKey:@"_OWSTestingKeySpec"];
+}
+
+- (nullable NSData *)fetchTestKeySpecFromKeychain
+{
+    NSError *error;
+    NSData *keySpec = [OWSStorage tryToLoadKeyChainValue:@"_OWSTestingKeySpec" errorHandle:&error];
+    OWSAssert(keySpec);
+    OWSAssert(!error);
+    OWSAssert(keySpec.length == kSQLCipherKeySpecLength);
+
+    return keySpec;
+}
+
+- (void)testWidePassphraseFetchingStrategy
+{
+    NSData *password = [self randomDatabasePassword];
+    NSData *salt = [self randomDatabaseSalt];
+
+    [self measureBlock:^{
+        NSString *databaseFilePath = [self createTempDatabaseFilePath];
+
+        [self createTestDatabase:databaseFilePath
+            databaseKeySpecBlock:nil
+            databasePasswordBlock:^() {
+                return password;
+            }
+            databaseSaltBlock:^() {
+                return salt;
+            }];
+
+        [self verifyTestDatabase:databaseFilePath
+            databaseKeySpecBlock:nil
+            databasePasswordBlock:^() {
+                return password;
+            }
+            databaseSaltBlock:^() {
+                return salt;
+            }];
+    }];
+}
+
+- (void)testGranularPassphraseFetchingStrategy
+{
+    NSData *password = [self randomDatabasePassword];
+    NSData *salt = [self randomDatabaseSalt];
+    [self storeTestPasswordInKeychain:password];
+    [self storeTestSaltInKeychain:salt];
+
+    [self measureBlock:^{
+
+        NSString *databaseFilePath = [self createTempDatabaseFilePath];
+
+
+        [self createTestDatabase:databaseFilePath
+            databaseKeySpecBlock:nil
+            databasePasswordBlock:^() {
+                return [self fetchTestPasswordFromKeychain];
+            }
+            databaseSaltBlock:^() {
+                return [self fetchTestSaltFromKeychain];
+            }];
+
+        [self verifyTestDatabase:databaseFilePath
+            databaseKeySpecBlock:nil
+            databasePasswordBlock:^() {
+                return [self fetchTestPasswordFromKeychain];
+            }
+            databaseSaltBlock:^() {
+                return [self fetchTestSaltFromKeychain];
+            }];
+    }];
+}
+
+- (void)testGranularKeySpecFetchingStrategy
+{
+    NSData *keySpec = [self randomDatabaseKeySpec];
+    [self storeTestKeySpecInKeychain:keySpec];
+
+    [self measureBlock:^{
+        NSString *databaseFilePath = [self createTempDatabaseFilePath];
+
+        [self createTestDatabase:databaseFilePath
+             databaseKeySpecBlock:^() {
+                 return [self fetchTestKeySpecFromKeychain];
+             }
+            databasePasswordBlock:nil
+                databaseSaltBlock:nil];
+
+        [self verifyTestDatabase:databaseFilePath
+             databaseKeySpecBlock:^() {
+                 return [self fetchTestKeySpecFromKeychain];
+             }
+            databasePasswordBlock:nil
+                databaseSaltBlock:nil];
+    }];
+}
+
+- (void)testWideKeyFetchingStrategy
+{
+    NSData *keySpec = [self randomDatabaseKeySpec];
+
+    [self measureBlock:^{
+        NSString *databaseFilePath = [self createTempDatabaseFilePath];
+
+        [self createTestDatabase:databaseFilePath
+             databaseKeySpecBlock:^() {
+                 return keySpec;
+             }
+            databasePasswordBlock:nil
+                databaseSaltBlock:nil];
+
+        [self verifyTestDatabase:databaseFilePath
+             databaseKeySpecBlock:^() {
+                 return keySpec;
+             }
+            databasePasswordBlock:nil
+                databaseSaltBlock:nil];
+    }];
 }
 
 @end

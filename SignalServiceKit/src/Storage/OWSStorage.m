@@ -380,16 +380,15 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 - (BOOL)tryToLoadDatabase
 {
-    // We determine the database key spec first, since a side effect of
-    // this can be deleting any existing database file (if we're recovering
-    // from a corrupt keychain).
-    NSData *databaseKeySpec = [self databaseKeySpec];
-    OWSAssert(databaseKeySpec.length == kSQLCipherKeySpecLength);
-
     YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
     options.corruptAction = YapDatabaseCorruptAction_Fail;
     options.enableMultiProcessSupport = YES;
     options.cipherKeySpecBlock = ^{
+        // Rather than compute this once and capture the value of the key
+        // in the closure, we prefer to fetch the key from the keychain multiple times
+        // in order to keep the key out of application memory.
+        NSData *databaseKeySpec = [self databaseKeySpec];
+        OWSAssert(databaseKeySpec.length == kSQLCipherKeySpecLength);
         return databaseKeySpec;
     };
 
