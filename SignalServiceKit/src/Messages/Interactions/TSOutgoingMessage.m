@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSOutgoingMessage.h"
@@ -532,6 +532,17 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     [builder setKey:attachmentStream.encryptionKey];
     [builder setDigest:attachmentStream.digest];
     [builder setFlags:(self.isVoiceMessage ? OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage : 0)];
+
+    CGSize imageSize = [attachmentStream imageSize];
+    if (imageSize.width < NSIntegerMax && imageSize.height < NSIntegerMax) {
+        NSInteger imageWidth = (NSInteger)round(imageSize.width);
+        NSInteger imageHeight = (NSInteger)round(imageSize.height);
+        if (imageWidth > 0 && imageHeight > 0) {
+            [builder setWidth:imageWidth];
+            [builder setHeight:imageHeight];
+        }
+    }
+
     return [builder build];
 }
 
