@@ -96,7 +96,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         AppSetup.setupEnvironment({
             return NoopCallMessageHandler()
         }) {
-            return NoopNotificationsManager()
+            return SAENotificationsManager()
         }
 
         // performUpdateCheck must be invoked after Environment has been initialized because

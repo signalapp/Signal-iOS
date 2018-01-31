@@ -230,19 +230,9 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
                 notification.soundName = kNotificationsManagerNewMesssageSoundName;
             }
 
-            NSString *alertBodyString = @"";
-
-            NSString *authorName = [thread name];
-            switch (self.notificationPreviewType) {
-                case NotificationNamePreview:
-                case NotificationNameNoPreview:
-                    alertBodyString = [NSString stringWithFormat:@"%@: %@", authorName, messageDescription];
-                    break;
-                case NotificationNoNameNoPreview:
-                    alertBodyString = messageDescription;
-                    break;
-            }
-            notification.alertBody = alertBodyString;
+            notification.alertBody = [NotificationUtils alertMessageForErrorMessage:message
+                                                                           inThread:thread
+                                                                   notificationType:self.notificationPreviewType];
 
             [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
         } else {
