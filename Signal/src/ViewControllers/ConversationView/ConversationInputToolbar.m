@@ -236,6 +236,11 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     [self.inputTextView resignFirstResponder];
 }
 
+- (BOOL)isInputTextViewFirstResponder
+{
+    return self.inputTextView.isFirstResponder;
+}
+
 - (void)ensureContentConstraints
 {
     [NSLayoutConstraint deactivateConstraints:self.contentContraints];

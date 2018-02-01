@@ -356,7 +356,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateFooterBarButtonItemsWithIsPlayingVideo:(BOOL)isPlayingVideo
 {
-    OWSAssert(self.footerBar);
+    if (!self.footerBar) {
+        DDLogVerbose(@"%@ No footer bar visible.", self.logTag);
+        return;
+    }
 
     NSMutableArray<UIBarButtonItem *> *toolbarItems = [NSMutableArray new];
 
