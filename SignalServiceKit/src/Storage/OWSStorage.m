@@ -27,9 +27,8 @@ NSString *const OWSStorageExceptionName_NoDatabase = @"OWSStorageExceptionName_N
 NSString *const OWSResetStorageNotification = @"OWSResetStorageNotification";
 
 static NSString *keychainService = @"TSKeyChainService";
-static NSString *keychainDBPassAccount = @"TSDatabasePass";
-static NSString *keychainDBSalt = @"OWSDatabaseSalt";
-static NSString *keychainDBKeySpec = @"OWSDatabaseKeySpec";
+static NSString *keychainDBLegacyPassphrase = @"TSDatabasePass";
+static NSString *keychainDBCipherKeySpec = @"OWSDatabaseCipherKeySpec";
 
 const NSUInteger kDatabasePasswordLength = 30;
 
@@ -381,26 +380,22 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 - (BOOL)tryToLoadDatabase
 {
-    // We determine the database password, salt and key spec first, since a side effect of
-    // this can be deleting any existing database file (if we're recovering
-    // from a corrupt keychain).
-    //
-    // Although we don't use databasePassword or databaseSalt in this method,
-    // we use their accessors to ensure that all three exist in the keychain
-    // and can be loaded or that we reset the database & keychain.
-    NSData *databasePassword = [self databasePassword];
-    OWSAssert(databasePassword.length > 0);
-    NSData *databaseSalt = [self databaseSalt];
-    OWSAssert(databaseSalt.length > 0);
-    NSData *databaseKeySpec = [self databaseKeySpec];
-    OWSAssert(databaseKeySpec.length == kSQLCipherKeySpecLength);
-
     YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
     options.corruptAction = YapDatabaseCorruptAction_Fail;
     options.enableMultiProcessSupport = YES;
     options.cipherKeySpecBlock = ^{
+        // Rather than compute this once and capture the value of the key
+        // in the closure, we prefer to fetch the key from the keychain multiple times
+        // in order to keep the key out of application memory.
+        NSData *databaseKeySpec = [self databaseKeySpec];
+        OWSAssert(databaseKeySpec.length == kSQLCipherKeySpecLength);
         return databaseKeySpec;
     };
+
+    // We leave a portion of the header decrypted so that iOS will recognize the file
+    // as a SQLite database. Otherwise, because the database lives in a shared data container,
+    // and our usage of sqlite's write-ahead logging retains a lock on the database, the OS
+    // would kill the app/share extension as soon as it is backgrounded.
     options.cipherUnencryptedHeaderLength = kSqliteHeaderLength;
 
     // If any of these asserts fails, we need to verify and update
@@ -411,6 +406,11 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     OWSAssert(options.pragmaPageSize == 0);
     OWSAssert(options.pragmaJournalSizeLimit == 0);
     OWSAssert(options.pragmaMMapSize == 0);
+
+    // Sanity checking elsewhere asserts we should only regenerate key specs when
+    // there is no existing database, so rather than lazily generate in the cipherKeySpecBlock
+    // we must ensure the keyspec exists before we create the database.
+    [self ensureDatabaseKeySpecExists];
 
     OWSDatabase *database = [[OWSDatabase alloc] initWithPath:[self databaseFilePath]
                                                    serializer:nil
@@ -506,7 +506,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     // This might be redundant but in the spirit of thoroughness...
     [self deleteDatabaseFiles];
 
-    [self deletePasswordFromKeychain];
+    [self deleteDBKeys];
 
     if (CurrentAppContext().isMainApp) {
         [TSAttachmentStream deleteAttachments];
@@ -528,124 +528,62 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 + (BOOL)isDatabasePasswordAccessible
 {
-    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
     NSError *error;
-    NSString *dbPassword = [SAMKeychain passwordForService:keychainService account:keychainDBPassAccount error:&error];
+    NSData *cipherKeySpec = [self tryToLoadDatabaseCipherKeySpec:&error];
 
-    if (dbPassword && !error) {
+    if (cipherKeySpec && !error) {
         return YES;
     }
 
     if (error) {
-        DDLogWarn(@"Database password couldn't be accessed: %@", error.localizedDescription);
+        DDLogWarn(@"Database key couldn't be accessed: %@", error.localizedDescription);
     }
 
     return NO;
 }
 
-+ (nullable NSData *)tryToLoadKeyChainValue:(NSString *)keychainKey errorHandle:(NSError **)errorHandle
++ (nullable NSData *)tryToLoadDatabaseLegacyPassphrase:(NSError **)errorHandle
 {
-    OWSAssert(keychainKey.length > 0);
-    OWSAssert(errorHandle);
-
-    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
-
-    return [SAMKeychain passwordDataForService:keychainService account:keychainKey error:errorHandle];
+    return [self tryToLoadKeyChainValue:keychainDBLegacyPassphrase errorHandle:errorHandle];
 }
 
-+ (nullable NSData *)tryToLoadDatabasePassword:(NSError **)errorHandle
++ (nullable NSData *)tryToLoadDatabaseCipherKeySpec:(NSError **)errorHandle
 {
-    return [self tryToLoadKeyChainValue:keychainDBPassAccount errorHandle:errorHandle];
+    NSData *_Nullable data = [self tryToLoadKeyChainValue:keychainDBCipherKeySpec errorHandle:errorHandle];
+    OWSAssert(!data || data.length == kSQLCipherKeySpecLength);
+
+    return data;
 }
 
-+ (nullable NSData *)tryToLoadDatabaseSalt:(NSError **)errorHandle
++ (void)storeDatabaseCipherKeySpec:(NSData *)cipherKeySpecData
 {
-    return [self tryToLoadKeyChainValue:keychainDBSalt errorHandle:errorHandle];
+    OWSAssert(cipherKeySpecData.length == kSQLCipherKeySpecLength);
+
+    [self storeKeyChainValue:cipherKeySpecData keychainKey:keychainDBCipherKeySpec];
 }
 
-+ (nullable NSData *)tryToLoadDatabaseKeySpec:(NSError **)errorHandle
++ (void)removeLegacyPassphrase
 {
-    return [self tryToLoadKeyChainValue:keychainDBKeySpec errorHandle:errorHandle];
+    DDLogInfo(@"%@ removing legacy passphrase", self.logTag);
+
+    [SAMKeychain deletePasswordForService:keychainService account:keychainDBLegacyPassphrase];
 }
 
-- (NSData *)databasePassword
+- (void)ensureDatabaseKeySpecExists
 {
-    return [self loadMetadataOrClearDatabase:^(NSError **_Nullable errorHandle) {
-        return [OWSStorage tryToLoadDatabasePassword:errorHandle];
-    }
-        createDataBlock:^{
-            NSData *passwordData = [self createAndSetNewDatabasePassword];
-            NSData *saltData = [self createAndSetNewDatabaseSalt];
-            NSData *keySpecData = [self createAndSetNewDatabaseKeySpec];
-
-            OWSAssert(passwordData.length > 0);
-            OWSAssert(saltData.length == kSQLCipherSaltLength);
-            OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
-
-            return passwordData;
-        }
-        label:@"Database password"];
-}
-
-- (NSData *)databaseSalt
-{
-    return [self loadMetadataOrClearDatabase:^(NSError **_Nullable errorHandle) {
-        return [OWSStorage tryToLoadDatabaseSalt:errorHandle];
-    }
-        createDataBlock:^{
-            NSData *passwordData = [self createAndSetNewDatabasePassword];
-            NSData *saltData = [self createAndSetNewDatabaseSalt];
-            NSData *keySpecData = [self createAndSetNewDatabaseKeySpec];
-
-            OWSAssert(passwordData.length > 0);
-            OWSAssert(saltData.length == kSQLCipherSaltLength);
-            OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
-
-            return saltData;
-        }
-        label:@"Database salt"];
-}
-
-- (NSData *)databaseKeySpec
-{
-    return [self loadMetadataOrClearDatabase:^(NSError **_Nullable errorHandle) {
-        return [OWSStorage tryToLoadDatabaseKeySpec:errorHandle];
-    }
-        createDataBlock:^{
-            OWSFail(@"%@ It should never be necessary to generate a random key spec.", self.logTag);
-
-            NSData *passwordData = [self createAndSetNewDatabasePassword];
-            NSData *saltData = [self createAndSetNewDatabaseSalt];
-            NSData *keySpecData = [self createAndSetNewDatabaseKeySpec];
-
-            OWSAssert(passwordData.length > 0);
-            OWSAssert(saltData.length == kSQLCipherSaltLength);
-            OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
-
-            return keySpecData;
-        }
-        label:@"Database key spec"];
-}
-
-- (NSData *)loadMetadataOrClearDatabase:(LoadDatabaseMetadataBlock)loadDataBlock
-                        createDataBlock:(CreateDatabaseMetadataBlock)createDataBlock
-                                  label:(NSString *)label
-{
-    OWSAssert(loadDataBlock);
-    OWSAssert(createDataBlock);
-
     NSError *error;
-    NSData *_Nullable data = loadDataBlock(&error);
+    NSData *_Nullable keySpec = [[self class] tryToLoadDatabaseCipherKeySpec:&error];
 
-    if (error) {
+    if (error || (keySpec.length != kSQLCipherKeySpecLength)) {
         // Because we use kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
         // the keychain will be inaccessible after device restart until
         // device is unlocked for the first time.  If the app receives
         // a push notification, we won't be able to access the keychain to
         // process that notification, so we should just terminate by throwing
         // an uncaught exception.
-        NSString *errorDescription =
-            [NSString stringWithFormat:@"%@ inaccessible. No unlock since device restart? Error: %@", label, error];
+        NSString *errorDescription = [NSString
+            stringWithFormat:@"CipherKeySpec inaccessible. New install or no unlock since device restart? Error: %@",
+            error];
         if (CurrentAppContext().isMainApp) {
             UIApplicationState applicationState = CurrentAppContext().mainApplicationState;
             errorDescription =
@@ -659,19 +597,17 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
                 // TODO: Rather than crash here, we should detect the situation earlier
                 // and exit gracefully - (in the app delegate?). See the `
                 // This is a last ditch effort to avoid blowing away the user's database.
-                [self backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:errorDescription];
+                [self raiseKeySpecInaccessibleExceptionWithErrorDescription:errorDescription];
             }
         } else {
-            [self backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:
-                      [NSString stringWithFormat:@"%@ inaccessible; not main app.", label]];
+            [self raiseKeySpecInaccessibleExceptionWithErrorDescription:@"CipherKeySpec inaccessible; not main app."];
         }
 
         // At this point, either this is a new install so there's no existing password to retrieve
         // or the keychain has become corrupt.  Either way, we want to get back to a
         // "known good state" and behave like a new install.
-
-        BOOL shouldHaveDatabaseMetadata = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
-        if (shouldHaveDatabaseMetadata) {
+        BOOL doesDBExist = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
+        if (doesDBExist) {
             OWSFail(@"%@ Could not load database metadata", self.logTag);
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
         }
@@ -679,47 +615,30 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
         // Try to reset app by deleting database.
         [OWSStorage resetAllStorage];
 
-        data = createDataBlock();
+        keySpec = [Randomness generateRandomBytes:(int)kSQLCipherKeySpecLength];
+        [[self class] storeDatabaseCipherKeySpec:keySpec];
+    }
+}
+
+- (NSData *)databaseKeySpec
+{
+    NSError *error;
+    NSData *_Nullable keySpec = [[self class] tryToLoadDatabaseCipherKeySpec:&error];
+
+    if (error) {
+        DDLogError(@"%@ failed to fetch databaseKeySpec with error: %@", self.logTag, error);
+        [self raiseKeySpecInaccessibleExceptionWithErrorDescription:@"CipherKeySpec inaccessible"];
     }
 
-    return data;
+    if (keySpec.length != kSQLCipherKeySpecLength) {
+        DDLogError(@"%@ keyspec had length: %lu", self.logTag, (unsigned long)keySpec.length);
+        [self raiseKeySpecInaccessibleExceptionWithErrorDescription:@"CipherKeySpec invalid"];
+    }
+
+    return keySpec;
 }
 
-- (NSData *)createAndSetNewDatabasePassword
-{
-    NSData *password = [[[Randomness generateRandomBytes:kDatabasePasswordLength] base64EncodedString]
-        dataUsingEncoding:NSUTF8StringEncoding];
-
-    [OWSStorage storeDatabasePassword:password];
-
-    return password;
-}
-
-- (NSData *)createAndSetNewDatabaseSalt
-{
-    NSData *saltData = [Randomness generateRandomBytes:(int)kSQLCipherSaltLength];
-
-    [OWSStorage storeDatabaseSalt:saltData];
-
-    return saltData;
-}
-
-- (NSData *)createAndSetNewDatabaseKeySpec
-{
-    NSData *databasePassword = [self databasePassword];
-    OWSAssert(databasePassword.length > 0);
-    NSData *databaseSalt = [self databaseSalt];
-    OWSAssert(databaseSalt.length == kSQLCipherSaltLength);
-
-    NSData *keySpecData = [YapDatabaseCryptoUtils databaseKeySpecForPassword:databasePassword saltData:databaseSalt];
-    OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
-
-    [OWSStorage storeDatabaseKeySpec:keySpecData];
-
-    return keySpecData;
-}
-
-- (void)backgroundedAppDatabasePasswordInaccessibleWithErrorDescription:(NSString *)errorDescription
+- (void)raiseKeySpecInaccessibleExceptionWithErrorDescription:(NSString *)errorDescription
 {
     OWSAssert(CurrentAppContext().isMainApp && CurrentAppContext().isInBackground);
 
@@ -732,16 +651,23 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     OWSRaiseException(OWSStorageExceptionName_DatabasePasswordInaccessibleWhileBackgrounded, @"%@", errorDescription);
 }
 
-+ (void)deletePasswordFromKeychain
++ (void)deleteDBKeys
 {
-    [SAMKeychain deletePasswordForService:keychainService account:keychainDBPassAccount];
-    [SAMKeychain deletePasswordForService:keychainService account:keychainDBSalt];
-    [SAMKeychain deletePasswordForService:keychainService account:keychainDBKeySpec];
+    [SAMKeychain deletePasswordForService:keychainService account:keychainDBLegacyPassphrase];
+    [SAMKeychain deletePasswordForService:keychainService account:keychainDBCipherKeySpec];
 }
 
 - (unsigned long long)databaseFileSize
 {
     return [OWSFileSystem fileSizeOfPath:self.databaseFilePath].unsignedLongLongValue;
+}
+
++ (nullable NSData *)tryToLoadKeyChainValue:(NSString *)keychainKey errorHandle:(NSError **)errorHandle
+{
+    OWSAssert(keychainKey.length > 0);
+    OWSAssert(errorHandle);
+
+    return [SAMKeychain passwordDataForService:keychainService account:keychainKey error:errorHandle];
 }
 
 + (void)storeKeyChainValue:(NSData *)data keychainKey:(NSString *)keychainKey
@@ -756,35 +682,14 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
         OWSFail(@"%@ Could not store database metadata", self.logTag);
         OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotStoreKeychainValue]);
 
-        [OWSStorage deletePasswordFromKeychain];
-
         // Sleep to give analytics events time to be delivered.
         [NSThread sleepForTimeInterval:15.0f];
 
         OWSRaiseException(
             OWSStorageExceptionName_DatabasePasswordUnwritable, @"Setting keychain value failed with error: %@", error);
     } else {
-        DDLogWarn(@"Succesfully set new keychain value.");
+        DDLogWarn(@"Successfully set new keychain value.");
     }
-}
-
-+ (void)storeDatabasePassword:(NSData *)passwordData
-{
-    [self storeKeyChainValue:passwordData keychainKey:keychainDBPassAccount];
-}
-
-+ (void)storeDatabaseSalt:(NSData *)saltData
-{
-    OWSAssert(saltData.length == kSQLCipherSaltLength);
-
-    [self storeKeyChainValue:saltData keychainKey:keychainDBSalt];
-}
-
-+ (void)storeDatabaseKeySpec:(NSData *)keySpecData
-{
-    OWSAssert(keySpecData.length == kSQLCipherKeySpecLength);
-
-    [self storeKeyChainValue:keySpecData keychainKey:keychainDBKeySpec];
 }
 
 @end

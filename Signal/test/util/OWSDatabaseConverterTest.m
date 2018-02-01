@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSStorage (OWSDatabaseConverterTest)
 
 + (YapDatabaseDeserializer)logOnFailureDeserializer;
++ (void)storeKeyChainValue:(NSData *)data keychainKey:(NSString *)keychainKey;
++ (nullable NSData *)tryToLoadKeyChainValue:(NSString *)keychainKey errorHandle:(NSError **)errorHandle;
 
 @end
 
@@ -298,23 +300,21 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
     __block NSData *_Nullable databaseSalt = nil;
-    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+    __block NSData *_Nullable databaseKeySpec = nil;
+    YapRecordDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(!databaseSalt);
         OWSAssert(saltData);
 
         databaseSalt = saltData;
-    };
-    __block NSData *_Nullable databaseKeySpec = nil;
-    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
-        OWSAssert(!databaseKeySpec);
-        OWSAssert(keySpecData);
+        databaseKeySpec = [YapDatabaseCryptoUtils deriveDatabaseKeySpecForPassword:databasePassword saltData:saltData];
+        XCTAssert(databaseKeySpec.length == kSQLCipherKeySpecLength);
 
-        databaseKeySpec = keySpecData;
+        return YES;
     };
+
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
-                                                                        saltBlock:saltBlock
-                                                                     keySpecBlock:keySpecBlock];
+                                                                  recordSaltBlock:recordSaltBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
@@ -340,23 +340,22 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
     __block NSData *_Nullable databaseSalt = nil;
-    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+
+    __block NSData *_Nullable databaseKeySpec = nil;
+    YapRecordDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(!databaseSalt);
         OWSAssert(saltData);
         
         databaseSalt = saltData;
+        databaseKeySpec = [YapDatabaseCryptoUtils deriveDatabaseKeySpecForPassword:databasePassword saltData:saltData];
+        XCTAssert(databaseKeySpec.length == kSQLCipherKeySpecLength);
+
+        return YES;
     };
-    __block NSData *_Nullable databaseKeySpec = nil;
-    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
-        OWSAssert(!databaseKeySpec);
-        OWSAssert(keySpecData);
-        
-        databaseKeySpec = keySpecData;
-    };
+
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
-                                                                        saltBlock:saltBlock
-                                                                     keySpecBlock:keySpecBlock];
+                                                                  recordSaltBlock:recordSaltBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
@@ -374,6 +373,40 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue(isValid);
 }
 
+// If we fail to record the salt for some reason, we'll be unable to re-open the database
+// halt the conversion in hopes that either the failure is intermittent or we can push out
+// a patch to fix the problem without having lost the user's DB.
+- (void)testDatabaseConversionDoesNotProceedWhenRecordingSaltFails
+{
+    NSData *databasePassword = [self randomDatabasePassword];
+    NSString *_Nullable databaseFilePath = [self createUnconvertedDatabase:databasePassword];
+    XCTAssertTrue([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
+
+    __block NSData *_Nullable databaseSalt = nil;
+
+    __block NSData *_Nullable databaseKeySpec = nil;
+    YapRecordDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
+        OWSAssert(!databaseSalt);
+        OWSAssert(saltData);
+
+        // Simulate a failure to record the new salt, e.g. if KDF returns nil
+        return NO;
+    };
+
+    NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
+                                                                 databasePassword:databasePassword
+                                                                  recordSaltBlock:recordSaltBlock];
+
+    XCTAssertNotNil(error);
+    XCTAssertTrue([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
+
+    BOOL isValid = [self verifyTestDatabase:databaseFilePath
+                           databasePassword:databasePassword
+                               databaseSalt:nil
+                            databaseKeySpec:databaseKeySpec];
+    XCTAssertTrue(isValid);
+}
+
 // Verifies that legacy users with non-converted databases can convert.
 - (void)testDatabaseConversionPerformance_WithKeyspec
 {
@@ -382,7 +415,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     const int kItemCount = 50 * 1000;
 
-    // Create an populate the unconverted database.
+    // Create and populate an unconverted database.
     [self openYapDatabase:databaseFilePath
          databasePassword:databasePassword
              databaseSalt:nil
@@ -391,7 +424,8 @@ NS_ASSUME_NONNULL_BEGIN
                 YapDatabaseConnection *dbConnection = database.newConnection;
                 [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                     for (int i = 0; i < kItemCount; i++) {
-                        [transaction setObject:@(i) forKey:@"test_key_name" inCollection:@"test_collection_name"];
+                        NSString *key = [NSString stringWithFormat:@"key-%d", i];
+                        [transaction setObject:@"test-object" forKey:key inCollection:@"test_collection_name"];
                     }
                 }];
             }];
@@ -399,23 +433,21 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
     __block NSData *_Nullable databaseSalt = nil;
-    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+    __block NSData *_Nullable databaseKeySpec = nil;
+    YapRecordDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(!databaseSalt);
         OWSAssert(saltData);
 
         databaseSalt = saltData;
-    };
-    __block NSData *_Nullable databaseKeySpec = nil;
-    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
-        OWSAssert(!databaseKeySpec);
-        OWSAssert(keySpecData);
+        databaseKeySpec = [YapDatabaseCryptoUtils deriveDatabaseKeySpecForPassword:databasePassword saltData:saltData];
+        XCTAssert(databaseKeySpec.length == kSQLCipherKeySpecLength);
 
-        databaseKeySpec = keySpecData;
+        return YES;
     };
+
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
-                                                                        saltBlock:saltBlock
-                                                                     keySpecBlock:keySpecBlock];
+                                                                  recordSaltBlock:recordSaltBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
@@ -429,9 +461,9 @@ NS_ASSUME_NONNULL_BEGIN
     // Verify the contents of the unconverted database.
     __block BOOL isValid = NO;
     [self openYapDatabase:databaseFilePath
-         databasePassword:databasePassword
+         databasePassword:nil
              databaseSalt:nil
-          databaseKeySpec:nil
+          databaseKeySpec:databaseKeySpec
             databaseBlock:^(YapDatabase *database) {
                 YapDatabaseConnection *dbConnection = database.newConnection;
                 isValid = [dbConnection numberOfKeysInCollection:@"test_collection_name"] == kItemCount;
@@ -449,21 +481,16 @@ NS_ASSUME_NONNULL_BEGIN
         [self createDatabase:databasePassword databaseSalt:databaseSalt databaseKeySpec:databaseKeySpec];
     XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
-    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+    YapRecordDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(saltData);
 
         XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
-    };
-    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
-        OWSAssert(keySpecData);
-
-        XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
+        return NO;
     };
 
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
-                                                                        saltBlock:saltBlock
-                                                                     keySpecBlock:keySpecBlock];
+                                                                  recordSaltBlock:recordSaltBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
@@ -487,21 +514,16 @@ NS_ASSUME_NONNULL_BEGIN
         [self createDatabase:databasePassword databaseSalt:databaseSalt databaseKeySpec:databaseKeySpec];
     XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
 
-    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+    YapRecordDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(saltData);
 
         XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
-    };
-    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
-        OWSAssert(keySpecData);
-
-        XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
+        return NO;
     };
 
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
-                                                                        saltBlock:saltBlock
-                                                                     keySpecBlock:keySpecBlock];
+                                                                  recordSaltBlock:recordSaltBlock];
     if (error) {
         DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
@@ -927,6 +949,199 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     DDLogInfo(@"%@: %@", label, output);
+}
+
+
+#pragma mark - keychain strategy benchmarks
+
+
+- (void)verifyTestDatabase:(NSString *)databaseFilePath
+      databaseKeySpecBlock:(NSData *_Nullable (^_Nullable)(void))databaseKeySpecBlock
+     databasePasswordBlock:(NSData *_Nullable (^_Nullable)(void))databasePasswordBlock
+         databaseSaltBlock:(NSData *_Nullable (^_Nullable)(void))databaseSaltBlock
+{
+    NSData *_Nullable databaseKeySpec = databaseKeySpecBlock ? databaseKeySpecBlock() : nil;
+    NSData *_Nullable databasePassword = databasePasswordBlock ? databasePasswordBlock() : nil;
+    NSData *_Nullable databaseSalt = databaseSaltBlock ? databaseSaltBlock() : nil;
+
+    [self verifyTestDatabase:databaseFilePath
+            databasePassword:databasePassword
+                databaseSalt:databaseSalt
+             databaseKeySpec:databaseKeySpec];
+}
+
+- (void)createTestDatabase:(NSString *)databaseFilePath
+      databaseKeySpecBlock:(NSData *_Nullable (^_Nullable)(void))databaseKeySpecBlock
+     databasePasswordBlock:(NSData *_Nullable (^_Nullable)(void))databasePasswordBlock
+         databaseSaltBlock:(NSData *_Nullable (^_Nullable)(void))databaseSaltBlock
+{
+    NSData *_Nullable databaseKeySpec = databaseKeySpecBlock ? databaseKeySpecBlock() : nil;
+    NSData *_Nullable databasePassword = databasePasswordBlock ? databasePasswordBlock() : nil;
+    NSData *_Nullable databaseSalt = databaseSaltBlock ? databaseSaltBlock() : nil;
+
+    [self createTestDatabase:databaseFilePath
+            databasePassword:databasePassword
+                databaseSalt:databaseSalt
+             databaseKeySpec:databaseKeySpec];
+}
+
+- (void)storeTestPasswordInKeychain:(NSData *)password
+{
+    // legacy password length
+    OWSAssert(password.length == 30);
+    [OWSStorage storeKeyChainValue:password keychainKey:@"_OWSTestingPassword"];
+}
+
+- (nullable NSData *)fetchTestPasswordFromKeychain
+{
+    NSError *error;
+    NSData *password = [OWSStorage tryToLoadKeyChainValue:@"_OWSTestingPassword" errorHandle:&error];
+    OWSAssert(password);
+    OWSAssert(!error);
+    // legacy password length
+    OWSAssert(password.length == 30);
+
+    return password;
+}
+
+- (void)storeTestSaltInKeychain:(NSData *)salt
+{
+    OWSAssert(salt.length == kSQLCipherSaltLength);
+    [OWSStorage storeKeyChainValue:salt keychainKey:@"_OWSTestingSalt"];
+}
+
+- (nullable NSData *)fetchTestSaltFromKeychain
+{
+    NSError *error;
+    NSData *salt = [OWSStorage tryToLoadKeyChainValue:@"_OWSTestingSalt" errorHandle:&error];
+    OWSAssert(salt);
+    OWSAssert(!error);
+    OWSAssert(salt.length == kSQLCipherSaltLength);
+    return salt;
+}
+
+- (void)storeTestKeySpecInKeychain:(NSData *)keySpec
+{
+    OWSAssert(keySpec.length == kSQLCipherKeySpecLength);
+    [OWSStorage storeKeyChainValue:keySpec keychainKey:@"_OWSTestingKeySpec"];
+}
+
+- (nullable NSData *)fetchTestKeySpecFromKeychain
+{
+    NSError *error;
+    NSData *keySpec = [OWSStorage tryToLoadKeyChainValue:@"_OWSTestingKeySpec" errorHandle:&error];
+    OWSAssert(keySpec);
+    OWSAssert(!error);
+    OWSAssert(keySpec.length == kSQLCipherKeySpecLength);
+
+    return keySpec;
+}
+
+- (void)testWidePassphraseFetchingStrategy
+{
+    NSData *password = [self randomDatabasePassword];
+    NSData *salt = [self randomDatabaseSalt];
+
+    [self measureBlock:^{
+        NSString *databaseFilePath = [self createTempDatabaseFilePath];
+
+        [self createTestDatabase:databaseFilePath
+            databaseKeySpecBlock:nil
+            databasePasswordBlock:^() {
+                return password;
+            }
+            databaseSaltBlock:^() {
+                return salt;
+            }];
+
+        [self verifyTestDatabase:databaseFilePath
+            databaseKeySpecBlock:nil
+            databasePasswordBlock:^() {
+                return password;
+            }
+            databaseSaltBlock:^() {
+                return salt;
+            }];
+    }];
+}
+
+- (void)testGranularPassphraseFetchingStrategy
+{
+    NSData *password = [self randomDatabasePassword];
+    NSData *salt = [self randomDatabaseSalt];
+    [self storeTestPasswordInKeychain:password];
+    [self storeTestSaltInKeychain:salt];
+
+    [self measureBlock:^{
+
+        NSString *databaseFilePath = [self createTempDatabaseFilePath];
+
+
+        [self createTestDatabase:databaseFilePath
+            databaseKeySpecBlock:nil
+            databasePasswordBlock:^() {
+                return [self fetchTestPasswordFromKeychain];
+            }
+            databaseSaltBlock:^() {
+                return [self fetchTestSaltFromKeychain];
+            }];
+
+        [self verifyTestDatabase:databaseFilePath
+            databaseKeySpecBlock:nil
+            databasePasswordBlock:^() {
+                return [self fetchTestPasswordFromKeychain];
+            }
+            databaseSaltBlock:^() {
+                return [self fetchTestSaltFromKeychain];
+            }];
+    }];
+}
+
+- (void)testGranularKeySpecFetchingStrategy
+{
+    NSData *keySpec = [self randomDatabaseKeySpec];
+    [self storeTestKeySpecInKeychain:keySpec];
+
+    [self measureBlock:^{
+        NSString *databaseFilePath = [self createTempDatabaseFilePath];
+
+        [self createTestDatabase:databaseFilePath
+             databaseKeySpecBlock:^() {
+                 return [self fetchTestKeySpecFromKeychain];
+             }
+            databasePasswordBlock:nil
+                databaseSaltBlock:nil];
+
+        [self verifyTestDatabase:databaseFilePath
+             databaseKeySpecBlock:^() {
+                 return [self fetchTestKeySpecFromKeychain];
+             }
+            databasePasswordBlock:nil
+                databaseSaltBlock:nil];
+    }];
+}
+
+- (void)testWideKeyFetchingStrategy
+{
+    NSData *keySpec = [self randomDatabaseKeySpec];
+
+    [self measureBlock:^{
+        NSString *databaseFilePath = [self createTempDatabaseFilePath];
+
+        [self createTestDatabase:databaseFilePath
+             databaseKeySpecBlock:^() {
+                 return keySpec;
+             }
+            databasePasswordBlock:nil
+                databaseSaltBlock:nil];
+
+        [self verifyTestDatabase:databaseFilePath
+             databaseKeySpecBlock:^() {
+                 return keySpec;
+             }
+            databasePasswordBlock:nil
+                databaseSaltBlock:nil];
+    }];
 }
 
 @end

@@ -1215,7 +1215,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         thread:message.thread
         attempts:OWSMessageSenderRetryAttempts
         success:^{
-            DDLogInfo(@"Succesfully sent sync transcript.");
+            DDLogInfo(@"Successfully sent sync transcript.");
         }
         failure:^(NSError *error) {
             // FIXME: We don't yet honor the isRetryable flag here, since sendSyncTranscriptForMessage

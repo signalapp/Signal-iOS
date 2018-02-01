@@ -251,28 +251,40 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (nullable NSError *)convertDatabaseIfNecessary
 {
     NSString *databaseFilePath = [TSStorageManager legacyDatabaseFilePath];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]) {
+        DDLogVerbose(@"%@ no legacy database file found", self.logTag);
+        return nil;
+    }
 
     NSError *error;
-    NSData *_Nullable databasePassword = [OWSStorage tryToLoadDatabasePassword:&error];
+    NSData *_Nullable databasePassword = [OWSStorage tryToLoadDatabaseLegacyPassphrase:&error];
     if (!databasePassword || error) {
         return (error
                 ?: OWSErrorWithCodeDescription(
                        OWSErrorCodeDatabaseConversionFatalError, @"Failed to load database password"));
     }
 
-    YapDatabaseSaltBlock saltBlock = ^(NSData *saltData) {
+    YapRecordDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         DDLogVerbose(@"%@ saltData: %@", self.logTag, saltData.hexadecimalString);
-        [OWSStorage storeDatabaseSalt:saltData];
-    };
-    YapDatabaseKeySpecBlock keySpecBlock = ^(NSData *keySpecData) {
-        DDLogVerbose(@"%@ keySpecData: %@", self.logTag, keySpecData.hexadecimalString);
-        [OWSStorage storeDatabaseKeySpec:keySpecData];
+
+        // Derive and store the raw cipher key spec, to avoid the ongoing tax of future KDF
+        NSData *_Nullable keySpecData =
+            [YapDatabaseCryptoUtils deriveDatabaseKeySpecForPassword:databasePassword saltData:saltData];
+
+        if (!keySpecData) {
+            DDLogError(@"%@ Failed to derive key spec.", self.logTag);
+            return NO;
+        }
+
+        [OWSStorage storeDatabaseCipherKeySpec:keySpecData];
+        [OWSStorage removeLegacyPassphrase];
+
+        return YES;
     };
 
     return [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                              databasePassword:databasePassword
-                                                    saltBlock:saltBlock
-                                                 keySpecBlock:keySpecBlock];
+                                              recordSaltBlock:recordSaltBlock];
 }
 
 - (void)startupLogging
