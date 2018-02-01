@@ -407,6 +407,11 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     OWSAssert(options.pragmaJournalSizeLimit == 0);
     OWSAssert(options.pragmaMMapSize == 0);
 
+    // Sanity checking elsewhere asserts we should only regenerate key specs when
+    // there is no existing database, so rather than lazily generate in the cipherKeySpecBlock
+    // we must ensure the keyspec exists before we create the database.
+    [self ensureDatabaseKeySpecExists];
+
     OWSDatabase *database = [[OWSDatabase alloc] initWithPath:[self databaseFilePath]
                                                    serializer:nil
                                                  deserializer:[[self class] logOnFailureDeserializer]
@@ -564,20 +569,21 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     [SAMKeychain deletePasswordForService:keychainService account:keychainDBLegacyPassphrase];
 }
 
-- (NSData *)databaseKeySpec
+- (void)ensureDatabaseKeySpecExists
 {
     NSError *error;
-    NSData *_Nullable data = [[self class] tryToLoadDatabaseCipherKeySpec:&error];
+    NSData *_Nullable keySpec = [[self class] tryToLoadDatabaseCipherKeySpec:&error];
 
-    if (error) {
+    if (error || (keySpec.length != kSQLCipherKeySpecLength)) {
         // Because we use kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
         // the keychain will be inaccessible after device restart until
         // device is unlocked for the first time.  If the app receives
         // a push notification, we won't be able to access the keychain to
         // process that notification, so we should just terminate by throwing
         // an uncaught exception.
-        NSString *errorDescription =
-            [NSString stringWithFormat:@"CipherKeySpec inaccessible. No unlock since device restart? Error: %@", error];
+        NSString *errorDescription = [NSString
+            stringWithFormat:@"CipherKeySpec inaccessible. New install or no unlock since device restart? Error: %@",
+            error];
         if (CurrentAppContext().isMainApp) {
             UIApplicationState applicationState = CurrentAppContext().mainApplicationState;
             errorDescription =
@@ -600,9 +606,8 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
         // At this point, either this is a new install so there's no existing password to retrieve
         // or the keychain has become corrupt.  Either way, we want to get back to a
         // "known good state" and behave like a new install.
-
-        BOOL shouldHaveDatabaseMetadata = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
-        if (shouldHaveDatabaseMetadata) {
+        BOOL doesDBExist = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
+        if (doesDBExist) {
             OWSFail(@"%@ Could not load database metadata", self.logTag);
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
         }
@@ -610,11 +615,27 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
         // Try to reset app by deleting database.
         [OWSStorage resetAllStorage];
 
-        data = [Randomness generateRandomBytes:(int)kSQLCipherKeySpecLength];
-        [[self class] storeDatabaseCipherKeySpec:data];
+        keySpec = [Randomness generateRandomBytes:(int)kSQLCipherKeySpecLength];
+        [[self class] storeDatabaseCipherKeySpec:keySpec];
+    }
+}
+
+- (NSData *)databaseKeySpec
+{
+    NSError *error;
+    NSData *_Nullable keySpec = [[self class] tryToLoadDatabaseCipherKeySpec:&error];
+
+    if (error) {
+        DDLogError(@"%@ failed to fetch databaseKeySpec with error: %@", self.logTag, error);
+        [self raiseKeySpecInaccessibleExceptionWithErrorDescription:@"CipherKeySpec inaccessible"];
     }
 
-    return data;
+    if (keySpec.length != kSQLCipherKeySpecLength) {
+        DDLogError(@"%@ keyspec had length: %lu", self.logTag, (unsigned long)keySpec.length);
+        [self raiseKeySpecInaccessibleExceptionWithErrorDescription:@"CipherKeySpec invalid"];
+    }
+
+    return keySpec;
 }
 
 - (void)raiseKeySpecInaccessibleExceptionWithErrorDescription:(NSString *)errorDescription
@@ -667,7 +688,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
         OWSRaiseException(
             OWSStorageExceptionName_DatabasePasswordUnwritable, @"Setting keychain value failed with error: %@", error);
     } else {
-        DDLogWarn(@"Succesfully set new keychain value.");
+        DDLogWarn(@"Successfully set new keychain value.");
     }
 }
 
