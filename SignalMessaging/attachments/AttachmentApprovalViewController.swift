@@ -282,10 +282,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         self.approveAttachment(captionText: captionText)
     }
 
-    func captioningToolbar(_ captioningToolbar: CaptioningToolbar, didChangeTextViewHeight newHeight: CGFloat) {
-        Logger.info("Changed height: \(newHeight)")
-    }
-
     // MARK: Video
 
     private func playVideo() {
@@ -546,7 +542,6 @@ private class GradientView: UIView {
 
 protocol CaptioningToolbarDelegate: class {
     func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar, captionText: String?)
-    func captioningToolbar(_ captioningToolbar: CaptioningToolbar, didChangeTextViewHeight newHeight: CGFloat)
     func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar)
     func captioningToolbarDidEndEditing(_ captioningToolbar: CaptioningToolbar)
 }
@@ -559,18 +554,15 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     private let bottomGradient: GradientView
 
     // Layout Constants
+
+    let kMinTextViewHeight: CGFloat = 38
     var maxTextViewHeight: CGFloat {
         // About ~4 lines in portrait and ~3 lines in landscape.
         // Otherwise we risk obscuring too much of the content.
         return UIDevice.current.orientation.isPortrait ? 160 : 100
     }
-
-    let kMinTextViewHeight: CGFloat = 38
-    var textViewHeight: CGFloat {
-        didSet {
-            self.captioningToolbarDelegate?.captioningToolbar(self, didChangeTextViewHeight: textViewHeight)
-        }
-    }
+    var textViewHeightConstraint: NSLayoutConstraint!
+    var textViewHeight: CGFloat
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -586,7 +578,14 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         }
     }
 
-    let kSendButtonShadowOffset: CGFloat = 1
+    override var intrinsicContentSize: CGSize {
+        get {
+            // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, we must specify
+            // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
+            return CGSize.zero
+        }
+    }
+
     init() {
         self.sendButton = UIButton(type: .system)
         self.bottomGradient = GradientView(from: UIColor.clear, to: UIColor.black)
@@ -595,6 +594,10 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
 
         super.init(frame: CGRect.zero)
 
+        // Specifying autorsizing mask and an intrinsic content size allows proper
+        // sizing when used as an input accessory view.
+        self.autoresizingMask = .flexibleHeight
+        self.translatesAutoresizingMaskIntoConstraints = false
         self.backgroundColor = UIColor.clear
 
         textView.delegate = self
@@ -614,7 +617,8 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         sendButton.backgroundColor = UIColor.ows_systemPrimaryButton
         sendButton.layer.cornerRadius = 4
 
-        // Send Button Shadow - without this the send button bottom doesn't align with the toolbar.
+        // Send Button Shadow - without this the send button bottom doesn't feel aligned with the toolbar.
+        let kSendButtonShadowOffset: CGFloat = 1
         sendButton.layer.shadowColor = UIColor.darkGray.cgColor
         sendButton.layer.shadowOffset = CGSize(width: 0, height: kSendButtonShadowOffset)
         sendButton.layer.shadowOpacity = 0.8
@@ -624,58 +628,41 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         // Increase hit area of send button
         sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
 
-        addSubview(bottomGradient)
-        addSubview(sendButton)
-        addSubview(textView)
+        let contentView = UIView()
+        addSubview(contentView)
+        contentView.autoPinEdgesToSuperviewEdges()
+        contentView.addSubview(bottomGradient)
+        contentView.addSubview(sendButton)
+        contentView.addSubview(textView)
 
-        sendButton.sizeToFit()
+        // Layout
+        let kToolbarMargin: CGFloat = 8
+
+        // We have to wrap the toolbar items in a content view because iOS (at least on iOS10.3) assigns the inputAccessoryView.layoutMargins
+        // when resigning first responder (verified by auditing with `layoutMarginsDidChange`).
+        // The effect of this is that if we were to assign these margins to self.layoutMargins, they'd be blown away if the
+        // user dismisses the keyboard, giving the input accessory view a wonky layout.
+        contentView.layoutMargins = UIEdgeInsets(top: kToolbarMargin, left: kToolbarMargin, bottom: kToolbarMargin, right: kToolbarMargin)
+
+        self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
+        textView.autoPinEdges(toSuperviewMarginsExcludingEdge: .right)
+
+        sendButton.autoPinEdge(.left, to: .right, of: textView, withOffset: kToolbarMargin)
+
+        // Because the textview has a border, the sendButton feels unaligned without this shadow and offset
+        sendButton.autoPinEdge(.bottom, to: .bottom, of: textView, withOffset: -kSendButtonShadowOffset)
+
+        sendButton.autoPinEdge(toSuperviewMargin: .right)
+        sendButton.setContentHuggingHigh()
+        sendButton.setCompressionResistanceHigh()
+
+        let bottomGradientHeight = ScaleFromIPhone5(100)
+        bottomGradient.autoSetDimension(.height, toSize: bottomGradientHeight)
+        bottomGradient.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
     }
 
     func didTapSend() {
         self.captioningToolbarDelegate?.captioningToolbarDidTapSend(self, captionText: self.textView.text)
-    }
-
-    // MARK: - UIView Overrides
-
-    // We do progammatic layout, explicitly computing and setting frames since autoLayout does
-    // not seem to work with inputAccessory views, even when forcing a layout.
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        let kToolbarHMargin: CGFloat = 8
-        let kToolbarVMargin: CGFloat = 8
-
-        let sendButtonWidth = sendButton.frame.size.width
-
-        let kOriginalToolbarHeight = kMinTextViewHeight + 2 * kToolbarVMargin
-        // Assume send button has proper size.
-        let textViewWidth = frame.size.width - 3 * kToolbarHMargin - sendButtonWidth
-
-        // determine height given a fixed width
-        let textViewHeight = clampedTextViewHeight(fixedWidth: textViewWidth)
-        let newToolbarHeight = textViewHeight + 2 * kToolbarVMargin
-        self.frame.size.height = newToolbarHeight
-        let toolbarHeightOffset = newToolbarHeight - kOriginalToolbarHeight
-
-        let textViewY = kToolbarVMargin - toolbarHeightOffset
-        textView.frame = CGRect(x: kToolbarHMargin, y: textViewY, width: textViewWidth, height: textViewHeight)
-        if (self.textViewHeight != textViewHeight) {
-            // textViewHeight changed without textView's content changing, this can happen
-            // when the user flips their device orientation after writing a caption.
-            self.textViewHeight = textViewHeight
-        }
-
-        // Send Button
-
-        // position in bottom right corner
-        let sendButtonX = frame.size.width - kToolbarHMargin - sendButton.frame.size.width
-        let sendButtonY = kOriginalToolbarHeight - kToolbarVMargin - sendButton.frame.size.height - kSendButtonShadowOffset
-        sendButton.frame = CGRect(origin: CGPoint(x: sendButtonX, y: sendButtonY), size: sendButton.frame.size)
-        sendButton.frame.size.height = kMinTextViewHeight - kSendButtonShadowOffset - textView.layer.borderWidth
-
-        let bottomGradientHeight = ScaleFromIPhone5(100)
-        let bottomGradientY = kOriginalToolbarHeight - bottomGradientHeight
-        bottomGradient.frame = CGRect(x: 0, y: bottomGradientY, width: frame.size.width, height: bottomGradientHeight)
     }
 
     // MARK: - UITextViewDelegate
@@ -688,8 +675,8 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         if newHeight != self.textViewHeight {
             Logger.debug("\(self.logTag) TextView height changed: \(self.textViewHeight) -> \(newHeight)")
             self.textViewHeight = newHeight
-            self.setNeedsLayout()
-            self.layoutIfNeeded()
+            self.textViewHeightConstraint?.constant = textViewHeight
+            self.invalidateIntrinsicContentSize()
         }
     }
 
@@ -718,5 +705,4 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
         return Clamp(contentSize.height, kMinTextViewHeight, maxTextViewHeight)
     }
-
 }
