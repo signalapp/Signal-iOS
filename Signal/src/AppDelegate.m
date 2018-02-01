@@ -264,13 +264,22 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                        OWSErrorCodeDatabaseConversionFatalError, @"Failed to load database password"));
     }
 
-    YapDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
+    YapRecordDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         DDLogVerbose(@"%@ saltData: %@", self.logTag, saltData.hexadecimalString);
 
         // Derive and store the raw cipher key spec, to avoid the ongoing tax of future KDF
-        NSData *keySpecData =
+        NSData *_Nullable keySpecData =
             [YapDatabaseCryptoUtils deriveDatabaseKeySpecForPassword:databasePassword saltData:saltData];
+
+        if (!keySpecData) {
+            DDLogError(@"%@ Failed to derive key spec.", self.logTag);
+            return NO;
+        }
+
         [OWSStorage storeDatabaseCipherKeySpec:keySpecData];
+        [OWSStorage removeLegacyPassphrase];
+
+        return YES;
     };
 
     return [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath

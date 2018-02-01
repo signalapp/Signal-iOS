@@ -193,7 +193,7 @@ CHECKOUT OPTIONS:
     :commit: d5c2bec
     :git: https://github.com/sqlcipher/sqlcipher.git
   YapDatabase:
-    :commit: a88958a8db03a050650a495394e1817e48d99f4b
+    :commit: bdd7409de45f9e38b9144adba3b38d74ca48ea77
     :git: https://github.com/WhisperSystems/YapDatabase.git
 
 SPEC CHECKSUMS:

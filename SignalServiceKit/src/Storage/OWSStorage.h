@@ -76,6 +76,7 @@ extern NSString *const StorageIsReadyNotification;
 + (BOOL)isDatabasePasswordAccessible;
 
 + (nullable NSData *)tryToLoadDatabaseLegacyPassphrase:(NSError **)errorHandle;
++ (void)removeLegacyPassphrase;
 
 + (void)storeDatabaseCipherKeySpec:(NSData *)cipherKeySpecData;
 

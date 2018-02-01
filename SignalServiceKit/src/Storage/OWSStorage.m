@@ -544,7 +544,10 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 + (nullable NSData *)tryToLoadDatabaseCipherKeySpec:(NSError **)errorHandle
 {
-    return [self tryToLoadKeyChainValue:keychainDBCipherKeySpec errorHandle:errorHandle];
+    NSData *_Nullable data = [self tryToLoadKeyChainValue:keychainDBCipherKeySpec errorHandle:errorHandle];
+    OWSAssert(!data || data.length == kSQLCipherKeySpecLength);
+
+    return data;
 }
 
 + (void)storeDatabaseCipherKeySpec:(NSData *)cipherKeySpecData
@@ -552,6 +555,13 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     OWSAssert(cipherKeySpecData.length == kSQLCipherKeySpecLength);
 
     [self storeKeyChainValue:cipherKeySpecData keychainKey:keychainDBCipherKeySpec];
+}
+
++ (void)removeLegacyPassphrase
+{
+    DDLogInfo(@"%@ removing legacy passphrase", self.logTag);
+
+    [SAMKeychain deletePasswordForService:keychainService account:keychainDBLegacyPassphrase];
 }
 
 - (NSData *)databaseKeySpec
