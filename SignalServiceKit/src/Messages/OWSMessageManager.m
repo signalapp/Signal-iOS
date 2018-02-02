@@ -699,7 +699,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      transaction:transaction];
     } else if (syncMessage.hasVerified) {
         DDLogInfo(@"%@ Received verification state for %@", self.logTag, syncMessage.verified.destination);
-        [self.identityManager processIncomingSyncMessage:syncMessage.verified];
+        [self.identityManager processIncomingSyncMessage:syncMessage.verified transaction:transaction];
     } else {
         DDLogWarn(@"%@ Ignoring unsupported sync message.", self.logTag);
     }

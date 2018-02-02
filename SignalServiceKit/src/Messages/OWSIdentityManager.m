@@ -683,7 +683,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 }
 
 - (void)processIncomingSyncMessage:(OWSSignalServiceProtosVerified *)verified
+                       transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssert(verified);
+    OWSAssert(transaction);
+
     NSString *recipientId = verified.destination;
     if (recipientId.length < 1) {
         OWSFail(@"Verification state sync message missing recipientId.");
@@ -698,32 +702,29 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
     NSData *identityKey = [rawIdentityKey removeKeyType];
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * transaction) {
-            switch (verified.state) {
-                case OWSSignalServiceProtosVerifiedStateDefault:
-                    [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateDefault
-                                                         recipientId:recipientId
-                                                         identityKey:identityKey
-                                                 overwriteOnConflict:NO
-                                                         transaction:transaction];
-                    break;
-                case OWSSignalServiceProtosVerifiedStateVerified:
-                    [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateVerified
-                                                         recipientId:recipientId
-                                                         identityKey:identityKey
-                                                 overwriteOnConflict:YES
-                                                         transaction:transaction];
-                    break;
-                case OWSSignalServiceProtosVerifiedStateUnverified:
-                    OWSFail(@"Verification state sync message for recipientId: %@ has unexpected value: %@.",
-                            recipientId,
-                            OWSVerificationStateToString(OWSVerificationStateNoLongerVerified));
-                    return;
-            }
-        }];
-        [self fireIdentityStateChangeNotification];
-    });
+    switch (verified.state) {
+        case OWSSignalServiceProtosVerifiedStateDefault:
+            [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateDefault
+                                                 recipientId:recipientId
+                                                 identityKey:identityKey
+                                         overwriteOnConflict:NO
+                                                 transaction:transaction];
+            break;
+        case OWSSignalServiceProtosVerifiedStateVerified:
+            [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateVerified
+                                                 recipientId:recipientId
+                                                 identityKey:identityKey
+                                         overwriteOnConflict:YES
+                                                 transaction:transaction];
+            break;
+        case OWSSignalServiceProtosVerifiedStateUnverified:
+            OWSFail(@"Verification state sync message for recipientId: %@ has unexpected value: %@.",
+                recipientId,
+                OWSVerificationStateToString(OWSVerificationStateNoLongerVerified));
+            return;
+    }
+
+    [self fireIdentityStateChangeNotification];
 }
 
 - (void)tryToApplyVerificationStateFromSyncMessage:(OWSVerificationState)verificationState
