@@ -1,17 +1,24 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSGroupsOutputStream.h"
 #import "MIMETypeUtil.h"
+#import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSGroupModel.h"
+#import "TSGroupThread.h"
 #import <ProtocolBuffers/CodedOutputStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSGroupsOutputStream
 
-- (void)writeGroup:(TSGroupModel *)group
+- (void)writeGroup:(TSGroupModel *)group transaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(group);
+    OWSAssert(transaction);
+
     OWSSignalServiceProtosGroupDetailsBuilder *groupBuilder = [OWSSignalServiceProtosGroupDetailsBuilder new];
     [groupBuilder setId:group.groupId];
     [groupBuilder setName:group.groupName];
@@ -32,6 +39,16 @@ NS_ASSUME_NONNULL_BEGIN
     uint32_t groupDataLength = (uint32_t)groupData.length;
     [self.delegateStream writeRawVarint32:groupDataLength];
     [self.delegateStream writeRawData:groupData];
+
+    TSGroupThread *_Nullable groupThread = [TSGroupThread threadWithGroupId:group.groupId transaction:transaction];
+    if (groupThread) {
+        OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration =
+            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:groupThread.uniqueId transaction:transaction];
+
+        if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
+            [groupBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];
+        }
+    }
 
     if (avatarPng) {
         [self.delegateStream writeRawData:avatarPng];

@@ -312,6 +312,19 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(dataMessage);
     OWSAssert(transaction);
 
+    if (dataMessage.hasTimestamp) {
+        if (dataMessage.timestamp <= 0) {
+            DDLogError(@"%@ Ignoring message with invalid data message timestamp: %@", self.logTag, envelope.source);
+            return;
+        }
+        // This prevents replay attacks by the service.
+        if (dataMessage.timestamp != envelope.timestamp) {
+            DDLogError(
+                @"%@ Ignoring message with non-matching data message timestamp: %@", self.logTag, envelope.source);
+            return;
+        }
+    }
+
     if ([dataMessage hasProfileKey]) {
         NSData *profileKey = [dataMessage profileKey];
         NSString *recipientId = envelope.source;

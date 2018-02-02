@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncGroupsRequestMessage.h"
@@ -55,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
     [groupContextBuilder setId:self.groupId];
 
     OWSSignalServiceProtosDataMessageBuilder *builder = [OWSSignalServiceProtosDataMessageBuilder new];
+    [builder setTimestamp:self.timestamp];
     [builder setGroupBuilder:groupContextBuilder];
 
     return builder;

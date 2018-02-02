@@ -799,13 +799,16 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define DataMessage_flags @"flags"
 #define DataMessage_expireTimer @"expireTimer"
 #define DataMessage_profileKey @"profileKey"
+#define DataMessage_timestamp @"timestamp"
 @interface OWSSignalServiceProtosDataMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
+  BOOL hasTimestamp_:1;
   BOOL hasBody_:1;
   BOOL hasGroup_:1;
   BOOL hasProfileKey_:1;
   BOOL hasFlags_:1;
   BOOL hasExpireTimer_:1;
+  UInt64 timestamp;
   NSString* body;
   OWSSignalServiceProtosGroupContext* group;
   NSData* profileKey;
@@ -818,12 +821,14 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (BOOL) hasFlags;
 - (BOOL) hasExpireTimer;
 - (BOOL) hasProfileKey;
+- (BOOL) hasTimestamp;
 @property (readonly, strong) NSString* body;
 @property (readonly, strong) NSArray<OWSSignalServiceProtosAttachmentPointer*> * attachments;
 @property (readonly, strong) OWSSignalServiceProtosGroupContext* group;
 @property (readonly) UInt32 flags;
 @property (readonly) UInt32 expireTimer;
 @property (readonly, strong) NSData* profileKey;
+@property (readonly) UInt64 timestamp;
 - (OWSSignalServiceProtosAttachmentPointer*)attachmentsAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -893,6 +898,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (NSData*) profileKey;
 - (OWSSignalServiceProtosDataMessageBuilder*) setProfileKey:(NSData*) value;
 - (OWSSignalServiceProtosDataMessageBuilder*) clearProfileKey;
+
+- (BOOL) hasTimestamp;
+- (UInt64) timestamp;
+- (OWSSignalServiceProtosDataMessageBuilder*) setTimestamp:(UInt64) value;
+- (OWSSignalServiceProtosDataMessageBuilder*) clearTimestamp;
 @end
 
 #define NullMessage_padding @"padding"
@@ -1644,6 +1654,8 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define AttachmentPointer_digest @"digest"
 #define AttachmentPointer_fileName @"fileName"
 #define AttachmentPointer_flags @"flags"
+#define AttachmentPointer_width @"width"
+#define AttachmentPointer_height @"height"
 @interface OWSSignalServiceProtosAttachmentPointer : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasId_:1;
@@ -1654,6 +1666,8 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   BOOL hasDigest_:1;
   BOOL hasSize_:1;
   BOOL hasFlags_:1;
+  BOOL hasWidth_:1;
+  BOOL hasHeight_:1;
   UInt64 id;
   NSString* contentType;
   NSString* fileName;
@@ -1662,6 +1676,8 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   NSData* digest;
   UInt32 size;
   UInt32 flags;
+  UInt32 width;
+  UInt32 height;
 }
 - (BOOL) hasId;
 - (BOOL) hasContentType;
@@ -1671,6 +1687,8 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (BOOL) hasDigest;
 - (BOOL) hasFileName;
 - (BOOL) hasFlags;
+- (BOOL) hasWidth;
+- (BOOL) hasHeight;
 @property (readonly) UInt64 id;
 @property (readonly, strong) NSString* contentType;
 @property (readonly, strong) NSData* key;
@@ -1679,6 +1697,8 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @property (readonly, strong) NSData* digest;
 @property (readonly, strong) NSString* fileName;
 @property (readonly) UInt32 flags;
+@property (readonly) UInt32 width;
+@property (readonly) UInt32 height;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -1754,6 +1774,16 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (UInt32) flags;
 - (OWSSignalServiceProtosAttachmentPointerBuilder*) setFlags:(UInt32) value;
 - (OWSSignalServiceProtosAttachmentPointerBuilder*) clearFlags;
+
+- (BOOL) hasWidth;
+- (UInt32) width;
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) setWidth:(UInt32) value;
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) clearWidth;
+
+- (BOOL) hasHeight;
+- (UInt32) height;
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) setHeight:(UInt32) value;
+- (OWSSignalServiceProtosAttachmentPointerBuilder*) clearHeight;
 @end
 
 #define GroupContext_id @"id"
@@ -1854,20 +1884,26 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define ContactDetails_color @"color"
 #define ContactDetails_verified @"verified"
 #define ContactDetails_profileKey @"profileKey"
+#define ContactDetails_blocked @"blocked"
+#define ContactDetails_expireTimer @"expireTimer"
 @interface OWSSignalServiceProtosContactDetails : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
+  BOOL hasBlocked_:1;
   BOOL hasNumber_:1;
   BOOL hasName_:1;
   BOOL hasColor_:1;
   BOOL hasAvatar_:1;
   BOOL hasVerified_:1;
   BOOL hasProfileKey_:1;
+  BOOL hasExpireTimer_:1;
+  BOOL blocked_:1;
   NSString* number;
   NSString* name;
   NSString* color;
   OWSSignalServiceProtosContactDetailsAvatar* avatar;
   OWSSignalServiceProtosVerified* verified;
   NSData* profileKey;
+  UInt32 expireTimer;
 }
 - (BOOL) hasNumber;
 - (BOOL) hasName;
@@ -1875,12 +1911,16 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (BOOL) hasColor;
 - (BOOL) hasVerified;
 - (BOOL) hasProfileKey;
+- (BOOL) hasBlocked;
+- (BOOL) hasExpireTimer;
 @property (readonly, strong) NSString* number;
 @property (readonly, strong) NSString* name;
 @property (readonly, strong) OWSSignalServiceProtosContactDetailsAvatar* avatar;
 @property (readonly, strong) NSString* color;
 @property (readonly, strong) OWSSignalServiceProtosVerified* verified;
 @property (readonly, strong) NSData* profileKey;
+- (BOOL) blocked;
+@property (readonly) UInt32 expireTimer;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -2010,6 +2050,16 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (NSData*) profileKey;
 - (OWSSignalServiceProtosContactDetailsBuilder*) setProfileKey:(NSData*) value;
 - (OWSSignalServiceProtosContactDetailsBuilder*) clearProfileKey;
+
+- (BOOL) hasBlocked;
+- (BOOL) blocked;
+- (OWSSignalServiceProtosContactDetailsBuilder*) setBlocked:(BOOL) value;
+- (OWSSignalServiceProtosContactDetailsBuilder*) clearBlocked;
+
+- (BOOL) hasExpireTimer;
+- (UInt32) expireTimer;
+- (OWSSignalServiceProtosContactDetailsBuilder*) setExpireTimer:(UInt32) value;
+- (OWSSignalServiceProtosContactDetailsBuilder*) clearExpireTimer;
 @end
 
 #define GroupDetails_id @"id"
@@ -2017,27 +2067,32 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define GroupDetails_members @"members"
 #define GroupDetails_avatar @"avatar"
 #define GroupDetails_active @"active"
+#define GroupDetails_expireTimer @"expireTimer"
 @interface OWSSignalServiceProtosGroupDetails : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasActive_:1;
   BOOL hasName_:1;
   BOOL hasAvatar_:1;
   BOOL hasId_:1;
+  BOOL hasExpireTimer_:1;
   BOOL active_:1;
   NSString* name;
   OWSSignalServiceProtosGroupDetailsAvatar* avatar;
   NSData* id;
+  UInt32 expireTimer;
   NSMutableArray * membersArray;
 }
 - (BOOL) hasId;
 - (BOOL) hasName;
 - (BOOL) hasAvatar;
 - (BOOL) hasActive;
+- (BOOL) hasExpireTimer;
 @property (readonly, strong) NSData* id;
 @property (readonly, strong) NSString* name;
 @property (readonly, strong) NSArray * members;
 @property (readonly, strong) OWSSignalServiceProtosGroupDetailsAvatar* avatar;
 - (BOOL) active;
+@property (readonly) UInt32 expireTimer;
 - (NSString*)membersAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -2162,6 +2217,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (BOOL) active;
 - (OWSSignalServiceProtosGroupDetailsBuilder*) setActive:(BOOL) value;
 - (OWSSignalServiceProtosGroupDetailsBuilder*) clearActive;
+
+- (BOOL) hasExpireTimer;
+- (UInt32) expireTimer;
+- (OWSSignalServiceProtosGroupDetailsBuilder*) setExpireTimer:(UInt32) value;
+- (OWSSignalServiceProtosGroupDetailsBuilder*) clearExpireTimer;
 @end
 
 

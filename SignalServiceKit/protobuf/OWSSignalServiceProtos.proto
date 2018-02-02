@@ -9,6 +9,7 @@ package signalservice;
 option java_package = "org.whispersystems.signalservice.internal.push";
 option java_outer_classname = "SignalServiceProtos";
 
+// Signal-iOS
 import "objectivec-descriptor.proto";
 option (google.protobuf.objectivec_file_options).class_prefix = "OWSSignalServiceProtos";
 
@@ -92,6 +93,7 @@ message DataMessage {
   optional uint32             flags       = 4;
   optional uint32             expireTimer = 5;
   optional bytes              profileKey  = 6;
+  optional uint64             timestamp   = 7;
 }
 
 message NullMessage {
@@ -130,7 +132,8 @@ message SyncMessage {
   }
 
   message Contacts {
-    optional AttachmentPointer blob     = 1;
+    optional AttachmentPointer blob       = 1;
+    // Signal-iOS renamed this property.
     optional bool              isComplete = 2 [default = false];
   }
 
@@ -187,6 +190,8 @@ message AttachmentPointer {
   optional bytes   digest      = 6;
   optional string  fileName    = 7;
   optional uint32  flags       = 8;
+  optional uint32  width       = 9;
+  optional uint32  height      = 10;
 }
 
 message GroupContext {
@@ -210,12 +215,14 @@ message ContactDetails {
     optional uint32 length      = 2;
   }
 
-  optional string   number     = 1;
-  optional string   name       = 2;
-  optional Avatar   avatar     = 3;
-  optional string   color      = 4;
-  optional Verified verified   = 5;
-  optional bytes    profileKey = 6;
+  optional string   number      = 1;
+  optional string   name        = 2;
+  optional Avatar   avatar      = 3;
+  optional string   color       = 4;
+  optional Verified verified    = 5;
+  optional bytes    profileKey  = 6;
+  optional bool     blocked     = 7;
+  optional uint32   expireTimer = 8;
 }
 
 message GroupDetails {
@@ -224,9 +231,10 @@ message GroupDetails {
     optional uint32 length      = 2;
   }
 
-  optional bytes  id       = 1;
-  optional string name     = 2;
-  repeated string members  = 3;
-  optional Avatar avatar   = 4;
-  optional bool   active   = 5 [default = true];
+  optional bytes  id          = 1;
+  optional string name        = 2;
+  repeated string members     = 3;
+  optional Avatar avatar      = 4;
+  optional bool   active      = 5 [default = true];
+  optional uint32 expireTimer = 6;
 }

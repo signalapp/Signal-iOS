@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesConfigurationMessage.h"
@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
 {
     OWSSignalServiceProtosDataMessageBuilder *dataMessageBuilder = [super dataMessageBuilder];
+    [dataMessageBuilder setTimestamp:self.timestamp];
     [dataMessageBuilder setFlags:OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate];
     if (self.configuration.isEnabled) {
         [dataMessageBuilder setExpireTimer:self.configuration.durationSeconds];
