@@ -69,6 +69,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)acceptNewIdentityKey
 {
+    OWSAssertIsOnMainThread();
+
     if (self.errorType != TSErrorMessageWrongTrustedIdentityKey) {
         DDLogError(@"Refusing to accept identity key for anything but a Key error.");
         return;
@@ -80,28 +82,20 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // Saving a new identity mutates the session store so it must happen on the sessionStoreQueue
-    [TSStorageManager.protocolStoreDBConnection asyncReadWriteWithBlock:^(
-        YapDatabaseReadWriteTransaction *transaction) {
-        [[OWSIdentityManager sharedManager] saveRemoteIdentity:newKey
-                                                   recipientId:self.envelope.source
-                                               protocolContext:transaction];
+    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newKey recipientId:self.envelope.source];
 
-        dispatch_async(dispatch_get_main_queue(), ^{
-            // Decrypt this and any old messages for the newly accepted key
-            NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *messagesToDecrypt =
-                [self.thread receivedMessagesForInvalidKey:newKey];
+    // Decrypt this and any old messages for the newly accepted key
+    NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *messagesToDecrypt =
+        [self.thread receivedMessagesForInvalidKey:newKey];
 
-            for (TSInvalidIdentityKeyReceivingErrorMessage *errorMessage in messagesToDecrypt) {
-                [[OWSMessageReceiver sharedInstance] handleReceivedEnvelope:errorMessage.envelope];
+    for (TSInvalidIdentityKeyReceivingErrorMessage *errorMessage in messagesToDecrypt) {
+        [[OWSMessageReceiver sharedInstance] handleReceivedEnvelope:errorMessage.envelope];
 
-                // Here we remove the existing error message because handleReceivedEnvelope will either
-                //  1.) succeed and create a new successful message in the thread or...
-                //  2.) fail and create a new identical error message in the thread.
-                [errorMessage remove];
-            }
-        });
-    }];
+        // Here we remove the existing error message because handleReceivedEnvelope will either
+        //  1.) succeed and create a new successful message in the thread or...
+        //  2.) fail and create a new identical error message in the thread.
+        [errorMessage remove];
+    }
 }
 
 - (nullable NSData *)newIdentityKey

@@ -55,7 +55,7 @@ class SafetyNumberConfirmationAlert: NSObject {
         let confirmAction = UIAlertAction(title: confirmationText, style: .default) { _ in
             Logger.info("\(self.TAG) Confirmed identity: \(untrustedIdentity)")
 
-        TSStorageManager.protocolStoreDBConnection().asyncReadWrite { (transaction) in
+        self.storageManager.newDatabaseConnection().asyncReadWrite { (transaction) in
             OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, recipientId: untrustedIdentity.recipientId, isUserInitiatedChange: true, protocolContext: transaction)
                 DispatchQueue.main.async {
                     completion(true)

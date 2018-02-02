@@ -903,13 +903,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
 
             NSData *newIdentityKey = [newIdentityKeyWithVersion removeKeyType];
-
-            [self.dbConnection
-                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey
-                                                               recipientId:recipient.recipientId
-                                                           protocolContext:transaction];
-                }];
+            [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey recipientId:recipient.recipientId];
 
             failureHandler(error);
             return;

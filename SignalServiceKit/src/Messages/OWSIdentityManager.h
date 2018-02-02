@@ -42,7 +42,7 @@ extern const NSUInteger kIdentityKeyLength;
 
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId;
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
-                                            transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                            transaction:(YapDatabaseReadTransaction *)transaction;
 
 - (nullable OWSRecipientIdentity *)recipientIdentityForRecipientId:(NSString *)recipientId;
 
@@ -55,6 +55,8 @@ extern const NSUInteger kIdentityKeyLength;
 
 // This method can be called from any thread.
 - (void)processIncomingSyncMessage:(OWSSignalServiceProtosVerified *)verified;
+
+- (BOOL)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId;
 
 #pragma mark - Debug
 

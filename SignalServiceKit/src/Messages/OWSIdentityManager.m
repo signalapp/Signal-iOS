@@ -56,10 +56,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 @interface OWSIdentityManager ()
 
 @property (nonatomic, readonly) TSStorageManager *storageManager;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
-
-// TODO: Should we get rid of this property?
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+@property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 @end
 
@@ -132,7 +130,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
 {
     __block NSData *_Nullable result = nil;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         result = [self identityKeyForRecipientId:recipientId protocolContext:transaction];
     }];
     return result;
@@ -144,6 +142,15 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
+
+    return [self identityKeyForRecipientId:recipientId protocolContext:transaction];
+}
+
+- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
+                                   transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(recipientId.length > 0);
+    OWSAssert(transaction);
 
     return [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction].identityKey;
 }
@@ -175,6 +182,19 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
     return (int)[TSAccountManager getOrGenerateRegistrationId:transaction];
+}
+
+- (BOOL)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId
+{
+    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
+    OWSAssert(recipientId.length > 0);
+
+    __block BOOL result;
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        result = [self saveRemoteIdentity:identityKey recipientId:recipientId protocolContext:transaction];
+    }];
+
+    return result;
 }
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey
@@ -306,14 +326,14 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     __block OWSVerificationState result;
     // Use a read/write transaction to block on latest.
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self verificationStateForRecipientId:recipientId transaction:transaction];
     }];
     return result;
 }
 
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
-                                            transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                            transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(recipientId.length > 0);
     OWSAssert(transaction);

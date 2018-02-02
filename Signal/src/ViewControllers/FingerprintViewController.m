@@ -512,7 +512,8 @@ typedef void (^CustomLayoutBlock)(void);
 - (void)verifyUnverifyButtonTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        [TSStorageManager.protocolStoreDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [TSStorageManager.sharedManager.newDatabaseConnection readWriteWithBlock:^(
+            YapDatabaseReadWriteTransaction *transaction) {
             BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId
                                                                                       transaction:transaction]
                 == OWSVerificationStateVerified;

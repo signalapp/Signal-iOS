@@ -39,25 +39,19 @@ NS_ASSUME_NONNULL_BEGIN
                                 OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
                                 NSString *recipientId = [thread contactIdentifier];
 
-                                [TSStorageManager.protocolStoreDBConnection
-                                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                        NSData *currentKey = [identityManager identityKeyForRecipientId:recipientId
-                                                                                        protocolContext:transaction];
-                                        NSMutableData *flippedKey = [NSMutableData new];
-                                        const char *currentKeyBytes = currentKey.bytes;
-                                        for (NSUInteger i = 0; i < currentKey.length; i++) {
-                                            const char xorByte = currentKeyBytes[i] ^ 0xff;
-                                            [flippedKey appendBytes:&xorByte length:1];
-                                        }
-                                        OWSAssert(flippedKey.length == currentKey.length);
-                                        [identityManager saveRemoteIdentity:flippedKey
-                                                                recipientId:recipientId
-                                                            protocolContext:transaction];
-                                    }];
+                                NSData *currentKey = [identityManager identityKeyForRecipientId:recipientId];
+                                NSMutableData *flippedKey = [NSMutableData new];
+                                const char *currentKeyBytes = currentKey.bytes;
+                                for (NSUInteger i = 0; i < currentKey.length; i++) {
+                                    const char xorByte = currentKeyBytes[i] ^ 0xff;
+                                    [flippedKey appendBytes:&xorByte length:1];
+                                }
+                                OWSAssert(flippedKey.length == currentKey.length);
+                                [identityManager saveRemoteIdentity:flippedKey recipientId:recipientId];
                             }],
             [OWSTableItem itemWithTitle:@"Delete all sessions"
                             actionBlock:^{
-                                [TSStorageManager.protocolStoreDBConnection
+                                [TSStorageManager.sharedManager.newDatabaseConnection
                                     readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                         [[TSStorageManager sharedManager]
                                             deleteAllSessionsForContact:thread.contactIdentifier
@@ -66,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
                             }],
             [OWSTableItem itemWithTitle:@"Archive all sessions"
                             actionBlock:^{
-                                [TSStorageManager.protocolStoreDBConnection
+                                [TSStorageManager.sharedManager.newDatabaseConnection
                                     readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                         [[TSStorageManager sharedManager]
                                             archiveAllSessionsForContact:thread.contactIdentifier

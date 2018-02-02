@@ -200,7 +200,7 @@ NS_ASSUME_NONNULL_BEGIN
                                           @"Button that marks user as verified after a successful fingerprint scan.")
                                 style:UIAlertActionStyleDefault
                               handler:^(UIAlertAction *action) {
-                                  [TSStorageManager.protocolStoreDBConnection
+                                  [TSStorageManager.sharedManager.newDatabaseConnection
                                       asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                           [OWSIdentityManager.sharedManager
                                                setVerificationState:OWSVerificationStateVerified

@@ -20,22 +20,22 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
  * Note that it's still technically possible to access this collection from a different collection,
  * but that should be considered a bug.
  */
-+ (YapDatabaseConnection *)protocolStoreDBConnection
++ (YapDatabaseConnection *)sessionStoreDBConnection
 {
     static dispatch_once_t onceToken;
-    static YapDatabaseConnection *protocolStoreDBConnection;
+    static YapDatabaseConnection *sessionStoreDBConnection;
     dispatch_once(&onceToken, ^{
-        protocolStoreDBConnection = [TSStorageManager sharedManager].newDatabaseConnection;
-        protocolStoreDBConnection.objectCacheEnabled = NO;
+        sessionStoreDBConnection = [TSStorageManager sharedManager].newDatabaseConnection;
+        sessionStoreDBConnection.objectCacheEnabled = NO;
     });
 
-    return protocolStoreDBConnection;
+    return sessionStoreDBConnection;
 }
 
 // TODO: Audit usage of this connection.
-- (YapDatabaseConnection *)protocolStoreDBConnection
+- (YapDatabaseConnection *)sessionStoreDBConnection
 {
-    return [[self class] protocolStoreDBConnection];
+    return [[self class] sessionStoreDBConnection];
 }
 
 #pragma mark - SessionStore
@@ -198,7 +198,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 - (void)resetSessionStore
 {
     DDLogWarn(@"%@ resetting session store", self.logTag);
-    [self.protocolStoreDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.sessionStoreDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [transaction removeAllObjectsInCollection:TSStorageManagerSessionStoreCollection];
     }];
 }
@@ -206,7 +206,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 - (void)printAllSessions
 {
     NSString *tag = @"[TSStorageManager (SessionStore)]";
-    [self.protocolStoreDBConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.sessionStoreDBConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         DDLogDebug(@"%@ All Sessions:", tag);
         [transaction
             enumerateKeysAndObjectsInCollection:TSStorageManagerSessionStoreCollection
@@ -255,14 +255,14 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
 - (void)snapshotSessionStore
 {
-    [self.protocolStoreDBConnection snapshotCollection:TSStorageManagerSessionStoreCollection
-                                      snapshotFilePath:self.snapshotFilePath];
+    [self.sessionStoreDBConnection snapshotCollection:TSStorageManagerSessionStoreCollection
+                                     snapshotFilePath:self.snapshotFilePath];
 }
 
 - (void)restoreSessionStore
 {
-    [self.protocolStoreDBConnection restoreSnapshotOfCollection:TSStorageManagerSessionStoreCollection
-                                               snapshotFilePath:self.snapshotFilePath];
+    [self.sessionStoreDBConnection restoreSnapshotOfCollection:TSStorageManagerSessionStoreCollection
+                                              snapshotFilePath:self.snapshotFilePath];
 }
 #endif
 

@@ -30,7 +30,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly, weak) id<ShareViewDelegate> shareViewDelegate;
 @property (nonatomic, readonly) UIProgressView *progressView;
-@property (nullable, atomic) TSOutgoingMessage *outgoingMessage;
+@property (atomic, nullable) TSOutgoingMessage *outgoingMessage;
 
 @end
 
@@ -385,7 +385,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     DDLogDebug(@"%@ Confirming identity for recipient: %@", self.logTag, recipientId);
 
-    [TSStorageManager.protocolStoreDBConnection asyncReadWriteWithBlock:^(
+    [TSStorageManager.sharedManager.newDatabaseConnection asyncReadWriteWithBlock:^(
         YapDatabaseReadWriteTransaction *transaction) {
         OWSVerificationState verificationState =
             [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId transaction:transaction];
