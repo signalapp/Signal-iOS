@@ -385,11 +385,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
         // Which sources are available depends on the state of your Session.
         // When the audio session is not yet in PlayAndRecord none are available
         // Then if we're in speakerphone, bluetooth isn't available. 
-        // So we acrew all possible audio sources in a set, and that list lives as longs as the CallViewController
+        // So we accrue all possible audio sources in a set, and that list lives as longs as the CallViewController
         // The downside of this is that if you e.g. unpair your bluetooth mid call, it will still appear as an option
         // until your next call.
         // FIXME: There's got to be a better way, but this is where I landed after a bit of work, and seems to work
-        // pretty well in practrice.
+        // pretty well in practice.
         let availableInputs = callUIAdapter.audioService.availableInputs
         self.allAudioSources.formUnion(availableInputs)
     }
