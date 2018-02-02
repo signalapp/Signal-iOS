@@ -32,13 +32,14 @@ extern const NSUInteger kIdentityKeyLength;
 
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId;
 
-- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId protocolContext:(nullable id)protocolContext;
+- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
+                                   transaction:(YapDatabaseReadTransaction *)transaction;
 
 - (void)setVerificationState:(OWSVerificationState)verificationState
                  identityKey:(NSData *)identityKey
                  recipientId:(NSString *)recipientId
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
-             protocolContext:(nullable id)protocolContext;
+                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId;
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId

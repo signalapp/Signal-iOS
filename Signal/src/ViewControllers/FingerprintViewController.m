@@ -524,7 +524,7 @@ typedef void (^CustomLayoutBlock)(void);
                                                          identityKey:self.identityKey
                                                          recipientId:self.recipientId
                                                isUserInitiatedChange:YES
-                                                     protocolContext:transaction];
+                                                         transaction:transaction];
         }];
 
         [self dismissViewControllerAnimated:YES completion:nil];

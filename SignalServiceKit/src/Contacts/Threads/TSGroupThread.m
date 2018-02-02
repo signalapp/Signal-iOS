@@ -149,7 +149,10 @@ NS_ASSUME_NONNULL_BEGIN
 // @note If this becomes a hotspot we can extract into a YapDB View.
 // As is, the number of groups should be small (dozens, *maybe* hundreds), and we only enumerate them upon SN changes.
 + (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId
-                                              transaction:(YapDatabaseReadWriteTransaction *)transaction {
+                                              transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(recipientId.length > 0);
+    OWSAssert(transaction);
 
     NSMutableArray<TSGroupThread *> *groupThreads = [NSMutableArray new];
 

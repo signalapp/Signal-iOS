@@ -56,7 +56,7 @@ class SafetyNumberConfirmationAlert: NSObject {
             Logger.info("\(self.TAG) Confirmed identity: \(untrustedIdentity)")
 
         self.storageManager.newDatabaseConnection().asyncReadWrite { (transaction) in
-            OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, recipientId: untrustedIdentity.recipientId, isUserInitiatedChange: true, protocolContext: transaction)
+            OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, recipientId: untrustedIdentity.recipientId, isUserInitiatedChange: true, transaction: transaction)
                 DispatchQueue.main.async {
                     completion(true)
                 }

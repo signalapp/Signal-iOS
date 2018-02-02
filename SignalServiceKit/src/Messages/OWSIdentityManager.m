@@ -131,19 +131,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     __block NSData *_Nullable result = nil;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        result = [self identityKeyForRecipientId:recipientId protocolContext:transaction];
+        result = [self identityKeyForRecipientId:recipientId transaction:transaction];
     }];
     return result;
-}
-
-- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId protocolContext:(nullable id)protocolContext
-{
-    OWSAssert(recipientId.length > 0);
-    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
-
-    YapDatabaseReadWriteTransaction *transaction = protocolContext;
-
-    return [self identityKeyForRecipientId:recipientId protocolContext:transaction];
 }
 
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
@@ -158,8 +148,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (nullable ECKeyPair *)identityKeyPair
 {
     __block ECKeyPair *_Nullable identityKeyPair = nil;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        identityKeyPair = [self identityKeyPair:transaction];
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        identityKeyPair = [self identityKeyPairWithTransaction:transaction];
     }];
     return identityKeyPair;
 }
@@ -169,6 +159,13 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
+
+    return [self identityKeyPairWithTransaction:transaction];
+}
+
+- (nullable ECKeyPair *)identityKeyPairWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(transaction);
 
     ECKeyPair *_Nullable identityKeyPair = [transaction keyPairForKey:TSStorageManagerIdentityKeyStoreIdentityKey
                                                          inCollection:TSStorageManagerIdentityKeyStoreCollection];
@@ -359,7 +356,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
 {
     __block OWSVerificationState result;
-    // Use a read/write transaction to block on latest.
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self verificationStateForRecipientId:recipientId transaction:transaction];
     }];
@@ -388,8 +384,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert(recipientId.length > 0);
 
     __block OWSRecipientIdentity *_Nullable result;
-    // Use a read/write transaction to block on latest.
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
     }];
     return result;
@@ -400,8 +395,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert(recipientId.length > 0);
 
     __block OWSRecipientIdentity *_Nullable result;
-    // Use a read/write transaction to block on latest.
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         OWSRecipientIdentity *_Nullable recipientIdentity =
             [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
 
@@ -413,7 +407,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         BOOL isTrusted = [self isTrustedIdentityKey:recipientIdentity.identityKey
                                         recipientId:recipientId
                                           direction:TSMessageDirectionOutgoing
-                                    protocolContext:transaction];
+                                        transaction:transaction];
         if (isTrusted) {
             return;
         } else {
@@ -442,10 +436,23 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
+    return [self isTrustedIdentityKey:identityKey recipientId:recipientId direction:direction transaction:transaction];
+}
+
+- (BOOL)isTrustedIdentityKey:(NSData *)identityKey
+                 recipientId:(NSString *)recipientId
+                   direction:(TSMessageDirection)direction
+                 transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
+    OWSAssert(recipientId.length > 0);
+    OWSAssert(direction != TSMessageDirectionUnknown);
+    OWSAssert(transaction);
+
     @synchronized(self)
     {
         if ([[TSAccountManager localNumber] isEqualToString:recipientId]) {
-            ECKeyPair *_Nullable localIdentityKeyPair = [self identityKeyPair:protocolContext];
+            ECKeyPair *_Nullable localIdentityKeyPair = [self identityKeyPair:transaction];
 
             if ([localIdentityKeyPair.publicKey isEqualToData:identityKey]) {
                 return YES;
@@ -573,7 +580,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         @synchronized(self)
         {
             NSMutableArray<NSString *> *recipientIds = [NSMutableArray new];
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                 [transaction enumerateKeysAndObjectsInCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages
                                                       usingBlock:^(NSString *_Nonnull recipientId,
                                                                    id _Nonnull object,
