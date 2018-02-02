@@ -19,7 +19,7 @@ extern const NSUInteger kIdentityKeyLength;
 @class OWSRecipientIdentity;
 @class OWSSignalServiceProtosVerified;
 @class OWSStorage;
-@class OWSStorage;
+@class YapDatabaseReadWriteTransaction;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSIdentityManager : NSObject <IdentityKeyStore>
@@ -44,6 +44,11 @@ extern const NSUInteger kIdentityKeyLength;
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
                                             transaction:(YapDatabaseReadTransaction *)transaction;
 
+- (void)setVerificationState:(OWSVerificationState)verificationState
+                 identityKey:(NSData *)identityKey
+                 recipientId:(NSString *)recipientId
+       isUserInitiatedChange:(BOOL)isUserInitiatedChange;
+
 - (nullable OWSRecipientIdentity *)recipientIdentityForRecipientId:(NSString *)recipientId;
 
 /**
@@ -64,10 +69,10 @@ extern const NSUInteger kIdentityKeyLength;
 
 #if DEBUG
 // Clears everything except the local identity key.
-- (void)clearIdentityState;
+- (void)clearIdentityState:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (void)snapshotIdentityState;
-- (void)restoreIdentityState;
+- (void)snapshotIdentityState:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)restoreIdentityState:(YapDatabaseReadWriteTransaction *)transaction;
 #endif
 
 @end

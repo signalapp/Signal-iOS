@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "YapDatabaseReadTransaction+OWS.h"
+#import "YapDatabaseTransaction+OWS.h"
 #import <AxolotlKit/PreKeyRecord.h>
 #import <AxolotlKit/SignedPrekeyRecord.h>
 #import <Curve25519Kit/Curve25519.h>
@@ -106,6 +106,48 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 }
+
+@end
+
+#pragma mark -
+
+@implementation YapDatabaseReadWriteTransaction (OWS)
+
+#pragma mark - Debug
+
+#if DEBUG
+- (void)snapshotCollection:(NSString *)collection snapshotFilePath:(NSString *)snapshotFilePath
+{
+    OWSAssert(collection.length > 0);
+    OWSAssert(snapshotFilePath.length > 0);
+
+    NSMutableDictionary<NSString *, id> *snapshot = [NSMutableDictionary new];
+    [self enumerateKeysAndObjectsInCollection:collection
+                                   usingBlock:^(NSString *_Nonnull key, id _Nonnull value, BOOL *_Nonnull stop) {
+                                       snapshot[key] = value;
+                                   }];
+    NSData *_Nullable data = [NSKeyedArchiver archivedDataWithRootObject:snapshot];
+    OWSAssert(data);
+    BOOL success = [data writeToFile:snapshotFilePath atomically:YES];
+    OWSAssert(success);
+}
+
+- (void)restoreSnapshotOfCollection:(NSString *)collection snapshotFilePath:(NSString *)snapshotFilePath
+{
+    OWSAssert(collection.length > 0);
+    OWSAssert(snapshotFilePath.length > 0);
+
+    NSData *_Nullable data = [NSData dataWithContentsOfFile:snapshotFilePath];
+    OWSAssert(data);
+    NSMutableDictionary<NSString *, id> *_Nullable snapshot = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    OWSAssert(snapshot);
+
+    [self removeAllObjectsInCollection:collection];
+    [snapshot enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key, id _Nonnull value, BOOL *_Nonnull stop) {
+        [self setObject:value forKey:key inCollection:collection];
+    }];
+}
+#endif
 
 @end
 

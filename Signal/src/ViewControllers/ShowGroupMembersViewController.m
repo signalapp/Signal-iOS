@@ -251,14 +251,10 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFail(@"Missing identity key for: %@", recipientId);
                 continue;
             }
-            [TSStorageManager.sharedManager.newDatabaseConnection
-                asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [identityManger setVerificationState:OWSVerificationStateDefault
-                                             identityKey:identityKey
-                                             recipientId:recipientId
-                                   isUserInitiatedChange:YES
-                                         protocolContext:transaction];
-                }];
+            [identityManger setVerificationState:OWSVerificationStateDefault
+                                     identityKey:identityKey
+                                     recipientId:recipientId
+                           isUserInitiatedChange:YES];
         }
     }
 

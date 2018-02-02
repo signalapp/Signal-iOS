@@ -104,9 +104,10 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
         _phoneNumberAwaitingVerification = nil;
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [transaction removeAllObjectsInCollection:TSAccountManager_UserAccountCollection];
+
+            [[TSStorageManager sharedManager] resetSessionStore:transaction];
         }];
     }
-    [[TSStorageManager sharedManager] resetSessionStore];
 }
 
 + (BOOL)isRegistered

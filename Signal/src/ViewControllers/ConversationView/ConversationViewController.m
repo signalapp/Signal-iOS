@@ -926,14 +926,10 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             continue;
         }
 
-        [self.editingDatabaseConnection
-            asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateDefault
-                                                           identityKey:identityKey
-                                                           recipientId:recipientId
-                                                 isUserInitiatedChange:YES
-                                                       protocolContext:transaction];
-            }];
+        [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateDefault
+                                                   identityKey:identityKey
+                                                   recipientId:recipientId
+                                         isUserInitiatedChange:YES];
     }
 }
 

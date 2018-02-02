@@ -23,7 +23,7 @@
 #import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 #import "YapDatabaseConnection+OWS.h"
-#import "YapDatabaseReadTransaction+OWS.h"
+#import "YapDatabaseTransaction+OWS.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <Curve25519Kit/Curve25519.h>
 #import <YapDatabase/YapDatabase.h>
@@ -275,6 +275,23 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                  identityKey:(NSData *)identityKey
                  recipientId:(NSString *)recipientId
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
+{
+    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
+    OWSAssert(recipientId.length > 0);
+
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self setVerificationState:verificationState
+                       identityKey:identityKey
+                       recipientId:recipientId
+             isUserInitiatedChange:isUserInitiatedChange
+                       transaction:transaction];
+    }];
+}
+
+- (void)setVerificationState:(OWSVerificationState)verificationState
+                 identityKey:(NSData *)identityKey
+                 recipientId:(NSString *)recipientId
+       isUserInitiatedChange:(BOOL)isUserInitiatedChange
              protocolContext:(nullable id)protocolContext
 {
     OWSAssert(identityKey.length == kStoredIdentityKeyLength);
@@ -283,10 +300,27 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
+    [self setVerificationState:verificationState
+                   identityKey:identityKey
+                   recipientId:recipientId
+         isUserInitiatedChange:isUserInitiatedChange
+                   transaction:transaction];
+}
+
+- (void)setVerificationState:(OWSVerificationState)verificationState
+                 identityKey:(NSData *)identityKey
+                 recipientId:(NSString *)recipientId
+       isUserInitiatedChange:(BOOL)isUserInitiatedChange
+                 transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
+    OWSAssert(recipientId.length > 0);
+    OWSAssert(transaction);
+
     // TODO: Remove all @synchronized
     // Ensure a remote identity exists for this key. We may be learning about
     // it for the first time.
-    [self saveRemoteIdentity:identityKey recipientId:recipientId protocolContext:protocolContext];
+    [self saveRemoteIdentity:identityKey recipientId:recipientId protocolContext:transaction];
 
     OWSRecipientIdentity *recipientIdentity =
         [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
@@ -845,23 +879,23 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 #pragma mark - Debug
 
 #if DEBUG
-- (void)clearIdentityState
+- (void)clearIdentityState:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        NSMutableArray<NSString *> *identityKeysToRemove = [NSMutableArray new];
-        [transaction enumerateKeysInCollection:TSStorageManagerIdentityKeyStoreCollection
-                                    usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
-                                        if ([key isEqualToString:TSStorageManagerIdentityKeyStoreIdentityKey]) {
-                                            // Don't delete our own key.
-                                            return;
-                                        }
-                                        [identityKeysToRemove addObject:key];
-                                    }];
-        for (NSString *key in identityKeysToRemove) {
-            [transaction removeObjectForKey:key inCollection:TSStorageManagerIdentityKeyStoreCollection];
-        }
-        [transaction removeAllObjectsInCollection:TSStorageManagerTrustedKeysCollection];
-    }];
+    OWSAssert(transaction);
+
+    NSMutableArray<NSString *> *identityKeysToRemove = [NSMutableArray new];
+    [transaction enumerateKeysInCollection:TSStorageManagerIdentityKeyStoreCollection
+                                usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
+                                    if ([key isEqualToString:TSStorageManagerIdentityKeyStoreIdentityKey]) {
+                                        // Don't delete our own key.
+                                        return;
+                                    }
+                                    [identityKeysToRemove addObject:key];
+                                }];
+    for (NSString *key in identityKeysToRemove) {
+        [transaction removeObjectForKey:key inCollection:TSStorageManagerIdentityKeyStoreCollection];
+    }
+    [transaction removeAllObjectsInCollection:TSStorageManagerTrustedKeysCollection];
 }
 
 - (NSString *)identityKeySnapshotFilePath
@@ -878,20 +912,24 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     return [dirPath stringByAppendingPathComponent:@".trusted-key-snapshot"];
 }
 
-- (void)snapshotIdentityState
+- (void)snapshotIdentityState:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self.dbConnection snapshotCollection:TSStorageManagerIdentityKeyStoreCollection
-                         snapshotFilePath:self.identityKeySnapshotFilePath];
-    [self.dbConnection snapshotCollection:TSStorageManagerTrustedKeysCollection
-                         snapshotFilePath:self.trustedKeySnapshotFilePath];
+    OWSAssert(transaction);
+
+    [transaction snapshotCollection:TSStorageManagerIdentityKeyStoreCollection
+                   snapshotFilePath:self.identityKeySnapshotFilePath];
+    [transaction snapshotCollection:TSStorageManagerTrustedKeysCollection
+                   snapshotFilePath:self.trustedKeySnapshotFilePath];
 }
 
-- (void)restoreIdentityState
+- (void)restoreIdentityState:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self.dbConnection restoreSnapshotOfCollection:TSStorageManagerIdentityKeyStoreCollection
-                                  snapshotFilePath:self.identityKeySnapshotFilePath];
-    [self.dbConnection restoreSnapshotOfCollection:TSStorageManagerTrustedKeysCollection
-                                  snapshotFilePath:self.trustedKeySnapshotFilePath];
+    OWSAssert(transaction);
+
+    [transaction restoreSnapshotOfCollection:TSStorageManagerIdentityKeyStoreCollection
+                            snapshotFilePath:self.identityKeySnapshotFilePath];
+    [transaction restoreSnapshotOfCollection:TSStorageManagerTrustedKeysCollection
+                            snapshotFilePath:self.trustedKeySnapshotFilePath];
 }
 
 #endif

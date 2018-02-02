@@ -5,6 +5,7 @@
 #import "OWSFileSystem.h"
 #import "TSStorageManager+SessionStore.h"
 #import "YapDatabaseConnection+OWS.h"
+#import "YapDatabaseTransaction+OWS.h"
 #import <AxolotlKit/SessionRecord.h>
 #import <YapDatabase/YapDatabase.h>
 
@@ -195,12 +196,13 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
 #pragma mark - debug
 
-- (void)resetSessionStore
+- (void)resetSessionStore:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssert(transaction);
+
     DDLogWarn(@"%@ resetting session store", self.logTag);
-    [self.sessionStoreDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [transaction removeAllObjectsInCollection:TSStorageManagerSessionStoreCollection];
-    }];
+
+    [transaction removeAllObjectsInCollection:TSStorageManagerSessionStoreCollection];
 }
 
 - (void)printAllSessions
@@ -253,16 +255,19 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     return [dirPath stringByAppendingPathComponent:@".session-snapshot"];
 }
 
-- (void)snapshotSessionStore
+- (void)snapshotSessionStore:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self.sessionStoreDBConnection snapshotCollection:TSStorageManagerSessionStoreCollection
-                                     snapshotFilePath:self.snapshotFilePath];
+    OWSAssert(transaction);
+
+    [transaction snapshotCollection:TSStorageManagerSessionStoreCollection snapshotFilePath:self.snapshotFilePath];
 }
 
-- (void)restoreSessionStore
+- (void)restoreSessionStore:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self.sessionStoreDBConnection restoreSnapshotOfCollection:TSStorageManagerSessionStoreCollection
-                                              snapshotFilePath:self.snapshotFilePath];
+    OWSAssert(transaction);
+
+    [transaction restoreSnapshotOfCollection:TSStorageManagerSessionStoreCollection
+                            snapshotFilePath:self.snapshotFilePath];
 }
 #endif
 

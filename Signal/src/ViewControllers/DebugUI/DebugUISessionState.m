@@ -99,20 +99,29 @@ NS_ASSUME_NONNULL_BEGIN
 #if DEBUG
 + (void)clearSessionAndIdentityStore
 {
-    [[TSStorageManager sharedManager] resetSessionStore];
-    [[OWSIdentityManager sharedManager] clearIdentityState];
+    [TSStorageManager.sharedManager.newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [[TSStorageManager sharedManager] resetSessionStore:transaction];
+            [[OWSIdentityManager sharedManager] clearIdentityState:transaction];
+        }];
 }
 
 + (void)snapshotSessionAndIdentityStore
 {
-    [[TSStorageManager sharedManager] snapshotSessionStore];
-    [[OWSIdentityManager sharedManager] snapshotIdentityState];
+    [TSStorageManager.sharedManager.newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [[TSStorageManager sharedManager] snapshotSessionStore:transaction];
+            [[OWSIdentityManager sharedManager] snapshotIdentityState:transaction];
+        }];
 }
 
 + (void)restoreSessionAndIdentityStore
 {
-    [[TSStorageManager sharedManager] restoreSessionStore];
-    [[OWSIdentityManager sharedManager] restoreIdentityState];
+    [TSStorageManager.sharedManager.newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [[TSStorageManager sharedManager] restoreSessionStore:transaction];
+            [[OWSIdentityManager sharedManager] restoreIdentityState:transaction];
+        }];
 }
 #endif
 

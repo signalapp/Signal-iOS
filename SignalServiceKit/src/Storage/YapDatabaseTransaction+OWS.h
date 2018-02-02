@@ -25,4 +25,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
+@interface YapDatabaseReadWriteTransaction (OWS)
+
+#pragma mark - Debug
+
+#if DEBUG
+- (void)snapshotCollection:(NSString *)collection snapshotFilePath:(NSString *)snapshotFilePath;
+- (void)restoreSnapshotOfCollection:(NSString *)collection snapshotFilePath:(NSString *)snapshotFilePath;
+#endif
+
+@end
+
 NS_ASSUME_NONNULL_END
