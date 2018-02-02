@@ -116,8 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view addSubview:self.tableViewController.view];
     [_tableViewController.view autoPinWidthToSuperview];
     [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:header];
-
-    [self autoPinViewToBottomGuideOrKeyboard:self.tableViewController.view];
+    [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 }
 
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification
