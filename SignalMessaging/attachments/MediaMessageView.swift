@@ -87,18 +87,6 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         NotificationCenter.default.removeObserver(self)
     }
 
-    // MARK: View Lifecycle
-
-    @objc
-    public func viewWillAppear(_ animated: Bool) {
-        OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(true)
-    }
-
-    @objc
-    public func viewWillDisappear(_ animated: Bool) {
-        OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(false)
-    }
-
     // MARK: - Create Views
 
     private func createViews() {

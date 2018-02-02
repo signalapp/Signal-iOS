@@ -88,8 +88,6 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        mediaMessageView?.viewWillAppear(animated)
-
         updateTextLayout()
 
         if mode == .focusOnMetadata {
@@ -116,12 +114,6 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
                 scrollView.setContentOffset(offset, animated: false)
             }
         }
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        mediaMessageView?.viewWillDisappear(animated)
     }
 
     // MARK: - Create Views

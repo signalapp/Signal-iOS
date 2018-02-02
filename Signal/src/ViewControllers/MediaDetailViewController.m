@@ -16,6 +16,7 @@
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MPMoviePlayerViewController.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <YYImage/YYImage.h>
 
@@ -46,7 +47,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface MediaDetailViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, PlayerProgressBarDelegate>
+@interface MediaDetailViewController () <UIScrollViewDelegate,
+    UIGestureRecognizerDelegate,
+    PlayerProgressBarDelegate,
+    OWSVideoPlayerDelegate>
 
 @property (nonatomic) UIScrollView *scrollView;
 @property (nonatomic) UIView *mediaView;
@@ -64,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIToolbar *footerBar;
 @property (nonatomic) BOOL areToolbarsHidden;
 
-@property (nonatomic, nullable) AVPlayer *videoPlayer;
+@property (nonatomic, nullable) OWSVideoPlayer *videoPlayer;
 @property (nonatomic, nullable) UIButton *playVideoButton;
 @property (nonatomic, nullable) PlayerProgressBar *videoProgressBar;
 @property (nonatomic, nullable) UIBarButtonItem *videoPlayBarButton;
@@ -306,7 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (@available(iOS 9, *)) {
             PlayerProgressBar *videoProgressBar = [PlayerProgressBar new];
             videoProgressBar.delegate = self;
-            videoProgressBar.player = self.videoPlayer;
+            videoProgressBar.player = self.videoPlayer.avPlayer;
 
             self.videoProgressBar = videoProgressBar;
             [self.view addSubview:videoProgressBar];
@@ -435,17 +439,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (@available(iOS 9.0, *)) {
-        AVPlayer *player = [[AVPlayer alloc] initWithURL:self.attachmentUrl];
+        OWSVideoPlayer *player = [[OWSVideoPlayer alloc] initWithUrl:self.attachmentUrl];
         [player seekToTime:kCMTimeZero];
+        player.delegate = self;
         self.videoPlayer = player;
 
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(playerItemDidPlayToCompletion:)
-                                                     name:AVPlayerItemDidPlayToEndTimeNotification
-                                                   object:player.currentItem];
-
         VideoPlayerView *playerView = [VideoPlayerView new];
-        playerView.player = player;
+        playerView.player = player.avPlayer;
 
         [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
                              forConstraints:^{
@@ -892,20 +892,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (@available(iOS 9, *)) {
         OWSAssert(self.videoPlayer);
-        AVPlayer *player = self.videoPlayer;
 
         [self updateFooterBarButtonItemsWithIsPlayingVideo:YES];
         self.playVideoButton.hidden = YES;
         self.areToolbarsHidden = YES;
 
-        OWSAssert(player.currentItem);
-        AVPlayerItem *item = player.currentItem;
-        if (CMTIME_COMPARE_INLINE(item.currentTime, ==, item.duration)) {
-            // Rewind for repeated plays
-            [player seekToTime:kCMTimeZero];
-        }
-
-        [player play];
+        [self.videoPlayer play];
     } else {
         [self legacyPlayVideo];
         return;
@@ -921,7 +913,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.videoPlayer pause];
 }
 
-- (void)playerItemDidPlayToCompletion:(NSNotification *)notification
+#pragma mark - OWSVideoPlayer
+
+- (void)videoPlayerDidPlayToCompletion:(OWSVideoPlayer *)videoPlayer
 {
     OWSAssert(self.isVideo);
     OWSAssert(self.videoPlayer);
@@ -932,6 +926,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updateFooterBarButtonItemsWithIsPlayingVideo:NO];
 }
+
+#pragma mark - PlayerProgressBarDelegate
 
 - (void)playerProgressBarDidStartScrubbing:(PlayerProgressBar *)playerProgressBar
 {

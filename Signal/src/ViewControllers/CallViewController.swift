@@ -10,7 +10,7 @@ import SignalMessaging
 
 // TODO: Add category so that button handlers can be defined where button is created.
 // TODO: Ensure buttons enabled & disabled as necessary.
-class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
+class CallViewController: OWSViewController, CallObserver, CallServiceObserver, CallAudioServiceDelegate {
 
     let TAG = "[CallViewController]"
 
@@ -140,6 +140,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
         self.call = call
         self.thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
         super.init(nibName: nil, bundle: nil)
+
+        assert(callUIAdapter.audioService.delegate == nil)
+        callUIAdapter.audioService.delegate = self
         observeNotifications()
     }
 
@@ -148,10 +151,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
                                                selector:#selector(didBecomeActive),
                                                name:NSNotification.Name.OWSApplicationDidBecomeActive,
                                                object:nil)
-
-        NotificationCenter.default.addObserver(forName: CallAudioServiceSessionChanged, object: nil, queue: nil) { [weak self] _ in
-            self?.didChangeAudioSession()
-        }
     }
 
     deinit {
@@ -377,21 +376,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
             [audioModeMuteButton, audioSourceButton, audioModeVideoButton ],
             [videoModeMuteButton, hangUpButton, videoModeVideoButton ]
         ])
-    }
-
-    func didChangeAudioSession() {
-        AssertIsOnMainThread()
-
-        // Which sources are available depends on the state of your Session.
-        // When the audio session is not yet in PlayAndRecord none are available
-        // Then if we're in speakerphone, bluetooth isn't available. 
-        // So we acrew all possible audio sources in a set, and that list lives as longs as the CallViewController
-        // The downside of this is that if you e.g. unpair your bluetooth mid call, it will still appear as an option
-        // until your next call.
-        // FIXME: There's got to be a better way, but this is where I landed after a bit of work, and seems to work
-        // pretty well in practrice.
-        let availableInputs = callUIAdapter.audioService.availableInputs
-        self.allAudioSources.formUnion(availableInputs)
     }
 
     func presentAudioSourcePicker() {
@@ -724,7 +708,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
             return
         }
 
-        // Marquee scrolling is distractingn during a video call, disable it.
+        // Marquee scrolling is distracting during a video call, disable it.
         contactNameLabel.labelize = call.hasLocalVideo
 
         audioModeMuteButton.isSelected = call.isMuted
@@ -779,8 +763,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
             audioSourceButton.isHidden = false
         } else {
             // No bluetooth audio detected
-
-            audioSourceButton.isSelected = call.isSpeakerphoneEnabled
             audioSourceButton.setImage(#imageLiteral(resourceName: "audio-call-speaker-inactive"), for: .normal)
             audioSourceButton.setImage(#imageLiteral(resourceName: "audio-call-speaker-active"), for: .selected)
 
@@ -820,6 +802,29 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
         updateCallStatusLabel(callState: call.state)
     }
 
+    // We update the audioSourceButton outside of the main `updateCallUI`
+    // because `updateCallUI` is intended to be idempotent, which isn't possible
+    // with external speaker state because:
+    // - the system API which enables the external speaker is a (somewhat slow) asyncronous
+    //   operation
+    // - we want to give immediate UI feedback by marking the pressed button as selected
+    //   before the operation completes.
+    func updateAudioSourceButtonIsSelected() {
+        guard callUIAdapter.audioService.isSpeakerphoneEnabled else {
+            self.audioSourceButton.isSelected = false
+            return
+        }
+
+        // VideoChat mode enables the output speaker, but we don't
+        // want to highlight the speaker button in that case.
+        guard !call.hasLocalVideo else {
+            self.audioSourceButton.isSelected = false
+            return
+        }
+
+        self.audioSourceButton.isSelected = true
+    }
+
     // MARK: - Actions
 
     /**
@@ -852,13 +857,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
 
     func didPressSpeakerphone(sender button: UIButton) {
         Logger.info("\(TAG) called \(#function)")
+
         button.isSelected = !button.isSelected
-        if button.isSelected {
-            callUIAdapter.setAudioSource(call: call, audioSource: AudioSource.builtInSpeaker)
-        } else {
-            // use default audio source
-            callUIAdapter.setAudioSource(call: call, audioSource: nil)
-        }
+        callUIAdapter.audioService.requestSpeakerphone(isEnabled: button.isSelected)
     }
 
     func didPressTextMessage(sender button: UIButton) {
@@ -961,6 +962,29 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
         self.updateCallUI(callState: call.state)
     }
 
+    // MARK: CallAudioServiceDelegate
+
+    func callAudioService(_ callAudioService: CallAudioService, didUpdateIsSpeakerphoneEnabled isSpeakerphoneEnabled: Bool) {
+        AssertIsOnMainThread()
+
+        updateAudioSourceButtonIsSelected()
+    }
+
+    func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService) {
+        AssertIsOnMainThread()
+
+        // Which sources are available depends on the state of your Session.
+        // When the audio session is not yet in PlayAndRecord none are available
+        // Then if we're in speakerphone, bluetooth isn't available.
+        // So we accrue all possible audio sources in a set, and that list lives as longs as the CallViewController
+        // The downside of this is that if you e.g. unpair your bluetooth mid call, it will still appear as an option
+        // until your next call.
+        // FIXME: There's got to be a better way, but this is where I landed after a bit of work, and seems to work
+        // pretty well in practice.
+        let availableInputs = callAudioService.availableInputs
+        self.allAudioSources.formUnion(availableInputs)
+    }
+
     // MARK: - Video
 
     internal func updateLocalVideoTrack(localVideoTrack: RTCVideoTrack?) {
@@ -979,6 +1003,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
         localVideoView.isHidden = isHidden
 
         updateLocalVideoLayout()
+        updateAudioSourceButtonIsSelected()
     }
 
     var hasRemoteVideoTrack: Bool {
@@ -1002,6 +1027,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver {
     }
 
     internal func dismissIfPossible(shouldDelay: Bool, ignoreNag: Bool = false, completion: (() -> Swift.Void)? = nil) {
+        callUIAdapter.audioService.delegate = nil
+
         if hasDismissed {
             // Don't dismiss twice.
             return

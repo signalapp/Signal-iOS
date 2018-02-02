@@ -1024,6 +1024,9 @@ protocol CallServiceObserver: class {
         //        this.messageSender.cancelInFlightRequests();
 
         if let peerConnectionClient = self.peerConnectionClient {
+            // Stop audio capture ASAP
+            ensureAudioState(call: call, peerConnectionClient: peerConnectionClient)
+
             // If the call is connected, we can send the hangup via the data channel for faster hangup.
             let message = DataChannelMessage.forHangup(callId: call.signalingId)
             peerConnectionClient.sendDataChannelMessage(data: message.asData(), description: "hangup", isCritical: true)
