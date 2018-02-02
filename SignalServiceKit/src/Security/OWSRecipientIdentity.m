@@ -126,65 +126,6 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
     }];
 }
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    // For consistency, we should only access instances of this class on
-    // non-caching connections.
-    OWSAssert(!transaction.connection.objectCacheEnabled);
-
-    [super saveWithTransaction:transaction];
-}
-
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    // For consistency, we should only access instances of this class on
-    // non-caching connections.
-    OWSAssert(!transaction.connection.objectCacheEnabled);
-
-    [super removeWithTransaction:transaction];
-}
-
-- (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    // For consistency, we should only access instances of this class on
-    // non-caching connections.
-    OWSAssert(!transaction.connection.objectCacheEnabled);
-
-    [super touchWithTransaction:transaction];
-}
-
-+ (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
-                                     transaction:(YapDatabaseReadTransaction *)transaction
-{
-    // For consistency, we should only access instances of this class on
-    // non-caching connections.
-    OWSAssert(!transaction.connection.objectCacheEnabled);
-
-    return [super fetchObjectWithUniqueID:uniqueID transaction:transaction];
-}
-
-#pragma mark - Database Connections
-
-+ (YapDatabaseConnection *)dbReadConnection
-{
-    return self.dbReadWriteConnection;
-}
-
-+ (YapDatabaseConnection *)dbReadWriteConnection
-{
-    return TSStorageManager.protocolStoreDBConnection;
-}
-
-- (YapDatabaseConnection *)dbReadConnection
-{
-    return OWSRecipientIdentity.dbReadConnection;
-}
-
-- (YapDatabaseConnection *)dbReadWriteConnection
-{
-    return OWSRecipientIdentity.dbReadWriteConnection;
-}
-
 #pragma mark - debug
 
 + (void)printAllIdentities

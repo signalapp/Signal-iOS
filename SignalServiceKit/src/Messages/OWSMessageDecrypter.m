@@ -156,10 +156,9 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSSignalServiceProtosEnvelopeTypeReceipt:
             case OWSSignalServiceProtosEnvelopeTypeKeyExchange:
             case OWSSignalServiceProtosEnvelopeTypeUnknown: {
-                [TSStorageManager.protocolStoreDBConnection
-                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        successBlock(nil, transaction);
-                    }];
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    successBlock(nil, transaction);
+                }];
                 // Return to avoid double-acknowledging.
                 return;
             }
@@ -236,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [TSStorageManager.protocolStoreDBConnection
+    [self.dbConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             @try {
                 id<CipherMessage> cipherMessage = cipherMessageBlock(encryptedData);

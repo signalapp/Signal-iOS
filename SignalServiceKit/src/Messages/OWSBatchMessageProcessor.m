@@ -234,7 +234,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 @interface OWSMessageContentQueue : NSObject
 
 @property (nonatomic, readonly) OWSMessageManager *messagesManager;
-@property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSMessageContentJobFinder *finder;
 @property (nonatomic) BOOL isDrainingQueue;
 
@@ -261,7 +261,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     }
 
     _messagesManager = messagesManager;
-    _dbReadWriteConnection = [storageManager newDatabaseConnection];
+    _dbConnection = [storageManager newDatabaseConnection];
     _finder = finder;
     _isDrainingQueue = NO;
 
@@ -369,9 +369,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 {
     AssertOnDispatchQueue(self.serialQueue);
 
-    // Note that we use the protocolStoreDBConnection to process incoming messages,
-    // to ensure session & identity store consistency.
-    [TSStorageManager.protocolStoreDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (OWSMessageContentJob *job in jobs) {
             [self.messagesManager processEnvelope:job.envelopeProto
                                     plaintextData:job.plaintextData

@@ -49,8 +49,6 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
-    // For consistency, we should only access session state on non-caching connections.
-    OWSAssert(!transaction.connection.objectCacheEnabled);
 
     NSDictionary *_Nullable dictionary =
         [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
@@ -78,8 +76,6 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     OWSFail(@"%@ subDevicesSessions is deprecated", self.logTag);
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
-    // For consistency, we should only access session state on non-caching connections.
-    OWSAssert(!transaction.connection.objectCacheEnabled);
 
     NSDictionary *_Nullable dictionary =
         [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
@@ -97,8 +93,6 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
-    // For consistency, we should only access session state on non-caching connections.
-    OWSAssert(!transaction.connection.objectCacheEnabled);
 
     // We need to ensure subsequent usage of this SessionRecord does not consider this session as "fresh". Normally this
     // is achieved by marking things as "not fresh" at the point of deserialization - when we fetch a SessionRecord from
@@ -142,8 +136,6 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
-    // For consistency, we should only access session state on non-caching connections.
-    OWSAssert(!transaction.connection.objectCacheEnabled);
 
     DDLogInfo(
         @"[TSStorageManager (SessionStore)] deleting session for contact: %@ device: %d", contactIdentifier, deviceId);
@@ -167,8 +159,6 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
-    // For consistency, we should only access session state on non-caching connections.
-    OWSAssert(!transaction.connection.objectCacheEnabled);
 
     DDLogInfo(@"[TSStorageManager (SessionStore)] deleting all sessions for contact:%@", contactIdentifier);
 
@@ -181,8 +171,6 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
-    // For consistency, we should only access session state on non-caching connections.
-    OWSAssert(!transaction.connection.objectCacheEnabled);
 
     DDLogInfo(@"[TSStorageManager (SessionStore)] archiving all sessions for contact: %@", contactIdentifier);
 

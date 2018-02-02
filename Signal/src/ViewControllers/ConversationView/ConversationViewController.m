@@ -926,7 +926,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             continue;
         }
 
-        [TSStorageManager.protocolStoreDBConnection
+        [self.editingDatabaseConnection
             asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateDefault
                                                            identityKey:identityKey

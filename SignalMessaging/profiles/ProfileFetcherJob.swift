@@ -130,7 +130,7 @@ public class ProfileFetcherJob: NSObject {
     }
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
-        TSStorageManager.protocolStoreDBConnection().asyncReadWrite { (transaction) in
+        storageManager.newDatabaseConnection().asyncReadWrite { (transaction) in
             if OWSIdentityManager.shared().saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, protocolContext: transaction) {
                 Logger.info("\(self.TAG) updated identity key with fetched profile for recipient: \(recipientId)")
                 self.storageManager.archiveAllSessions(forContact: recipientId, protocolContext: transaction)

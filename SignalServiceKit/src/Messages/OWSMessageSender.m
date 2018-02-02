@@ -904,7 +904,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             NSData *newIdentityKey = [newIdentityKeyWithVersion removeKeyType];
 
-            [TSStorageManager.protocolStoreDBConnection
+            [self.dbConnection
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                     [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey
                                                                recipientId:recipient.recipientId
@@ -1104,7 +1104,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
-    [TSStorageManager.protocolStoreDBConnection
+    [self.dbConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             if (extraDevices.count < 1 && missingDevices.count < 1) {
                 OWSProdFail([OWSAnalyticsEvents messageSenderErrorNoMissingOrExtraDevices]);
@@ -1256,7 +1256,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         @try {
             __block NSDictionary *messageDict;
             __block NSException *encryptionException;
-            [TSStorageManager.protocolStoreDBConnection
+            [self.dbConnection
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     @try {
                         messageDict = [self encryptedMessageWithPlaintext:plainText
@@ -1436,8 +1436,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return;
         }
 
-        [TSStorageManager.protocolStoreDBConnection asyncReadWriteWithBlock:^(
-            YapDatabaseReadWriteTransaction *transaction) {
+        [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (NSUInteger i = 0; i < [devices count]; i++) {
                 int deviceNumber = [devices[i] intValue];
                 [[TSStorageManager sharedManager] deleteSessionForContact:identifier
