@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (nullable instancetype)threadWithGroupId:(NSData *)groupId;
 + (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(YapDatabaseReadTransaction *)transaction;
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;

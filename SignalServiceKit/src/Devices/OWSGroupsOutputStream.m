@@ -14,8 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSGroupsOutputStream
 
-- (void)writeGroup:(TSGroupModel *)group
+- (void)writeGroup:(TSGroupModel *)group transaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(group);
+    OWSAssert(transaction);
+
     OWSSignalServiceProtosGroupDetailsBuilder *groupBuilder = [OWSSignalServiceProtosGroupDetailsBuilder new];
     [groupBuilder setId:group.groupId];
     [groupBuilder setName:group.groupName];
@@ -37,10 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegateStream writeRawVarint32:groupDataLength];
     [self.delegateStream writeRawData:groupData];
 
-    TSGroupThread *_Nullable groupThread = [TSGroupThread threadWithGroupId:group.groupId];
+    TSGroupThread *_Nullable groupThread = [TSGroupThread threadWithGroupId:group.groupId transaction:transaction];
     if (groupThread) {
         OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration =
-            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:groupThread.uniqueId];
+            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:groupThread.uniqueId transaction:transaction];
 
         if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
             [groupBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];

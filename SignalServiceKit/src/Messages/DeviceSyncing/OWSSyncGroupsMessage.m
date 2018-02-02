@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncGroupsMessage.h"
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                return;
                                            }
                                            TSGroupModel *group = ((TSGroupThread *)obj).groupModel;
-                                           [groupsOutputStream writeGroup:group];
+                                           [groupsOutputStream writeGroup:group transaction:transaction];
                                        }];
 
     [groupsOutputStream flush];

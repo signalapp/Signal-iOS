@@ -19,9 +19,11 @@ NS_ASSUME_NONNULL_BEGIN
 // changes in the file path generation logic don't break existing attachments.
 @property (nullable, nonatomic) NSString *localRelativeFilePath;
 
-// These properties should only be accessed on the main thread.
+// These properties should only be accessed while synchronized on self.
 @property (nullable, nonatomic) NSNumber *cachedImageWidth;
 @property (nullable, nonatomic) NSNumber *cachedImageHeight;
+
+// This property should only be accessed on the main thread.
 @property (nullable, nonatomic) NSNumber *cachedAudioDurationSeconds;
 
 @end
@@ -105,8 +107,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (attachmentSchemaVersion < 4) {
         // Legacy image sizes don't correctly reflect image orientation.
-        self.cachedImageWidth = nil;
-        self.cachedImageHeight = nil;
+        @synchronized(self)
+        {
+            self.cachedImageWidth = nil;
+            self.cachedImageHeight = nil;
+        }
     }
 }
 
@@ -390,35 +395,46 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (BOOL)shouldHaveImageSize
+{
+    return ([self isVideo] || [self isImage] || [self isAnimated]);
+}
+
 - (CGSize)imageSize
 {
-    OWSAssertIsOnMainThread();
+    OWSAssert(self.shouldHaveImageSize);
 
-    if (self.cachedImageWidth && self.cachedImageHeight) {
-        return CGSizeMake(self.cachedImageWidth.floatValue, self.cachedImageHeight.floatValue);
-    }
-
-    CGSize imageSize = [self calculateImageSize];
-    self.cachedImageWidth = @(imageSize.width);
-    self.cachedImageHeight = @(imageSize.height);
-
-    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-
-        NSString *collection = [[self class] collection];
-        TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
-        if (latestInstance) {
-            latestInstance.cachedImageWidth = @(imageSize.width);
-            latestInstance.cachedImageHeight = @(imageSize.height);
-            [latestInstance saveWithTransaction:transaction];
-        } else {
-            // This message has not yet been saved or has been deleted; do nothing.
-            // This isn't an error per se, but these race conditions should be
-            // _very_ rare.
-            OWSFail(@"%@ Attachment not yet saved.", self.logTag);
+    @synchronized(self)
+    {
+        if (self.cachedImageWidth && self.cachedImageHeight) {
+            return CGSizeMake(self.cachedImageWidth.floatValue, self.cachedImageHeight.floatValue);
         }
-    }];
 
-    return imageSize;
+        CGSize imageSize = [self calculateImageSize];
+        if (imageSize.width <= 0 || imageSize.height <= 0) {
+            return CGSizeZero;
+        }
+        self.cachedImageWidth = @(imageSize.width);
+        self.cachedImageHeight = @(imageSize.height);
+
+        [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+
+            NSString *collection = [[self class] collection];
+            TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
+            if (latestInstance) {
+                latestInstance.cachedImageWidth = @(imageSize.width);
+                latestInstance.cachedImageHeight = @(imageSize.height);
+                [latestInstance saveWithTransaction:transaction];
+            } else {
+                // This message has not yet been saved or has been deleted; do nothing.
+                // This isn't an error per se, but these race conditions should be
+                // _very_ rare.
+                OWSFail(@"%@ Attachment not yet saved.", self.logTag);
+            }
+        }];
+
+        return imageSize;
+    }
 }
 
 - (CGFloat)calculateAudioDurationSeconds

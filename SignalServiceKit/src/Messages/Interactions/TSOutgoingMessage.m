@@ -535,13 +535,15 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     [builder setDigest:attachmentStream.digest];
     [builder setFlags:(self.isVoiceMessage ? OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage : 0)];
 
-    CGSize imageSize = [attachmentStream imageSize];
-    if (imageSize.width < NSIntegerMax && imageSize.height < NSIntegerMax) {
-        NSInteger imageWidth = (NSInteger)round(imageSize.width);
-        NSInteger imageHeight = (NSInteger)round(imageSize.height);
-        if (imageWidth > 0 && imageHeight > 0) {
-            [builder setWidth:(UInt32)imageWidth];
-            [builder setHeight:(UInt32)imageHeight];
+    if ([attachmentStream shouldHaveImageSize]) {
+        CGSize imageSize = [attachmentStream imageSize];
+        if (imageSize.width < NSIntegerMax && imageSize.height < NSIntegerMax) {
+            NSInteger imageWidth = (NSInteger)round(imageSize.width);
+            NSInteger imageHeight = (NSInteger)round(imageSize.height);
+            if (imageWidth > 0 && imageHeight > 0) {
+                [builder setWidth:(UInt32)imageWidth];
+                [builder setHeight:(UInt32)imageHeight];
+            }
         }
     }
 
