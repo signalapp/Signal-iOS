@@ -584,8 +584,13 @@ protocol CallServiceObserver: class {
 
         self.call = newCall
 
-        var backgroundTask = OWSBackgroundTask(label:"\(#function)", completionBlock: { [weak self] _ in
+        var backgroundTask = OWSBackgroundTask(label:"\(#function)", completionBlock: { [weak self] status in
             AssertIsOnMainThread()
+
+            guard status == .expired else {
+                return
+            }
+
             guard let strongSelf = self else {
                 return
             }
