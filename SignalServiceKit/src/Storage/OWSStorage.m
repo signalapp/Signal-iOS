@@ -454,8 +454,10 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 - (YapDatabaseConnection *)newDatabaseConnection
 {
     YapDatabaseConnection *dbConnection = self.database.newConnection;
-    OWSRaiseException(
-        @"OWSStorageExceptionName_CouldNotOpenConnection", @"Storage could not open new database connection.");
+    if (!dbConnection) {
+        OWSRaiseException(
+            @"OWSStorageExceptionName_CouldNotOpenConnection", @"Storage could not open new database connection.");
+    }
     return dbConnection;
 }
 
