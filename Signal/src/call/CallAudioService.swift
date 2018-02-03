@@ -1,13 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import AVFoundation
 import SignalServiceKit
 import SignalMessaging
-
-public let CallAudioServiceSessionChanged = Notification.Name("CallAudioServiceSessionChanged")
 
 struct AudioSource: Hashable {
 
@@ -88,11 +86,21 @@ struct AudioSource: Hashable {
     }
 }
 
+protocol CallAudioServiceDelegate: class {
+    func callAudioService(_ callAudioService: CallAudioService, didUpdateIsSpeakerphoneEnabled isEnabled: Bool)
+    func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService)
+}
+
 @objc class CallAudioService: NSObject, CallObserver {
 
     private var vibrateTimer: Timer?
     private let audioPlayer = AVAudioPlayer()
     private let handleRinging: Bool
+    weak var delegate: CallAudioServiceDelegate? {
+        willSet {
+            assert(newValue == nil || delegate == nil)
+        }
+    }
 
     class Sound: NSObject {
 
@@ -137,8 +145,11 @@ struct AudioSource: Hashable {
     // `pulseDuration` is the small pause between the two vibrations in the pair.
     private let pulseDuration = 0.2
 
-    var audioSession: CallAudioSession {
+    var callAudioSession: CallAudioSession {
         return CallAudioSession.shared
+    }
+    var audioSession: AVAudioSession {
+        return AVAudioSession.sharedInstance()
     }
 
     // MARK: - Initializers
@@ -151,7 +162,11 @@ struct AudioSource: Hashable {
         SwiftSingletons.register(self)
 
         // Configure audio session so we don't prompt user with Record permission until call is connected.
-        audioSession.configure()
+        callAudioSession.configure()
+        NotificationCenter.default.addObserver(forName: .AVAudioSessionRouteChange, object: audioSession, queue: nil) { _ in
+            assert(!Thread.isMainThread)
+            self.updateIsSpeakerphoneEnabled()
+        }
     }
 
     // MARK: - CallObserver
@@ -177,12 +192,50 @@ struct AudioSource: Hashable {
         AssertIsOnMainThread()
 
         ensureProperAudioSession(call: call)
+
+        if let audioSource = audioSource, audioSource.isBuiltInSpeaker {
+            self.isSpeakerphoneEnabled = true
+        } else {
+            self.isSpeakerphoneEnabled = false
+        }
     }
 
     internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
         ensureProperAudioSession(call: call)
+    }
+
+    // Speakerphone can be manipulated by the in-app callscreen or via the system callscreen (CallKit).
+    // Unlike other CallKit CallScreen buttons, enabling doesn't trigger a CXAction, so it's not as simple
+    // to track state changes. Instead we never store the state and directly access the ground-truth in the
+    // AVAudioSession.
+    private(set) var isSpeakerphoneEnabled: Bool = false {
+        didSet {
+            self.delegate?.callAudioService(self, didUpdateIsSpeakerphoneEnabled: isSpeakerphoneEnabled)
+        }
+    }
+
+    public func requestSpeakerphone(isEnabled: Bool) {
+        // This is a little too slow to execute on the main thread and the results are not immediately available after execution
+        // anyway, so we dispatch async. If you need to know the new value, you'll need to check isSpeakerphoneEnabled and take
+        // advantage of the CallAudioServiceDelegate.callAudioService(_:didUpdateIsSpeakerphoneEnabled:)
+        DispatchQueue.global().async {
+            do {
+                try self.audioSession.overrideOutputAudioPort( isEnabled ? .speaker : .none )
+            } catch {
+                owsFail("\(self.logTag) failed to set \(#function) = \(isEnabled) with error: \(error)")
+            }
+        }
+    }
+
+    private func updateIsSpeakerphoneEnabled() {
+        let value = audioSession.currentRoute.outputs.contains { (portDescription: AVAudioSessionPortDescription) -> Bool in
+            return portDescription.portName == AVAudioSessionPortBuiltInSpeaker
+        }
+        DispatchQueue.main.async {
+            self.isSpeakerphoneEnabled = value
+        }
     }
 
     private func ensureProperAudioSession(call: SignalCall?) {
@@ -206,7 +259,7 @@ struct AudioSource: Hashable {
             // SoloAmbient plays through speaker, but respects silent switch
             setAudioSession(category: AVAudioSessionCategorySoloAmbient,
                             mode: AVAudioSessionModeDefault)
-        } else if call.state == .connected, call.hasLocalVideo {
+        } else if call.hasLocalVideo {
             // Because ModeVideoChat affects gain, we don't want to apply it until the call is connected.
             // otherwise sounds like ringing will be extra loud for video vs. speakerphone
 
@@ -227,26 +280,15 @@ struct AudioSource: Hashable {
                             options: options)
         }
 
-        let session = AVAudioSession.sharedInstance()
         do {
             // It's important to set preferred input *after* ensuring properAudioSession
             // because some sources are only valid for certain category/option combinations.
-            let existingPreferredInput = session.preferredInput
+            let existingPreferredInput = audioSession.preferredInput
             if  existingPreferredInput != call.audioSource?.portDescription {
                 Logger.info("\(self.logTag) changing preferred input: \(String(describing: existingPreferredInput)) -> \(String(describing: call.audioSource?.portDescription))")
-                try session.setPreferredInput(call.audioSource?.portDescription)
+                try audioSession.setPreferredInput(call.audioSource?.portDescription)
             }
 
-            if call.isSpeakerphoneEnabled || (call.hasLocalVideo && call.state != .connected) {
-                // We want consistent ringer-volume between speaker-phone and video chat.
-                // But because using VideoChat mode has noticeably higher output gain, we treat
-                // video chat like speakerphone mode until the call is connected.
-                Logger.verbose("\(self.logTag) enabling speakerphone overrideOutputAudioPort(.speaker)")
-                try session.overrideOutputAudioPort(.speaker)
-            } else {
-                Logger.verbose("\(self.logTag) disabling spearkerphone overrideOutputAudioPort(.none) ")
-                try session.overrideOutputAudioPort(.none)
-            }
         } catch {
             owsFail("\(self.logTag) failed setting audio source with error: \(error) isSpeakerPhoneEnabled: \(call.isSpeakerphoneEnabled)")
         }
@@ -328,6 +370,7 @@ struct AudioSource: Hashable {
         AssertIsOnMainThread()
 
         play(sound: Sound.failure)
+        handleCallEnded(call: call)
     }
 
     private func handleLocalHangup(call: SignalCall) {
@@ -363,6 +406,7 @@ struct AudioSource: Hashable {
         AssertIsOnMainThread()
 
         // Stop solo audio, revert to default.
+        isSpeakerphoneEnabled = false
         setAudioSession(category: AVAudioSessionCategoryAmbient)
     }
 
@@ -439,9 +483,7 @@ struct AudioSource: Hashable {
     // Specifically if you call it while speakerphone is enabled you won't see 
     // any connected bluetooth routes.
     var availableInputs: [AudioSource] {
-        let session = AVAudioSession.sharedInstance()
-
-        guard let availableInputs = session.availableInputs else {
+        guard let availableInputs = audioSession.availableInputs else {
             // I'm not sure why this would happen, but it may indicate an error.
             // In practice, I haven't seen it on iOS9+.
             //
@@ -468,8 +510,7 @@ struct AudioSource: Hashable {
         // system state to determine the current audio source.
         // If a bluetooth is connected, this will be bluetooth, otherwise
         // this will be the receiver.
-        let session = AVAudioSession.sharedInstance()
-        guard let portDescription = session.currentRoute.inputs.first else {
+        guard let portDescription = audioSession.currentRoute.inputs.first else {
             return nil
         }
 
@@ -482,13 +523,12 @@ struct AudioSource: Hashable {
 
         AssertIsOnMainThread()
 
-        let session = AVAudioSession.sharedInstance()
         var audioSessionChanged = false
         do {
             if #available(iOS 10.0, *), let mode = mode {
-                let oldCategory = session.category
-                let oldMode = session.mode
-                let oldOptions = session.categoryOptions
+                let oldCategory = audioSession.category
+                let oldMode = audioSession.mode
+                let oldOptions = audioSession.categoryOptions
 
                 guard oldCategory != category || oldMode != mode || oldOptions != options else {
                     return
@@ -505,13 +545,13 @@ struct AudioSource: Hashable {
                 if oldOptions != options {
                     Logger.debug("\(self.logTag) audio session changed options: \(oldOptions) -> \(options) ")
                 }
-                try session.setCategory(category, mode: mode, options: options)
+                try audioSession.setCategory(category, mode: mode, options: options)
 
             } else {
-                let oldCategory = session.category
-                let oldOptions = session.categoryOptions
+                let oldCategory = audioSession.category
+                let oldOptions = audioSession.categoryOptions
 
-                guard session.category != category || session.categoryOptions != options else {
+                guard audioSession.category != category || audioSession.categoryOptions != options else {
                     return
                 }
 
@@ -523,7 +563,7 @@ struct AudioSource: Hashable {
                 if oldOptions != options {
                     Logger.debug("\(self.logTag) audio session changed options: \(oldOptions) -> \(options) ")
                 }
-                try session.setCategory(category, with: options)
+                try audioSession.setCategory(category, with: options)
 
             }
         } catch {
@@ -533,8 +573,7 @@ struct AudioSource: Hashable {
 
         if audioSessionChanged {
             Logger.info("\(self.logTag) in \(#function)")
-            // Update call view synchronously; already on main thread.
-            NotificationCenter.default.post(name:CallAudioServiceSessionChanged, object: nil)
+            self.delegate?.callAudioServiceDidChangeAudioSession(self)
         }
     }
 }
