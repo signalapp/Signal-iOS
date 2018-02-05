@@ -74,16 +74,17 @@ NS_ASSUME_NONNULL_BEGIN
     [textField setSelectedTextRange:[textField textRangeFromPosition:pos toPosition:pos]];
 }
 
-+ (void)setAudioIgnoresHardwareMuteSwitch:(BOOL)shouldIgnore
-{
-    NSError *error = nil;
-    BOOL success = [[AVAudioSession sharedInstance]
-        setCategory:(shouldIgnore ? AVAudioSessionCategoryPlayback : AVAudioSessionCategoryPlayAndRecord)error:&error];
-    OWSAssert(!error);
-    if (!success || error) {
-        DDLogError(@"%@ Error in setAudioIgnoresHardwareMuteSwitch: %d", self.logTag, shouldIgnore);
-    }
-}
+//+ (void)setAudioIgnoresHardwareMuteSwitch:(BOOL)shouldIgnore
+//{
+//    NSError *error = nil;
+//    BOOL success = [[AVAudioSession sharedInstance]
+//        setCategory:(shouldIgnore ? AVAudioSessionCategoryPlayback :
+//        AVAudioSessionCategoryPlayAndRecord)error:&error];
+//    OWSAssert(!error);
+//    if (!success || error) {
+//        DDLogError(@"%@ Error in setAudioIgnoresHardwareMuteSwitch: %d", self.logTag, shouldIgnore);
+//    }
+//}
 
 + (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode callingCode:(NSString *)callingCode
 {

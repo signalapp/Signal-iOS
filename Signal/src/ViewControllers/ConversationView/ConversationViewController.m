@@ -3232,7 +3232,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     NSTimeInterval durationSeconds = self.audioRecorder.currentTime;
 
-    [self.audioRecorder stop];
+    [self stopRecording];
 
     const NSTimeInterval kMinimumRecordingTimeSeconds = 1.f;
     if (durationSeconds < kMinimumRecordingTimeSeconds) {
@@ -3279,20 +3279,27 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 }
 
+- (void)stopRecording
+{
+    [self.audioRecorder stop];
+    NSError *error;
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:&error];
+    if (error) {
+        OWSFail(@"%@ deactivating audio session failed with error: %@", self.logTag, error);
+    } else {
+        DDLogDebug(@"%@ successfully deactivated audio session.", self.logTag);
+    }
+}
+
 - (void)cancelRecordingVoiceMemo
 {
     OWSAssertIsOnMainThread();
 
     DDLogDebug(@"cancelRecordingVoiceMemo");
 
-    [self resetRecordingVoiceMemo];
-}
-
-- (void)resetRecordingVoiceMemo
-{
     OWSAssertIsOnMainThread();
 
-    [self.audioRecorder stop];
+    [self stopRecording];
     self.audioRecorder = nil;
     self.voiceMessageUUID = nil;
 }
