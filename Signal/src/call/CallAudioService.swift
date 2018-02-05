@@ -145,10 +145,10 @@ protocol CallAudioServiceDelegate: class {
     // `pulseDuration` is the small pause between the two vibrations in the pair.
     private let pulseDuration = 0.2
 
-    var callAudioSession: CallAudioSession {
-        return CallAudioSession.shared
+    var audioSession: OWSAudioSession {
+        return OWSAudioSession.shared
     }
-    var audioSession: AVAudioSession {
+    var avAudioSession: AVAudioSession {
         return AVAudioSession.sharedInstance()
     }
 
@@ -162,8 +162,9 @@ protocol CallAudioServiceDelegate: class {
         SwiftSingletons.register(self)
 
         // Configure audio session so we don't prompt user with Record permission until call is connected.
-        callAudioSession.configure()
-        NotificationCenter.default.addObserver(forName: .AVAudioSessionRouteChange, object: audioSession, queue: nil) { _ in
+
+        audioSession.configureRTCAudio()
+        NotificationCenter.default.addObserver(forName: .AVAudioSessionRouteChange, object: avAudioSession, queue: nil) { _ in
             assert(!Thread.isMainThread)
             self.updateIsSpeakerphoneEnabled()
         }
@@ -222,7 +223,7 @@ protocol CallAudioServiceDelegate: class {
         // advantage of the CallAudioServiceDelegate.callAudioService(_:didUpdateIsSpeakerphoneEnabled:)
         DispatchQueue.global().async {
             do {
-                try self.audioSession.overrideOutputAudioPort( isEnabled ? .speaker : .none )
+                try self.avAudioSession.overrideOutputAudioPort( isEnabled ? .speaker : .none )
             } catch {
                 owsFail("\(self.logTag) failed to set \(#function) = \(isEnabled) with error: \(error)")
             }
@@ -230,7 +231,7 @@ protocol CallAudioServiceDelegate: class {
     }
 
     private func updateIsSpeakerphoneEnabled() {
-        let value = audioSession.currentRoute.outputs.contains { (portDescription: AVAudioSessionPortDescription) -> Bool in
+        let value = avAudioSession.currentRoute.outputs.contains { (portDescription: AVAudioSessionPortDescription) -> Bool in
             return portDescription.portName == AVAudioSessionPortBuiltInSpeaker
         }
         DispatchQueue.main.async {
@@ -283,10 +284,10 @@ protocol CallAudioServiceDelegate: class {
         do {
             // It's important to set preferred input *after* ensuring properAudioSession
             // because some sources are only valid for certain category/option combinations.
-            let existingPreferredInput = audioSession.preferredInput
+            let existingPreferredInput = avAudioSession.preferredInput
             if  existingPreferredInput != call.audioSource?.portDescription {
                 Logger.info("\(self.logTag) changing preferred input: \(String(describing: existingPreferredInput)) -> \(String(describing: call.audioSource?.portDescription))")
-                try audioSession.setPreferredInput(call.audioSource?.portDescription)
+                try avAudioSession.setPreferredInput(call.audioSource?.portDescription)
             }
 
         } catch {
@@ -483,7 +484,7 @@ protocol CallAudioServiceDelegate: class {
     // Specifically if you call it while speakerphone is enabled you won't see 
     // any connected bluetooth routes.
     var availableInputs: [AudioSource] {
-        guard let availableInputs = audioSession.availableInputs else {
+        guard let availableInputs = avAudioSession.availableInputs else {
             // I'm not sure why this would happen, but it may indicate an error.
             // In practice, I haven't seen it on iOS9+.
             //
@@ -510,7 +511,7 @@ protocol CallAudioServiceDelegate: class {
         // system state to determine the current audio source.
         // If a bluetooth is connected, this will be bluetooth, otherwise
         // this will be the receiver.
-        guard let portDescription = audioSession.currentRoute.inputs.first else {
+        guard let portDescription = avAudioSession.currentRoute.inputs.first else {
             return nil
         }
 
@@ -526,9 +527,9 @@ protocol CallAudioServiceDelegate: class {
         var audioSessionChanged = false
         do {
             if #available(iOS 10.0, *), let mode = mode {
-                let oldCategory = audioSession.category
-                let oldMode = audioSession.mode
-                let oldOptions = audioSession.categoryOptions
+                let oldCategory = avAudioSession.category
+                let oldMode = avAudioSession.mode
+                let oldOptions = avAudioSession.categoryOptions
 
                 guard oldCategory != category || oldMode != mode || oldOptions != options else {
                     return
@@ -545,13 +546,13 @@ protocol CallAudioServiceDelegate: class {
                 if oldOptions != options {
                     Logger.debug("\(self.logTag) audio session changed options: \(oldOptions) -> \(options) ")
                 }
-                try audioSession.setCategory(category, mode: mode, options: options)
+                try avAudioSession.setCategory(category, mode: mode, options: options)
 
             } else {
-                let oldCategory = audioSession.category
-                let oldOptions = audioSession.categoryOptions
+                let oldCategory = avAudioSession.category
+                let oldOptions = avAudioSession.categoryOptions
 
-                guard audioSession.category != category || audioSession.categoryOptions != options else {
+                guard avAudioSession.category != category || avAudioSession.categoryOptions != options else {
                     return
                 }
 
@@ -563,7 +564,7 @@ protocol CallAudioServiceDelegate: class {
                 if oldOptions != options {
                     Logger.debug("\(self.logTag) audio session changed options: \(oldOptions) -> \(options) ")
                 }
-                try audioSession.setCategory(category, with: options)
+                try avAudioSession.setCategory(category, with: options)
 
             }
         } catch {
