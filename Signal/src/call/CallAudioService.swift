@@ -243,7 +243,7 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
 
         guard let call = call else {
-            setAudioSession(category: AVAudioSessionCategoryPlayback,
+            setAudioSession(category: AVAudioSessionCategorySoloAmbient,
                             mode: AVAudioSessionModeDefault)
             return
         }
@@ -408,7 +408,7 @@ protocol CallAudioServiceDelegate: class {
 
         // Stop solo audio, revert to default.
         isSpeakerphoneEnabled = false
-        setAudioSession(category: AVAudioSessionCategoryAmbient)
+        setAudioSession(category: AVAudioSessionCategorySoloAmbient)
     }
 
     // MARK: Playing Sounds

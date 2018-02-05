@@ -3174,17 +3174,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     NSURL *fileURL = [NSURL fileURLWithPath:filepath];
 
     // Setup audio session
-    AVAudioSession *session = [AVAudioSession sharedInstance];
-    OWSAssert(session.recordPermission == AVAudioSessionRecordPermissionGranted);
-
-    NSError *error;
-    [session setCategory:AVAudioSessionCategoryRecord error:&error];
-    if (error) {
-        OWSFail(@"%@ Couldn't configure audio session: %@", self.logTag, error);
+    BOOL configuredAudio = [OWSAudioSession.shared setRecordCategory];
+    if (!configuredAudio) {
+        OWSFail(@"%@ Couldn't configure audio session", self.logTag);
         [self cancelVoiceMemo];
         return;
     }
 
+    NSError *error;
     // Initiate and prepare the recorder
     self.audioRecorder = [[AVAudioRecorder alloc] initWithURL:fileURL
                                                      settings:@{
@@ -3282,13 +3279,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)stopRecording
 {
     [self.audioRecorder stop];
-    NSError *error;
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:&error];
-    if (error) {
-        OWSFail(@"%@ deactivating audio session failed with error: %@", self.logTag, error);
-    } else {
-        DDLogDebug(@"%@ successfully deactivated audio session.", self.logTag);
-    }
+    [OWSAudioSession.shared endAudioActivity];
 }
 
 - (void)cancelRecordingVoiceMemo
