@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -89,7 +89,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             return
         }
 
-        CallAudioSession.shared.isRTCAudioEnabled = true
+        OWSAudioSession.shared.isRTCAudioEnabled = true
         self.callService.handleAnswerCall(call)
     }
 
@@ -123,7 +123,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
     func recipientAcceptedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        CallAudioSession.shared.isRTCAudioEnabled = true
+        OWSAudioSession.shared.isRTCAudioEnabled = true
     }
 
     func localHangupCall(_ call: SignalCall) {

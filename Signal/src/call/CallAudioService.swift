@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -137,8 +137,8 @@ struct AudioSource: Hashable {
     // `pulseDuration` is the small pause between the two vibrations in the pair.
     private let pulseDuration = 0.2
 
-    var audioSession: CallAudioSession {
-        return CallAudioSession.shared
+    var audioSession: OWSAudioSession {
+        return OWSAudioSession.shared
     }
 
     // MARK: - Initializers
@@ -151,7 +151,7 @@ struct AudioSource: Hashable {
         SwiftSingletons.register(self)
 
         // Configure audio session so we don't prompt user with Record permission until call is connected.
-        audioSession.configure()
+        audioSession.configureRTCAudio()
     }
 
     // MARK: - CallObserver
