@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
                 replacementString:(NSString *)insertionText
                       countryCode:(NSString *)countryCode;
 
-+ (void)setAudioIgnoresHardwareMuteSwitch:(BOOL)shouldIgnore;
+//+ (void)setAudioIgnoresHardwareMuteSwitch:(BOOL)shouldIgnore;
 
 + (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode callingCode:(NSString *)callingCode;
 

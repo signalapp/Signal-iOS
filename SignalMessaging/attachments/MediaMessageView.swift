@@ -91,12 +91,12 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
 
     @objc
     public func viewWillAppear(_ animated: Bool) {
-        OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(true)
+//        OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(true)
     }
 
     @objc
     public func viewWillDisappear(_ animated: Bool) {
-        OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(false)
+//        OWSAudioAttachmentPlayer.setAudioIgnoresHardwareMuteSwitch(false)
     }
 
     // MARK: - Create Views

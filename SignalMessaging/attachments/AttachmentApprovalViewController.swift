@@ -13,7 +13,7 @@ public protocol AttachmentApprovalViewControllerDelegate: class {
 }
 
 @objc
-public class AttachmentApprovalViewController: OWSViewController, CaptioningToolbarDelegate, PlayerProgressBarDelegate {
+public class AttachmentApprovalViewController: OWSViewController, CaptioningToolbarDelegate, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
 
     let TAG = "[AttachmentApprovalViewController]"
     weak var delegate: AttachmentApprovalViewControllerDelegate?
@@ -27,7 +27,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     // MARK: Properties
 
     let attachment: SignalAttachment
-    private var videoPlayer: AVPlayer?
+    private var videoPlayer: OWSVideoPlayer?
 
     private(set) var bottomToolbar: UIView!
     private(set) var mediaMessageView: MediaMessageView!
@@ -182,16 +182,12 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
                     return
                 }
 
-                let player = AVPlayer(url: videoURL)
+                let player = OWSVideoPlayer(url: videoURL)
                 self.videoPlayer = player
-
-                NotificationCenter.default.addObserver(self,
-                                                       selector: #selector(playerItemDidPlayToCompletion(_:)),
-                                                       name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
-                                                       object: player.currentItem)
+                player.delegate = self
 
                 let playerView = VideoPlayerView()
-                playerView.player = player
+                playerView.player = player.avPlayer
                 self.mediaMessageView.addSubview(playerView)
                 playerView.autoPinEdgesToSuperviewEdges()
 
@@ -199,7 +195,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
                 playerView.addGestureRecognizer(pauseGesture)
 
                 let progressBar = PlayerProgressBar()
-                progressBar.player = player
+                progressBar.player = player.avPlayer
                 progressBar.delegate = self
 
                 // we don't want the progress bar to zoom during "pinch-to-zoom"
@@ -287,12 +283,12 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     private func playVideo() {
         Logger.info("\(TAG) in \(#function)")
 
-        if #available(iOS 9, *) {
-            guard let videoPlayer = self.videoPlayer else {
-                owsFail("\(TAG) video player was unexpectedly nil")
-                return
-            }
+        guard let videoPlayer = self.videoPlayer else {
+            owsFail("\(TAG) video player was unexpectedly nil")
+            return
+        }
 
+        if #available(iOS 9, *) {
             guard let playVideoButton = self.playVideoButton else {
                 owsFail("\(TAG) playVideoButton was unexpectedly nil")
                 return
@@ -300,17 +296,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
             UIView.animate(withDuration: 0.1) {
                 playVideoButton.alpha = 0.0
             }
-
-            guard let item = videoPlayer.currentItem else {
-                owsFail("\(TAG) video player item was unexpectedly nil")
-                return
-            }
-
-            if item.currentTime() == item.duration {
-                // Rewind for repeated plays, but only if it previously played to end.
-                videoPlayer.seek(to: kCMTimeZero)
-            }
-
             videoPlayer.play()
         } else {
             self.playLegacyVideo()
@@ -353,11 +338,12 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     }
 
     @objc
-    private func playerItemDidPlayToCompletion(_ notification: Notification) {
+    public func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer) {
         guard let playVideoButton = self.playVideoButton else {
             owsFail("\(TAG) playVideoButton was unexpectedly nil")
             return
         }
+
         UIView.animate(withDuration: 0.1) {
             playVideoButton.alpha = 1.0
         }
