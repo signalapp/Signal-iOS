@@ -6,6 +6,7 @@
 #import "Signal-Swift.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -178,9 +179,13 @@ NS_ASSUME_NONNULL_BEGIN
     return UIApplication.sharedApplication.keyWindow;
 }
 
-- (void)openSystemSettings
+- (nullable UIAlertAction *)openSystemSettingsAction
 {
-    [UIApplication.sharedApplication openSystemSettings];
+    return [UIAlertAction actionWithTitle:CommonStrings.openSettingsButton
+                                    style:UIAlertActionStyleDefault
+                                  handler:^(UIAlertAction *_Nonnull action) {
+                                      [UIApplication.sharedApplication openSystemSettings];
+                                  }];
 }
 
 - (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey

@@ -61,8 +61,8 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 // Returns the VC that should be used to present alerts, modals, etc.
 - (nullable UIViewController *)frontmostViewController;
 
-// Should only be called if isMainApp is YES.
-- (void)openSystemSettings;
+// Returns nil if isMainApp is NO
+@property (nullable, nonatomic, readonly) UIAlertAction *openSystemSettingsAction;
 
 // Should only be called if isMainApp is YES,
 // but should only be necessary to call if isMainApp is YES.
