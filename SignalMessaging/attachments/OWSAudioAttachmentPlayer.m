@@ -22,17 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSAudioAttachmentPlayer
 
-+ (void)setAudioIgnoresHardwareMuteSwitch:(BOOL)shouldIgnore
-{
-    NSError *error = nil;
-    BOOL success = [[AVAudioSession sharedInstance]
-        setCategory:(shouldIgnore ? AVAudioSessionCategoryPlayback : AVAudioSessionCategoryPlayAndRecord)error:&error];
-    OWSAssert(!error);
-    if (!success || error) {
-        DDLogError(@"%@ Error in setAudioIgnoresHardwareMuteSwitch: %d", self.logTag, shouldIgnore);
-    }
-}
-
 - (instancetype)initWithMediaUrl:(NSURL *)mediaUrl delegate:(id<OWSAudioAttachmentPlayerDelegate>)delegate
 {
     self = [super init];
@@ -76,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.mediaUrl);
     OWSAssert([self.delegate audioPlaybackState] != AudioPlaybackState_Playing);
 
-    [[self class] setAudioIgnoresHardwareMuteSwitch:YES];
+    [OWSAudioSession.shared setPlaybackCategory];
 
     [self.audioPlayerPoller invalidate];
 
@@ -101,7 +90,6 @@ NS_ASSUME_NONNULL_BEGIN
         self.audioPlayer.delegate = self;
     }
 
-    [self.audioPlayer prepareToPlay];
     [self.audioPlayer play];
     [self.audioPlayerPoller invalidate];
     self.audioPlayerPoller = [NSTimer weakScheduledTimerWithTimeInterval:.05f
@@ -123,6 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioPlayerPoller invalidate];
     [self.delegate setAudioProgress:[self.audioPlayer currentTime] duration:[self.audioPlayer duration]];
 
+    [OWSAudioSession.shared endAudioActivity];
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 }
 
@@ -135,6 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioPlayerPoller invalidate];
     [self.delegate setAudioProgress:0 duration:0];
 
+    [OWSAudioSession.shared endAudioActivity];
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 }
 

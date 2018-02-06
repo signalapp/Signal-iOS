@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -345,14 +345,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         Logger.debug("\(TAG) Received \(#function)")
 
-        CallAudioSession.shared.isRTCAudioEnabled = true
+        OWSAudioSession.shared.isRTCAudioEnabled = true
     }
 
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
 
         Logger.debug("\(TAG) Received \(#function)")
-        CallAudioSession.shared.isRTCAudioEnabled = false
+        OWSAudioSession.shared.isRTCAudioEnabled = false
     }
 
     // MARK: - Util

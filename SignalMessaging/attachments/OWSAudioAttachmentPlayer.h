@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -24,8 +24,6 @@ typedef NS_ENUM(NSInteger, AudioPlaybackState) {
 #pragma mark -
 
 @interface OWSAudioAttachmentPlayer : NSObject
-
-+ (void)setAudioIgnoresHardwareMuteSwitch:(BOOL)shouldIgnore;
 
 @property (nonatomic, readonly, weak) id<OWSAudioAttachmentPlayerDelegate> delegate;
 
