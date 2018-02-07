@@ -12,19 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSAttachmentPointer;
 
-@interface TSQuotedMessage : TSYapDatabaseObject
-
-@property (nonatomic, readonly) uint32_t timestamp;
-@property (nonatomic, readonly) NSString *recipientId;
-
-@property (nullable, nonatomic, readonly) NSString *body;
-@property (nullable, nonatomic, readonly) NSString *sourceFilename;
-@property (nullable, nonatomic, readonly) NSData *thumbnailData;
-
-@end
-
-#pragma mark -
-
 @interface TSMessage : TSInteraction
 
 @property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;

@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SignalAttachment;
+@class TSQuotedMessage;
 
 @protocol ConversationInputToolbarDelegate <NSObject>
 
@@ -56,6 +57,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setVoiceMemoUICancelAlpha:(CGFloat)cancelAlpha;
 
 - (void)cancelVoiceMemoIfNecessary;
+
+- (void)setQuotedMessage:(TSQuotedMessage *)quotedMessage;
+- (void)clearQuotedMessage;
 
 @end
 

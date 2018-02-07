@@ -14,10 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 static const NSUInteger OWSMessageSchemaVersion = 4;
 
-@implementation TSQuotedMessage
-
-@end
-
 #pragma mark -
 
 @interface TSMessage ()
