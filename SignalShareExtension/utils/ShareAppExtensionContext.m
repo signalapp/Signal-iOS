@@ -177,9 +177,9 @@ NS_ASSUME_NONNULL_BEGIN
     return self.rootViewController.view;
 }
 
-- (void)openSystemSettings
+- (nullable UIAlertAction *)openSystemSettingsAction
 {
-    OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
+    return nil;
 }
 
 - (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey

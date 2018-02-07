@@ -282,11 +282,10 @@ NS_ASSUME_NONNULL_BEGIN
                                            style:UIAlertActionStyleCancel
                                          handler:nil]];
 
-    [alertController addAction:[UIAlertAction actionWithTitle:CommonStrings.openSettingsButton
-                                                        style:UIAlertActionStyleDefault
-                                                      handler:^(UIAlertAction *_Nonnull action) {
-                                                          [CurrentAppContext() openSystemSettings];
-                                                      }]];
+    UIAlertAction *_Nullable openSystemSettingsAction = CurrentAppContext().openSystemSettingsAction;
+    if (openSystemSettingsAction) {
+        [alertController addAction:openSystemSettingsAction];
+    }
 
     [viewController presentViewController:alertController animated:YES completion:nil];
 }

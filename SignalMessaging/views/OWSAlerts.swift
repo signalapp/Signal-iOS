@@ -14,12 +14,11 @@ import Foundation
         let alertMessage = NSLocalizedString("CALL_AUDIO_PERMISSION_MESSAGE", comment:"Alert message when calling and permissions for microphone are missing")
         let alertController = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
         let dismissAction = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel)
-        let settingsString = CommonStrings.openSettingsButton
-        let settingsAction = UIAlertAction(title: settingsString, style: .default) { _ in
-            CurrentAppContext().openSystemSettings()
-        }
+
         alertController.addAction(dismissAction)
-        alertController.addAction(settingsAction)
+        if let settingsAction = CurrentAppContext().openSystemSettingsAction {
+            alertController.addAction(settingsAction)
+        }
         CurrentAppContext().frontmostViewController()?.present(alertController, animated: true, completion: nil)
     }
 
