@@ -48,6 +48,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 // they were received & decrypted, not by when they were sent.
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
 
+@property (nonatomic, nullable) TSQuotedMessage *quotedMessage;
+
 @end
 
 #pragma mark -
@@ -314,6 +316,18 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSMessage *message) {
                                  [message setExpireStartedAt:expireStartedAt];
+                             }];
+}
+
+- (void)updateWithQuotedMessage:(TSQuotedMessage *)quotedMessage
+                    transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(quotedMessage);
+    OWSAssert(transaction);
+
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSMessage *message) {
+                                 [message setQuotedMessage:quotedMessage];
                              }];
 }
 

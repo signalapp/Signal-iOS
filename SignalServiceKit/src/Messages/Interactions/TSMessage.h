@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 
 @class TSAttachmentPointer;
+@class TSQuotedMessage;
 
 @interface TSMessage : TSInteraction
 
@@ -20,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t expiresAt;
 @property (nonatomic, readonly) BOOL isExpiringMessage;
+@property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp;
 
@@ -59,6 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Update With... Methods
 
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithQuotedMessage:(TSQuotedMessage *)quotedMessage
+                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

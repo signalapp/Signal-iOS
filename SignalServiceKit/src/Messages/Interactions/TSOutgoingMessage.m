@@ -11,6 +11,7 @@
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
+#import "TSQuotedMessage.h"
 #import "TextSecureKitEnv.h"
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
@@ -498,6 +499,37 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
     [builder setTimestamp:self.timestamp];
     [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
+
+    if (self.quotedMessage) {
+        OWSSignalServiceProtosDataMessageQuoteBuilder *quoteBuilder =
+            [OWSSignalServiceProtosDataMessageQuoteBuilder new];
+        [quoteBuilder setId:self.quotedMessage.timestamp];
+        [quoteBuilder setAuthor:self.quotedMessage.recipientId];
+        if (self.quotedMessage.body.length > 0) {
+            OWSAssert(self.quotedMessage.sourceFilename.length == 0);
+            OWSAssert(self.quotedMessage.thumbnailData.length == 0);
+            OWSAssert(self.quotedMessage.contentType.length == 0);
+
+            [quoteBuilder setText:self.quotedMessage.body];
+
+            [builder setQuoteBuilder:quoteBuilder];
+        } else if (self.quotedMessage.sourceFilename.length > 0 && self.quotedMessage.thumbnailData.length > 0
+            && self.quotedMessage.contentType.length > 0) {
+            OWSAssert(self.quotedMessage.body.length == 0);
+
+            OWSSignalServiceProtosAttachmentPointerBuilder *attachmentBuilder =
+                [OWSSignalServiceProtosAttachmentPointerBuilder new];
+            [attachmentBuilder setThumbnail:self.quotedMessage.thumbnailData];
+            [attachmentBuilder setFileName:self.quotedMessage.sourceFilename];
+            [attachmentBuilder setContentType:self.quotedMessage.contentType];
+            [quoteBuilder setAttachmentBuilder:attachmentBuilder];
+
+            [builder setQuoteBuilder:quoteBuilder];
+        } else {
+            OWSFail(@"%@ Invalid quoted message data.", self.logTag);
+        }
+    }
+
     return [builder build];
 }
 

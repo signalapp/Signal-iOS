@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, readonly) NSString *body;
 @property (nullable, nonatomic, readonly) NSString *sourceFilename;
 @property (nullable, nonatomic, readonly) NSData *thumbnailData;
+// This is a MIME type.
+@property (nullable, nonatomic, readonly) NSString *contentType;
 
 @end
 
