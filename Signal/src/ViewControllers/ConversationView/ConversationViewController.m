@@ -3174,17 +3174,14 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     NSURL *fileURL = [NSURL fileURLWithPath:filepath];
 
     // Setup audio session
-    AVAudioSession *session = [AVAudioSession sharedInstance];
-    OWSAssert(session.recordPermission == AVAudioSessionRecordPermissionGranted);
-
-    NSError *error;
-    [session setCategory:AVAudioSessionCategoryRecord error:&error];
-    if (error) {
-        OWSFail(@"%@ Couldn't configure audio session: %@", self.logTag, error);
+    BOOL configuredAudio = [OWSAudioSession.shared setRecordCategory];
+    if (!configuredAudio) {
+        OWSFail(@"%@ Couldn't configure audio session", self.logTag);
         [self cancelVoiceMemo];
         return;
     }
 
+    NSError *error;
     // Initiate and prepare the recorder
     self.audioRecorder = [[AVAudioRecorder alloc] initWithURL:fileURL
                                                      settings:@{
@@ -3232,7 +3229,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     NSTimeInterval durationSeconds = self.audioRecorder.currentTime;
 
-    [self.audioRecorder stop];
+    [self stopRecording];
 
     const NSTimeInterval kMinimumRecordingTimeSeconds = 1.f;
     if (durationSeconds < kMinimumRecordingTimeSeconds) {
@@ -3279,20 +3276,18 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     }
 }
 
+- (void)stopRecording
+{
+    [self.audioRecorder stop];
+    [OWSAudioSession.shared endAudioActivity];
+}
+
 - (void)cancelRecordingVoiceMemo
 {
     OWSAssertIsOnMainThread();
-
     DDLogDebug(@"cancelRecordingVoiceMemo");
 
-    [self resetRecordingVoiceMemo];
-}
-
-- (void)resetRecordingVoiceMemo
-{
-    OWSAssertIsOnMainThread();
-
-    [self.audioRecorder stop];
+    [self stopRecording];
     self.audioRecorder = nil;
     self.voiceMessageUUID = nil;
 }
