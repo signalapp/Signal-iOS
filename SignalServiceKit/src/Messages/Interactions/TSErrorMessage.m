@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSErrorMessage.h"
@@ -59,12 +59,13 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                 failedMessageType:(TSErrorMessageType)errorMessageType
                       recipientId:(nullable NSString *)recipientId
 {
-    self = [super initWithTimestamp:timestamp
-                           inThread:thread
-                        messageBody:nil
-                      attachmentIds:@[]
-                   expiresInSeconds:0
-                    expireStartedAt:0];
+    self = [super initMessageWithTimestamp:timestamp
+                                  inThread:thread
+                               messageBody:nil
+                             attachmentIds:@[]
+                          expiresInSeconds:0
+                           expireStartedAt:0
+                             quotedMessage:nil];
 
     if (!self) {
         return self;

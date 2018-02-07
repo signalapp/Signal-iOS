@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadTracking.h"
@@ -8,12 +8,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSErrorMessage : TSMessage <OWSReadTracking>
-
 typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageNoSession,
     TSErrorMessageWrongTrustedIdentityKey, // DEPRECATED: We no longer create TSErrorMessageWrongTrustedIdentityKey, but
-                                           // persisted legacy messages could exist indefinitly.
+    // persisted legacy messages could exist indefinitly.
     TSErrorMessageInvalidKeyException,
     TSErrorMessageMissingKeyId, // unused
     TSErrorMessageInvalidMessage,
@@ -23,6 +21,16 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageUnknownContactBlockOffer,
     TSErrorMessageGroupCreationFailed,
 };
+
+@interface TSErrorMessage : TSMessage <OWSReadTracking>
+
+- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
+                                inThread:(nullable TSThread *)thread
+                             messageBody:(nullable NSString *)body
+                           attachmentIds:(NSArray<NSString *> *)attachmentIds
+                        expiresInSeconds:(uint32_t)expiresInSeconds
+                         expireStartedAt:(uint64_t)expireStartedAt
+                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

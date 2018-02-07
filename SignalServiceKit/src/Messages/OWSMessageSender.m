@@ -1236,13 +1236,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         // We want the incoming message to appear after the outgoing message.
         TSIncomingMessage *incomingMessage =
-            [[TSIncomingMessage alloc] initWithTimestamp:(outgoingMessage.timestamp + 1)
-                                                inThread:cThread
-                                                authorId:[cThread contactIdentifier]
-                                          sourceDeviceId:[OWSDevice currentDeviceId]
-                                             messageBody:outgoingMessage.body
-                                           attachmentIds:attachmentIds
-                                        expiresInSeconds:outgoingMessage.expiresInSeconds];
+            [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:(outgoingMessage.timestamp + 1)
+                                                               inThread:cThread
+                                                               authorId:[cThread contactIdentifier]
+                                                         sourceDeviceId:[OWSDevice currentDeviceId]
+                                                            messageBody:outgoingMessage.body
+                                                          attachmentIds:attachmentIds
+                                                       expiresInSeconds:outgoingMessage.expiresInSeconds
+                                                          quotedMessage:outgoingMessage.quotedMessage];
         [incomingMessage saveWithTransaction:transaction];
     }];
 }

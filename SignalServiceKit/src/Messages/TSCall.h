@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadTracking.h"
@@ -23,6 +23,8 @@ typedef enum {
 @interface TSCall : TSInteraction <OWSReadTracking>
 
 @property (nonatomic, readonly) RPRecentCallType callType;
+
+- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                    withCallNumber:(NSString *)contactNumber

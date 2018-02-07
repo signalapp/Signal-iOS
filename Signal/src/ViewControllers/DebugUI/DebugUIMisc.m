@@ -12,7 +12,6 @@
 #import <AxolotlKit/PreKeyBundle.h>
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalMessaging/UIImage+OWS.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
@@ -21,6 +20,7 @@
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSThread.h>
+#import <SignalServiceKit/UIImage+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
 
 @interface TSInteraction : TSYapDatabaseObject
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
+- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
 
 @property (nonatomic, readonly) NSString *uniqueThreadId;
 @property (nonatomic, readonly) TSThread *thread;

@@ -88,12 +88,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
     TSOutgoingMessage *outgoingMessage =
-        [[TSOutgoingMessage alloc] initWithTimestamp:transcript.timestamp
-                                            inThread:thread
-                                         messageBody:transcript.body
-                                       attachmentIds:[attachmentsProcessor.attachmentIds mutableCopy]
-                                    expiresInSeconds:transcript.expirationDuration
-                                     expireStartedAt:transcript.expirationStartedAt];
+        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:transcript.timestamp
+                                                           inThread:thread
+                                                        messageBody:transcript.body
+                                                      attachmentIds:[attachmentsProcessor.attachmentIds mutableCopy]
+                                                   expiresInSeconds:transcript.expirationDuration
+                                                    expireStartedAt:transcript.expirationStartedAt
+                                                     isVoiceMessage:NO
+                                                   groupMetaMessage:TSGroupMessageNone
+                                                      quotedMessage:nil];
 
     if (transcript.isExpirationTimerUpdate) {
         [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:outgoingMessage

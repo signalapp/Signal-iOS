@@ -4,7 +4,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class TSIncomingMessage;
+@class TSOutgoingMessage;
+@class TSQuotedMessage;
 @class TSThread;
+@class YapDatabaseReadWriteTransaction;
 
 @interface OWSMessageUtils : NSObject
 
@@ -16,6 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)unreadMessagesInThread:(TSThread *)thread;
 
 - (void)updateApplicationBadgeCount;
+
++ (nullable TSQuotedMessage *)quotedMessageForIncomingMessage:(TSIncomingMessage *)message
+                                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
++ (nullable TSQuotedMessage *)quotedMessageForOutgoingMessage:(TSOutgoingMessage *)message
+                                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

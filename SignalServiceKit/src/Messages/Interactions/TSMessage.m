@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 static const NSUInteger OWSMessageSchemaVersion = 4;
 
+#pragma mark -
+
 @interface TSMessage ()
 
 @property (nonatomic, nullable) NSString *body;
@@ -48,63 +50,23 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 // they were received & decrypted, not by when they were sent.
 @property (nonatomic) uint64_t receivedAtTimestamp;
 
+@property (nonatomic, nullable) TSQuotedMessage *quotedMessage;
+
 @end
 
 #pragma mark -
 
 @implementation TSMessage
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
+- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
+                                inThread:(nullable TSThread *)thread
+                             messageBody:(nullable NSString *)body
+                           attachmentIds:(NSArray<NSString *> *)attachmentIds
+                        expiresInSeconds:(uint32_t)expiresInSeconds
+                         expireStartedAt:(uint64_t)expireStartedAt
+                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
 {
-    return [self initWithTimestamp:timestamp inThread:nil messageBody:nil];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
-{
-    return [self initWithTimestamp:timestamp inThread:thread messageBody:nil attachmentIds:@[]];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-{
-    return [self initWithTimestamp:timestamp inThread:thread messageBody:body attachmentIds:@[]];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-{
-    return [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:body
-                     attachmentIds:attachmentIds
-                  expiresInSeconds:0];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-{
-    return [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:body
-                     attachmentIds:attachmentIds
-                  expiresInSeconds:expiresInSeconds
-                   expireStartedAt:0];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-                  expireStartedAt:(uint64_t)expireStartedAt
-{
-    self = [super initWithTimestamp:timestamp inThread:thread];
+    self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
     if (!self) {
         return self;
@@ -118,6 +80,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _expireStartedAt = expireStartedAt;
     [self updateExpiresAt];
     _receivedAtTimestamp = [NSDate ows_millisecondTimeStamp];
+    _quotedMessage = quotedMessage;
 
     return self;
 }

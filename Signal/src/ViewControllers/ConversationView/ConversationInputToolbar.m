@@ -4,6 +4,8 @@
 
 #import "ConversationInputToolbar.h"
 #import "ConversationInputTextView.h"
+#import "Environment.h"
+#import "OWSContactsManager.h"
 #import "OWSMath.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
@@ -12,11 +14,104 @@
 #import "ViewControllerUtils.h"
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
+#import <SignalServiceKit/TSQuotedMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
 static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
+
+@interface QuotedMessagePreviewView : UIView
+
+@property (nonatomic, readonly) UILabel *titleLabel;
+@property (nonatomic, readonly) UILabel *bodyLabel;
+@property (nonatomic, readonly) UIImageView *iconView;
+@property (nonatomic, readonly) UIButton *cancelButton;
+@property (nonatomic, readonly) UIView *quoteStripe;
+
+@end
+
+@implementation QuotedMessagePreviewView
+
+- (nullable UIImageView *)iconForMessage:(TSQuotedMessage *)message
+{
+    // FIXME TODO
+    return nil;
+}
+
+- (instancetype)initWithQuotedMessage:(TSQuotedMessage *)message
+{
+    self = [super initWithFrame:CGRectZero];
+    if (!self) {
+        return self;
+    }
+
+    _titleLabel = [UILabel new];
+    _titleLabel.text = [[Environment current].contactsManager displayNameForPhoneIdentifier:message.authorId];
+
+    _bodyLabel = [UILabel new];
+    _bodyLabel.text = message.body;
+
+    _iconView = [self iconForMessage:message];
+    if (_iconView) {
+        [self addSubview:_iconView];
+    }
+
+    _cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIImage *buttonImage =
+        [[UIImage imageNamed:@"quoted-message-cancel"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [_cancelButton setImage:buttonImage forState:UIControlStateNormal];
+    _cancelButton.imageView.tintColor = [UIColor ows_blackColor];
+
+    _quoteStripe = [UIView new];
+    BOOL isQuotingSelf = [message.authorId isEqualToString:[TSAccountManager localNumber]];
+
+    // FIXME actual colors TBD
+    _quoteStripe.backgroundColor = isQuotingSelf ? [UIColor orangeColor] : [UIColor blackColor];
+
+    UIView *contentContainer = [UIView containerView];
+
+    [self addSubview:_titleLabel];
+    [self addSubview:contentContainer];
+    [contentContainer addSubview:_bodyLabel];
+    [self addSubview:_cancelButton];
+    [self addSubview:_quoteStripe];
+
+    // Layout
+
+    CGFloat kLeadingMargin = 4;
+
+    [_quoteStripe autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeRight];
+    [_titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [_titleLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeTrailing ofView:_quoteStripe withOffset:kLeadingMargin];
+    [_titleLabel autoPinEdge:ALEdgeTrailing toEdge:ALEdgeLeading ofView:_cancelButton];
+
+    if (_iconView) {
+        [contentContainer addSubview:_iconView];
+        [_iconView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+        [_iconView autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:_bodyLabel];
+        [_iconView autoPinHeightToSuperview];
+    } else {
+        [_bodyLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeTrailing ofView:_quoteStripe withOffset:kLeadingMargin];
+    }
+
+    [_bodyLabel autoPinHeightToSuperview];
+    [_bodyLabel autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+
+    [contentContainer autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_titleLabel];
+    [contentContainer autoPinEdge:ALEdgeTrailing toEdge:ALEdgeLeading ofView:_cancelButton];
+    [contentContainer autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
+    [_cancelButton autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [_cancelButton autoVCenterInSuperview];
+
+    return self;
+}
+
+@end
+
+#pragma mark -
+
 @interface ConversationInputToolbar () <UIGestureRecognizerDelegate, ConversationTextViewToolbarDelegate>
 
 @property (nonatomic, readonly) UIView *contentView;
@@ -34,6 +129,10 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 @property (nonatomic) CGFloat toolbarHeight;
 @property (nonatomic) CGFloat textViewHeight;
 
+#pragma mark -
+
+@property (nonatomic, nullable) QuotedMessagePreviewView *quotedMessageView;
+
 #pragma mark - Voice Memo Recording UI
 
 @property (nonatomic, nullable) UIView *voiceMemoUI;
@@ -45,6 +144,9 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
 
 @end
+
+#pragma mark -
+
 
 #pragma mark -
 
@@ -224,6 +326,18 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     _shouldShowVoiceMemoButton = shouldShowVoiceMemoButton;
 
     [self ensureContentConstraints];
+}
+
+- (void)setQuotedMessage:(TSQuotedMessage *)quotedMessage
+{
+    QuotedMessagePreviewView *quotedMessageView =
+        [[QuotedMessagePreviewView alloc] initWithQuotedMessage:quotedMessage];
+
+    [self ensureContentConstraints];
+}
+
+- (void)clearQuotedMessage
+{
 }
 
 - (void)beginEditingTextMessage

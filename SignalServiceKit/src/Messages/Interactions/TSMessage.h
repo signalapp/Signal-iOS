@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 
 @class TSAttachment;
+@class TSQuotedMessage;
 
 @interface TSMessage : TSInteraction
 
@@ -20,32 +21,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t expiresAt;
 @property (nonatomic, readonly) BOOL isExpiringMessage;
+@property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp;
+- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-                  expireStartedAt:(uint64_t)expireStartedAt NS_DESIGNATED_INITIALIZER;
+- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
+                                inThread:(nullable TSThread *)thread
+                             messageBody:(nullable NSString *)body
+                           attachmentIds:(NSArray<NSString *> *)attachmentIds
+                        expiresInSeconds:(uint32_t)expiresInSeconds
+                         expireStartedAt:(uint64_t)expireStartedAt
+                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

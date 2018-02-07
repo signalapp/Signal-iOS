@@ -41,6 +41,7 @@
 #import "TSInfoMessage.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
+#import "TSQuotedMessage.h"
 #import "TextSecureKitEnv.h"
 #import <YapDatabase/YapDatabase.h>
 
@@ -888,9 +889,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *updateGroupInfo =
         [gThread.groupModel getInfoStringAboutUpdateTo:gThread.groupModel contactsManager:self.contactsManager];
-    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                     inThread:gThread
-                                                             groupMetaMessage:TSGroupMessageUpdate];
+    TSOutgoingMessage *message =
+        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                           inThread:gThread
+                                                        messageBody:nil
+                                                      attachmentIds:[NSMutableArray new]
+                                                   expiresInSeconds:0
+                                                    expireStartedAt:0
+                                                     isVoiceMessage:NO
+                                                   groupMetaMessage:TSGroupMessageUpdate
+                                                      quotedMessage:nil];
     [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
     // Only send this group update to the requester.
     [message updateWithSingleGroupRecipient:envelope.source transaction:transaction];
@@ -993,19 +1001,24 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
 
+                TSQuotedMessage *_Nullable quotedMessage = [self quotedMessageForDataMessage:dataMessage];
+
                 DDLogDebug(@"%@ incoming message from: %@ for group: %@ with timestamp: %lu",
                     self.logTag,
                     envelopeAddress(envelope),
                     groupId,
                     (unsigned long)timestamp);
+
                 TSIncomingMessage *incomingMessage =
-                    [[TSIncomingMessage alloc] initWithTimestamp:timestamp
-                                                        inThread:oldGroupThread
-                                                        authorId:envelope.source
-                                                  sourceDeviceId:envelope.sourceDevice
-                                                     messageBody:body
-                                                   attachmentIds:attachmentIds
-                                                expiresInSeconds:dataMessage.expireTimer];
+                    [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
+                                                                       inThread:oldGroupThread
+                                                                       authorId:envelope.source
+                                                                 sourceDeviceId:envelope.sourceDevice
+                                                                    messageBody:body
+                                                                  attachmentIds:attachmentIds
+                                                               expiresInSeconds:dataMessage.expireTimer
+                                                                  quotedMessage:quotedMessage];
+
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
                                      envelope:envelope
@@ -1036,13 +1049,17 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       transaction:transaction
                                                                             relay:envelope.relay];
 
-        TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
-                                                                                 inThread:thread
-                                                                                 authorId:[thread contactIdentifier]
-                                                                           sourceDeviceId:envelope.sourceDevice
-                                                                              messageBody:body
-                                                                            attachmentIds:attachmentIds
-                                                                         expiresInSeconds:dataMessage.expireTimer];
+        TSQuotedMessage *_Nullable quotedMessage = [self quotedMessageForDataMessage:dataMessage];
+
+        TSIncomingMessage *incomingMessage =
+            [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
+                                                               inThread:thread
+                                                               authorId:[thread contactIdentifier]
+                                                         sourceDeviceId:envelope.sourceDevice
+                                                            messageBody:body
+                                                          attachmentIds:attachmentIds
+                                                       expiresInSeconds:dataMessage.expireTimer
+                                                          quotedMessage:quotedMessage];
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread
                              envelope:envelope
@@ -1051,6 +1068,70 @@ NS_ASSUME_NONNULL_BEGIN
                           transaction:transaction];
         return incomingMessage;
     }
+}
+
+- (TSQuotedMessage *_Nullable)quotedMessageForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+{
+    OWSAssert(dataMessage);
+
+    if (!dataMessage.hasQuote) {
+        return nil;
+    }
+
+    OWSSignalServiceProtosDataMessageQuote *quoteProto = [dataMessage quote];
+
+    if (![quoteProto hasId] || [quoteProto id] == 0) {
+        OWSFail(@"%@ quoted message missing id", self.logTag);
+        return nil;
+    }
+    uint64_t timestamp = [quoteProto id];
+
+    if (![quoteProto hasAuthor] || [quoteProto author].length == 0) {
+        OWSFail(@"%@ quoted message missing author", self.logTag);
+        return nil;
+    }
+    // TODO: We could verify that this is a valid e164 value.
+    NSString *authorId = [quoteProto author];
+
+    NSString *_Nullable body = nil;
+    BOOL hasText = NO;
+    BOOL hasAttachment = NO;
+    if ([quoteProto hasText] && [quoteProto text].length > 0) {
+        body = [quoteProto text];
+        hasText = YES;
+    }
+
+    NSString *_Nullable sourceFilename = nil;
+    NSData *_Nullable thumbnailData = nil;
+    NSString *_Nullable contentType = nil;
+
+    if ([quoteProto hasAttachment]) {
+        OWSSignalServiceProtosAttachmentPointer *attachmentProto = [quoteProto attachment];
+        if ([attachmentProto hasContentType] && attachmentProto.contentType.length > 0) {
+            contentType = attachmentProto.contentType;
+
+            if ([attachmentProto hasFileName] && attachmentProto.fileName.length > 0) {
+                sourceFilename = attachmentProto.fileName;
+            }
+            if ([attachmentProto hasThumbnail] && attachmentProto.thumbnail.length > 0) {
+                thumbnailData = [attachmentProto thumbnail];
+            }
+        }
+        hasAttachment = YES;
+    }
+
+    if (!hasText && !hasAttachment) {
+        OWSFail(@"%@ quoted message has neither text nor attachment", self.logTag);
+        return nil;
+    }
+
+    TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initWithTimestamp:timestamp
+                                                                       authorId:authorId
+                                                                           body:body
+                                                                 sourceFilename:sourceFilename
+                                                                  thumbnailData:thumbnailData
+                                                                    contentType:contentType];
+    return quotedMessage;
 }
 
 - (void)finalizeIncomingMessage:(TSIncomingMessage *)incomingMessage
@@ -1069,8 +1150,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssert([TSAccountManager isRegistered]);
     NSString *localNumber = [TSAccountManager localNumber];
-    NSString *body = dataMessage.body;
-    uint64_t timestamp = envelope.timestamp;
 
     if (!thread) {
         OWSFail(@"%@ Can't finalize without thread", self.logTag);

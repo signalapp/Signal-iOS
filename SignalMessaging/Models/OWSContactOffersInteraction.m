@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactOffersInteraction.h"
@@ -13,14 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
-                    hasBlockOffer:(BOOL)hasBlockOffer
-            hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
-    hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
-                      recipientId:(NSString *)recipientId
+- (instancetype)initContactOffersWithTimestamp:(uint64_t)timestamp
+                                        thread:(TSThread *)thread
+                                 hasBlockOffer:(BOOL)hasBlockOffer
+                         hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
+                 hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
+                                   recipientId:(NSString *)recipientId
 {
-    self = [super initWithTimestamp:timestamp inThread:thread];
+    self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
     if (!self) {
         return self;

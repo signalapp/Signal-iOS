@@ -111,7 +111,6 @@
 		346129C71FD2072E00532771 /* NSString+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129C01FD2072C00532771 /* NSString+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129C81FD2072E00532771 /* NSAttributedString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129C11FD2072D00532771 /* NSAttributedString+OWS.m */; };
 		346129C91FD2072E00532771 /* NSString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129C21FD2072D00532771 /* NSString+OWS.m */; };
-		346129CA1FD2072E00532771 /* UIImage+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129C31FD2072D00532771 /* UIImage+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129CB1FD2072E00532771 /* Promise+retainUntilComplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129C41FD2072D00532771 /* Promise+retainUntilComplete.swift */; };
 		346129CC1FD2072E00532771 /* NSAttributedString+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129C51FD2072D00532771 /* NSAttributedString+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129CD1FD2072E00532771 /* UIImage+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129C61FD2072D00532771 /* UIImage+OWS.m */; };
@@ -684,10 +683,8 @@
 		346129C01FD2072C00532771 /* NSString+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+OWS.h"; sourceTree = "<group>"; };
 		346129C11FD2072D00532771 /* NSAttributedString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+OWS.m"; sourceTree = "<group>"; };
 		346129C21FD2072D00532771 /* NSString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+OWS.m"; sourceTree = "<group>"; };
-		346129C31FD2072D00532771 /* UIImage+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+OWS.h"; sourceTree = "<group>"; };
 		346129C41FD2072D00532771 /* Promise+retainUntilComplete.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promise+retainUntilComplete.swift"; sourceTree = "<group>"; };
 		346129C51FD2072D00532771 /* NSAttributedString+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+OWS.h"; sourceTree = "<group>"; };
-		346129C61FD2072D00532771 /* UIImage+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+OWS.m"; sourceTree = "<group>"; };
 		346129CF1FD207F200532771 /* OWSAlerts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAlerts.swift; sourceTree = "<group>"; };
 		346129D11FD2085A00532771 /* CommonStrings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonStrings.swift; sourceTree = "<group>"; };
 		346129D31FD20ADB00532771 /* UIViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+OWS.m"; sourceTree = "<group>"; };
@@ -1407,8 +1404,6 @@
 				34480B5E1FD0A98800BC14EF /* UIColor+OWS.m */,
 				34480B661FD0AA9400BC14EF /* UIFont+OWS.h */,
 				34480B651FD0AA9400BC14EF /* UIFont+OWS.m */,
-				346129C31FD2072D00532771 /* UIImage+OWS.h */,
-				346129C61FD2072D00532771 /* UIImage+OWS.m */,
 				34480B5F1FD0A98800BC14EF /* UIView+OWS.h */,
 				34480B601FD0A98800BC14EF /* UIView+OWS.m */,
 				346129D41FD20ADC00532771 /* UIViewController+OWS.h */,
@@ -3072,7 +3067,6 @@
 				347850591FD9972E007B8332 /* SwiftSingletons.swift in Sources */,
 				344F248720069ECB00CFB4F4 /* ModalActivityIndicatorViewController.swift in Sources */,
 				346129961FD1E30000532771 /* OWSDatabaseMigration.m in Sources */,
-				346129CD1FD2072E00532771 /* UIImage+OWS.m in Sources */,
 				344D6CEC20069E070042AF96 /* NewNonContactConversationViewController.m in Sources */,
 				346129FB1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
 				344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */,
