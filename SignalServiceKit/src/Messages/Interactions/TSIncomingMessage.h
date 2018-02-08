@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadTracking.h"
@@ -51,6 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
  *    The uniqueIds for the message's attachments, possibly an empty list.
  *  @param expiresInSeconds
  *    Seconds from when the message is read until it is deleted.
+ *  @param quotedMessage
+ *    If this message is a quoted reply to another message, contains data about that message.
  *
  *  @return initiated incoming group message
  */
@@ -60,7 +62,8 @@ NS_ASSUME_NONNULL_BEGIN
                    sourceDeviceId:(uint32_t)sourceDeviceId
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds NS_DESIGNATED_INITIALIZER;
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

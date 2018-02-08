@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSErrorMessage.h"
@@ -64,7 +64,8 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                         messageBody:nil
                       attachmentIds:@[]
                    expiresInSeconds:0
-                    expireStartedAt:0];
+                    expireStartedAt:0
+                      quotedMessage:nil];
 
     if (!self) {
         return self;

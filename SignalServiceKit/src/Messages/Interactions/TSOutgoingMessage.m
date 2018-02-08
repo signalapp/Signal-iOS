@@ -156,7 +156,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                      attachmentIds:attachmentIds
                   expiresInSeconds:expiresInSeconds
                    expireStartedAt:expireStartedAt
-                  groupMetaMessage:groupMetaMessage];
+                  groupMetaMessage:groupMetaMessage
+                     quotedMessage:nil];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -169,7 +170,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                      attachmentIds:[NSMutableArray new]
                   expiresInSeconds:0
                    expireStartedAt:0
-                  groupMetaMessage:groupMetaMessage];
+                  groupMetaMessage:groupMetaMessage
+                     quotedMessage:nil];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -179,13 +181,15 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                  expiresInSeconds:(uint32_t)expiresInSeconds
                   expireStartedAt:(uint64_t)expireStartedAt
                  groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
 {
     self = [super initWithTimestamp:timestamp
                            inThread:thread
                         messageBody:body
                       attachmentIds:attachmentIds
                    expiresInSeconds:expiresInSeconds
-                    expireStartedAt:expireStartedAt];
+                    expireStartedAt:expireStartedAt
+                      quotedMessage:quotedMessage];
     if (!self) {
         return self;
     }
@@ -505,25 +509,30 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
             [OWSSignalServiceProtosDataMessageQuoteBuilder new];
         [quoteBuilder setId:self.quotedMessage.timestamp];
         [quoteBuilder setAuthor:self.quotedMessage.recipientId];
-        if (self.quotedMessage.body.length > 0) {
-            OWSAssert(self.quotedMessage.sourceFilename.length == 0);
-            OWSAssert(self.quotedMessage.thumbnailData.length == 0);
-            OWSAssert(self.quotedMessage.contentType.length == 0);
 
+        BOOL hasQuotedText = NO;
+        BOOL hasQuotedAttachment = NO;
+        if (self.quotedMessage.body.length > 0) {
             [quoteBuilder setText:self.quotedMessage.body];
 
-            [builder setQuoteBuilder:quoteBuilder];
-        } else if (self.quotedMessage.sourceFilename.length > 0 && self.quotedMessage.thumbnailData.length > 0
-            && self.quotedMessage.contentType.length > 0) {
-            OWSAssert(self.quotedMessage.body.length == 0);
+            hasQuotedText = YES;
+        }
+
+        if (self.quotedMessage.sourceFilename.length > 0 && self.quotedMessage.contentType.length > 0) {
 
             OWSSignalServiceProtosAttachmentPointerBuilder *attachmentBuilder =
                 [OWSSignalServiceProtosAttachmentPointerBuilder new];
-            [attachmentBuilder setThumbnail:self.quotedMessage.thumbnailData];
+            if (self.quotedMessage.thumbnailData.length > 0) {
+                [attachmentBuilder setThumbnail:self.quotedMessage.thumbnailData];
+            }
             [attachmentBuilder setFileName:self.quotedMessage.sourceFilename];
             [attachmentBuilder setContentType:self.quotedMessage.contentType];
             [quoteBuilder setAttachmentBuilder:attachmentBuilder];
 
+            hasQuotedAttachment = YES;
+        }
+
+        if (hasQuotedText || hasQuotedAttachment) {
             [builder setQuoteBuilder:quoteBuilder];
         } else {
             OWSFail(@"%@ Invalid quoted message data.", self.logTag);

@@ -47,7 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
                  expiresInSeconds:(uint32_t)expiresInSeconds
-                  expireStartedAt:(uint64_t)expireStartedAt NS_DESIGNATED_INITIALIZER;
+                  expireStartedAt:(uint64_t)expireStartedAt
+                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
@@ -61,8 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Update With... Methods
 
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)updateWithQuotedMessage:(TSQuotedMessage *)quotedMessage
-                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

@@ -1064,7 +1064,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                    attachmentIds:@[
                                                        pointer.uniqueId,
                                                    ]
-                                                expiresInSeconds:0];
+                                                expiresInSeconds:0
+                                                   quotedMessage:nil];
                 [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
                 break;
             }

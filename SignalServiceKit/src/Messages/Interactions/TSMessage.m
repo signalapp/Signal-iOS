@@ -96,7 +96,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                        messageBody:body
                      attachmentIds:attachmentIds
                   expiresInSeconds:expiresInSeconds
-                   expireStartedAt:0];
+                   expireStartedAt:0
+                     quotedMessage:nil];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -105,6 +106,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
                  expiresInSeconds:(uint32_t)expiresInSeconds
                   expireStartedAt:(uint64_t)expireStartedAt
+                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
 {
     self = [super initWithTimestamp:timestamp inThread:thread];
 
@@ -120,6 +122,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _expireStartedAt = expireStartedAt;
     [self updateExpiresAt];
     _receivedAtTimestamp = [NSDate ows_millisecondTimeStamp];
+    _quotedMessage = quotedMessage;
 
     return self;
 }
@@ -316,18 +319,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSMessage *message) {
                                  [message setExpireStartedAt:expireStartedAt];
-                             }];
-}
-
-- (void)updateWithQuotedMessage:(TSQuotedMessage *)quotedMessage
-                    transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssert(quotedMessage);
-    OWSAssert(transaction);
-
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSMessage *message) {
-                                 [message setQuotedMessage:quotedMessage];
                              }];
 }
 

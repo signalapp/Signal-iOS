@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSIncomingMessage.h"
@@ -47,7 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
                     sourceDeviceId:sourceDeviceId
                        messageBody:body
                      attachmentIds:@[]
-                  expiresInSeconds:0];
+                  expiresInSeconds:0
+                     quotedMessage:nil];
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
@@ -57,13 +58,15 @@ NS_ASSUME_NONNULL_BEGIN
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
                  expiresInSeconds:(uint32_t)expiresInSeconds
+                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
 {
     self = [super initWithTimestamp:timestamp
                            inThread:thread
                         messageBody:body
                       attachmentIds:attachmentIds
                    expiresInSeconds:expiresInSeconds
-                    expireStartedAt:0];
+                    expireStartedAt:0
+                      quotedMessage:quotedMessage];
 
     if (!self) {
         return self;

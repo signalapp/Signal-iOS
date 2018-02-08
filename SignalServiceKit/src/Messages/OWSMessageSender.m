@@ -1200,7 +1200,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                           sourceDeviceId:[OWSDevice currentDeviceId]
                                              messageBody:outgoingMessage.body
                                            attachmentIds:attachmentIds
-                                        expiresInSeconds:outgoingMessage.expiresInSeconds];
+                                        expiresInSeconds:outgoingMessage.expiresInSeconds
+                                           quotedMessage:outgoingMessage.quotedMessage];
         [incomingMessage saveWithTransaction:transaction];
     }];
 }
