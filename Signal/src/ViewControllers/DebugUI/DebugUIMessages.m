@@ -956,11 +956,15 @@ NS_ASSUME_NONNULL_BEGIN
     [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (int i = 0; i < counter; i++) {
             NSString *randomText = [self randomText];
-            TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                             inThread:thread
-                                                                             authorId:@"+19174054215"
-                                                                       sourceDeviceId:0
-                                                                          messageBody:randomText];
+            TSIncomingMessage *message =
+                [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                   inThread:thread
+                                                                   authorId:@"+19174054215"
+                                                             sourceDeviceId:0
+                                                                messageBody:randomText
+                                                              attachmentIds:@[]
+                                                           expiresInSeconds:0
+                                                              quotedMessage:nil];
             [message saveWithTransaction:transaction];
         }
     }];
@@ -1025,11 +1029,14 @@ NS_ASSUME_NONNULL_BEGIN
         switch (arc4random_uniform(isTextOnly ? 2 : 4)) {
             case 0: {
                 TSIncomingMessage *message =
-                    [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                        inThread:thread
-                                                        authorId:@"+19174054215"
-                                                  sourceDeviceId:0
-                                                     messageBody:randomText];
+                    [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                       inThread:thread
+                                                                       authorId:@"+19174054215"
+                                                                 sourceDeviceId:0
+                                                                    messageBody:randomText
+                                                                  attachmentIds:@[]
+                                                               expiresInSeconds:0
+                                                                  quotedMessage:nil];
                 [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
                 break;
             }
@@ -1056,16 +1063,16 @@ NS_ASSUME_NONNULL_BEGIN
                 pointer.state = TSAttachmentPointerStateFailed;
                 [pointer saveWithTransaction:transaction];
                 TSIncomingMessage *message =
-                    [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                        inThread:thread
-                                                        authorId:@"+19174054215"
-                                                  sourceDeviceId:0
-                                                     messageBody:nil
-                                                   attachmentIds:@[
-                                                       pointer.uniqueId,
-                                                   ]
-                                                expiresInSeconds:0
-                                                   quotedMessage:nil];
+                    [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                       inThread:thread
+                                                                       authorId:@"+19174054215"
+                                                                 sourceDeviceId:0
+                                                                    messageBody:nil
+                                                                  attachmentIds:@[
+                                                                      pointer.uniqueId,
+                                                                  ]
+                                                               expiresInSeconds:0
+                                                                  quotedMessage:nil];
                 [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
                 break;
             }

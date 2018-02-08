@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSUnreadIndicatorInteraction.h"
@@ -21,12 +21,12 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                                  thread:(TSThread *)thread
-                   hasMoreUnseenMessages:(BOOL)hasMoreUnseenMessages
-    missingUnseenSafetyNumberChangeCount:(NSUInteger)missingUnseenSafetyNumberChangeCount
+- (instancetype)initUnreadIndicatorWithTimestamp:(uint64_t)timestamp
+                                          thread:(TSThread *)thread
+                           hasMoreUnseenMessages:(BOOL)hasMoreUnseenMessages
+            missingUnseenSafetyNumberChangeCount:(NSUInteger)missingUnseenSafetyNumberChangeCount
 {
-    self = [super initWithTimestamp:timestamp inThread:thread];
+    self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
     if (!self) {
         return self;

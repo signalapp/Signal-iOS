@@ -37,6 +37,14 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @interface TSOutgoingMessage : TSMessage
 
+- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
+                                inThread:(nullable TSThread *)thread
+                             messageBody:(nullable NSString *)body
+                           attachmentIds:(NSArray<NSString *> *)attachmentIds
+                        expiresInSeconds:(uint32_t)expiresInSeconds
+                         expireStartedAt:(uint64_t)expireStartedAt
+                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage NS_UNAVAILABLE;
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread;

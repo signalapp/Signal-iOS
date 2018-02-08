@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInteraction.h"
@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     return @"TSInteraction";
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
+- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
 {
     OWSAssert(timestamp > 0);
 

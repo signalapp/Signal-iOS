@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSCall.h"
@@ -28,7 +28,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
                          callType:(RPRecentCallType)callType
                          inThread:(TSContactThread *)thread
 {
-    self = [super initWithTimestamp:timestamp inThread:thread];
+    self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
     if (!self) {
         return self;

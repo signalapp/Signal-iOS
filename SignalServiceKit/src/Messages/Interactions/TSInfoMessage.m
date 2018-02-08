@@ -46,13 +46,13 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
                          inThread:(TSThread *)thread
                       messageType:(TSInfoMessageType)infoMessage
 {
-    self = [super initWithTimestamp:timestamp
-                           inThread:thread
-                        messageBody:nil
-                      attachmentIds:@[]
-                   expiresInSeconds:0
-                    expireStartedAt:0
-                      quotedMessage:nil];
+    self = [super initMessageWithTimestamp:timestamp
+                                  inThread:thread
+                               messageBody:nil
+                             attachmentIds:@[]
+                          expiresInSeconds:0
+                           expireStartedAt:0
+                             quotedMessage:nil];
 
     if (!self) {
         return self;

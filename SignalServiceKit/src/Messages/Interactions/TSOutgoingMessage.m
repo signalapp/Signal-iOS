@@ -183,13 +183,13 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                  groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
 {
-    self = [super initWithTimestamp:timestamp
-                           inThread:thread
-                        messageBody:body
-                      attachmentIds:attachmentIds
-                   expiresInSeconds:expiresInSeconds
-                    expireStartedAt:expireStartedAt
-                      quotedMessage:quotedMessage];
+    self = [super initMessageWithTimestamp:timestamp
+                                  inThread:thread
+                               messageBody:body
+                             attachmentIds:attachmentIds
+                          expiresInSeconds:expiresInSeconds
+                           expireStartedAt:expireStartedAt
+                             quotedMessage:quotedMessage];
     if (!self) {
         return self;
     }

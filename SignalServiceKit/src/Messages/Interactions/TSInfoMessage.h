@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadTracking.h"
@@ -27,6 +27,14 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
 
 @property (atomic, readonly) TSInfoMessageType messageType;
 @property (atomic, readonly) NSString *customMessage;
+
+- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
+                                inThread:(nullable TSThread *)thread
+                             messageBody:(nullable NSString *)body
+                           attachmentIds:(NSArray<NSString *> *)attachmentIds
+                        expiresInSeconds:(uint32_t)expiresInSeconds
+                         expireStartedAt:(uint64_t)expireStartedAt
+                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

@@ -35,38 +35,22 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                         authorId:(NSString *)authorId
-                   sourceDeviceId:(uint32_t)sourceDeviceId
-                      messageBody:(nullable NSString *)body
+- (instancetype)initIncomingMessageWithTimestamp:(uint64_t)timestamp
+                                        inThread:(TSThread *)thread
+                                        authorId:(NSString *)authorId
+                                  sourceDeviceId:(uint32_t)sourceDeviceId
+                                     messageBody:(nullable NSString *)body
+                                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                                expiresInSeconds:(uint32_t)expiresInSeconds
+                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
 {
-    return [self initWithTimestamp:timestamp
-                          inThread:thread
-                          authorId:authorId
-                    sourceDeviceId:sourceDeviceId
-                       messageBody:body
-                     attachmentIds:@[]
-                  expiresInSeconds:0
-                     quotedMessage:nil];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                         authorId:(NSString *)authorId
-                   sourceDeviceId:(uint32_t)sourceDeviceId
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-{
-    self = [super initWithTimestamp:timestamp
-                           inThread:thread
-                        messageBody:body
-                      attachmentIds:attachmentIds
-                   expiresInSeconds:expiresInSeconds
-                    expireStartedAt:0
-                      quotedMessage:quotedMessage];
+    self = [super initMessageWithTimestamp:timestamp
+                                  inThread:thread
+                               messageBody:body
+                             attachmentIds:attachmentIds
+                          expiresInSeconds:expiresInSeconds
+                           expireStartedAt:0
+                             quotedMessage:quotedMessage];
 
     if (!self) {
         return self;

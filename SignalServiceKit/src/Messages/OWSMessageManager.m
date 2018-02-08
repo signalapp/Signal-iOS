@@ -980,14 +980,14 @@ NS_ASSUME_NONNULL_BEGIN
                     (unsigned long)timestamp);
 
                 TSIncomingMessage *incomingMessage =
-                    [[TSIncomingMessage alloc] initWithTimestamp:timestamp
-                                                        inThread:oldGroupThread
-                                                        authorId:envelope.source
-                                                  sourceDeviceId:envelope.sourceDevice
-                                                     messageBody:body
-                                                   attachmentIds:attachmentIds
-                                                expiresInSeconds:dataMessage.expireTimer
-                                                   quotedMessage:quotedMessage];
+                    [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
+                                                                       inThread:oldGroupThread
+                                                                       authorId:envelope.source
+                                                                 sourceDeviceId:envelope.sourceDevice
+                                                                    messageBody:body
+                                                                  attachmentIds:attachmentIds
+                                                               expiresInSeconds:dataMessage.expireTimer
+                                                                  quotedMessage:quotedMessage];
 
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
@@ -1021,14 +1021,15 @@ NS_ASSUME_NONNULL_BEGIN
 
         TSQuotedMessage *_Nullable quotedMessage = [self quotedMessageForDataMessage:dataMessage];
 
-        TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
-                                                                                 inThread:thread
-                                                                                 authorId:[thread contactIdentifier]
-                                                                           sourceDeviceId:envelope.sourceDevice
-                                                                              messageBody:body
-                                                                            attachmentIds:attachmentIds
-                                                                         expiresInSeconds:dataMessage.expireTimer
-                                                                            quotedMessage:quotedMessage];
+        TSIncomingMessage *incomingMessage =
+            [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
+                                                               inThread:thread
+                                                               authorId:[thread contactIdentifier]
+                                                         sourceDeviceId:envelope.sourceDevice
+                                                            messageBody:body
+                                                          attachmentIds:attachmentIds
+                                                       expiresInSeconds:dataMessage.expireTimer
+                                                          quotedMessage:quotedMessage];
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread
                              envelope:envelope

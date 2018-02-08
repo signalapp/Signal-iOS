@@ -59,13 +59,13 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                 failedMessageType:(TSErrorMessageType)errorMessageType
                       recipientId:(nullable NSString *)recipientId
 {
-    self = [super initWithTimestamp:timestamp
-                           inThread:thread
-                        messageBody:nil
-                      attachmentIds:@[]
-                   expiresInSeconds:0
-                    expireStartedAt:0
-                      quotedMessage:nil];
+    self = [super initMessageWithTimestamp:timestamp
+                                  inThread:thread
+                               messageBody:nil
+                             attachmentIds:@[]
+                          expiresInSeconds:0
+                           expireStartedAt:0
+                             quotedMessage:nil];
 
     if (!self) {
         return self;

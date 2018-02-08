@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ThreadUtil.h"
@@ -499,12 +499,12 @@ NS_ASSUME_NONNULL_BEGIN
             NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
 
             TSInteraction *offersMessage =
-                [[OWSContactOffersInteraction alloc] initWithTimestamp:contactOffersTimestamp
-                                                                thread:thread
-                                                         hasBlockOffer:shouldHaveBlockOffer
-                                                 hasAddToContactsOffer:shouldHaveAddToContactsOffer
-                                         hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
-                                                           recipientId:recipientId];
+                [[OWSContactOffersInteraction alloc] initContactOffersWithTimestamp:contactOffersTimestamp
+                                                                             thread:thread
+                                                                      hasBlockOffer:shouldHaveBlockOffer
+                                                              hasAddToContactsOffer:shouldHaveAddToContactsOffer
+                                                      hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
+                                                                        recipientId:recipientId];
             [offersMessage saveWithTransaction:transaction];
 
             DDLogInfo(@"%@ Creating contact offers: %@ (%llu)",
@@ -540,11 +540,11 @@ NS_ASSUME_NONNULL_BEGIN
                     [existingUnreadIndicator removeWithTransaction:transaction];
                 }
 
-                TSUnreadIndicatorInteraction *indicator =
-                    [[TSUnreadIndicatorInteraction alloc] initWithTimestamp:indicatorTimestamp
-                                                                     thread:thread
-                                                      hasMoreUnseenMessages:result.hasMoreUnseenMessages
-                                       missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount];
+                TSUnreadIndicatorInteraction *indicator = [[TSUnreadIndicatorInteraction alloc]
+                        initUnreadIndicatorWithTimestamp:indicatorTimestamp
+                                                  thread:thread
+                                   hasMoreUnseenMessages:result.hasMoreUnseenMessages
+                    missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount];
                 [indicator saveWithTransaction:transaction];
 
                 DDLogInfo(@"%@ Creating TSUnreadIndicatorInteraction: %@ (%llu)",
