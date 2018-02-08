@@ -1042,9 +1042,15 @@ NS_ASSUME_NONNULL_BEGIN
             }
             case 1: {
                 TSOutgoingMessage *message =
-                    [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                        inThread:thread
-                                                     messageBody:randomText];
+                    [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                       inThread:thread
+                                                                    messageBody:randomText
+                                                                  attachmentIds:[NSMutableArray new]
+                                                               expiresInSeconds:0
+                                                                expireStartedAt:0
+                                                                 isVoiceMessage:NO
+                                                               groupMetaMessage:TSGroupMessageNone
+                                                                  quotedMessage:nil];
                 [message saveWithTransaction:transaction];
                 [message updateWithMessageState:TSOutgoingMessageStateUnsent transaction:transaction];
                 break;
@@ -1078,11 +1084,15 @@ NS_ASSUME_NONNULL_BEGIN
             }
             case 3: {
                 TSOutgoingMessage *message =
-                    [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                        inThread:thread
-                                                     messageBody:nil
-                                                  isVoiceMessage:NO
-                                                expiresInSeconds:0];
+                    [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                       inThread:thread
+                                                                    messageBody:nil
+                                                                  attachmentIds:[NSMutableArray new]
+                                                               expiresInSeconds:0
+                                                                expireStartedAt:0
+                                                                 isVoiceMessage:NO
+                                                               groupMetaMessage:TSGroupMessageNone
+                                                                  quotedMessage:nil];
 
                 NSString *filename = @"test.mp3";
                 UInt32 filesize = 16;
@@ -1115,11 +1125,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                         inThread:thread
-                                                                      messageBody:nil
-                                                                   isVoiceMessage:NO
-                                                                 expiresInSeconds:0];
+        TSOutgoingMessage *message =
+            [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                               inThread:thread
+                                                            messageBody:nil
+                                                          attachmentIds:[NSMutableArray new]
+                                                       expiresInSeconds:0
+                                                        expireStartedAt:0
+                                                         isVoiceMessage:NO
+                                                       groupMetaMessage:TSGroupMessageNone
+                                                          quotedMessage:nil];
         DDLogError(@"%@ sendFakeMessages outgoing attachment timestamp: %llu.", self.logTag, message.timestamp);
 
         NSString *filename = @"test.mp3";
@@ -1189,9 +1204,16 @@ NS_ASSUME_NONNULL_BEGIN
         }];
     OWSAssert(thread);
 
-    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                     inThread:thread
-                                                             groupMetaMessage:TSGroupMessageNew];
+    TSOutgoingMessage *message =
+        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                           inThread:thread
+                                                        messageBody:nil
+                                                      attachmentIds:[NSMutableArray new]
+                                                   expiresInSeconds:0
+                                                    expireStartedAt:0
+                                                     isVoiceMessage:NO
+                                                   groupMetaMessage:TSGroupMessageNew
+                                                      quotedMessage:nil];
     [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 
     OWSMessageSender *messageSender = [Environment current].messageSender;
@@ -1436,12 +1458,16 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *text = [self randomText];
         OWSDisappearingMessagesConfiguration *configuration =
             [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId transaction:transaction];
-        TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                            inThread:thread
-                                         messageBody:text
-                                       attachmentIds:[NSMutableArray new]
-                                    expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
+            initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                    inThread:thread
+                                 messageBody:text
+                               attachmentIds:[NSMutableArray new]
+                            expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds
+                                                                      : 0)expireStartedAt:0
+                              isVoiceMessage:NO
+                            groupMetaMessage:TSGroupMessageNone
+                               quotedMessage:nil];
         DDLogError(@"%@ insertAndDeleteNewOutgoingMessages timestamp: %llu.", self.logTag, message.timestamp);
         [messages addObject:message];
     }
@@ -1466,12 +1492,16 @@ NS_ASSUME_NONNULL_BEGIN
         OWSDisappearingMessagesConfiguration *configuration =
             [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId
                                                               transaction:initialTransaction];
-        TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                            inThread:thread
-                                         messageBody:text
-                                       attachmentIds:[NSMutableArray new]
-                                    expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
+            initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                    inThread:thread
+                                 messageBody:text
+                               attachmentIds:[NSMutableArray new]
+                            expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds
+                                                                      : 0)expireStartedAt:0
+                              isVoiceMessage:NO
+                            groupMetaMessage:TSGroupMessageNone
+                               quotedMessage:nil];
         DDLogError(@"%@ resurrectNewOutgoingMessages1 timestamp: %llu.", self.logTag, message.timestamp);
         [messages addObject:message];
     }
@@ -1505,12 +1535,16 @@ NS_ASSUME_NONNULL_BEGIN
         OWSDisappearingMessagesConfiguration *configuration =
             [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId
                                                               transaction:initialTransaction];
-        TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                            inThread:thread
-                                         messageBody:text
-                                       attachmentIds:[NSMutableArray new]
-                                    expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
+            initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                    inThread:thread
+                                 messageBody:text
+                               attachmentIds:[NSMutableArray new]
+                            expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds
+                                                                      : 0)expireStartedAt:0
+                              isVoiceMessage:NO
+                            groupMetaMessage:TSGroupMessageNone
+                               quotedMessage:nil];
         DDLogError(@"%@ resurrectNewOutgoingMessages2 timestamp: %llu.", self.logTag, message.timestamp);
         [messages addObject:message];
     }

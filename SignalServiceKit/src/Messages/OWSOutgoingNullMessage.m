@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingNullMessage.h"
@@ -17,13 +17,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
 @implementation OWSOutgoingNullMessage
 
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
          verificationStateSyncMessage:(OWSVerificationStateSyncMessage *)verificationStateSyncMessage
 {
-    self = [super initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                           inThread:contactThread];
+    self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                          inThread:contactThread
+                                       messageBody:nil
+                                     attachmentIds:[NSMutableArray new]
+                                  expiresInSeconds:0
+                                   expireStartedAt:0
+                                    isVoiceMessage:NO
+                                  groupMetaMessage:TSGroupMessageNone
+                                     quotedMessage:nil];
     if (!self) {
         return self;
     }

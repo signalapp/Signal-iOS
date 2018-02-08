@@ -16,7 +16,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init
 {
-    return [super initWithTimestamp:[NSDate ows_millisecondTimeStamp]];
+    return [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                          inThread:nil
+                                       messageBody:nil
+                                     attachmentIds:[NSMutableArray new]
+                                  expiresInSeconds:0
+                                   expireStartedAt:0
+                                    isVoiceMessage:NO
+                                  groupMetaMessage:TSGroupMessageNone
+                                     quotedMessage:nil];
 }
 
 - (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder

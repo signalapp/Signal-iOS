@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
 @implementation OWSDisappearingMessagesConfigurationMessage
 
 - (BOOL)shouldBeSaved
@@ -24,7 +26,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithConfiguration:(OWSDisappearingMessagesConfiguration *)configuration thread:(TSThread *)thread
 {
-    self = [super initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
+    self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                          inThread:thread
+                                       messageBody:nil
+                                     attachmentIds:[NSMutableArray new]
+                                  expiresInSeconds:0
+                                   expireStartedAt:0
+                                    isVoiceMessage:NO
+                                  groupMetaMessage:TSGroupMessageNone
+                                     quotedMessage:nil];
     if (!self) {
         return self;
     }

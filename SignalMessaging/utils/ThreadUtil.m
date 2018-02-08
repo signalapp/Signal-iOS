@@ -82,12 +82,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
-    TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                            inThread:thread
-                                         messageBody:text
-                                       attachmentIds:[NSMutableArray new]
-                                    expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
+        initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                inThread:thread
+                             messageBody:text
+                           attachmentIds:[NSMutableArray new]
+                        expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)expireStartedAt:0
+                          isVoiceMessage:NO
+                        groupMetaMessage:TSGroupMessageNone
+                           quotedMessage:nil];
 
     [messageSender enqueueMessage:message success:successHandler failure:failureHandler];
 
@@ -121,13 +124,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
-    TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                            inThread:thread
-                                         messageBody:attachment.captionText
-                                      isVoiceMessage:[attachment isVoiceMessage]
-                                    expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
-    
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
+        initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                inThread:thread
+                             messageBody:attachment.captionText
+                           attachmentIds:[NSMutableArray new]
+                        expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)expireStartedAt:0
+                          isVoiceMessage:[attachment isVoiceMessage]
+                        groupMetaMessage:TSGroupMessageNone
+                           quotedMessage:nil];
+
     [messageSender enqueueAttachment:attachment.dataSource
         contentType:attachment.mimeType
         sourceFilename:attachment.filenameOrDefault

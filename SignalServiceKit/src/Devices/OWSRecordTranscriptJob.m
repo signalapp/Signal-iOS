@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRecordTranscriptJob.h"
@@ -90,12 +90,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
     TSOutgoingMessage *outgoingMessage =
-        [[TSOutgoingMessage alloc] initWithTimestamp:transcript.timestamp
-                                            inThread:thread
-                                         messageBody:transcript.body
-                                       attachmentIds:[attachmentsProcessor.attachmentIds mutableCopy]
-                                    expiresInSeconds:transcript.expirationDuration
-                                     expireStartedAt:transcript.expirationStartedAt];
+        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:transcript.timestamp
+                                                           inThread:thread
+                                                        messageBody:transcript.body
+                                                      attachmentIds:[attachmentsProcessor.attachmentIds mutableCopy]
+                                                   expiresInSeconds:transcript.expirationDuration
+                                                    expireStartedAt:transcript.expirationStartedAt
+                                                     isVoiceMessage:NO
+                                                   groupMetaMessage:TSGroupMessageNone
+                                                      quotedMessage:nil];
 
     if (transcript.isExpirationTimerUpdate) {
         [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:outgoingMessage
@@ -132,12 +135,16 @@ NS_ASSUME_NONNULL_BEGIN
     if (attachmentsProcessor.hasSupportedAttachments && transcript.body && ![transcript.body isEqualToString:@""]) {
         // We want the text to appear after the attachment.
         uint64_t textMessageTimestamp = transcript.timestamp + 1;
-        TSOutgoingMessage *textMessage = [[TSOutgoingMessage alloc] initWithTimestamp:textMessageTimestamp
-                                                                             inThread:thread
-                                                                          messageBody:transcript.body
-                                                                        attachmentIds:[NSMutableArray new]
-                                                                     expiresInSeconds:transcript.expirationDuration
-                                                                      expireStartedAt:transcript.expirationStartedAt];
+        TSOutgoingMessage *textMessage =
+            [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:textMessageTimestamp
+                                                               inThread:thread
+                                                            messageBody:transcript.body
+                                                          attachmentIds:[NSMutableArray new]
+                                                       expiresInSeconds:transcript.expirationDuration
+                                                        expireStartedAt:transcript.expirationStartedAt
+                                                         isVoiceMessage:NO
+                                                       groupMetaMessage:TSGroupMessageNone
+                                                          quotedMessage:nil];
         // Since textMessage is a new message, updateWithWasSentAndDelivered will save it.
         [textMessage saveWithTransaction:transaction];
         [textMessage updateWithWasSentFromLinkedDeviceWithTransaction:transaction];

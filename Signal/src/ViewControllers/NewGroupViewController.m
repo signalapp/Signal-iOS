@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "NewGroupViewController.h"
@@ -490,9 +490,15 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                       TSOutgoingMessage *message =
-                          [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                              inThread:thread
-                                                      groupMetaMessage:TSGroupMessageNew];
+                          [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                             inThread:thread
+                                                                          messageBody:nil
+                                                                        attachmentIds:[NSMutableArray new]
+                                                                     expiresInSeconds:0
+                                                                      expireStartedAt:0
+                                                                       isVoiceMessage:NO
+                                                                     groupMetaMessage:TSGroupMessageNew
+                                                                        quotedMessage:nil];
 
                       [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 

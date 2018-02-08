@@ -75,113 +75,15 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     return self;
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-{
-    return [self initWithTimestamp:timestamp inThread:nil];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
-{
-    return [self initWithTimestamp:timestamp inThread:thread messageBody:nil];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-{
-    return [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:body
-                     attachmentIds:[NSMutableArray new]
-                  expiresInSeconds:0];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-{
-    return [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:body
-                     attachmentIds:attachmentIds
-                  expiresInSeconds:0];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-{
-    return [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:body
-                     attachmentIds:attachmentIds
-                  expiresInSeconds:expiresInSeconds
-                   expireStartedAt:0];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)messageBody
-                   isVoiceMessage:(BOOL)isVoiceMessage
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-{
-    self = [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:messageBody
-                     attachmentIds:[NSMutableArray new]
-                  expiresInSeconds:expiresInSeconds
-                   expireStartedAt:0];
-    if (self) {
-        _isVoiceMessage = isVoiceMessage;
-    }
-
-    return self;
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-                  expireStartedAt:(uint64_t)expireStartedAt
-{
-    TSGroupMetaMessage groupMetaMessage
-        = ([thread isKindOfClass:[TSGroupThread class]] ? TSGroupMessageDeliver : TSGroupMessageNone);
-    return [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:body
-                     attachmentIds:attachmentIds
-                  expiresInSeconds:expiresInSeconds
-                   expireStartedAt:expireStartedAt
-                  groupMetaMessage:groupMetaMessage
-                     quotedMessage:nil];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-{
-    return [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:@""
-                     attachmentIds:[NSMutableArray new]
-                  expiresInSeconds:0
-                   expireStartedAt:0
-                  groupMetaMessage:groupMetaMessage
-                     quotedMessage:nil];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-                  expireStartedAt:(uint64_t)expireStartedAt
-                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+- (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
+                                        inThread:(nullable TSThread *)thread
+                                     messageBody:(nullable NSString *)body
+                                   attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
+                                expiresInSeconds:(uint32_t)expiresInSeconds
+                                 expireStartedAt:(uint64_t)expireStartedAt
+                                  isVoiceMessage:(BOOL)isVoiceMessage
+                                groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -198,6 +100,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     _sentRecipients = [NSArray new];
     _hasSyncedTranscript = NO;
     _groupMetaMessage = groupMetaMessage;
+    _isVoiceMessage = isVoiceMessage;
 
     _attachmentFilenameMap = [NSMutableDictionary new];
 
