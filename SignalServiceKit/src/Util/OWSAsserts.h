@@ -119,6 +119,9 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 
 // This macro is intended for use in Objective-C.
+//
+// Note that we use the "C" flavor of the assert to avoid
+// capturing a strong reference to self.
 #define OWSAssertIsOnMainThread() OWSCAssert([NSThread isMainThread])
 
 // This function is intended for use in Swift.
