@@ -40,6 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
+@property (nonatomic) BOOL isPresentedInNavigationController;
+
 @end
 
 NS_ASSUME_NONNULL_END

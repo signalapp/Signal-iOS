@@ -10,7 +10,7 @@ import SignalServiceKit
 import PromiseKit
 
 @objc
-public class ShareViewController: UINavigationController, ShareViewDelegate, SAEFailedViewDelegate {
+public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate {
 
     enum ShareViewControllerError: Error {
         case assertionError(description: String)
@@ -104,8 +104,6 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
             self.versionMigrationsDidComplete()
         })
-
-        self.isNavigationBarHidden = true
 
         // We don't need to use "screen protection" in the SAE.
 
@@ -470,7 +468,6 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         self.buildAttachment().then { attachment -> Void in
             let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: self)
             conversationPicker.attachment = attachment
-            self.shareViewNavigationController.isNavigationBarHidden = true
             self.progressPoller = nil
             self.loadViewController = nil
             self.showPrimaryViewController(conversationPicker)
