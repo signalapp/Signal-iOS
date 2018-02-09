@@ -59,7 +59,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     _messageSender = [Environment current].messageSender;
 
     _progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
-    self.title = NSLocalizedString(@"SEND_EXTERNAL_FILE_VIEW_TITLE", @"Title for the 'send external file' view.");
+    self.title = NSLocalizedString(@"SHARE_EXTENSION_VIEW_TITLE", @"Title for the 'share extension' view.");
 }
 
 - (void)viewDidLoad
