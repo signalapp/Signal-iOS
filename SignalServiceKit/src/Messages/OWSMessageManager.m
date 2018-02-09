@@ -1068,7 +1068,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
     // TODO: We could verify that this is a valid e164 value.
-    NSString *recipientId = [quoteProto author];
+    NSString *authorId = [quoteProto author];
 
     NSString *_Nullable body = nil;
     BOOL hasText = NO;
@@ -1084,11 +1084,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([quoteProto hasAttachment]) {
         OWSSignalServiceProtosAttachmentPointer *attachmentProto = [quoteProto attachment];
-        if ([attachmentProto hasFileName] && attachmentProto.fileName.length > 0 && [attachmentProto hasContentType]
-            && attachmentProto.contentType.length > 0) {
-            sourceFilename = attachmentProto.fileName;
+        if ([attachmentProto hasContentType] && attachmentProto.contentType.length > 0) {
             contentType = attachmentProto.contentType;
 
+            if ([attachmentProto hasFileName] && attachmentProto.fileName.length > 0) {
+                sourceFilename = attachmentProto.fileName;
+            }
             if ([attachmentProto hasThumbnail] && attachmentProto.thumbnail.length > 0) {
                 thumbnailData = [attachmentProto thumbnail];
             }
@@ -1102,7 +1103,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initWithTimestamp:timestamp
-                                                                    recipientId:recipientId
+                                                                       authorId:authorId
                                                                            body:body
                                                                  sourceFilename:sourceFilename
                                                                   thumbnailData:thumbnailData

@@ -6,7 +6,6 @@
 #import "Environment.h"
 #import "NSString+OWS.h"
 #import "OWSUserProfile.h"
-#import "UIImage+OWS.h"
 #import <AFNetworking/AFNetworking.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
@@ -30,6 +29,7 @@
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
+#import <SignalServiceKit/UIImage+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

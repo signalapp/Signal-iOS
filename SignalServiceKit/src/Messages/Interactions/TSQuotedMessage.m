@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation TSQuotedMessage
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                      recipientId:(NSString *)recipientId
+                         authorId:(NSString *)authorId
                              body:(NSString *_Nullable)body
                    sourceFilename:(NSString *_Nullable)sourceFilename
                     thumbnailData:(NSData *_Nullable)thumbnailData
@@ -21,10 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSAssert(timestamp > 0);
-    OWSAssert(recipientId.length > 0);
+    OWSAssert(authorId.length > 0);
 
     _timestamp = timestamp;
-    _recipientId = recipientId;
+    _authorId = authorId;
     _body = body;
     _sourceFilename = sourceFilename;
     _thumbnailData = thumbnailData;

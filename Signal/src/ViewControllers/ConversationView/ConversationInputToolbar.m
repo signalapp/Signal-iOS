@@ -47,7 +47,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     }
 
     _titleLabel = [UILabel new];
-    _titleLabel.text = [[Environment current].contactsManager displayNameForPhoneIdentifier:message.recipientId];
+    _titleLabel.text = [[Environment current].contactsManager displayNameForPhoneIdentifier:message.authorId];
 
     _bodyLabel = [UILabel new];
     _bodyLabel.text = message.body;
@@ -64,7 +64,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     _cancelButton.imageView.tintColor = [UIColor ows_blackColor];
 
     _quoteStripe = [UIView new];
-    BOOL isQuotingSelf = [message.recipientId isEqualToString:[TSAccountManager localNumber]];
+    BOOL isQuotingSelf = [message.authorId isEqualToString:[TSAccountManager localNumber]];
 
     // FIXME actual colors TBD
     _quoteStripe.backgroundColor = isQuotingSelf ? [UIColor orangeColor] : [UIColor blackColor];

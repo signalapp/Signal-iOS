@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSQuotedMessage : TSYapDatabaseObject
 
 @property (nonatomic, readonly) uint64_t timestamp;
-@property (nonatomic, readonly) NSString *recipientId;
+@property (nonatomic, readonly) NSString *authorId;
 
 // This property should be set IFF we are quoting a text message.
 @property (nullable, nonatomic, readonly) NSString *body;
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                      recipientId:(NSString *)recipientId
+                         authorId:(NSString *)authorId
                              body:(NSString *_Nullable)body
                    sourceFilename:(NSString *_Nullable)sourceFilename
                     thumbnailData:(NSData *_Nullable)thumbnailData

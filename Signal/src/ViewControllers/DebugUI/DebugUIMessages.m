@@ -14,6 +14,7 @@
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSMessageUtils.h>
 #import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SecurityUtils.h>
@@ -272,6 +273,10 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Inject 1,000 fake incoming messages"
                         actionBlock:^{
                             [DebugUIMessages injectFakeIncomingMessages:1000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Create fake quoted replies"
+                        actionBlock:^{
+                            [DebugUIMessages createFakeQuotedRepliesInThread:thread];
                         }],
     ] mutableCopy];
     if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -1570,6 +1575,51 @@ NS_ASSUME_NONNULL_BEGIN
             }];
         });
     });
+}
+
++ (void)createFakeQuotedRepliesInThread:(TSThread *)thread
+{
+    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        int counter = 0;
+
+        {
+            // Reply to yourself, text.
+
+            NSString *text1 =
+                [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
+            TSOutgoingMessage *message1 =
+                [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                   inThread:thread
+                                                                messageBody:text1
+                                                              attachmentIds:[NSMutableArray new]
+                                                           expiresInSeconds:0
+                                                            expireStartedAt:0
+                                                             isVoiceMessage:NO
+                                                           groupMetaMessage:TSGroupMessageNone
+                                                              quotedMessage:nil];
+            [message1 saveWithTransaction:transaction];
+            [message1 updateWithMessageState:TSOutgoingMessageStateUnsent transaction:transaction];
+
+            TSQuotedMessage *_Nullable quotedMessage =
+                [OWSMessageUtils quotedMessageForOutgoingMessage:message1 transaction:transaction];
+            OWSAssert(quotedMessage);
+
+            NSString *text2 =
+                [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
+            TSOutgoingMessage *message2 =
+                [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                   inThread:thread
+                                                                messageBody:text2
+                                                              attachmentIds:[NSMutableArray new]
+                                                           expiresInSeconds:0
+                                                            expireStartedAt:0
+                                                             isVoiceMessage:NO
+                                                           groupMetaMessage:TSGroupMessageNone
+                                                              quotedMessage:quotedMessage];
+            [message1 saveWithTransaction:transaction];
+            [message1 updateWithMessageState:TSOutgoingMessageStateUnsent transaction:transaction];
+        }
+    }];
 }
 
 @end

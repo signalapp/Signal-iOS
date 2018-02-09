@@ -411,7 +411,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
         OWSSignalServiceProtosDataMessageQuoteBuilder *quoteBuilder =
             [OWSSignalServiceProtosDataMessageQuoteBuilder new];
         [quoteBuilder setId:self.quotedMessage.timestamp];
-        [quoteBuilder setAuthor:self.quotedMessage.recipientId];
+        [quoteBuilder setAuthor:self.quotedMessage.authorId];
 
         BOOL hasQuotedText = NO;
         BOOL hasQuotedAttachment = NO;
@@ -421,14 +421,16 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
             hasQuotedText = YES;
         }
 
-        if (self.quotedMessage.sourceFilename.length > 0 && self.quotedMessage.contentType.length > 0) {
+        if (self.quotedMessage.contentType.length > 0) {
 
             OWSSignalServiceProtosAttachmentPointerBuilder *attachmentBuilder =
                 [OWSSignalServiceProtosAttachmentPointerBuilder new];
             if (self.quotedMessage.thumbnailData.length > 0) {
                 [attachmentBuilder setThumbnail:self.quotedMessage.thumbnailData];
             }
-            [attachmentBuilder setFileName:self.quotedMessage.sourceFilename];
+            if (self.quotedMessage.sourceFilename.length > 0) {
+                [attachmentBuilder setFileName:self.quotedMessage.sourceFilename];
+            }
             [attachmentBuilder setContentType:self.quotedMessage.contentType];
             [quoteBuilder setAttachmentBuilder:attachmentBuilder];
 
