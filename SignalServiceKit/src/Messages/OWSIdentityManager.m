@@ -314,7 +314,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert(recipientId.length > 0);
     OWSAssert(transaction);
 
-    // TODO: Remove all @synchronized
     // Ensure a remote identity exists for this key. We may be learning about
     // it for the first time.
     [self saveRemoteIdentity:identityKey recipientId:recipientId protocolContext:transaction];
@@ -449,36 +448,33 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert(direction != TSMessageDirectionUnknown);
     OWSAssert(transaction);
 
-    @synchronized(self)
-    {
-        if ([[TSAccountManager localNumber] isEqualToString:recipientId]) {
-            ECKeyPair *_Nullable localIdentityKeyPair = [self identityKeyPair:transaction];
+    if ([[TSAccountManager localNumber] isEqualToString:recipientId]) {
+        ECKeyPair *_Nullable localIdentityKeyPair = [self identityKeyPair:transaction];
 
-            if ([localIdentityKeyPair.publicKey isEqualToData:identityKey]) {
-                return YES;
-            } else {
-                OWSFail(@"%@ Wrong identity: %@ for local key: %@, recipientId: %@",
-                    self.logTag,
-                    identityKey,
-                    localIdentityKeyPair.publicKey,
-                    recipientId);
-                return NO;
-            }
+        if ([localIdentityKeyPair.publicKey isEqualToData:identityKey]) {
+            return YES;
+        } else {
+            OWSFail(@"%@ Wrong identity: %@ for local key: %@, recipientId: %@",
+                self.logTag,
+                identityKey,
+                localIdentityKeyPair.publicKey,
+                recipientId);
+            return NO;
         }
+    }
 
-        switch (direction) {
-            case TSMessageDirectionIncoming: {
-                return YES;
-            }
-            case TSMessageDirectionOutgoing: {
-                OWSRecipientIdentity *existingIdentity =
-                    [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
-                return [self isTrustedKey:identityKey forSendingToIdentity:existingIdentity];
-            }
-            default: {
-                OWSFail(@"%@ unexpected message direction: %ld", self.logTag, (long)direction);
-                return NO;
-            }
+    switch (direction) {
+        case TSMessageDirectionIncoming: {
+            return YES;
+        }
+        case TSMessageDirectionOutgoing: {
+            OWSRecipientIdentity *existingIdentity =
+                [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
+            return [self isTrustedKey:identityKey forSendingToIdentity:existingIdentity];
+        }
+        default: {
+            OWSFail(@"%@ unexpected message direction: %ld", self.logTag, (long)direction);
+            return NO;
         }
     }
 }
@@ -577,56 +573,53 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)syncQueuedVerificationStates
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        @synchronized(self)
-        {
-            NSMutableArray<NSString *> *recipientIds = [NSMutableArray new];
-            [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                [transaction enumerateKeysAndObjectsInCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages
-                                                      usingBlock:^(NSString *_Nonnull recipientId,
-                                                                   id _Nonnull object,
-                                                                   BOOL *_Nonnull stop) {
-                                                          [recipientIds addObject:recipientId];
-                                                      }];
-            }];
+        NSMutableArray<NSString *> *recipientIds = [NSMutableArray new];
+        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [transaction
+                enumerateKeysAndObjectsInCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages
+                                         usingBlock:^(
+                                             NSString *_Nonnull recipientId, id _Nonnull object, BOOL *_Nonnull stop) {
+                                             [recipientIds addObject:recipientId];
+                                         }];
+        }];
 
-            NSMutableArray<OWSVerificationStateSyncMessage *> *messages = [NSMutableArray new];
-            for (NSString *recipientId in recipientIds) {
-                OWSRecipientIdentity *recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
-                if (!recipientIdentity) {
-                    OWSFail(@"Could not load recipient identity for recipientId: %@", recipientId);
-                    continue;
-                }
-                if (recipientIdentity.recipientId.length < 1) {
-                    OWSFail(@"Invalid recipient identity for recipientId: %@", recipientId);
-                    continue;
-                }
-
-                // Prepend key type for transit.
-                // TODO we should just be storing the key type so we don't have to juggle re-adding it.
-                NSData *identityKey = [recipientIdentity.identityKey prependKeyType];
-                if (identityKey.length != kIdentityKeyLength) {
-                    OWSFail(@"Invalid recipient identitykey for recipientId: %@ key: %@", recipientId, identityKey);
-                    continue;
-                }
-                if (recipientIdentity.verificationState == OWSVerificationStateNoLongerVerified) {
-                    // We don't want to sync "no longer verified" state.  Other clients can
-                    // figure this out from the /profile/ endpoint, and this can cause data
-                    // loss as a user's devices overwrite each other's verification.
-                    OWSFail(@"Queue verification state had unexpected value: %@ recipientId: %@",
-                        OWSVerificationStateToString(recipientIdentity.verificationState),
-                        recipientId);
-                    continue;
-                }
-                OWSVerificationStateSyncMessage *message = [[OWSVerificationStateSyncMessage alloc]
-                     initWithVerificationState:recipientIdentity.verificationState
-                                   identityKey:identityKey
-                    verificationForRecipientId:recipientIdentity.recipientId];
-                [messages addObject:message];
+        NSMutableArray<OWSVerificationStateSyncMessage *> *messages = [NSMutableArray new];
+        for (NSString *recipientId in recipientIds) {
+            OWSRecipientIdentity *recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
+            if (!recipientIdentity) {
+                OWSFail(@"Could not load recipient identity for recipientId: %@", recipientId);
+                continue;
             }
-            if (messages.count > 0) {
-                for (OWSVerificationStateSyncMessage *message in messages) {
-                    [self sendSyncVerificationStateMessage:message];
-                }
+            if (recipientIdentity.recipientId.length < 1) {
+                OWSFail(@"Invalid recipient identity for recipientId: %@", recipientId);
+                continue;
+            }
+
+            // Prepend key type for transit.
+            // TODO we should just be storing the key type so we don't have to juggle re-adding it.
+            NSData *identityKey = [recipientIdentity.identityKey prependKeyType];
+            if (identityKey.length != kIdentityKeyLength) {
+                OWSFail(@"Invalid recipient identitykey for recipientId: %@ key: %@", recipientId, identityKey);
+                continue;
+            }
+            if (recipientIdentity.verificationState == OWSVerificationStateNoLongerVerified) {
+                // We don't want to sync "no longer verified" state.  Other clients can
+                // figure this out from the /profile/ endpoint, and this can cause data
+                // loss as a user's devices overwrite each other's verification.
+                OWSFail(@"Queue verification state had unexpected value: %@ recipientId: %@",
+                    OWSVerificationStateToString(recipientIdentity.verificationState),
+                    recipientId);
+                continue;
+            }
+            OWSVerificationStateSyncMessage *message =
+                [[OWSVerificationStateSyncMessage alloc] initWithVerificationState:recipientIdentity.verificationState
+                                                                       identityKey:identityKey
+                                                        verificationForRecipientId:recipientIdentity.recipientId];
+            [messages addObject:message];
+        }
+        if (messages.count > 0) {
+            for (OWSVerificationStateSyncMessage *message in messages) {
+                [self sendSyncVerificationStateMessage:message];
             }
         }
     });

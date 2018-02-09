@@ -33,7 +33,6 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     return sessionStoreDBConnection;
 }
 
-// TODO: Audit usage of this connection.
 - (YapDatabaseConnection *)sessionStoreDBConnection
 {
     return [[self class] sessionStoreDBConnection];

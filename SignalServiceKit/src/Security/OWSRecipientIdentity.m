@@ -109,7 +109,6 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
     [latest saveWithTransaction:transaction];
 }
 
-// TODO: Is this method obsolete?
 - (void)updateWithChangeBlock:(void (^)(OWSRecipientIdentity *obj))changeBlock
 {
     changeBlock(self);
