@@ -60,7 +60,8 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         self.viewItem = viewItem
         self.message = message
         self.mode = mode
-        self.databaseConnection = TSStorageManager.shared().newDatabaseConnection()!
+        self.databaseConnection = TSStorageManager.shared().newDatabaseConnection()
+
         super.init(nibName: nil, bundle: nil)
     }
 

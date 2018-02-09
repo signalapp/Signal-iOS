@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <YapDatabase/YapDatabaseConnection.h>
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 @class ECKeyPair;
 @class PreKeyRecord;
@@ -10,13 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YapDatabaseConnection (OWS)
+@interface YapDatabaseReadTransaction (OWS)
 
-- (BOOL)hasObjectForKey:(NSString *)key inCollection:(NSString *)collection;
 - (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection;
 - (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection defaultValue:(BOOL)defaultValue;
 - (int)intForKey:(NSString *)key inCollection:(NSString *)collection;
-- (nullable id)objectForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable NSDate *)dateForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable NSDictionary *)dictionaryForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable NSString *)stringForKey:(NSString *)key inCollection:(NSString *)collection;
@@ -25,18 +23,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable PreKeyRecord *)preKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
 
-- (NSUInteger)numberOfKeysInCollection:(NSString *)collection;
+@end
 
 #pragma mark -
 
-- (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection;
-- (void)setBool:(BOOL)value forKey:(NSString *)key inCollection:(NSString *)collection;
-- (void)removeObjectForKey:(NSString *)string inCollection:(NSString *)collection;
-- (void)setInt:(int)integer forKey:(NSString *)key inCollection:(NSString *)collection;
-- (void)setDate:(NSDate *)value forKey:(NSString *)key inCollection:(NSString *)collection;
-- (int)incrementIntForKey:(NSString *)key inCollection:(NSString *)collection;
+@interface YapDatabaseReadWriteTransaction (OWS)
 
-- (void)purgeCollection:(NSString *)collection;
+#pragma mark - Debug
+
+#if DEBUG
+- (void)snapshotCollection:(NSString *)collection snapshotFilePath:(NSString *)snapshotFilePath;
+- (void)restoreSnapshotOfCollection:(NSString *)collection snapshotFilePath:(NSString *)snapshotFilePath;
+#endif
 
 @end
 

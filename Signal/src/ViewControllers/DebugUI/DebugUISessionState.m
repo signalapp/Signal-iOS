@@ -30,9 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
                             }],
             [OWSTableItem itemWithTitle:@"Log All Sessions"
                             actionBlock:^{
-                                dispatch_async([OWSDispatch sessionStoreQueue], ^{
-                                    [[TSStorageManager sharedManager] printAllSessions];
-                                });
+                                [[TSStorageManager sharedManager] printAllSessions];
                             }],
             [OWSTableItem itemWithTitle:@"Toggle Key Change"
                             actionBlock:^{
@@ -53,17 +51,21 @@ NS_ASSUME_NONNULL_BEGIN
                             }],
             [OWSTableItem itemWithTitle:@"Delete all sessions"
                             actionBlock:^{
-                                dispatch_async([OWSDispatch sessionStoreQueue], ^{
-                                    [[TSStorageManager sharedManager]
-                                        deleteAllSessionsForContact:thread.contactIdentifier];
-                                });
+                                [TSStorageManager.sharedManager.newDatabaseConnection
+                                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                        [[TSStorageManager sharedManager]
+                                            deleteAllSessionsForContact:thread.contactIdentifier
+                                                        protocolContext:transaction];
+                                    }];
                             }],
             [OWSTableItem itemWithTitle:@"Archive all sessions"
                             actionBlock:^{
-                                dispatch_async([OWSDispatch sessionStoreQueue], ^{
-                                    [[TSStorageManager sharedManager]
-                                        archiveAllSessionsForContact:thread.contactIdentifier];
-                                });
+                                [TSStorageManager.sharedManager.newDatabaseConnection
+                                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                        [[TSStorageManager sharedManager]
+                                            archiveAllSessionsForContact:thread.contactIdentifier
+                                                         protocolContext:transaction];
+                                    }];
                             }],
             [OWSTableItem itemWithTitle:@"Send session reset"
                             actionBlock:^{
@@ -97,32 +99,29 @@ NS_ASSUME_NONNULL_BEGIN
 #if DEBUG
 + (void)clearSessionAndIdentityStore
 {
-    dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[TSStorageManager sharedManager] resetSessionStore];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[OWSIdentityManager sharedManager] clearIdentityState];
-        });
-    });
+    [TSStorageManager.sharedManager.newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [[TSStorageManager sharedManager] resetSessionStore:transaction];
+            [[OWSIdentityManager sharedManager] clearIdentityState:transaction];
+        }];
 }
 
 + (void)snapshotSessionAndIdentityStore
 {
-    dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[TSStorageManager sharedManager] snapshotSessionStore];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[OWSIdentityManager sharedManager] snapshotIdentityState];
-        });
-    });
+    [TSStorageManager.sharedManager.newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [[TSStorageManager sharedManager] snapshotSessionStore:transaction];
+            [[OWSIdentityManager sharedManager] snapshotIdentityState:transaction];
+        }];
 }
 
 + (void)restoreSessionAndIdentityStore
 {
-    dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        [[TSStorageManager sharedManager] restoreSessionStore];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[OWSIdentityManager sharedManager] restoreIdentityState];
-        });
-    });
+    [TSStorageManager.sharedManager.newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [[TSStorageManager sharedManager] restoreSessionStore:transaction];
+            [[OWSIdentityManager sharedManager] restoreIdentityState:transaction];
+        }];
 }
 #endif
 

@@ -451,9 +451,14 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     };
 }
 
-- (nullable YapDatabaseConnection *)newDatabaseConnection
+- (YapDatabaseConnection *)newDatabaseConnection
 {
-    return self.database.newConnection;
+    YapDatabaseConnection *dbConnection = self.database.newConnection;
+    if (!dbConnection) {
+        OWSRaiseException(
+            @"OWSStorageExceptionName_CouldNotOpenConnection", @"Storage could not open new database connection.");
+    }
+    return dbConnection;
 }
 
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName

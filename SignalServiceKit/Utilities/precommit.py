@@ -392,10 +392,16 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description='Precommit script.')
     parser.add_argument('--all', action='store_true', help='process all files in or below current dir')
+    parser.add_argument('--path', help='used to specify a path to process.')
     args = parser.parse_args()
     
     if args.all:
         for rootdir, dirnames, filenames in os.walk(git_repo_path):
+            for filename in filenames:
+                file_path = os.path.abspath(os.path.join(rootdir, filename))
+                process_if_appropriate(file_path)
+    elif args.path:
+        for rootdir, dirnames, filenames in os.walk(args.path):
             for filename in filenames:
                 file_path = os.path.abspath(os.path.join(rootdir, filename))
                 process_if_appropriate(file_path)

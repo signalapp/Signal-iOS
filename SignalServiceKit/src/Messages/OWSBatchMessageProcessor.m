@@ -12,6 +12,7 @@
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSStorage.h"
 #import "TSDatabaseView.h"
+#import "TSStorageManager+SessionStore.h"
 #import "TSStorageManager.h"
 #import "TSYapDatabaseObject.h"
 #import "Threading.h"
@@ -135,14 +136,16 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     return [jobs copy];
 }
 
-- (void)addJobWithEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
+- (void)addJobWithEnvelopeData:(NSData *)envelopeData
+                 plaintextData:(NSData *_Nullable)plaintextData
+                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    // We need to persist the decrypted envelope data ASAP to prevent data loss.
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        OWSMessageContentJob *job =
-            [[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData plaintextData:plaintextData];
-        [job saveWithTransaction:transaction];
-    }];
+    OWSAssert(envelopeData);
+    OWSAssert(transaction);
+
+    OWSMessageContentJob *job =
+        [[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData plaintextData:plaintextData];
+    [job saveWithTransaction:transaction];
 }
 
 - (void)removeJobsWithIds:(NSArray<NSString *> *)uniqueIds
@@ -231,7 +234,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 @interface OWSMessageContentQueue : NSObject
 
 @property (nonatomic, readonly) OWSMessageManager *messagesManager;
-@property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSMessageContentJobFinder *finder;
 @property (nonatomic) BOOL isDrainingQueue;
 
@@ -258,7 +261,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     }
 
     _messagesManager = messagesManager;
-    _dbReadWriteConnection = [storageManager newDatabaseConnection];
+    _dbConnection = [storageManager newDatabaseConnection];
     _finder = finder;
     _isDrainingQueue = NO;
 
@@ -292,12 +295,15 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     return queue;
 }
 
-- (void)enqueueEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
+- (void)enqueueEnvelopeData:(NSData *)envelopeData
+              plaintextData:(NSData *_Nullable)plaintextData
+                transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(envelopeData);
+    OWSAssert(transaction);
 
     // We need to persist the decrypted envelope data ASAP to prevent data loss.
-    [self.finder addJobWithEnvelopeData:envelopeData plaintextData:plaintextData];
+    [self.finder addJobWithEnvelopeData:envelopeData plaintextData:plaintextData transaction:transaction];
 }
 
 - (void)drainQueue
@@ -363,7 +369,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 {
     AssertOnDispatchQueue(self.serialQueue);
 
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (OWSMessageContentJob *job in jobs) {
             [self.messagesManager processEnvelope:job.envelopeProto
                                     plaintextData:job.plaintextData
@@ -456,12 +462,15 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     [self.processingQueue drainQueue];
 }
 
-- (void)enqueueEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
+- (void)enqueueEnvelopeData:(NSData *)envelopeData
+              plaintextData:(NSData *_Nullable)plaintextData
+                transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(envelopeData);
+    OWSAssert(transaction);
 
     // We need to persist the decrypted envelope data ASAP to prevent data loss.
-    [self.processingQueue enqueueEnvelopeData:envelopeData plaintextData:plaintextData];
+    [self.processingQueue enqueueEnvelopeData:envelopeData plaintextData:plaintextData transaction:transaction];
     [self.processingQueue drainQueue];
 }
 

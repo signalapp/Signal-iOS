@@ -3,6 +3,7 @@
 //
 
 #import "OWSRecipientIdentity.h"
+#import "TSStorageManager+SessionStore.h"
 #import "TSStorageManager.h"
 #import <YapDatabase/YapDatabase.h>
 
@@ -80,11 +81,32 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
 }
 
 - (void)updateWithVerificationState:(OWSVerificationState)verificationState
+                        transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssert(transaction);
+
     // Ensure changes are persisted without clobbering any work done on another thread or instance.
     [self updateWithChangeBlock:^(OWSRecipientIdentity *_Nonnull obj) {
         obj.verificationState = verificationState;
-    }];
+    }
+                    transaction:transaction];
+}
+
+- (void)updateWithChangeBlock:(void (^)(OWSRecipientIdentity *obj))changeBlock
+                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+
+    changeBlock(self);
+
+    OWSRecipientIdentity *latest = [[self class] fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
+    if (latest == nil) {
+        [self saveWithTransaction:transaction];
+        return;
+    }
+
+    changeBlock(latest);
+    [latest saveWithTransaction:transaction];
 }
 
 - (void)updateWithChangeBlock:(void (^)(OWSRecipientIdentity *obj))changeBlock
@@ -97,76 +119,10 @@ OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerifica
             [self saveWithTransaction:transaction];
             return;
         }
-
+        
         changeBlock(latest);
         [latest saveWithTransaction:transaction];
     }];
-}
-
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssert(transaction.connection == [OWSRecipientIdentity dbReadWriteConnection]);
-
-    [super saveWithTransaction:transaction];
-}
-
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssert(transaction.connection == [OWSRecipientIdentity dbReadWriteConnection]);
-
-    [super removeWithTransaction:transaction];
-}
-
-- (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssert(transaction.connection == [OWSRecipientIdentity dbReadWriteConnection]);
-
-    [super touchWithTransaction:transaction];
-}
-
-+ (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
-                                     transaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssert(transaction.connection == [OWSRecipientIdentity dbReadConnection]);
-
-    return [super fetchObjectWithUniqueID:uniqueID transaction:transaction];
-}
-
-#pragma mark - Database Connections
-
-+ (YapDatabaseConnection *)dbReadConnection
-{
-    return self.dbReadWriteConnection;
-}
-
-/**
- * Override to disable the object cache to better enforce transaction semantics on the store.
- * Note that it's still technically possible to access this collection from a different collection,
- * but that should be considered a bug.
- */
-+ (YapDatabaseConnection *)dbReadWriteConnection
-{
-    static dispatch_once_t onceToken;
-    static YapDatabaseConnection *sharedDBConnection;
-    dispatch_once(&onceToken, ^{
-        sharedDBConnection = [TSStorageManager sharedManager].newDatabaseConnection;
-        sharedDBConnection.objectCacheEnabled = NO;
-#if DEBUG
-        sharedDBConnection.permittedTransactions = YDB_AnySyncTransaction;
-#endif
-    });
-
-    return sharedDBConnection;
-}
-
-- (YapDatabaseConnection *)dbReadConnection
-{
-    return OWSRecipientIdentity.dbReadConnection;
-}
-
-- (YapDatabaseConnection *)dbReadWriteConnection
-{
-    return OWSRecipientIdentity.dbReadWriteConnection;
 }
 
 #pragma mark - debug

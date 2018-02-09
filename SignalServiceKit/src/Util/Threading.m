@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "Threading.h"
@@ -14,6 +14,19 @@ void DispatchMainThreadSafe(SimpleBlock block)
         block();
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
+            block();
+        });
+    }
+}
+
+void DispatchSyncMainThreadSafe(SimpleBlock block)
+{
+    OWSCAssert(block);
+
+    if ([NSThread isMainThread]) {
+        block();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), ^{
             block();
         });
     }

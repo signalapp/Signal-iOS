@@ -27,9 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&onceToken, ^{
         [Environment setCurrent:[Release releaseEnvironment]];
 
-        // Encryption/Decryption mutates session state and must be synchronized on a serial queue.
-        [SessionCipher setSessionCipherDispatchQueue:[OWSDispatch sessionStoreQueue]];
-
         id<OWSCallMessageHandler> callMessageHandler = callMessageHandlerBlock();
         id<NotificationsProtocol> notificationsManager = notificationsManagerBlock();
 

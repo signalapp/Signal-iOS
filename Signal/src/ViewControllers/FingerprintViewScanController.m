@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "FingerprintViewScanController.h"
@@ -203,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateVerified
                                                                              identityKey:identityKey
                                                                              recipientId:recipientId
-                                                                         isUserInitiatedChange:YES];
+                                                                   isUserInitiatedChange:YES];
                                   [viewController dismissViewControllerAnimated:true completion:nil];
                               }]];
     UIAlertAction *dismissAction =

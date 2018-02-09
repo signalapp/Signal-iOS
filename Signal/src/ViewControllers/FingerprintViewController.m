@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "FingerprintViewController.h"
@@ -512,15 +512,20 @@ typedef void (^CustomLayoutBlock)(void);
 - (void)verifyUnverifyButtonTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId]
-            == OWSVerificationStateVerified;
+        [TSStorageManager.sharedManager.newDatabaseConnection readWriteWithBlock:^(
+            YapDatabaseReadWriteTransaction *transaction) {
+            BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId
+                                                                                      transaction:transaction]
+                == OWSVerificationStateVerified;
 
-        OWSVerificationState newVerificationState
-            = (isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified);
-        [[OWSIdentityManager sharedManager] setVerificationState:newVerificationState
-                                                     identityKey:self.identityKey
-                                                     recipientId:self.recipientId
-                                           isUserInitiatedChange:YES];
+            OWSVerificationState newVerificationState
+                = (isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified);
+            [[OWSIdentityManager sharedManager] setVerificationState:newVerificationState
+                                                         identityKey:self.identityKey
+                                                         recipientId:self.recipientId
+                                               isUserInitiatedChange:YES
+                                                         transaction:transaction];
+        }];
 
         [self dismissViewControllerAnimated:YES completion:nil];
     }

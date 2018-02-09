@@ -27,7 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
 
 // all group threads containing recipient as a member
-+ (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId;
++ (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId
+                                              transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream

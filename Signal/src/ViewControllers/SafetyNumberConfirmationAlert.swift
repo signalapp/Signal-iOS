@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -55,8 +55,8 @@ class SafetyNumberConfirmationAlert: NSObject {
         let confirmAction = UIAlertAction(title: confirmationText, style: .default) { _ in
             Logger.info("\(self.TAG) Confirmed identity: \(untrustedIdentity)")
 
-            OWSDispatch.sessionStoreQueue().async {
-                OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, recipientId: untrustedIdentity.recipientId, isUserInitiatedChange: true)
+        self.storageManager.newDatabaseConnection().asyncReadWrite { (transaction) in
+            OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, recipientId: untrustedIdentity.recipientId, isUserInitiatedChange: true, transaction: transaction)
                 DispatchQueue.main.async {
                     completion(true)
                 }

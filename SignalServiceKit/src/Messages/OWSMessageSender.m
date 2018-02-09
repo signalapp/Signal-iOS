@@ -903,7 +903,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
 
             NSData *newIdentityKey = [newIdentityKeyWithVersion removeKeyType];
-
             [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey recipientId:recipient.recipientId];
 
             failureHandler(error);
@@ -1099,28 +1098,34 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
-    dispatch_async([OWSDispatch sessionStoreQueue], ^{
-        if (extraDevices.count < 1 && missingDevices.count < 1) {
-            OWSProdFail([OWSAnalyticsEvents messageSenderErrorNoMissingOrExtraDevices]);
-        }
-
-        if (extraDevices && extraDevices.count > 0) {
-            DDLogInfo(@"%@ removing extra devices: %@", self.logTag, extraDevices);
-            for (NSNumber *extraDeviceId in extraDevices) {
-                [self.storageManager deleteSessionForContact:recipient.uniqueId deviceId:extraDeviceId.intValue];
+    [self.dbConnection
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            if (extraDevices.count < 1 && missingDevices.count < 1) {
+                OWSProdFail([OWSAnalyticsEvents messageSenderErrorNoMissingOrExtraDevices]);
             }
 
-            [recipient removeDevices:[NSSet setWithArray:extraDevices]];
-        }
+            if (extraDevices && extraDevices.count > 0) {
+                DDLogInfo(@"%@ removing extra devices: %@", self.logTag, extraDevices);
+                for (NSNumber *extraDeviceId in extraDevices) {
+                    [self.storageManager deleteSessionForContact:recipient.uniqueId
+                                                        deviceId:extraDeviceId.intValue
+                                                 protocolContext:transaction];
+                }
 
-        if (missingDevices && missingDevices.count > 0) {
-            DDLogInfo(@"%@ Adding missing devices: %@", self.logTag, missingDevices);
-            [recipient addDevices:[NSSet setWithArray:missingDevices]];
-        }
+                [recipient removeDevices:[NSSet setWithArray:extraDevices]];
+            }
 
-        [recipient save];
-        completionHandler();
-    });
+            if (missingDevices && missingDevices.count > 0) {
+                DDLogInfo(@"%@ Adding missing devices: %@", self.logTag, missingDevices);
+                [recipient addDevices:[NSSet setWithArray:missingDevices]];
+            }
+
+            [recipient saveWithTransaction:transaction];
+
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                completionHandler();
+            });
+        }];
 }
 
 - (void)handleMessageSentLocally:(TSOutgoingMessage *)message
@@ -1245,19 +1250,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         @try {
             __block NSDictionary *messageDict;
             __block NSException *encryptionException;
-            // Mutating session state is not thread safe, so we operate on a serial queue, shared with decryption
-            // operations.
-            dispatch_sync([OWSDispatch sessionStoreQueue], ^{
-                @try {
-                    messageDict = [self encryptedMessageWithPlaintext:plainText
-                                                          toRecipient:recipient.uniqueId
-                                                             deviceId:deviceNumber
-                                                        keyingStorage:self.storageManager
-                                                             isSilent:message.isSilent];
-                } @catch (NSException *exception) {
-                    encryptionException = exception;
-                }
-            });
+            [self.dbConnection
+                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    @try {
+                        messageDict = [self encryptedMessageWithPlaintext:plainText
+                                                              toRecipient:recipient.uniqueId
+                                                                 deviceId:deviceNumber
+                                                            keyingStorage:self.storageManager
+                                                                 isSilent:message.isSilent
+                                                              transaction:transaction];
+                    } @catch (NSException *exception) {
+                        encryptionException = exception;
+                    }
+                }];
 
             if (encryptionException) {
                 DDLogInfo(@"%@ Exception during encryption: %@", self.logTag, encryptionException);
@@ -1286,13 +1291,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                        deviceId:(NSNumber *)deviceNumber
                                   keyingStorage:(TSStorageManager *)storage
                                        isSilent:(BOOL)isSilent
+                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(plainText);
     OWSAssert(identifier.length > 0);
     OWSAssert(deviceNumber);
     OWSAssert(storage);
+    OWSAssert(transaction);
 
-    if (![storage containsSession:identifier deviceId:[deviceNumber intValue]]) {
+    if (![storage containsSession:identifier deviceId:[deviceNumber intValue] protocolContext:transaction]) {
         __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         __block PreKeyBundle *_Nullable bundle;
         __block NSException *_Nullable exception;
@@ -1337,10 +1344,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                        recipientId:identifier
                                                                           deviceId:[deviceNumber intValue]];
             @try {
-                // Mutating session state is not thread safe.
-                @synchronized(self) {
-                    [builder processPrekeyBundle:bundle];
-                }
+                [builder processPrekeyBundle:bundle protocolContext:transaction];
             } @catch (NSException *exception) {
                 if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
                     OWSRaiseExceptionWithUserInfo(UntrustedIdentityKeyException,
@@ -1359,18 +1363,20 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                             recipientId:identifier
                                                                deviceId:[deviceNumber intValue]];
 
-    id<CipherMessage> encryptedMessage = [cipher encryptMessage:[plainText paddedMessageBody]];
+    id<CipherMessage> encryptedMessage =
+        [cipher encryptMessage:[plainText paddedMessageBody] protocolContext:transaction];
 
 
     NSData *serializedMessage = encryptedMessage.serialized;
     TSWhisperMessageType messageType = [self messageTypeForCipherMessage:encryptedMessage];
 
-    OWSMessageServiceParams *messageParams = [[OWSMessageServiceParams alloc] initWithType:messageType
-                                                                               recipientId:identifier
-                                                                                    device:[deviceNumber intValue]
-                                                                                   content:serializedMessage
-                                                                                  isSilent:isSilent
-                                                                            registrationId:cipher.remoteRegistrationId];
+    OWSMessageServiceParams *messageParams =
+        [[OWSMessageServiceParams alloc] initWithType:messageType
+                                          recipientId:identifier
+                                               device:[deviceNumber intValue]
+                                              content:serializedMessage
+                                             isSilent:isSilent
+                                       registrationId:[cipher remoteRegistrationId:transaction]];
 
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
@@ -1424,13 +1430,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return;
         }
 
-        dispatch_async([OWSDispatch sessionStoreQueue], ^{
+        [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (NSUInteger i = 0; i < [devices count]; i++) {
                 int deviceNumber = [devices[i] intValue];
-                [[TSStorageManager sharedManager] deleteSessionForContact:identifier deviceId:deviceNumber];
+                [[TSStorageManager sharedManager] deleteSessionForContact:identifier
+                                                                 deviceId:deviceNumber
+                                                          protocolContext:transaction];
             }
-            completionHandler();
-        });
+        }];
+        completionHandler();
     });
 }
 

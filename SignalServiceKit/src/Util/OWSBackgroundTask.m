@@ -77,12 +77,19 @@
 - (void)startBackgroundTask
 {
     // beginBackgroundTaskWithExpirationHandler must be called on the main thread.
-    DispatchMainThreadSafe(^{
-        __weak typeof(self) weakSelf = self;
-        self.backgroundTaskId = [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
-            // Note the usage of OWSCAssert() to avoid capturing a reference to self.
-            OWSCAssert([NSThread isMainThread]);
+    __weak typeof(self) weakSelf = self;
+    self.backgroundTaskId = [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
+        // Supposedly [UIApplication beginBackgroundTaskWithExpirationHandler]'s handler
+        // will always be called on the main thread, but in practice we've observed
+        // otherwise.  We use DispatchSyncMainThreadSafe() (note the sync) to ensure that
+        // this work is done on the main thread.
+        //
+        // See: https://developer.apple.com/documentation/uikit/uiapplication/1623031-beginbackgroundtaskwithexpiratio)
+        //
+        // Note the usage of OWSCAssert() to avoid capturing a reference to self.
+        OWSCAssert([NSThread isMainThread]);
 
+        DispatchSyncMainThreadSafe(^{
             OWSBackgroundTask *strongSelf = weakSelf;
             if (!strongSelf) {
                 return;
@@ -107,26 +114,26 @@
             if (completionBlock) {
                 completionBlock(BackgroundTaskState_Expired);
             }
-        }];
+        });
+    }];
 
-        // If a background task could not be begun, call the completion block.
-        if (self.backgroundTaskId == UIBackgroundTaskInvalid) {
+    // If a background task could not be begun, call the completion block.
+    if (self.backgroundTaskId == UIBackgroundTaskInvalid) {
 
-            DDLogInfo(@"%@ %@ background task could not be started.", self.logTag, self.label);
+        DDLogInfo(@"%@ %@ background task could not be started.", self.logTag, self.label);
 
-            // Make a local copy of completionBlock to ensure that it is called
-            // exactly once.
-            BackgroundTaskCompletionBlock _Nullable completionBlock;
-            @synchronized(self)
-            {
-                completionBlock = self.completionBlock;
-                self.completionBlock = nil;
-            }
-            if (completionBlock) {
-                completionBlock(BackgroundTaskState_CouldNotStart);
-            }
+        // Make a local copy of completionBlock to ensure that it is called
+        // exactly once.
+        BackgroundTaskCompletionBlock _Nullable completionBlock;
+        @synchronized(self)
+        {
+            completionBlock = self.completionBlock;
+            self.completionBlock = nil;
         }
-    });
+        if (completionBlock) {
+            completionBlock(BackgroundTaskState_CouldNotStart);
+        }
+    }
 }
 
 - (void)endBackgroundTask

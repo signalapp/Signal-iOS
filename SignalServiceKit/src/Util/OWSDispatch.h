@@ -12,12 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (dispatch_queue_t)attachmentsQueue;
 
 /**
- * Signal protocol session state must be coordinated on a serial queue. This is sometimes used synchronously,
- * so never dispatching sync *from* this queue to avoid deadlock.
- */
-+ (dispatch_queue_t)sessionStoreQueue;
-
-/**
  * Serial message sending queue
  */
 + (dispatch_queue_t)sendingQueue;
