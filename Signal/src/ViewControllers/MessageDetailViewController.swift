@@ -89,8 +89,6 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        updateTextLayout()
-
         if mode == .focusOnMetadata {
             if let bubbleView = self.bubbleView {
                 // Force layout.
@@ -293,6 +291,8 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         if let mediaMessageView = mediaMessageView {
             mediaMessageView.autoMatch(.height, to: .width, of: mediaMessageView, withOffset:0, relation: .lessThanOrEqual)
         }
+
+        updateTextLayout()
     }
 
     private func displayableTextIfText() -> String? {
