@@ -476,7 +476,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     if (!AppReadiness.isAppReady) {
         DDLogWarn(@"%@ Ignoring openURL: app not ready.", self.logTag);
-        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
+        // We don't need to use [AppReadiness runNowOrWhenAppIsReady:];
+        // the only URLs we handle in Signal iOS at the moment are used
+        // for resuming the verification step of the registration flow.
         return NO;
     }
 
@@ -644,33 +646,31 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return;
     }
 
-    if (!AppReadiness.isAppReady) {
-        DDLogWarn(@"%@ Ignoring performActionForShortcutItem: app not ready.", self.logTag);
-        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
-        completionHandler(NO);
-    }
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        if (![TSAccountManager isRegistered]) {
+            UIAlertController *controller =
+                [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
+                                                    message:NSLocalizedString(@"REGISTRATION_RESTRICTED_MESSAGE", nil)
+                                             preferredStyle:UIAlertControllerStyleAlert];
 
-    if ([TSAccountManager isRegistered]) {
+            [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                           style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction *_Nonnull action){
+
+                                                         }]];
+            UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
+            [fromViewController presentViewController:controller
+                                             animated:YES
+                                           completion:^{
+                                               completionHandler(NO);
+                                           }];
+            return;
+        }
+
         [SignalApp.sharedApp.homeViewController showNewConversationView];
-        completionHandler(YES);
-    } else {
-        UIAlertController *controller =
-            [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
-                                                message:NSLocalizedString(@"REGISTRATION_RESTRICTED_MESSAGE", nil)
-                                         preferredStyle:UIAlertControllerStyleAlert];
+    }];
 
-        [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                                       style:UIAlertActionStyleDefault
-                                                     handler:^(UIAlertAction *_Nonnull action){
-
-                                                     }]];
-        UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-        [fromViewController presentViewController:controller
-                                         animated:YES
-                                       completion:^{
-                                           completionHandler(NO);
-                                       }];
-    }
+    completionHandler(YES);
 }
 
 /**
@@ -684,12 +684,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     if (self.didAppLaunchFail) {
         OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
-        return NO;
-    }
-
-    if (!AppReadiness.isAppReady) {
-        DDLogWarn(@"%@ Ignoring continueUserActivity: app not ready.", self.logTag);
-        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
         return NO;
     }
 
@@ -715,38 +709,42 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             return NO;
         }
 
-        NSString *_Nullable phoneNumber = handle;
-        if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-            phoneNumber = [[TSStorageManager sharedManager] phoneNumberForCallKitId:handle];
-            if (phoneNumber.length < 1) {
-                DDLogWarn(@"%@ ignoring attempt to initiate video call to unknown anonymous signal user.", self.logTag);
-                return NO;
+        [AppReadiness runNowOrWhenAppIsReady:^{
+            NSString *_Nullable phoneNumber = handle;
+            if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
+                phoneNumber = [[TSStorageManager sharedManager] phoneNumberForCallKitId:handle];
+                if (phoneNumber.length < 1) {
+                    DDLogWarn(
+                        @"%@ ignoring attempt to initiate video call to unknown anonymous signal user.", self.logTag);
+                    return;
+                }
             }
-        }
 
-        // This intent can be received from more than one user interaction.
-        //
-        // * It can be received if the user taps the "video" button in the CallKit UI for an
-        //   an ongoing call.  If so, the correct response is to try to activate the local
-        //   video for that call.
-        // * It can be received if the user taps the "video" button for a contact in the
-        //   contacts app.  If so, the correct response is to try to initiate a new call
-        //   to that user - unless there already is another call in progress.
-        if (SignalApp.sharedApp.callService.call != nil) {
-            if ([phoneNumber isEqualToString:SignalApp.sharedApp.callService.call.remotePhoneNumber]) {
-                DDLogWarn(@"%@ trying to upgrade ongoing call to video.", self.logTag);
-                [SignalApp.sharedApp.callService handleCallKitStartVideo];
-                return YES;
-            } else {
-                DDLogWarn(
-                    @"%@ ignoring INStartVideoCallIntent due to ongoing WebRTC call with another party.", self.logTag);
-                return NO;
+            // This intent can be received from more than one user interaction.
+            //
+            // * It can be received if the user taps the "video" button in the CallKit UI for an
+            //   an ongoing call.  If so, the correct response is to try to activate the local
+            //   video for that call.
+            // * It can be received if the user taps the "video" button for a contact in the
+            //   contacts app.  If so, the correct response is to try to initiate a new call
+            //   to that user - unless there already is another call in progress.
+            if (SignalApp.sharedApp.callService.call != nil) {
+                if ([phoneNumber isEqualToString:SignalApp.sharedApp.callService.call.remotePhoneNumber]) {
+                    DDLogWarn(@"%@ trying to upgrade ongoing call to video.", self.logTag);
+                    [SignalApp.sharedApp.callService handleCallKitStartVideo];
+                    return;
+                } else {
+                    DDLogWarn(@"%@ ignoring INStartVideoCallIntent due to ongoing WebRTC call with another party.",
+                        self.logTag);
+                    return;
+                }
             }
-        }
 
-        OutboundCallInitiator *outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
-        OWSAssert(outboundCallInitiator);
-        return [outboundCallInitiator initiateCallWithHandle:phoneNumber];
+            OutboundCallInitiator *outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
+            OWSAssert(outboundCallInitiator);
+            [outboundCallInitiator initiateCallWithHandle:phoneNumber];
+        }];
+        return YES;
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
 
         if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
@@ -770,23 +768,27 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
             return NO;
         }
 
-        NSString *_Nullable phoneNumber = handle;
-        if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-            phoneNumber = [[TSStorageManager sharedManager] phoneNumberForCallKitId:handle];
-            if (phoneNumber.length < 1) {
-                DDLogWarn(@"%@ ignoring attempt to initiate audio call to unknown anonymous signal user.", self.logTag);
-                return NO;
+        [AppReadiness runNowOrWhenAppIsReady:^{
+            NSString *_Nullable phoneNumber = handle;
+            if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
+                phoneNumber = [[TSStorageManager sharedManager] phoneNumberForCallKitId:handle];
+                if (phoneNumber.length < 1) {
+                    DDLogWarn(
+                        @"%@ ignoring attempt to initiate audio call to unknown anonymous signal user.", self.logTag);
+                    return;
+                }
             }
-        }
 
-        if (SignalApp.sharedApp.callService.call != nil) {
-            DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing WebRTC call.", self.logTag);
-            return NO;
-        }
+            if (SignalApp.sharedApp.callService.call != nil) {
+                DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing WebRTC call.", self.logTag);
+                return;
+            }
 
-        OutboundCallInitiator *outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
-        OWSAssert(outboundCallInitiator);
-        return [outboundCallInitiator initiateCallWithHandle:phoneNumber];
+            OutboundCallInitiator *outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
+            OWSAssert(outboundCallInitiator);
+            [outboundCallInitiator initiateCallWithHandle:phoneNumber];
+        }];
+        return YES;
     } else {
         DDLogWarn(@"%@ called %s with userActivity: %@, but not yet supported.",
             self.logTag,
@@ -910,16 +912,18 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return;
     }
 
-    if (!AppReadiness.isAppReady) {
-        DDLogWarn(@"%@ Ignoring handleActionWithIdentifier: app not ready.", self.logTag);
-        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
-        return;
-    }
-
-    [[PushManager sharedManager] application:application
-                  handleActionWithIdentifier:identifier
-                        forLocalNotification:notification
-                           completionHandler:completionHandler];
+    // The docs for handleActionWithIdentifier:... state:
+    // "You must call [completionHandler] at the end of your method.".
+    // Nonetheless, it is presumably safe to call the completion handler
+    // later, after this method returns.
+    //
+    // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623068-application?language=objc
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [[PushManager sharedManager] application:application
+                      handleActionWithIdentifier:identifier
+                            forLocalNotification:notification
+                               completionHandler:completionHandler];
+    }];
 }
 
 - (void)application:(UIApplication *)application
@@ -935,17 +939,19 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return;
     }
 
-    if (!AppReadiness.isAppReady) {
-        DDLogWarn(@"%@ Ignoring handleActionWithIdentifier: app not ready.", self.logTag);
-        // TODO: Consider using [AppReadiness runNowOrWhenAppIsReady:].
-        return;
-    }
-
-    [[PushManager sharedManager] application:application
-                  handleActionWithIdentifier:identifier
-                        forLocalNotification:notification
-                            withResponseInfo:responseInfo
-                           completionHandler:completionHandler];
+    // The docs for handleActionWithIdentifier:... state:
+    // "You must call [completionHandler] at the end of your method.".
+    // Nonetheless, it is presumably safe to call the completion handler
+    // later, after this method returns.
+    //
+    // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623068-application?language=objc
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [[PushManager sharedManager] application:application
+                      handleActionWithIdentifier:identifier
+                            forLocalNotification:notification
+                                withResponseInfo:responseInfo
+                               completionHandler:completionHandler];
+    }];
 }
 
 - (void)versionMigrationsDidComplete
