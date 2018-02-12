@@ -478,12 +478,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 // and continue cleaning in the background.
                 [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
 
-                // TODO remove this once we're sure our app boot process is coherent.
-                // Currently this happens *before* db registration is complete when
-                // launching the app directly, but *after* db registration is complete when
-                // the app is launched in the background, e.g. from a voip notification.
-                [[OWSProfileManager sharedManager] ensureLocalProfileCached];
-
                 // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
                 // sent before the app exited should be marked as failures.
                 [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
@@ -877,6 +871,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [OWSPreferences setIsRegistered:[TSAccountManager isRegistered]];
 
+    // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
+    [[OWSProfileManager sharedManager] ensureLocalProfileCached];
+
     // Note that this does much more than set a flag;
     // it will also run all deferred blocks.
     [AppReadiness setAppIsReady];
@@ -897,15 +894,13 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 
-    [AppVersion.instance appLaunchDidComplete];
+    [AppVersion.instance mainAppLaunchDidComplete];
 
     [Environment.current.contactsManager loadSignalAccountsFromCache];
 
     // If there were any messages in our local queue which we hadn't yet processed.
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
     [[OWSBatchMessageProcessor sharedInstance] handleAnyUnprocessedEnvelopesAsync];
-
-    [[OWSProfileManager sharedManager] ensureLocalProfileCached];
 
 
 #ifdef DEBUG
