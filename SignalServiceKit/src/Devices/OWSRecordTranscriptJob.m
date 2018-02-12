@@ -6,11 +6,11 @@
 #import "OWSAttachmentsProcessor.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSIncomingSentMessageTranscript.h"
+#import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSReadReceiptManager.h"
 #import "TSInfoMessage.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
-#import "TSStorageManager+SessionStore.h"
 #import "TextSecureKitEnv.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSRecordTranscriptJob ()
 
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 
@@ -32,14 +32,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return [self initWithIncomingSentMessageTranscript:incomingSentMessageTranscript
                                         networkManager:TSNetworkManager.sharedManager
-                                        storageManager:TSStorageManager.sharedManager
+                                        primaryStorage:OWSPrimaryStorage.sharedManager
                                     readReceiptManager:OWSReadReceiptManager.sharedManager
                                        contactsManager:[TextSecureKitEnv sharedEnv].contactsManager];
 }
 
 - (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
                                        networkManager:(TSNetworkManager *)networkManager
-                                       storageManager:(TSStorageManager *)storageManager
+                                       primaryStorage:(OWSPrimaryStorage *)primaryStorage
                                    readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
                                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
 {
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _incomingSentMessageTranscript = incomingSentMessageTranscript;
     _networkManager = networkManager;
-    _storageManager = storageManager;
+    _primaryStorage = primaryStorage;
     _readReceiptManager = readReceiptManager;
     _contactsManager = contactsManager;
 
@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSThread *thread = [transcript threadWithTransaction:transaction];
     if (transcript.isEndSessionMessage) {
         DDLogInfo(@"%@ EndSession was sent to recipient: %@.", self.logTag, transcript.recipientId);
-        [self.storageManager deleteAllSessionsForContact:transcript.recipientId protocolContext:transaction];
+        [self.primaryStorage deleteAllSessionsForContact:transcript.recipientId protocolContext:transaction];
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
                                          inThread:thread
                                       messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                             relay:transcript.relay
                                                            thread:thread
                                                    networkManager:self.networkManager
-                                                   storageManager:self.storageManager
+                                                   primaryStorage:self.primaryStorage
                                                       transaction:transaction];
 
     // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.

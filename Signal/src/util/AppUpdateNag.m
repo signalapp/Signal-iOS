@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppUpdateNag.h"
@@ -7,10 +7,10 @@
 #import "Signal-Swift.h"
 #import <ATAppUpdater/ATAppUpdater.h>
 #import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/TSStorageManager.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 
-NSString *const TSStorageManagerAppUpgradeNagCollection = @"TSStorageManagerAppUpgradeNagCollection";
-NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgradeNagDate";
+NSString *const OWSPrimaryStorageAppUpgradeNagCollection = @"OWSPrimaryStorageAppUpgradeNagCollection";
+NSString *const OWSPrimaryStorageAppUpgradeNagDate = @"OWSPrimaryStorageAppUpgradeNagDate";
 
 @interface AppUpdateNag () <ATAppUpdaterDelegate>
 
@@ -34,12 +34,12 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
 
 - (instancetype)initDefault
 {
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
 
-    return [self initWithStorageManager:storageManager];
+    return [self initWithPrimaryStorage:primaryStorage];
 }
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
 
@@ -47,9 +47,9 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
         return self;
     }
 
-    OWSAssert(storageManager);
+    OWSAssert(primaryStorage);
 
-    _dbConnection = storageManager.newDatabaseConnection;
+    _dbConnection = primaryStorage.newDatabaseConnection;
 
     OWSSingletonAssert();
 
@@ -69,8 +69,8 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
         return;
     }
 
-    NSDate *lastNagDate = [self.dbConnection dateForKey:TSStorageManagerAppUpgradeNagDate
-                                           inCollection:TSStorageManagerAppUpgradeNagCollection];
+    NSDate *lastNagDate = [self.dbConnection dateForKey:OWSPrimaryStorageAppUpgradeNagDate
+                                           inCollection:OWSPrimaryStorageAppUpgradeNagCollection];
     const NSTimeInterval kNagFrequency = kDayInterval * 14;
     BOOL canNag = (!lastNagDate || fabs(lastNagDate.timeIntervalSinceNow) > kNagFrequency);
     if (!canNag) {
@@ -97,8 +97,8 @@ NSString *const TSStorageManagerAppUpgradeNagDate = @"TSStorageManagerAppUpgrade
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [self.dbConnection setDate:[NSDate new]
-                        forKey:TSStorageManagerAppUpgradeNagDate
-                  inCollection:TSStorageManagerAppUpgradeNagCollection];
+                        forKey:OWSPrimaryStorageAppUpgradeNagDate
+                  inCollection:OWSPrimaryStorageAppUpgradeNagCollection];
 }
 
 - (void)appUpdaterUserDidLaunchAppStore

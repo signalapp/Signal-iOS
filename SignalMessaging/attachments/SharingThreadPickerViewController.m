@@ -385,7 +385,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     DDLogDebug(@"%@ Confirming identity for recipient: %@", self.logTag, recipientId);
 
-    [TSStorageManager.sharedManager.newDatabaseConnection asyncReadWriteWithBlock:^(
+    [OWSPrimaryStorage.sharedManager.newDatabaseConnection asyncReadWriteWithBlock:^(
         YapDatabaseReadWriteTransaction *transaction) {
         OWSVerificationState verificationState =
             [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId transaction:transaction];

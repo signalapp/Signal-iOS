@@ -3,8 +3,8 @@
 //
 
 #import "OWSRecipientIdentity.h"
-#import "TSStorageManager+SessionStore.h"
-#import "TSStorageManager.h"
+#import "OWSPrimaryStorage+SessionStore.h"
+#import "OWSPrimaryStorage.h"
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

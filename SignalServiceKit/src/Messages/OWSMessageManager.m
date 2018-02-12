@@ -22,6 +22,8 @@
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
 #import "OWSMessageUtils.h"
+#import "OWSPrimaryStorage+SessionStore.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
 #import "OWSSyncConfigurationMessage.h"
@@ -38,8 +40,6 @@
 #import "TSInfoMessage.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
-#import "TSStorageManager+SessionStore.h"
-#import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 #import <YapDatabase/YapDatabase.h>
 
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSIncomingMessageFinder *incomingMessageFinder;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initDefault
 {
     TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
     id<ContactsManagerProtocol> contactsManager = [TextSecureKitEnv sharedEnv].contactsManager;
     id<OWSCallMessageHandler> callMessageHandler = [TextSecureKitEnv sharedEnv].callMessageHandler;
     OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
     return [self initWithNetworkManager:networkManager
-                         storageManager:storageManager
+                         primaryStorage:primaryStorage
                      callMessageHandler:callMessageHandler
                         contactsManager:contactsManager
                         identityManager:identityManager
@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        storageManager:(TSStorageManager *)storageManager
+                        primaryStorage:(OWSPrimaryStorage *)primaryStorage
                     callMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        identityManager:(OWSIdentityManager *)identityManager
@@ -104,15 +104,15 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _storageManager = storageManager;
+    _primaryStorage = primaryStorage;
     _networkManager = networkManager;
     _callMessageHandler = callMessageHandler;
     _contactsManager = contactsManager;
     _identityManager = identityManager;
     _messageSender = messageSender;
 
-    _dbConnection = storageManager.newDatabaseConnection;
-    _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithStorageManager:storageManager];
+    _dbConnection = primaryStorage.newDatabaseConnection;
+    _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithPrimaryStorage:primaryStorage];
     _blockingManager = [OWSBlockingManager sharedManager];
 
     OWSSingletonAssert();
@@ -128,7 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
-                                               object:TSStorageManager.sharedManager.dbNotificationObject];
+                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedExternallyNotification
@@ -500,7 +500,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                             relay:envelope.relay
                                                            thread:groupThread
                                                    networkManager:self.networkManager
-                                                   storageManager:self.storageManager
+                                                   primaryStorage:self.primaryStorage
                                                       transaction:transaction];
 
     if (!attachmentsProcessor.hasSupportedAttachments) {
@@ -540,7 +540,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                             relay:envelope.relay
                                                            thread:thread
                                                    networkManager:self.networkManager
-                                                   storageManager:self.storageManager
+                                                   primaryStorage:self.primaryStorage
                                                       transaction:transaction];
     if (!attachmentsProcessor.hasSupportedAttachments) {
         DDLogWarn(@"%@ received unsupported media envelope", self.logTag);
@@ -719,7 +719,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      inThread:thread
                                   messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
 
-    [self.storageManager deleteAllSessionsForContact:envelope.source protocolContext:transaction];
+    [self.primaryStorage deleteAllSessionsForContact:envelope.source protocolContext:transaction];
 }
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope

@@ -202,7 +202,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
@@ -273,7 +273,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _contactsUpdater = [Environment current].contactsUpdater;
     _messageSender = [Environment current].messageSender;
     _outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
-    _storageManager = [TSStorageManager sharedManager];
+    _primaryStorage = [OWSPrimaryStorage sharedManager];
     _networkManager = [TSNetworkManager sharedManager];
     _blockingManager = [OWSBlockingManager sharedManager];
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
@@ -296,7 +296,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
-                                               object:TSStorageManager.sharedManager.dbNotificationObject];
+                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification
@@ -1638,9 +1638,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     OWSAttachmentsProcessor *processor =
                         [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
                                                                     networkManager:self.networkManager
-                                                                    storageManager:self.storageManager];
+                                                                    primaryStorage:self.primaryStorage];
                     [processor fetchAttachmentsForMessage:message
-                        storageManager:self.storageManager
+                        primaryStorage:self.primaryStorage
                         success:^(TSAttachmentStream *_Nonnull attachmentStream) {
                             DDLogInfo(
                                 @"%@ Successfully redownloaded attachment in thread: %@", self.logTag, message.thread);
@@ -1811,7 +1811,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                     TSContactThread *contactThread = (TSContactThread *)self.thread;
                     [OWSSessionResetJob runWithContactThread:contactThread
                                                messageSender:self.messageSender
-                                              storageManager:self.storageManager];
+                                              primaryStorage:self.primaryStorage];
                 }];
     [alertController addAction:resetSessionAction];
 
@@ -2774,7 +2774,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     NSAssert([NSThread isMainThread], @"Must access uiDatabaseConnection on main thread!");
     if (!_uiDatabaseConnection) {
-        _uiDatabaseConnection = [self.storageManager newDatabaseConnection];
+        _uiDatabaseConnection = [self.primaryStorage newDatabaseConnection];
         [_uiDatabaseConnection beginLongLivedReadTransaction];
     }
     return _uiDatabaseConnection;
@@ -2783,7 +2783,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (YapDatabaseConnection *)editingDatabaseConnection
 {
     if (!_editingDatabaseConnection) {
-        _editingDatabaseConnection = [self.storageManager newDatabaseConnection];
+        _editingDatabaseConnection = [self.primaryStorage newDatabaseConnection];
     }
     return _editingDatabaseConnection;
 }

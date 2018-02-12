@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ProfileViewController.h"
@@ -16,7 +16,7 @@
 #import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/TSStorageManager.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -63,10 +63,10 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     self.profileViewMode = profileViewMode;
 
-    // Use the TSStorageManager.dbReadWriteConnection for consistency with the reads below.
-    [[[TSStorageManager sharedManager] dbReadWriteConnection] setDate:[NSDate new]
-                                                               forKey:kProfileView_LastPresentedDate
-                                                         inCollection:kProfileView_Collection];
+    // Use the OWSPrimaryStorage.dbReadWriteConnection for consistency with the reads below.
+    [[[OWSPrimaryStorage sharedManager] dbReadWriteConnection] setDate:[NSDate new]
+                                                                forKey:kProfileView_LastPresentedDate
+                                                          inCollection:kProfileView_Collection];
 
     return self;
 }
@@ -530,11 +530,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         return NO;
     }
 
-    // Use the TSStorageManager.dbReadWriteConnection for consistency with the writes above.
+    // Use the OWSPrimaryStorage.dbReadWriteConnection for consistency with the writes above.
     NSTimeInterval kProfileNagFrequency = kDayInterval * 30;
     NSDate *_Nullable lastPresentedDate =
-        [[[TSStorageManager sharedManager] dbReadWriteConnection] dateForKey:kProfileView_LastPresentedDate
-                                                                inCollection:kProfileView_Collection];
+        [[[OWSPrimaryStorage sharedManager] dbReadWriteConnection] dateForKey:kProfileView_LastPresentedDate
+                                                                 inCollection:kProfileView_Collection];
     return (!lastPresentedDate || fabs([lastPresentedDate timeIntervalSinceNow]) > kProfileNagFrequency);
 }
 

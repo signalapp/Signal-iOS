@@ -9,6 +9,7 @@
 #import "InboxTableViewCell.h"
 #import "NewContactThreadViewController.h"
 #import "OWSNavigationController.h"
+#import "OWSPrimaryStorage.h"
 #import "ProfileViewController.h"
 #import "PushManager.h"
 #import "Signal-Swift.h"
@@ -16,7 +17,6 @@
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
 #import "TSGroupThread.h"
-#import "TSStorageManager.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/OWSContactsManager.h>
@@ -136,7 +136,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
-                                               object:TSStorageManager.sharedManager.dbNotificationObject];
+                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification
@@ -254,7 +254,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [super viewDidLoad];
     [self.navigationController.navigationBar setTranslucent:NO];
 
-    self.editingDbConnection = TSStorageManager.sharedManager.newDatabaseConnection;
+    self.editingDbConnection = OWSPrimaryStorage.sharedManager.newDatabaseConnection;
 
     // Create the database connection.
     [self uiDatabaseConnection];
@@ -917,7 +917,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     OWSAssertIsOnMainThread();
 
     if (!_uiDatabaseConnection) {
-        _uiDatabaseConnection = [TSStorageManager.sharedManager newDatabaseConnection];
+        _uiDatabaseConnection = [OWSPrimaryStorage.sharedManager newDatabaseConnection];
         [_uiDatabaseConnection beginLongLivedReadTransaction];
     }
     return _uiDatabaseConnection;

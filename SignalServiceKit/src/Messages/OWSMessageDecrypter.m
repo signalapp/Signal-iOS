@@ -9,15 +9,15 @@
 #import "OWSBlockingManager.h"
 #import "OWSError.h"
 #import "OWSIdentityManager.h"
+#import "OWSPrimaryStorage+PreKeyStore.h"
+#import "OWSPrimaryStorage+SessionStore.h"
+#import "OWSPrimaryStorage+SignedPreKeyStore.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
 #import "TSPreKeyManager.h"
-#import "TSStorageManager+PreKeyStore.h"
-#import "TSStorageManager+SessionStore.h"
-#import "TSStorageManager+SignedPreKeyStore.h"
-#import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageDecrypter ()
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) OWSIdentityManager *identityManager;
@@ -49,14 +49,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initDefault
 {
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
     OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
     OWSBlockingManager *blockingManager = [OWSBlockingManager sharedManager];
 
-    return [self initWithStorageManager:storageManager identityManager:identityManager blockingManager:blockingManager];
+    return [self initWithPrimaryStorage:primaryStorage identityManager:identityManager blockingManager:blockingManager];
 }
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
                        identityManager:(OWSIdentityManager *)identityManager
                        blockingManager:(OWSBlockingManager *)blockingManager
 {
@@ -66,11 +66,11 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _storageManager = storageManager;
+    _primaryStorage = primaryStorage;
     _identityManager = identityManager;
     _blockingManager = blockingManager;
 
-    _dbConnection = storageManager.newDatabaseConnection;
+    _dbConnection = primaryStorage.newDatabaseConnection;
 
     OWSSingletonAssert();
 
@@ -223,7 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(successBlock);
     OWSAssert(failureBlock);
 
-    TSStorageManager *storageManager = self.storageManager;
+    OWSPrimaryStorage *primaryStorage = self.primaryStorage;
     NSString *recipientId = envelope.source;
     int deviceId = envelope.sourceDevice;
 
@@ -239,9 +239,9 @@ NS_ASSUME_NONNULL_BEGIN
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             @try {
                 id<CipherMessage> cipherMessage = cipherMessageBlock(encryptedData);
-                SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storageManager
-                                                                        preKeyStore:storageManager
-                                                                  signedPreKeyStore:storageManager
+                SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:primaryStorage
+                                                                        preKeyStore:primaryStorage
+                                                                  signedPreKeyStore:primaryStorage
                                                                    identityKeyStore:self.identityManager
                                                                         recipientId:recipientId
                                                                            deviceId:deviceId];

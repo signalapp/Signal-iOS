@@ -4,8 +4,8 @@
 
 #import "OWSMessageUtils.h"
 #import "AppContext.h"
+#import "OWSPrimaryStorage.h"
 #import "TSDatabaseView.h"
-#import "TSStorageManager.h"
 #import "TSThread.h"
 #import <YapDatabase/YapDatabase.h>
 
@@ -33,12 +33,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initDefault
 {
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
 
-    return [self initWithStorageManager:storageManager];
+    return [self initWithPrimaryStorage:primaryStorage];
 }
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
 
@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _dbConnection = storageManager.newDatabaseConnection;
+    _dbConnection = primaryStorage.newDatabaseConnection;
 
     OWSSingletonAssert();
 

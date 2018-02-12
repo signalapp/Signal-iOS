@@ -10,11 +10,11 @@ class SafetyNumberConfirmationAlert: NSObject {
     let TAG = "[SafetyNumberConfirmationAlert]"
 
     private let contactsManager: OWSContactsManager
-    private let storageManager: TSStorageManager
+    private let primaryStorage: OWSPrimaryStorage
 
     init(contactsManager: OWSContactsManager) {
         self.contactsManager = contactsManager
-        self.storageManager = TSStorageManager.shared()
+        self.primaryStorage = OWSPrimaryStorage.sharedManager()
     }
 
     public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
@@ -55,7 +55,7 @@ class SafetyNumberConfirmationAlert: NSObject {
         let confirmAction = UIAlertAction(title: confirmationText, style: .default) { _ in
             Logger.info("\(self.TAG) Confirmed identity: \(untrustedIdentity)")
 
-        self.storageManager.newDatabaseConnection().asyncReadWrite { (transaction) in
+        self.primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
             OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, recipientId: untrustedIdentity.recipientId, isUserInitiatedChange: true, transaction: transaction)
                 DispatchQueue.main.async {
                     completion(true)

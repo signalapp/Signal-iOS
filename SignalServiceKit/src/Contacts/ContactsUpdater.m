@@ -1,15 +1,15 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactsUpdater.h"
 #import "Contact.h"
 #import "Cryptography.h"
 #import "OWSError.h"
+#import "OWSPrimaryStorage.h"
 #import "PhoneNumber.h"
 #import "TSContactsIntersectionRequest.h"
 #import "TSNetworkManager.h"
-#import "TSStorageManager.h"
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSMutableSet *recipientIds = [NSMutableSet set];
-    [TSStorageManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         NSArray *allRecipientKeys = [transaction allKeysInCollection:[SignalRecipient collection]];
         [recipientIds addObjectsFromArray:allRecipientKeys];
     }];
@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  [recipientIds minusSet:matchedIds];
 
                                  // Cleaning up unregistered identifiers
-                                 [TSStorageManager.dbReadWriteConnection
+                                 [OWSPrimaryStorage.dbReadWriteConnection
                                      readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                          for (NSString *identifier in recipientIds) {
                                              SignalRecipient *recipient =
@@ -185,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
               }
 
               // Insert or update contact attributes
-              [TSStorageManager.dbReadWriteConnection
+              [OWSPrimaryStorage.dbReadWriteConnection
                   readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                       for (NSString *identifier in attributesForIdentifier) {
                           SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:identifier

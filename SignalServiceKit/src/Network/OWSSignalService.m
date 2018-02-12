@@ -7,21 +7,21 @@
 #import "OWSCensorshipConfiguration.h"
 #import "OWSError.h"
 #import "OWSHTTPSecurityPolicy.h"
+#import "OWSPrimaryStorage.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
-#import "TSStorageManager.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kTSStorageManager_OWSSignalService = @"kTSStorageManager_OWSSignalService";
-NSString *const kTSStorageManager_isCensorshipCircumventionManuallyActivated =
-    @"kTSStorageManager_isCensorshipCircumventionManuallyActivated";
-NSString *const kTSStorageManager_ManualCensorshipCircumventionDomain =
-    @"kTSStorageManager_ManualCensorshipCircumventionDomain";
-NSString *const kTSStorageManager_ManualCensorshipCircumventionCountryCode =
-    @"kTSStorageManager_ManualCensorshipCircumventionCountryCode";
+NSString *const kOWSPrimaryStorage_OWSSignalService = @"kOWSPrimaryStorage_OWSSignalService";
+NSString *const kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
+    = @"kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated";
+NSString *const kOWSPrimaryStorage_ManualCensorshipCircumventionDomain
+    = @"kOWSPrimaryStorage_ManualCensorshipCircumventionDomain";
+NSString *const kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode
+    = @"kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode";
 
 NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     @"kNSNotificationName_IsCensorshipCircumventionActiveDidChange";
@@ -104,15 +104,16 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (BOOL)isCensorshipCircumventionManuallyActivated
 {
-    return [[TSStorageManager dbReadConnection] boolForKey:kTSStorageManager_isCensorshipCircumventionManuallyActivated
-                                              inCollection:kTSStorageManager_OWSSignalService];
+    return
+        [[OWSPrimaryStorage dbReadConnection] boolForKey:kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
+                                            inCollection:kOWSPrimaryStorage_OWSSignalService];
 }
 
 - (void)setIsCensorshipCircumventionManuallyActivated:(BOOL)value
 {
-    [[TSStorageManager dbReadWriteConnection] setObject:@(value)
-                                                 forKey:kTSStorageManager_isCensorshipCircumventionManuallyActivated
-                                           inCollection:kTSStorageManager_OWSSignalService];
+    [[OWSPrimaryStorage dbReadWriteConnection] setObject:@(value)
+                                                  forKey:kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
+                                            inCollection:kOWSPrimaryStorage_OWSSignalService];
 
     [self updateIsCensorshipCircumventionActive];
 }
@@ -341,28 +342,29 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (NSString *)manualCensorshipCircumventionDomain
 {
-    return [[TSStorageManager dbReadConnection] objectForKey:kTSStorageManager_ManualCensorshipCircumventionDomain
-                                                inCollection:kTSStorageManager_OWSSignalService];
+    return [[OWSPrimaryStorage dbReadConnection] objectForKey:kOWSPrimaryStorage_ManualCensorshipCircumventionDomain
+                                                 inCollection:kOWSPrimaryStorage_OWSSignalService];
 }
 
 - (void)setManualCensorshipCircumventionDomain:(NSString *)value
 {
-    [[TSStorageManager dbReadWriteConnection] setObject:value
-                                                 forKey:kTSStorageManager_ManualCensorshipCircumventionDomain
-                                           inCollection:kTSStorageManager_OWSSignalService];
+    [[OWSPrimaryStorage dbReadWriteConnection] setObject:value
+                                                  forKey:kOWSPrimaryStorage_ManualCensorshipCircumventionDomain
+                                            inCollection:kOWSPrimaryStorage_OWSSignalService];
 }
 
 - (NSString *)manualCensorshipCircumventionCountryCode
 {
-    return [[TSStorageManager dbReadConnection] objectForKey:kTSStorageManager_ManualCensorshipCircumventionCountryCode
-                                                inCollection:kTSStorageManager_OWSSignalService];
+    return
+        [[OWSPrimaryStorage dbReadConnection] objectForKey:kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode
+                                              inCollection:kOWSPrimaryStorage_OWSSignalService];
 }
 
 - (void)setManualCensorshipCircumventionCountryCode:(NSString *)value
 {
-    [[TSStorageManager dbReadWriteConnection] setObject:value
-                                                 forKey:kTSStorageManager_ManualCensorshipCircumventionCountryCode
-                                           inCollection:kTSStorageManager_OWSSignalService];
+    [[OWSPrimaryStorage dbReadWriteConnection] setObject:value
+                                                  forKey:kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode
+                                            inCollection:kOWSPrimaryStorage_OWSSignalService];
 }
 
 @end

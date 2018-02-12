@@ -10,7 +10,7 @@ void runSyncRegistrationsForStorage(OWSStorage *storage);
 void runAsyncRegistrationsForStorage(OWSStorage *storage);
 
 // TODO: Rename to OWSPrimaryStorage?
-@interface TSStorageManager : OWSStorage
+@interface OWSPrimaryStorage : OWSStorage
 
 - (instancetype)init NS_UNAVAILABLE;
 

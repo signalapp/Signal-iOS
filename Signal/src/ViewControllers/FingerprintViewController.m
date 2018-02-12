@@ -17,9 +17,9 @@
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInfoMessage.h>
-#import <SignalServiceKit/TSStorageManager+SessionStore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -512,7 +512,7 @@ typedef void (^CustomLayoutBlock)(void);
 - (void)verifyUnverifyButtonTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        [TSStorageManager.sharedManager.newDatabaseConnection readWriteWithBlock:^(
+        [OWSPrimaryStorage.sharedManager.newDatabaseConnection readWriteWithBlock:^(
             YapDatabaseReadWriteTransaction *transaction) {
             BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId
                                                                                       transaction:transaction]

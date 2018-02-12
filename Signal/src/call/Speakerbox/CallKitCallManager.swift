@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -35,7 +35,7 @@ final class CallKitCallManager: NSObject {
         if Environment.current().preferences.isCallKitPrivacyEnabled() {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             handle = CXHandle(type: .generic, value: callKitId)
-            TSStorageManager.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId:callKitId)
+            OWSPrimaryStorage.sharedManager().setPhoneNumber(call.remotePhoneNumber, forCallKitId:callKitId)
         } else {
             handle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
         }

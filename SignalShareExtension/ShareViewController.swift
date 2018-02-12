@@ -59,13 +59,13 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         }
 
         // If we haven't migrated the database file to the shared data
-        // directory we can't load it, and therefore can't init TSSStorageManager,
+        // directory we can't load it, and therefore can't init TSSPrimaryStorage,
         // and therefore don't want to setup most of our machinery (Environment,
         // most of the singletons, etc.).  We just want to show an error view and
         // abort.
         isReadyForAppExtensions = OWSPreferences.isReadyForAppExtensions()
         guard isReadyForAppExtensions else {
-            // If we don't have TSSStorageManager, we can't consult TSAccountManager
+            // If we don't have TSSPrimaryStorage, we can't consult TSAccountManager
             // for isRegistered, so we use OWSPreferences which is usually-accurate
             // copy of that state.
             if OWSPreferences.isRegistered() {

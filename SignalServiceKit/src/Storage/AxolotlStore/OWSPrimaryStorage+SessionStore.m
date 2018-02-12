@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSFileSystem.h"
-#import "TSStorageManager+SessionStore.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
 #import <AxolotlKit/SessionRecord.h>
@@ -11,10 +11,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const TSStorageManagerSessionStoreCollection = @"TSStorageManagerSessionStoreCollection";
+NSString *const OWSPrimaryStorageSessionStoreCollection = @"OWSPrimaryStorageSessionStoreCollection";
 NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
-@implementation TSStorageManager (SessionStore)
+@implementation OWSPrimaryStorage (SessionStore)
 
 /**
  * Special purpose dbConnection which disables the object cache to better enforce transaction semantics on the store.
@@ -26,7 +26,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     static dispatch_once_t onceToken;
     static YapDatabaseConnection *sessionStoreDBConnection;
     dispatch_once(&onceToken, ^{
-        sessionStoreDBConnection = [TSStorageManager sharedManager].newDatabaseConnection;
+        sessionStoreDBConnection = [OWSPrimaryStorage sharedManager].newDatabaseConnection;
         sessionStoreDBConnection.objectCacheEnabled = NO;
     });
 
@@ -51,7 +51,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
     NSDictionary *_Nullable dictionary =
-        [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+        [transaction objectForKey:contactIdentifier inCollection:OWSPrimaryStorageSessionStoreCollection];
 
     SessionRecord *record;
 
@@ -78,7 +78,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
     NSDictionary *_Nullable dictionary =
-        [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+        [transaction objectForKey:contactIdentifier inCollection:OWSPrimaryStorageSessionStoreCollection];
 
     return dictionary ? dictionary.allKeys : @[];
 }
@@ -103,7 +103,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     [session markAsUnFresh];
 
     NSDictionary *immutableDictionary =
-        [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+        [transaction objectForKey:contactIdentifier inCollection:OWSPrimaryStorageSessionStoreCollection];
 
     NSMutableDictionary *dictionary
         = (immutableDictionary ? [immutableDictionary mutableCopy] : [NSMutableDictionary new]);
@@ -112,7 +112,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
     [transaction setObject:[dictionary copy]
                     forKey:contactIdentifier
-              inCollection:TSStorageManagerSessionStoreCollection];
+              inCollection:OWSPrimaryStorageSessionStoreCollection];
 }
 
 - (BOOL)containsSession:(NSString *)contactIdentifier
@@ -138,10 +138,10 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
     DDLogInfo(
-        @"[TSStorageManager (SessionStore)] deleting session for contact: %@ device: %d", contactIdentifier, deviceId);
+        @"[OWSPrimaryStorage (SessionStore)] deleting session for contact: %@ device: %d", contactIdentifier, deviceId);
 
     NSDictionary *immutableDictionary =
-        [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+        [transaction objectForKey:contactIdentifier inCollection:OWSPrimaryStorageSessionStoreCollection];
 
     NSMutableDictionary *dictionary
         = (immutableDictionary ? [immutableDictionary mutableCopy] : [NSMutableDictionary new]);
@@ -150,7 +150,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
     [transaction setObject:[dictionary copy]
                     forKey:contactIdentifier
-              inCollection:TSStorageManagerSessionStoreCollection];
+              inCollection:OWSPrimaryStorageSessionStoreCollection];
 }
 
 - (void)deleteAllSessionsForContact:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext
@@ -160,9 +160,9 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
-    DDLogInfo(@"[TSStorageManager (SessionStore)] deleting all sessions for contact:%@", contactIdentifier);
+    DDLogInfo(@"[OWSPrimaryStorage (SessionStore)] deleting all sessions for contact:%@", contactIdentifier);
 
-    [transaction removeObjectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+    [transaction removeObjectForKey:contactIdentifier inCollection:OWSPrimaryStorageSessionStoreCollection];
 }
 
 - (void)archiveAllSessionsForContact:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext
@@ -172,10 +172,10 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
-    DDLogInfo(@"[TSStorageManager (SessionStore)] archiving all sessions for contact: %@", contactIdentifier);
+    DDLogInfo(@"[OWSPrimaryStorage (SessionStore)] archiving all sessions for contact: %@", contactIdentifier);
 
     __block NSDictionary<NSNumber *, SessionRecord *> *sessionRecords =
-        [transaction objectForKey:contactIdentifier inCollection:TSStorageManagerSessionStoreCollection];
+        [transaction objectForKey:contactIdentifier inCollection:OWSPrimaryStorageSessionStoreCollection];
 
     for (id deviceId in sessionRecords) {
         id object = sessionRecords[deviceId];
@@ -186,11 +186,11 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
         SessionRecord *sessionRecord = (SessionRecord *)object;
         [sessionRecord archiveCurrentState];
-        }
+    }
 
-        [transaction setObject:sessionRecords
-                        forKey:contactIdentifier
-                  inCollection:TSStorageManagerSessionStoreCollection];
+    [transaction setObject:sessionRecords
+                    forKey:contactIdentifier
+              inCollection:OWSPrimaryStorageSessionStoreCollection];
 }
 
 #pragma mark - debug
@@ -201,16 +201,16 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
     DDLogWarn(@"%@ resetting session store", self.logTag);
 
-    [transaction removeAllObjectsInCollection:TSStorageManagerSessionStoreCollection];
+    [transaction removeAllObjectsInCollection:OWSPrimaryStorageSessionStoreCollection];
 }
 
 - (void)printAllSessions
 {
-    NSString *tag = @"[TSStorageManager (SessionStore)]";
+    NSString *tag = @"[OWSPrimaryStorage (SessionStore)]";
     [self.sessionStoreDBConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         DDLogDebug(@"%@ All Sessions:", tag);
         [transaction
-            enumerateKeysAndObjectsInCollection:TSStorageManagerSessionStoreCollection
+            enumerateKeysAndObjectsInCollection:OWSPrimaryStorageSessionStoreCollection
                                      usingBlock:^(NSString *_Nonnull key,
                                          id _Nonnull deviceSessionsObject,
                                          BOOL *_Nonnull stop) {
@@ -258,14 +258,14 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 {
     OWSAssert(transaction);
 
-    [transaction snapshotCollection:TSStorageManagerSessionStoreCollection snapshotFilePath:self.snapshotFilePath];
+    [transaction snapshotCollection:OWSPrimaryStorageSessionStoreCollection snapshotFilePath:self.snapshotFilePath];
 }
 
 - (void)restoreSessionStore:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
 
-    [transaction restoreSnapshotOfCollection:TSStorageManagerSessionStoreCollection
+    [transaction restoreSnapshotOfCollection:OWSPrimaryStorageSessionStoreCollection
                             snapshotFilePath:self.snapshotFilePath];
 }
 #endif

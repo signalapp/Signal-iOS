@@ -110,7 +110,7 @@ protocol CallServiceObserver: class {
     private let accountManager: AccountManager
     private let messageSender: MessageSender
     private let contactsManager: OWSContactsManager
-    private let storageManager: TSStorageManager
+    private let primaryStorage: OWSPrimaryStorage
 
     // Exposed by environment.m
     internal let notificationsAdapter: CallNotificationsAdapter
@@ -220,7 +220,7 @@ protocol CallServiceObserver: class {
         self.contactsManager = contactsManager
         self.messageSender = messageSender
         self.notificationsAdapter = notificationsAdapter
-        self.storageManager = TSStorageManager.shared()
+        self.primaryStorage = OWSPrimaryStorage.sharedManager()
 
         super.init()
 

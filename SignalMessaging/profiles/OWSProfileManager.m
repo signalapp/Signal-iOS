@@ -18,6 +18,7 @@
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSRequestBuilder.h>
 #import <SignalServiceKit/OWSSignalService.h>
@@ -26,7 +27,6 @@
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSProfileAvatarUploadFormRequest.h>
-#import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
@@ -81,14 +81,14 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (instancetype)initDefault
 {
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
     OWSMessageSender *messageSender = [Environment current].messageSender;
     TSNetworkManager *networkManager = [Environment current].networkManager;
 
-    return [self initWithStorageManager:storageManager messageSender:messageSender networkManager:networkManager];
+    return [self initWithPrimaryStorage:primaryStorage messageSender:messageSender networkManager:networkManager];
 }
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
                          messageSender:(OWSMessageSender *)messageSender
                         networkManager:(TSNetworkManager *)networkManager
 {
@@ -99,12 +99,12 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     }
 
     OWSAssertIsOnMainThread();
-    OWSAssert(storageManager);
+    OWSAssert(primaryStorage);
     OWSAssert(messageSender);
     OWSAssert(messageSender);
 
     _messageSender = messageSender;
-    _dbConnection = storageManager.newDatabaseConnection;
+    _dbConnection = primaryStorage.newDatabaseConnection;
     _networkManager = networkManager;
 
     _profileAvatarImageCache = [NSCache new];

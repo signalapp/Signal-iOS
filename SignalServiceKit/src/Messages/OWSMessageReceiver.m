@@ -9,11 +9,11 @@
 #import "OWSBackgroundTask.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSMessageDecrypter.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSQueues.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSStorage.h"
 #import "TSDatabaseView.h"
-#import "TSStorageManager.h"
 #import "TSYapDatabaseObject.h"
 #import "Threading.h"
 #import <YapDatabase/YapDatabaseAutoView.h>
@@ -404,7 +404,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 - (instancetype)initDefault
 {
     // For concurrency coherency we use the same dbConnection to persist and read the unprocessed envelopes
-    YapDatabaseConnection *dbConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
+    YapDatabaseConnection *dbConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
     OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter sharedManager];
     OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor sharedInstance];
 

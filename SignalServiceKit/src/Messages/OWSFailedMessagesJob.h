@@ -4,20 +4,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSPrimaryStorage;
 @class OWSStorage;
-@class TSStorageManager;
 
 @interface OWSFailedMessagesJob : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 - (void)run;
 
 /**
  * Database extensions required for class to work.
  */
-+ (void)asyncRegisterDatabaseExtensionsWithStorageManager:(OWSStorage *)storage;
++ (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage;
 
 #ifdef DEBUG
 /**

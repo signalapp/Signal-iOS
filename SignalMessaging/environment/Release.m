@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "Release.h"
@@ -18,12 +18,12 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         // Order matters here.
-        TSStorageManager *storageManager = [TSStorageManager sharedManager];
+        OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
         TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
         OWSContactsManager *contactsManager = [OWSContactsManager new];
         ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
         OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithNetworkManager:networkManager
-                                                                            storageManager:storageManager
+                                                                            primaryStorage:primaryStorage
                                                                            contactsManager:contactsManager
                                                                            contactsUpdater:contactsUpdater];
 

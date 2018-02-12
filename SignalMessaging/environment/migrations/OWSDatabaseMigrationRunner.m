@@ -16,14 +16,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDatabaseMigrationRunner
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _storageManager = storageManager;
+    _primaryStorage = primaryStorage;
 
     return self;
 }
@@ -31,14 +31,14 @@ NS_ASSUME_NONNULL_BEGIN
 // This should all migrations which do NOT qualify as safeBlockingMigrations:
 - (NSArray<OWSDatabaseMigration *> *)allMigrations
 {
-    TSStorageManager *storageManager = TSStorageManager.sharedManager;
+    OWSPrimaryStorage *primaryStorage = OWSPrimaryStorage.sharedManager;
     return @[
-        [[OWS100RemoveTSRecipientsMigration alloc] initWithStorageManager:storageManager],
-        [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithStorageManager:storageManager],
-        [[OWS103EnableVideoCalling alloc] initWithStorageManager:storageManager],
-        [[OWS104CreateRecipientIdentities alloc] initWithStorageManager:storageManager],
-        [[OWS105AttachmentFilePaths alloc] initWithStorageManager:storageManager],
-        [[OWS106EnsureProfileComplete alloc] initWithStorageManager:storageManager]
+        [[OWS100RemoveTSRecipientsMigration alloc] initWithPrimaryStorage:primaryStorage],
+        [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithPrimaryStorage:primaryStorage],
+        [[OWS103EnableVideoCalling alloc] initWithPrimaryStorage:primaryStorage],
+        [[OWS104CreateRecipientIdentities alloc] initWithPrimaryStorage:primaryStorage],
+        [[OWS105AttachmentFilePaths alloc] initWithPrimaryStorage:primaryStorage],
+        [[OWS106EnsureProfileComplete alloc] initWithPrimaryStorage:primaryStorage]
     ];
 }
 
