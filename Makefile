@@ -19,7 +19,6 @@ update_dependencies:
 dependencies:
 	cd $(WORKING_DIR) && \
 		git submodule update --init
-		bundle exec pod install
 		carthage build --platform iOS
 
 build: dependencies
