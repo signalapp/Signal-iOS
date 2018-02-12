@@ -627,7 +627,16 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         contentView.layoutMargins = UIEdgeInsets(top: kToolbarMargin, left: kToolbarMargin, bottom: kToolbarMargin, right: kToolbarMargin)
 
         self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
-        textView.autoPinEdges(toSuperviewMarginsExcludingEdge: .right)
+
+        // We pin all three edges explicitly rather than doing something like:
+        //  textView.autoPinEdges(toSuperviewMarginsExcludingEdge: .right)
+        // because that method uses `leading` / `trailing` rather than `left` vs. `right`.
+        // So it doesn't work as expected with RTL layouts when we explicitly want something
+        // to be on the right side for both RTL and LTR layouts, like with the send button.
+        // I believe this is a bug in PureLayout. Filed here: https://github.com/PureLayout/PureLayout/issues/209
+        textView.autoPinEdge(toSuperviewMargin: .left)
+        textView.autoPinEdge(toSuperviewMargin: .top)
+        textView.autoPinEdge(toSuperviewMargin: .bottom)
 
         sendButton.autoPinEdge(.left, to: .right, of: textView, withOffset: kToolbarMargin)
 
