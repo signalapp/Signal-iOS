@@ -61,6 +61,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 @property (nonatomic) UIWindow *screenProtectionWindow;
 @property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
+@property (nonatomic) BOOL didAppLaunchFail;
 
 @end
 
@@ -130,7 +131,15 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // We need to do this _after_ we set up logging, when the keychain is unlocked,
     // but before we access YapDatabase, files on disk, or NSUserDefaults
-    [self ensureIsReadyForAppExtensions];
+    if (![self ensureIsReadyForAppExtensions]) {
+        // If this method has failed; do nothing.
+        //
+        // ensureIsReadyForAppExtensions will show a failure mode UI that
+        // lets users report this error.
+        DDLogInfo(@"%@ application: didFinishLaunchingWithOptions failed.", self.logTag);
+
+        return YES;
+    }
 
     [AppVersion instance];
 
@@ -219,10 +228,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 }
 
-- (void)ensureIsReadyForAppExtensions
+- (BOOL)ensureIsReadyForAppExtensions
 {
     if ([OWSPreferences isReadyForAppExtensions]) {
-        return;
+        return YES;
     }
 
     if ([NSFileManager.defaultManager fileExistsAtPath:TSStorageManager.legacyDatabaseFilePath]) {
@@ -238,14 +247,56 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     NSError *_Nullable error = [self convertDatabaseIfNecessary];
-    // TODO: Handle this error.
-    OWSAssert(!error);
+    if (error) {
+        OWSFail(@"%@ database conversion failed: %@", self.logTag, error);
+        [self showLaunchFailureUI:error];
+        return NO;
+    }
 
     [NSUserDefaults migrateToSharedUserDefaults];
 
     [TSStorageManager migrateToSharedData];
     [OWSProfileManager migrateToSharedData];
     [TSAttachmentStream migrateToSharedData];
+
+    return YES;
+}
+
+- (void)showLaunchFailureUI:(NSError *)error
+{
+    // Disable normal functioning of app.
+    self.didAppLaunchFail = YES;
+
+    // We perform a subset of the [application:didFinishLaunchingWithOptions:].
+    [AppVersion instance];
+    [self startupLogging];
+
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+
+    // Show the launch screen until the async database view registrations are complete.
+    self.window.rootViewController = [self loadingRootViewController];
+
+    [self.window makeKeyAndVisible];
+
+    UIAlertController *controller =
+        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_TITLE",
+                                                        @"Title for the 'app launch failed' alert.")
+                                            message:NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_MESSAGE",
+                                                        @"Message for the 'app launch failed' alert.")
+                                     preferredStyle:UIAlertControllerStyleAlert];
+
+    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:^(UIAlertAction *_Nonnull action) {
+                                                     [Pastelog submitLogsWithShareCompletion:^{
+                                                         DDLogInfo(
+                                                             @"%@ exiting after sharing debug logs.", self.logTag);
+                                                         [DDLog flushLog];
+                                                         exit(0);
+                                                     }];
+                                                 }]];
+    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
+    [fromViewController presentViewController:controller animated:YES completion:nil];
 }
 
 - (nullable NSError *)convertDatabaseIfNecessary
@@ -368,6 +419,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 {
     OWSAssertIsOnMainThread();
 
+    if (self.didAppLaunchFail) {
+        OWSFail(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        return;
+    }
+
     DDLogInfo(@"%@ registered vanilla push token: %@", self.logTag, deviceToken);
     [PushRegistrationManager.sharedManager didReceiveVanillaPushToken:deviceToken];
 }
@@ -375,6 +431,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
     OWSAssertIsOnMainThread();
+
+    if (self.didAppLaunchFail) {
+        OWSFail(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        return;
+    }
 
     DDLogError(@"%@ failed to register vanilla push token with error: %@", self.logTag, error);
 #ifdef DEBUG
@@ -392,6 +453,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 {
     OWSAssertIsOnMainThread();
 
+    if (self.didAppLaunchFail) {
+        OWSFail(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        return;
+    }
+
     DDLogInfo(@"%@ registered user notification settings", self.logTag);
     [PushRegistrationManager.sharedManager didRegisterUserNotificationSettings];
 }
@@ -402,6 +468,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
            annotation:(id)annotation
 {
     OWSAssertIsOnMainThread();
+
+    if (self.didAppLaunchFail) {
+        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        return NO;
+    }
 
     if (!AppReadiness.isAppReady) {
         DDLogWarn(@"%@ Ignoring openURL: app not ready.", self.logTag);
@@ -436,6 +507,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     OWSAssertIsOnMainThread();
+
+    if (self.didAppLaunchFail) {
+        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        return;
+    }
 
     DDLogWarn(@"%@ applicationDidBecomeActive.", self.logTag);
     if (CurrentAppContext().isRunningTests) {
@@ -536,6 +612,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)applicationWillResignActive:(UIApplication *)application {
     OWSAssertIsOnMainThread();
 
+    if (self.didAppLaunchFail) {
+        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        return;
+    }
+
     DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
 
     __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
@@ -563,6 +644,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler {
     OWSAssertIsOnMainThread();
+
+    if (self.didAppLaunchFail) {
+        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        return;
+    }
 
     if (!AppReadiness.isAppReady) {
         DDLogWarn(@"%@ Ignoring performActionForShortcutItem: app not ready.", self.logTag);
@@ -601,6 +687,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
       restorationHandler:(nonnull void (^)(NSArray *_Nullable))restorationHandler
 {
     OWSAssertIsOnMainThread();
+
+    if (self.didAppLaunchFail) {
+        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        return NO;
+    }
 
     if (!AppReadiness.isAppReady) {
         DDLogWarn(@"%@ Ignoring continueUserActivity: app not ready.", self.logTag);
@@ -772,6 +863,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     OWSAssertIsOnMainThread();
 
+    if (self.didAppLaunchFail) {
+        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        return;
+    }
+
     // It is safe to continue even if the app isn't ready.
     [[PushManager sharedManager] application:application didReceiveRemoteNotification:userInfo];
 }
@@ -781,6 +877,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     OWSAssertIsOnMainThread();
 
+    if (self.didAppLaunchFail) {
+        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        return;
+    }
+
     // It is safe to continue even if the app isn't ready.
     [[PushManager sharedManager] application:application
                 didReceiveRemoteNotification:userInfo
@@ -789,6 +890,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
     OWSAssertIsOnMainThread();
+
+    if (self.didAppLaunchFail) {
+        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        return;
+    }
 
     DDLogInfo(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, notification);
 
@@ -804,6 +910,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
              completionHandler:(void (^)())completionHandler
 {
     OWSAssertIsOnMainThread();
+
+    if (self.didAppLaunchFail) {
+        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        return;
+    }
 
     if (!AppReadiness.isAppReady) {
         DDLogWarn(@"%@ Ignoring handleActionWithIdentifier: app not ready.", self.logTag);
@@ -824,6 +935,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
              completionHandler:(void (^)())completionHandler
 {
     OWSAssertIsOnMainThread();
+
+    if (self.didAppLaunchFail) {
+        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        return;
+    }
 
     if (!AppReadiness.isAppReady) {
         DDLogWarn(@"%@ Ignoring handleActionWithIdentifier: app not ready.", self.logTag);

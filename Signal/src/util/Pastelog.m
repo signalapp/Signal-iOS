@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "Pastelog.h"
@@ -18,7 +18,7 @@
 
 @property (nonatomic) UIAlertController *loadingAlert;
 @property (nonatomic) NSMutableData *responseData;
-@property (nonatomic) successBlock block;
+@property (nonatomic) DebugLogsUploadedBlock block;
 
 @end
 
@@ -27,7 +27,20 @@
 @implementation Pastelog
 
 +(void)submitLogs {
-    [self submitLogsWithCompletion:^(NSError *error, NSString *urlString) {
+    [self submitLogsWithShareCompletion:nil];
+}
+
++ (void)submitLogsWithShareCompletion:(nullable DebugLogsSharedBlock)shareCompletionParam
+{
+    DebugLogsSharedBlock shareCompletion = ^{
+        if (shareCompletionParam) {
+            // Wait a moment. If PasteLog opens a URL, it needs a moment to complete.
+            dispatch_after(
+                dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), shareCompletionParam);
+        }
+    };
+
+    [self submitLogsWithUploadCompletion:^(NSError *error, NSString *urlString) {
         if (!error) {
             UIAlertController *alert = [UIAlertController
                 alertControllerWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_TITLE", @"Title of the debug log alert.")
@@ -41,6 +54,8 @@
                                         style:UIAlertActionStyleDefault
                                       handler:^(UIAlertAction *_Nonnull action) {
                                           [Pastelog.sharedManager submitEmail:urlString];
+
+                                          shareCompletion();
                                       }]];
             [alert addAction:[UIAlertAction
                                  actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_COPY_LINK",
@@ -49,6 +64,8 @@
                                          handler:^(UIAlertAction *_Nonnull action) {
                                              UIPasteboard *pb = [UIPasteboard generalPasteboard];
                                              [pb setString:urlString];
+
+                                             shareCompletion();
                                          }]];
 #ifdef DEBUG
             [alert addAction:[UIAlertAction
@@ -73,7 +90,8 @@
                                                @"Label for the 'Open a Bug Report' option of the the debug log alert.")
                                      style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *_Nonnull action) {
-                                       [Pastelog.sharedManager prepareRedirection:urlString];
+                                       [Pastelog.sharedManager prepareRedirection:urlString
+                                                                  shareCompletion:shareCompletion];
                                    }]];
             UIViewController *presentingViewController
                 = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
@@ -91,11 +109,13 @@
     }];
 }
 
-+(void)submitLogsWithCompletion:(successBlock)block {
-    [self submitLogsWithCompletion:(successBlock)block forFileLogger:[[DDFileLogger alloc] init]];
++ (void)submitLogsWithUploadCompletion:(DebugLogsUploadedBlock)block
+{
+    [self submitLogsWithUploadCompletion:block forFileLogger:[[DDFileLogger alloc] init]];
 }
 
-+(void)submitLogsWithCompletion:(successBlock)block forFileLogger:(DDFileLogger*)fileLogger {
++ (void)submitLogsWithUploadCompletion:(DebugLogsUploadedBlock)block forFileLogger:(DDFileLogger *)fileLogger
+{
 
     [self sharedManager].block = block;
 
@@ -231,7 +251,10 @@
     [UIApplication.sharedApplication openURL: [NSURL URLWithString: urlString]];
 }
 
-- (void)prepareRedirection:(NSString*)url {
+- (void)prepareRedirection:(NSString *)url shareCompletion:(DebugLogsSharedBlock)shareCompletion
+{
+    OWSAssert(shareCompletion);
+
     UIPasteboard *pb = [UIPasteboard generalPasteboard];
     [pb setString:url];
 
@@ -248,6 +271,8 @@
                                      [UIApplication.sharedApplication
                                          openURL:[NSURL URLWithString:[[NSBundle mainBundle]
                                                                           objectForInfoDictionaryKey:@"LOGS_URL"]]];
+
+                                     shareCompletion();
                                  }]];
     UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
     [presentingViewController presentViewController:alert animated:NO completion:nil];
