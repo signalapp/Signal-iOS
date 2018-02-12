@@ -263,7 +263,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
             // Try to reset app by deleting all databases.
             //
             // TODO: Possibly clean up all app files.
-            //            [OWSStorage deleteDatabaseFiles];
+            // [OWSStorage deleteDatabaseFiles];
 
             if (![self tryToLoadDatabase]) {
                 OWSFail(@"%@ Could not load database (second try)", self.logTag);
@@ -599,8 +599,8 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
         if (CurrentAppContext().isMainApp) {
             if (CurrentAppContext().isInBackground) {
-                // TODO: Rather than crash here, we should detect the situation earlier
-                // and exit gracefully - (in the app delegate?). See the `
+                // Rather than crash here, we should have already detected the situation earlier
+                // and exited gracefully (in the app delegate) using isDatabasePasswordAccessible.
                 // This is a last ditch effort to avoid blowing away the user's database.
                 [self raiseKeySpecInaccessibleExceptionWithErrorDescription:errorDescription];
             }

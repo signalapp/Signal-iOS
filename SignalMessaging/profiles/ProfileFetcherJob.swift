@@ -141,7 +141,6 @@ public class ProfileFetcherJob: NSObject {
     }
 }
 
-// TODO: This was a struct.
 @objc
 public class SignalServiceProfile: NSObject {
     let TAG = "[SignalServiceProfile]"
