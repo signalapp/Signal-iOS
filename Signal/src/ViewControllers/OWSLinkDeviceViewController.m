@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLoad];
 
-    self.dbConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
+    self.dbConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
 
     // HACK to get full width preview layer
     CGRect oldFrame = self.qrScanningView.frame;

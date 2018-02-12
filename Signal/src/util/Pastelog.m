@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "Pastelog.h"
@@ -8,9 +8,9 @@
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/Threading.h>
 #import <sys/sysctl.h>
 
@@ -263,7 +263,7 @@
 
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
-        [TSStorageManager.dbReadWriteConnection
+        [OWSPrimaryStorage.dbReadWriteConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
             }];
@@ -283,7 +283,7 @@
 
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
-        [TSStorageManager.dbReadWriteConnection
+        [OWSPrimaryStorage.dbReadWriteConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 thread = [[transaction ext:TSThreadDatabaseViewExtensionName] firstObjectInGroup:[TSThread collection]];
             }];

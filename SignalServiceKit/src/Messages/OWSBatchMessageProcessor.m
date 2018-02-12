@@ -8,12 +8,12 @@
 #import "NSArray+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSMessageManager.h"
+#import "OWSPrimaryStorage+SessionStore.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSQueues.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSStorage.h"
 #import "TSDatabaseView.h"
-#import "TSStorageManager+SessionStore.h"
-#import "TSStorageManager.h"
 #import "TSYapDatabaseObject.h"
 #import "Threading.h"
 #import <YapDatabase/YapDatabaseAutoView.h>
@@ -239,7 +239,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 @property (nonatomic) BOOL isDrainingQueue;
 
 - (instancetype)initWithMessagesManager:(OWSMessageManager *)messagesManager
-                         storageManager:(TSStorageManager *)storageManager
+                         primaryStorage:(OWSPrimaryStorage *)primaryStorage
                                  finder:(OWSMessageContentJobFinder *)finder NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -250,7 +250,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 @implementation OWSMessageContentQueue
 
 - (instancetype)initWithMessagesManager:(OWSMessageManager *)messagesManager
-                         storageManager:(TSStorageManager *)storageManager
+                         primaryStorage:(OWSPrimaryStorage *)primaryStorage
                                  finder:(OWSMessageContentJobFinder *)finder
 {
     OWSSingletonAssert();
@@ -261,7 +261,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     }
 
     _messagesManager = messagesManager;
-    _dbConnection = [storageManager newDatabaseConnection];
+    _dbConnection = [primaryStorage newDatabaseConnection];
     _finder = finder;
     _isDrainingQueue = NO;
 
@@ -407,7 +407,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 - (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection
                      messagesManager:(OWSMessageManager *)messagesManager
-                      storageManager:(TSStorageManager *)storageManager
+                      primaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     OWSSingletonAssert();
 
@@ -418,7 +418,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
     OWSMessageContentJobFinder *finder = [[OWSMessageContentJobFinder alloc] initWithDBConnection:dbConnection];
     OWSMessageContentQueue *processingQueue = [[OWSMessageContentQueue alloc] initWithMessagesManager:messagesManager
-                                                                                       storageManager:storageManager
+                                                                                       primaryStorage:primaryStorage
                                                                                                finder:finder];
 
     _processingQueue = processingQueue;
@@ -429,11 +429,11 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 - (instancetype)initDefault
 {
     // For concurrency coherency we use the same dbConnection to persist and read the unprocessed envelopes
-    YapDatabaseConnection *dbConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
+    YapDatabaseConnection *dbConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
     OWSMessageManager *messagesManager = [OWSMessageManager sharedManager];
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
 
-    return [self initWithDBConnection:dbConnection messagesManager:messagesManager storageManager:storageManager];
+    return [self initWithDBConnection:dbConnection messagesManager:messagesManager primaryStorage:primaryStorage];
 }
 
 + (instancetype)sharedInstance

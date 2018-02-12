@@ -60,7 +60,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         self.viewItem = viewItem
         self.message = message
         self.mode = mode
-        self.databaseConnection = TSStorageManager.shared().newDatabaseConnection()
+        self.databaseConnection = OWSPrimaryStorage.sharedManager().newDatabaseConnection()
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -83,7 +83,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         NotificationCenter.default.addObserver(self,
             selector: #selector(yapDatabaseModified),
             name: NSNotification.Name.YapDatabaseModified,
-            object: TSStorageManager.shared().dbNotificationObject)
+            object: OWSPrimaryStorage.sharedManager().dbNotificationObject)
     }
 
     override func viewWillAppear(_ animated: Bool) {

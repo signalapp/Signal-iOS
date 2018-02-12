@@ -8,8 +8,8 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/UIUtil.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSDatabaseView.h>
-#import <SignalServiceKit/TSStorageManager.h>
 
 @implementation AboutTableViewController
 
@@ -71,11 +71,11 @@
 #ifdef DEBUG
     __block NSUInteger threadCount;
     __block NSUInteger messageCount;
-    [TSStorageManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         threadCount = [[transaction ext:TSThreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
         messageCount = [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInAllGroups];
     }];
-    unsigned long long databaseFileSize = [TSStorageManager.sharedManager databaseFileSize];
+    unsigned long long databaseFileSize = [OWSPrimaryStorage.sharedManager databaseFileSize];
 
     OWSTableSection *debugSection = [OWSTableSection new];
     debugSection.headerTitle = @"Debug";

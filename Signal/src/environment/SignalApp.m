@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalApp.h"
@@ -8,9 +8,9 @@
 #import "Signal-Swift.h"
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/Threading.h>
 
 @interface SignalApp ()
@@ -172,7 +172,7 @@
 
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
-        [TSStorageManager.dbReadWriteConnection
+        [OWSPrimaryStorage.dbReadWriteConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
             }];

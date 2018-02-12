@@ -7,11 +7,11 @@
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
+#import "OWSPrimaryStorage+SessionStore.h"
+#import "OWSPrimaryStorage.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage_privateConstructor.h"
-#import "TSStorageManager+SessionStore.h"
-#import "TSStorageManager.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/PreKeyWhisperMessage.h>
 #import <YapDatabase/YapDatabaseTransaction.h>

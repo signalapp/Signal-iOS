@@ -12,6 +12,8 @@
 #import "OWSFileSystem.h"
 #import "OWSMessageSender.h"
 #import "OWSOutgoingNullMessage.h"
+#import "OWSPrimaryStorage+sessionStore.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSRecipientIdentity.h"
 #import "OWSVerificationStateChangeMessage.h"
 #import "OWSVerificationStateSyncMessage.h"
@@ -19,8 +21,6 @@
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
-#import "TSStorageManager+sessionStore.h"
-#import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
@@ -31,11 +31,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // Storing our own identity key
-NSString *const TSStorageManagerIdentityKeyStoreIdentityKey = @"TSStorageManagerIdentityKeyStoreIdentityKey";
-NSString *const TSStorageManagerIdentityKeyStoreCollection = @"TSStorageManagerIdentityKeyStoreCollection";
+NSString *const OWSPrimaryStorageIdentityKeyStoreIdentityKey = @"OWSPrimaryStorageIdentityKeyStoreIdentityKey";
+NSString *const OWSPrimaryStorageIdentityKeyStoreCollection = @"OWSPrimaryStorageIdentityKeyStoreCollection";
 
 // Storing recipients identity keys
-NSString *const TSStorageManagerTrustedKeysCollection = @"TSStorageManagerTrustedKeysCollection";
+NSString *const OWSPrimaryStorageTrustedKeysCollection = @"OWSPrimaryStorageTrustedKeysCollection";
 
 NSString *const OWSIdentityManager_QueuedVerificationStateSyncMessages =
     @"OWSIdentityManager_QueuedVerificationStateSyncMessages";
@@ -55,7 +55,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 @interface OWSIdentityManager ()
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 
@@ -77,13 +77,13 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (instancetype)initDefault
 {
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
     OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
 
-    return [self initWithStorageManager:storageManager messageSender:messageSender];
+    return [self initWithPrimaryStorage:primaryStorage messageSender:messageSender];
 }
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
                          messageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
@@ -92,11 +92,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         return self;
     }
 
-    OWSAssert(storageManager);
+    OWSAssert(primaryStorage);
     OWSAssert(messageSender);
 
-    _storageManager = storageManager;
-    _dbConnection = storageManager.newDatabaseConnection;
+    _primaryStorage = primaryStorage;
+    _dbConnection = primaryStorage.newDatabaseConnection;
     self.dbConnection.objectCacheEnabled = NO;
     _messageSender = messageSender;
 
@@ -123,8 +123,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)generateNewIdentityKey
 {
     [self.dbConnection setObject:[Curve25519 generateKeyPair]
-                          forKey:TSStorageManagerIdentityKeyStoreIdentityKey
-                    inCollection:TSStorageManagerIdentityKeyStoreCollection];
+                          forKey:OWSPrimaryStorageIdentityKeyStoreIdentityKey
+                    inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
 }
 
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
@@ -167,8 +167,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     OWSAssert(transaction);
 
-    ECKeyPair *_Nullable identityKeyPair = [transaction keyPairForKey:TSStorageManagerIdentityKeyStoreIdentityKey
-                                                         inCollection:TSStorageManagerIdentityKeyStoreCollection];
+    ECKeyPair *_Nullable identityKeyPair = [transaction keyPairForKey:OWSPrimaryStorageIdentityKeyStoreIdentityKey
+                                                         inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
     return identityKeyPair;
 }
 
@@ -204,11 +204,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
-    // Deprecated. We actually no longer use the TSStorageManagerTrustedKeysCollection for trust
+    // Deprecated. We actually no longer use the OWSPrimaryStorageTrustedKeysCollection for trust
     // decisions, but it's desirable to try to keep it up to date with our trusted identitys
     // while we're switching between versions, e.g. so we don't get into a state where we have a
     // session for an identity not in our key store.
-    [transaction setObject:identityKey forKey:recipientId inCollection:TSStorageManagerTrustedKeysCollection];
+    [transaction setObject:identityKey forKey:recipientId inCollection:OWSPrimaryStorageTrustedKeysCollection];
 
     OWSRecipientIdentity *existingIdentity =
         [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
@@ -255,7 +255,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                  createdAt:[NSDate new]
                                          verificationState:verificationState] saveWithTransaction:transaction];
 
-        [self.storageManager archiveAllSessionsForContact:recipientId protocolContext:protocolContext];
+        [self.primaryStorage archiveAllSessionsForContact:recipientId protocolContext:protocolContext];
 
         // Cancel any pending verification state sync messages for this recipient.
         [self clearSyncMessageForRecipientId:recipientId transaction:transaction];
@@ -885,18 +885,18 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert(transaction);
 
     NSMutableArray<NSString *> *identityKeysToRemove = [NSMutableArray new];
-    [transaction enumerateKeysInCollection:TSStorageManagerIdentityKeyStoreCollection
+    [transaction enumerateKeysInCollection:OWSPrimaryStorageIdentityKeyStoreCollection
                                 usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
-                                    if ([key isEqualToString:TSStorageManagerIdentityKeyStoreIdentityKey]) {
+                                    if ([key isEqualToString:OWSPrimaryStorageIdentityKeyStoreIdentityKey]) {
                                         // Don't delete our own key.
                                         return;
                                     }
                                     [identityKeysToRemove addObject:key];
                                 }];
     for (NSString *key in identityKeysToRemove) {
-        [transaction removeObjectForKey:key inCollection:TSStorageManagerIdentityKeyStoreCollection];
+        [transaction removeObjectForKey:key inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
     }
-    [transaction removeAllObjectsInCollection:TSStorageManagerTrustedKeysCollection];
+    [transaction removeAllObjectsInCollection:OWSPrimaryStorageTrustedKeysCollection];
 }
 
 - (NSString *)identityKeySnapshotFilePath
@@ -917,9 +917,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     OWSAssert(transaction);
 
-    [transaction snapshotCollection:TSStorageManagerIdentityKeyStoreCollection
+    [transaction snapshotCollection:OWSPrimaryStorageIdentityKeyStoreCollection
                    snapshotFilePath:self.identityKeySnapshotFilePath];
-    [transaction snapshotCollection:TSStorageManagerTrustedKeysCollection
+    [transaction snapshotCollection:OWSPrimaryStorageTrustedKeysCollection
                    snapshotFilePath:self.trustedKeySnapshotFilePath];
 }
 
@@ -927,9 +927,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     OWSAssert(transaction);
 
-    [transaction restoreSnapshotOfCollection:TSStorageManagerIdentityKeyStoreCollection
+    [transaction restoreSnapshotOfCollection:OWSPrimaryStorageIdentityKeyStoreCollection
                             snapshotFilePath:self.identityKeySnapshotFilePath];
-    [transaction restoreSnapshotOfCollection:TSStorageManagerTrustedKeysCollection
+    [transaction restoreSnapshotOfCollection:OWSPrimaryStorageTrustedKeysCollection
                             snapshotFilePath:self.trustedKeySnapshotFilePath];
 }
 

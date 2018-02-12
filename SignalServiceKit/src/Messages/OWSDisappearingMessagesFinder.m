@@ -4,9 +4,9 @@
 
 #import "OWSDisappearingMessagesFinder.h"
 #import "NSDate+OWS.h"
+#import "OWSPrimaryStorage.h"
 #import "TSMessage.h"
 #import "TSOutgoingMessage.h"
-#import "TSStorageManager.h"
 #import "TSThread.h"
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>

@@ -10,8 +10,8 @@
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDevicesService.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSDatabaseView.h>
-#import <SignalServiceKit/TSStorageManager.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 #import <YapDatabase/YapDatabaseViewMappings.h>
@@ -54,7 +54,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 #pragma clang diagnostic pop
     }
 
-    self.dbConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
+    self.dbConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
     [self.dbConnection beginLongLivedReadTransaction];
     self.deviceMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ TSSecondaryDevicesGroup ]
                                                                      view:TSSecondaryDevicesDatabaseViewExtensionName];
@@ -65,7 +65,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
-                                               object:TSStorageManager.sharedManager.dbNotificationObject];
+                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification

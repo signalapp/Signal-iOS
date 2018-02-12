@@ -3,9 +3,9 @@
 //
 
 #import "OWSFailedMessagesJob.h"
+#import "OWSPrimaryStorage.h"
 #import "TSMessage.h"
 #import "TSOutgoingMessage.h"
-#import "TSStorageManager.h"
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
@@ -17,7 +17,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 
 @interface OWSFailedMessagesJob ()
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 
 @end
 
@@ -25,14 +25,14 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 
 @implementation OWSFailedMessagesJob
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _storageManager = storageManager;
+    _primaryStorage = primaryStorage;
 
     return self;
 }
@@ -79,7 +79,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 {
     __block uint count = 0;
 
-    [[self.storageManager newDatabaseConnection]
+    [[self.primaryStorage newDatabaseConnection]
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [self enumerateAttemptingOutMessagesWithBlock:^(TSOutgoingMessage *message) {
                 // sanity check
@@ -131,12 +131,12 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 // Useful for tests, don't use in app startup path because it's slow.
 - (void)blockingRegisterDatabaseExtensions
 {
-    [self.storageManager registerExtension:[self.class indexDatabaseExtension]
+    [self.primaryStorage registerExtension:[self.class indexDatabaseExtension]
                                   withName:OWSFailedMessagesJobMessageStateIndex];
 }
 #endif
 
-+ (void)asyncRegisterDatabaseExtensionsWithStorageManager:(OWSStorage *)storage
++ (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage
 {
     [storage asyncRegisterExtension:[self indexDatabaseExtension] withName:OWSFailedMessagesJobMessageStateIndex];
 }

@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSStorageManager.h"
+#import "OWSPrimaryStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSStorageManager (Calling)
+@interface OWSPrimaryStorage (Calling)
 
 // phoneNumber is an e164 formatted phone number.
 //

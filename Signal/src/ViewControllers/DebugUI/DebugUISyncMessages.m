@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUISyncMessages.h"
@@ -15,6 +15,8 @@
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
@@ -26,8 +28,6 @@
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <SignalServiceKit/TSStorageManager+SessionStore.h>
-#import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (YapDatabaseConnection *)dbConnection
 {
-    return [TSStorageManager.sharedManager newDatabaseConnection];
+    return [OWSPrimaryStorage.sharedManager newDatabaseConnection];
 }
 
 + (void)sendContactsSyncMessage

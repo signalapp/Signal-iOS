@@ -3,8 +3,8 @@
 //
 
 #import "OWSIncomingMessageFinder.h"
+#import "OWSPrimaryStorage.h"
 #import "TSIncomingMessage.h"
-#import "TSStorageManager.h"
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
 
@@ -18,7 +18,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 
 @interface OWSIncomingMessageFinder ()
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
@@ -31,19 +31,19 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 
 - (instancetype)init
 {
-    OWSAssert([TSStorageManager sharedManager]);
+    OWSAssert([OWSPrimaryStorage sharedManager]);
 
-    return [self initWithStorageManager:[TSStorageManager sharedManager]];
+    return [self initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]];
 }
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _storageManager = storageManager;
+    _primaryStorage = primaryStorage;
 
     return self;
 }
@@ -54,7 +54,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 {
     @synchronized (self) {
         if (!_dbConnection) {
-            _dbConnection = [self.storageManager newDatabaseConnection];
+            _dbConnection = [self.primaryStorage newDatabaseConnection];
         }
     }
     return _dbConnection;
@@ -92,7 +92,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
     return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
 }
 
-+ (void)asyncRegisterExtensionWithStorageManager:(OWSStorage *)storage
++ (void)asyncRegisterExtensionWithPrimaryStorage:(OWSStorage *)storage
 {
     DDLogInfo(@"%@ registering async.", self.logTag);
     [storage asyncRegisterExtension:self.indexExtension withName:OWSIncomingMessageFinderExtensionName];
@@ -103,7 +103,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 - (void)registerExtension
 {
     DDLogError(@"%@ registering SYNC. We should prefer async when possible.", self.logTag);
-    [self.storageManager registerExtension:self.class.indexExtension withName:OWSIncomingMessageFinderExtensionName];
+    [self.primaryStorage registerExtension:self.class.indexExtension withName:OWSIncomingMessageFinderExtensionName];
 }
 #endif
 
@@ -115,7 +115,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
                        transaction:(YapDatabaseReadTransaction *)transaction
 {
 #ifdef DEBUG
-    if (![self.storageManager registeredExtension:OWSIncomingMessageFinderExtensionName]) {
+    if (![self.primaryStorage registeredExtension:OWSIncomingMessageFinderExtensionName]) {
         OWSFail(@"%@ in %s but extension is not registered", self.logTag, __PRETTY_FUNCTION__);
 
         // we should be initializing this at startup rather than have an unexpectedly slow lazy setup at random.

@@ -50,8 +50,8 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
         // We don't need to use DeviceSleepManager in the SAE.
 
-        // TODO:
-        //        [UIUtil applySignalAppearence];
+        // TODO: Do we need to applySignalAppearence in the SAE?
+        UIUtil.applySignalAppearence()
 
         if CurrentAppContext().isRunningTests {
             // TODO: Do we need to implement isRunningTests in the SAE context?
@@ -59,13 +59,13 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
         }
 
         // If we haven't migrated the database file to the shared data
-        // directory we can't load it, and therefore can't init TSSStorageManager,
+        // directory we can't load it, and therefore can't init TSSPrimaryStorage,
         // and therefore don't want to setup most of our machinery (Environment,
         // most of the singletons, etc.).  We just want to show an error view and
         // abort.
         isReadyForAppExtensions = OWSPreferences.isReadyForAppExtensions()
         guard isReadyForAppExtensions else {
-            // If we don't have TSSStorageManager, we can't consult TSAccountManager
+            // If we don't have TSSPrimaryStorage, we can't consult TSAccountManager
             // for isRegistered, so we use OWSPreferences which is usually-accurate
             // copy of that state.
             if OWSPreferences.isRegistered() {
@@ -156,12 +156,6 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
                 // We don't need to use OWSDisappearingMessagesJob in the SAE.
 
-                // TODO remove this once we're sure our app boot process is coherent.
-                // Currently this happens *before* db registration is complete when
-                // launching the app directly, but *after* db registration is complete when
-                // the app is launched in the background, e.g. from a voip notification.
-                OWSProfileManager.shared().ensureLocalProfileCached()
-
                 // We don't need to use OWSFailedMessagesJob in the SAE.
 
                 // We don't need to use OWSFailedAttachmentDownloadsJob in the SAE.
@@ -174,7 +168,6 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
             // We don't need to prod the TSSocketManager in the SAE.
         }
 
-        // TODO: Do we want to move this logic into the notification handler for "SAE will appear".
         if TSAccountManager.isRegistered() {
             DispatchQueue.main.async { [weak self] in
                 guard let strongSelf = self else { return }
@@ -229,6 +222,9 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
         Logger.debug("\(self.logTag) \(#function)")
 
+        // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
+        OWSProfileManager.shared().ensureLocalProfileCached()
+
         // Note that this does much more than set a flag;
         // it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
@@ -243,8 +239,7 @@ public class ShareViewController: UINavigationController, ShareViewDelegate, SAE
 
         // We don't need to use DeviceSleepManager in the SAE.
 
-        // TODO: Should we distinguish main app and SAE "completion"?
-        AppVersion.instance().appLaunchDidComplete()
+        AppVersion.instance().saeLaunchDidComplete()
 
         Environment.current().contactsManager.loadSignalAccountsFromCache()
 

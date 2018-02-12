@@ -4,9 +4,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSPrimaryStorage;
 @class OWSStorage;
 @class TSMessage;
-@class TSStorageManager;
 @class TSThread;
 @class YapDatabaseReadTransaction;
 

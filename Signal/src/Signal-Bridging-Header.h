@@ -92,6 +92,8 @@
 #import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSOutgoingCallMessage.h>
+#import <SignalServiceKit/OWSPrimaryStorage+Calling.h>
+#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSSignalService.h>
@@ -114,8 +116,6 @@
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
-#import <SignalServiceKit/TSStorageManager+Calling.h>
-#import <SignalServiceKit/TSStorageManager+SessionStore.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/Threading.h>
 #import <WebRTC/RTCAudioSession.h>

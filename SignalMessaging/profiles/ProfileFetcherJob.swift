@@ -12,7 +12,7 @@ public class ProfileFetcherJob: NSObject {
     let TAG = "[ProfileFetcherJob]"
 
     let networkManager: TSNetworkManager
-    let storageManager: TSStorageManager
+    let primaryStorage: OWSPrimaryStorage
 
     // This property is only accessed on the main queue.
     static var fetchDateMap = [String: Date]()
@@ -31,7 +31,7 @@ public class ProfileFetcherJob: NSObject {
 
     public init(networkManager: TSNetworkManager, ignoreThrottling: Bool = false) {
         self.networkManager = networkManager
-        self.storageManager = TSStorageManager.shared()
+        self.primaryStorage = OWSPrimaryStorage.sharedManager()
         self.ignoreThrottling = ignoreThrottling
     }
 
@@ -130,10 +130,10 @@ public class ProfileFetcherJob: NSObject {
     }
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
-        storageManager.newDatabaseConnection().asyncReadWrite { (transaction) in
+        primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
             if OWSIdentityManager.shared().saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, protocolContext: transaction) {
                 Logger.info("\(self.TAG) updated identity key with fetched profile for recipient: \(recipientId)")
-                self.storageManager.archiveAllSessions(forContact: recipientId, protocolContext: transaction)
+                self.primaryStorage.archiveAllSessions(forContact: recipientId, protocolContext: transaction)
             } else {
                 // no change in identity.
             }

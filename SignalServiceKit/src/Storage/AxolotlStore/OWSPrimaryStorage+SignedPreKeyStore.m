@@ -2,10 +2,10 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSPrimaryStorage+SignedPreKeyStore.h"
 #import "OWSIdentityManager.h"
-#import "TSStorageManager+PreKeyStore.h"
-#import "TSStorageManager+SignedPreKeyStore.h"
-#import "TSStorageManager+keyFromIntLong.h"
+#import "OWSPrimaryStorage+PreKeyStore.h"
+#import "OWSPrimaryStorage+keyFromIntLong.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/NSData+keyVersionByte.h>
@@ -14,15 +14,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const TSStorageManagerSignedPreKeyStoreCollection = @"TSStorageManagerSignedPreKeyStoreCollection";
-NSString *const TSStorageManagerSignedPreKeyMetadataCollection = @"TSStorageManagerSignedPreKeyMetadataCollection";
-NSString *const TSStorageManagerKeyPrekeyUpdateFailureCount = @"prekeyUpdateFailureCount";
-NSString *const TSStorageManagerKeyFirstPrekeyUpdateFailureDate = @"firstPrekeyUpdateFailureDate";
-NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSignedPrekeyId";
+NSString *const OWSPrimaryStorageSignedPreKeyStoreCollection = @"OWSPrimaryStorageSignedPreKeyStoreCollection";
+NSString *const OWSPrimaryStorageSignedPreKeyMetadataCollection = @"OWSPrimaryStorageSignedPreKeyMetadataCollection";
+NSString *const OWSPrimaryStorageKeyPrekeyUpdateFailureCount = @"prekeyUpdateFailureCount";
+NSString *const OWSPrimaryStorageKeyFirstPrekeyUpdateFailureDate = @"firstPrekeyUpdateFailureDate";
+NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSignedPrekeyId";
 
-@implementation TSStorageManager (SignedPreKeyStore)
+@implementation OWSPrimaryStorage (SignedPreKeyStore)
 
-- (SignedPreKeyRecord *)generateRandomSignedRecord {
+- (SignedPreKeyRecord *)generateRandomSignedRecord
+{
     ECKeyPair *keyPair = [Curve25519 generateKeyPair];
 
     // Signed prekey ids must be > 0.
@@ -35,10 +36,11 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
         generatedAt:[NSDate date]];
 }
 
-- (SignedPreKeyRecord *)loadSignedPrekey:(int)signedPreKeyId {
+- (SignedPreKeyRecord *)loadSignedPrekey:(int)signedPreKeyId
+{
     SignedPreKeyRecord *preKeyRecord =
         [self.dbReadConnection signedPreKeyRecordForKey:[self keyFromInt:signedPreKeyId]
-                                           inCollection:TSStorageManagerSignedPreKeyStoreCollection];
+                                           inCollection:OWSPrimaryStorageSignedPreKeyStoreCollection];
 
     if (!preKeyRecord) {
         OWSRaiseException(InvalidKeyIdException, @"No signed pre key found matching key id");
@@ -50,101 +52,105 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
 - (nullable SignedPreKeyRecord *)loadSignedPrekeyOrNil:(int)signedPreKeyId
 {
     return [self.dbReadConnection signedPreKeyRecordForKey:[self keyFromInt:signedPreKeyId]
-                                              inCollection:TSStorageManagerSignedPreKeyStoreCollection];
+                                              inCollection:OWSPrimaryStorageSignedPreKeyStoreCollection];
 }
 
-- (NSArray *)loadSignedPreKeys {
+- (NSArray *)loadSignedPreKeys
+{
     NSMutableArray *signedPreKeyRecords = [NSMutableArray array];
 
     YapDatabaseConnection *conn = [self newDatabaseConnection];
 
     [conn readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-      [transaction enumerateRowsInCollection:TSStorageManagerSignedPreKeyStoreCollection
-                                  usingBlock:^(NSString *key, id object, id metadata, BOOL *stop) {
-                                    [signedPreKeyRecords addObject:object];
-                                  }];
+        [transaction enumerateRowsInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection
+                                    usingBlock:^(NSString *key, id object, id metadata, BOOL *stop) {
+                                        [signedPreKeyRecords addObject:object];
+                                    }];
     }];
 
     return signedPreKeyRecords;
 }
 
-- (void)storeSignedPreKey:(int)signedPreKeyId signedPreKeyRecord:(SignedPreKeyRecord *)signedPreKeyRecord {
+- (void)storeSignedPreKey:(int)signedPreKeyId signedPreKeyRecord:(SignedPreKeyRecord *)signedPreKeyRecord
+{
     [self.dbReadWriteConnection setObject:signedPreKeyRecord
                                    forKey:[self keyFromInt:signedPreKeyId]
-                             inCollection:TSStorageManagerSignedPreKeyStoreCollection];
+                             inCollection:OWSPrimaryStorageSignedPreKeyStoreCollection];
 }
 
-- (BOOL)containsSignedPreKey:(int)signedPreKeyId {
+- (BOOL)containsSignedPreKey:(int)signedPreKeyId
+{
     PreKeyRecord *preKeyRecord =
         [self.dbReadConnection signedPreKeyRecordForKey:[self keyFromInt:signedPreKeyId]
-                                           inCollection:TSStorageManagerSignedPreKeyStoreCollection];
+                                           inCollection:OWSPrimaryStorageSignedPreKeyStoreCollection];
     return (preKeyRecord != nil);
 }
 
-- (void)removeSignedPreKey:(int)signedPrekeyId {
+- (void)removeSignedPreKey:(int)signedPrekeyId
+{
     [self.dbReadWriteConnection removeObjectForKey:[self keyFromInt:signedPrekeyId]
-                                      inCollection:TSStorageManagerSignedPreKeyStoreCollection];
+                                      inCollection:OWSPrimaryStorageSignedPreKeyStoreCollection];
 }
 
 - (nullable NSNumber *)currentSignedPrekeyId
 {
-    return [self.dbReadConnection objectForKey:TSStorageManagerKeyPrekeyCurrentSignedPrekeyId
-                                  inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    return [self.dbReadConnection objectForKey:OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId
+                                  inCollection:OWSPrimaryStorageSignedPreKeyMetadataCollection];
 }
 
 - (void)setCurrentSignedPrekeyId:(int)value
 {
     [self.dbReadWriteConnection setObject:@(value)
-                                   forKey:TSStorageManagerKeyPrekeyCurrentSignedPrekeyId
-                             inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+                                   forKey:OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId
+                             inCollection:OWSPrimaryStorageSignedPreKeyMetadataCollection];
 }
 
 #pragma mark - Prekey update failures
 
 - (int)prekeyUpdateFailureCount;
 {
-    NSNumber *value = [self.dbReadConnection objectForKey:TSStorageManagerKeyPrekeyUpdateFailureCount
-                                             inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    NSNumber *value = [self.dbReadConnection objectForKey:OWSPrimaryStorageKeyPrekeyUpdateFailureCount
+                                             inCollection:OWSPrimaryStorageSignedPreKeyMetadataCollection];
     // Will default to zero.
     return [value intValue];
 }
 
 - (void)clearPrekeyUpdateFailureCount
 {
-    [self.dbReadWriteConnection removeObjectForKey:TSStorageManagerKeyPrekeyUpdateFailureCount
-                                      inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    [self.dbReadWriteConnection removeObjectForKey:OWSPrimaryStorageKeyPrekeyUpdateFailureCount
+                                      inCollection:OWSPrimaryStorageSignedPreKeyMetadataCollection];
 }
 
 - (int)incrementPrekeyUpdateFailureCount
 {
-    return [self.dbReadWriteConnection incrementIntForKey:TSStorageManagerKeyPrekeyUpdateFailureCount
-                                             inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    return [self.dbReadWriteConnection incrementIntForKey:OWSPrimaryStorageKeyPrekeyUpdateFailureCount
+                                             inCollection:OWSPrimaryStorageSignedPreKeyMetadataCollection];
 }
 
 - (nullable NSDate *)firstPrekeyUpdateFailureDate
 {
-    return [self.dbReadConnection dateForKey:TSStorageManagerKeyFirstPrekeyUpdateFailureDate
-                                inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    return [self.dbReadConnection dateForKey:OWSPrimaryStorageKeyFirstPrekeyUpdateFailureDate
+                                inCollection:OWSPrimaryStorageSignedPreKeyMetadataCollection];
 }
 
 - (void)setFirstPrekeyUpdateFailureDate:(nonnull NSDate *)value
 {
     [self.dbReadWriteConnection setDate:value
-                                 forKey:TSStorageManagerKeyFirstPrekeyUpdateFailureDate
-                           inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+                                 forKey:OWSPrimaryStorageKeyFirstPrekeyUpdateFailureDate
+                           inCollection:OWSPrimaryStorageSignedPreKeyMetadataCollection];
 }
 
 - (void)clearFirstPrekeyUpdateFailureDate
 {
-    [self.dbReadWriteConnection removeObjectForKey:TSStorageManagerKeyFirstPrekeyUpdateFailureDate
-                                      inCollection:TSStorageManagerSignedPreKeyMetadataCollection];
+    [self.dbReadWriteConnection removeObjectForKey:OWSPrimaryStorageKeyFirstPrekeyUpdateFailureDate
+                                      inCollection:OWSPrimaryStorageSignedPreKeyMetadataCollection];
 }
 
 #pragma mark - Debugging
 
 - (void)logSignedPreKeyReport
 {
-    NSString *tag = @"[TSStorageManager (SignedPreKeyStore)]";
+    NSString *tag = @"[OWSPrimaryStorage (SignedPreKeyStore)]";
 
     NSNumber *currentId = [self currentSignedPrekeyId];
     NSDate *firstPrekeyUpdateFailureDate = [self firstPrekeyUpdateFailureDate];
@@ -158,11 +164,11 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
         DDLogInfo(@"%@   firstPrekeyUpdateFailureDate: %@", tag, firstPrekeyUpdateFailureDate);
         DDLogInfo(@"%@   prekeyUpdateFailureCount: %lu", tag, (unsigned long)prekeyUpdateFailureCount);
 
-        NSUInteger count = [transaction numberOfKeysInCollection:TSStorageManagerSignedPreKeyStoreCollection];
+        NSUInteger count = [transaction numberOfKeysInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection];
         DDLogInfo(@"%@   All Keys (count: %lu):", tag, (unsigned long)count);
 
         [transaction
-            enumerateKeysAndObjectsInCollection:TSStorageManagerSignedPreKeyStoreCollection
+            enumerateKeysAndObjectsInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection
                                      usingBlock:^(
                                          NSString *_Nonnull key, id _Nonnull signedPreKeyObject, BOOL *_Nonnull stop) {
                                          i++;

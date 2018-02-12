@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSCensorshipConfiguration.h"
+#import "OWSPrimaryStorage.h"
 #import "TSConstants.h"
-#import "TSStorageManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

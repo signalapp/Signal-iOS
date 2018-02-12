@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "NewGroupViewController.h"
@@ -446,7 +446,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     TSGroupModel *model = [self makeGroup];
 
     __block TSGroupThread *thread;
-    [TSStorageManager.dbReadWriteConnection
+    [OWSPrimaryStorage.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
         }];

@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSStorageManager.h"
+#import "OWSPrimaryStorage.h"
 #import "AppContext.h"
 #import "OWSAnalytics.h"
 #import "OWSBatchMessageProcessor.h"
@@ -18,10 +18,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const TSStorageManagerExceptionName_CouldNotMoveDatabaseFile
-    = @"TSStorageManagerExceptionName_CouldNotMoveDatabaseFile";
-NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
-    = @"TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory";
+NSString *const OWSPrimaryStorageExceptionName_CouldNotMoveDatabaseFile
+    = @"OWSPrimaryStorageExceptionName_CouldNotMoveDatabaseFile";
+NSString *const OWSPrimaryStorageExceptionName_CouldNotCreateDatabaseDirectory
+    = @"OWSPrimaryStorageExceptionName_CouldNotCreateDatabaseDirectory";
 
 void runSyncRegistrationsForStorage(OWSStorage *storage)
 {
@@ -52,15 +52,15 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:storage];
 
     // Register extensions which aren't essential for rendering threads async.
-    [OWSIncomingMessageFinder asyncRegisterExtensionWithStorageManager:storage];
+    [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:storage];
     [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:storage];
     [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:storage];
-    [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithStorageManager:storage];
-    [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithStorageManager:storage];
+    [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
+    [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
 }
 
 #pragma mark -
-@interface TSStorageManager ()
+@interface OWSPrimaryStorage ()
 
 @property (nonatomic, readonly, nullable) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly, nullable) YapDatabaseConnection *dbReadWriteConnection;
@@ -72,16 +72,17 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 
 #pragma mark -
 
-@implementation TSStorageManager
+@implementation OWSPrimaryStorage
 
-+ (instancetype)sharedManager {
-    static TSStorageManager *sharedManager = nil;
++ (instancetype)sharedManager
+{
+    static OWSPrimaryStorage *sharedManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedManager = [[self alloc] initStorage];
 
 #if TARGET_OS_IPHONE
-        [TSStorageManager protectFiles];
+        [OWSPrimaryStorage protectFiles];
 #endif
     });
     return sharedManager;
@@ -176,7 +177,7 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 
     if (![OWSFileSystem ensureDirectoryExists:databaseDirPath]) {
         OWSRaiseException(
-            TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory, @"Could not create new database directory");
+            OWSPrimaryStorageExceptionName_CouldNotCreateDatabaseDirectory, @"Could not create new database directory");
     }
     return databaseDirPath;
 }
@@ -230,35 +231,35 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 {
     [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath
                 sharedDataFilePath:self.sharedDataDatabaseFilePath
-                     exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
+                     exceptionName:OWSPrimaryStorageExceptionName_CouldNotMoveDatabaseFile];
     [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_SHM
                 sharedDataFilePath:self.sharedDataDatabaseFilePath_SHM
-                     exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
+                     exceptionName:OWSPrimaryStorageExceptionName_CouldNotMoveDatabaseFile];
     [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_WAL
                 sharedDataFilePath:self.sharedDataDatabaseFilePath_WAL
-                     exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
+                     exceptionName:OWSPrimaryStorageExceptionName_CouldNotMoveDatabaseFile];
 }
 
 + (NSString *)databaseFilePath
 {
-    DDLogVerbose(@"databasePath: %@", TSStorageManager.sharedDataDatabaseFilePath);
+    DDLogVerbose(@"databasePath: %@", OWSPrimaryStorage.sharedDataDatabaseFilePath);
 
     return self.sharedDataDatabaseFilePath;
 }
 
 - (NSString *)databaseFilePath
 {
-    return TSStorageManager.databaseFilePath;
+    return OWSPrimaryStorage.databaseFilePath;
 }
 
 + (YapDatabaseConnection *)dbReadConnection
 {
-    return TSStorageManager.sharedManager.dbReadConnection;
+    return OWSPrimaryStorage.sharedManager.dbReadConnection;
 }
 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
-    return TSStorageManager.sharedManager.dbReadWriteConnection;
+    return OWSPrimaryStorage.sharedManager.dbReadWriteConnection;
 }
 
 @end

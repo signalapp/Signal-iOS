@@ -108,7 +108,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         if Environment.current().preferences.isCallKitPrivacyEnabled() {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             update.remoteHandle = CXHandle(type: .generic, value: callKitId)
-            TSStorageManager.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId:callKitId)
+            OWSPrimaryStorage.sharedManager().setPhoneNumber(call.remotePhoneNumber, forCallKitId:callKitId)
             update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
         } else {
             update.localizedCallerName = self.contactsManager.stringForConversationTitle(withPhoneIdentifier: call.remotePhoneNumber)

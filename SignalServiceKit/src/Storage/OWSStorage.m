@@ -7,9 +7,9 @@
 #import "NSData+Base64.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSFileSystem.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSStorage+Subclass.h"
 #import "TSAttachmentStream.h"
-#import "TSStorageManager.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
 #import <YapDatabase/YapDatabase.h>
@@ -329,7 +329,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 + (NSArray<OWSStorage *> *)allStorages
 {
     return @[
-        TSStorageManager.sharedManager,
+        OWSPrimaryStorage.sharedManager,
     ];
 }
 
@@ -489,7 +489,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 + (void)deleteDatabaseFiles
 {
-    [OWSFileSystem deleteFile:[TSStorageManager databaseFilePath]];
+    [OWSFileSystem deleteFile:[OWSPrimaryStorage databaseFilePath]];
 }
 
 - (void)deleteDatabaseFile
