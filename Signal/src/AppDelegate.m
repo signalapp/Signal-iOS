@@ -420,7 +420,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFail(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -433,7 +433,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFail(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -454,7 +454,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFail(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -470,7 +470,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return NO;
     }
 
@@ -509,7 +509,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -613,7 +613,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -646,7 +646,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -689,7 +689,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return NO;
     }
 
@@ -864,7 +864,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -878,7 +878,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -892,7 +892,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -912,7 +912,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -937,7 +937,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
