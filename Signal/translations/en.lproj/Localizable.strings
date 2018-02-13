@@ -1452,9 +1452,6 @@
 /* Label for the send button in the conversation view. */
 "SEND_BUTTON_TITLE" = "Send";
 
-/* Title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Send File";
-
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Sending invite failed, please try again later.";
 
@@ -1640,6 +1637,9 @@
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Unable to Prepare Attachment";
+
+/* Title for the 'share extension' view. */
+"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Show New Safety Number";

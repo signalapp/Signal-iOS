@@ -31,10 +31,12 @@
 
     self.countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
 
-    self.navigationItem.leftBarButtonItem =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
-                                                      target:self
-                                                      action:@selector(dismissWasPressed:)];
+    if (!self.isPresentedInNavigationController) {
+        self.navigationItem.leftBarButtonItem =
+            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+                                                          target:self
+                                                          action:@selector(dismissWasPressed:)];
+    }
 
     [self createViews];
 }

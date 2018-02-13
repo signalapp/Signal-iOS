@@ -181,6 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              NewNonContactConversationViewController *viewController =
                                                  [NewNonContactConversationViewController new];
                                              viewController.nonContactConversationDelegate = weakSelf;
+                                             viewController.isPresentedInNavigationController = YES;
                                              [weakSelf.navigationController pushViewController:viewController
                                                                                       animated:YES];
                                          }]];

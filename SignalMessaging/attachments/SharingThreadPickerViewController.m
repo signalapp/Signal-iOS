@@ -59,7 +59,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     _messageSender = [Environment current].messageSender;
 
     _progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
-    self.title = NSLocalizedString(@"SEND_EXTERNAL_FILE_VIEW_TITLE", @"Title for the 'send external file' view.");
+    self.title = NSLocalizedString(@"SHARE_EXTENSION_VIEW_TITLE", @"Title for the 'share extension' view.");
 }
 
 - (void)viewDidLoad
@@ -148,6 +148,12 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     self.thread = thread;
 
     NSString *_Nullable messageText = [self convertAttachmentToMessageTextIfPossible];
+
+    // Hide the navigation bar before presenting the approval view.
+    //
+    // Note that cancelling in the approval views will dismiss the entire
+    // share extension, so there is no "back" button.
+    self.navigationController.navigationBarHidden = YES;
 
     if (messageText) {
         MessageApprovalViewController *approvalVC =

@@ -238,10 +238,10 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                   callingCode:(NSString *)callingCode
                   countryCode:(NSString *)countryCode
 {
-
     _callingCode = callingCode;
 
-    NSString *title = [NSString stringWithFormat:@"%@ (%@)", callingCode, countryCode.uppercaseString];
+    NSString *titleFormat = ([UIView new].isRTL ? @"(%2$@) %1$@" : @"%1$@ (%2$@)");
+    NSString *title = [NSString stringWithFormat:titleFormat, callingCode, countryCode.uppercaseString];
     [self.countryCodeButton setTitle:title forState:UIControlStateNormal];
     [self.countryCodeButton layoutSubviews];
 
@@ -263,9 +263,14 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 {
     CountryCodeViewController *countryCodeController = [CountryCodeViewController new];
     countryCodeController.countryCodeDelegate = self;
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:countryCodeController];
-    [self presentViewController:navigationController animated:YES completion:[UIUtil modalCompletionBlock]];
+    countryCodeController.isPresentedInNavigationController = self.isPresentedInNavigationController;
+    if (self.isPresentedInNavigationController) {
+        [self.navigationController pushViewController:countryCodeController animated:YES];
+    } else {
+        UINavigationController *navigationController =
+            [[UINavigationController alloc] initWithRootViewController:countryCodeController];
+        [self presentViewController:navigationController animated:YES completion:[UIUtil modalCompletionBlock]];
+    }
 }
 
 - (void)phoneNumberButtonPressed

@@ -21,4 +21,6 @@
 
 @property (nonatomic, weak) id<CountryCodeViewControllerDelegate> countryCodeDelegate;
 
+@property (nonatomic) BOOL isPresentedInNavigationController;
+
 @end
