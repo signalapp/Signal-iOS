@@ -215,6 +215,20 @@ extension String {
         return text.ows_stripped()
     }
 
+    @objc
+    public class func filterNotificationText(_ text: String?) -> String? {
+        guard let text = self.filterText(text) else {
+            return nil
+        }
+
+        // iOS strips anything that looks like a printf formatting character from
+        // the notification body, so if we want to dispay a literal "%" in a notification
+        // it must be escaped.
+        // see https://developer.apple.com/documentation/uikit/uilocalnotification/1616646-alertbody
+        // for more details.
+        return text.replacingOccurrences(of: "%", with: "%%")
+    }
+
     private class func hasExcessiveDiacriticals(text: String) -> Bool {
         // discard any zalgo style text, by detecting maximum number of glyphs per character
         for char in text.enumerated() {

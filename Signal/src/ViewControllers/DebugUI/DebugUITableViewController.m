@@ -85,6 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
         [subsectionItems
             addObject:[self itemForSubsection:[DebugUICalling new] viewController:viewController thread:thread]];
     }
+    [subsectionItems
+        addObject:[self itemForSubsection:[DebugUINotifications new] viewController:viewController thread:thread]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIProfile new] viewController:viewController thread:thread]];
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUIStress new] viewController:viewController thread:thread]];

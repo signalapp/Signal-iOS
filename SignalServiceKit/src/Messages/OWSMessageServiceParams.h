@@ -10,7 +10,7 @@
  * the Signal Web Service.
  *
  * See:
- * https://github.com/WhisperSystems/libsignal-service-java/blob/master/java/src/main/java/org/whispersystems/signalservice/internal/push/OutgoingPushMessage.java
+ * https://github.com/signalapp/libsignal-service-java/blob/master/java/src/main/java/org/whispersystems/signalservice/internal/push/OutgoingPushMessage.java
  */
 @interface OWSMessageServiceParams : MTLModel <MTLJSONSerializing>
 

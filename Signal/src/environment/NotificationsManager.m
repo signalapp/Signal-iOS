@@ -263,7 +263,14 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
     OWSAssert(contactsManager);
 
     // While batch processing, some of the necessary changes have not been commited.
-    NSString *messageDescription = [message previewTextWithTransaction:transaction];
+    NSString *rawMessageText = [message previewTextWithTransaction:transaction];
+
+    // iOS strips anything that looks like a printf formatting character from
+    // the notification body, so if we want to dispay a literal "%" in a notification
+    // it must be escaped.
+    // see https://developer.apple.com/documentation/uikit/uilocalnotification/1616646-alertbody
+    // for more details.
+    NSString *messageText = [DisplayableText filterNotificationText:rawMessageText];
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (thread.isMuted) {
@@ -278,7 +285,7 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
             groupName = [MessageStrings newGroupDefaultTitle];
         }
 
-        if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageDescription) {
+        if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageText) {
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             if (shouldPlaySound) {
                 notification.soundName = kNotificationsManagerNewMesssageSoundName;
@@ -307,14 +314,16 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
 
                     if ([thread isGroupThread]) {
                         NSString *threadName = [NSString stringWithFormat:@"\"%@\"", groupName];
+
                         // TODO: Format parameters might change order in l10n.  We should use named parameters.
                         notification.alertBody =
                             [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil),
                                       senderName,
                                       threadName,
-                                      messageDescription];
+                                      messageText];
+
                     } else {
-                        notification.alertBody = [NSString stringWithFormat:@"%@: %@", senderName, messageDescription];
+                        notification.alertBody = [NSString stringWithFormat:@"%@: %@", senderName, messageText];
                     }
                     break;
                 }
