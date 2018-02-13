@@ -922,7 +922,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [TSGroupThread getOrCreateThreadWithGroupId:groupId transaction:transaction];
 
                 TSGroupModel *newGroupModel = [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
-                                                                        memberIds:[newMemberIds.allObjects mutableCopy]
+                                                                        memberIds:newMemberIds.allObjects
                                                                             image:oldGroupThread.groupModel.groupImage
                                                                           groupId:dataMessage.group.id];
                 NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel

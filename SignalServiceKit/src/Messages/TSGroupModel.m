@@ -1,16 +1,18 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSGroupModel.h"
 #import "FunctionalUtil.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation TSGroupModel
 
 #if TARGET_OS_IOS
-- (instancetype)initWithTitle:(NSString *)title
+- (instancetype)initWithTitle:(nullable NSString *)title
                     memberIds:(NSArray<NSString *> *)memberIds
-                        image:(UIImage *)image
+                        image:(nullable UIImage *)image
                       groupId:(NSData *)groupId
 {
     _groupName              = title;
@@ -106,3 +108,5 @@
 #endif
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -1,22 +1,24 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSYapDatabaseObject.h"
 #import "ContactsManagerProtocol.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface TSGroupModel : TSYapDatabaseObject
 
-@property (nonatomic, strong) NSArray<NSString *> *groupMemberIds;
-@property (nonatomic, strong) NSString *groupName;
-@property (nonatomic, strong) NSData *groupId;
+@property (nonatomic) NSArray<NSString *> *groupMemberIds;
+@property (nullable, readonly, nonatomic) NSString *groupName;
+@property (readonly, nonatomic) NSData *groupId;
 
 #if TARGET_OS_IOS
-@property (nonatomic, strong) UIImage *groupImage;
+@property (nullable, nonatomic, strong) UIImage *groupImage;
 
-- (instancetype)initWithTitle:(NSString *)title
-                    memberIds:(NSMutableArray<NSString *> *)memberIds
-                        image:(UIImage *)image
+- (instancetype)initWithTitle:(nullable NSString *)title
+                    memberIds:(NSArray<NSString *> *)memberIds
+                        image:(nullable UIImage *)image
                       groupId:(NSData *)groupId;
 
 - (BOOL)isEqual:(id)other;
@@ -25,3 +27,5 @@
 #endif
 
 @end
+
+NS_ASSUME_NONNULL_END

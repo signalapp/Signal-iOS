@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "UpdateGroupViewController.h"
@@ -375,7 +375,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
-                                                         memberIds:[self.memberRecipientIds.allObjects mutableCopy]
+                                                         memberIds:self.memberRecipientIds.allObjects
                                                              image:self.groupAvatar
                                                            groupId:self.thread.groupModel.groupId];
     [self.conversationSettingsViewDelegate groupWasUpdated:groupModel];
