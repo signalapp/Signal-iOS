@@ -87,8 +87,6 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
         dateString = NSLocalizedString(@"DATE_TODAY", @"The current day.");
     } else if ([self dateIsYesterday:pastDate]) {
         dateString = NSLocalizedString(@"DATE_YESTERDAY", @"The day before today.");
-    } else if (![self dateIsOlderThanOneWeek:pastDate]) {
-        dateString = [[self weekdayFormatter] stringFromDate:pastDate];
     } else {
         dateString = [[self dateFormatter] stringFromDate:pastDate];
     }
