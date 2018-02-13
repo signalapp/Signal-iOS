@@ -44,9 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(localNumber.length > 0);
 
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:nil
-                                                         memberIds:[@[
-                                                             localNumber,
-                                                         ] mutableCopy]
+                                                         memberIds:@[ localNumber ]
                                                              image:nil
                                                            groupId:groupId];
 

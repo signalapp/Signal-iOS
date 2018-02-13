@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIStress.h"
@@ -479,7 +479,7 @@ NS_ASSUME_NONNULL_BEGIN
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             TSGroupModel *groupModel =
                 [[TSGroupModel alloc] initWithTitle:[groupThread.groupModel.groupName stringByAppendingString:@" Copy"]
-                                          memberIds:[groupThread.groupModel.groupMemberIds mutableCopy]
+                                          memberIds:groupThread.groupModel.groupMemberIds
                                               image:groupThread.groupModel.groupImage
                                             groupId:[SecurityUtils generateRandomBytes:16]];
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
