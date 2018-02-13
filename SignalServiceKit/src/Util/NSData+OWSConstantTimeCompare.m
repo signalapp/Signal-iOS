@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)ows_constantTimeIsEqualToData:(NSData *)other
 {
-    BOOL isEqual = YES;
+    volatile UInt8 isEqual = 0;
 
     if (self.length != other.length) {
         return NO;
@@ -21,10 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
     for (int i = 0; i < self.length; i++) {
         // rather than returning as soon as we find a discrepency, we compare the rest of
         // the byte stream to maintain a constant time comparison
-        isEqual = isEqual && (leftBytes[i] == rightBytes[i]);
+        isEqual |= leftBytes[i] ^ rightBytes[i];
     }
 
-    return isEqual;
+    return isEqual == 0;
 }
 
 @end
