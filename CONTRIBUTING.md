@@ -32,7 +32,7 @@ If you don't agree with us, you can use the [ClangFormat Xcode plugin](https://g
 
 ## Contributors
 
-Signal wouldn’t be possible without the many open-source projects we depend on. Big shoutout to the maintainers of all the [pods](https://github.com/WhisperSystems/Signal-iOS/blob/master/Podfile) we use!
+Signal wouldn’t be possible without the many open-source projects we depend on. Big shoutout to the maintainers of all the [pods](https://github.com/signalapp/Signal-iOS/blob/master/Podfile) we use!
 
 The original version of Signal was developed by Twisted Oak Studios.
 v1.0 development by Twisted Oak Studios:

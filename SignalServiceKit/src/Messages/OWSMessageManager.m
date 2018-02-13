@@ -385,7 +385,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // FIXME: https://github.com/WhisperSystems/Signal-iOS/issues/1340
+    // FIXME: https://github.com/signalapp/Signal-iOS/issues/1340
     DDLogInfo(@"%@ Sending group info request: %@", self.logTag, envelopeAddress(envelope));
 
     NSString *recipientId = envelope.source;

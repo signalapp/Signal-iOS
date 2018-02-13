@@ -171,7 +171,7 @@ public class SignalAttachment: NSObject {
     /**
      * Media Size constraints from Signal-Android
      *
-     * https://github.com/WhisperSystems/Signal-Android/blob/master/src/org/thoughtcrime/securesms/mms/PushMediaConstraints.java
+     * https://github.com/signalapp/Signal-Android/blob/master/src/org/thoughtcrime/securesms/mms/PushMediaConstraints.java
      */
     static let kMaxFileSizeAnimatedImage = UInt(25 * 1024 * 1024)
     static let kMaxFileSizeImage = UInt(6 * 1024 * 1024)

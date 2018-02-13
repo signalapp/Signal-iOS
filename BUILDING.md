@@ -60,7 +60,7 @@ carthage build --platform iOS
 
 A prebuilt version of WebRTC.framework resides in our Carthage submodule
 and should be installed by the above steps.  However, if you'd like to
-build it from source, see: https://github.com/WhisperSystems/signal-webrtc-ios
+build it from source, see: https://github.com/signalapp/signal-webrtc-ios
 
 ## 3. XCode
 

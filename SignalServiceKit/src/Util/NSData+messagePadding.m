@@ -32,7 +32,7 @@
 
 - (NSData *)paddedMessageBody {
     // From
-    // https://github.com/WhisperSystems/TextSecure/blob/master/libtextsecure/src/main/java/org/whispersystems/textsecure/internal/push/PushTransportDetails.java#L55
+    // https://github.com/signalapp/TextSecure/blob/master/libtextsecure/src/main/java/org/whispersystems/textsecure/internal/push/PushTransportDetails.java#L55
     // NOTE: This is dumb.  We have our own padding scheme, but so does the cipher.
     // The +1 -1 here is to make sure the Cipher has room to add one padding byte,
     // otherwise it'll add a full 16 extra bytes.

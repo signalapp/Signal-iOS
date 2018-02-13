@@ -9,5 +9,5 @@ Please go ahead and sign, putting your github username in "Address line #2", so 
 
 ## Code Conventions
 
-Follow all [Signal-iOS Code Conventions](https://github.com/WhisperSystems/Signal-iOS/blob/master/CONTRIBUTING.md).
+Follow all [Signal-iOS Code Conventions](https://github.com/signalapp/Signal-iOS/blob/master/CONTRIBUTING.md).
 

@@ -3,9 +3,9 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target 'TSKitiOSTestApp' do
   pod 'SocketRocket', git: 'https://github.com/facebook/SocketRocket.git'
-  pod 'AxolotlKit',  git: 'https://github.com/WhisperSystems/SignalProtocolKit.git'
+  pod 'AxolotlKit',  git: 'https://github.com/signalapp/SignalProtocolKit.git'
   pod 'SignalServiceKit', :path => '../../../SignalServiceKit.podspec'
-  pod 'OpenSSL', git: 'https://github.com/WhisperSystems/OpenSSL-Pod'
+  pod 'OpenSSL', git: 'https://github.com/signalapp/OpenSSL-Pod'
 
   target 'TSKitiOSTestAppTests' do
      inherit! :search_paths
