@@ -23,6 +23,22 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    // Occasionally seeing this as nil in legacy data,
+    // which causes crashes.
+    if (_groupMemberIds == nil) {
+        _groupMemberIds = [NSArray new];
+    }
+
+    return self;
+}
+
 - (BOOL)isEqual:(id)other {
     if (other == self) {
         return YES;
