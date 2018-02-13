@@ -85,6 +85,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock];
 
     AFHTTPSessionManager *sessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
+    // [OWSSignalService signalServiceSessionManager] always returns a new instance of
+    // session manager, so its safe to reconfigure it here.
     if (shouldCompleteOnMainQueue) {
         sessionManager.completionQueue = dispatch_get_main_queue();
     } else {
