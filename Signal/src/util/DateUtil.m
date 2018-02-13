@@ -1,9 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "DateUtil.h"
+#import <SignalMessaging/NSString+OWS.h>
 #import <SignalServiceKit/NSDate+OWS.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
@@ -65,7 +68,13 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return [self date:[NSDate date] isEqualToDateIgnoringTime:date];
 }
 
-+ (NSString *)formatPastTimestampRelativeToNow:(uint64_t)pastTimestamp
++ (BOOL)dateIsYesterday:(NSDate *)date
+{
+    NSDate *yesterday = [NSDate ows_dateWithMillisecondsSince1970:[NSDate ows_millisecondTimeStamp] - kDayInMs];
+    return [self date:yesterday isEqualToDateIgnoringTime:date];
+}
+
++ (NSString *)formatPastTimestampRelativeToNow:(uint64_t)pastTimestamp isRTL:(BOOL)isRTL
 {
     OWSCAssert(pastTimestamp > 0);
 
@@ -73,13 +82,20 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     BOOL isFutureTimestamp = pastTimestamp >= nowTimestamp;
 
     NSDate *pastDate = [NSDate ows_dateWithMillisecondsSince1970:pastTimestamp];
+    NSString *dateString;
     if (isFutureTimestamp || [self dateIsToday:pastDate]) {
-        return [[self timeFormatter] stringFromDate:pastDate];
+        dateString = NSLocalizedString(@"DATE_TODAY", @"The current day.");
+    } else if ([self dateIsYesterday:pastDate]) {
+        dateString = NSLocalizedString(@"DATE_YESTERDAY", @"The day before today.");
     } else if (![self dateIsOlderThanOneWeek:pastDate]) {
-        return [[self weekdayFormatter] stringFromDate:pastDate];
+        dateString = [[self weekdayFormatter] stringFromDate:pastDate];
     } else {
-        return [[self dateFormatter] stringFromDate:pastDate];
+        dateString = [[self dateFormatter] stringFromDate:pastDate];
     }
+    return [[dateString rtlSafeAppend:@" " isRTL:isRTL] rtlSafeAppend:[[self timeFormatter] stringFromDate:pastDate]
+                                                                isRTL:isRTL];
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

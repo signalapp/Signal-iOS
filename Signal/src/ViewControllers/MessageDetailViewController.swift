@@ -211,7 +211,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
                 }
 
                 for recipientId in thread.recipientIdentifiers {
-                    let (recipientStatus, statusMessage) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientId: recipientId, referenceView: self.view)
+                    let (recipientStatus, shortStatusMessage, longStatusMessage) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientId: recipientId, referenceView: self.view)
 
                     guard recipientStatus == recipientStatusGroup else {
                         continue
@@ -229,9 +229,11 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
                     let cell = ContactTableViewCell()
                     cell.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
                     let statusLabel = UILabel()
-                    statusLabel.text = statusMessage
+                    // We use the "short" status message to avoid being redundant with the section title.
+                    statusLabel.text = shortStatusMessage
                     statusLabel.textColor = UIColor.ows_darkGray
                     statusLabel.font = UIFont.ows_footnote()
+                    statusLabel.adjustsFontSizeToFitWidth = true
                     statusLabel.sizeToFit()
                     cell.accessoryView = statusLabel
                     cell.autoSetDimension(.height, toSize: ContactTableViewCell.rowHeight())
@@ -258,12 +260,14 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
 
         rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
                                                      comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
-                             value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp)))
+                             value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp,
+                                                                              isRTL:self.view.isRTL())))
 
         if message as? TSIncomingMessage != nil {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                                                          comment: "Label for the 'received date & time' field of the 'message metadata' view."),
-                                 value: DateUtil.formatPastTimestampRelativeToNow(message.timestampForSorting())))
+                                 value: DateUtil.formatPastTimestampRelativeToNow(message.timestampForSorting(),
+                                                                                  isRTL:self.view.isRTL())))
         }
 
         rows += addAttachmentMetadataRows()

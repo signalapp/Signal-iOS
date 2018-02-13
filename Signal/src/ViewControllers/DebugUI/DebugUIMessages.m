@@ -232,6 +232,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages createSystemMessagesInThread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"Create messages with variety of timestamps"
+                        actionBlock:^{
+                            [DebugUIMessages createTimestampMessagesInThread:thread];
+                        }],
 
         [OWSTableItem itemWithTitle:@"Send 10 text and system messages"
                         actionBlock:^{
@@ -1532,6 +1536,61 @@ NS_ASSUME_NONNULL_BEGIN
             }];
         });
     });
+}
+
++ (void)createTimestampMessagesInThread:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    uint64_t now = [NSDate ows_millisecondTimeStamp];
+    NSArray<NSNumber *> *timestamps = @[
+        @(now + 1 * kHourInMs),
+        @(now),
+        @(now - 1 * kHourInMs),
+        @(now - 12 * kHourInMs),
+        @(now - 1 * kDayInMs),
+        @(now - 2 * kDayInMs),
+        @(now - 3 * kDayInMs),
+        @(now - 6 * kDayInMs),
+        @(now - 7 * kDayInMs),
+        @(now - 8 * kDayInMs),
+        @(now - 2 * kWeekInMs),
+        @(now - 1 * kMonthInMs),
+        @(now - 2 * kMonthInMs),
+    ];
+    NSMutableArray<NSString *> *recipientIds = [thread.recipientIdentifiers mutableCopy];
+    [recipientIds removeObject:[TSAccountManager localNumber]];
+    NSString *recipientId = (recipientIds.count > 0 ? recipientIds.firstObject : @"+19174054215");
+
+    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (NSNumber *timestamp in timestamps) {
+            NSString *randomText = [self randomText];
+            {
+                TSIncomingMessage *message =
+                    [[TSIncomingMessage alloc] initWithTimestamp:timestamp.unsignedLongLongValue
+                                                        inThread:thread
+                                                        authorId:recipientId
+                                                  sourceDeviceId:0
+                                                     messageBody:randomText];
+                [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+            }
+            {
+                TSOutgoingMessage *message =
+                    [[TSOutgoingMessage alloc] initWithTimestamp:timestamp.unsignedLongLongValue
+                                                        inThread:thread
+                                                     messageBody:randomText];
+                [message saveWithTransaction:transaction];
+                [message updateWithMessageState:TSOutgoingMessageStateSentToService transaction:transaction];
+                [message updateWithSentRecipient:recipientId transaction:transaction];
+                [message updateWithDeliveredToRecipientId:recipientId
+                                        deliveryTimestamp:timestamp
+                                              transaction:transaction];
+                [message updateWithReadRecipientId:recipientId
+                                     readTimestamp:timestamp.unsignedLongLongValue
+                                       transaction:transaction];
+            }
+        }
+    }];
 }
 
 @end
