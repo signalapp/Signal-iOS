@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -58,8 +58,8 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 - (BOOL)hasDeclinedNoContactsView;
 - (void)setHasDeclinedNoContactsView:(BOOL)value;
 
-- (void)setIOSUpgradeNagVersion:(NSString *)value;
-- (nullable NSString *)iOSUpgradeNagVersion;
+- (void)setIOSUpgradeNagDate:(NSDate *)value;
+- (nullable NSDate *)iOSUpgradeNagDate;
 
 #pragma mark - Calling
 

@@ -560,6 +560,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                          }];
     } else if (!self.hasBeenPresented && [ProfileViewController shouldDisplayProfileViewOnLaunch]) {
         [ProfileViewController presentForUpgradeOrNag:self];
+    } else {
+        [OWSAlerts showIOSUpgradeNagIfNecessary];
     }
 
     self.hasBeenPresented = YES;

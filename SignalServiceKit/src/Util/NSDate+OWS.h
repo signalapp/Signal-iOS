@@ -5,11 +5,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // These NSTimeInterval constants provide simplified durations for readability.
-#define kMinuteInterval 60
-#define kHourInterval (60 * kMinuteInterval)
-#define kDayInterval (24 * kHourInterval)
-#define kWeekInterval (7 * kDayInterval)
-#define kMonthInterval (30 * kDayInterval)
+extern const NSTimeInterval kMinuteInterval;
+extern const NSTimeInterval kHourInterval;
+extern const NSTimeInterval kDayInterval;
+extern const NSTimeInterval kWeekInterval;
+extern const NSTimeInterval kMonthInterval;
 
 #define kSecondInMs 1000
 #define kMinuteInMs (kSecondInMs * 60)

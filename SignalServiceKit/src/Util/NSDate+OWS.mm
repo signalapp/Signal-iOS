@@ -7,6 +7,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const NSTimeInterval kMinuteInterval = 60;
+const NSTimeInterval kHourInterval = 60 * kMinuteInterval;
+const NSTimeInterval kDayInterval = 24 * kHourInterval;
+const NSTimeInterval kWeekInterval = 7 * kDayInterval;
+const NSTimeInterval kMonthInterval = 30 * kDayInterval;
+
 @implementation NSDate (OWS)
 
 + (uint64_t)ows_millisecondTimeStamp

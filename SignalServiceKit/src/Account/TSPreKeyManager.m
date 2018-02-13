@@ -15,17 +15,17 @@
 // Time before deletion of signed prekeys (measured in seconds)
 //
 // Currently we retain signed prekeys for at least 7 days.
-static const NSTimeInterval kSignedPreKeysDeletionTime = 7 * kDayInterval;
+#define kSignedPreKeysDeletionTime ((NSTimeInterval)7 * kDayInterval)
 
 // Time before rotation of signed prekeys (measured in seconds)
 //
 // Currently we rotate signed prekeys every 2 days (48 hours).
-static const NSTimeInterval kSignedPreKeyRotationTime = 2 * kDayInterval;
+#define kSignedPreKeyRotationTime ((NSTimeInterval)7 * kDayInterval)
 
 // How often we check prekey state on app activation.
 //
 // Currently we check prekey state every 12 hours.
-static const NSTimeInterval kPreKeyCheckFrequencySeconds = 12 * kHourInterval;
+#define kPreKeyCheckFrequencySeconds ((NSTimeInterval)12 * kHourInterval)
 
 // We generate 100 one-time prekeys at a time.  We should replenish
 // whenever ~2/3 of them have been consumed.
@@ -42,7 +42,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 // before the message sending is disabled.
 //
 // Current value is 10 days (240 hours).
-static const NSTimeInterval kSignedPreKeyUpdateFailureMaxFailureDuration = 10 * kDayInterval;
+#define kSignedPreKeyUpdateFailureMaxFailureDuration ((NSTimeInterval)10 * kDayInterval)
 
 #pragma mark -
 
