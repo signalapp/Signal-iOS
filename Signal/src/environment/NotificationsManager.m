@@ -312,9 +312,12 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
                             [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil),
                                       senderName,
                                       threadName,
-                                      messageDescription];
+                                      [DisplayableText filterNotificationText:messageDescription]];
+
                     } else {
-                        notification.alertBody = [NSString stringWithFormat:@"%@: %@", senderName, messageDescription];
+                        notification.alertBody = [NSString stringWithFormat:@"%@: %@",
+                                                           senderName,
+                                                           [DisplayableText filterNotificationText:messageDescription]];
                     }
                     break;
                 }

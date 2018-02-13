@@ -215,6 +215,17 @@ extension String {
         return text.ows_stripped()
     }
 
+    @objc
+    public class func filterNotificationText(_ text: String?) -> String? {
+        guard let text = self.filterText(text) else {
+            return nil
+        }
+
+        // Notifications strip anything that looks lik a printf formatting character,
+        // so literal "%" must be escaped in order to appear in notification text.
+        return text.replacingOccurrences(of: "%", with: "%%")
+    }
+
     private class func hasExcessiveDiacriticals(text: String) -> Bool {
         // discard any zalgo style text, by detecting maximum number of glyphs per character
         for char in text.enumerated() {
