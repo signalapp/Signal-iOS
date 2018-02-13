@@ -154,11 +154,13 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     return identityKeyPair;
 }
 
+// This method should only be called from SignalProtocolKit, which doesn't know about YapDatabaseTransactions.
+// Whenever possible, prefer to call the strongly typed variant: `identityKeyPairWithTransaction:`.
 - (nullable ECKeyPair *)identityKeyPair:(nullable id)protocolContext
 {
-    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadTransaction class]]);
 
-    YapDatabaseReadWriteTransaction *transaction = protocolContext;
+    YapDatabaseReadTransaction *transaction = protocolContext;
 
     return [self identityKeyPairWithTransaction:transaction];
 }
@@ -449,7 +451,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert(transaction);
 
     if ([[TSAccountManager localNumber] isEqualToString:recipientId]) {
-        ECKeyPair *_Nullable localIdentityKeyPair = [self identityKeyPair:transaction];
+        ECKeyPair *_Nullable localIdentityKeyPair = [self identityKeyPairWithTransaction:transaction];
 
         if ([localIdentityKeyPair.publicKey isEqualToData:identityKey]) {
             return YES;
