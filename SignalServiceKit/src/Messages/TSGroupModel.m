@@ -1,22 +1,42 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSGroupModel.h"
 #import "FunctionalUtil.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation TSGroupModel
 
 #if TARGET_OS_IOS
-- (instancetype)initWithTitle:(NSString *)title
+- (instancetype)initWithTitle:(nullable NSString *)title
                     memberIds:(NSArray<NSString *> *)memberIds
-                        image:(UIImage *)image
+                        image:(nullable UIImage *)image
                       groupId:(NSData *)groupId
 {
+    OWSAssert(memberIds);
+
     _groupName              = title;
     _groupMemberIds         = [memberIds copy];
     _groupImage = image; // image is stored in DB
     _groupId                = groupId;
+
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    // Occasionally seeing this as nil in legacy data,
+    // which causes crashes.
+    if (_groupMemberIds == nil) {
+        _groupMemberIds = [NSArray new];
+    }
 
     return self;
 }
@@ -106,3 +126,5 @@
 #endif
 
 @end
+
+NS_ASSUME_NONNULL_END
