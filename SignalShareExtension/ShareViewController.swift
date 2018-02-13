@@ -50,8 +50,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We don't need to use DeviceSleepManager in the SAE.
 
-        // TODO:
-        //        [UIUtil applySignalAppearence];
+        // TODO: Do we need to applySignalAppearence in the SAE?
+        UIUtil.applySignalAppearence()
 
         if CurrentAppContext().isRunningTests {
             // TODO: Do we need to implement isRunningTests in the SAE context?
@@ -154,12 +154,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
                 // We don't need to use OWSDisappearingMessagesJob in the SAE.
 
-                // TODO remove this once we're sure our app boot process is coherent.
-                // Currently this happens *before* db registration is complete when
-                // launching the app directly, but *after* db registration is complete when
-                // the app is launched in the background, e.g. from a voip notification.
-                OWSProfileManager.shared().ensureLocalProfileCached()
-
                 // We don't need to use OWSFailedMessagesJob in the SAE.
 
                 // We don't need to use OWSFailedAttachmentDownloadsJob in the SAE.
@@ -172,7 +166,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // We don't need to prod the TSSocketManager in the SAE.
         }
 
-        // TODO: Do we want to move this logic into the notification handler for "SAE will appear".
         if TSAccountManager.isRegistered() {
             DispatchQueue.main.async { [weak self] in
                 guard let strongSelf = self else { return }
@@ -227,6 +220,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.debug("\(self.logTag) \(#function)")
 
+        // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
+        OWSProfileManager.shared().ensureLocalProfileCached()
+
         // Note that this does much more than set a flag;
         // it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
@@ -241,8 +237,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We don't need to use DeviceSleepManager in the SAE.
 
-        // TODO: Should we distinguish main app and SAE "completion"?
-        AppVersion.instance().appLaunchDidComplete()
+        AppVersion.instance().saeLaunchDidComplete()
 
         Environment.current().contactsManager.loadSignalAccountsFromCache()
 

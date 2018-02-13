@@ -50,7 +50,6 @@ extern NSString *const StorageIsReadyNotification;
 
 + (void)resetAllStorage;
 
-// TODO: Deprecate?
 - (YapDatabaseConnection *)newDatabaseConnection;
 
 #ifdef DEBUG

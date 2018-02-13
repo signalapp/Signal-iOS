@@ -8,6 +8,10 @@
 NSString *const kNSUserDefaults_FirstAppVersion = @"kNSUserDefaults_FirstAppVersion";
 NSString *const kNSUserDefaults_LastAppVersion = @"kNSUserDefaults_LastVersion";
 NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefaults_LastCompletedLaunchAppVersion";
+NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_MainApp
+    = @"kNSUserDefaults_LastCompletedLaunchAppVersion_MainApp";
+NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_SAE
+    = @"kNSUserDefaults_LastCompletedLaunchAppVersion_SAE";
 
 @interface AppVersion ()
 
@@ -15,6 +19,8 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
 @property (nonatomic) NSString *lastAppVersion;
 @property (nonatomic) NSString *currentAppVersion;
 @property (nonatomic) NSString *lastCompletedLaunchAppVersion;
+@property (nonatomic) NSString *lastCompletedLaunchMainAppVersion;
+@property (nonatomic) NSString *lastCompletedLaunchSAEAppVersion;
 
 @end
 
@@ -32,7 +38,6 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
     return instance;
 }
 
-// TODO: Modify these NSUserDefaults keys for SAE.
 - (void)configure {
     self.currentAppVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
     
@@ -44,6 +49,10 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
     self.lastAppVersion = [[NSUserDefaults appUserDefaults] objectForKey:kNSUserDefaults_LastAppVersion];
     self.lastCompletedLaunchAppVersion =
         [[NSUserDefaults appUserDefaults] objectForKey:kNSUserDefaults_LastCompletedLaunchAppVersion];
+    self.lastCompletedLaunchMainAppVersion =
+        [[NSUserDefaults appUserDefaults] objectForKey:kNSUserDefaults_LastCompletedLaunchAppVersion_MainApp];
+    self.lastCompletedLaunchSAEAppVersion =
+        [[NSUserDefaults appUserDefaults] objectForKey:kNSUserDefaults_LastCompletedLaunchAppVersion_SAE];
 
     // Ensure the value for the "first launched version".
     if (!self.firstAppVersion) {
@@ -63,6 +72,8 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
         [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]);
 
     DDLogInfo(@"%@ lastCompletedLaunchAppVersion: %@", self.logTag, self.lastCompletedLaunchAppVersion);
+    DDLogInfo(@"%@ lastCompletedLaunchMainAppVersion: %@", self.logTag, self.lastCompletedLaunchMainAppVersion);
+    DDLogInfo(@"%@ lastCompletedLaunchSAEAppVersion: %@", self.logTag, self.lastCompletedLaunchSAEAppVersion);
 }
 
 - (void)appLaunchDidComplete
@@ -75,6 +86,24 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion = @"kNSUserDefault
     [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion
                                          forKey:kNSUserDefaults_LastCompletedLaunchAppVersion];
     [[NSUserDefaults appUserDefaults] synchronize];
+}
+
+- (void)mainAppLaunchDidComplete
+{
+    self.lastCompletedLaunchMainAppVersion = self.currentAppVersion;
+    [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion
+                                         forKey:kNSUserDefaults_LastCompletedLaunchAppVersion_MainApp];
+
+    [self appLaunchDidComplete];
+}
+
+- (void)saeLaunchDidComplete
+{
+    self.lastCompletedLaunchSAEAppVersion = self.currentAppVersion;
+    [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion
+                                         forKey:kNSUserDefaults_LastCompletedLaunchAppVersion_SAE];
+
+    [self appLaunchDidComplete];
 }
 
 - (BOOL)isFirstLaunch

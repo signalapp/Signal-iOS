@@ -189,7 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isRunningTests
 {
-    // TODO: I don't think we'll need to distinguish this in the SAE.
+    // We don't need to distinguish this in the SAE.
     return NO;
 }
 
