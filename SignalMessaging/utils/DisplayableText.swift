@@ -221,8 +221,11 @@ extension String {
             return nil
         }
 
-        // Notifications strip anything that looks lik a printf formatting character,
-        // so literal "%" must be escaped in order to appear in notification text.
+        // iOS strips anything that looks like a printf formatting character from
+        // the notification body, so if we want to dispay a literal "%" in a notification
+        // it must be escaped.
+        // see https://developer.apple.com/documentation/uikit/uilocalnotification/1616646-alertbody
+        // for more details.
         return text.replacingOccurrences(of: "%", with: "%%")
     }
 
