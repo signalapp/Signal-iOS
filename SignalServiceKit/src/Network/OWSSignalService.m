@@ -205,7 +205,6 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
     [sessionManager.requestSerializer setValue:self.censorshipConfiguration.signalServiceReflectorHost forHTTPHeaderField:@"Host"];
-
     sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
 
     return sessionManager;

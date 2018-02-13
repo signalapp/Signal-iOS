@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 /**
@@ -27,6 +27,9 @@ extern NSString *const TSNetworkManagerDomain;
 
 BOOL IsNSErrorNetworkFailure(NSError *_Nullable error);
 
+typedef void (^TSNetworkManagerSuccess)(NSURLSessionDataTask *task, id responseObject);
+typedef void (^TSNetworkManagerFailure)(NSURLSessionDataTask *task, NSError *error);
+
 @interface TSNetworkManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -34,8 +37,13 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error);
 + (instancetype)sharedManager;
 
 - (void)makeRequest:(TSRequest *)request
-            success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
-            failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure NS_SWIFT_NAME(makeRequest(_:success:failure:));
+            success:(TSNetworkManagerSuccess)success
+            failure:(TSNetworkManagerFailure)failure NS_SWIFT_NAME(makeRequest(_:success:failure:));
+
+- (void)makeRequest:(TSRequest *)request
+    shouldCompleteOnMainQueue:(BOOL)shouldCompleteOnMainQueue
+                      success:(TSNetworkManagerSuccess)success
+                      failure:(TSNetworkManagerFailure)failure NS_SWIFT_NAME(makeRequest(_:shouldCompleteOnMainQueue:success:failure:));
 
 @end
 

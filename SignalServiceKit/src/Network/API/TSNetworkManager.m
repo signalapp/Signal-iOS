@@ -55,9 +55,21 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 #pragma mark Manager Methods
 
 - (void)makeRequest:(TSRequest *)request
-            success:(void (^)(NSURLSessionDataTask *task, id responseObject))success
-            failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failureBlock
+            success:(TSNetworkManagerSuccess)success
+            failure:(TSNetworkManagerFailure)failure
 {
+    return [self makeRequest:request shouldCompleteOnMainQueue:YES success:success failure:failure];
+}
+
+- (void)makeRequest:(TSRequest *)request
+    shouldCompleteOnMainQueue:(BOOL)shouldCompleteOnMainQueue
+                      success:(TSNetworkManagerSuccess)success
+                      failure:(TSNetworkManagerFailure)failureBlock
+{
+    OWSAssert(request);
+    OWSAssert(success);
+    OWSAssert(failureBlock);
+
     DDLogInfo(@"%@ Making request: %@", self.logTag, request);
     if (!CurrentAppContext().isMainApp) {
         if (![request isKindOfClass:[TSRecipientPrekeyRequest class]]
@@ -73,6 +85,11 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock];
 
     AFHTTPSessionManager *sessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
+    if (shouldCompleteOnMainQueue) {
+        sessionManager.completionQueue = dispatch_get_main_queue();
+    } else {
+        sessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    }
 
     if ([request isKindOfClass:[TSVerifyCodeRequest class]]) {
         // We plant the Authorization parameter ourselves, no need to double add.
