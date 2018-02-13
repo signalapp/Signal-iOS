@@ -1,13 +1,15 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 @interface Pastelog : NSObject
 
-typedef void (^successBlock)(NSError *error, NSString *urlString);
+typedef void (^DebugLogsUploadedBlock)(NSError *error, NSString *urlString);
+typedef void (^DebugLogsSharedBlock)(void);
 
 +(void)submitLogs;
-+(void)submitLogsWithCompletion:(successBlock)block;
-+(void)submitLogsWithCompletion:(successBlock)block forFileLogger:(DDFileLogger*)fileLogger;
++ (void)submitLogsWithShareCompletion:(nullable DebugLogsSharedBlock)block;
++ (void)submitLogsWithUploadCompletion:(DebugLogsUploadedBlock)block;
++ (void)submitLogsWithUploadCompletion:(DebugLogsUploadedBlock)block forFileLogger:(DDFileLogger *)fileLogger;
 
 @end
