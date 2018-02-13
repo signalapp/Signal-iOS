@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
                         image:(nullable UIImage *)image
                       groupId:(NSData *)groupId
 {
+    OWSAssert(memberIds);
+
     _groupName              = title;
     _groupMemberIds         = [memberIds copy];
     _groupImage = image; // image is stored in DB
