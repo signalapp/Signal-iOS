@@ -668,13 +668,21 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         }
 
         [SignalApp.sharedApp.homeViewController showNewConversationView];
-    }];
 
-    completionHandler(YES);
+        completionHandler(YES);
+    }];
 }
 
 /**
  * Among other things, this is used by "call back" callkit dialog and calling from native contacts app.
+ *
+ * We always return YES if we are going to try to handle the user activity since
+ * we never want iOS to contact us again using a URL.
+ *
+ * From https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623072-application?language=objc:
+ *
+ * If you do not implement this method or if your implementation returns NO, iOS tries to
+ * create a document for your app to open using a URL.
  */
 - (BOOL)application:(UIApplication *)application
     continueUserActivity:(nonnull NSUserActivity *)userActivity
@@ -817,6 +825,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     //        callManager.startCall(handle: handle, video: video)
     //        return true
     //    }
+
     return NO;
 }
 
