@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)ows_stripped;
 
 - (NSString *)rtlSafeAppend:(NSString *)string referenceView:(UIView *)referenceView;
+- (NSString *)rtlSafeAppend:(NSString *)string isRTL:(BOOL)isRTL;
 
 - (NSString *)digitsOnly;
 

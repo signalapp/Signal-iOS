@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSString+OWS.h"
@@ -19,7 +19,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(string);
     OWSAssert(referenceView);
 
-    if ([referenceView isRTL]) {
+    return [self rtlSafeAppend:string isRTL:referenceView.isRTL];
+}
+
+- (NSString *)rtlSafeAppend:(NSString *)string isRTL:(BOOL)isRTL
+{
+    OWSAssert(string);
+
+    if (isRTL) {
         return [string stringByAppendingString:self];
     } else {
         return [self stringByAppendingString:string];
@@ -28,7 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)removeAllCharactersIn:(NSCharacterSet *)characterSet
 {
-    OWSAssert(characterSet != nil);
+    OWSAssert(characterSet);
+
     return [[self componentsSeparatedByCharactersInSet:characterSet] componentsJoinedByString:@""];
 }
 

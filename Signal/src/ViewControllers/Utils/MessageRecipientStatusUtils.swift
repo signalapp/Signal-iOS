@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -56,7 +56,7 @@ class MessageRecipientStatusUtils: NSObject {
     public class func recipientStatus(outgoingMessage: TSOutgoingMessage,
                                       recipientId: String,
                                       referenceView: UIView) -> MessageRecipientStatus {
-        let (messageRecipientStatus, _) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
+        let (messageRecipientStatus, _, _) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
                                                                                      recipientId: recipientId,
                                                                                      referenceView: referenceView)
         return messageRecipientStatus
@@ -64,20 +64,31 @@ class MessageRecipientStatusUtils: NSObject {
 
     // This method is per-recipient and "biased towards success".
     // See comments above.
-    public class func statusMessage(outgoingMessage: TSOutgoingMessage,
-                                      recipientId: String,
-                                      referenceView: UIView) -> String {
-        let (_, statusMessage) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
-                                                                                     recipientId: recipientId,
-                                                                                     referenceView: referenceView)
-        return statusMessage
+    public class func shortStatusMessage(outgoingMessage: TSOutgoingMessage,
+                                    recipientId: String,
+                                    referenceView: UIView) -> String {
+        let (_, shortStatusMessage, _) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
+                                                                 recipientId: recipientId,
+                                                                 referenceView: referenceView)
+        return shortStatusMessage
+    }
+
+    // This method is per-recipient and "biased towards success".
+    // See comments above.
+    public class func longStatusMessage(outgoingMessage: TSOutgoingMessage,
+                                    recipientId: String,
+                                    referenceView: UIView) -> String {
+        let (_, _, longStatusMessage) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
+                                                                 recipientId: recipientId,
+                                                                 referenceView: referenceView)
+        return longStatusMessage
     }
 
     // This method is per-recipient and "biased towards success".  
     // See comments above.
     public class func recipientStatusAndStatusMessage(outgoingMessage: TSOutgoingMessage,
                                                       recipientId: String,
-                                                      referenceView: UIView) -> (MessageRecipientStatus, String) {
+                                                      referenceView: UIView) -> (status: MessageRecipientStatus, shortStatusMessage: String, longStatusMessage: String) {
         // Legacy messages don't have "recipient read" state or "per-recipient delivery" state,
         // so we fall back to `TSOutgoingMessageState` which is not per-recipient and therefore
         // might be misleading.
@@ -85,49 +96,53 @@ class MessageRecipientStatusUtils: NSObject {
         let recipientReadMap = outgoingMessage.recipientReadMap
         if let readTimestamp = recipientReadMap[recipientId] {
             assert(outgoingMessage.messageState == .sentToService)
-            let statusMessage = NSLocalizedString("MESSAGE_STATUS_READ", comment:"message footer for read messages").rtlSafeAppend(" ", referenceView:referenceView)
-                .rtlSafeAppend(
-                    DateUtil.formatPastTimestampRelativeToNow(readTimestamp.uint64Value), referenceView:referenceView)
-            return (.read, statusMessage)
+            let timestampString = DateUtil.formatPastTimestampRelativeToNow(readTimestamp.uint64Value,
+                                                                               isRTL:referenceView.isRTL())
+            let shortStatusMessage = timestampString
+            let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_READ", comment:"message footer for read messages").rtlSafeAppend(" ", referenceView:referenceView)
+                .rtlSafeAppend(timestampString, referenceView:referenceView)
+            return (status:.read, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
         }
 
         let recipientDeliveryMap = outgoingMessage.recipientDeliveryMap
         if let deliveryTimestamp = recipientDeliveryMap[recipientId] {
             assert(outgoingMessage.messageState == .sentToService)
-            let statusMessage = NSLocalizedString("MESSAGE_STATUS_DELIVERED",
+            let timestampString = DateUtil.formatPastTimestampRelativeToNow(deliveryTimestamp.uint64Value,
+                                                                            isRTL:referenceView.isRTL())
+            let shortStatusMessage = timestampString
+            let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_DELIVERED",
                                                   comment:"message status for message delivered to their recipient.").rtlSafeAppend(" ", referenceView:referenceView)
-                .rtlSafeAppend(
-                    DateUtil.formatPastTimestampRelativeToNow(deliveryTimestamp.uint64Value), referenceView:referenceView)
-            return (.delivered, statusMessage)
+                .rtlSafeAppend(timestampString, referenceView:referenceView)
+            return (status:.delivered, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
         }
 
         if outgoingMessage.wasDelivered {
             let statusMessage = NSLocalizedString("MESSAGE_STATUS_DELIVERED",
                                                   comment:"message status for message delivered to their recipient.")
-            return (.delivered, statusMessage)
+            return (status:.delivered, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
         }
 
         if outgoingMessage.messageState == .unsent {
             let statusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED", comment:"message footer for failed messages")
-            return (.failed, statusMessage)
+            return (status:.failed, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
         } else if outgoingMessage.messageState == .sentToService ||
             outgoingMessage.wasSent(toRecipient:recipientId) {
             let statusMessage =
                 NSLocalizedString("MESSAGE_STATUS_SENT",
                                   comment:"message footer for sent messages")
-            return (.sent, statusMessage)
+            return (status:.sent, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
         } else if outgoingMessage.hasAttachments() {
             assert(outgoingMessage.messageState == .attemptingOut)
 
             let statusMessage = NSLocalizedString("MESSAGE_STATUS_UPLOADING",
                                                   comment:"message footer while attachment is uploading")
-            return (.uploading, statusMessage)
+            return (status:.uploading, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
         } else {
             assert(outgoingMessage.messageState == .attemptingOut)
 
             let statusMessage = NSLocalizedString("MESSAGE_STATUS_SENDING",
                                                   comment:"message status while message is sending.")
-            return (.sending, statusMessage)
+            return (status:.sending, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
         }
     }
 
