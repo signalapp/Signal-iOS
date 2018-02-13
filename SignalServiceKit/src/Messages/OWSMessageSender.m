@@ -1328,6 +1328,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 }
                 dispatch_semaphore_signal(sema);
             }];
+        // FIXME: Currently this happens within a readwrite transaction - meaning our read-write transaction blocks
+        // on a network request.
         dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
         if (exception) {
             @throw exception;
