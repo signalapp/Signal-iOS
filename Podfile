@@ -8,22 +8,22 @@ def shared_pods
   # pod 'SQLCipher', path: '../sqlcipher2'
   pod 'SQLCipher', :git => 'https://github.com/sqlcipher/sqlcipher.git', :commit => 'd5c2bec'
   # pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
-  pod 'YapDatabase/SQLCipher', :git => 'https://github.com/WhisperSystems/YapDatabase.git', branch: 'release/unencryptedHeaders'
+  pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'release/unencryptedHeaders'
   # pod 'AxolotlKit',   path: '../SignalProtocolKit'
   pod 'SignalServiceKit', path: '.'
   pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git'
   #pod 'AxolotlKit', path: '../SignalProtocolKit'
-  pod 'HKDFKit', git: 'https://github.com/WhisperSystems/HKDFKit.git', branch: 'mkirk/framework-friendly'
+  pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git', branch: 'mkirk/framework-friendly'
   #pod 'HKDFKit', path: '../HKDFKit'
-  pod 'Curve25519Kit', git: 'https://github.com/WhisperSystems/Curve25519Kit', branch: 'mkirk/framework-friendly'
+  pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', branch: 'mkirk/framework-friendly'
   #pod 'Curve25519Kit', path: '../Curve25519Kit'
-  pod 'GRKOpenSSLFramework', git: 'https://github.com/WhisperSystems/GRKOpenSSLFramework'
+  pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramework'
   #pod 'GRKOpenSSLFramework', path: '../GRKOpenSSLFramework'
 
   # third party pods
   pod 'AFNetworking', inhibit_warnings: true
-  pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'mkirk/share-compatible', :inhibit_warnings => true
-  #pod 'JSQMessagesViewController',  git: 'https://github.com/WhisperSystems/JSQMessagesViewController.git', branch: 'signal-master', :inhibit_warnings => true
+  pod 'JSQMessagesViewController',  git: 'https://github.com/signalapp/JSQMessagesViewController.git', branch: 'mkirk/share-compatible', :inhibit_warnings => true
+  #pod 'JSQMessagesViewController',  git: 'https://github.com/signalapp/JSQMessagesViewController.git', branch: 'signal-master', :inhibit_warnings => true
   #pod 'JSQMessagesViewController',   path: '../JSQMessagesViewController'
   pod 'Mantle', :inhibit_warnings => true
   # pod 'YapDatabase/SQLCipher', :inhibit_warnings => true
