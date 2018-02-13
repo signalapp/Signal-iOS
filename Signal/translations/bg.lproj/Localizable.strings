@@ -52,6 +52,12 @@
 /* No comment provided by engineer. */
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ група %@: %@";
 
+/* Message for the 'app launch failed' alert. */
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send your debug logs to our team so that we can try to resolve this issue.";
+
+/* Title for the 'app launch failed' alert. */
+"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Error";
+
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Въведете името си";
 
@@ -77,7 +83,7 @@
 "ATTACHMENT" = "Прикачен файл";
 
 /* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Прикачен файл";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Вид Файл: %@";
@@ -86,7 +92,7 @@
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Размер: %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Изпрати";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Прикачен файл";
@@ -105,6 +111,9 @@
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Прикачената снимка не може да се преоразмери.";
+
+/* Attachment error message for video attachments which could not be converted to MP4 */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Unable to process video.";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Прикачената снимка не може да се провери.";
@@ -141,6 +150,63 @@
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Говорител";
+
+/* Message indicating that backup export is complete. */
+"BACKUP_EXPORT_COMPLETE_MESSAGE" = "Backup complete.";
+
+/* Label for button that copies backup password to the pasteboard. */
+"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "Copy Password";
+
+/* Message indicating that backup export failed. */
+"BACKUP_EXPORT_FAILED_MESSAGE" = "BACKUP_EXPORT_FAILED_MESSAGE";
+
+/* Message indicating that backup export is in progress. */
+"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "Exporting Backup...";
+
+/* Format for message indicating that backup export is complete. Embeds: {{the backup password}}. */
+"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Your backup password is: %@. Make sure to keep a copy of this password or you won't be able to restore from this backup.";
+
+/* Label for button that 'send backup' in the current conversation. */
+"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Send Backup as Message";
+
+/* Message indicating that sending the backup failed. */
+"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Sending Backup Failed.";
+
+/* Message indicating that sending the backup succeeded. */
+"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "Backup Sent.";
+
+/* Label for button that opens share UI for backup. */
+"BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Share Backup";
+
+/* Title for the 'backup export' view. */
+"BACKUP_EXPORT_VIEW_TITLE" = "Backup";
+
+/* Format for backup filenames. Embeds: {{the date and time of the backup}}. Should not include characters like slash (/ or \\) or colon (:). */
+"BACKUP_FILENAME_FORMAT" = "Signal Backup %@";
+
+/* Message indicating that backup import is complete. */
+"BACKUP_IMPORT_COMPLETE_MESSAGE" = "Restore Complete";
+
+/* Label for button confirming backup import. */
+"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "Restore";
+
+/* Message for alert confirming backup import. */
+"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "To restore this backup you must restart the Signal app. Warning: you will lose all of your current Signal data.";
+
+/* Title for alert confirming backup import. */
+"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "Restore Backup?";
+
+/* Message indicating that backup import failed. */
+"BACKUP_IMPORT_FAILED_MESSAGE" = "Restore Failed";
+
+/* Message indicating that backup import is in progress. */
+"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Restoring Backup...";
+
+/* Label for button that restarts app to complete restore. */
+"BACKUP_IMPORT_RESTART_BUTTON" = "Restart App";
+
+/* Title for the 'backup import' view. */
+"BACKUP_IMPORT_VIEW_TITLE" = "Restore Backup";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Блокиран потребител не може да ви се обажда или да ви изпраща съобщения.";
@@ -227,19 +293,19 @@
 "CALL_USER_ALERT_TITLE" = "Повикване?";
 
 /* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Accept incoming call";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Приеми входящо повикване";
 
 /* Accessibility label for selection the audio source */
-"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Audio";
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Аудио";
 
 /* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline incoming call";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Откажи входящо повикване";
 
 /* Accessibility label for hang up call */
-"CALL_VIEW_HANGUP_LABEL" = "End call";
+"CALL_VIEW_HANGUP_LABEL" = "Край на обаждането";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Mute";
+"CALL_VIEW_MUTE_LABEL" = "Заглуши";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Можете да отговаряте на позвъняване директно от заключен екран и да виждате името и телефонния номер на входящото повикване, ако промените настройките си.\nВижте в настройките на Поверителност за детайли.";
@@ -254,10 +320,10 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Покажи Настройките за Поверителност";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to audio call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Превключи към аудио обаждане";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Превключи към видео обаждане";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Обратно Повикване";
@@ -401,10 +467,10 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Този потребител не е в контактите ви.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Зареждане на още съобщения...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap For More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Докосни за още";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Блокирай потребителя";
@@ -437,16 +503,19 @@
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Open a Bug Report";
 
 /* Label for the 'copy link' option of the the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copy Link";
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Копирай връзка";
 
 /* Label for the 'email debug log' option of the the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email Support";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Имейл поддръжка";
+
+/* Label for the 'send to last thread' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send to Last Thread";
 
 /* Label for the 'send to self' option of the the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Send to Self";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Изпрати до себе си";
 
 /* Title of the debug log alert. */
-"DEBUG_LOG_ALERT_TITLE" = "One More Step";
+"DEBUG_LOG_ALERT_TITLE" = "Още една стъпка";
 
 /* Title of the alert indicating the debug log upload failed. */
 "DEBUG_LOG_FAILURE_ALERT_TITLE" = "Failed to Submit Debug Log";
@@ -455,7 +524,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "The gist link was copied in your clipboard. You are about to be redirected to the GitHub issue list.";
 
 /* Title of the alert before redirecting to Github Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Redirection";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Препращане към Github";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Последно активно: %@";
@@ -521,7 +590,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Копирай";
 
 /* Short name for edit menu item to delete contents of media message. */
-"EDIT_ITEM_DELETE_ACTION" = "Delete";
+"EDIT_ITEM_DELETE_ACTION" = "Изтрий";
 
 /* Short name for edit menu item to show message metadata. */
 "EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Информация";
@@ -637,21 +706,6 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Номера за безопасност са променени. Докоснете, за да ги потвърдите.";
 
-/* Message for the alert indicating the 'export with signal' file had an invalid filename. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_INVALID_FILENAME" = "Невалидно име на файл.";
-
-/* Message for the alert indicating the 'export with signal' attachment couldn't be loaded. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_ATTACHMENT" = "Не може да зареди файла.";
-
-/* Message for the alert indicating the 'export with signal' data couldn't be loaded. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_MISSING_DATA" = "Не може да зареди файла.";
-
-/* Message for the alert indicating the 'export with signal' file had unknown type. */
-"EXPORT_WITH_SIGNAL_ERROR_MESSAGE_UNKNOWN_TYPE" = "Непознат тип файл.";
-
-/* Title for the alert indicating the 'export with signal' attachment had an error. */
-"EXPORT_WITH_SIGNAL_ERROR_TITLE" = "Грешка";
-
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Твърде много провали с този контакт. Моля, опитайте отново след малко.";
 
@@ -665,7 +719,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Маркирай като проверено";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Нулирай сесията";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset Session";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Създай групата";
@@ -868,6 +922,12 @@
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Папка със Снимки";
 
+/* Title for the 'message approval' dialog. */
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
+
+/* Label for the recipient name in the 'message approval' dialog. */
+"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "To:";
+
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Ново Съобщение";
 
@@ -993,6 +1053,12 @@
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal се нуждае от достъп до камерата ви.";
 
+/* Alert body when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can grant this permission in the Settings app.";
+
+/* Alert title when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal Requires Access to your Media Library to do this.";
+
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Пропуснато обаждане от %@.";
 
@@ -1098,8 +1164,7 @@
 /* No comment provided by engineer. */
 "OK" = "ОК";
 
-/* Button text which opens the settings app
-   Label for button which opens the settings UI */
+/* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Настройки";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
@@ -1155,6 +1220,9 @@
 
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Служебен Факс";
+
+/* accessability label for button to start media playback */
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Не сте маркирали %@ като проверен";
@@ -1373,22 +1441,16 @@
 "SELECT_GIF_BUTTON" = "GIF";
 
 /* Table section header for conversations you haven't recently used. */
-"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Other Contacts";
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Други контакти";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Recent Chats";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Последни разговори";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Повторно Изпращане";
 
 /* Label for the send button in the conversation view. */
 "SEND_BUTTON_TITLE" = "Изпрати";
-
-/* Header title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_HEADER_TITLE" = "Изберете получател за:";
-
-/* Title for the 'send external file' view. */
-"SEND_EXTERNAL_FILE_VIEW_TITLE" = "Изпрати Файл";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Изпращането на покана се провали, моля опитайте по-късно.";
@@ -1549,23 +1611,35 @@
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
 
+/* alert body when sharing file failed because of untrusted/changed identity keys */
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
+
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Loading...";
+"SHARE_EXTENSION_LOADING" = "Зареждане...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Launch the Signal app to register.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Not Registered";
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Не е регистриран";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Not Ready";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Не е готово";
+
+/* Alert title */
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
+
+/* Alert title */
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Uploading…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Unable to Prepare Attachment";
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Не може да се подготви прикачен файл";
+
+/* Title for the 'share extension' view. */
+"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Покажи новите номера за сигурност";
@@ -1585,14 +1659,26 @@
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ дена";
 
+/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%@ часа";
+
+/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ минути";
 
+/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
+
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@ секунди";
+
+/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_DAY" = "%@ дни";
@@ -1608,6 +1694,9 @@
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ седмици";
+
+/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Откажи";
@@ -1628,7 +1717,7 @@
 "UNKNOWN_CONTACT_NAME" = "Непознат Контакт";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "Unknown";
+"UNKNOWN_VALUE" = "Непознат";
 
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "Премахни";
