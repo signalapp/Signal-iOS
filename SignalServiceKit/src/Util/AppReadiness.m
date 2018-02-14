@@ -94,10 +94,12 @@ NSString *const AppIsReadyNotification = @"AppIsReadyNotification";
     OWSAssertIsOnMainThread();
     OWSAssert(self.isAppReady);
 
-    for (AppReadyBlock block in self.appReadyBlocks) {
+    // Make a local copy, then clear this state.
+    NSArray<AppReadyBlock> *appReadyBlocks = self.appReadyBlocks;
+    self.appReadyBlocks = nil;
+    for (AppReadyBlock block in appReadyBlocks) {
         block();
     }
-    self.appReadyBlocks = nil;
 }
 
 @end

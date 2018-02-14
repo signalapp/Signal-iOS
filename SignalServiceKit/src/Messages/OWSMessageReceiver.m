@@ -123,7 +123,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 - (void)addJobForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [[[OWSMessageDecryptJob alloc] initWithEnvelope:envelope] saveWithTransaction:transaction];
+        OWSMessageDecryptJob *job = [[OWSMessageDecryptJob alloc] initWithEnvelope:envelope];
+        [job saveWithTransaction:transaction];
     }];
 }
 
@@ -287,6 +288,12 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     dispatch_async(self.serialQueue, ^{
         if (!AppReadiness.isAppReady) {
             // We don't want to process incoming messages until storage is ready.
+            static dispatch_once_t onceToken;
+            dispatch_once(&onceToken, ^{
+                [AppReadiness runNowOrWhenAppIsReady:^{
+                    [self drainQueue];
+                }];
+            });
             return;
         }
 

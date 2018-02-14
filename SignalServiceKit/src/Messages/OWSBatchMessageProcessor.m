@@ -269,6 +269,10 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                                              selector:@selector(appIsReady)
                                                  name:AppIsReadyNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(yapDatabaseModified:)
+                                                 name:YapDatabaseModifiedNotification
+                                               object:TSStorageManager.sharedManager.dbNotificationObject];
 
     return self;
 }
@@ -280,6 +284,13 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 - (void)appIsReady
 {
+    [self drainQueue];
+}
+
+- (void)yapDatabaseModified:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
     [self drainQueue];
 }
 
@@ -316,6 +327,13 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     dispatch_async(self.serialQueue, ^{
         if (!AppReadiness.isAppReady) {
             // We don't want to process incoming messages until storage is ready.
+            static dispatch_once_t onceToken;
+            dispatch_once(&onceToken, ^{
+                [AppReadiness runNowOrWhenAppIsReady:^{
+                    [self drainQueue];
+                }];
+            });
+
             return;
         }
 
@@ -471,7 +489,8 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
     // We need to persist the decrypted envelope data ASAP to prevent data loss.
     [self.processingQueue enqueueEnvelopeData:envelopeData plaintextData:plaintextData transaction:transaction];
-    [self.processingQueue drainQueue];
+    // The new envelope won't be visible to the finder until this transaction commits,
+    // so don't bother calling drainQueue here.
 }
 
 @end

@@ -610,6 +610,12 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     OWSAssertIsOnMainThread();
 
     if (!AppReadiness.isAppReady) {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            [AppReadiness runNowOrWhenAppIsReady:^{
+                [self applyDesiredSocketState];
+            }];
+        });
         return;
     }
 

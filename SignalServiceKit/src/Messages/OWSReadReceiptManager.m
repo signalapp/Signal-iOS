@@ -206,6 +206,12 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         {
             if (!AppReadiness.isAppReady) {
                 DDLogInfo(@"%@ Deferring read receipt processing; storage not yet ready.", self.logTag);
+                static dispatch_once_t onceToken;
+                dispatch_once(&onceToken, ^{
+                    [AppReadiness runNowOrWhenAppIsReady:^{
+                        [self scheduleProcessing];
+                    }];
+                });
                 return;
             }
             if (self.isProcessing) {
