@@ -53,10 +53,10 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ בקבוצה %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send your debug logs to our team so that we can try to resolve this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal אינו יכול להיות מופעל. אנא שלח את יומן ניפוי התקלים שלך אל הצוות שלנו כך שנוכל לנסות לפתור סוגייה זו.";
 
 /* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Error";
+"APP_LAUNCH_FAILURE_ALERT_TITLE" = "שגיאה";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "הכנס את שמך";
@@ -113,7 +113,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "צרופת התמונה לא יכלה להיות משונת גודל";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Unable to process video.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "לא היה ניתן לעבד וידיאו.";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "צרופת התמונה לא יכלה להיות מנותחת.";
@@ -152,61 +152,61 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "רמקול";
 
 /* Message indicating that backup export is complete. */
-"BACKUP_EXPORT_COMPLETE_MESSAGE" = "Backup complete.";
+"BACKUP_EXPORT_COMPLETE_MESSAGE" = "הגיבוי הושלם.";
 
 /* Label for button that copies backup password to the pasteboard. */
-"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "Copy Password";
+"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "העתק סיסמה";
 
 /* Message indicating that backup export failed. */
-"BACKUP_EXPORT_FAILED_MESSAGE" = "BACKUP_EXPORT_FAILED_MESSAGE";
+"BACKUP_EXPORT_FAILED_MESSAGE" = "יצוא הגיבוי נכשל";
 
 /* Message indicating that backup export is in progress. */
-"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "Exporting Backup...";
+"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "מייצא גיבוי...";
 
 /* Format for message indicating that backup export is complete. Embeds: {{the backup password}}. */
-"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Your backup password is: %@. Make sure to keep a copy of this password or you won't be able to restore from this backup.";
+"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "סיסמת הגיבוי שלך היא: %@. וודא שאתה שומר עותק של סיסמה זו או שלא תוכל לשחזר מגיבוי זה.";
 
 /* Label for button that 'send backup' in the current conversation. */
-"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Send Backup as Message";
+"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "שלח גיבוי בתור הודעה";
 
 /* Message indicating that sending the backup failed. */
-"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Sending Backup Failed.";
+"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "שליחת הגיבוי נכשלה.";
 
 /* Message indicating that sending the backup succeeded. */
-"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "Backup Sent.";
+"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "הגיבוי נשלח.";
 
 /* Label for button that opens share UI for backup. */
-"BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Share Backup";
+"BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "שתף גיבוי";
 
 /* Title for the 'backup export' view. */
-"BACKUP_EXPORT_VIEW_TITLE" = "Backup";
+"BACKUP_EXPORT_VIEW_TITLE" = "גיבוי";
 
 /* Format for backup filenames. Embeds: {{the date and time of the backup}}. Should not include characters like slash (/ or \\) or colon (:). */
-"BACKUP_FILENAME_FORMAT" = "Signal Backup %@";
+"BACKUP_FILENAME_FORMAT" = "גיבוי Signal %@";
 
 /* Message indicating that backup import is complete. */
-"BACKUP_IMPORT_COMPLETE_MESSAGE" = "Restore Complete";
+"BACKUP_IMPORT_COMPLETE_MESSAGE" = "השחזור הושלם";
 
 /* Label for button confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "Restore";
+"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "שחזר";
 
 /* Message for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "To restore this backup you must restart the Signal app. Warning: you will lose all of your current Signal data.";
+"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "כדי לשחזר גיבוי זה אתה חייב להפעיל מחדש את היישום Signal. אזהרה: תאבד את כל נתוני Signal הנוכחיים שלך.";
 
 /* Title for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "Restore Backup?";
+"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "לשחזר גיבוי?";
 
 /* Message indicating that backup import failed. */
-"BACKUP_IMPORT_FAILED_MESSAGE" = "Restore Failed";
+"BACKUP_IMPORT_FAILED_MESSAGE" = "השחזור נכשל";
 
 /* Message indicating that backup import is in progress. */
-"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Restoring Backup...";
+"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "משחזר גיבוי...";
 
 /* Label for button that restarts app to complete restore. */
-"BACKUP_IMPORT_RESTART_BUTTON" = "Restart App";
+"BACKUP_IMPORT_RESTART_BUTTON" = "הפעל מחדש יישום";
 
 /* Title for the 'backup import' view. */
-"BACKUP_IMPORT_VIEW_TITLE" = "Restore Backup";
+"BACKUP_IMPORT_VIEW_TITLE" = "שחזור גיבוי";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "משתמשים חסומים לא יוכלו לחייג אליך או לשלוח לך הודעות.";
@@ -493,6 +493,12 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "מעדכן מסד נתונים";
 
+/* The current day. */
+"DATE_TODAY" = "Today";
+
+/* The day before today. */
+"DATE_YESTERDAY" = "Yesterday";
+
 /* Message indicating that the debug log is being uploaded. */
 "DEBUG_LOG_ACTIVITY_INDICATOR" = "שולח יומן ניפוי תקלים...";
 
@@ -509,7 +515,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "תמיכת דוא\"ל";
 
 /* Label for the 'send to last thread' option of the the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send to Last Thread";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "שלח אל אשכול אחרון";
 
 /* Label for the 'send to self' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "שלח לעצמי";
@@ -719,7 +725,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "סמן כמאומת";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset Session";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "אפס שיח";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "סיים יצירת קבוצה";
@@ -923,10 +929,10 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "תמונות שלך";
 
 /* Title for the 'message approval' dialog. */
-"MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "הודעה";
 
 /* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "To:";
+"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "אל:";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "הודעה חדשה";
@@ -1054,10 +1060,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal צריך לקבל גישה למצלמה שלך.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can grant this permission in the Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "אתה יכול להעניק הרשאה זו ביישום הגדרות.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal Requires Access to your Media Library to do this.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal דורש הרשאה אל סיפריית המדיה שלך כדי לעשות זאת.";
 
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "שיחה לא נענתה מאת %@.";
@@ -1222,7 +1228,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "פקס עבודה";
 
 /* accessability label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "נגן מדיה";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "לא סימנת את %@ כמוודא.";
@@ -1612,7 +1618,7 @@
 "SHARE_ACTION_TWEET" = "טוויטר";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "מספר הביטחון שלך עם %@ השתנה לאחרונה. מומלץ לוודא אותו ביישום הראשי לפני שליחה מחדש.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "טוען...";
@@ -1630,16 +1636,16 @@
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "לא מוכן";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "לא היה ניתן לשלוח צרופה";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Uploading…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "מעלה...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "לא היה ניתן להכין צרופה";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "שתף ב־Signal";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "הראה מספר ביטחון חדש";
@@ -1660,25 +1666,25 @@
 "TIME_AMOUNT_DAYS" = "%@ ימים";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@י";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%@ שעות";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@שע";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ דקות";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@ח";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@ שניות";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@שנ";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_DAY" = "יום %@";
@@ -1696,7 +1702,7 @@
 "TIME_AMOUNT_WEEKS" = "%@ שבועות";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@שב";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "ביטול";

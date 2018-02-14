@@ -493,6 +493,12 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "S'està actualitzant la base de dades";
 
+/* The current day. */
+"DATE_TODAY" = "Today";
+
+/* The day before today. */
+"DATE_YESTERDAY" = "Yesterday";
+
 /* Message indicating that the debug log is being uploaded. */
 "DEBUG_LOG_ACTIVITY_INDICATOR" = "Sending Debug Log...";
 

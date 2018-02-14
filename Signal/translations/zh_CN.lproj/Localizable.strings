@@ -53,10 +53,10 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ 在 %@ 群组：%@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send your debug logs to our team so that we can try to resolve this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal 无法启动。请将您的调试日志发送给我们的开发团队，以让我们帮助您解决这个问题。";
 
 /* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Error";
+"APP_LAUNCH_FAILURE_ALERT_TITLE" = "错误";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "输入您的名字";
@@ -113,7 +113,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "无法调整图像附件大小。";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Unable to process video.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "无法解析该视频。";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "无法读取图像附件。";
@@ -152,61 +152,61 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "扬声器";
 
 /* Message indicating that backup export is complete. */
-"BACKUP_EXPORT_COMPLETE_MESSAGE" = "Backup complete.";
+"BACKUP_EXPORT_COMPLETE_MESSAGE" = "已完成备份。";
 
 /* Label for button that copies backup password to the pasteboard. */
-"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "Copy Password";
+"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "复制密码";
 
 /* Message indicating that backup export failed. */
-"BACKUP_EXPORT_FAILED_MESSAGE" = "BACKUP_EXPORT_FAILED_MESSAGE";
+"BACKUP_EXPORT_FAILED_MESSAGE" = "备份导出失败";
 
 /* Message indicating that backup export is in progress. */
-"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "Exporting Backup...";
+"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "正在导出备份...";
 
 /* Format for message indicating that backup export is complete. Embeds: {{the backup password}}. */
-"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Your backup password is: %@. Make sure to keep a copy of this password or you won't be able to restore from this backup.";
+"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "您的备份密码是：%@。请妥善保管此密码，否则您将无法使用此备份恢复数据。";
 
 /* Label for button that 'send backup' in the current conversation. */
-"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Send Backup as Message";
+"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "已消息形式发送备份";
 
 /* Message indicating that sending the backup failed. */
-"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Sending Backup Failed.";
+"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "备份发送失败。";
 
 /* Message indicating that sending the backup succeeded. */
-"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "Backup Sent.";
+"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "备份已发送。";
 
 /* Label for button that opens share UI for backup. */
-"BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Share Backup";
+"BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "分享备份";
 
 /* Title for the 'backup export' view. */
-"BACKUP_EXPORT_VIEW_TITLE" = "Backup";
+"BACKUP_EXPORT_VIEW_TITLE" = "备份";
 
 /* Format for backup filenames. Embeds: {{the date and time of the backup}}. Should not include characters like slash (/ or \\) or colon (:). */
-"BACKUP_FILENAME_FORMAT" = "Signal Backup %@";
+"BACKUP_FILENAME_FORMAT" = "Signal 备份 %@";
 
 /* Message indicating that backup import is complete. */
-"BACKUP_IMPORT_COMPLETE_MESSAGE" = "Restore Complete";
+"BACKUP_IMPORT_COMPLETE_MESSAGE" = "恢复完成";
 
 /* Label for button confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "Restore";
+"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "恢复";
 
 /* Message for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "To restore this backup you must restart the Signal app. Warning: you will lose all of your current Signal data.";
+"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "要从备份恢复数据，您必须重启 Signal 应用。警告：您将丢弃当前 Signal 中的所有数据。";
 
 /* Title for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "Restore Backup?";
+"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "从备份恢复？";
 
 /* Message indicating that backup import failed. */
-"BACKUP_IMPORT_FAILED_MESSAGE" = "Restore Failed";
+"BACKUP_IMPORT_FAILED_MESSAGE" = "恢复失败";
 
 /* Message indicating that backup import is in progress. */
-"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Restoring Backup...";
+"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "正在从备份恢复...";
 
 /* Label for button that restarts app to complete restore. */
-"BACKUP_IMPORT_RESTART_BUTTON" = "Restart App";
+"BACKUP_IMPORT_RESTART_BUTTON" = "重启应用";
 
 /* Title for the 'backup import' view. */
-"BACKUP_IMPORT_VIEW_TITLE" = "Restore Backup";
+"BACKUP_IMPORT_VIEW_TITLE" = "从备份恢复";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "黑名单中的用户将不能呼叫您或给你发送消息。";
@@ -493,6 +493,12 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "更新数据库";
 
+/* The current day. */
+"DATE_TODAY" = "Today";
+
+/* The day before today. */
+"DATE_YESTERDAY" = "Yesterday";
+
 /* Message indicating that the debug log is being uploaded. */
 "DEBUG_LOG_ACTIVITY_INDICATOR" = "提交调试日志";
 
@@ -509,7 +515,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "邮件支持";
 
 /* Label for the 'send to last thread' option of the the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send to Last Thread";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "发送到最后一个线程";
 
 /* Label for the 'send to self' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "发送给自己";
@@ -719,7 +725,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "标记为已验证";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset Session";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "重置会话";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "完成组群创建";
@@ -923,10 +929,10 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "相册";
 
 /* Title for the 'message approval' dialog. */
-"MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "消息";
 
 /* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "To:";
+"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "致：";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "新信息";
@@ -1054,10 +1060,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal需要访问您的摄像头";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can grant this permission in the Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "您可以在 Settings 应用中授予该权限。";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal Requires Access to your Media Library to do this.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal 需要媒体库访问权限来完成此操作。";
 
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "来自 %@ 的未接来电。";
@@ -1069,7 +1075,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "您已经匹配使用的设备到达当前账号的上限。请移除一个设备后重新尝试匹配。";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "无有效接收人，消息发送失败。";
+"MUTE_BEHAVIOR_EXPLANATION" = "您将不会收到来自静音对话的通知。";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "跳过";
@@ -1222,7 +1228,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "工作传真";
 
 /* accessability label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "播放媒体";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "您未将%@标记为已验证。";
@@ -1300,7 +1306,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "头像";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "您的 Signal 资料在以下情况将可见：您已有的联系人，在建立新对话时，以及您与其它用户群组分享时。";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "您的 Signal 资料将对您的联系人可见，包括：建立新对话，或您与其它用户群组共享资料时。";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "点击了解更多资讯。";
@@ -1612,7 +1618,7 @@
 "SHARE_ACTION_TWEET" = "推特";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "近期您与%@的安全码已改变。在您重新发送前，建议您在主应用中验证新的安全码。";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "读取中";
@@ -1630,16 +1636,16 @@
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "还未准备好";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "无法发送附件";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Uploading…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "上传中...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "无法准备附件";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "分享到 Signal";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "显示新的安全码";
@@ -1660,25 +1666,25 @@
 "TIME_AMOUNT_DAYS" = "%@天";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@天";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%@小时";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@时";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@分钟";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@分";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@秒";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@秒";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_DAY" = "%@天";
@@ -1696,7 +1702,7 @@
 "TIME_AMOUNT_WEEKS" = "%@个星期";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@周";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "取消";

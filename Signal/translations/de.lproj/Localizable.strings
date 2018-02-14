@@ -53,10 +53,10 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ in Gruppe %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send your debug logs to our team so that we can try to resolve this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal kann nicht starten. Bitte sende deine Diagnoseprotokolle an unser Team, damit wir versuchen können, dieses Problem zu beheben.";
 
 /* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Error";
+"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Fehler";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Gib deinen Namen ein";
@@ -492,6 +492,12 @@
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Datenbank wird aktualisiert";
+
+/* The current day. */
+"DATE_TODAY" = "Today";
+
+/* The day before today. */
+"DATE_YESTERDAY" = "Yesterday";
 
 /* Message indicating that the debug log is being uploaded. */
 "DEBUG_LOG_ACTIVITY_INDICATOR" = "Diagnoseprotokoll wird gesendet …";
@@ -1639,7 +1645,7 @@
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Anhang kann nicht vorbereitet werden";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "Mit Signal teilen";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Neue Sicherheitsnummer anzeigen";

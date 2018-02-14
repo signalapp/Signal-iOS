@@ -53,10 +53,10 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ i gruppe %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send your debug logs to our team so that we can try to resolve this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal klarer ikke starte. Vennligst send inn debug-logger til utviklerne bak appen slik at vi kan forsøke å løse dette problemet.";
 
 /* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Error";
+"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Feil";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Skriv inn navnet ditt";
@@ -113,7 +113,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Kunne ikke endre størrelse for vedlagte bilde.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Unable to process video.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Klarte ikke behandle videoen.";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Vedlagte bilde kunne ikke håndteres.";
@@ -152,61 +152,61 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Høyttaler";
 
 /* Message indicating that backup export is complete. */
-"BACKUP_EXPORT_COMPLETE_MESSAGE" = "Backup complete.";
+"BACKUP_EXPORT_COMPLETE_MESSAGE" = "Sikkerhetskopiering ferdig";
 
 /* Label for button that copies backup password to the pasteboard. */
-"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "Copy Password";
+"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "Kopier passord";
 
 /* Message indicating that backup export failed. */
 "BACKUP_EXPORT_FAILED_MESSAGE" = "BACKUP_EXPORT_FAILED_MESSAGE";
 
 /* Message indicating that backup export is in progress. */
-"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "Exporting Backup...";
+"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "Eksporterer sikkerhetskopi...";
 
 /* Format for message indicating that backup export is complete. Embeds: {{the backup password}}. */
-"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Your backup password is: %@. Make sure to keep a copy of this password or you won't be able to restore from this backup.";
+"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Sikkerhetskopi-passordet ditt er: %@. Ta godt bare på dette passordet, uten det vil du ikke kunne gjenopprette fra denne sikkerhetskopien.";
 
 /* Label for button that 'send backup' in the current conversation. */
-"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Send Backup as Message";
+"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Send sikkerhetskopi som en melding";
 
 /* Message indicating that sending the backup failed. */
-"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Sending Backup Failed.";
+"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Sending av sikkerhetskopi feilet.";
 
 /* Message indicating that sending the backup succeeded. */
-"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "Backup Sent.";
+"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "Sikkerhetskopi sendt.";
 
 /* Label for button that opens share UI for backup. */
-"BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Share Backup";
+"BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Del sikkerhetskopi";
 
 /* Title for the 'backup export' view. */
-"BACKUP_EXPORT_VIEW_TITLE" = "Backup";
+"BACKUP_EXPORT_VIEW_TITLE" = "Sikkerhetskopi";
 
 /* Format for backup filenames. Embeds: {{the date and time of the backup}}. Should not include characters like slash (/ or \\) or colon (:). */
-"BACKUP_FILENAME_FORMAT" = "Signal Backup %@";
+"BACKUP_FILENAME_FORMAT" = "Signal sikkerhetskopi %@";
 
 /* Message indicating that backup import is complete. */
-"BACKUP_IMPORT_COMPLETE_MESSAGE" = "Restore Complete";
+"BACKUP_IMPORT_COMPLETE_MESSAGE" = "Gjenoppretting fullført";
 
 /* Label for button confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "Restore";
+"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "Gjenopprett";
 
 /* Message for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "To restore this backup you must restart the Signal app. Warning: you will lose all of your current Signal data.";
+"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "For å gjenopprette denne sikkerhetskopien må du restarte Signal-appen. Advarsel: Du vil miste alle dine nåværende Signal data.";
 
 /* Title for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "Restore Backup?";
+"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "Gjenopprette fra sikkerhetskopi?";
 
 /* Message indicating that backup import failed. */
-"BACKUP_IMPORT_FAILED_MESSAGE" = "Restore Failed";
+"BACKUP_IMPORT_FAILED_MESSAGE" = "Gjenoppretting feilet";
 
 /* Message indicating that backup import is in progress. */
-"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Restoring Backup...";
+"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Gjenoppretter sikkerhetskopi...";
 
 /* Label for button that restarts app to complete restore. */
-"BACKUP_IMPORT_RESTART_BUTTON" = "Restart App";
+"BACKUP_IMPORT_RESTART_BUTTON" = "Restart appen";
 
 /* Title for the 'backup import' view. */
-"BACKUP_IMPORT_VIEW_TITLE" = "Restore Backup";
+"BACKUP_IMPORT_VIEW_TITLE" = "Gjenopprett fra sikkerhetskopi";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blokkerte brukere vil ikke kunne ringe deg eller sende deg meldinger.";
@@ -493,6 +493,12 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Oppdaterer database";
 
+/* The current day. */
+"DATE_TODAY" = "Today";
+
+/* The day before today. */
+"DATE_YESTERDAY" = "Yesterday";
+
 /* Message indicating that the debug log is being uploaded. */
 "DEBUG_LOG_ACTIVITY_INDICATOR" = "Sender feilsøkingslogg...";
 
@@ -509,7 +515,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Send e-post for hjelp";
 
 /* Label for the 'send to last thread' option of the the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send to Last Thread";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send til forrige tråd";
 
 /* Label for the 'send to self' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Send til deg selv";
@@ -719,7 +725,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Merk som verifisert";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset Session";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Nullstill sesjon";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Fullfør oppretting av gruppe";
@@ -923,10 +929,10 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "Kamerarull";
 
 /* Title for the 'message approval' dialog. */
-"MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "Melding";
 
 /* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "To:";
+"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "Til:";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Ny melding";
@@ -1054,10 +1060,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal trenger tilgang til ditt kamera.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can grant this permission in the Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Du kan gi tilgang i Innstillinger på telefonen.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal Requires Access to your Media Library to do this.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal trenger tilgang til mediebiblioteket ditt for å gjøre dette.";
 
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Tapt anrop fra %@.";
@@ -1222,7 +1228,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Arbeid fax";
 
 /* accessability label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spill av media";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Du har ikke markert %@ som verifisert.";
@@ -1612,7 +1618,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Sikkerhetsnummeret ditt med %@ har nylig endret seg. Vurder om du ønsker å verifisere det på nytt i hovedappen før du sender på nytt.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "Laster...";
@@ -1630,16 +1636,16 @@
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Ikke klar";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Klarte ikke sende vedlegg";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Uploading…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Laster opp...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Klarte ikke klargjøre vedlegg";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "Del via Signal";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Vis nytt sikkerhetsnummer";
@@ -1666,7 +1672,7 @@
 "TIME_AMOUNT_HOURS" = "%@ timer";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@t";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ minutter";
@@ -1696,7 +1702,7 @@
 "TIME_AMOUNT_WEEKS" = "%@ uker";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@u";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Avbryt";
