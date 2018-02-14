@@ -250,7 +250,12 @@ NS_ASSUME_NONNULL_BEGIN
     scrollView.showsVerticalScrollIndicator = NO;
     scrollView.showsHorizontalScrollIndicator = NO;
     scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
-    self.automaticallyAdjustsScrollViewInsets = NO;
+
+    if (@available(iOS 11.0, *)) {
+        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    } else {
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
 
     [scrollView autoPinToSuperviewEdges];
 
