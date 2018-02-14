@@ -283,7 +283,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
         hasInitialRootViewController = true
 
-        Logger.info("Presenting initial root view controller")
+        Logger.info("\(logTag) Presenting initial root view controller")
 
         if !TSAccountManager.isRegistered() {
             showNotRegisteredView()

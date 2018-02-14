@@ -693,7 +693,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
         OWSRaiseException(
             OWSStorageExceptionName_DatabasePasswordUnwritable, @"Setting keychain value failed with error: %@", error);
     } else {
-        DDLogWarn(@"Successfully set new keychain value.");
+        DDLogWarn(@"%@ Successfully set new keychain value.", self.logTag);
     }
 }
 

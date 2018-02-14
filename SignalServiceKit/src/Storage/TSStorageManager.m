@@ -151,9 +151,9 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 
 + (void)protectFiles
 {
-    DDLogInfo(@"%@ Database file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.legacyDatabaseFilePath]);
-    DDLogInfo(@"%@ \t SHM file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.legacyDatabaseFilePath_SHM]);
-    DDLogInfo(@"%@ \t WAL file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.legacyDatabaseFilePath_WAL]);
+    DDLogInfo(@"%@ Database file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath]);
+    DDLogInfo(@"%@ \t SHM file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_SHM]);
+    DDLogInfo(@"%@ \t WAL file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_WAL]);
 
     // The old database location was in the Document directory,
     // so protect the database files individually.
@@ -241,7 +241,7 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 
 + (NSString *)databaseFilePath
 {
-    DDLogVerbose(@"databasePath: %@", TSStorageManager.sharedDataDatabaseFilePath);
+    DDLogVerbose(@"%@ databasePath: %@", self.logTag, TSStorageManager.sharedDataDatabaseFilePath);
 
     return self.sharedDataDatabaseFilePath;
 }
