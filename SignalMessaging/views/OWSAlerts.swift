@@ -65,4 +65,32 @@ import Foundation
         return action
     }
 
+    @objc
+    public class func showIOSUpgradeNagIfNecessary() {
+        // Only show the nag to iOS 8 users.
+        if #available(iOS 9.0, *) {
+            return
+        }
+
+        // Don't show the nag to users who have just launched
+        // the app for the first time.
+        guard AppVersion.instance().lastAppVersion != nil else {
+            return
+        }
+
+        if let iOSUpgradeNagDate = Environment.preferences().iOSUpgradeNagDate() {
+            // Nag no more than once every three days.
+            let kNagFrequencySeconds = 3 * kDayInterval
+            guard fabs(iOSUpgradeNagDate.timeIntervalSinceNow) > kNagFrequencySeconds else {
+                return
+            }
+        }
+
+        Environment.preferences().setIOSUpgradeNagDate(Date())
+
+        OWSAlerts.showAlert(withTitle:NSLocalizedString("UPGRADE_IOS_ALERT_TITLE",
+                                                        comment:"Title for the alert indicating that user should upgrade iOS."),
+                            message:NSLocalizedString("UPGRADE_IOS_ALERT_MESSAGE",
+                                                      comment:"Message for the alert indicating that user should upgrade iOS."))
+    }
 }

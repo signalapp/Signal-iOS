@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern const uint32_t OWSDisappearingMessagesConfigurationDefaultExpirationDuration;
+#define OWSDisappearingMessagesConfigurationDefaultExpirationDuration kDayInterval
 
 @interface OWSDisappearingMessagesConfiguration : TSYapDatabaseObject
 

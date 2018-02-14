@@ -24,7 +24,7 @@ NSString *const OWSPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 NSString *const OWSPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled";
 NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
-NSString *const OWSPreferencesKeyIOSUpgradeNagVersion = @"iOSUpgradeNagVersion";
+NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKey_IsRegistered = @"OWSPreferencesKey_IsRegistered";
 
@@ -179,14 +179,14 @@ NSString *const OWSPreferencesKey_IsRegistered = @"OWSPreferencesKey_IsRegistere
     [self setValueForKey:OWSPreferencesKeyHasDeclinedNoContactsView toValue:@(value)];
 }
 
-- (void)setIOSUpgradeNagVersion:(NSString *)value
+- (void)setIOSUpgradeNagDate:(NSDate *)value
 {
-    [self setValueForKey:OWSPreferencesKeyIOSUpgradeNagVersion toValue:value];
+    [self setValueForKey:OWSPreferencesKeyIOSUpgradeNagDate toValue:value];
 }
 
-- (nullable NSString *)iOSUpgradeNagVersion
+- (nullable NSDate *)iOSUpgradeNagDate
 {
-    return [self tryGetValueForKey:OWSPreferencesKeyIOSUpgradeNagVersion];
+    return [self tryGetValueForKey:OWSPreferencesKeyIOSUpgradeNagDate];
 }
 
 #pragma mark - Calling

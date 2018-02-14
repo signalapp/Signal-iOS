@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "NewContactThreadViewController.h"
@@ -278,35 +278,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidAppear:animated];
 
-    [self showIOSUpgradeNagIfNecessary];
-}
-
-- (void)showIOSUpgradeNagIfNecessary
-{
-    // Only show the nag to iOS 8 users.
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
-        return;
-    }
-
-    // Don't show the nag to users who have just launched
-    // the app for the first time.
-    if (![AppVersion instance].lastAppVersion) {
-        return;
-    }
-
-    // Only show the nag once per update of the app.
-    NSString *currentAppVersion = [AppVersion instance].currentAppVersion;
-    OWSAssert(currentAppVersion.length > 0);
-    NSString *lastNagAppVersion = [Environment.preferences iOSUpgradeNagVersion];
-    if (lastNagAppVersion && ![lastNagAppVersion isEqualToString:currentAppVersion]) {
-
-        [Environment.preferences setIOSUpgradeNagVersion:currentAppVersion];
-
-        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"UPGRADE_IOS_ALERT_TITLE",
-                                          @"Title for the alert indicating that user should upgrade iOS.")
-                              message:NSLocalizedString(@"UPGRADE_IOS_ALERT_MESSAGE",
-                                          @"Message for the alert indicating that user should upgrade iOS.")];
-    }
+    [OWSAlerts showIOSUpgradeNagIfNecessary];
 }
 
 #pragma mark - Table Contents

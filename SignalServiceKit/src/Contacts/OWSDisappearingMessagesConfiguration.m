@@ -7,9 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// 1 day.
-const uint32_t OWSDisappearingMessagesConfigurationDefaultExpirationDuration = kDayInterval;
-
 @interface OWSDisappearingMessagesConfiguration ()
 
 // Transient record lifecycle attributes.
