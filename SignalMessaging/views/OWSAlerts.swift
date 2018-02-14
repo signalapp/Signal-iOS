@@ -74,7 +74,7 @@ import Foundation
 
         // Don't show the nag to users who have just launched
         // the app for the first time.
-        guard let _ = AppVersion.instance().lastAppVersion else {
+        guard AppVersion.instance().lastAppVersion != nil else {
             return
         }
 
