@@ -1303,8 +1303,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         __block PreKeyBundle *_Nullable bundle;
         __block NSException *_Nullable exception;
-        [self.networkManager makeRequest:[[TSRecipientPrekeyRequest alloc] initWithRecipient:identifier
-                                                                                    deviceId:[deviceNumber stringValue]]
+        // It's not ideal that we're using a semaphore inside a read/write transaction.
+        // To avoid deadlock, we need to ensure that our success/failure completions
+        // are called _off_ the main thread.  Otherwise we'll deadlock if the main
+        // thread is blocked on opening a transaction.
+        TSRequest *request =
+            [[TSRecipientPrekeyRequest alloc] initWithRecipient:identifier deviceId:[deviceNumber stringValue]];
+        [self.networkManager makeRequest:request
+            completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
             success:^(NSURLSessionDataTask *task, id responseObject) {
                 bundle = [PreKeyBundle preKeyBundleFromDictionary:responseObject forDeviceNumber:deviceNumber];
                 dispatch_semaphore_signal(sema);
