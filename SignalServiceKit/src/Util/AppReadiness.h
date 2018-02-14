@@ -4,8 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const AppIsReadyNotification;
-
 typedef void (^AppReadyBlock)(void);
 
 @interface AppReadiness : NSObject

@@ -265,33 +265,12 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     _finder = finder;
     _isDrainingQueue = NO;
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(appIsReady)
-                                                 name:AppIsReadyNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
-                                                 name:YapDatabaseModifiedNotification
-                                               object:TSStorageManager.sharedManager.dbNotificationObject];
+    // Start processing.
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [self drainQueue];
+    }];
 
     return self;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)appIsReady
-{
-    [self drainQueue];
-}
-
-- (void)yapDatabaseModified:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self drainQueue];
 }
 
 #pragma mark - instance methods
@@ -319,24 +298,14 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 - (void)drainQueue
 {
+    OWSAssert(AppReadiness.isAppReady);
+
     // Don't process incoming messages in app extensions.
     if (!CurrentAppContext().isMainApp) {
         return;
     }
 
     dispatch_async(self.serialQueue, ^{
-        if (!AppReadiness.isAppReady) {
-            // We don't want to process incoming messages until storage is ready.
-            static dispatch_once_t onceToken;
-            dispatch_once(&onceToken, ^{
-                [AppReadiness runNowOrWhenAppIsReady:^{
-                    [self drainQueue];
-                }];
-            });
-
-            return;
-        }
-
         if (self.isDrainingQueue) {
             return;
         }
@@ -489,8 +458,13 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
     // We need to persist the decrypted envelope data ASAP to prevent data loss.
     [self.processingQueue enqueueEnvelopeData:envelopeData plaintextData:plaintextData transaction:transaction];
+
     // The new envelope won't be visible to the finder until this transaction commits,
-    // so don't bother calling drainQueue here.
+    // so drainQueue in the transaction completion.
+    [transaction addCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                    completionBlock:^{
+                        [self.processingQueue drainQueue];
+                    }];
 }
 
 @end

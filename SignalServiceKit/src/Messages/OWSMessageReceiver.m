@@ -243,22 +243,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     _finder = finder;
     _isDrainingQueue = NO;
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(appIsReady)
-                                                 name:AppIsReadyNotification
-                                               object:nil];
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [self drainQueue];
+    }];
 
     return self;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)appIsReady
-{
-    [self drainQueue];
 }
 
 #pragma mark - instance methods
@@ -280,23 +269,14 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)drainQueue
 {
+    OWSAssert(AppReadiness.isAppReady);
+
     // Don't decrypt messages in app extensions.
     if (!CurrentAppContext().isMainApp) {
         return;
     }
 
     dispatch_async(self.serialQueue, ^{
-        if (!AppReadiness.isAppReady) {
-            // We don't want to process incoming messages until storage is ready.
-            static dispatch_once_t onceToken;
-            dispatch_once(&onceToken, ^{
-                [AppReadiness runNowOrWhenAppIsReady:^{
-                    [self drainQueue];
-                }];
-            });
-            return;
-        }
-
         if (self.isDrainingQueue) {
             return;
         }
