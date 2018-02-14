@@ -137,12 +137,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [AppReadiness runNowOrWhenAppIsReady:^{
-            [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
-        }];
-    });
+    if (AppReadiness.isAppReady) {
+        [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+    } else {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            [AppReadiness runNowOrWhenAppIsReady:^{
+                [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+            }];
+        });
+    }
 }
 
 #pragma mark - Blocking
