@@ -1091,7 +1091,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
     self.hasInitialRootViewController = YES;
 
-    DDLogInfo(@"Presenting initial root view controller");
+    DDLogInfo(@"%@ Presenting initial root view controller", self.logTag);
 
     if ([TSAccountManager isRegistered]) {
         HomeViewController *homeView = [HomeViewController new];

@@ -68,7 +68,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
                 var isCompleted = false
                 strongSelf.ensureProfileComplete().then { _ -> Void in
                     guard isCompleted == false else {
-                        Logger.info("Already saved. Skipping redundant call.")
+                        Logger.info("\(strongSelf.TAG) Already saved. Skipping redundant call.")
                         return
                     }
                     Logger.info("\(strongSelf.TAG) complete. Canceling timer and saving.")

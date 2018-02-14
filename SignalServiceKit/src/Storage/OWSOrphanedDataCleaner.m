@@ -76,18 +76,18 @@ NS_ASSUME_NONNULL_BEGIN
                                               }];
     }];
 
-    CleanupLogDebug(@"fileCount: %zd", fileCount);
-    CleanupLogDebug(@"totalFileSize: %lld", totalFileSize);
-    CleanupLogDebug(@"attachmentStreams: %d", attachmentStreamCount);
-    CleanupLogDebug(@"attachmentStreams with file paths: %zd", attachmentFilePaths.count);
+    CleanupLogDebug(@"%@ fileCount: %zd", self.logTag, fileCount);
+    CleanupLogDebug(@"%@ totalFileSize: %lld", self.logTag, totalFileSize);
+    CleanupLogDebug(@"%@ attachmentStreams: %d", self.logTag, attachmentStreamCount);
+    CleanupLogDebug(@"%@ attachmentStreams with file paths: %zd", self.logTag, attachmentFilePaths.count);
 
     NSMutableSet<NSString *> *orphanDiskFilePaths = [diskFilePaths mutableCopy];
     [orphanDiskFilePaths minusSet:attachmentFilePaths];
     NSMutableSet<NSString *> *missingAttachmentFilePaths = [attachmentFilePaths mutableCopy];
     [missingAttachmentFilePaths minusSet:diskFilePaths];
 
-    CleanupLogDebug(@"orphan disk file paths: %zd", orphanDiskFilePaths.count);
-    CleanupLogDebug(@"missing attachment file paths: %zd", missingAttachmentFilePaths.count);
+    CleanupLogDebug(@"%@ orphan disk file paths: %zd", self.logTag, orphanDiskFilePaths.count);
+    CleanupLogDebug(@"%@ missing attachment file paths: %zd", self.logTag, missingAttachmentFilePaths.count);
 
     [self printPaths:orphanDiskFilePaths.allObjects label:@"orphan disk file paths"];
     [self printPaths:missingAttachmentFilePaths.allObjects label:@"missing attachment file paths"];
@@ -116,17 +116,17 @@ NS_ASSUME_NONNULL_BEGIN
                                               }];
     }];
 
-    CleanupLogDebug(@"attachmentIds: %zd", attachmentIds.count);
-    CleanupLogDebug(@"messageAttachmentIds: %zd", messageAttachmentIds.count);
+    CleanupLogDebug(@"%@ attachmentIds: %zd", self.logTag, attachmentIds.count);
+    CleanupLogDebug(@"%@ messageAttachmentIds: %zd", self.logTag, messageAttachmentIds.count);
 
     NSMutableSet<NSString *> *orphanAttachmentIds = [attachmentIds mutableCopy];
     [orphanAttachmentIds minusSet:messageAttachmentIds];
     NSMutableSet<NSString *> *missingAttachmentIds = [messageAttachmentIds mutableCopy];
     [missingAttachmentIds minusSet:attachmentIds];
 
-    CleanupLogDebug(@"orphan attachmentIds: %zd", orphanAttachmentIds.count);
-    CleanupLogDebug(@"missing attachmentIds: %zd", missingAttachmentIds.count);
-    CleanupLogDebug(@"orphan interactions: %zd", orphanInteractionIds.count);
+    CleanupLogDebug(@"%@ orphan attachmentIds: %zd", self.logTag, orphanAttachmentIds.count);
+    CleanupLogDebug(@"%@ missing attachmentIds: %zd", self.logTag, missingAttachmentIds.count);
+    CleanupLogDebug(@"%@ orphan interactions: %zd", self.logTag, orphanInteractionIds.count);
 
     // We need to avoid cleaning up new attachments and files that are still in the process of
     // being created/written, so we don't clean up anything recent.
@@ -145,10 +145,10 @@ NS_ASSUME_NONNULL_BEGIN
             TSInteraction *interaction = [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
             if (!interaction) {
                 // This could just be a race condition, but it should be very unlikely.
-                OWSFail(@"Could not load interaction: %@", interactionId);
+                OWSFail(@"%@ Could not load interaction: %@", self.logTag, interactionId);
                 continue;
             }
-            CleanupLogInfo(@"Removing orphan message: %@", interaction.uniqueId);
+            CleanupLogInfo(@"%@ Removing orphan message: %@", self.logTag, interaction.uniqueId);
             [interaction removeWithTransaction:transaction];
         }
         for (NSString *attachmentId in orphanAttachmentIds) {
@@ -165,11 +165,11 @@ NS_ASSUME_NONNULL_BEGIN
             TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
             // Don't delete attachments which were created in the last N minutes.
             if (fabs([attachmentStream.creationTimestamp timeIntervalSinceNow]) < kMinimumOrphanAge) {
-                CleanupLogInfo(@"Skipping orphan attachment due to age: %f",
+                CleanupLogInfo(@"%@ Skipping orphan attachment due to age: %f", self.logTag,
                     fabs([attachmentStream.creationTimestamp timeIntervalSinceNow]));
                 continue;
             }
-            CleanupLogInfo(@"Removing orphan attachment: %@", attachmentStream.uniqueId);
+            CleanupLogInfo(@"%@ Removing orphan attachmentStream from DB: %@", self.logTag, attachmentStream.uniqueId);
             [attachmentStream removeWithTransaction:transaction];
         }
     }];
@@ -178,20 +178,20 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
         if (!attributes || error) {
-            OWSFail(@"Could not get attributes of file at: %@", filePath);
+            OWSFail(@"%@ Could not get attributes of file at: %@", self.logTag, filePath);
             continue;
         }
         // Don't delete files which were created in the last N minutes.
         if (fabs([attributes.fileModificationDate timeIntervalSinceNow]) < kMinimumOrphanAge) {
-            CleanupLogInfo(@"Skipping orphan attachment file due to age: %f",
+            CleanupLogInfo(@"%@ Skipping orphan attachment file due to age: %f", self.logTag,
                 fabs([attributes.fileModificationDate timeIntervalSinceNow]));
             continue;
         }
 
-        CleanupLogInfo(@"Removing orphan attachment file: %@", filePath);
+        CleanupLogInfo(@"%@ Deleting orphan attachment file: %@", self.logTag, filePath);
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
         if (error) {
-            OWSFail(@"Could not remove orphan file at: %@", filePath);
+            OWSFail(@"%@ Could not remove orphan file at: %@", self.logTag, filePath);
         }
     }
 
@@ -205,14 +205,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)printPaths:(NSArray<NSString *> *)paths label:(NSString *)label
 {
     for (NSString *path in [paths sortedArrayUsingSelector:@selector(compare:)]) {
-        CleanupLogDebug(@"%@: %@", label, path);
+        CleanupLogDebug(@"%@ %@: %@", self.logTag, label, path);
     }
 }
 
 + (NSSet<NSString *> *)filePathsInAttachmentsFolder
 {
     NSString *attachmentsFolder = [TSAttachmentStream attachmentsFolder];
-    CleanupLogDebug(@"attachmentsFolder: %@", attachmentsFolder);
+    CleanupLogDebug(@"%@ attachmentsFolder: %@", self.logTag, attachmentsFolder);
 
     return [self filePathsInDirectory:attachmentsFolder];
 }
@@ -223,7 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     NSArray<NSString *> *fileNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:&error];
     if (error) {
-        OWSFail(@"contentsOfDirectoryAtPath error: %@", error);
+        OWSFail(@"%@ contentsOfDirectoryAtPath error: %@", self.logTag, error);
         return [NSSet new];
     }
     for (NSString *fileName in fileNames) {
@@ -244,7 +244,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     NSNumber *fileSize = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error][NSFileSize];
     if (error) {
-        OWSFail(@"attributesOfItemAtPath: %@ error: %@", filePath, error);
+        OWSFail(@"%@ attributesOfItemAtPath: %@ error: %@", self.logTag, filePath, error);
         return 0;
     }
     return fileSize.longLongValue;

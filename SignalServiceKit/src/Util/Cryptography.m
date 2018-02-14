@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "Cryptography.h"
@@ -213,7 +213,9 @@ const NSUInteger kAES256_KeyByteLength = 32;
     }
 
     if (hmac == nil || ![ourHmacData ows_constantTimeIsEqualToData:hmac]) {
-        DDLogError(@"%@ %s Bad HMAC on decrypting payload. Their MAC: %@, our MAC: %@",
+        DDLogError(@"%@ Bad HMAC on decrypting payload.", self.logTag);
+        // Don't log HMAC in prod
+        DDLogDebug(@"%@ %s Bad HMAC on decrypting payload. Their MAC: %@, our MAC: %@",
             self.logTag,
             __PRETTY_FUNCTION__,
             hmac,
@@ -223,11 +225,13 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
     // Optionally verify digest of: version? || iv || encrypted data || hmac
     if (digest) {
-        DDLogDebug(@"%@ %s verifying their digest: %@", self.logTag, __PRETTY_FUNCTION__, digest);
+        DDLogDebug(@"%@ verifying their digest", self.logTag);
         [dataToAuth appendData:ourHmacData];
         NSData *ourDigest = [Cryptography computeSHA256Digest:dataToAuth];
         if (!ourDigest || ![ourDigest ows_constantTimeIsEqualToData:digest]) {
-            DDLogWarn(@"%@ Bad digest on decrypting payload. Their digest: %@, our digest: %@",
+            DDLogWarn(@"%@ Bad digest on decrypting payload", self.logTag);
+            // Don't log digest in prod
+            DDLogDebug(@"%@ Bad digest on decrypting payload. Their digest: %@, our digest: %@",
                 self.logTag,
                 digest,
                 ourDigest);
@@ -433,13 +437,11 @@ const NSUInteger kAES256_KeyByteLength = 32;
     // compute hmac of: iv || encrypted data
     NSData *hmac =
         [Cryptography truncatedSHA256HMAC:encryptedPaddedData withHMACKey:hmacKey truncation:HMAC256_OUTPUT_LENGTH];
-    DDLogVerbose(@"%@ computed hmac: %@", self.logTag, hmac);
 
     [encryptedPaddedData appendData:hmac];
 
     // compute digest of: iv || encrypted data || hmac
     *outDigest = [self computeSHA256Digest:encryptedPaddedData];
-    DDLogVerbose(@"%@ computed digest: %@", self.logTag, *outDigest);
 
     return [encryptedPaddedData copy];
 }
