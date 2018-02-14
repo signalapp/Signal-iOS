@@ -16,6 +16,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         case assertionError(description: String)
         case unsupportedMedia
         case notRegistered()
+        case obsoleteShare
     }
 
     private var hasInitialRootViewController = false
@@ -29,7 +30,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
     override open func loadView() {
         super.loadView()
-        Logger.debug("\(self.logTag) \(#function)")
 
         // This should be the first thing we do.
         let appContext = ShareAppExtensionContext(rootViewController:self)
@@ -41,6 +41,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         } else if OWSPreferences.isLoggingEnabled() {
             DebugLogger.shared().enableFileLogging()
         }
+
+        Logger.info("\(self.logTag) \(#function)")
 
         _ = AppVersion()
 
@@ -80,14 +82,15 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         self.loadViewController = loadViewController
 
         // Don't display load screen immediately, in hopes that we can avoid it altogether.
-        after(seconds: 0.5).then { () -> Void in
-            guard self.presentedViewController == nil else {
-                Logger.debug("\(self.logTag) setup completed quickly, no need to present load view controller.")
+        after(seconds: 0.5).then { [weak self] () -> Void in
+            guard let strongSelf = self else { return }
+            guard strongSelf.presentedViewController == nil else {
+                Logger.debug("\(strongSelf.logTag) setup completed quickly, no need to present load view controller.")
                 return
             }
 
-            Logger.debug("\(self.logTag) setup is slow - showing loading screen")
-            self.showPrimaryViewController(loadViewController)
+            Logger.debug("\(strongSelf.logTag) setup is slow - showing loading screen")
+            strongSelf.showPrimaryViewController(loadViewController)
         }.retainUntilComplete()
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
@@ -99,10 +102,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // performUpdateCheck must be invoked after Environment has been initialized because
         // upgrade process may depend on Environment.
-        VersionMigrations.performUpdateCheck(completion: {
+        VersionMigrations.performUpdateCheck(completion: { [weak self] in
             AssertIsOnMainThread()
 
-            self.versionMigrationsDidComplete()
+            guard let strongSelf = self else { return }
+
+            strongSelf.versionMigrationsDidComplete()
         })
 
         // We don't need to use "screen protection" in the SAE.
@@ -123,14 +128,19 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                                name: .OWSApplicationWillEnterForeground,
                                                object: nil)
 
-        Logger.info("\(self.logTag) application: didFinishLaunchingWithOptions completed.")
+        Logger.info("\(self.logTag) \(#function) completed.")
 
         OWSAnalytics.appLaunchDidBegin()
     }
 
     deinit {
-        Logger.info("\(self.logTag) dealloc")
+        Logger.info("\(self.logTag) deinit")
         NotificationCenter.default.removeObserver(self)
+
+        // Share extensions reside in a process that may be reused between usages.
+        // That isn't safe; the codebase is full of statics (e.g. singletons) which
+        // can't easily clean up.
+        ExitShareExtension()
     }
 
     private func activate() {
@@ -356,8 +366,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         Logger.debug("\(self.logTag) \(#function)")
 
         if isReadyForAppExtensions {
-            AppReadiness.runNowOrWhenAppIsReady {
-                self.activate()
+            AppReadiness.runNowOrWhenAppIsReady { [weak self] in
+                AssertIsOnMainThread()
+                guard let strongSelf = self else { return }
+                strongSelf.activate()
             }
         }
     }
@@ -418,24 +430,30 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     public func shareViewWasCompleted() {
         Logger.info("\(self.logTag) \(#function)")
 
-        self.dismiss(animated: true) {
-            self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+        self.dismiss(animated: true) { [weak self] in
+            AssertIsOnMainThread()
+            guard let strongSelf = self else { return }
+            strongSelf.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
         }
     }
 
     public func shareViewWasCancelled() {
         Logger.info("\(self.logTag) \(#function)")
 
-        self.dismiss(animated: true) {
-            self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+        self.dismiss(animated: true) { [weak self] in
+            AssertIsOnMainThread()
+            guard let strongSelf = self else { return }
+            strongSelf.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
         }
     }
 
     public func shareViewFailed(error: Error) {
         Logger.info("\(self.logTag) \(#function)")
 
-        self.dismiss(animated: true) {
-            self.extensionContext!.cancelRequest(withError: error)
+        self.dismiss(animated: true) { [weak self] in
+            AssertIsOnMainThread()
+            guard let strongSelf = self else { return }
+            strongSelf.extensionContext!.cancelRequest(withError: error)
         }
     }
 
@@ -457,25 +475,34 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             Logger.debug("\(self.logTag) modal already presented. swapping modal content for: \(viewController)")
             assert(self.presentedViewController == shareViewNavigationController)
         }
+        Logger.debug("\(self.logTag) self.view.frame: \(self.view.frame)")
+        Logger.debug("\(self.logTag) shareViewNavigationController.view.frame: \(shareViewNavigationController.view.frame)")
     }
 
     private func presentConversationPicker() {
-        self.buildAttachment().then { attachment -> Void in
-            let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: self)
+        self.buildAttachment().then { [weak self] attachment -> Void in
+            AssertIsOnMainThread()
+            guard let strongSelf = self else { return }
+
+            let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: strongSelf)
+            Logger.debug("\(strongSelf.logTag) presentConversationPicker: \(conversationPicker)")
             conversationPicker.attachment = attachment
-            self.progressPoller = nil
-            self.loadViewController = nil
-            self.showPrimaryViewController(conversationPicker)
+            strongSelf.progressPoller = nil
+            strongSelf.loadViewController = nil
+            strongSelf.showPrimaryViewController(conversationPicker)
             Logger.info("showing picker with attachment: \(attachment)")
-        }.catch { error in
+        }.catch {[weak self]  error in
+            AssertIsOnMainThread()
+            guard let strongSelf = self else { return }
+
             let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE",
                                                comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
             OWSAlerts.showAlert(withTitle: alertTitle,
                                 message: error.localizedDescription,
                                 buttonTitle: CommonStrings.cancelButton) { _ in
-                                    self.shareViewWasCancelled()
+                                    strongSelf.shareViewWasCancelled()
             }
-            owsFail("\(self.logTag) building attachment failed with error: \(error)")
+            owsFail("\(strongSelf.logTag) building attachment failed with error: \(error)")
         }.retainUntilComplete()
     }
 
@@ -580,8 +607,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         var customFileName: String?
         var isConvertibleToTextMessage = false
 
-        let loadCompletion: NSItemProvider.CompletionHandler = {
+        let loadCompletion: NSItemProvider.CompletionHandler = { [weak self]
             (value, error) in
+
+                guard let strongSelf = self else { return }
 
             guard error == nil else {
                 reject(error!)
@@ -594,7 +623,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 return
             }
 
-            Logger.info("\(self.logTag) value type: \(type(of:value))")
+            Logger.info("\(strongSelf.logTag) value type: \(type(of:value))")
 
             if let data = value as? Data {
                 // Although we don't support contacts _yet_, when we do we'll want to make
@@ -613,7 +642,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 let fileUrl = URL(fileURLWithPath:tempFilePath)
                 fulfill((itemUrl: fileUrl, utiType: srcUtiType))
             } else if let string = value as? String {
-                Logger.debug("\(self.logTag) string provider: \(string)")
+                Logger.debug("\(strongSelf.logTag) string provider: \(string)")
                 guard let data = string.data(using: String.Encoding.utf8) else {
                     let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
                     reject(writeError)
@@ -669,17 +698,21 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // See comments on NSItemProvider+OWS.h.
         itemProvider.loadData(forTypeIdentifier: srcUtiType, options: nil, completionHandler: loadCompletion)
 
-        return promise.then { (itemUrl: URL, utiType: String) -> Promise<SignalAttachment> in
+        return promise.then { [weak self] (itemUrl: URL, utiType: String) -> Promise<SignalAttachment> in
+            guard let strongSelf = self else {
+                let error = ShareViewControllerError.obsoleteShare
+                return Promise(error: error)
+            }
 
             let url: URL = try {
-                if self.isVideoNeedingRelocation(itemProvider: itemProvider, itemUrl: itemUrl) {
+                if strongSelf.isVideoNeedingRelocation(itemProvider: itemProvider, itemUrl: itemUrl) {
                     return try SignalAttachment.copyToVideoTempDir(url: itemUrl)
                 } else {
                     return itemUrl
                 }
             }()
 
-            Logger.debug("\(self.logTag) building DataSource with url: \(url), utiType: \(utiType)")
+            Logger.debug("\(strongSelf.logTag) building DataSource with url: \(url), utiType: \(utiType)")
 
             guard let dataSource = ShareViewController.createDataSource(utiType: utiType, url: url, customFileName: customFileName) else {
                 throw ShareViewControllerError.assertionError(description: "Unable to read attachment data")
@@ -694,7 +727,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             } else if url.pathExtension.count > 0 {
                 // Determine a more specific utiType based on file extension
                 if let typeExtension = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) {
-                    Logger.debug("\(self.logTag) utiType based on extension: \(typeExtension)")
+                    Logger.debug("\(strongSelf.logTag) utiType based on extension: \(typeExtension)")
                     specificUTIType = typeExtension
                 }
             }
@@ -709,15 +742,17 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 // when the user hits "send".
                 if let exportSession = exportSession {
                     let progressPoller = ProgressPoller(timeInterval: 0.1, ratioCompleteBlock: { return exportSession.progress })
-                    self.progressPoller = progressPoller
+                    strongSelf.progressPoller = progressPoller
                     progressPoller.startPolling()
 
-                    guard let loadViewController = self.loadViewController else {
+                    guard let loadViewController = strongSelf.loadViewController else {
                         owsFail("load view controller was unexpectedly nil")
                         return promise
                     }
 
-                    loadViewController.progress = progressPoller.progress
+                    DispatchQueue.main.async {
+                        loadViewController.progress = progressPoller.progress
+                    }
                 }
 
                 return promise
@@ -725,7 +760,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
             if isConvertibleToTextMessage {
-                Logger.info("\(self.logTag) isConvertibleToTextMessage")
+                Logger.info("\(strongSelf.logTag) isConvertibleToTextMessage")
                 attachment.isConvertibleToTextMessage = isConvertibleToTextMessage
             }
             return Promise(value: attachment)

@@ -31,4 +31,11 @@ void SetCurrentAppContext(id<AppContext> appContext)
     currentAppContext = appContext;
 }
 
+void ExitShareExtension(void)
+{
+    DDLogInfo(@"ExitShareExtension");
+    [DDLog flushLog];
+    exit(0);
+}
+
 NS_ASSUME_NONNULL_END

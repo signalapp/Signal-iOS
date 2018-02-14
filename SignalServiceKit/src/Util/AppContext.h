@@ -76,4 +76,6 @@ typedef void (^BackgroundTaskExpirationHandler)(void);
 id<AppContext> CurrentAppContext(void);
 void SetCurrentAppContext(id<AppContext> appContext);
 
+void ExitShareExtension(void);
+
 NS_ASSUME_NONNULL_END
