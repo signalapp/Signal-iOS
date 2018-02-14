@@ -125,21 +125,6 @@ NS_ASSUME_NONNULL_BEGIN
                                    self.logTag,
                                    outgoingMessage);
                            }];
-
-    // If there is an attachment + text, render the text here, as Signal-iOS renders two messages.
-    if (attachmentsProcessor.hasSupportedAttachments && transcript.body && ![transcript.body isEqualToString:@""]) {
-        // We want the text to appear after the attachment.
-        uint64_t textMessageTimestamp = transcript.timestamp + 1;
-        TSOutgoingMessage *textMessage = [[TSOutgoingMessage alloc] initWithTimestamp:textMessageTimestamp
-                                                                             inThread:thread
-                                                                          messageBody:transcript.body
-                                                                        attachmentIds:[NSMutableArray new]
-                                                                     expiresInSeconds:transcript.expirationDuration
-                                                                      expireStartedAt:transcript.expirationStartedAt];
-        // Since textMessage is a new message, updateWithWasSentAndDelivered will save it.
-        [textMessage saveWithTransaction:transaction];
-        [textMessage updateWithWasSentFromLinkedDeviceWithTransaction:transaction];
-    }
 }
 
 @end
