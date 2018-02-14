@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-void DispatchMainThreadSafe(SimpleBlock block)
+void DispatchMainThreadSafe(dispatch_block_t block)
 {
     OWSCAssert(block);
 
@@ -19,7 +19,7 @@ void DispatchMainThreadSafe(SimpleBlock block)
     }
 }
 
-void DispatchSyncMainThreadSafe(SimpleBlock block)
+void DispatchSyncMainThreadSafe(dispatch_block_t block)
 {
     OWSCAssert(block);
 

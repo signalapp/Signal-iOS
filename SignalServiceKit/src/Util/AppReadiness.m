@@ -3,6 +3,7 @@
 //
 
 #import "AppReadiness.h"
+#import "Threading.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,9 +49,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)runNowOrWhenAppIsReady:(AppReadyBlock)block
 {
-    OWSAssertIsOnMainThread();
-
-    [self.sharedManager runNowOrWhenAppIsReady:block];
+    DispatchMainThreadSafe(^{
+        [self.sharedManager runNowOrWhenAppIsReady:block];
+    });
 }
 
 - (void)runNowOrWhenAppIsReady:(AppReadyBlock)block
