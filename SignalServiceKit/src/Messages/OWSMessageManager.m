@@ -139,6 +139,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (AppReadiness.isAppReady) {
         [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+    } else {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            [AppReadiness runNowOrWhenAppIsReady:^{
+                [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+            }];
+        });
     }
 }
 

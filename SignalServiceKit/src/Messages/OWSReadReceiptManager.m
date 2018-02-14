@@ -177,13 +177,10 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
     OWSSingletonAssert();
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(appIsReady)
-                                                 name:AppIsReadyNotification
-                                               object:nil];
-
-    // Try to start processing.
-    [self scheduleProcessing];
+    // Start processing.
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [self scheduleProcessing];
+    }];
 
     return self;
 }
@@ -193,21 +190,14 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)appIsReady
-{
-    [self scheduleProcessing];
-}
-
 // Schedules a processing pass, unless one is already scheduled.
 - (void)scheduleProcessing
 {
+    OWSAssert(AppReadiness.isAppReady);
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
-            if (!AppReadiness.isAppReady) {
-                DDLogInfo(@"%@ Deferring read receipt processing; storage not yet ready.", self.logTag);
-                return;
-            }
             if (self.isProcessing) {
                 return;
             }

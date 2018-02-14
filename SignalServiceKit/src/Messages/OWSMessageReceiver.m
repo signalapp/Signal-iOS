@@ -123,7 +123,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 - (void)addJobForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [[[OWSMessageDecryptJob alloc] initWithEnvelope:envelope] saveWithTransaction:transaction];
+        OWSMessageDecryptJob *job = [[OWSMessageDecryptJob alloc] initWithEnvelope:envelope];
+        [job saveWithTransaction:transaction];
     }];
 }
 
@@ -242,22 +243,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     _finder = finder;
     _isDrainingQueue = NO;
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(appIsReady)
-                                                 name:AppIsReadyNotification
-                                               object:nil];
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [self drainQueue];
+    }];
 
     return self;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)appIsReady
-{
-    [self drainQueue];
 }
 
 #pragma mark - instance methods
@@ -279,17 +269,14 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)drainQueue
 {
+    OWSAssert(AppReadiness.isAppReady);
+
     // Don't decrypt messages in app extensions.
     if (!CurrentAppContext().isMainApp) {
         return;
     }
 
     dispatch_async(self.serialQueue, ^{
-        if (!AppReadiness.isAppReady) {
-            // We don't want to process incoming messages until storage is ready.
-            return;
-        }
-
         if (self.isDrainingQueue) {
             return;
         }

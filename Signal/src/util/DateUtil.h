@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSDateFormatter *)dateFormatter;
 + (NSDateFormatter *)timeFormatter;
+
 + (BOOL)dateIsOlderThanOneDay:(NSDate *)date;
 + (BOOL)dateIsOlderThanOneWeek:(NSDate *)date;
 + (BOOL)dateIsToday:(NSDate *)date;

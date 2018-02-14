@@ -265,22 +265,12 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     _finder = finder;
     _isDrainingQueue = NO;
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(appIsReady)
-                                                 name:AppIsReadyNotification
-                                               object:nil];
+    // Start processing.
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [self drainQueue];
+    }];
 
     return self;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)appIsReady
-{
-    [self drainQueue];
 }
 
 #pragma mark - instance methods
@@ -308,17 +298,14 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 - (void)drainQueue
 {
+    OWSAssert(AppReadiness.isAppReady);
+
     // Don't process incoming messages in app extensions.
     if (!CurrentAppContext().isMainApp) {
         return;
     }
 
     dispatch_async(self.serialQueue, ^{
-        if (!AppReadiness.isAppReady) {
-            // We don't want to process incoming messages until storage is ready.
-            return;
-        }
-
         if (self.isDrainingQueue) {
             return;
         }
@@ -471,7 +458,13 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
     // We need to persist the decrypted envelope data ASAP to prevent data loss.
     [self.processingQueue enqueueEnvelopeData:envelopeData plaintextData:plaintextData transaction:transaction];
-    [self.processingQueue drainQueue];
+
+    // The new envelope won't be visible to the finder until this transaction commits,
+    // so drainQueue in the transaction completion.
+    [transaction addCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                    completionBlock:^{
+                        [self.processingQueue drainQueue];
+                    }];
 }
 
 @end

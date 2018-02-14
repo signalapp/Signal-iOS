@@ -3,11 +3,8 @@
 //
 
 #import "AppReadiness.h"
-#import "NSNotificationCenter+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-NSString *const AppIsReadyNotification = @"AppIsReadyNotification";
 
 @interface AppReadiness ()
 
@@ -85,8 +82,6 @@ NSString *const AppIsReadyNotification = @"AppIsReadyNotification";
     self.isAppReady = YES;
 
     [self runAppReadyBlocks];
-
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:AppIsReadyNotification object:nil userInfo:nil];
 }
 
 - (void)runAppReadyBlocks
