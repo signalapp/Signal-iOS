@@ -58,13 +58,13 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
             success:(TSNetworkManagerSuccess)success
             failure:(TSNetworkManagerFailure)failure
 {
-    return [self makeRequest:request shouldCompleteOnMainQueue:YES success:success failure:failure];
+    return [self makeRequest:request completionQueue:dispatch_get_main_queue() success:success failure:failure];
 }
 
 - (void)makeRequest:(TSRequest *)request
-    shouldCompleteOnMainQueue:(BOOL)shouldCompleteOnMainQueue
-                      success:(TSNetworkManagerSuccess)success
-                      failure:(TSNetworkManagerFailure)failureBlock
+    completionQueue:(dispatch_queue_t)completionQueue
+            success:(TSNetworkManagerSuccess)success
+            failure:(TSNetworkManagerFailure)failureBlock
 {
     OWSAssert(request);
     OWSAssert(success);
@@ -87,11 +87,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     AFHTTPSessionManager *sessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
     // [OWSSignalService signalServiceSessionManager] always returns a new instance of
     // session manager, so its safe to reconfigure it here.
-    if (shouldCompleteOnMainQueue) {
-        sessionManager.completionQueue = dispatch_get_main_queue();
-    } else {
-        sessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    }
+    sessionManager.completionQueue = completionQueue;
 
     if ([request isKindOfClass:[TSVerifyCodeRequest class]]) {
         // We plant the Authorization parameter ourselves, no need to double add.

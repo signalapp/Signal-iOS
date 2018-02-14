@@ -1310,7 +1310,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         TSRequest *request =
             [[TSRecipientPrekeyRequest alloc] initWithRecipient:identifier deviceId:[deviceNumber stringValue]];
         [self.networkManager makeRequest:request
-            shouldCompleteOnMainQueue:NO
+            completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
             success:^(NSURLSessionDataTask *task, id responseObject) {
                 bundle = [PreKeyBundle preKeyBundleFromDictionary:responseObject forDeviceNumber:deviceNumber];
                 dispatch_semaphore_signal(sema);
