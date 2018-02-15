@@ -139,7 +139,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // Share extensions reside in a process that may be reused between usages.
         // That isn't safe; the codebase is full of statics (e.g. singletons) which
-        // can't easily clean up.
+        // we can't easily clean up.
         ExitShareExtension()
     }
 
@@ -400,6 +400,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         super.viewDidDisappear(animated)
 
         Logger.flush()
+
+        // Share extensions reside in a process that may be reused between usages.
+        // That isn't safe; the codebase is full of statics (e.g. singletons) which
+        // we can't easily clean up.
+        ExitShareExtension()
     }
 
     @objc
@@ -475,8 +480,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             Logger.debug("\(self.logTag) modal already presented. swapping modal content for: \(viewController)")
             assert(self.presentedViewController == shareViewNavigationController)
         }
-        Logger.debug("\(self.logTag) self.view.frame: \(self.view.frame)")
-        Logger.debug("\(self.logTag) shareViewNavigationController.view.frame: \(shareViewNavigationController.view.frame)")
     }
 
     private func presentConversationPicker() {
