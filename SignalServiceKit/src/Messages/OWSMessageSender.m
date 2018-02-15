@@ -1153,8 +1153,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self handleMessageSentLocally:outgoingMessage];
 
     if (!(outgoingMessage.body || outgoingMessage.hasAttachments)) {
-        DDLogDebug(
-            @"%@ Refusing to make incoming copy of non-standard message sent to self:%@", self.logTag, outgoingMessage);
+        DDLogDebug(@"%@ Refusing to make incoming copy of non-standard message sent to self: %@",
+            self.logTag,
+            outgoingMessage);
         return;
     }
 
