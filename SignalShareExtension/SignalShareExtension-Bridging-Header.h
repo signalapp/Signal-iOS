@@ -6,6 +6,7 @@
 #import <UIKit/UIKit.h>
 
 // Separate iOS Frameworks from other imports.
+#import "NSItemProvider+OWS.h"
 #import "ShareAppExtensionContext.h"
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
