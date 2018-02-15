@@ -1153,7 +1153,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self handleMessageSentLocally:outgoingMessage];
 
     if (!(outgoingMessage.body || outgoingMessage.hasAttachments)) {
-        DDLogDebug(@"%@ Refusing to make incoming copy of non-standard message sent to self: %@",
+        // We only want to "clone" text and attachment messages.
+        //
+        // This method shouldn't be called for sync messages, so this
+        // probably represents a bug.
+        OWSFail(@"%@ Refusing to make incoming copy of non-standard message sent to self: %@",
             self.logTag,
             outgoingMessage);
         return;
