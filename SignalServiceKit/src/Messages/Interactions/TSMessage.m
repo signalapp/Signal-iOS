@@ -227,7 +227,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (NSString *)debugDescription
 {
-    if ([self hasAttachments]) {
+    if ([self hasAttachments] && self.body.length > 0) {
+        NSString *attachmentId = self.attachmentIds[0];
+        return [NSString
+            stringWithFormat:@"Media Message with attachmentId: %@ and caption: '%@'", attachmentId, self.body];
+    } else if ([self hasAttachments]) {
         NSString *attachmentId = self.attachmentIds[0];
         return [NSString stringWithFormat:@"Media Message with attachmentId:%@", attachmentId];
     } else {
@@ -237,7 +241,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    if ([self hasAttachments]) {
+    if (self.body.length > 0) {
+        // Use the message text/caption, if any.
+        return self.body;
+    } else if ([self hasAttachments]) {
         NSString *attachmentId = self.attachmentIds[0];
         TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
         if (attachment) {
@@ -246,14 +253,18 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             return NSLocalizedString(@"UNKNOWN_ATTACHMENT_LABEL", @"In Inbox view, last message label for thread with corrupted attachment.");
         }
     } else {
-        return self.body;
+        // TODO: We should do better here.
+        return @"";
     }
 }
 
 // TODO deprecate this and implement something like previewTextWithTransaction: for all TSInteractions
 - (NSString *)description
 {
-    if ([self hasAttachments]) {
+    if (self.body.length > 0) {
+        // Use the message text/caption, if any.
+        return self.body;
+    } else if ([self hasAttachments]) {
         NSString *attachmentId = self.attachmentIds[0];
         TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
         if (attachment) {
@@ -262,7 +273,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             return NSLocalizedString(@"UNKNOWN_ATTACHMENT_LABEL", @"In Inbox view, last message label for thread with corrupted attachment.");
         }
     } else {
-        return self.body;
+        // TODO: We should do better here.
+        return @"";
     }
 }
 
