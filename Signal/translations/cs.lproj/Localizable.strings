@@ -991,6 +991,9 @@
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "Odesílání selhalo. Pro informace klepněte.";
 
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Read";
 
@@ -1789,7 +1792,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Ahoj bezpečné video hovory!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal bude brzy vyžadovat iOS 9 nebo novější. Prosíme, aktualizujte v aplikaci Nastavení >> Obecné >> Aktualizace softwaru";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Aktualizujte iOS";

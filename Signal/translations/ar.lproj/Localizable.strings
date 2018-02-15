@@ -991,6 +991,9 @@
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "لقد تعذر الارسال. انقر للحصول على معلومات.";
 
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Read";
 
@@ -1789,7 +1792,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "أهلاً بإتصالات الفيديو الآمنة! ";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "سيتطلب تطبيق سجنال قريبا نظام التشغيل iOS 9 و الإصدارات الأحدث. يرجى ترقية نظام التشغيل في إعدادات التطبيق >> عام >> تحديث البرامج.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "ترقية iOS";

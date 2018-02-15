@@ -991,6 +991,9 @@
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "送信に失敗しました。詳細はタップで。";
 
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "既読";
 
@@ -1789,7 +1792,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "安全なビデオ電話にようこそ！";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "SignalはまもなくiOS 9以降でしか動作しなくなります。iOSを更新するには設定→一般→ソフトウェアアップデートに進んでください。";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOSを更新する";

@@ -991,6 +991,9 @@
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "Изпращането се провали. Докосни за информация.";
 
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Прочетено";
 
@@ -1789,7 +1792,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Здравейте Безопасни Видео Обаждания!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Сигнал скоро ще изисква iOS 9 или по-нова. Моля, надстройте от Settings >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Надстройте iOS";

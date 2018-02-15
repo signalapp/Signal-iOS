@@ -494,10 +494,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Database wordt bijgewerkt";
 
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "Vandaag";
 
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "Gisteren";
 
 /* Message indicating that the debug log is being uploaded. */
 "DEBUG_LOG_ACTIVITY_INDICATOR" = "Debuglog sturen...";
@@ -990,6 +990,9 @@
 
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "Versturen mislukt, tik voor meer info.";
+
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Gelezen";
@@ -1789,7 +1792,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hallo, beveiligde videogesprekken!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Binnenkort vereist Signal iOS 9 of later. Werk je besturingssysteem bij in Instellingen >> Algemeen >> Software-update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Werk iOS bij";

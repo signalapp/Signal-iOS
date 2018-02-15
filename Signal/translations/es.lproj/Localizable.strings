@@ -152,37 +152,37 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Altavoz";
 
 /* Message indicating that backup export is complete. */
-"BACKUP_EXPORT_COMPLETE_MESSAGE" = "Backup completa.";
+"BACKUP_EXPORT_COMPLETE_MESSAGE" = "Copia de seguridad completada.";
 
 /* Label for button that copies backup password to the pasteboard. */
 "BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "Copiar contraseña";
 
 /* Message indicating that backup export failed. */
-"BACKUP_EXPORT_FAILED_MESSAGE" = "Fallo al exportar la backup";
+"BACKUP_EXPORT_FAILED_MESSAGE" = "Fallo al exportar la copia de seguridad.";
 
 /* Message indicating that backup export is in progress. */
-"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "Exportando backup...";
+"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "Exportando copia de seguridad...";
 
 /* Format for message indicating that backup export is complete. Embeds: {{the backup password}}. */
-"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "La contraseña de la backup es: %@. Asegúrate de tener una copia o no será posible restaurar esta backup.";
+"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "La contraseña de la copia de seguridad es: %@. Asegúrate de anotarla o no será posible restaurar esta copia.";
 
 /* Label for button that 'send backup' in the current conversation. */
-"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Enviar backup como mensaje";
+"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Enviar copia de seguridad como mensaje";
 
 /* Message indicating that sending the backup failed. */
-"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Fallo al enviar la backup.";
+"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Fallo al enviar la copia de seguridad.";
 
 /* Message indicating that sending the backup succeeded. */
-"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "Backup enviada.";
+"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "Copia de seguridad enviada.";
 
 /* Label for button that opens share UI for backup. */
-"BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Compartir backup";
+"BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Compartir copia de seguridad";
 
 /* Title for the 'backup export' view. */
-"BACKUP_EXPORT_VIEW_TITLE" = "Backup";
+"BACKUP_EXPORT_VIEW_TITLE" = "Copia de seguridad";
 
 /* Format for backup filenames. Embeds: {{the date and time of the backup}}. Should not include characters like slash (/ or \\) or colon (:). */
-"BACKUP_FILENAME_FORMAT" = "Backup de Signal %@";
+"BACKUP_FILENAME_FORMAT" = "Copia de seguridad de Signal %@";
 
 /* Message indicating that backup import is complete. */
 "BACKUP_IMPORT_COMPLETE_MESSAGE" = "Restablecimiento completo";
@@ -191,22 +191,22 @@
 "BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "Restablecer";
 
 /* Message for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "Para restaurar esta backup necesitas reiniciar Signal. Atención: Perderás todos los datos presentes en la aplicación.";
+"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "Para restaurar esta copia de seguridad necesitas reiniciar Signal. Atención: Perderás todos los datos actuales en Signal.";
 
 /* Title for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "¿Restablecer backup?";
+"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "¿Restablecer copia de seguridad?";
 
 /* Message indicating that backup import failed. */
 "BACKUP_IMPORT_FAILED_MESSAGE" = "Fallo al restablecer";
 
 /* Message indicating that backup import is in progress. */
-"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Restableciendo backup...";
+"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Restableciendo copia de seguridad...";
 
 /* Label for button that restarts app to complete restore. */
 "BACKUP_IMPORT_RESTART_BUTTON" = "Reiniciar app";
 
 /* Title for the 'backup import' view. */
-"BACKUP_IMPORT_VIEW_TITLE" = "Restablecer backup";
+"BACKUP_IMPORT_VIEW_TITLE" = "Restablecer copia";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Los contactos bloqueados no podrán llamarte ni enviarte mensajes.";
@@ -494,10 +494,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Actualizando base de datos";
 
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "Hoy";
 
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "Ayer";
 
 /* Message indicating that the debug log is being uploaded. */
 "DEBUG_LOG_ACTIVITY_INDICATOR" = "Enviando registro de depuración...";
@@ -990,6 +990,9 @@
 
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "Fallo al enviar. Toca para más información.";
+
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Leído";
@@ -1789,7 +1792,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "¡Saluda a las vídeollamadas seguras!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal va a necesitar en los próximos meses por lo menos iOS 9 para funcionar. Actualiza tu iPhone en Ajustes >> General >> Actualización de Software  ";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Actualizar iOS";

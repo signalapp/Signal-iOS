@@ -991,6 +991,9 @@
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "Trimitere eșuată. Apasă pentru informații.";
 
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Citit";
 
@@ -1789,7 +1792,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Bun venit la apeluri video securizate!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal va necesita în curând iOS 9 sau o versiune mai nouă. Te rog actualizează din aplicația Setări >> General >> Actualizări Software.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Actualizează-ți iOS-ul";

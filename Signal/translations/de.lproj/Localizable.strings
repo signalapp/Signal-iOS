@@ -179,7 +179,7 @@
 "BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Sicherung teilen";
 
 /* Title for the 'backup export' view. */
-"BACKUP_EXPORT_VIEW_TITLE" = "Sicherung";
+"BACKUP_EXPORT_VIEW_TITLE" = "Datensicherung";
 
 /* Format for backup filenames. Embeds: {{the date and time of the backup}}. Should not include characters like slash (/ or \\) or colon (:). */
 "BACKUP_FILENAME_FORMAT" = "Signal-Sicherung %@";
@@ -206,7 +206,7 @@
 "BACKUP_IMPORT_RESTART_BUTTON" = "App neu starten";
 
 /* Title for the 'backup import' view. */
-"BACKUP_IMPORT_VIEW_TITLE" = "Sicherung wiederherstellen";
+"BACKUP_IMPORT_VIEW_TITLE" = "Datensicherung wiederherstellen";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blockierte Benutzer werden dich nicht anrufen oder dir Nachrichten senden können.";
@@ -494,10 +494,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Datenbank wird aktualisiert";
 
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "Heute";
 
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "Gestern";
 
 /* Message indicating that the debug log is being uploaded. */
 "DEBUG_LOG_ACTIVITY_INDICATOR" = "Diagnoseprotokoll wird gesendet …";
@@ -990,6 +990,9 @@
 
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "Versand gescheitert. Für Details antippen.";
+
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Gelesen";
@@ -1789,7 +1792,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hallo, sichere Videoanrufe!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal wird bald iOS 9 oder neuer erfordern. Bitte aktualisieren über die iOS-Einstellungen: Einstellungen >> Allgemein >> Softwareaktualisierung.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOS aktualisieren";

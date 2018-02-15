@@ -53,10 +53,10 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ u grupi %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send your debug logs to our team so that we can try to resolve this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal se ne može pokrenuti. Pošaljite svoje zapis o neispravnosti našem timu kako bismo mogli pokušati riješiti ovaj problem.";
 
 /* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Error";
+"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Pogreška";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Unesite svoje ime";
@@ -494,10 +494,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Ažuriranje podataka";
 
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "Danas";
 
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "Jučer";
 
 /* Message indicating that the debug log is being uploaded. */
 "DEBUG_LOG_ACTIVITY_INDICATOR" = "Slanje zapisa o neispravnosti...";
@@ -990,6 +990,9 @@
 
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "Slanje nije uspjelo. Dodirni za informacije.";
+
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Pročitano";
@@ -1789,7 +1792,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Pozdrav sigurnim video pozivima!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal će uskoro zahtijevati iOS 9 ili noviji. Molimo izvršite ažuriranje u aplikaciji Postavke >> Općenito >> Ažuriranje softvera.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Ažuriraj iOS";

@@ -494,10 +494,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Posodabljam podatkovno bazo";
 
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "Danes";
 
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "Včeraj";
 
 /* Message indicating that the debug log is being uploaded. */
 "DEBUG_LOG_ACTIVITY_INDICATOR" = "Pošiljam sistemsko zabeležbo...";
@@ -990,6 +990,9 @@
 
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "Pošiljanje ni uspelo. Tapnite za več informacij.";
+
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Prebrano";
@@ -1789,7 +1792,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "NOVO: varni video klici!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Aplikacija Signal bo za svoje delovanje v kratkem potrebovala operacijski sistem iOS 9 ali več. Sistem lahko nadgradite na Nastavitve >> Splošno >> Nadgradnja programske opreme.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Nadrgradnja iOS";

@@ -991,6 +991,9 @@
 /* message footer for failed messages */
 "MESSAGE_STATUS_FAILED" = "การส่งล้มเหลว แตะเพื่อดูข้อมูล";
 
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "อ่านแล้ว";
 
@@ -1789,7 +1792,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "สวัสดีการโทรเห็นหน้าแบบปลอดภัย!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal กำลังจะต้องใช้ iOS 9 หรือใหม่กว่า โปรดปรับรุ่นใน การตั้งค่า >> ทั่วไป >> รายการอัปเดตซอฟต์แวร์";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "ปรับรุ่น iOS";
