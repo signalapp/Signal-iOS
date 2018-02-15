@@ -62,7 +62,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     BOOL isDirectory;
     BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory];
-    OWSAssert(exists);
+    if (!exists) {
+        OWSFail(@"%@ error retrieving file attributes for issing file", self.logTag);
+        return;
+    }
 
     if (isDirectory) {
         NSDirectoryEnumerator *directoryEnumerator = [[NSFileManager defaultManager] enumeratorAtPath:(NSString *)path];
@@ -72,10 +75,12 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         NSError *error;
         NSDictionary<NSFileAttributeKey, id> *_Nullable attributes =
-            [[NSFileManager defaultManager] attributesOfItemAtPath:path error:error];
-        OWSAssert(!error);
-
-        DDLogDebug(@"%@ path: %@ has attributes: %@", self.logTag, path, attributes);
+            [[NSFileManager defaultManager] attributesOfItemAtPath:path error:&error];
+        if (error) {
+            OWSFail(@"%@ error retrieving file attributes: %@", self.logTag, error);
+        } else {
+            DDLogDebug(@"%@ path: %@ has attributes: %@", self.logTag, path, attributes);
+        }
     }
 }
 
