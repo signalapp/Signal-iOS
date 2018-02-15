@@ -9,8 +9,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFileSystem
 
++ (BOOL)protectRecursiveContentsAtPath:(NSString *)path
+{
+    BOOL isDirectory;
+    if (![NSFileManager.defaultManager fileExistsAtPath:path isDirectory:&isDirectory]) {
+        return NO;
+    }
+
+    if (!isDirectory) {
+        return [self protectFileOrFolderAtPath:path];
+    }
+    NSString *dirPath = path;
+
+    BOOL success = YES;
+    NSDirectoryEnumerator *directoryEnumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirPath];
+
+    for (NSString *relativePath in directoryEnumerator) {
+        NSString *filePath = [dirPath stringByAppendingPathComponent:relativePath];
+        DDLogDebug(@"%@ path: %@ had attributes: %@", self.logTag, filePath, directoryEnumerator.fileAttributes);
+
+        success = success && [self protectFileOrFolderAtPath:filePath];
+    }
+
+    return success;
+}
+
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path
 {
+    DDLogVerbose(@"%@ protecting file at path: %@", self.logTag, path);
     if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
         return NO;
     }
@@ -30,6 +56,27 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     return YES;
+}
+
++ (void)logAttributesOfItemAtPathRecursively:(NSString *)path
+{
+    BOOL isDirectory;
+    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory];
+    OWSAssert(exists);
+
+    if (isDirectory) {
+        NSDirectoryEnumerator *directoryEnumerator = [[NSFileManager defaultManager] enumeratorAtPath:(NSString *)path];
+        for (NSString *path in directoryEnumerator) {
+            DDLogDebug(@"%@ path: %@ has attributes: %@", self.logTag, path, directoryEnumerator.fileAttributes);
+        }
+    } else {
+        NSError *error;
+        NSDictionary<NSFileAttributeKey, id> *_Nullable attributes =
+            [[NSFileManager defaultManager] attributesOfItemAtPath:path error:error];
+        OWSAssert(!error);
+
+        DDLogDebug(@"%@ path: %@ has attributes: %@", self.logTag, path, attributes);
+    }
 }
 
 + (NSString *)appDocumentDirectoryPath
@@ -93,6 +140,9 @@ NS_ASSUME_NONNULL_BEGIN
         oldFilePath,
         newFilePath,
         fabs([startDate timeIntervalSinceNow]));
+
+    // Ensure all files moved have the proper data protection class.
+    [self protectRecursiveContentsAtPath:newFilePath];
 }
 
 + (BOOL)ensureDirectoryExists:(NSString *)dirPath

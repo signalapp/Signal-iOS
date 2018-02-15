@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path;
++ (BOOL)protectRecursiveContentsAtPath:(NSString *)path;
 
 + (NSString *)appDocumentDirectoryPath;
 
@@ -36,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)writeDataToTemporaryFile:(NSData *)data fileExtension:(NSString *_Nullable)fileExtension;
 
 + (nullable NSNumber *)fileSizeOfPath:(NSString *)filePath;
++ (void)logAttributesOfItemAtPathRecursively:(NSString *)path;
 
 @end
 
