@@ -690,19 +690,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             } else {
                 // It's unavoidable that we may sometimes receives data types that we
                 // don't know how to handle.
-                //
-                // See comments on NSItemProvider+OWS.h.
                 let unexpectedTypeError = ShareViewControllerError.assertionError(description: "unexpected value: \(String(describing: value))")
                 reject(unexpectedTypeError)
             }
         }
 
-        // See comments on NSItemProvider+OWS.h.
-        if srcUtiType == kUTTypeURL as String {
-            itemProvider.loadItem(forTypeIdentifier: srcUtiType, options: nil, completionHandler: loadCompletion)
-        } else {
-            itemProvider.loadData(forTypeIdentifier: srcUtiType, options: nil, completionHandler: loadCompletion)
-        }
+        itemProvider.loadItem(forTypeIdentifier: srcUtiType, options: nil, completionHandler: loadCompletion)
 
         return promise.then { [weak self] (itemUrl: URL, utiType: String) -> Promise<SignalAttachment> in
             guard let strongSelf = self else {
