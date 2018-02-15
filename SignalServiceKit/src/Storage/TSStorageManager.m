@@ -261,13 +261,6 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     return TSStorageManager.sharedManager.dbReadWriteConnection;
 }
 
-+ (BOOL)hasLegacyOrSharedDatabase
-{
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    return ([fileManager fileExistsAtPath:self.legacyDatabaseFilePath] ||
-        [fileManager fileExistsAtPath:self.sharedDataDatabaseFilePath]);
-}
-
 @end
 
 NS_ASSUME_NONNULL_END
