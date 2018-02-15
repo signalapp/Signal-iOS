@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (!isDirectory) {
-        [self protectFileOrFolderAtPath:path];
+        return [self protectFileOrFolderAtPath:path];
     }
     NSString *dirPath = path;
 
@@ -58,17 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-+ (void)logAttributesOfItemAtPath:(NSString *)path
-{
-    NSDictionary<NSFileAttributeKey, id> *_Nullable attributes = [self attributesOfItemAtPath:path];
-    DDLogDebug(@"%@ path: %@ has attributes: %@", self.logTag, path, attributes);
-}
-
-+ (nullable NSDictionary<NSFileAttributeKey, id> *)attributesOfItemAtPath:(NSString *)path
-{
-    return [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
-}
-
 + (void)logAttributesOfItemAtPathRecursively:(NSString *)path
 {
     BOOL isDirectory;
@@ -81,7 +70,12 @@ NS_ASSUME_NONNULL_BEGIN
             DDLogDebug(@"%@ path: %@ has attributes: %@", self.logTag, path, directoryEnumerator.fileAttributes);
         }
     } else {
-        [self logAttributesOfItemAtPath:path];
+        NSError *error;
+        NSDictionary<NSFileAttributeKey, id> *_Nullable attributes =
+            [[NSFileManager defaultManager] attributesOfItemAtPath:path error:error];
+        OWSAssert(!error);
+
+        DDLogDebug(@"%@ path: %@ has attributes: %@", self.logTag, path, attributes);
     }
 }
 
