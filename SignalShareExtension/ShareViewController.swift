@@ -90,7 +90,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             Logger.debug("\(strongSelf.logTag) setup is slow - showing loading screen")
             strongSelf.showPrimaryViewController(loadViewController)
-            }.retainUntilComplete()
+        }.retainUntilComplete()
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         AppSetup.setupEnvironment({
@@ -493,19 +493,19 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             strongSelf.loadViewController = nil
             strongSelf.showPrimaryViewController(conversationPicker)
             Logger.info("showing picker with attachment: \(attachment)")
-            }.catch {[weak self]  error in
-                AssertIsOnMainThread()
-                guard let strongSelf = self else { return }
+        }.catch {[weak self]  error in
+            AssertIsOnMainThread()
+            guard let strongSelf = self else { return }
 
-                let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE",
-                                                   comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
-                OWSAlerts.showAlert(withTitle: alertTitle,
-                                    message: error.localizedDescription,
-                                    buttonTitle: CommonStrings.cancelButton) { _ in
-                                        strongSelf.shareViewWasCancelled()
-                }
-                owsFail("\(strongSelf.logTag) building attachment failed with error: \(error)")
-            }.retainUntilComplete()
+            let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE",
+                                               comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
+            OWSAlerts.showAlert(withTitle: alertTitle,
+                                message: error.localizedDescription,
+                                buttonTitle: CommonStrings.cancelButton) { _ in
+                                    strongSelf.shareViewWasCancelled()
+            }
+            owsFail("\(strongSelf.logTag) building attachment failed with error: \(error)")
+        }.retainUntilComplete()
     }
 
     private class func itemMatchesSpecificUtiType(itemProvider: NSItemProvider, utiType: String) -> Bool {
@@ -730,7 +730,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 } else {
                     return itemUrl
                 }
-                }()
+            }()
 
             Logger.debug("\(strongSelf.logTag) building DataSource with url: \(url), utiType: \(utiType)")
 
