@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import SignalServiceKit
@@ -12,6 +12,6 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
     }
 
     public func notifyUser(for error: TSErrorMessage!, in thread: TSThread!) {
-        owsFail("\(self.logTag) in \(#function).")
+        Logger.warn("\(self.logTag) in \(#function), skipping notification for: \(error.description)")
     }
 }
