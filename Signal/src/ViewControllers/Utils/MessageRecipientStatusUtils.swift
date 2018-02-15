@@ -123,8 +123,9 @@ class MessageRecipientStatusUtils: NSObject {
         }
 
         if outgoingMessage.messageState == .unsent {
-            let statusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED", comment:"message footer for failed messages")
-            return (status:.failed, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
+            let shortStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED_SHORT", comment:"status message for failed messages")
+            let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED", comment:"message footer for failed messages")
+            return (status:.failed, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
         } else if outgoingMessage.messageState == .sentToService ||
             outgoingMessage.wasSent(toRecipient:recipientId) {
             let statusMessage =
@@ -153,6 +154,7 @@ class MessageRecipientStatusUtils: NSObject {
 
         switch outgoingMessage.messageState {
         case .unsent:
+            // Use the "long" version of this message here.
             return NSLocalizedString("MESSAGE_STATUS_FAILED", comment:"message footer for failed messages")
         case .attemptingOut:
             if outgoingMessage.hasAttachments() {
