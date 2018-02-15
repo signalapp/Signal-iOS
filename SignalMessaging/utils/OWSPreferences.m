@@ -26,7 +26,6 @@ NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
-NSString *const OWSPreferencesKey_IsRegistered = @"OWSPreferencesKey_IsRegistered";
 
 @implementation OWSPreferences
 
@@ -82,25 +81,6 @@ NSString *const OWSPreferencesKey_IsRegistered = @"OWSPreferencesKey_IsRegistere
     OWSAssert(CurrentAppContext().isMainApp);
 
     [NSUserDefaults.appUserDefaults setObject:@(YES) forKey:OWSPreferencesKey_IsReadyForAppExtensions];
-    [NSUserDefaults.appUserDefaults synchronize];
-}
-
-+ (BOOL)isRegistered
-{
-    NSNumber *preference = [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKey_IsRegistered];
-
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return NO;
-    }
-}
-
-+ (void)setIsRegistered:(BOOL)value
-{
-    OWSAssert(CurrentAppContext().isMainApp);
-
-    [NSUserDefaults.appUserDefaults setObject:@(value) forKey:OWSPreferencesKey_IsRegistered];
     [NSUserDefaults.appUserDefaults synchronize];
 }
 

@@ -66,14 +66,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // abort.
         isReadyForAppExtensions = OWSPreferences.isReadyForAppExtensions()
         guard isReadyForAppExtensions else {
-            // If we don't have TSSStorageManager, we can't consult TSAccountManager
-            // for isRegistered, so we use OWSPreferences which is usually-accurate
-            // copy of that state.
-            if OWSPreferences.isRegistered() {
-                showNotReadyView()
-            } else {
-                showNotRegisteredView()
-            }
+            showNotReadyView()
             return
         }
 

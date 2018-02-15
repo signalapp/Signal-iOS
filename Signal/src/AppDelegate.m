@@ -1000,8 +1000,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     DDLogInfo(@"%@ checkIfAppIsReady", self.logTag);
 
-    [OWSPreferences setIsRegistered:[TSAccountManager isRegistered]];
-
     // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
     [[OWSProfileManager sharedManager] ensureLocalProfileCached];
 
@@ -1060,8 +1058,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     OWSAssertIsOnMainThread();
 
     DDLogInfo(@"registrationStateDidChange");
-
-    [OWSPreferences setIsRegistered:[TSAccountManager isRegistered]];
 
     if ([TSAccountManager isRegistered]) {
         DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
