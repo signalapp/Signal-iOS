@@ -52,8 +52,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We don't need to use DeviceSleepManager in the SAE.
 
-        // TODO: Do we need to applySignalAppearence in the SAE?
-        UIUtil.applySignalAppearence()
+        // We don't need to use applySignalAppearence in the SAE.
 
         if CurrentAppContext().isRunningTests {
             // TODO: Do we need to implement isRunningTests in the SAE context?
