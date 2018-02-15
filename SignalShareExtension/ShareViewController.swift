@@ -602,7 +602,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             let error = ShareViewControllerError.unsupportedMedia
             return Promise(error: error)
         }
-        Logger.debug("\(logTag) matched utiType: \(srcUtiType)")
+        // True IFF any of the UTIs for this item provider conform to the URL type.
+        let hasUrlType =  nil != itemProvider.registeredTypeIdentifiers.first { (utiType: String) -> Bool in
+            UTTypeConformsTo(utiType as CFString, kUTTypeURL)
+        }
+
+        Logger.debug("\(logTag) matched utiType: \(srcUtiType), hasUrlType: \(hasUrlType)")
 
         let (promise, fulfill, reject) = Promise<(itemUrl: URL, utiType: String)>.pending()
 
@@ -698,9 +703,18 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
 
         // See comments on NSItemProvider+OWS.h.
-        if srcUtiType == kUTTypeURL as String {
+        if hasUrlType {
+            // If any of the UTI types for this item provider conform to the URL UTI type,
+            // we should be able to load this item as a URL, so do so.  We prefer to load
+            // as a URL:
+            //
+            // * So that we can preserve the source filename which we infer from the URL.
+            // * So that we can avoid loading the item into memory if possible.
+
             itemProvider.loadItem(forTypeIdentifier: srcUtiType, options: nil, completionHandler: loadCompletion)
         } else {
+            // Otherwise, fall back to using the "load as data" coercion hack since this is
+            // safer.
             itemProvider.loadData(forTypeIdentifier: srcUtiType, options: nil, completionHandler: loadCompletion)
         }
 
