@@ -239,6 +239,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
+// TODO: This method contains view-specific logic and probably belongs in NotificationsManager, not in SSK.
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     NSString *_Nullable attachmentDescription = nil;
