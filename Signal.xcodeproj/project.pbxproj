@@ -120,10 +120,9 @@
 		347850691FD9B78A007B8332 /* AppSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = 347850651FD9B789007B8332 /* AppSetup.m */; };
 		3478506A1FD9B78A007B8332 /* AppSetup.h in Headers */ = {isa = PBXBuildFile; fileRef = 347850661FD9B789007B8332 /* AppSetup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */; };
-		3478506C1FD9B78A007B8332 /* SAENotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850681FD9B78A007B8332 /* SAENotificationsManager.swift */; };
+		3478506C1FD9B78A007B8332 /* NoopNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850681FD9B78A007B8332 /* NoopNotificationsManager.swift */; };
 		347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 3478506F1FDAEB16007B8332 /* OWSUserProfile.m */; };
 		347850721FDAEB17007B8332 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 347850701FDAEB16007B8332 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		347D96B4202269E400CA6547 /* NotificationUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D96B3202269E400CA6547 /* NotificationUtils.swift */; };
 		347E0B7A2003CD7500BC2F76 /* OWSBackupExportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 347E0B762003CD7400BC2F76 /* OWSBackupExportViewController.m */; };
 		347E0B7B2003CD7500BC2F76 /* OWSBackupImportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 347E0B782003CD7400BC2F76 /* OWSBackupImportViewController.m */; };
 		3497DBEC1ECE257500DB2605 /* OWSCountryMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 3497DBEB1ECE257500DB2605 /* OWSCountryMetadata.m */; };
@@ -607,10 +606,9 @@
 		347850651FD9B789007B8332 /* AppSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppSetup.m; sourceTree = "<group>"; };
 		347850661FD9B789007B8332 /* AppSetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppSetup.h; sourceTree = "<group>"; };
 		347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopCallMessageHandler.swift; sourceTree = "<group>"; };
-		347850681FD9B78A007B8332 /* SAENotificationsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAENotificationsManager.swift; sourceTree = "<group>"; };
+		347850681FD9B78A007B8332 /* NoopNotificationsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopNotificationsManager.swift; sourceTree = "<group>"; };
 		3478506F1FDAEB16007B8332 /* OWSUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUserProfile.m; sourceTree = "<group>"; };
 		347850701FDAEB16007B8332 /* OWSUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUserProfile.h; sourceTree = "<group>"; };
-		347D96B3202269E400CA6547 /* NotificationUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationUtils.swift; sourceTree = "<group>"; };
 		347E0B762003CD7400BC2F76 /* OWSBackupExportViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupExportViewController.m; sourceTree = "<group>"; };
 		347E0B772003CD7400BC2F76 /* OWSBackupExportViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupExportViewController.h; sourceTree = "<group>"; };
 		347E0B782003CD7400BC2F76 /* OWSBackupImportViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupImportViewController.m; sourceTree = "<group>"; };
@@ -1200,11 +1198,10 @@
 				346129411FD1D74B00532771 /* Environment.m */,
 				346129921FD1E30000532771 /* migrations */,
 				347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */,
+				347850681FD9B78A007B8332 /* NoopNotificationsManager.swift */,
 				45F170AB1E2F0351003FC1F2 /* OWSAudioSession.swift */,
-				347D96B3202269E400CA6547 /* NotificationUtils.swift */,
 				346129561FD1D74B00532771 /* Release.h */,
 				346129571FD1D74B00532771 /* Release.m */,
-				347850681FD9B78A007B8332 /* SAENotificationsManager.swift */,
 				346129581FD1D74B00532771 /* SignalKeyingStorage.h */,
 				346129591FD1D74B00532771 /* SignalKeyingStorage.m */,
 				346129E01FD5C0BE00532771 /* VersionMigrations.h */,
@@ -2784,7 +2781,7 @@
 				346129F81FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.m in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				346129701FD1D74C00532771 /* Release.m in Sources */,
-				3478506C1FD9B78A007B8332 /* SAENotificationsManager.swift in Sources */,
+				3478506C1FD9B78A007B8332 /* NoopNotificationsManager.swift in Sources */,
 				34480B621FD0A98800BC14EF /* UIColor+OWS.m in Sources */,
 				34480B531FD0A7A400BC14EF /* OWSLogger.m in Sources */,
 				34480B641FD0A98800BC14EF /* UIView+OWS.m in Sources */,
@@ -2814,7 +2811,6 @@
 				454A965F1FD60EA3008D2A0E /* OWSFlatButton.swift in Sources */,
 				346129B61FD1F7E800532771 /* ProfileFetcherJob.swift in Sources */,
 				346129F51FD5F31400532771 /* OWS102MoveLoggingPreferenceToUserDefaults.m in Sources */,
-				347D96B4202269E400CA6547 /* NotificationUtils.swift in Sources */,
 				45194F8F1FD71FF500333B2C /* ThreadUtil.m in Sources */,
 				451F8A3B1FD71297005CB9DA /* UIUtil.m in Sources */,
 				451F8A331FD71083005CB9DA /* SelectThreadViewController.m in Sources */,
