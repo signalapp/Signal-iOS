@@ -1,20 +1,19 @@
 //
-//  Copyright © 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 /**
  * Container for a weakly referenced object.
  *
  * Only use this for |T| with reference-semantic entities
- * e.g. inheriting from AnyObject or Class-only protocols, but not structs or enums.
- *
+ * That is - <T> should inherit from AnyObject or Class-only protocols, but not structs or enums.
  *
  * Based on https://devforums.apple.com/message/981472#981472, but also supports class-only protocols
  */
-struct Weak<T> {
+public struct Weak<T> {
     private weak var _value: AnyObject?
 
-    var value: T? {
+    public var value: T? {
         get {
             return _value as? T
         }
@@ -23,7 +22,7 @@ struct Weak<T> {
         }
     }
 
-    init(value: T) {
+    public init(value: T) {
         self.value = value
     }
 }

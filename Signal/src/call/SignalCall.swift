@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -106,6 +106,8 @@ protocol CallObserver: class {
         }
     }
 
+    let audioActivity: AudioActivity
+
     var audioSource: AudioSource? = nil {
         didSet {
             AssertIsOnMainThread()
@@ -148,8 +150,8 @@ protocol CallObserver: class {
         self.signalingId = signalingId
         self.state = state
         self.remotePhoneNumber = remotePhoneNumber
-
         self.thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+        self.audioActivity = AudioActivity(audioDescription: "[SignalCall] with \(remotePhoneNumber)")
     }
 
     // A string containing the three identifiers for this call.

@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSURL *mediaUrl;
 @property (nonatomic, nullable) AVAudioPlayer *audioPlayer;
 @property (nonatomic, nullable) NSTimer *audioPlayerPoller;
+@property (nonatomic, readonly) AudioActivity *audioActivity;
 
 @end
 
@@ -34,6 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     _delegate = delegate;
     _mediaUrl = mediaUrl;
+
+    NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ %@", self.logTag, self.mediaUrl];
+    _audioActivity = [[AudioActivity alloc] initWithAudioDescription:audioActivityDescription];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidEnterBackground:)
@@ -65,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.mediaUrl);
     OWSAssert([self.delegate audioPlaybackState] != AudioPlaybackState_Playing);
 
-    [OWSAudioSession.shared setPlaybackCategory];
+    [OWSAudioSession.shared setPlaybackCategoryWithAudioActivity:self.audioActivity];
 
     [self.audioPlayerPoller invalidate];
 
@@ -111,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioPlayerPoller invalidate];
     [self.delegate setAudioProgress:[self.audioPlayer currentTime] duration:[self.audioPlayer duration]];
 
-    [OWSAudioSession.shared endAudioActivity];
+    [OWSAudioSession.shared endAudioActivity:self.audioActivity];
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 }
 
@@ -124,7 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioPlayerPoller invalidate];
     [self.delegate setAudioProgress:0 duration:0];
 
-    [OWSAudioSession.shared endAudioActivity];
+    [OWSAudioSession.shared endAudioActivity:self.audioActivity];
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 }
 
