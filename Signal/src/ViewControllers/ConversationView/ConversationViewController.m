@@ -3787,6 +3787,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     [self sendMessageAttachment:attachment];
     [self dismissViewControllerAnimated:YES completion:nil];
+    // We always want to scroll to the bottom of the conversation after the local user
+    // sends a message.  Normally, this is taken care of in yapDatabaseModified:, but
+    // we don't listen to db modifications when this view isn't visible, i.e. when the
+    // attachment approval view is presented.
+    [self scrollToBottomAnimated:YES];
 }
 
 - (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval didCancelAttachment:(SignalAttachment * _Nonnull)attachment
