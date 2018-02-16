@@ -70,7 +70,7 @@ public class OWSAudioSession: NSObject {
         }
     }
 
-    private func startAudioActivity(_ audioActivity: AudioActivity) {
+    public func startAudioActivity(_ audioActivity: AudioActivity) {
         Logger.debug("\(logTag) in \(#function) with \(audioActivity)")
 
         self.currentActivities.append(Weak(value: audioActivity))

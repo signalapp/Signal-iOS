@@ -1501,6 +1501,8 @@ protocol CallServiceObserver: class {
 
         self.call?.removeAllObservers()
         self.call = nil
+        self.callUIAdapter.didTerminateCall(self.call)
+
         self.sendIceUpdatesImmediately = true
         Logger.info("\(self.logTag) clearing pendingIceUpdateMessages")
         self.pendingIceUpdateMessages = []

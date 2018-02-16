@@ -37,6 +37,9 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
 
         let call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
 
+        // make sure we don't terminate audio session during call
+        OWSAudioSession.shared.startAudioActivity(call.audioActivity)
+
         self.callService.handleOutgoingCall(call).then {
             Logger.debug("\(self.TAG) handleOutgoingCall succeeded")
         }.catch { error in

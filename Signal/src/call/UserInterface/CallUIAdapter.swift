@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -111,6 +111,9 @@ extension CallUIAdaptee {
     internal func reportIncomingCall(_ call: SignalCall, thread: TSContactThread) {
         AssertIsOnMainThread()
 
+        // make sure we don't terminate audio session during call
+        OWSAudioSession.shared.startAudioActivity(call.audioActivity)
+
         let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
         adaptee.reportIncomingCall(call, callerName: callerName)
     }
@@ -151,6 +154,14 @@ extension CallUIAdaptee {
         AssertIsOnMainThread()
 
         adaptee.declineCall(call)
+    }
+
+    internal func didTerminateCall(_ call: SignalCall?) {
+        AssertIsOnMainThread()
+
+        if let call = call {
+            OWSAudioSession.shared.endAudioActivity(call.audioActivity)
+        }
     }
 
     internal func startAndShowOutgoingCall(recipientId: String) {
