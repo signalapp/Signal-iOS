@@ -37,6 +37,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 @implementation OWSUserProfile
 
 @synthesize avatarUrlPath = _avatarUrlPath;
+@synthesize profileName = _profileName;
 
 + (NSString *)collection
 {
@@ -331,6 +332,22 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                      self.profileName,
                      self.avatarUrlPath,
                      self.avatarFileName];
+}
+
+- (nullable NSString *)profileName
+{
+    @synchronized(self)
+    {
+        return _profileName.filterStringForDisplay;
+    }
+}
+
+- (void)setProfileName:(nullable NSString *)profileName
+{
+    @synchronized(self)
+    {
+        _profileName = profileName.filterStringForDisplay;
+    }
 }
 
 @end

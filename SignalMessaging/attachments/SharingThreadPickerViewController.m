@@ -138,7 +138,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     OWSAssert(data.length < kOversizeTextMessageSizeThreshold);
     NSString *_Nullable messageText = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     DDLogVerbose(@"%@ messageTextForAttachment: %@", self.logTag, messageText);
-    return messageText;
+    return [messageText filterStringForDisplay];
 }
 
 - (void)threadWasSelected:(TSThread *)thread

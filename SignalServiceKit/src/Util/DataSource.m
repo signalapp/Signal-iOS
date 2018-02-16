@@ -78,6 +78,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [data ows_isValidImage];
 }
 
+- (void)setSourceFilename:(nullable NSString *)sourceFilename
+{
+    _sourceFilename = sourceFilename.filterStringForDisplay;
+}
+
 @end
 
 #pragma mark -

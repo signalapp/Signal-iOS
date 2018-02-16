@@ -638,7 +638,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 fulfill((itemUrl: fileUrl, utiType: srcUtiType))
             } else if let string = value as? String {
                 Logger.debug("\(strongSelf.logTag) string provider: \(string)")
-                guard let data = string.data(using: String.Encoding.utf8) else {
+                guard let data = string.filterStringForDisplay().data(using: String.Encoding.utf8) else {
                     let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
                     reject(writeError)
                     return
