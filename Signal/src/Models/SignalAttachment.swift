@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -91,7 +91,7 @@ class SignalAttachment: NSObject {
         return dataSource.dataUrl()
     }
     public var sourceFilename: String? {
-        return dataSource.sourceFilename
+        return dataSource.sourceFilename?.filterStringForDisplay()
     }
     public var isValidImage: Bool {
         return dataSource.isValidImage()
@@ -223,7 +223,7 @@ class SignalAttachment: NSObject {
 
         if let filename = sourceFilename {
             let fileExtension = (filename as NSString).pathExtension
-            if fileExtension.characters.count > 0 {
+            if fileExtension.count > 0 {
                 if let mimeType = MIMETypeUtil.mimeType(forFileExtension:fileExtension) {
                     // UTI types are an imperfect means of representing file type;
                     // file extensions are also imperfect but far more reliable and
@@ -249,7 +249,7 @@ class SignalAttachment: NSObject {
     // like: "signal-2017-04-24-095918.zip"
     var filenameOrDefault: String {
         if let filename = sourceFilename {
-            return filename
+            return filename.filterStringForDisplay()
         } else {
             let kDefaultAttachmentName = "signal"
 
@@ -271,8 +271,8 @@ class SignalAttachment: NSObject {
     var fileExtension: String? {
         if let filename = sourceFilename {
             let fileExtension = (filename as NSString).pathExtension
-            if fileExtension.characters.count > 0 {
-                return fileExtension
+            if fileExtension.count > 0 {
+                return fileExtension.filterStringForDisplay()
             }
         }
         if dataUTI == kOversizeTextAttachmentUTI {
@@ -475,7 +475,7 @@ class SignalAttachment: NSObject {
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
     private class func imageAttachment(dataSource: DataSource?, dataUTI: String) -> SignalAttachment {
-        assert(dataUTI.characters.count > 0)
+        assert(dataUTI.count > 0)
 
         assert(dataSource != nil)
         guard let dataSource = dataSource else {
@@ -575,7 +575,7 @@ class SignalAttachment: NSObject {
     // NOTE: The attachment returned by this method may nil or not be valid.
     //       Check the attachment's error property.
     public class func imageAttachment(image: UIImage?, dataUTI: String, filename: String?) -> SignalAttachment {
-        assert(dataUTI.characters.count > 0)
+        assert(dataUTI.count > 0)
 
         guard let image = image else {
             let dataSource = DataSourceValue.emptyDataSource()
@@ -777,7 +777,7 @@ class SignalAttachment: NSObject {
                                      dataUTI: String,
                                      validUTISet: Set<String>?,
                                      maxFileSize: UInt) -> SignalAttachment {
-        assert(dataUTI.characters.count > 0)
+        assert(dataUTI.count > 0)
 
         assert(dataSource != nil)
         guard let dataSource = dataSource else {

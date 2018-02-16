@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "NotificationsManager.h"
@@ -10,6 +10,7 @@
 #import "PushManager.h"
 #import "Signal-Swift.h"
 #import <AudioToolbox/AudioServices.h>
+#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSErrorMessage.h>
@@ -393,6 +394,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
 
 - (void)presentNotification:(UILocalNotification *)notification identifier:(NSString *)identifier
 {
+    notification.alertBody = notification.alertBody.filterStringForDisplay;
+
     DispatchMainThreadSafe(^{
         // Replace any existing notification
         // e.g. when an "Incoming Call" notification gets replaced with a "Missed Call" notification.

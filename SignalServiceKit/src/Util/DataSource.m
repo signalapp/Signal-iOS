@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "DataSource.h"
 #import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "NSString+SSK.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -139,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    NSData *data = [text dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *data = [text.filterStringForDisplay dataUsingEncoding:NSUTF8StringEncoding];
     return [self dataSourceWithData:data fileExtension:kOversizeTextAttachmentFileExtension];
 }
 

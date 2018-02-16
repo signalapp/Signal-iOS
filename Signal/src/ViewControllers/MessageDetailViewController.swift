@@ -312,7 +312,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
                 return nil
         }
         let messageBody = displayableText.fullText
-        guard messageBody.characters.count > 0  else {
+        guard messageBody.count > 0  else {
             return nil
         }
         return messageBody
@@ -500,7 +500,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
         nameLabel.autoPinEdge(toSuperviewEdge: .top)
         valueLabel.autoPinEdge(toSuperviewEdge: .top)
 
-        if subtitle.characters.count > 0 {
+        if subtitle.count > 0 {
             let subtitleLabel = self.valueLabel(text: subtitle)
             subtitleLabel.textColor = UIColor.ows_darkGray()
             row.addSubview(subtitleLabel)
@@ -508,7 +508,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate {
             subtitleLabel.autoPinLeading(toTrailingOf: nameLabel, margin: 10)
             subtitleLabel.autoPinEdge(.top, to: .bottom, of: valueLabel, withOffset: 1)
             subtitleLabel.autoPinEdge(toSuperviewEdge: .bottom)
-        } else if value.characters.count > 0 {
+        } else if value.count > 0 {
             valueLabel.autoPinEdge(toSuperviewEdge: .bottom)
         } else {
             nameLabel.autoPinEdge(toSuperviewEdge: .bottom)

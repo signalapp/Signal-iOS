@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSProfileManager.h"
@@ -11,6 +11,7 @@
 #import <SignalServiceKit/NSData+hexString.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
+#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSRequestBuilder.h>
@@ -70,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     @synchronized(self)
     {
-        return _profileName;
+        return _profileName.filterStringForDisplay;
     }
 }
 
@@ -78,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     @synchronized(self)
     {
-        _profileName = [profileName ows_stripped];
+        _profileName = profileName.filterStringForDisplay;
     }
 }
 
@@ -363,6 +364,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(successBlockParameter);
     OWSAssert(failureBlockParameter);
+
+    profileName = profileName.filterStringForDisplay;
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
@@ -1327,7 +1330,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
     NSData *unpaddedData = [decryptedData subdataWithRange:NSMakeRange(0, unpaddedLength)];
 
-    return [[NSString alloc] initWithData:unpaddedData encoding:NSUTF8StringEncoding];
+    return [[NSString alloc] initWithData:unpaddedData encoding:NSUTF8StringEncoding].filterStringForDisplay;
 }
 
 - (nullable NSData *)encryptProfileData:(nullable NSData *)data
@@ -1345,7 +1348,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (nullable NSData *)encryptProfileNameWithUnpaddedName:(NSString *)name
 {
-    NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *nameData = [name.filterStringForDisplay dataUsingEncoding:NSUTF8StringEncoding];
     if (nameData.length > kOWSProfileManager_NameDataLength) {
         OWSFail(@"%@ name data is too long with length:%lu", self.logTag, (unsigned long)nameData.length);
         return nil;

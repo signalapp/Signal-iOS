@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "InboxTableViewCell.h"
@@ -188,7 +188,7 @@ const NSUInteger kAvatarViewDiameter = 52;
                                                                                                 : [UIColor lightGrayColor]),
                                                               }]];
         }
-        NSString *displayableText = [DisplayableText displayableText:thread.lastMessageLabel];
+        NSString *displayableText = thread.lastMessageLabel.filterStringForDisplay;
         if (displayableText) {
             [snippetText appendAttributedString:[[NSAttributedString alloc]
                                                     initWithString:displayableText
