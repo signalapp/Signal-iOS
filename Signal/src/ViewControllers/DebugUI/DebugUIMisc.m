@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMisc.h"
@@ -74,15 +74,15 @@ NS_ASSUME_NONNULL_BEGIN
                                                     }];
                            }]];
 
-    [items addObject:[OWSTableItem
-                         subPageItemWithText:@"Export Backup w/o Password"
-                                 actionBlock:^(UIViewController *viewController) {
-                                     OWSBackupExportViewController *backupViewController =
-                                         [OWSBackupExportViewController new];
-                                     [backupViewController exportBackup:thread skipPassword:YES];
-                                     [viewController.navigationController pushViewController:backupViewController
-                                                                                    animated:YES];
-                                 }]];
+    [items addObject:[OWSTableItem subPageItemWithText:@"Export Backup w/o Password"
+                                           actionBlock:^(UIViewController *viewController) {
+                                               OWSBackupExportViewController *backupViewController =
+                                                   [OWSBackupExportViewController new];
+                                               [backupViewController exportBackup:thread skipPassword:YES];
+                                               [viewController.navigationController
+                                                   pushViewController:backupViewController
+                                                             animated:YES];
+                                           }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }

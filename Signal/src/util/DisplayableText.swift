@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -202,7 +202,7 @@ extension String {
 
     @objc
     class func displayableText(_ text: String?) -> String? {
-        guard let text = text?.ows_stripped() else {
+        guard let text = text?.ows_stripped().filterStringForDisplay() else {
             return nil
         }
 

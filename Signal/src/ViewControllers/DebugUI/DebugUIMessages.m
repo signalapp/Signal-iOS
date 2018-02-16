@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMessages.h"
@@ -248,6 +248,10 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Inject 1,000 fake incoming messages"
                         actionBlock:^{
                             [DebugUIMessages injectFakeIncomingMessages:1000 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Test Indic Scripts"
+                        actionBlock:^{
+                            [DebugUIMessages testIndicScriptsInThread:thread];
                         }],
     ] mutableCopy];
     if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -1429,6 +1433,31 @@ NS_ASSUME_NONNULL_BEGIN
                 }];
         });
     });
+}
+
++ (void)testIndicScriptsInThread:(TSThread *)thread
+{
+    NSArray<NSString *> *strings = @[
+        @"\u0C1C\u0C4D\u0C1E\u200C\u0C3E",
+        @"\u09B8\u09CD\u09B0\u200C\u09C1",
+        @"non-crashing string",
+    ];
+
+    for (NSString *string in strings) {
+        // DO NOT log these strings with the debugger attached.
+        //        DDLogInfo(@"%@ %@", self.logTag, string);
+
+        [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
+            YapDatabaseReadWriteTransaction *transaction) {
+            TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                             inThread:thread
+                                                                             authorId:@"+19174054215"
+                                                                       sourceDeviceId:0
+                                                                          messageBody:string];
+            [message saveWithTransaction:transaction];
+            [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+        }];
+    }
 }
 
 @end
