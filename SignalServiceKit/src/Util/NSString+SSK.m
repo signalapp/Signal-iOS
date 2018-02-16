@@ -26,12 +26,14 @@ NS_ASSUME_NONNULL_BEGIN
 // See: https://manishearth.github.io/blog/2018/02/15/picking-apart-the-crashing-ios-string/
 - (NSString *)filterStringForDisplay
 {
+    NSString *stripped = self.ows_stripped;
+
     if (!NSString.shouldFilterIndic) {
-        return self;
+        return stripped;
     }
     NSMutableString *result = [NSMutableString new];
-    for (NSUInteger i = 0; i < self.length; i++) {
-        unichar c = [self characterAtIndex:i];
+    for (NSUInteger i = 0; i < stripped.length; i++) {
+        unichar c = [stripped characterAtIndex:i];
         if (c == 0x200C) {
             continue;
         }

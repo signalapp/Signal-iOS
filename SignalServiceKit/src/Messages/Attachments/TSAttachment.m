@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachment.h"
 #import "MIMETypeUtil.h"
+#import "NSString+SSK.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,6 +17,8 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 @end
 
 @implementation TSAttachment
+
+@synthesize sourceFilename = _sourceFilename;
 
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded incoming attachments.
@@ -182,6 +185,11 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 - (BOOL)isVoiceMessage
 {
     return self.attachmentType == TSAttachmentTypeVoiceMessage;
+}
+
+- (nullable NSString *)sourceFilename
+{
+    return _sourceFilename.filterStringForDisplay;
 }
 
 @end
