@@ -1443,21 +1443,39 @@ NS_ASSUME_NONNULL_BEGIN
         @"non-crashing string",
     ];
 
-    for (NSString *string in strings) {
-        // DO NOT log these strings with the debugger attached.
-        //        DDLogInfo(@"%@ %@", self.logTag, string);
+    [TSStorageManager.sharedManager.dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            for (NSString *string in strings) {
+                // DO NOT log these strings with the debugger attached.
+                //        DDLogInfo(@"%@ %@", self.logTag, string);
 
-        [TSStorageManager.sharedManager.dbReadWriteConnection readWriteWithBlock:^(
-            YapDatabaseReadWriteTransaction *transaction) {
-            TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                             inThread:thread
-                                                                             authorId:@"+19174054215"
-                                                                       sourceDeviceId:0
-                                                                          messageBody:string];
-            [message saveWithTransaction:transaction];
-            [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+                {
+                    TSIncomingMessage *message =
+                        [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                            inThread:thread
+                                                            authorId:@"+19174054215"
+                                                      sourceDeviceId:0
+                                                         messageBody:string];
+                    [message saveWithTransaction:transaction];
+                    [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+                }
+                {
+                    NSString *recipientId = @"+19174054215";
+                    NSString *groupName = string;
+                    NSMutableArray<NSString *> *recipientIds = [@[
+                        recipientId,
+                        [TSAccountManager localNumber],
+                    ] mutableCopy];
+                    NSData *groupId = [SecurityUtils generateRandomBytes:16];
+                    TSGroupModel *groupModel =
+                        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+
+                    TSGroupThread *groupThread =
+                        [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+                    OWSAssert(groupThread);
+                }
+            }
         }];
-    }
 }
 
 @end
