@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)filterStringForDisplay;
 
+- (BOOL)isValidE164;
+
 @end
 
 NS_ASSUME_NONNULL_END
