@@ -16,6 +16,8 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 @property (nonatomic, nullable) NSString *sourceFilename;
 
+@property (nonatomic) NSString *contentType;
+
 @end
 
 @implementation TSAttachment
