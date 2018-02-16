@@ -36,6 +36,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 @implementation OWSUserProfile
 
+@synthesize avatarUrlPath = _avatarUrlPath;
+
 + (NSString *)collection
 {
     // Legacy class name.
@@ -91,6 +93,35 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     return self;
 }
 
+- (nullable NSString *)avatarUrlPath
+{
+    @synchronized(self)
+    {
+        return _avatarUrlPath;
+    }
+}
+
+- (void)setAvatarUrlPath:(nullable NSString *)avatarUrlPath
+{
+    @synchronized(self)
+    {
+        BOOL didChange;
+        if (_avatarUrlPath == nil && avatarUrlPath == nil) {
+            didChange = NO;
+        } else if (_avatarUrlPath != nil && avatarUrlPath != nil) {
+            didChange = YES;
+        } else {
+            didChange = [_avatarUrlPath isEqualToString:avatarUrlPath];
+        }
+
+        if (didChange) {
+            // If the avatarURL changed, the avatarFileName can't be valid.
+            // Clear it.
+            self.avatarFileName = nil;
+        }
+    }
+}
+
 #pragma mark - Update With... Methods
 
 // Similar in spirit to [TSYapDatabaseObject applyChangeToSelfAndLatestCopy],
@@ -122,13 +153,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                     @"%@ Ignoring redundant update in %s: %@", self.logTag, functionName, self.debugDescription);
                 didChange = NO;
             } else {
-                NSString *_Nullable oldAvatarUrlPath = beforeSnapshot[@"avatarUrlPath"];
-                if (!latestInstance.avatarUrlPath || ![latestInstance.avatarUrlPath isEqual:oldAvatarUrlPath]) {
-                    // If the avatarURL changed, the avatarFileName can't be valid.
-                    // Clear it.
-                    latestInstance.avatarFileName = nil;
-                }
-
                 [latestInstance saveWithTransaction:transaction];
             }
         } else {
@@ -183,6 +207,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 {
     [self applyChanges:^(OWSUserProfile *userProfile) {
         [userProfile setProfileName:[profileName ows_stripped]];
+        // Always setAvatarUrlPath: before you setAvatarFileName: since
+        // setAvatarUrlPath: may clear the avatar filename.
         [userProfile setAvatarUrlPath:avatarUrlPath];
         [userProfile setAvatarFileName:avatarFileName];
     }
@@ -211,6 +237,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                      completion:(nullable OWSUserProfileCompletion)completion
 {
     [self applyChanges:^(OWSUserProfile *userProfile) {
+        // Always setAvatarUrlPath: before you setAvatarFileName: since
+        // setAvatarUrlPath: may clear the avatar filename.
         [userProfile setAvatarUrlPath:avatarUrlPath];
         [userProfile setAvatarFileName:avatarFileName];
     }
@@ -238,6 +266,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     [self applyChanges:^(OWSUserProfile *userProfile) {
         [userProfile setProfileKey:profileKey];
         [userProfile setProfileName:nil];
+        // Always setAvatarUrlPath: before you setAvatarFileName: since
+        // setAvatarUrlPath: may clear the avatar filename.
         [userProfile setAvatarUrlPath:nil];
         [userProfile setAvatarFileName:nil];
     }
