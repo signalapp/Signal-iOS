@@ -142,15 +142,14 @@ public class OWSAudioSession: NSObject {
 
     /**
      * Because we useManualAudio with our RTCAudioSession, we have to start/stop the recording audio session ourselves.
-     * See "WebRTC Audio" comment for details on manual audio.
+     * See header for details on  manual audio.
      */
-    public func enableRTCAudio(audioActivity: AudioActivity) {
-        startAudioActivity(audioActivity)
-        rtcAudioSession.isAudioEnabled = true
-    }
-
-    public func disableRTCAudio(audioActivity: AudioActivity) {
-        rtcAudioSession.isAudioEnabled = false
-        endAudioActivity(audioActivity)
+    public var isRTCAudioEnabled: Bool {
+        get {
+            return rtcAudioSession.isAudioEnabled
+        }
+        set {
+            rtcAudioSession.isAudioEnabled = newValue
+        }
     }
 }

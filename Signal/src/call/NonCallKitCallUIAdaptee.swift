@@ -15,7 +15,6 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
 
     let notificationsAdapter: CallNotificationsAdapter
     let callService: CallService
-    let audioActivity: AudioActivity
 
     // Starting/Stopping incoming call ringing is our apps responsibility for the non CallKit interface.
     let hasManualRinger = true
@@ -25,7 +24,6 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
 
         self.callService = callService
         self.notificationsAdapter = notificationsAdapter
-        self.audioActivity = AudioActivity(audioDescription: "[NonCallKitCallUIAdaptee]")
 
         super.init()
 
@@ -94,7 +92,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             return
         }
 
-        OWSAudioSession.shared.enableRTCAudio(audioActivity: audioActivity)
+        OWSAudioSession.shared.isRTCAudioEnabled = true
         self.callService.handleAnswerCall(call)
     }
 
@@ -128,7 +126,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
     func recipientAcceptedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        OWSAudioSession.shared.enableRTCAudio(audioActivity: audioActivity)
+        OWSAudioSession.shared.isRTCAudioEnabled = true
     }
 
     func localHangupCall(_ call: SignalCall) {

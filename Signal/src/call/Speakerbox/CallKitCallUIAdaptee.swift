@@ -25,7 +25,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     internal let notificationsAdapter: CallNotificationsAdapter
     internal let contactsManager: OWSContactsManager
     private let provider: CXProvider
-    private let audioActivity: AudioActivity
 
     // CallKit handles incoming ringer stop/start for us. Yay!
     let hasManualRinger = false
@@ -61,7 +60,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         self.contactsManager = contactsManager
         self.notificationsAdapter = notificationsAdapter
         self.provider = CXProvider(configuration: type(of: self).providerConfiguration)
-        self.audioActivity = AudioActivity(audioDescription: "CallKitCallUIAdaptee audio")
 
         super.init()
 
@@ -348,15 +346,16 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
 
-        Logger.debug("\(TAG) in \(#function)")
-        OWSAudioSession.shared.enableRTCAudio(audioActivity: audioActivity)
+        Logger.debug("\(TAG) Received \(#function)")
+
+        OWSAudioSession.shared.isRTCAudioEnabled = true
     }
 
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
 
-        Logger.debug("\(TAG) in \(#function)")
-        OWSAudioSession.shared.disableRTCAudio(audioActivity: audioActivity)
+        Logger.debug("\(TAG) Received \(#function)")
+        OWSAudioSession.shared.isRTCAudioEnabled = false
     }
 
     // MARK: - Util
