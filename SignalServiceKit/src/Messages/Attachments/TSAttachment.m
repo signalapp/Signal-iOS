@@ -14,11 +14,11 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 @property (nonatomic, readonly) NSUInteger attachmentSchemaVersion;
 
+@property (nonatomic, nullable) NSString *sourceFilename;
+
 @end
 
 @implementation TSAttachment
-
-@synthesize sourceFilename = _sourceFilename;
 
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded incoming attachments.
@@ -190,6 +190,11 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 - (nullable NSString *)sourceFilename
 {
     return _sourceFilename.filterStringForDisplay;
+}
+
+- (NSString *)contentType
+{
+    return _contentType.filterStringForDisplay;
 }
 
 @end

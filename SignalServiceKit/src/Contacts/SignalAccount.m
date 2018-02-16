@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalAccount.h"
 #import "Contact.h"
+#import "NSString+SSK.h"
 #import "SignalRecipient.h"
 #import "TSStorageManager.h"
 
@@ -58,7 +59,12 @@ NS_ASSUME_NONNULL_BEGIN
             ? [NSString stringWithFormat:@"%@ (%@)", baseName, self.multipleAccountLabelText]
             : baseName);
 
-    return displayName;
+    return displayName.filterStringForDisplay;
+}
+
+- (NSString *)multipleAccountLabelText
+{
+    return _multipleAccountLabelText.filterStringForDisplay;
 }
 
 @end
