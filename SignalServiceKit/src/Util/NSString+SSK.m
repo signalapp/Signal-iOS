@@ -118,6 +118,8 @@ NS_ASSUME_NONNULL_BEGIN
                     // and replace it with 0xFFFD, the Unicode "replacement character."
                     [filteredForIndic appendFormat:@"\uFFFD"];
                     DDLogError(@"%@ Filtered unsafe Indic script.", self.logTag);
+                    // Then discard the vowel too.
+                    index++;
                     continue;
                 }
             }
