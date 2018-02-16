@@ -114,15 +114,15 @@ NS_ASSUME_NONNULL_BEGIN
                 unichar next = [self characterAtIndex:nextIndex];
                 if ([NSString isIndicVowel:next]) {
                     // Discard ZWNJ (zero-width non-joiner) whenever we find a ZWNJ
-                    // followed by an Indic (Telugu, Bengali, Devanagari) vowel.
+                    // followed by an Indic (Telugu, Bengali, Devanagari) vowel
+                    // and replace it with 0xFFFD, the Unicode "replacement character."
+                    [filteredForIndic appendFormat:@"\uFFFD"];
+                    DDLogError(@"%@ Filtered unsafe Indic script.", self.logTag);
                     continue;
                 }
             }
         }
         [filteredForIndic appendFormat:@"%C", c];
-    }
-    if (filteredForIndic.length != self.length) {
-        DDLogError(@"%@ Filtered unsafe Indic script: %zd -> %zd", self.logTag, self.length, filteredForIndic.length);
     }
     return [filteredForIndic copy];
 }
