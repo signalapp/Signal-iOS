@@ -98,6 +98,20 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
++ (NSCharacterSet *)problematicCharacterSetForIndicScript
+{
+    static NSCharacterSet *characterSet;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        UniChar chars[] = {0x200C};
+        NSString *characterSetString = [[NSString alloc] initWithCharacters:chars
+                                                                     length:sizeof(chars) / sizeof(UniChar)];
+        characterSet = [NSCharacterSet characterSetWithCharactersInString:characterSetString];
+    });
+    
+    return characterSet;
+}
+
 // See: https://manishearth.github.io/blog/2018/02/15/picking-apart-the-crashing-ios-string/
 - (NSString *)filterForIndicScripts
 {
@@ -105,6 +119,10 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    if ([self rangeOfCharacterFromSet:[[self class] problematicCharacterSetForIndicScript]].location == NSNotFound) {
+        return self;
+    }
+    
     NSMutableString *filteredForIndic = [NSMutableString new];
     for (NSUInteger index = 0; index < self.length; index++) {
         unichar c = [self characterAtIndex:index];
