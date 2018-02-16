@@ -151,6 +151,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) YapDatabaseConnection *editingDatabaseConnection;
+@property (nonatomic, readonly) AudioActivity *voiceNoteAudioActivity;
 
 // These two properties must be updated in lockstep.
 //
@@ -277,6 +278,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _networkManager = [TSNetworkManager sharedManager];
     _blockingManager = [OWSBlockingManager sharedManager];
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+    NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ voice note", self.logTag];
+    _voiceNoteAudioActivity = [[AudioActivity alloc] initWithAudioDescription:audioActivityDescription];
 }
 
 - (void)addNotificationListeners
@@ -3173,7 +3176,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     NSURL *fileURL = [NSURL fileURLWithPath:filepath];
 
     // Setup audio session
-    BOOL configuredAudio = [OWSAudioSession.shared setRecordCategory];
+    BOOL configuredAudio = [OWSAudioSession.shared setRecordCategoryWithAudioActivity:self.voiceNoteAudioActivity];
     if (!configuredAudio) {
         OWSFail(@"%@ Couldn't configure audio session", self.logTag);
         [self cancelVoiceMemo];
@@ -3278,7 +3281,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 - (void)stopRecording
 {
     [self.audioRecorder stop];
-    [OWSAudioSession.shared endAudioActivity];
+    [OWSAudioSession.shared endAudioActivity:self.voiceNoteAudioActivity];
 }
 
 - (void)cancelRecordingVoiceMemo

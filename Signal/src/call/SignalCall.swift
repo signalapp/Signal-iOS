@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -148,7 +148,6 @@ protocol CallObserver: class {
         self.signalingId = signalingId
         self.state = state
         self.remotePhoneNumber = remotePhoneNumber
-
         self.thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
     }
 

@@ -15,12 +15,14 @@ protocol OWSVideoPlayerDelegate: class {
 public class OWSVideoPlayer: NSObject {
 
     let avPlayer: AVPlayer
+    let audioActivity: AudioActivity
 
     weak var delegate: OWSVideoPlayerDelegate?
 
     @available(iOS 9.0, *)
     init(url: URL) {
         self.avPlayer = AVPlayer(url: url)
+        self.audioActivity = AudioActivity(audioDescription:  "[OWSVideoPlayer] url:\(url)")
 
         super.init()
 
@@ -35,12 +37,12 @@ public class OWSVideoPlayer: NSObject {
     @available(iOS 9.0, *)
     public func pause() {
         avPlayer.pause()
-        OWSAudioSession.shared.endAudioActivity()
+        OWSAudioSession.shared.endAudioActivity(self.audioActivity)
     }
 
     @available(iOS 9.0, *)
     public func play() {
-        OWSAudioSession.shared.setPlaybackCategory()
+        OWSAudioSession.shared.setPlaybackCategory(audioActivity: self.audioActivity)
 
         guard let item = avPlayer.currentItem else {
             owsFail("\(logTag) video player item was unexpectedly nil")
@@ -67,6 +69,6 @@ public class OWSVideoPlayer: NSObject {
     @available(iOS 9.0, *)
     private func playerItemDidPlayToCompletion(_ notification: Notification) {
         self.delegate?.videoPlayerDidPlayToCompletion(self)
-        OWSAudioSession.shared.endAudioActivity()
+        OWSAudioSession.shared.endAudioActivity(self.audioActivity)
     }
 }

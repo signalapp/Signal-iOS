@@ -6,6 +6,24 @@ import Foundation
 import WebRTC
 
 @objc
+public class AudioActivity: NSObject {
+    let audioDescription: String
+
+    override public var description: String {
+        return "<\(self.logTag) audioDescription: \"\(audioDescription)\">"
+    }
+
+    public
+    init(audioDescription: String) {
+        self.audioDescription = audioDescription
+    }
+
+    deinit {
+        OWSAudioSession.shared.ensureAudioSessionActivationState()
+    }
+}
+
+@objc
 public class OWSAudioSession: NSObject {
 
     // Force singleton access
@@ -13,13 +31,17 @@ public class OWSAudioSession: NSObject {
     private override init() {}
     private let avAudioSession = AVAudioSession.sharedInstance()
 
+    private var currentActivities: [Weak<AudioActivity>] = []
+
     // Ignores hardware mute switch, plays through external speaker
-    public func setPlaybackCategory() {
+    public func setPlaybackCategory(audioActivity: AudioActivity) {
         Logger.debug("\(logTag) in \(#function)")
 
         // In general, we should have put the audio session back to it's default
         // category when we were done with whatever activity required it to be modified
         assert(avAudioSession.category == AVAudioSessionCategorySoloAmbient)
+
+        startAudioActivity(audioActivity)
 
         do {
             try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
@@ -28,7 +50,7 @@ public class OWSAudioSession: NSObject {
         }
     }
 
-    public func setRecordCategory() -> Bool {
+    public func setRecordCategory(audioActivity: AudioActivity) -> Bool {
         Logger.debug("\(logTag) in \(#function)")
 
         // In general, we should have put the audio session back to it's default
@@ -36,6 +58,8 @@ public class OWSAudioSession: NSObject {
         assert(avAudioSession.category == AVAudioSessionCategorySoloAmbient)
 
         assert(avAudioSession.recordPermission() == .granted)
+
+        startAudioActivity(audioActivity)
 
         do {
             try avAudioSession.setCategory(AVAudioSessionCategoryRecord)
@@ -46,8 +70,38 @@ public class OWSAudioSession: NSObject {
         }
     }
 
-    public func endAudioActivity() {
-        Logger.debug("\(logTag) in \(#function)")
+    private func startAudioActivity(_ audioActivity: AudioActivity) {
+        Logger.debug("\(logTag) in \(#function) with \(audioActivity)")
+
+        self.currentActivities.append(Weak(value: audioActivity))
+    }
+
+    public func endAudioActivity(_ audioActivity: AudioActivity) {
+        Logger.debug("\(logTag) in \(#function) with audioActivity: \(audioActivity)")
+
+        currentActivities = currentActivities.filter { return $0.value != audioActivity }
+        ensureAudioSessionActivationState()
+    }
+
+    fileprivate func ensureAudioSessionActivationState() {
+        // Cull any stale activities
+        currentActivities = currentActivities.flatMap { oldActivity in
+            guard oldActivity.value != nil else {
+                // Normally we should be explicitly stopping an audio activity, but this allows
+                // for recovery if the owner of the AudioAcivity was GC'd without ending it's
+                // audio activity
+                Logger.warn("\(logTag) an old activity has been gc'd")
+                return nil
+            }
+
+            // return any still-active activities
+            return oldActivity
+        }
+
+        guard currentActivities.count == 0 else {
+            Logger.debug("\(logTag) not deactivating due to currentActivities: \(currentActivities)")
+            return
+        }
 
         do {
             try avAudioSession.setCategory(AVAudioSessionCategorySoloAmbient)
@@ -88,14 +142,15 @@ public class OWSAudioSession: NSObject {
 
     /**
      * Because we useManualAudio with our RTCAudioSession, we have to start/stop the recording audio session ourselves.
-     * See header for details on  manual audio.
+     * See "WebRTC Audio" comment for details on manual audio.
      */
-    public var isRTCAudioEnabled: Bool {
-        get {
-            return rtcAudioSession.isAudioEnabled
-        }
-        set {
-            rtcAudioSession.isAudioEnabled = newValue
-        }
+    public func enableRTCAudio(audioActivity: AudioActivity) {
+        startAudioActivity(audioActivity)
+        rtcAudioSession.isAudioEnabled = true
+    }
+
+    public func disableRTCAudio(audioActivity: AudioActivity) {
+        rtcAudioSession.isAudioEnabled = false
+        endAudioActivity(audioActivity)
     }
 }
