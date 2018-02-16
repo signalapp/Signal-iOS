@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSMessage.h"
 #import "NSDate+OWS.h"
+#import "NSString+SSK.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
 #import "TSThread.h"
@@ -279,6 +280,11 @@ static const NSUInteger OWSMessageSchemaVersion = 3;
 - (BOOL)shouldUseReceiptDateForSorting
 {
     return YES;
+}
+
+- (nullable NSString *)body
+{
+    return _body.filterStringForDisplay;
 }
 
 #pragma mark - Update With... Methods

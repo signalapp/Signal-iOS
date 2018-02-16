@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSGroupModel.h"
 #import "FunctionalUtil.h"
+#import "NSString+SSK.h"
 
 @implementation TSGroupModel
 
@@ -102,7 +103,11 @@
     return updatedGroupInfoString;
 }
 
-
 #endif
+
+- (NSString *)groupName
+{
+    return _groupName.filterStringForDisplay;
+}
 
 @end
