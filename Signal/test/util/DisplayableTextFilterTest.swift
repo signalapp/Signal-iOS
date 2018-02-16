@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -19,20 +19,20 @@ class DisplayableTextTest: XCTestCase {
     func testDisplayableText() {
         // show plain text
         let boringText = "boring text"
-        XCTAssertEqual(boringText, DisplayableText.displayableText(boringText))
+        XCTAssertEqual(boringText, boringText.filterStringForDisplay())
 
         // show high byte emojis
         let emojiText = "🇹🇹🌼🇹🇹🌼🇹🇹"
-        XCTAssertEqual(emojiText, DisplayableText.displayableText(emojiText))
+        XCTAssertEqual(emojiText, emojiText.filterStringForDisplay())
 
         // show normal diacritic usage
         let diacriticalText = "Příliš žluťoučký kůň úpěl ďábelské ódy."
-        XCTAssertEqual(diacriticalText, DisplayableText.displayableText(diacriticalText))
+        XCTAssertEqual(diacriticalText, diacriticalText.filterStringForDisplay())
 
         // filter excessive diacritics
-        XCTAssertEqual("HAVING TROUBLE READING TEXT?", DisplayableText.displayableText("H҉̸̧͘͠A͢͞V̛̛I̴̸N͏̕͏G҉̵͜͏͢ ̧̧́T̶̛͘͡R̸̵̨̢̀O̷̡U͡҉B̶̛͢͞L̸̸͘͢͟É̸ ̸̛͘͏R͟È͠͞A̸͝Ḑ̕͘͜I̵͘҉͜͞N̷̡̢͠G̴͘͠ ͟͞T͏̢́͡È̀X̕҉̢̀T̢͠?̕͏̢͘͢") )
+        XCTAssertEqual("HAVING TROUBLE READING TEXT?", "H҉̸̧͘͠A͢͞V̛̛I̴̸N͏̕͏G҉̵͜͏͢ ̧̧́T̶̛͘͡R̸̵̨̢̀O̷̡U͡҉B̶̛͢͞L̸̸͘͢͟É̸ ̸̛͘͏R͟È͠͞A̸͝Ḑ̕͘͜I̵͘҉͜͞N̷̡̢͠G̴͘͠ ͟͞T͏̢́͡È̀X̕҉̢̀T̢͠?̕͏̢͘͢".filterStringForDisplay() )
 
-        XCTAssertEqual("LGO!", DisplayableText.displayableText("L̷̳͔̲͝Ģ̵̮̯̤̩̙͍̬̟͉̹̘̹͍͈̮̦̰̣͟͝O̶̴̮̻̮̗͘͡!̴̷̟͓͓"))
+        XCTAssertEqual("LGO!", "L̷̳͔̲͝Ģ̵̮̯̤̩̙͍̬̟͉̹̘̹͍͈̮̦̰̣͟͝O̶̴̮̻̮̗͘͡!̴̷̟͓͓".filterStringForDisplay())
     }
 
     func testGlyphCount() {

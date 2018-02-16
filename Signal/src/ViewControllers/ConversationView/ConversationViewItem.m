@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewItem.h"
@@ -309,7 +309,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
         // Only show up to N characters of text.
         const NSUInteger kMaxTextDisplayLength = 1024;
-        NSString *_Nullable fullText = [DisplayableText displayableText:text];
+        NSString *_Nullable fullText = text.filterStringForDisplay;
         BOOL isTextTruncated = NO;
         if (!fullText) {
             fullText = @"";

@@ -197,15 +197,4 @@ extension String {
         }
         return UInt(emojiCount)
     }
-
-    // MARK: Filter Methods
-
-    @objc
-    class func displayableText(_ text: String?) -> String? {
-        guard let text = text else {
-            return nil
-        }
-
-        return text.filterStringForDisplay()
-    }
 }
