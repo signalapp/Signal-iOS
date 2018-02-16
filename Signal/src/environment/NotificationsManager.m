@@ -10,6 +10,7 @@
 #import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSPreferences.h>
+#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSErrorMessage.h>
@@ -402,6 +403,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
 
 - (void)presentNotification:(UILocalNotification *)notification identifier:(NSString *)identifier
 {
+    notification.alertBody = notification.alertBody.filterStringForDisplay;
+
     DispatchMainThreadSafe(^{
         // Replace any existing notification
         // e.g. when an "Incoming Call" notification gets replaced with a "Missed Call" notification.

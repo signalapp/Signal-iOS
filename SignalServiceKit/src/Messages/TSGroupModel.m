@@ -4,8 +4,17 @@
 
 #import "TSGroupModel.h"
 #import "FunctionalUtil.h"
+#import "NSString+SSK.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface TSGroupModel ()
+
+@property (nullable, nonatomic) NSString *groupName;
+
+@end
+
+#pragma mark -
 
 @implementation TSGroupModel
 
@@ -122,8 +131,12 @@ NS_ASSUME_NONNULL_BEGIN
     return updatedGroupInfoString;
 }
 
-
 #endif
+
+- (nullable NSString *)groupName
+{
+    return _groupName.filterStringForDisplay;
+}
 
 @end
 

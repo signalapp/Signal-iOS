@@ -5,6 +5,7 @@
 #import "DataSource.h"
 #import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "NSString+SSK.h"
 #import "OWSFileSystem.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -140,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    NSData *data = [text dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *data = [text.filterStringForDisplay dataUsingEncoding:NSUTF8StringEncoding];
     return [self dataSourceWithData:data fileExtension:kOversizeTextAttachmentFileExtension];
 }
 

@@ -11,6 +11,7 @@
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/NSDate+OWS.h>
+#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
@@ -202,7 +203,8 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
                     UILocalNotification *failedSendNotif = [[UILocalNotification alloc] init];
                     failedSendNotif.alertBody =
-                        [NSString stringWithFormat:NSLocalizedString(@"NOTIFICATION_SEND_FAILED", nil), [thread name]];
+                        [NSString stringWithFormat:NSLocalizedString(@"NOTIFICATION_SEND_FAILED", nil), [thread name]]
+                            .filterStringForDisplay;
                     failedSendNotif.userInfo = @{ Signal_Thread_UserInfo_Key : thread.uniqueId };
                     [self presentNotification:failedSendNotif checkForCancel:NO];
                     completionHandler();
@@ -446,6 +448,8 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
 // TODO: consolidate notification tracking with NotificationsManager, which also maintains a list of notifications.
 - (void)presentNotification:(UILocalNotification *)notification checkForCancel:(BOOL)checkForCancel
 {
+    notification.alertBody = notification.alertBody.filterStringForDisplay;
+
     dispatch_async(dispatch_get_main_queue(), ^{
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
         if (checkForCancel && threadId != nil) {

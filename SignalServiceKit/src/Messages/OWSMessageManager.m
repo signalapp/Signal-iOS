@@ -9,6 +9,7 @@
 #import "Cryptography.h"
 #import "MimeTypeUtil.h"
 #import "NSDate+OWS.h"
+#import "NSString+SSK.h"
 #import "NotificationsProtocol.h"
 #import "OWSAttachmentsProcessor.h"
 #import "OWSBlockingManager.h"
@@ -170,6 +171,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(CurrentAppContext().isMainApp);
 
     DDLogInfo(@"%@ handling decrypted envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
+
+    if (!envelope.source.isValidE164) {
+        DDLogVerbose(
+            @"%@ incoming envelope has invalid source: %@", self.logTag, [self descriptionForEnvelope:envelope]);
+        OWSFail(@"%@ incoming envelope has invalid source", self.logTag);
+        return;
+    }
 
     OWSAssert(envelope.source.length > 0);
     OWSAssert(![self isEnvelopeBlocked:envelope]);
@@ -910,6 +918,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (groupId.length > 0) {
         NSMutableSet *newMemberIds = [NSMutableSet setWithArray:dataMessage.group.members];
+        for (NSString *recipientId in newMemberIds) {
+            if (!recipientId.isValidE164) {
+                DDLogVerbose(@"%@ incoming group update has invalid group member: %@",
+                    self.logTag,
+                    [self descriptionForEnvelope:envelope]);
+                OWSFail(@"%@ incoming group update has invalid group member", self.logTag);
+                return nil;
+            }
+        }
 
         // Group messages create the group if it doesn't already exist.
         //

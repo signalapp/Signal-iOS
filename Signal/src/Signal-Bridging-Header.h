@@ -13,6 +13,7 @@
 #import "FingerprintViewController.h"
 #import "HomeViewController.h"
 #import "MediaDetailViewController.h"
+#import "NSString+OWS.h"
 #import "NotificationsManager.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioAttachmentPlayer.h"
@@ -67,6 +68,7 @@
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
+#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAcknowledgeMessageDeliveryRequest.h>
 #import <SignalServiceKit/OWSAnalytics.h>

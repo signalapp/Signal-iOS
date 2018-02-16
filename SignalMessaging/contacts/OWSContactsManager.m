@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactsManager.h"
@@ -13,6 +13,7 @@
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
+#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
@@ -379,7 +380,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     OWSAssert(recipientId.length > 0);
 
     SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
-    return signalAccount.contact.firstName;
+    return signalAccount.contact.firstName.filterStringForDisplay;
 }
 
 - (NSString *_Nullable)cachedLastNameForRecipientId:(NSString *)recipientId
@@ -387,7 +388,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     OWSAssert(recipientId.length > 0);
 
     SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
-    return signalAccount.contact.lastName;
+    return signalAccount.contact.lastName.filterStringForDisplay;
 }
 
 #pragma mark - View Helpers
@@ -427,7 +428,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
                       indexText];
     }
 
-    return phoneNumberLabel;
+    return phoneNumberLabel.filterStringForDisplay;
 }
 
 - (BOOL)phoneNumber:(PhoneNumber *)phoneNumber1 matchesNumber:(PhoneNumber *)phoneNumber2

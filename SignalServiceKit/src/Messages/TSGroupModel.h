@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
 #import "ContactsManagerProtocol.h"
+#import "TSYapDatabaseObject.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -201,23 +201,8 @@ extension String {
     // MARK: Filter Methods
 
     @objc
-    public class func filterText(_ text: String?) -> String? {
-        guard let text = text?.ows_stripped() else {
-            return nil
-        }
-
-        if (self.hasExcessiveDiacriticals(text: text)) {
-            Logger.warn("\(TAG) filtering text for excessive diacriticals.")
-            let filteredText = text.folding(options: .diacriticInsensitive, locale: .current)
-            return filteredText.ows_stripped()
-        }
-
-        return text.ows_stripped()
-    }
-
-    @objc
     public class func filterNotificationText(_ text: String?) -> String? {
-        guard let text = self.filterText(text) else {
+        guard let text = text?.filterStringForDisplay() else {
             return nil
         }
 
@@ -229,25 +214,11 @@ extension String {
         return text.replacingOccurrences(of: "%", with: "%%")
     }
 
-    private class func hasExcessiveDiacriticals(text: String) -> Bool {
-        // discard any zalgo style text, by detecting maximum number of glyphs per character
-        for char in text.enumerated() {
-            let scalarCount = String(char.element).unicodeScalars.count
-            if scalarCount > 4 {
-                Logger.warn("\(TAG) detected excessive diacriticals at \(char.element) scalarCount: \(scalarCount)")
-                return true
-            }
-        }
-
-        return false
-    }
-
     @objc
     public class func displayableText(_ rawText: String) -> DisplayableText {
         // Only show up to N characters of text.
         let kMaxTextDisplayLength = 1024
-        let filteredText = filterText(rawText)
-        let fullText = filteredText != nil ? filteredText! : ""
+        let fullText = rawText.filterStringForDisplay()
         var isTextTruncated = false
         var displayText = fullText
         if displayText.count > kMaxTextDisplayLength {
