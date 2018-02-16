@@ -30,12 +30,6 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 + (BOOL)isReadyForAppExtensions;
 + (void)setIsReadyForAppExtensions;
 
-// TSAccountManager is the source of truth; this is less reliable
-// and should only be used in edge cases where the database is not
-// yet available.
-+ (BOOL)isRegistered;
-+ (void)setIsRegistered:(BOOL)value;
-
 - (BOOL)getHasSentAMessage;
 - (void)setHasSentAMessage:(BOOL)enabled;
 
