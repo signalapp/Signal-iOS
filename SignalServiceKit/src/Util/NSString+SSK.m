@@ -6,6 +6,37 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface UnicodeCodeRange : NSObject
+
+@property (nonatomic) unichar first;
+@property (nonatomic) unichar last;
+
+@end
+
+#pragma mark -
+
+@implementation UnicodeCodeRange
+
++ (UnicodeCodeRange *)rangeWithStart:(unichar)first last:(unichar)last
+{
+    OWSAssert(first <= last);
+
+    UnicodeCodeRange *range = [UnicodeCodeRange new];
+    range.first = first;
+    range.last = last;
+    return range;
+}
+
+- (NSComparisonResult)compare:(UnicodeCodeRange *)other
+{
+
+    return self.first > other.first;
+}
+
+@end
+
+#pragma mark -
+
 @implementation NSString (SSK)
 
 - (NSString *)ows_stripped
@@ -23,6 +54,50 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
++ (BOOL)isIndicVowel:(unichar)c
+{
+    static NSArray<UnicodeCodeRange *> *ranges;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // From:
+        //    https://unicode.org/charts/PDF/U0C00.pdf
+        //    https://unicode.org/charts/PDF/U0980.pdf
+        //    https://unicode.org/charts/PDF/U0900.pdf
+        ranges = [@[
+            // Telugu:
+            [UnicodeCodeRange rangeWithStart:0xC05 last:0xC14],
+            [UnicodeCodeRange rangeWithStart:0xC3E last:0xC4C],
+            [UnicodeCodeRange rangeWithStart:0xC60 last:0xC63],
+            // Bengali
+            [UnicodeCodeRange rangeWithStart:0x985 last:0x994],
+            [UnicodeCodeRange rangeWithStart:0x9BE last:0x9C8],
+            [UnicodeCodeRange rangeWithStart:0x9CB last:0x9CC],
+            [UnicodeCodeRange rangeWithStart:0x9E0 last:0x9E3],
+            // Devanagari
+            [UnicodeCodeRange rangeWithStart:0x904 last:0x914],
+            [UnicodeCodeRange rangeWithStart:0x93A last:0x93B],
+            [UnicodeCodeRange rangeWithStart:0x93E last:0x94C],
+            [UnicodeCodeRange rangeWithStart:0x94E last:0x94F],
+            [UnicodeCodeRange rangeWithStart:0x955 last:0x957],
+            [UnicodeCodeRange rangeWithStart:0x960 last:0x963],
+            [UnicodeCodeRange rangeWithStart:0x972 last:0x977],
+        ] sortedArrayUsingSelector:@selector(compare:)];
+    });
+
+    for (UnicodeCodeRange *range in ranges) {
+        if (c < range.first) {
+            // For perf, we can take advantage of the fact that the
+            // ranges are sorted to exit early if the character lies
+            // before the current range.
+            return NO;
+        }
+        if (range.first <= c && c <= range.last) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 // See: https://manishearth.github.io/blog/2018/02/15/picking-apart-the-crashing-ios-string/
 - (NSString *)filterForIndicScripts
 {
@@ -31,12 +106,23 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSMutableString *filteredForIndic = [NSMutableString new];
-    for (NSUInteger i = 0; i < self.length; i++) {
-        unichar c = [self characterAtIndex:i];
+    for (NSUInteger index = 0; index < self.length; index++) {
+        unichar c = [self characterAtIndex:index];
         if (c == 0x200C) {
-            continue;
+            NSUInteger nextIndex = index + 1;
+            if (nextIndex < self.length) {
+                unichar next = [self characterAtIndex:nextIndex];
+                if ([NSString isIndicVowel:next]) {
+                    // Discard ZWNJ (zero-width non-joiner) whenever we find a ZWNJ
+                    // followed by an Indic (Telugu, Bengali, Devanagari) vowel.
+                    continue;
+                }
+            }
         }
         [filteredForIndic appendFormat:@"%C", c];
+    }
+    if (filteredForIndic.length != self.length) {
+        DDLogError(@"%@ Filtered unsafe Indic script: %zd -> %zd", self.logTag, self.length, filteredForIndic.length);
     }
     return [filteredForIndic copy];
 }
