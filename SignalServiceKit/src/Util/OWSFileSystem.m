@@ -145,9 +145,6 @@ NS_ASSUME_NONNULL_BEGIN
         oldFilePath,
         newFilePath,
         fabs([startDate timeIntervalSinceNow]));
-
-    // Ensure all files moved have the proper data protection class.
-    [self protectRecursiveContentsAtPath:newFilePath];
 }
 
 + (BOOL)ensureDirectoryExists:(NSString *)dirPath

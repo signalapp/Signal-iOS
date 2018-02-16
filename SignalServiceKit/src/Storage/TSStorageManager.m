@@ -237,6 +237,9 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_WAL
                 sharedDataFilePath:self.sharedDataDatabaseFilePath_WAL
                      exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
+
+    // Ensure all files moved have the proper data protection class.
+    [OWSFileSystem protectRecursiveContentsAtPath:self.sharedDataDatabaseFilePath];
 }
 
 + (NSString *)databaseFilePath
