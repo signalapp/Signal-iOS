@@ -159,6 +159,7 @@ protocol CallAudioServiceDelegate: class {
 
         super.init()
 
+        // This fails when someone toggles iOS Call Integration
         SwiftSingletons.register(self)
 
         // Configure audio session so we don't prompt user with Record permission until call is connected.
@@ -242,7 +243,8 @@ protocol CallAudioServiceDelegate: class {
     private func ensureProperAudioSession(call: SignalCall?) {
         AssertIsOnMainThread()
 
-        guard let call = call else {
+        guard let call = call, !call.isTerminated else {
+            // Revert to default audio
             setAudioSession(category: AVAudioSessionCategorySoloAmbient,
                             mode: AVAudioSessionModeDefault)
             return

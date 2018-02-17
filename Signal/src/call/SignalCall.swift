@@ -43,6 +43,15 @@ protocol CallObserver: class {
     var observers = [Weak<CallObserver>]()
     let remotePhoneNumber: String
 
+    var isTerminated: Bool {
+        switch state {
+        case .localFailure, .localHangup, .remoteHangup, .remoteBusy:
+            return true
+        case .idle, .dialing, .answering, .remoteRinging, .localRinging, .connected:
+            return false
+        }
+    }
+
     // Signal Service identifier for this Call. Used to coordinate the call across remote clients.
     let signalingId: UInt64
 
