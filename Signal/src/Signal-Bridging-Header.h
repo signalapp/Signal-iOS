@@ -12,6 +12,7 @@
 #import "DebugUIPage.h"
 #import "FingerprintViewController.h"
 #import "HomeViewController.h"
+#import "DebugUITableViewController.h"
 #import "MediaDetailViewController.h"
 #import "NSString+OWS.h"
 #import "NotificationsManager.h"

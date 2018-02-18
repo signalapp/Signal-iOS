@@ -73,6 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
     contents.title = @"Debug: Conversation";
 
     NSMutableArray<OWSTableItem *> *subsectionItems = [NSMutableArray new];
+
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUIMessages new] viewController:viewController thread:thread]];
     [subsectionItems
@@ -92,6 +93,22 @@ NS_ASSUME_NONNULL_BEGIN
         addObject:[self itemForSubsection:[DebugUIStress new] viewController:viewController thread:thread]];
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUISyncMessages new] viewController:viewController thread:thread]];
+    OWSTableItem *sharedDataFileBrowserItem = [OWSTableItem
+        disclosureItemWithText:@"📁 Shared Container"
+                   actionBlock:^{
+                       NSURL *baseURL = [NSURL URLWithString:[OWSFileSystem appSharedDataDirectoryPath]];
+                       DebugUIFileBrowser *fileBrowser = [[DebugUIFileBrowser alloc] initWithFileURL:baseURL];
+                       [viewController.navigationController pushViewController:fileBrowser animated:YES];
+                   }];
+    [subsectionItems addObject:sharedDataFileBrowserItem];
+    OWSTableItem *documentsFileBrowserItem = [OWSTableItem
+        disclosureItemWithText:@"📁 Document Dir"
+                   actionBlock:^{
+                       NSURL *baseURL = [NSURL URLWithString:[OWSFileSystem appDocumentDirectoryPath]];
+                       DebugUIFileBrowser *fileBrowser = [[DebugUIFileBrowser alloc] initWithFileURL:baseURL];
+                       [viewController.navigationController pushViewController:fileBrowser animated:YES];
+                   }];
+    [subsectionItems addObject:documentsFileBrowserItem];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:thread]];
 
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
