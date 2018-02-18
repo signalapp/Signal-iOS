@@ -155,12 +155,6 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     DDLogInfo(@"%@ \t SHM file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_SHM]);
     DDLogInfo(@"%@ \t WAL file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_WAL]);
 
-    // The old database location was in the Document directory,
-    // so protect the database files individually.
-    [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath];
-    [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath_SHM];
-    [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath_WAL];
-
     // Protect the entire new database directory.
     [OWSFileSystem protectFileOrFolderAtPath:self.sharedDataDatabaseDirPath];
 }
@@ -228,6 +222,19 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 
 + (void)migrateToSharedData
 {
+    // We protect the db files here, which is somewhat redundant with what will happen in
+    // `moveAppFilePath:` which also ensures file protection.
+    // However that method dispatches async, since it can take a while with large attachment directories.
+    //
+    // Since we only have three files here it'll be quick to do it sync, and we want to make
+    // sure it happens as part of the migration.
+    //
+    // FileProtection attributes move with the file, so we do it on the legacy files before moving
+    // them.
+    [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath];
+    [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath_SHM];
+    [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath_WAL];
+
     [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath
                 sharedDataFilePath:self.sharedDataDatabaseFilePath
                      exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
