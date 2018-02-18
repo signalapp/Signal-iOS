@@ -1507,6 +1507,9 @@ protocol CallServiceObserver: class {
         Logger.info("\(self.logTag) clearing pendingIceUpdateMessages")
         self.pendingIceUpdateMessages = []
         self.fulfillCallConnectedPromise = nil
+
+        // In case we're still waiting on this promise somewhere, we need to reject it to avoid a memory leak.
+        // There is no harm in rejecting a previously fulfilled promise.
         if let rejectCallConnectedPromise = self.rejectCallConnectedPromise {
             rejectCallConnectedPromise(CallError.obsoleteCall(description: "Terminating call"))
         }

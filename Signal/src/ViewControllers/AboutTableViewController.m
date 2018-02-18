@@ -90,6 +90,13 @@
     NSString *_Nullable voipToken = [preferences getVoipToken];
     [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Push Token: %@", pushToken ?: @"None" ]]];
     [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"VOIP Token: %@", voipToken ?: @"None" ]]];
+
+    // Strip prefix from category, otherwise it's too long to fit into cell on a small device.
+    NSString *audioCategory =
+        [AVAudioSession.sharedInstance.category stringByReplacingOccurrencesOfString:@"AVAudioSessionCategory"
+                                                                          withString:@""];
+    [debugSection
+        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Audio Category: %@", audioCategory]]];
 #endif
 
     self.contents = contents;
