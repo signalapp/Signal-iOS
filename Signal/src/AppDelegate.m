@@ -274,7 +274,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
     // Show the launch screen until the async database view registrations are complete.
-    self.window.rootViewController = [self loadingRootViewController];
+    //
+    // Note: we void using loadingRootViewController, since it will indirectly try to
+    // instantiate primary storage, which will fail.
+    self.window.rootViewController = [self loadingRootViewControllerWithShowUpgradeWarning:NO];
 
     [self.window makeKeyAndVisible];
 
@@ -358,9 +361,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (UIViewController *)loadingRootViewController
 {
-    UIViewController *viewController =
-        [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
-
     NSString *lastLaunchedAppVersion = AppVersion.instance.lastAppVersion;
     NSString *lastCompletedLaunchAppVersion = AppVersion.instance.lastCompletedLaunchAppVersion;
     // Every time we change or add a database view in such a way that
@@ -373,44 +373,56 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                [VersionMigrations isVersion:lastCompletedLaunchAppVersion
                                    lessThan:kLastVersionWithDatabaseViewChange]));
     DDLogInfo(@"%@ mayNeedUpgrade: %d", self.logTag, mayNeedUpgrade);
-    if (mayNeedUpgrade) {
-        UIView *rootView = viewController.view;
-        UIImageView *iconView = nil;
-        for (UIView *subview in viewController.view.subviews) {
-            if ([subview isKindOfClass:[UIImageView class]]) {
-                iconView = (UIImageView *)subview;
-                break;
-            }
-        }
-        if (!iconView) {
-            OWSFail(@"Database view registration overlay has unexpected contents.");
-        } else {
-            UILabel *bottomLabel = [UILabel new];
-            bottomLabel.text = NSLocalizedString(
-                @"DATABASE_VIEW_OVERLAY_SUBTITLE", @"Subtitle shown while the app is updating its database.");
-            bottomLabel.font = [UIFont ows_mediumFontWithSize:16.f];
-            bottomLabel.textColor = [UIColor whiteColor];
-            bottomLabel.numberOfLines = 0;
-            bottomLabel.lineBreakMode = NSLineBreakByWordWrapping;
-            bottomLabel.textAlignment = NSTextAlignmentCenter;
-            [rootView addSubview:bottomLabel];
 
-            UILabel *topLabel = [UILabel new];
-            topLabel.text = NSLocalizedString(
-                @"DATABASE_VIEW_OVERLAY_TITLE", @"Title shown while the app is updating its database.");
-            topLabel.font = [UIFont ows_mediumFontWithSize:20.f];
-            topLabel.textColor = [UIColor whiteColor];
-            topLabel.numberOfLines = 0;
-            topLabel.lineBreakMode = NSLineBreakByWordWrapping;
-            topLabel.textAlignment = NSTextAlignmentCenter;
-            [rootView addSubview:topLabel];
+    return [self loadingRootViewControllerWithShowUpgradeWarning:mayNeedUpgrade];
+}
 
-            [bottomLabel autoPinWidthToSuperviewWithMargin:20.f];
-            [topLabel autoPinWidthToSuperviewWithMargin:20.f];
-            [bottomLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topLabel withOffset:10.f];
-            [iconView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:bottomLabel withOffset:40.f];
+- (UIViewController *)loadingRootViewControllerWithShowUpgradeWarning:(BOOL)showUpgradeWarning
+{
+    UIViewController *viewController =
+        [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
+
+    if (!showUpgradeWarning) {
+        return viewController;
+    }
+
+    UIView *rootView = viewController.view;
+    UIImageView *iconView = nil;
+    for (UIView *subview in viewController.view.subviews) {
+        if ([subview isKindOfClass:[UIImageView class]]) {
+            iconView = (UIImageView *)subview;
+            break;
         }
     }
+    if (!iconView) {
+        OWSFail(@"Database view registration overlay has unexpected contents.");
+        return viewController;
+    }
+
+    UILabel *bottomLabel = [UILabel new];
+    bottomLabel.text = NSLocalizedString(
+        @"DATABASE_VIEW_OVERLAY_SUBTITLE", @"Subtitle shown while the app is updating its database.");
+    bottomLabel.font = [UIFont ows_mediumFontWithSize:16.f];
+    bottomLabel.textColor = [UIColor whiteColor];
+    bottomLabel.numberOfLines = 0;
+    bottomLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    bottomLabel.textAlignment = NSTextAlignmentCenter;
+    [rootView addSubview:bottomLabel];
+
+    UILabel *topLabel = [UILabel new];
+    topLabel.text
+        = NSLocalizedString(@"DATABASE_VIEW_OVERLAY_TITLE", @"Title shown while the app is updating its database.");
+    topLabel.font = [UIFont ows_mediumFontWithSize:20.f];
+    topLabel.textColor = [UIColor whiteColor];
+    topLabel.numberOfLines = 0;
+    topLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    topLabel.textAlignment = NSTextAlignmentCenter;
+    [rootView addSubview:topLabel];
+
+    [bottomLabel autoPinWidthToSuperviewWithMargin:20.f];
+    [topLabel autoPinWidthToSuperviewWithMargin:20.f];
+    [bottomLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topLabel withOffset:10.f];
+    [iconView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:bottomLabel withOffset:40.f];
 
     return viewController;
 }
