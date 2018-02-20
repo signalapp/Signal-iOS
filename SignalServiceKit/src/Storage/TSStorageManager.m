@@ -222,6 +222,23 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 
 + (void)migrateToSharedData
 {
+    // Given how sensitive this migration is, we verbosely
+    // log the contents of all involved paths before and after.
+    NSArray<NSString *> *paths = @[
+        self.legacyDatabaseFilePath,
+        self.legacyDatabaseFilePath_SHM,
+        self.legacyDatabaseFilePath_WAL,
+        self.sharedDataDatabaseFilePath,
+        self.sharedDataDatabaseFilePath_SHM,
+        self.sharedDataDatabaseFilePath_WAL,
+    ];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    for (NSString *path in paths) {
+        if ([fileManager fileExistsAtPath:path]) {
+            DDLogInfo(@"%@ migrateToSharedData before %@: %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
+        }
+    }
+
     // We protect the db files here, which is somewhat redundant with what will happen in
     // `moveAppFilePath:` which also ensures file protection.
     // However that method dispatches async, since it can take a while with large attachment directories.
@@ -244,6 +261,12 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_WAL
                 sharedDataFilePath:self.sharedDataDatabaseFilePath_WAL
                      exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
+
+    for (NSString *path in paths) {
+        if ([fileManager fileExistsAtPath:path]) {
+            DDLogInfo(@"%@ migrateToSharedData after %@: %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
+        }
+    }
 }
 
 + (NSString *)databaseFilePath
