@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)audioDurationSeconds;
 
-+ (void)migrateToSharedData;
++ (nullable NSError *)migrateToSharedData;
 
 @end
 

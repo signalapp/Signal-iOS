@@ -194,11 +194,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"Attachments"];
 }
 
-+ (void)migrateToSharedData
++ (nullable NSError *)migrateToSharedData
 {
-    [OWSFileSystem moveAppFilePath:self.legacyAttachmentsDirPath
-                sharedDataFilePath:self.sharedDataAttachmentsDirPath
-                     exceptionName:@"CouldNotMigrateAttachmentsDirectory"];
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    return [OWSFileSystem moveAppFilePath:self.legacyAttachmentsDirPath
+                       sharedDataFilePath:self.sharedDataAttachmentsDirPath
+                            exceptionName:@"CouldNotMigrateAttachmentsDirectory"];
 }
 
 + (NSString *)attachmentsFolder

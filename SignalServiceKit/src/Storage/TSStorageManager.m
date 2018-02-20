@@ -220,8 +220,10 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
 }
 
-+ (void)migrateToSharedData
++ (nullable NSError *)migrateToSharedData
 {
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
     // Given how sensitive this migration is, we verbosely
     // log the contents of all involved paths before and after.
     NSArray<NSString *> *paths = @[
@@ -235,7 +237,7 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     NSFileManager *fileManager = [NSFileManager defaultManager];
     for (NSString *path in paths) {
         if ([fileManager fileExistsAtPath:path]) {
-            DDLogInfo(@"%@ migrateToSharedData before %@: %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
+            DDLogInfo(@"%@ before migrateToSharedData: %@, %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
         }
     }
 
@@ -252,21 +254,33 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath_SHM];
     [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath_WAL];
 
-    [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath
-                sharedDataFilePath:self.sharedDataDatabaseFilePath
-                     exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
-    [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_SHM
-                sharedDataFilePath:self.sharedDataDatabaseFilePath_SHM
-                     exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
-    [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_WAL
-                sharedDataFilePath:self.sharedDataDatabaseFilePath_WAL
-                     exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
+    NSError *_Nullable error = nil;
+    error = [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath
+                        sharedDataFilePath:self.sharedDataDatabaseFilePath
+                             exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
+    if (error) {
+        return error;
+    }
+    error = [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_SHM
+                        sharedDataFilePath:self.sharedDataDatabaseFilePath_SHM
+                             exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
+    if (error) {
+        return error;
+    }
+    error = [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_WAL
+                        sharedDataFilePath:self.sharedDataDatabaseFilePath_WAL
+                             exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
+    if (error) {
+        return error;
+    }
 
     for (NSString *path in paths) {
         if ([fileManager fileExistsAtPath:path]) {
-            DDLogInfo(@"%@ migrateToSharedData after %@: %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
+            DDLogInfo(@"%@ after migrateToSharedData: %@, %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
         }
     }
+
+    return nil;
 }
 
 + (NSString *)databaseFilePath

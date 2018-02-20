@@ -1113,11 +1113,13 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"ProfileAvatars"];
 }
 
-+ (void)migrateToSharedData
++ (nullable NSError *)migrateToSharedData
 {
-    [OWSFileSystem moveAppFilePath:self.legacyProfileAvatarsDirPath
-                sharedDataFilePath:self.sharedDataProfileAvatarsDirPath
-                     exceptionName:@"ProfileManagerCouldNotMigrateProfileDirectory"];
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    return [OWSFileSystem moveAppFilePath:self.legacyProfileAvatarsDirPath
+                       sharedDataFilePath:self.sharedDataProfileAvatarsDirPath
+                            exceptionName:@"ProfileManagerCouldNotMigrateProfileDirectory"];
 }
 
 - (NSString *)profileAvatarsDirPath

@@ -121,6 +121,13 @@ NS_ASSUME_NONNULL_BEGIN
 // This macro is intended for use in Objective-C.
 #define OWSAssertIsOnMainThread() OWSCAssert([NSThread isMainThread])
 
+#define OWSProdLogAndFail(_messageFormat, ...)                                                                         \
+    {                                                                                                                  \
+        DDLogError(_messageFormat, ##__VA_ARGS__);                                                                     \
+        [DDLog flushLog];                                                                                              \
+        OWSFail(_messageFormat, ##__VA_ARGS__);                                                                        \
+    }
+
 // This function is intended for use in Swift.
 void AssertIsOnMainThread(void);
 

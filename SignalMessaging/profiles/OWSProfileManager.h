@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/ProfileManagerProtocol.h>
@@ -24,7 +24,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 - (void)resetProfileStorage;
 
-+ (void)migrateToSharedData;
++ (nullable NSError *)migrateToSharedData;
 
 #pragma mark - Local Profile
 
