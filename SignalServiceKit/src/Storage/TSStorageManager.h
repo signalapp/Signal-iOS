@@ -21,13 +21,16 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage);
 + (YapDatabaseConnection *)dbReadConnection;
 + (YapDatabaseConnection *)dbReadWriteConnection;
 
-+ (void)migrateToSharedData;
++ (nullable NSError *)migrateToSharedData;
 
 + (NSString *)databaseFilePath;
 
 + (NSString *)legacyDatabaseFilePath;
 + (NSString *)legacyDatabaseFilePath_SHM;
 + (NSString *)legacyDatabaseFilePath_WAL;
++ (NSString *)sharedDataDatabaseFilePath;
++ (NSString *)sharedDataDatabaseFilePath_SHM;
++ (NSString *)sharedDataDatabaseFilePath_WAL;
 
 @end
 

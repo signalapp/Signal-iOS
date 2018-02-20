@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "AppContext.h"
 #import "NSUserDefaults+OWS.h"
+#import "AppContext.h"
 #import "TSConstants.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)migrateToSharedUserDefaults
 {
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
     NSUserDefaults *appUserDefaults = self.appUserDefaults;
 
     NSDictionary<NSString *, id> *dictionary = [NSUserDefaults standardUserDefaults].dictionaryRepresentation;

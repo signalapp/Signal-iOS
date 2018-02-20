@@ -3,6 +3,7 @@
 //
 
 #import "OWSFileSystem.h"
+#import "OWSError.h"
 #import "TSConstants.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -107,23 +108,47 @@ NS_ASSUME_NONNULL_BEGIN
     return paths[0];
 }
 
-+ (void)moveAppFilePath:(NSString *)oldFilePath
-     sharedDataFilePath:(NSString *)newFilePath
-          exceptionName:(NSString *)exceptionName
++ (nullable NSError *)moveAppFilePath:(NSString *)oldFilePath
+                   sharedDataFilePath:(NSString *)newFilePath
+                        exceptionName:(NSString *)exceptionName
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:oldFilePath]) {
-        return;
+        return nil;
     }
 
     DDLogInfo(@"%@ Moving file or directory from: %@ to: %@", self.logTag, oldFilePath, newFilePath);
 
     if ([fileManager fileExistsAtPath:newFilePath]) {
-        OWSFail(@"%@ Can't move file or directory from: %@ to: %@; destination already exists.",
+        // If a file/directory already exists at the destination,
+        // try to move it "aside" by renaming it with an extension.
+        NSString *legacyFilePath =
+            [[newFilePath stringByAppendingString:@"."] stringByAppendingString:[NSUUID UUID].UUIDString];
+        DDLogInfo(@"%@ Trying to rename pre-existing destination file or directory from: %@ to: %@",
+            self.logTag,
+            newFilePath,
+            legacyFilePath);
+
+        NSError *_Nullable error;
+        BOOL success = [fileManager moveItemAtPath:newFilePath toPath:legacyFilePath error:&error];
+        if (!success || error) {
+            OWSProdLogAndFail(
+                @"%@ Could not move pre-existing destination file or directory from: %@ to: %@, error: %@",
+                self.logTag,
+                newFilePath,
+                legacyFilePath,
+                error);
+            return error;
+        }
+    }
+
+    if ([fileManager fileExistsAtPath:newFilePath]) {
+        OWSProdLogAndFail(@"%@ Can't move file or directory from: %@ to: %@; destination already exists.",
             self.logTag,
             oldFilePath,
             newFilePath);
-        return;
+        return OWSErrorWithCodeDescription(
+            OWSErrorCodeMoveFileToSharedDataContainerError, @"Can't move file; destination already exists.");
     }
     
     NSDate *startDate = [NSDate new];
@@ -131,14 +156,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *_Nullable error;
     BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
     if (!success || error) {
-        NSString *errorDescription =
-            [NSString stringWithFormat:@"%@ Could not move file or directory from: %@ to: %@, error: %@",
-                      self.logTag,
-                      oldFilePath,
-                      newFilePath,
-                      error];
-        OWSFail(@"%@", errorDescription);
-        OWSRaiseException(exceptionName, @"%@", errorDescription);
+        OWSProdLogAndFail(@"%@ Could not move file or directory from: %@ to: %@, error: %@",
+            self.logTag,
+            oldFilePath,
+            newFilePath,
+            error);
+        return error;
     }
 
     DDLogInfo(@"%@ Moved file or directory from: %@ to: %@ in: %f",
@@ -153,6 +176,8 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self protectRecursiveContentsAtPath:newFilePath];
     });
+
+    return nil;
 }
 
 + (BOOL)ensureDirectoryExists:(NSString *)dirPath

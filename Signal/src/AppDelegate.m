@@ -230,34 +230,63 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (BOOL)ensureIsReadyForAppExtensions
 {
+    // Given how sensitive this migration is, we verbosely
+    // log the contents of all involved paths before and after.
+    //
+    // TODO: Remove this logging once we have high confidence
+    // in our migration logic.
+    NSArray<NSString *> *paths = @[
+        TSStorageManager.legacyDatabaseFilePath,
+        TSStorageManager.legacyDatabaseFilePath_SHM,
+        TSStorageManager.legacyDatabaseFilePath_WAL,
+        TSStorageManager.sharedDataDatabaseFilePath,
+        TSStorageManager.sharedDataDatabaseFilePath_SHM,
+        TSStorageManager.sharedDataDatabaseFilePath_WAL,
+    ];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    for (NSString *path in paths) {
+        if ([fileManager fileExistsAtPath:path]) {
+            DDLogInfo(@"%@ storage file: %@, %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
+        }
+    }
+
     if ([OWSPreferences isReadyForAppExtensions]) {
         return YES;
     }
 
     if ([NSFileManager.defaultManager fileExistsAtPath:TSStorageManager.legacyDatabaseFilePath]) {
-        DDLogInfo(@"%@ Database file size: %@",
+        DDLogInfo(@"%@ Legacy Database file size: %@",
             self.logTag,
             [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath]);
-        DDLogInfo(@"%@ \t SHM file size: %@",
+        DDLogInfo(@"%@ \t Legacy SHM file size: %@",
             self.logTag,
             [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath_SHM]);
-        DDLogInfo(@"%@ \t WAL file size: %@",
+        DDLogInfo(@"%@ \t Legacy WAL file size: %@",
             self.logTag,
             [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath_WAL]);
     }
 
     NSError *_Nullable error = [self convertDatabaseIfNecessary];
+
+    if (!error) {
+        [NSUserDefaults migrateToSharedUserDefaults];
+    }
+
+    if (!error) {
+        error = [TSStorageManager migrateToSharedData];
+    }
+    if (!error) {
+        error = [OWSProfileManager migrateToSharedData];
+    }
+    if (!error) {
+        error = [TSAttachmentStream migrateToSharedData];
+    }
+
     if (error) {
         OWSFail(@"%@ database conversion failed: %@", self.logTag, error);
         [self showLaunchFailureUI:error];
         return NO;
     }
-
-    [NSUserDefaults migrateToSharedUserDefaults];
-
-    [TSStorageManager migrateToSharedData];
-    [OWSProfileManager migrateToSharedData];
-    [TSAttachmentStream migrateToSharedData];
 
     return YES;
 }
@@ -304,6 +333,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 - (nullable NSError *)convertDatabaseIfNecessary
 {
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
     NSString *databaseFilePath = [TSStorageManager legacyDatabaseFilePath];
     if (![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]) {
         DDLogVerbose(@"%@ no legacy database file found", self.logTag);
