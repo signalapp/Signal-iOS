@@ -405,6 +405,10 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                 backgroundTask = nil;
             });
         });
+    } else if ([message.path isEqualToString:@"/api/v1/queue/empty"]) {
+        // Queue is drained.
+
+        [self sendWebSocketMessageAcknowledgement:message];
     } else {
         DDLogWarn(@"%@ Unsupported WebSocket Request", self.logTag);
 

@@ -63,11 +63,11 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
 - (void)makeRequest:(TSRequest *)request
     completionQueue:(dispatch_queue_t)completionQueue
-            success:(TSNetworkManagerSuccess)success
+            success:(TSNetworkManagerSuccess)successBlock
             failure:(TSNetworkManagerFailure)failureBlock
 {
     OWSAssert(request);
-    OWSAssert(success);
+    OWSAssert(successBlock);
     OWSAssert(failureBlock);
 
     DDLogInfo(@"%@ Making request: %@", self.logTag, request);
@@ -77,12 +77,16 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
             && ![request isKindOfClass:[TSContactsIntersectionRequest class]]
             && ![request isKindOfClass:[TSAllocAttachmentRequest class]]) {
             // The SAE should only make requests directly related to message sending.
-            OWSFail(@"%@ Making request: %@", self.logTag, request);
+            OWSFail(@"%@ Making unexpected request: %@", self.logTag, request);
         }
     }
 
-    void (^failure)(NSURLSessionDataTask *task, NSError *error) =
-        [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock];
+    // TODO: Remove this logging when the call connection issues have been resolved.
+    TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, id responseObject) {
+        DDLogInfo(@"%@ request succeeded : %@", self.logTag, request);
+        successBlock(task, responseObject);
+    };
+    TSNetworkManagerFailure failure = [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock request:request];
 
     AFHTTPSessionManager *sessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
     // [OWSSignalService signalServiceSessionManager] always returns a new instance of
@@ -131,7 +135,11 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     }
 }
 
-+ (failureBlock)errorPrettifyingForFailureBlock:(failureBlock)failureBlock {
++ (failureBlock)errorPrettifyingForFailureBlock:(failureBlock)failureBlock request:(TSRequest *)request
+{
+    OWSAssert(failureBlock);
+    OWSAssert(request);
+
     return ^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull networkError) {
       NSInteger statusCode = [task statusCode];
       NSError *error       = [self errorWithHTTPCode:statusCode
@@ -142,7 +150,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
       switch (statusCode) {
           case 0: {
-              DDLogWarn(@"The network request failed because of a connectivity error.");
+              DDLogWarn(@"The network request failed because of a connectivity error: %@", request);
               failureBlock(task,
                   [self errorWithHTTPCode:statusCode
                               description:NSLocalizedString(@"ERROR_DESCRIPTION_NO_INTERNET",
@@ -153,27 +161,30 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               break;
           }
           case 400: {
-              DDLogError(@"The request contains an invalid parameter : %@", networkError.debugDescription);
+              DDLogError(@"The request contains an invalid parameter : %@, %@", networkError.debugDescription, request);
               failureBlock(task, error);
               break;
           }
           case 401: {
-              DDLogError(@"The server returned an error about the authorization header: %@",
-                         networkError.debugDescription);
+              DDLogError(@"The server returned an error about the authorization header: %@, %@",
+                  networkError.debugDescription,
+                  request);
               failureBlock(task, error);
               break;
           }
           case 403: {
-              DDLogError(@"The server returned an authentication failure: %@", networkError.debugDescription);
+              DDLogError(
+                  @"The server returned an authentication failure: %@, %@", networkError.debugDescription, request);
               failureBlock(task, error);
               break;
           }
           case 404: {
-              DDLogError(@"The requested resource could not be found: %@", networkError.debugDescription);
+              DDLogError(@"The requested resource could not be found: %@, %@", networkError.debugDescription, request);
               failureBlock(task, error);
               break;
           }
           case 411: {
+              DDLogInfo(@"Multi-device pairing: %zd, %@, %@", statusCode, networkError.debugDescription, request);
               failureBlock(task,
                            [self errorWithHTTPCode:statusCode
                                        description:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_DESC", nil)
@@ -183,7 +194,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               break;
           }
           case 413: {
-              DDLogWarn(@"Rate limit exceeded");
+              DDLogWarn(@"Rate limit exceeded: %@", request);
               failureBlock(task,
                            [self errorWithHTTPCode:statusCode
                                        description:NSLocalizedString(@"REGISTRATION_ERROR", nil)
@@ -193,7 +204,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               break;
           }
           case 417: {
-              DDLogWarn(@"The number is already registered on a relay. Please unregister there first.");
+              DDLogWarn(@"The number is already registered on a relay. Please unregister there first: %@", request);
               failureBlock(task,
                            [self errorWithHTTPCode:statusCode
                                        description:NSLocalizedString(@"REGISTRATION_ERROR", nil)
@@ -203,13 +214,14 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               break;
           }
           case 422: {
-              DDLogError(@"The registration was requested over an unknown transport: %@",
-                         networkError.debugDescription);
+              DDLogError(@"The registration was requested over an unknown transport: %@, %@",
+                  networkError.debugDescription,
+                  request);
               failureBlock(task, error);
               break;
           }
-
           default: {
+              DDLogWarn(@"Unknown error: %zd, %@, %@", statusCode, networkError.debugDescription, request);
               failureBlock(task, error);
               break;
           }
