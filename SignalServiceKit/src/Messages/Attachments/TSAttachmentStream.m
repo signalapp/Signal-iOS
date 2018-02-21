@@ -199,8 +199,7 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     return [OWSFileSystem moveAppFilePath:self.legacyAttachmentsDirPath
-                       sharedDataFilePath:self.sharedDataAttachmentsDirPath
-                            exceptionName:@"CouldNotMigrateAttachmentsDirectory"];
+                       sharedDataFilePath:self.sharedDataAttachmentsDirPath];
 }
 
 + (NSString *)attachmentsFolder

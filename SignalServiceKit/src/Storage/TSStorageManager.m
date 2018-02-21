@@ -18,8 +18,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const TSStorageManagerExceptionName_CouldNotMoveDatabaseFile
-    = @"TSStorageManagerExceptionName_CouldNotMoveDatabaseFile";
 NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
     = @"TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory";
 
@@ -255,21 +253,35 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     [OWSFileSystem protectFileOrFolderAtPath:self.legacyDatabaseFilePath_WAL];
 
     NSError *_Nullable error = nil;
-    error = [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath
-                        sharedDataFilePath:self.sharedDataDatabaseFilePath
-                             exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
+    if ([fileManager fileExistsAtPath:self.legacyDatabaseFilePath] &&
+        [fileManager fileExistsAtPath:self.sharedDataDatabaseFilePath]) {
+        // In the case that we have a "database conflict" (i.e. database files
+        // in the src and dst locations), ensure database integrity by renaming
+        // all of the dst database files.
+        for (NSString *filePath in @[
+                 self.sharedDataDatabaseFilePath,
+                 self.sharedDataDatabaseFilePath_SHM,
+                 self.sharedDataDatabaseFilePath_WAL,
+             ]) {
+            error = [OWSFileSystem renameFilePathUsingRandomExtension:filePath];
+            if (error) {
+                return error;
+            }
+        }
+    }
+
+    error =
+        [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath sharedDataFilePath:self.sharedDataDatabaseFilePath];
     if (error) {
         return error;
     }
     error = [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_SHM
-                        sharedDataFilePath:self.sharedDataDatabaseFilePath_SHM
-                             exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
+                        sharedDataFilePath:self.sharedDataDatabaseFilePath_SHM];
     if (error) {
         return error;
     }
     error = [OWSFileSystem moveAppFilePath:self.legacyDatabaseFilePath_WAL
-                        sharedDataFilePath:self.sharedDataDatabaseFilePath_WAL
-                             exceptionName:TSStorageManagerExceptionName_CouldNotMoveDatabaseFile];
+                        sharedDataFilePath:self.sharedDataDatabaseFilePath_WAL];
     if (error) {
         return error;
     }

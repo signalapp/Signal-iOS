@@ -108,9 +108,32 @@ NS_ASSUME_NONNULL_BEGIN
     return paths[0];
 }
 
-+ (nullable NSError *)moveAppFilePath:(NSString *)oldFilePath
-                   sharedDataFilePath:(NSString *)newFilePath
-                        exceptionName:(NSString *)exceptionName
++ (nullable NSError *)renameFilePathUsingRandomExtension:(NSString *)oldFilePath
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:oldFilePath]) {
+        return nil;
+    }
+
+    NSString *newFilePath =
+        [[oldFilePath stringByAppendingString:@"."] stringByAppendingString:[NSUUID UUID].UUIDString];
+
+    DDLogInfo(@"%@ Moving file or directory from: %@ to: %@", self.logTag, oldFilePath, newFilePath);
+
+    NSError *_Nullable error;
+    BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
+    if (!success || error) {
+        OWSProdLogAndFail(@"%@ Could not move file or directory from: %@ to: %@, error: %@",
+            self.logTag,
+            oldFilePath,
+            newFilePath,
+            error);
+        return error;
+    }
+    return nil;
+}
+
++ (nullable NSError *)moveAppFilePath:(NSString *)oldFilePath sharedDataFilePath:(NSString *)newFilePath
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:oldFilePath]) {
@@ -122,22 +145,8 @@ NS_ASSUME_NONNULL_BEGIN
     if ([fileManager fileExistsAtPath:newFilePath]) {
         // If a file/directory already exists at the destination,
         // try to move it "aside" by renaming it with an extension.
-        NSString *legacyFilePath =
-            [[newFilePath stringByAppendingString:@"."] stringByAppendingString:[NSUUID UUID].UUIDString];
-        DDLogInfo(@"%@ Trying to rename pre-existing destination file or directory from: %@ to: %@",
-            self.logTag,
-            newFilePath,
-            legacyFilePath);
-
-        NSError *_Nullable error;
-        BOOL success = [fileManager moveItemAtPath:newFilePath toPath:legacyFilePath error:&error];
-        if (!success || error) {
-            OWSProdLogAndFail(
-                @"%@ Could not move pre-existing destination file or directory from: %@ to: %@, error: %@",
-                self.logTag,
-                newFilePath,
-                legacyFilePath,
-                error);
+        NSError *_Nullable error = [self renameFilePathUsingRandomExtension:newFilePath];
+        if (error) {
             return error;
         }
     }
