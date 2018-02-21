@@ -254,7 +254,13 @@ const NSUInteger kAvatarViewDiameter = 52;
 
 #pragma mark - Date formatting
 
-- (NSAttributedString *)dateAttributedString:(NSDate *)date {
+- (NSAttributedString *)dateAttributedString:(nullable NSDate *)date
+{
+    if (date == nil) {
+        OWSProdLogAndFail(@"%@ date was unexpectedly nil", self.logTag);
+        return [NSAttributedString new];
+    }
+
     NSString *timeString;
 
     if ([DateUtil dateIsToday:date]) {
@@ -263,6 +269,7 @@ const NSUInteger kAvatarViewDiameter = 52;
         timeString = [[DateUtil dateFormatter] stringFromDate:date];
     }
 
+    OWSAssert(timeString);
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:timeString];
 
     [attributedString addAttribute:NSForegroundColorAttributeName
