@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)displayNameForNotificationSound:(NotificationSound)notificationSound;
 
++ (NSString *)filenameForNotificationSound:(NotificationSound)notificationSound;
+
 + (void)playNotificationSound:(NotificationSound)notificationSound;
 
 @end
