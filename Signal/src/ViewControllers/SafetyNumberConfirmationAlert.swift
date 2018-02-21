@@ -18,13 +18,22 @@ class SafetyNumberConfirmationAlert: NSObject {
     }
 
     public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
-        return self.presentAlertIfNecessary(recipientIds: [recipientId], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion)
+        return self.presentAlertIfNecessary(recipientIds: [recipientId], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: nil)
+    }
+
+    public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
+        return self.presentAlertIfNecessary(recipientIds: [recipientId], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: beforePresentationHandler)
     }
 
     public class func presentAlertIfNecessary(recipientIds: [String], confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
+        return self.presentAlertIfNecessary(recipientIds: recipientIds, confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: nil)
+    }
+
+    public class func presentAlertIfNecessary(recipientIds: [String], confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
         return SafetyNumberConfirmationAlert(contactsManager: contactsManager).presentIfNecessary(recipientIds: recipientIds,
                                                                                                   confirmationText: confirmationText,
-                                                                                                  completion: completion)
+                                                                                                  completion: completion,
+                                                                                                  beforePresentationHandler: beforePresentationHandler)
     }
 
     /**
@@ -33,7 +42,7 @@ class SafetyNumberConfirmationAlert: NSObject {
      * @returns true  if an alert was shown
      *          false if there were no unconfirmed identities
      */
-    public func presentIfNecessary(recipientIds: [String], confirmationText: String, completion: @escaping (Bool) -> Void) -> Bool {
+    public func presentIfNecessary(recipientIds: [String], confirmationText: String, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
 
         guard let untrustedIdentity = untrustedIdentityForSending(recipientIds: recipientIds) else {
             // No identities to confirm, no alert to present.
@@ -75,7 +84,15 @@ class SafetyNumberConfirmationAlert: NSObject {
         }
         actionSheetController.addAction(showSafetyNumberAction)
 
-        actionSheetController.addAction(OWSAlerts.cancelAction)
+        // We can't use the default `OWSAlerts.cancelAction` because we need to specify that the completion
+        // handler is called.
+        let cancelAction = UIAlertAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
+            Logger.info("\(self.logTag) user canceled.")
+            completion(false)
+        }
+        actionSheetController.addAction(cancelAction)
+
+        beforePresentationHandler?()
 
         UIApplication.shared.frontmostViewController?.present(actionSheetController, animated: true)
         return true

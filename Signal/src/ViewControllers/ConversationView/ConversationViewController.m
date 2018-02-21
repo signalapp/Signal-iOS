@@ -1356,9 +1356,28 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
                                                          completion:(void (^)(BOOL didConfirmIdentity))completionHandler
 {
     return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:self.thread.recipientIdentifiers
-                                                                 confirmationText:confirmationText
-                                                                  contactsManager:self.contactsManager
-                                                                       completion:completionHandler];
+        confirmationText:confirmationText
+        contactsManager:self.contactsManager
+        completion:^(BOOL didShowAlert) {
+            // Pre iOS-11, the keyboard and inputAccessoryView will obscure the alert if the keyboard is up when the
+            // alert is presented, so after hiding it, we regain first responder here.
+            if (@available(iOS 11.0, *)) {
+                // do nothing
+            } else {
+                [self becomeFirstResponder];
+            }
+            completionHandler(didShowAlert);
+        }
+        beforePresentationHandler:^(void) {
+            if (@available(iOS 11.0, *)) {
+                // do nothing
+            } else {
+                // Pre iOS-11, the keyboard and inputAccessoryView will obscure the alert if the keyboard is up when the
+                // alert is presented.
+                [self dismissKeyBoard];
+                [self resignFirstResponder];
+            }
+        }];
 }
 
 - (void)showFingerprintWithRecipientId:(NSString *)recipientId

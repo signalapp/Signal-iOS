@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -55,11 +55,12 @@ import SignalMessaging
 
         let showedAlert = SafetyNumberConfirmationAlert.presentAlertIfNecessary(recipientId: recipientId,
                                                                                 confirmationText: CallStrings.confirmAndCallButtonTitle,
-                                                                                contactsManager: self.contactsManager) { didConfirmIdentity in
+                                                                                contactsManager: self.contactsManager,
+                                                                                completion: { didConfirmIdentity in
                                                                                     if didConfirmIdentity {
                                                                                         _ = self.initiateCall(recipientId: recipientId)
                                                                                     }
-        }
+        })
         guard !showedAlert else {
             return false
         }
