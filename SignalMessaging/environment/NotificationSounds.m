@@ -42,6 +42,17 @@
 {
     return @[
         @(NotificationSound_Aurora),
+        @(NotificationSound_Bamboo),
+        @(NotificationSound_Chord),
+        @(NotificationSound_Circles),
+        @(NotificationSound_Complete),
+        @(NotificationSound_Hello),
+        @(NotificationSound_Input),
+        @(NotificationSound_Keys),
+        @(NotificationSound_Note),
+        @(NotificationSound_Popcorn),
+        @(NotificationSound_Pulse),
+        @(NotificationSound_Synth),
     ];
 }
 
@@ -51,22 +62,70 @@
     switch (notificationSound) {
         case NotificationSound_Aurora:
             return @"Aurora";
+        case NotificationSound_Bamboo:
+            return @"Bamboo";
+        case NotificationSound_Chord:
+            return @"Chord";
+        case NotificationSound_Circles:
+            return @"Circles";
+        case NotificationSound_Complete:
+            return @"Complete";
+        case NotificationSound_Hello:
+            return @"Hello";
+        case NotificationSound_Input:
+            return @"Input";
+        case NotificationSound_Keys:
+            return @"Keys";
+        case NotificationSound_Note:
+            return @"Note";
+        case NotificationSound_Popcorn:
+            return @"Popcorn";
+        case NotificationSound_Pulse:
+            return @"Pulse";
+        case NotificationSound_Synth:
+            return @"Synth";
     }
 }
 
 - (NSURL *)soundURLForNotificationSound:(NotificationSound)notificationSound
 {
-    NSString *bundlePath = [NSBundle mainBundle].bundlePath;
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    for (NSString *filename in [fileManager contentsOfDirectoryAtPath:bundlePath error:nil]) {
-        DDLogInfo(@"%@ filename: %@", self.logTag, filename);
-    }
-    [DDLog flushLog];
-
     NSURL *_Nullable url;
     switch (notificationSound) {
         case NotificationSound_Aurora:
             url = [[NSBundle mainBundle] URLForResource:@"aurora" withExtension:@"m4r"];
+            break;
+        case NotificationSound_Bamboo:
+            url = [[NSBundle mainBundle] URLForResource:@"bamboo" withExtension:@"m4r"];
+            break;
+        case NotificationSound_Chord:
+            url = [[NSBundle mainBundle] URLForResource:@"chord" withExtension:@"m4r"];
+            break;
+        case NotificationSound_Circles:
+            url = [[NSBundle mainBundle] URLForResource:@"circles" withExtension:@"m4r"];
+            break;
+        case NotificationSound_Complete:
+            url = [[NSBundle mainBundle] URLForResource:@"complete" withExtension:@"m4r"];
+            break;
+        case NotificationSound_Hello:
+            url = [[NSBundle mainBundle] URLForResource:@"hello" withExtension:@"m4r"];
+            break;
+        case NotificationSound_Input:
+            url = [[NSBundle mainBundle] URLForResource:@"input" withExtension:@"m4r"];
+            break;
+        case NotificationSound_Keys:
+            url = [[NSBundle mainBundle] URLForResource:@"keys" withExtension:@"m4r"];
+            break;
+        case NotificationSound_Note:
+            url = [[NSBundle mainBundle] URLForResource:@"note" withExtension:@"m4r"];
+            break;
+        case NotificationSound_Popcorn:
+            url = [[NSBundle mainBundle] URLForResource:@"popcorn" withExtension:@"m4r"];
+            break;
+        case NotificationSound_Pulse:
+            url = [[NSBundle mainBundle] URLForResource:@"pulse" withExtension:@"m4r"];
+            break;
+        case NotificationSound_Synth:
+            url = [[NSBundle mainBundle] URLForResource:@"synth" withExtension:@"m4r"];
             break;
     }
     OWSAssert(url);
