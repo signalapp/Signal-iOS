@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface InboxTableViewCell : UITableViewCell
 
-+ (CGFloat)rowHeight;
+- (void)updateFonts;
 
 + (NSString *)cellReuseIdentifier;
 

@@ -217,6 +217,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [self.tableView autoPinWidthToSuperview];
     [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
     [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:missingContactsPermissionView];
+    self.tableView.estimatedRowHeight = 80;
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
 
     UILabel *emptyBoxLabel = [UILabel new];
     self.emptyBoxLabel = emptyBoxLabel;
@@ -285,6 +287,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }
 
     [self updateBarButtonItems];
+
+    [self registerDynamicTypeObserver];
 }
 
 - (void)updateBarButtonItems
@@ -599,6 +603,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
         [self.tableView dequeueReusableCellWithIdentifier:InboxTableViewCell.cellReuseIdentifier];
     OWSAssert(cell);
 
+    [cell updateFonts];
+
     TSThread *thread = [self threadForIndexPath:indexPath];
 
     [cell configureWithThread:thread contactsManager:self.contactsManager blockedPhoneNumberSet:_blockedPhoneNumberSet];
@@ -619,11 +625,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }];
 
     return thread;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return InboxTableViewCell.rowHeight;
 }
 
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
@@ -1092,6 +1093,18 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                             value:[UIColor ows_darkGrayColor]
                             range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     _emptyBoxLabel.attributedText = fullLabelString;
+}
+
+#pragma mark - Dynamic type
+- (void)registerDynamicTypeObserver
+{
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    [center addObserver:self selector:@selector(dynamicTypeSizeDidChange:) name:UIContentSizeCategoryDidChangeNotification object:nil];
+}
+
+- (void)dynamicTypeSizeDidChange:(NSNotification *)notification
+{
+    [[self tableView] reloadData];
 }
 
 @end
