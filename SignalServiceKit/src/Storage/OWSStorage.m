@@ -6,6 +6,7 @@
 #import "AppContext.h"
 #import "NSData+Base64.h"
 #import "NSNotificationCenter+OWS.h"
+#import "OWSBackgroundTask.h"
 #import "OWSFileSystem.h"
 #import "OWSStorage+Subclass.h"
 #import "TSAttachmentStream.h"
@@ -75,7 +76,9 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     OWSAssert(delegate);
     OWSAssert(delegate.areAllRegistrationsComplete || self.canWriteBeforeStorageReady);
 
+    OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
     [super readWriteWithBlock:block];
+    backgroundTask = nil;
 }
 
 - (void)asyncReadWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
@@ -97,7 +100,13 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     OWSAssert(delegate);
     OWSAssert(delegate.areAllRegistrationsComplete || self.canWriteBeforeStorageReady);
 
-    [super asyncReadWriteWithBlock:block completionQueue:completionQueue completionBlock:completionBlock];
+    __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    [super asyncReadWriteWithBlock:block completionQueue:completionQueue completionBlock:^{
+        if (completionBlock) {
+            completionBlock();
+        }
+        backgroundTask = nil;
+    }];
 }
 
 @end
