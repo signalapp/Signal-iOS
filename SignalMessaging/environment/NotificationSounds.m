@@ -87,47 +87,43 @@
     }
 }
 
-- (NSURL *)soundURLForNotificationSound:(NotificationSound)notificationSound
++ (NSString *)filenameForNotificationSound:(NotificationSound)notificationSound
 {
-    NSURL *_Nullable url;
+    // TODO: Should we localize these sound names?
     switch (notificationSound) {
         case NotificationSound_Aurora:
-            url = [[NSBundle mainBundle] URLForResource:@"aurora" withExtension:@"m4r"];
-            break;
+            return @"aurora.m4r";
         case NotificationSound_Bamboo:
-            url = [[NSBundle mainBundle] URLForResource:@"bamboo" withExtension:@"m4r"];
-            break;
+            return @"bamboo.m4r";
         case NotificationSound_Chord:
-            url = [[NSBundle mainBundle] URLForResource:@"chord" withExtension:@"m4r"];
-            break;
+            return @"chord.m4r";
         case NotificationSound_Circles:
-            url = [[NSBundle mainBundle] URLForResource:@"circles" withExtension:@"m4r"];
-            break;
+            return @"circles.m4r";
         case NotificationSound_Complete:
-            url = [[NSBundle mainBundle] URLForResource:@"complete" withExtension:@"m4r"];
-            break;
+            return @"complete.m4r";
         case NotificationSound_Hello:
-            url = [[NSBundle mainBundle] URLForResource:@"hello" withExtension:@"m4r"];
-            break;
+            return @"hello.m4r";
         case NotificationSound_Input:
-            url = [[NSBundle mainBundle] URLForResource:@"input" withExtension:@"m4r"];
-            break;
+            return @"input.m4r";
         case NotificationSound_Keys:
-            url = [[NSBundle mainBundle] URLForResource:@"keys" withExtension:@"m4r"];
-            break;
+            return @"keys.m4r";
         case NotificationSound_Note:
-            url = [[NSBundle mainBundle] URLForResource:@"note" withExtension:@"m4r"];
-            break;
+            return @"note.m4r";
         case NotificationSound_Popcorn:
-            url = [[NSBundle mainBundle] URLForResource:@"popcorn" withExtension:@"m4r"];
-            break;
+            return @"popcorn.m4r";
         case NotificationSound_Pulse:
-            url = [[NSBundle mainBundle] URLForResource:@"pulse" withExtension:@"m4r"];
-            break;
+            return @"pulse.m4r";
         case NotificationSound_Synth:
-            url = [[NSBundle mainBundle] URLForResource:@"synth" withExtension:@"m4r"];
-            break;
+            return @"synth.m4r";
     }
+}
+
++ (NSURL *)soundURLForNotificationSound:(NotificationSound)notificationSound
+{
+    NSString *filename = [self filenameForNotificationSound:notificationSound];
+
+    NSURL *_Nullable url = [[NSBundle mainBundle] URLForResource:filename.stringByDeletingPathExtension
+                                                   withExtension:filename.pathExtension];
     OWSAssert(url);
     return url;
 }
@@ -146,7 +142,7 @@
         }
         NSNumber *_Nullable systemSoundID = self.systemSoundIDMap[@(notificationSound)];
         if (!systemSoundID) {
-            NSURL *soundURL = [self soundURLForNotificationSound:notificationSound];
+            NSURL *soundURL = [NotificationSounds soundURLForNotificationSound:notificationSound];
             SystemSoundID newSystemSoundID;
             OSStatus error = AudioServicesCreateSystemSoundID((__bridge CFURLRef)soundURL, &newSystemSoundID);
             if (error) {

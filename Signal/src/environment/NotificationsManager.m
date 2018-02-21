@@ -19,8 +19,6 @@
 #import <SignalServiceKit/TextSecureKitEnv.h>
 #import <SignalServiceKit/Threading.h>
 
-NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
-
 @interface NotificationsManager ()
 
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, UILocalNotification *> *currentNotifications;
@@ -102,7 +100,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
     };
 
     if ([self shouldPlaySoundForNotification]) {
-        notification.soundName = kNotificationsManagerNewMesssageSoundName;
+        NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+        notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
     }
 
     NSString *alertMessage;
@@ -141,7 +140,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
     if ([self shouldPlaySoundForNotification]) {
-        notification.soundName = kNotificationsManagerNewMesssageSoundName;
+        NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+        notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
     }
 
     NSString *alertMessage;
@@ -181,7 +181,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
     if ([self shouldPlaySoundForNotification]) {
-        notification.soundName = kNotificationsManagerNewMesssageSoundName;
+        NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+        notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
     }
 
     NSString *alertMessage;
@@ -225,7 +226,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             notification.userInfo = @{ Signal_Thread_UserInfo_Key : thread.uniqueId };
             if (shouldPlaySound) {
-                notification.soundName = kNotificationsManagerNewMesssageSoundName;
+                NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+                notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
             }
 
             NSString *alertBodyString = @"";
@@ -287,7 +289,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
         if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageText) {
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             if (shouldPlaySound) {
-                notification.soundName = kNotificationsManagerNewMesssageSoundName;
+                NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+                notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
             }
 
             switch (self.notificationPreviewType) {
