@@ -341,7 +341,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return nil;
     }
 
-    NSError *error;
+    NSError *_Nullable error;
     NSData *_Nullable databasePassword = [OWSStorage tryToLoadDatabaseLegacyPassphrase:&error];
     if (!databasePassword || error) {
         return (error
@@ -362,14 +362,18 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         }
 
         [OWSStorage storeDatabaseCipherKeySpec:keySpecData];
-        [OWSStorage removeLegacyPassphrase];
 
         return YES;
     };
 
-    return [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
-                                             databasePassword:databasePassword
-                                              recordSaltBlock:recordSaltBlock];
+    error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
+                                              databasePassword:databasePassword
+                                               recordSaltBlock:recordSaltBlock];
+    if (!error) {
+        [OWSStorage removeLegacyPassphrase];
+    }
+
+    return error;
 }
 
 - (void)startupLogging
