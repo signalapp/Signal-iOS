@@ -129,16 +129,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    // External database modifications can't be converted into incremental updates,
-    // so rebuild everything.  This is expensive and usually isn't necessary, but
-    // there's no alternative.
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self.threadMappings updateWithTransaction:transaction];
-    }];
-
-    [self updateThreads];
-    [self.delegate threadListDidChange];
+    if (self.shouldObserveDBModifications) {
+        // External database modifications can't be converted into incremental updates,
+        // so rebuild everything.  This is expensive and usually isn't necessary, but
+        // there's no alternative.
+        [self.uiDatabaseConnection beginLongLivedReadTransaction];
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [self.threadMappings updateWithTransaction:transaction];
+        }];
+        
+        [self updateThreads];
+        [self.delegate threadListDidChange];
+    }
 }
 
 - (void)yapDatabaseModified:(NSNotification *)notification
