@@ -23,7 +23,8 @@
 {
     [super viewDidLoad];
 
-    [self setTitle:NSLocalizedString(@"SETTINGS_NOTIFICATION_SOUND", nil)];
+    [self setTitle:NSLocalizedString(@"NOTIFICATIONS_ITEM_SOUND",
+                       @"Label for settings view that allows user to change the notification sound.")];
 
     OWSPreferences *preferences = [Environment preferences];
     self.globalNotificationSound = preferences.globalNotificationSound;
@@ -64,49 +65,27 @@
 
     OWSTableSection *soundsSection = [OWSTableSection new];
     soundsSection.headerTitle = NSLocalizedString(
-        @"NOTIFICATIONS_SECTION_SOUNDS", @"Label for settings UI allows user to change the notification sound.");
+        @"NOTIFICATIONS_SECTION_SOUNDS", @"Label for settings UI that allows user to change the notification sound.");
     for (NSNumber *nsNotificationSound in [NotificationSounds allNotificationSounds]) {
         NotificationSound notificationSound = (NotificationSound)nsNotificationSound.intValue;
-        // TODO: No disclosure, show checkmark.
-        [soundsSection
-            addItem:[OWSTableItem
-                        disclosureItemWithText:[NotificationSounds displayNameForNotificationSound:notificationSound]
-                                   actionBlock:^{
-                                       [weakSelf notificationSoundWasSelected:notificationSound];
-                                   }]];
+        OWSTableItem *item;
+        if (notificationSound == self.globalNotificationSound) {
+            item = [OWSTableItem
+                checkmarkItemWithText:[NotificationSounds displayNameForNotificationSound:notificationSound]
+                          actionBlock:^{
+                              [weakSelf notificationSoundWasSelected:notificationSound];
+                          }];
+        } else {
+            item =
+                [OWSTableItem actionItemWithText:[NotificationSounds displayNameForNotificationSound:notificationSound]
+                                     actionBlock:^{
+                                         [weakSelf notificationSoundWasSelected:notificationSound];
+                                     }];
+        }
+        [soundsSection addItem:item];
     }
 
     [contents addSection:soundsSection];
-
-    //    OWSTableSection *backgroundSection = [OWSTableSection new];
-    //    backgroundSection.headerTitle = NSLocalizedString(@"NOTIFICATIONS_SECTION_BACKGROUND", nil);
-    //    [backgroundSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-    //        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
-    //                                                       reuseIdentifier:@"UITableViewCellStyleValue1"];
-    //
-    //        NotificationType notifType = [prefs notificationPreviewType];
-    //        NSString *detailString     = [prefs nameForNotificationPreviewType:notifType];
-    //        cell.textLabel.text = NSLocalizedString(@"NOTIFICATIONS_SHOW", nil);
-    //        cell.detailTextLabel.text = detailString;
-    //        [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
-    //
-    //        return cell;
-    //    }
-    //                                                         actionBlock:^{
-    //                                                             NotificationSettingsOptionsViewController *vc =
-    //                                                             [NotificationSettingsOptionsViewController new];
-    //                                                             [weakSelf.navigationController pushViewController:vc
-    //                                                             animated:YES];
-    //                                                         }]];
-    //    [contents addSection:backgroundSection];
-    //
-    //    OWSTableSection *inAppSection = [OWSTableSection new];
-    //    inAppSection.headerTitle = NSLocalizedString(@"NOTIFICATIONS_SECTION_INAPP", nil);
-    //    [inAppSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"NOTIFICATIONS_SOUND", nil)
-    //                                                      isOn:[prefs soundInForeground]
-    //                                                    target:weakSelf
-    //                                                  selector:@selector(didToggleSoundNotificationsSwitch:)]];
-    //    [contents addSection:inAppSection];
 
     self.contents = contents;
 }
@@ -124,16 +103,13 @@
     self.globalNotificationSound = notificationSound;
     self.isDirty = YES;
     [self updateTableContents];
+    [self updateNavigationItems];
 }
-
-//- (void)didToggleSoundNotificationsSwitch:(UISwitch *)sender {
-//    [Environment.preferences setSoundInForeground:sender.on];
-//}
 
 - (void)cancelWasPressed:(id)sender
 {
     // TODO: Add "discard changes?" alert.
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)saveWasPressed:(id)sender
@@ -141,7 +117,7 @@
     OWSPreferences *preferences = [Environment preferences];
     preferences.globalNotificationSound = self.globalNotificationSound;
 
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end
