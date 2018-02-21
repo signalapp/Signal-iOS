@@ -17,9 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)cachesDirectoryPath;
 
-+ (nullable NSError *)moveAppFilePath:(NSString *)oldFilePath
-                   sharedDataFilePath:(NSString *)newFilePath
-                        exceptionName:(NSString *)exceptionName;
++ (nullable NSError *)renameFilePathUsingRandomExtension:(NSString *)oldFilePath;
+
++ (nullable NSError *)moveAppFilePath:(NSString *)oldFilePath sharedDataFilePath:(NSString *)newFilePath;
 
 // Returns NO IFF the directory does not exist and could not be created.
 + (BOOL)ensureDirectoryExists:(NSString *)dirPath;
