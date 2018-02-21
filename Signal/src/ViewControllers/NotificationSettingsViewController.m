@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "NotificationSettingsViewController.h"
 #import "NotificationSettingsOptionsViewController.h"
+#import "NotificationSoundsViewController.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 
@@ -30,6 +31,19 @@
     __weak NotificationSettingsViewController *weakSelf = self;
 
     OWSPreferences *prefs = [Environment preferences];
+
+    OWSTableSection *soundsSection = [OWSTableSection new];
+    soundsSection.headerTitle = NSLocalizedString(
+        @"NOTIFICATIONS_SECTION_SOUNDS", @"Label for settings UI allows user to change the notification sound.");
+    [soundsSection
+        addItem:[OWSTableItem
+                    disclosureItemWithText:NSLocalizedString(@"NOTIFICATIONS_ITEM_SOUND",
+                                               @"Label for item that allows user to change the notification sound.")
+                               actionBlock:^{
+                                   NotificationSoundsViewController *vc = [NotificationSoundsViewController new];
+                                   [weakSelf.navigationController pushViewController:vc animated:YES];
+                               }]];
+    [contents addSection:soundsSection];
 
     OWSTableSection *backgroundSection = [OWSTableSection new];
     backgroundSection.headerTitle = NSLocalizedString(@"NOTIFICATIONS_SECTION_BACKGROUND", nil);
