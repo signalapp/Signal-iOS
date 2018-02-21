@@ -163,17 +163,6 @@ protocol CallServiceObserver: class {
     private var fulfillCallConnectedPromise: (() -> Void)?
     private var rejectCallConnectedPromise: ((Error) -> Void)?
 
-    /**
-     * In the process of establishing a connection between the clients (ICE process) we must exchange ICE updates.
-     * Because this happens via Signal Service it's possible the callee user has not accepted any change in the caller's 
-     * identity. In which case *each* ICE update would cause an "identity change" warning on the callee's device. Since
-     * this could be several messages, the caller stores all ICE updates until receiving positive confirmation that the 
-     * callee has received a message from us. This positive confirmation comes in the form of the callees `CallAnswer` 
-     * message.
-     */
-    var sendIceUpdatesImmediately = true
-    var pendingIceUpdateMessages = [OWSCallIceUpdateMessage]()
-
     // Used by waitForPeerConnectionClient to make sure any received
     // ICE messages wait until the peer connection client is set up.
     private var fulfillPeerConnectionClientPromise: (() -> Void)?
@@ -282,9 +271,6 @@ protocol CallServiceObserver: class {
         }
 
         self.call = call
-
-        sendIceUpdatesImmediately = false
-        pendingIceUpdateMessages = []
 
         let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeOutgoingIncomplete, in: call.thread)
         callRecord.save()
@@ -403,19 +389,6 @@ protocol CallServiceObserver: class {
         guard call.signalingId == callId else {
             Logger.warn("\(self.logTag) ignoring mismatched call: \(callId) currentCall: \(call.signalingId) in \(#function)")
             return
-        }
-
-        // Now that we know the recipient trusts our identity, we no longer need to enqueue ICE updates.
-        self.sendIceUpdatesImmediately = true
-
-        if pendingIceUpdateMessages.count > 0 {
-            Logger.error("\(self.logTag) Sending \(pendingIceUpdateMessages.count) pendingIceUpdateMessages")
-
-            let callMessage = OWSOutgoingCallMessage(thread: thread, iceUpdateMessages: pendingIceUpdateMessages)
-            let sendPromise = messageSender.sendPromise(message: callMessage).catch { error in
-                Logger.error("\(self.logTag) failed to send ice updates in \(#function) with error: \(error)")
-            }
-            sendPromise.retainUntilComplete()
         }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
@@ -696,7 +669,7 @@ protocol CallServiceObserver: class {
             AssertIsOnMainThread()
 
             guard let call = self.call else {
-                Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current call. Call already ended?")
+                Logger.warn("ignoring remote ice update for thread: \(String(describing: thread.uniqueId)) since there is no current call. Call already ended?")
                 return
             }
 
@@ -706,12 +679,12 @@ protocol CallServiceObserver: class {
             }
 
             guard thread.contactIdentifier() == call.thread.contactIdentifier() else {
-                Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) due to thread mismatch. Call already ended?")
+                Logger.warn("ignoring remote ice update for thread: \(String(describing: thread.uniqueId)) due to thread mismatch. Call already ended?")
                 return
             }
 
             guard let peerConnectionClient = self.peerConnectionClient else {
-                Logger.warn("ignoring remote ice update for thread: \(thread.uniqueId) since there is no current peerConnectionClient. Call already ended?")
+                Logger.warn("ignoring remote ice update for thread: \(String(describing: thread.uniqueId)) since there is no current peerConnectionClient. Call already ended?")
                 return
             }
 
@@ -753,19 +726,10 @@ protocol CallServiceObserver: class {
 
             let iceUpdateMessage = OWSCallIceUpdateMessage(callId: call.signalingId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
 
-            if self.sendIceUpdatesImmediately {
-                Logger.info("\(self.logTag) in \(#function). Sending immediately.")
-                let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
-                let sendPromise = self.messageSender.sendPromise(message: callMessage)
-                sendPromise.retainUntilComplete()
-            } else {
-                // For outgoing messages, we wait to send ice updates until we're sure client received our call message.
-                // e.g. if the client has blocked our message due to an identity change, we'd otherwise
-                // bombard them with a bunch *more* undecipherable messages.
-                Logger.info("\(self.logTag) in \(#function). Enqueing for later.")
-                self.pendingIceUpdateMessages.append(iceUpdateMessage)
-                return
-            }
+            Logger.info("\(self.logTag) in \(#function) sending ICE Candidate.")
+            let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
+            let sendPromise = self.messageSender.sendPromise(message: callMessage)
+            sendPromise.retainUntilComplete()
         }.catch { error in
             OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalAddedIceCandidate(), file: #file, function: #function, line: #line)
             Logger.error("\(self.logTag) in \(#function) waitUntilReadyToSendIceUpdates failed with error: \(error)")
@@ -1503,9 +1467,6 @@ protocol CallServiceObserver: class {
         self.callUIAdapter.didTerminateCall(self.call)
         self.call = nil
 
-        self.sendIceUpdatesImmediately = true
-        Logger.info("\(self.logTag) clearing pendingIceUpdateMessages")
-        self.pendingIceUpdateMessages = []
         self.fulfillCallConnectedPromise = nil
 
         // In case we're still waiting on this promise somewhere, we need to reject it to avoid a memory leak.
