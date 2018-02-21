@@ -103,10 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
     static NSCharacterSet *characterSet;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        UniChar chars[] = { 0x200C };
-        NSString *characterSetString =
-            [[NSString alloc] initWithCharacters:chars length:sizeof(chars) / sizeof(UniChar)];
-        characterSet = [NSCharacterSet characterSetWithCharactersInString:characterSetString];
+        characterSet = [NSCharacterSet characterSetWithCharactersInString:@"\u200C"];
     });
 
     return characterSet;
@@ -147,9 +144,47 @@ NS_ASSUME_NONNULL_BEGIN
     return [filteredForIndic copy];
 }
 
++ (NSCharacterSet *)unsafeCharacterSet
+{
+    static NSCharacterSet *characterSet;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // 0x202D and 0x202E are the unicode ordering letters
+        // and can be used to control the rendering of text.
+        // They could be used to construct misleading attachment
+        // filenames that appear to have a different file extension,
+        // for example.
+        characterSet = [NSCharacterSet characterSetWithCharactersInString:@"\u202D\u202E"];
+    });
+
+    return characterSet;
+}
+
+- (NSString *)filterUnsafeCharacters
+{
+    NSCharacterSet *unsafeCharacterSet = [[self class] unsafeCharacterSet];
+    NSRange range = [self rangeOfCharacterFromSet:unsafeCharacterSet];
+    if (range.location == NSNotFound) {
+        return self;
+    }
+    NSMutableString *filtered = [NSMutableString new];
+    NSString *remainder = [self copy];
+    while (range.location != NSNotFound) {
+        if (range.location > 0) {
+            [filtered appendString:[remainder substringToIndex:range.location]];
+        }
+        // The "replacement" code point.
+        [filtered appendString:@"\uFFFD"];
+        remainder = [remainder substringFromIndex:range.location + range.length];
+        range = [remainder rangeOfCharacterFromSet:unsafeCharacterSet];
+    }
+    [filtered appendString:remainder];
+    return filtered;
+}
+
 - (NSString *)filterStringForDisplay
 {
-    return self.ows_stripped.filterForIndicScripts.filterForExcessiveDiacriticals;
+    return self.ows_stripped.filterForIndicScripts.filterForExcessiveDiacriticals.filterUnsafeCharacters;
 }
 
 - (NSString *)filterForExcessiveDiacriticals

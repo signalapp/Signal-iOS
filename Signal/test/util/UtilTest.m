@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "UtilTest.h"
@@ -10,6 +10,8 @@
 @interface NSString (OWS_Test)
 
 - (NSString *)removeAllCharactersIn:(NSCharacterSet *)characterSet;
+
+- (NSString *)filterUnsafeCharacters;
 
 @end
 
@@ -67,6 +69,18 @@
     test([@"1".digitsOnly isEqual:@"1"]);
     test([@"a".digitsOnly isEqual:@""]);
     test([@"(555) 235-7111".digitsOnly isEqual:@"5552357111"]);
+}
+
+- (void)testFilterUnsafeCharacters
+{
+    XCTAssertEqualObjects(@"1".filterUnsafeCharacters, @"1");
+    XCTAssertEqualObjects(@"alice\u202Dbob".filterUnsafeCharacters, @"alice\uFFFDbob");
+    XCTAssertEqualObjects(@"\u202Dalicebob".filterUnsafeCharacters, @"\uFFFDalicebob");
+    XCTAssertEqualObjects(@"alicebob\u202D".filterUnsafeCharacters, @"alicebob\uFFFD");
+    XCTAssertEqualObjects(@"alice\u202Ebob".filterUnsafeCharacters, @"alice\uFFFDbob");
+    XCTAssertEqualObjects(@"\u202Ealicebob".filterUnsafeCharacters, @"\uFFFDalicebob");
+    XCTAssertEqualObjects(@"alicebob\u202E".filterUnsafeCharacters, @"alicebob\uFFFD");
+    XCTAssertEqualObjects(@"alice\u202Dbobalice\u202Ebob".filterUnsafeCharacters, @"alice\uFFFDbobalice\uFFFDbob");
 }
 
 @end
