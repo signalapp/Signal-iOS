@@ -149,6 +149,11 @@ NS_ASSUME_NONNULL_BEGIN
     static NSCharacterSet *characterSet;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        // 0x202D and 0x202E are the unicode ordering letters
+        // and can be used to control the rendering of text.
+        // They could be used to construct misleading attachment
+        // filenames that appear to have a different file extension,
+        // for example.
         characterSet = [NSCharacterSet characterSetWithCharactersInString:@"\u202D\u202E"];
     });
 
