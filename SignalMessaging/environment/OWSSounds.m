@@ -234,6 +234,11 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
 
 + (nullable NSString *)filenameForSound:(OWSSound)sound
 {
+    return [self filenameForSound:sound quiet:NO];
+}
+
++ (nullable NSString *)filenameForSound:(OWSSound)sound quiet:(BOOL)quiet
+{
     switch (sound) {
         case OWSSound_Default:
             OWSFail(@"%@ invalid argument.", self.logTag);
@@ -241,31 +246,31 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
 
             // Notification Sounds
         case OWSSound_Aurora:
-            return @"aurora.m4r";
+            return (quiet ? @"aurora-quiet.caf" : @"aurora.m4r");
         case OWSSound_Bamboo:
-            return @"bamboo.m4r";
+            return (quiet ? @"bamboo-quiet.caf" : @"bamboo.m4r");
         case OWSSound_Chord:
-            return @"chord.m4r";
+            return (quiet ? @"chord-quiet.caf" : @"chord.m4r");
         case OWSSound_Circles:
-            return @"circles.m4r";
+            return (quiet ? @"circles-quiet.caf" : @"circles.m4r");
         case OWSSound_Complete:
-            return @"complete.m4r";
+            return (quiet ? @"complete-quiet.caf" : @"complete.m4r");
         case OWSSound_Hello:
-            return @"hello.m4r";
+            return (quiet ? @"hello-quiet.caf" : @"hello.m4r");
         case OWSSound_Input:
-            return @"input.m4r";
+            return (quiet ? @"input-quiet.caf" : @"input.m4r");
         case OWSSound_Keys:
-            return @"keys.m4r";
+            return (quiet ? @"keys-quiet.caf" : @"keys.m4r");
         case OWSSound_Note:
-            return @"note.m4r";
+            return (quiet ? @"note-quiet.caf" : @"note.m4r");
         case OWSSound_Popcorn:
-            return @"popcorn.m4r";
+            return (quiet ? @"popcorn-quiet.caf" : @"popcorn.m4r");
         case OWSSound_Pulse:
-            return @"pulse.m4r";
+            return (quiet ? @"pulse-quiet.caf" : @"pulse.m4r");
         case OWSSound_Synth:
-            return @"synth.m4r";
+            return (quiet ? @"synth-quiet.caf" : @"synth.m4r");
         case OWSSound_ClassicNotification:
-            return @"messageReceivedClassic.aifc";
+            return (quiet ? @"messageReceivedClassic-quiet.caf" : @"messageReceivedClassic.aifc");
 
             // Ringtone Sounds
         case OWSSound_Apex:
@@ -341,9 +346,9 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
     }
 }
 
-+ (nullable NSURL *)soundURLForSound:(OWSSound)sound
++ (nullable NSURL *)soundURLForSound:(OWSSound)sound quiet:(BOOL)quiet
 {
-    NSString *_Nullable filename = [self filenameForSound:sound];
+    NSString *_Nullable filename = [self filenameForSound:sound quiet:quiet];
     if (!filename) {
         return nil;
     }
@@ -355,13 +360,18 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
 
 + (void)playSound:(OWSSound)sound
 {
-    [self.sharedManager playSound:sound];
+    [self.sharedManager playSound:sound quiet:NO];
 }
 
-- (void)playSound:(OWSSound)sound
++ (void)playSound:(OWSSound)sound quiet:(BOOL)quiet
+{
+    [self.sharedManager playSound:sound quiet:quiet];
+}
+
+- (void)playSound:(OWSSound)sound quiet:(BOOL)quiet
 {
     [self.audioPlayer stop];
-    self.audioPlayer = [OWSSounds audioPlayerForSound:sound];
+    self.audioPlayer = [OWSSounds audioPlayerForSound:sound quiet:quiet];
     [self.audioPlayer play];
 }
 
@@ -474,7 +484,12 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
 
 + (nullable AVAudioPlayer *)audioPlayerForSound:(OWSSound)sound
 {
-    NSURL *_Nullable soundURL = [OWSSounds soundURLForSound:sound];
+    return [self audioPlayerForSound:sound quiet:NO];
+}
+
++ (nullable AVAudioPlayer *)audioPlayerForSound:(OWSSound)sound quiet:(BOOL)quiet
+{
+    NSURL *_Nullable soundURL = [OWSSounds soundURLForSound:sound quiet:(BOOL)quiet];
     if (!soundURL) {
         return nil;
     }

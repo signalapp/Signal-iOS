@@ -75,6 +75,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 + (nullable NSString *)filenameForSound:(OWSSound)sound;
 
 + (void)playSound:(OWSSound)sound;
++ (void)playSound:(OWSSound)sound quiet:(BOOL)quiet;
 
 #pragma mark - Notifications
 

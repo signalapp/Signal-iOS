@@ -354,7 +354,8 @@
         } else {
             if (shouldPlaySound && [Environment.preferences soundInForeground]) {
                 OWSSound sound = [OWSSounds notificationSoundForThread:thread];
-                [OWSSounds playSound:sound];
+                // We play the "quiet" variation of sounds if possible for notifications in the foreground.
+                [OWSSounds playSound:sound quiet:YES];
             }
         }
     });

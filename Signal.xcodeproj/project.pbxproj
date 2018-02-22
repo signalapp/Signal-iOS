@@ -247,6 +247,19 @@
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
 		34F77040203F55D000C7CBB7 /* OWS107LegacySounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F7703E203F55D000C7CBB7 /* OWS107LegacySounds.m */; };
 		34F77041203F55D000C7CBB7 /* OWS107LegacySounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 34F7703F203F55D000C7CBB7 /* OWS107LegacySounds.h */; };
+		34F77045203F5E4C00C7CBB7 /* messageReceivedClassic-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77044203F5E4B00C7CBB7 /* messageReceivedClassic-quiet.caf */; };
+		34F77052203F5E6800C7CBB7 /* note-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77046203F5E6200C7CBB7 /* note-quiet.caf */; };
+		34F77053203F5E6800C7CBB7 /* popcorn-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77047203F5E6200C7CBB7 /* popcorn-quiet.caf */; };
+		34F77054203F5E6800C7CBB7 /* complete-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77048203F5E6200C7CBB7 /* complete-quiet.caf */; };
+		34F77055203F5E6800C7CBB7 /* synth-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77049203F5E6200C7CBB7 /* synth-quiet.caf */; };
+		34F77056203F5E6800C7CBB7 /* aurora-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F7704A203F5E6300C7CBB7 /* aurora-quiet.caf */; };
+		34F77057203F5E6800C7CBB7 /* chord-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F7704B203F5E6300C7CBB7 /* chord-quiet.caf */; };
+		34F77058203F5E6800C7CBB7 /* circles-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F7704C203F5E6300C7CBB7 /* circles-quiet.caf */; };
+		34F77059203F5E6800C7CBB7 /* input-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F7704D203F5E6300C7CBB7 /* input-quiet.caf */; };
+		34F7705A203F5E6800C7CBB7 /* pulse-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F7704E203F5E6700C7CBB7 /* pulse-quiet.caf */; };
+		34F7705B203F5E6800C7CBB7 /* keys-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F7704F203F5E6700C7CBB7 /* keys-quiet.caf */; };
+		34F7705C203F5E6800C7CBB7 /* hello-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77050203F5E6700C7CBB7 /* hello-quiet.caf */; };
+		34F7705D203F5E6800C7CBB7 /* bamboo-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77051203F5E6700C7CBB7 /* bamboo-quiet.caf */; };
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
 		4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */; };
 		450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
@@ -853,6 +866,19 @@
 		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
 		34F7703E203F55D000C7CBB7 /* OWS107LegacySounds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS107LegacySounds.m; sourceTree = "<group>"; };
 		34F7703F203F55D000C7CBB7 /* OWS107LegacySounds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS107LegacySounds.h; sourceTree = "<group>"; };
+		34F77044203F5E4B00C7CBB7 /* messageReceivedClassic-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "messageReceivedClassic-quiet.caf"; path = "Signal/AudioFiles/messageReceivedClassic-quiet.caf"; sourceTree = SOURCE_ROOT; };
+		34F77046203F5E6200C7CBB7 /* note-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "note-quiet.caf"; sourceTree = "<group>"; };
+		34F77047203F5E6200C7CBB7 /* popcorn-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "popcorn-quiet.caf"; sourceTree = "<group>"; };
+		34F77048203F5E6200C7CBB7 /* complete-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "complete-quiet.caf"; sourceTree = "<group>"; };
+		34F77049203F5E6200C7CBB7 /* synth-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "synth-quiet.caf"; sourceTree = "<group>"; };
+		34F7704A203F5E6300C7CBB7 /* aurora-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "aurora-quiet.caf"; sourceTree = "<group>"; };
+		34F7704B203F5E6300C7CBB7 /* chord-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "chord-quiet.caf"; sourceTree = "<group>"; };
+		34F7704C203F5E6300C7CBB7 /* circles-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "circles-quiet.caf"; sourceTree = "<group>"; };
+		34F7704D203F5E6300C7CBB7 /* input-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "input-quiet.caf"; sourceTree = "<group>"; };
+		34F7704E203F5E6700C7CBB7 /* pulse-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "pulse-quiet.caf"; sourceTree = "<group>"; };
+		34F7704F203F5E6700C7CBB7 /* keys-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "keys-quiet.caf"; sourceTree = "<group>"; };
+		34F77050203F5E6700C7CBB7 /* hello-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "hello-quiet.caf"; sourceTree = "<group>"; };
+		34F77051203F5E6700C7CBB7 /* bamboo-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "bamboo-quiet.caf"; sourceTree = "<group>"; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = views/OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
 		435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
@@ -1179,12 +1205,13 @@
 			isa = PBXGroup;
 			children = (
 				34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */,
-				3421FA57203F542D00275549 /* messageReceivedClassic.aifc */,
-				3421FA58203F542E00275549 /* ringtoneClassic.caf */,
 				34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */,
+				34F77044203F5E4B00C7CBB7 /* messageReceivedClassic-quiet.caf */,
+				3421FA57203F542D00275549 /* messageReceivedClassic.aifc */,
 				34074FC5203E5435004596AE /* messageReceivedSounds */,
 				34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */,
 				34CF0785203E6B77005C4D61 /* ringback_tone_cept.caf */,
+				3421FA58203F542E00275549 /* ringtoneClassic.caf */,
 				34074FD2203E5436004596AE /* ringtoneSounds */,
 			);
 			path = Sounds;
@@ -1193,17 +1220,29 @@
 		34074FC5203E5435004596AE /* messageReceivedSounds */ = {
 			isa = PBXGroup;
 			children = (
+				34F7704A203F5E6300C7CBB7 /* aurora-quiet.caf */,
 				34074FC6203E5435004596AE /* aurora.m4r */,
 				34074FC7203E5435004596AE /* bamboo.m4r */,
+				34F77051203F5E6700C7CBB7 /* bamboo-quiet.caf */,
+				34F7704B203F5E6300C7CBB7 /* chord-quiet.caf */,
 				34074FC8203E5435004596AE /* chord.m4r */,
+				34F7704C203F5E6300C7CBB7 /* circles-quiet.caf */,
 				34074FC9203E5435004596AE /* circles.m4r */,
+				34F77048203F5E6200C7CBB7 /* complete-quiet.caf */,
 				34074FCA203E5435004596AE /* complete.m4r */,
 				34074FCB203E5435004596AE /* hello.m4r */,
+				34F77050203F5E6700C7CBB7 /* hello-quiet.caf */,
+				34F7704D203F5E6300C7CBB7 /* input-quiet.caf */,
 				34074FCC203E5435004596AE /* input.m4r */,
 				34074FCD203E5435004596AE /* keys.m4r */,
+				34F7704F203F5E6700C7CBB7 /* keys-quiet.caf */,
+				34F77046203F5E6200C7CBB7 /* note-quiet.caf */,
 				34074FCE203E5435004596AE /* note.m4r */,
+				34F77047203F5E6200C7CBB7 /* popcorn-quiet.caf */,
 				34074FCF203E5435004596AE /* popcorn.m4r */,
 				34074FD0203E5435004596AE /* pulse.m4r */,
+				34F7704E203F5E6700C7CBB7 /* pulse-quiet.caf */,
+				34F77049203F5E6200C7CBB7 /* synth-quiet.caf */,
 				34074FD1203E5435004596AE /* synth.m4r */,
 			);
 			name = messageReceivedSounds;
@@ -2537,12 +2576,17 @@
 				34074FF1203E5436004596AE /* circles.m4r in Resources */,
 				AD83FF441A73426500B5C81A /* audio_pause_button.png in Resources */,
 				34075005203E5436004596AE /* Night Owl.m4r in Resources */,
+				34F77053203F5E6800C7CBB7 /* popcorn-quiet.caf in Resources */,
+				34F77054203F5E6800C7CBB7 /* complete-quiet.caf in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
+				34F77045203F5E4C00C7CBB7 /* messageReceivedClassic-quiet.caf in Resources */,
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
 				34075003203E5436004596AE /* Hillside.m4r in Resources */,
 				34074FFA203E5436004596AE /* Apex.m4r in Resources */,
+				34F7705B203F5E6800C7CBB7 /* keys-quiet.caf in Resources */,
 				3407500E203E5436004596AE /* Silk.m4r in Resources */,
+				34F77057203F5E6800C7CBB7 /* chord-quiet.caf in Resources */,
 				34075004203E5436004596AE /* Illuminate.m4r in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
 				B10C9B611A7049EC00ECA2BF /* play_icon.png in Resources */,
@@ -2551,12 +2595,15 @@
 				AD83FF401A73426500B5C81A /* audio_pause_button_blue@2x.png in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
 				34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */,
+				34F77055203F5E6800C7CBB7 /* synth-quiet.caf in Resources */,
+				34F7705D203F5E6800C7CBB7 /* bamboo-quiet.caf in Resources */,
 				34074FF7203E5436004596AE /* popcorn.m4r in Resources */,
 				34CF0789203E6B78005C4D61 /* ringback_tone_cept.caf in Resources */,
 				34074FFF203E5436004596AE /* Circuit.m4r in Resources */,
 				34074FF8203E5436004596AE /* pulse.m4r in Resources */,
 				4517642A1DE939FD00EDB8B9 /* ContactCell.xib in Resources */,
 				AD83FF431A73426500B5C81A /* audio_play_button@2x.png in Resources */,
+				34F77052203F5E6800C7CBB7 /* note-quiet.caf in Resources */,
 				34075007203E5436004596AE /* Playtime.m4r in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
 				34B3F8781E8DF1700035BE1A /* ContactsPicker.xib in Resources */,
@@ -2572,14 +2619,18 @@
 				34074FF6203E5436004596AE /* note.m4r in Resources */,
 				34075009203E5436004596AE /* Radar.m4r in Resources */,
 				34075012203E5436004596AE /* Twinkle.m4r in Resources */,
+				34F77056203F5E6800C7CBB7 /* aurora-quiet.caf in Resources */,
 				B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */,
 				B10C9B621A7049EC00ECA2BF /* play_icon@2x.png in Resources */,
 				34074FFE203E5436004596AE /* Chimes.m4r in Resources */,
 				B633C5861A1D190B0059AC12 /* call@2x.png in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
+				34F77058203F5E6800C7CBB7 /* circles-quiet.caf in Resources */,
 				3421FA59203F542E00275549 /* messageReceivedClassic.aifc in Resources */,
+				34F7705A203F5E6800C7CBB7 /* pulse-quiet.caf in Resources */,
 				34074FF5203E5436004596AE /* keys.m4r in Resources */,
 				3407500D203E5436004596AE /* Signal.m4r in Resources */,
+				34F77059203F5E6800C7CBB7 /* input-quiet.caf in Resources */,
 				34075000203E5436004596AE /* Constellation.m4r in Resources */,
 				B10C9B601A7049EC00ECA2BF /* pause_icon@2x.png in Resources */,
 				34075002203E5436004596AE /* Crystals.m4r in Resources */,
@@ -2589,6 +2640,7 @@
 				34075013203E5436004596AE /* Uplift.m4r in Resources */,
 				3407500B203E5436004596AE /* Ripples.m4r in Resources */,
 				34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */,
+				34F7705C203F5E6800C7CBB7 /* hello-quiet.caf in Resources */,
 				34075010203E5436004596AE /* Stargaze.m4r in Resources */,
 				34074FF0203E5436004596AE /* chord.m4r in Resources */,
 				34074FF4203E5436004596AE /* input.m4r in Resources */,
