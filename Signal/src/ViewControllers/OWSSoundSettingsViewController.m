@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSSound currentSound;
 
-@property (nonatomic) AVAudioPlayer *audioPlayer;
+@property (nonatomic, nullable) AVAudioPlayer *audioPlayer;
 
 @end
 

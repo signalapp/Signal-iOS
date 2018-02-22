@@ -47,12 +47,15 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_Twinkle,
     OWSSound_Uplift,
     OWSSound_Waves,
-    
+
     // Calls
     OWSSound_CallConnecting,
     OWSSound_CallOutboundRinging,
     OWSSound_CallBusy,
     OWSSound_CallFailure,
+
+    // Other
+    OWSSound_None,
 };
 
 @class AVAudioPlayer;
@@ -64,7 +67,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 
 + (NSString *)displayNameForSound:(OWSSound)sound;
 
-+ (NSString *)filenameForSound:(OWSSound)sound;
++ (nullable NSString *)filenameForSound:(OWSSound)sound;
 
 + (void)playSound:(OWSSound)sound;
 

@@ -4,7 +4,6 @@
 
 #import "OWSSounds.h"
 #import <AVFoundation/AVFoundation.h>
-#import <AudioToolbox/AudioServices.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
@@ -19,7 +18,7 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
-@property (nonatomic) NSMutableDictionary<NSNumber *, NSNumber *> *systemSoundIDMap;
+@property (nonatomic, nullable) AVAudioPlayer *audioPlayer;
 
 @end
 
@@ -55,9 +54,6 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
     OWSAssert(storageManager);
 
     _dbConnection = storageManager.newDatabaseConnection;
-    // TODO: Is it safe to load all of these sounds into memory?
-    //       Probably better to do LRU cache.
-    self.systemSoundIDMap = [NSMutableDictionary new];
 
     OWSSingletonAssert();
 
@@ -67,6 +63,9 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
 + (NSArray<NSNumber *> *)allNotificationSounds
 {
     return @[
+        // None should be first.
+        @(OWSSound_None),
+
         @(OWSSound_Aurora),
         @(OWSSound_Bamboo),
         @(OWSSound_Chord),
@@ -85,6 +84,9 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
 + (NSArray<NSNumber *> *)allRingtoneSounds
 {
     return @[
+        // None should be first.
+        @(OWSSound_None),
+
         @(OWSSound_Apex),
         @(OWSSound_Beacon),
         @(OWSSound_Bulletin),
@@ -214,10 +216,16 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
             return @"Call Busy";
         case OWSSound_CallFailure:
             return @"Call Failure";
+
+            // Other
+        case OWSSound_None:
+            return NSLocalizedString(@"SOUNDS_NONE",
+                @"Label for the 'no sound' option that allows users to disable sounds for notifications, ringtones, "
+                @"etc.");
     }
 }
 
-+ (NSString *)filenameForSound:(OWSSound)sound
++ (nullable NSString *)filenameForSound:(OWSSound)sound
 {
     switch (sound) {
         case OWSSound_Default:
@@ -315,12 +323,19 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
             return @"busy_tone_ansi.caf";
         case OWSSound_CallFailure:
             return @"end_call_tone_cept.caf";
+
+            // Other
+        case OWSSound_None:
+            return nil;
     }
 }
 
-+ (NSURL *)soundURLForSound:(OWSSound)sound
++ (nullable NSURL *)soundURLForSound:(OWSSound)sound
 {
-    NSString *filename = [self filenameForSound:sound];
+    NSString *_Nullable filename = [self filenameForSound:sound];
+    if (!filename) {
+        return nil;
+    }
     NSURL *_Nullable url = [[NSBundle mainBundle] URLForResource:filename.stringByDeletingPathExtension
                                                    withExtension:filename.pathExtension];
     OWSAssert(url);
@@ -332,29 +347,11 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
     [self.sharedManager playSound:sound];
 }
 
-- (SystemSoundID)systemSoundIDForSound:(OWSSound)sound
-{
-    @synchronized(self)
-    {
-        NSNumber *_Nullable systemSoundID = self.systemSoundIDMap[@(sound)];
-        if (!systemSoundID) {
-            NSURL *soundURL = [OWSSounds soundURLForSound:sound];
-            SystemSoundID newSystemSoundID;
-            OSStatus error = AudioServicesCreateSystemSoundID((__bridge CFURLRef)soundURL, &newSystemSoundID);
-            if (error) {
-                OWSFail(@"%@ could not load sound.", self.logTag);
-            }
-            systemSoundID = @(newSystemSoundID);
-            self.systemSoundIDMap[@(sound)] = systemSoundID;
-        }
-        return (SystemSoundID)systemSoundID.unsignedIntegerValue;
-    }
-}
-
 - (void)playSound:(OWSSound)sound
 {
-    SystemSoundID systemSoundID = [self systemSoundIDForSound:sound];
-    AudioServicesPlayAlertSound(systemSoundID);
+    [self.audioPlayer stop];
+    self.audioPlayer = [OWSSounds audioPlayerForSound:sound];
+    [self.audioPlayer play];
 }
 
 #pragma mark - Notifications
@@ -447,7 +444,10 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
 
 + (nullable AVAudioPlayer *)audioPlayerForSound:(OWSSound)sound
 {
-    NSURL *soundURL = [OWSSounds soundURLForSound:sound];
+    NSURL *_Nullable soundURL = [OWSSounds soundURLForSound:sound];
+    if (!soundURL) {
+        return nil;
+    }
     NSError *error;
     AVAudioPlayer *_Nullable player = [[AVAudioPlayer alloc] initWithContentsOfURL:soundURL error:&error];
     if (error || !player) {

@@ -1668,6 +1668,9 @@
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "I'm inviting you to install Signal! Here is the link:";
 
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, ringtones, etc. */
+"SOUNDS_NONE" = "None";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
 
