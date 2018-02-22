@@ -3,6 +3,7 @@
 //
 
 #import "TSMessage.h"
+#import "AppContext.h"
 #import "NSDate+OWS.h"
 #import "NSString+SSK.h"
 #import "TSAttachment.h"
@@ -227,7 +228,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (NSString *)debugDescription
 {
-    if ([self hasAttachments]) {
+    if ([self hasAttachments] && self.body.length > 0) {
+        NSString *attachmentId = self.attachmentIds[0];
+        return [NSString
+            stringWithFormat:@"Media Message with attachmentId: %@ and caption: '%@'", attachmentId, self.body];
+    } else if ([self hasAttachments]) {
         NSString *attachmentId = self.attachmentIds[0];
         return [NSString stringWithFormat:@"Media Message with attachmentId:%@", attachmentId];
     } else {
@@ -235,35 +240,53 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
+// TODO: This method contains view-specific logic and probably belongs in NotificationsManager, not in SSK.
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    NSString *_Nullable attachmentDescription = nil;
     if ([self hasAttachments]) {
         NSString *attachmentId = self.attachmentIds[0];
         TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
         if (attachment) {
-            return attachment.description;
+            attachmentDescription = attachment.description;
         } else {
-            return NSLocalizedString(@"UNKNOWN_ATTACHMENT_LABEL", @"In Inbox view, last message label for thread with corrupted attachment.");
+            attachmentDescription = NSLocalizedString(@"UNKNOWN_ATTACHMENT_LABEL",
+                @"In Inbox view, last message label for thread with corrupted attachment.");
         }
+    }
+
+    NSString *_Nullable bodyDescription = nil;
+    if (self.body.length > 0) {
+        // TODO: Filter this text using something like DisplayableText.
+        bodyDescription = self.body;
+    }
+
+    if (attachmentDescription.length > 0 && bodyDescription.length > 0) {
+        // Attachment with caption.
+        if ([CurrentAppContext() isRTL]) {
+            return [[bodyDescription stringByAppendingString:@": "] stringByAppendingString:attachmentDescription];
+        } else {
+            return [[attachmentDescription stringByAppendingString:@": "] stringByAppendingString:bodyDescription];
+        }
+    } else if (bodyDescription.length > 0) {
+        return bodyDescription;
+    } else if (attachmentDescription.length > 0) {
+        return attachmentDescription;
     } else {
-        return self.body;
+        OWSFail(@"%@ message has neither body nor attachment.", self.logTag);
+        // TODO: We should do better here.
+        return @"";
     }
 }
 
 // TODO deprecate this and implement something like previewTextWithTransaction: for all TSInteractions
 - (NSString *)description
 {
-    if ([self hasAttachments]) {
-        NSString *attachmentId = self.attachmentIds[0];
-        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
-        if (attachment) {
-            return attachment.description;
-        } else {
-            return NSLocalizedString(@"UNKNOWN_ATTACHMENT_LABEL", @"In Inbox view, last message label for thread with corrupted attachment.");
-        }
-    } else {
-        return self.body;
-    }
+    __block NSString *result;
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        result = [self previewTextWithTransaction:transaction];
+    }];
+    return result;
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
