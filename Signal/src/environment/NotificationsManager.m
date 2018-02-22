@@ -8,6 +8,7 @@
 #import <AudioToolbox/AudioServices.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/NSString+OWS.h>
+#import <SignalMessaging/NotificationSounds.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalServiceKit/NSString+SSK.h>
@@ -18,11 +19,8 @@
 #import <SignalServiceKit/TextSecureKitEnv.h>
 #import <SignalServiceKit/Threading.h>
 
-NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
-
 @interface NotificationsManager ()
 
-@property (nonatomic) SystemSoundID newMessageSound;
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, UILocalNotification *> *currentNotifications;
 @property (nonatomic, readonly) NotificationType notificationPreviewType;
 
@@ -42,9 +40,6 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
     }
 
     _currentNotifications = [NSMutableDictionary new];
-
-    NSURL *newMessageURL = [[NSBundle mainBundle] URLForResource:@"NewMessage" withExtension:@"aifc"];
-    AudioServicesCreateSystemSoundID((__bridge CFURLRef)newMessageURL, &_newMessageSound);
 
     _notificationHistory = [NSMutableArray new];
 
@@ -105,7 +100,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
     };
 
     if ([self shouldPlaySoundForNotification]) {
-        notification.soundName = kNotificationsManagerNewMesssageSoundName;
+        NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+        notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
     }
 
     NSString *alertMessage;
@@ -144,7 +140,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
     if ([self shouldPlaySoundForNotification]) {
-        notification.soundName = kNotificationsManagerNewMesssageSoundName;
+        NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+        notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
     }
 
     NSString *alertMessage;
@@ -184,7 +181,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
     if ([self shouldPlaySoundForNotification]) {
-        notification.soundName = kNotificationsManagerNewMesssageSoundName;
+        NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+        notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
     }
 
     NSString *alertMessage;
@@ -228,7 +226,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             notification.userInfo = @{ Signal_Thread_UserInfo_Key : thread.uniqueId };
             if (shouldPlaySound) {
-                notification.soundName = kNotificationsManagerNewMesssageSoundName;
+                NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+                notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
             }
 
             NSString *alertBodyString = @"";
@@ -248,7 +247,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
             [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
         } else {
             if (shouldPlaySound && [Environment.preferences soundInForeground]) {
-                AudioServicesPlayAlertSound(_newMessageSound);
+                NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+                [NotificationSounds playNotificationSound:notificationSound];
             }
         }
     });
@@ -289,7 +289,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
         if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageText) {
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             if (shouldPlaySound) {
-                notification.soundName = kNotificationsManagerNewMesssageSoundName;
+                NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+                notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
             }
 
             switch (self.notificationPreviewType) {
@@ -351,7 +352,8 @@ NSString *const kNotificationsManagerNewMesssageSoundName = @"NewMessage.aifc";
             [[PushManager sharedManager] presentNotification:notification checkForCancel:YES];
         } else {
             if (shouldPlaySound && [Environment.preferences soundInForeground]) {
-                AudioServicesPlayAlertSound(_newMessageSound);
+                NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+                [NotificationSounds playNotificationSound:notificationSound];
             }
         }
     });

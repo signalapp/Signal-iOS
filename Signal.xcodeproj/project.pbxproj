@@ -8,6 +8,21 @@
 
 /* Begin PBXBuildFile section */
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
+		34074F5B203D093B004596AE /* NotificationSoundsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F59203D093A004596AE /* NotificationSoundsViewController.m */; };
+		34074F61203D0CBE004596AE /* NotificationSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* NotificationSounds.m */; };
+		34074F62203D0CBE004596AE /* NotificationSounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 34074F60203D0CBE004596AE /* NotificationSounds.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		34074FAE203D14D8004596AE /* aurora.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FAD203D14D8004596AE /* aurora.m4r */; };
+		34074FBA203D14F6004596AE /* bamboo.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FAF203D14F3004596AE /* bamboo.m4r */; };
+		34074FBB203D14F6004596AE /* circles.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FB0203D14F4004596AE /* circles.m4r */; };
+		34074FBC203D14F6004596AE /* chord.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FB1203D14F4004596AE /* chord.m4r */; };
+		34074FBD203D14F6004596AE /* complete.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FB2203D14F4004596AE /* complete.m4r */; };
+		34074FBE203D14F6004596AE /* hello.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FB3203D14F4004596AE /* hello.m4r */; };
+		34074FBF203D14F6004596AE /* input.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FB4203D14F4004596AE /* input.m4r */; };
+		34074FC0203D14F6004596AE /* note.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FB5203D14F4004596AE /* note.m4r */; };
+		34074FC1203D14F6004596AE /* popcorn.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FB6203D14F5004596AE /* popcorn.m4r */; };
+		34074FC2203D14F6004596AE /* pulse.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FB7203D14F5004596AE /* pulse.m4r */; };
+		34074FC3203D14F6004596AE /* synth.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FB8203D14F5004596AE /* synth.m4r */; };
+		34074FC4203D14F6004596AE /* keys.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FB9203D14F6004596AE /* keys.m4r */; };
 		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
 		340CB2271EAC25820001CAA1 /* UpdateGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CB2261EAC25820001CAA1 /* UpdateGroupViewController.m */; };
 		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
@@ -349,7 +364,6 @@
 		B10C9B621A7049EC00ECA2BF /* play_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B10C9B5E1A7049EC00ECA2BF /* play_icon@2x.png */; };
 		B609597C1C2C0FC6004E8797 /* iRate.m in Sources */ = {isa = PBXBuildFile; fileRef = B609597B1C2C0FC6004E8797 /* iRate.m */; };
 		B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EDE031A05A01700D73516 /* AudioToolbox.framework */; };
-		B625CD561ABB589C00E8B23C /* NewMessage.aifc in Resources */ = {isa = PBXBuildFile; fileRef = B625CD551ABB589C00E8B23C /* NewMessage.aifc */; };
 		B633C5861A1D190B0059AC12 /* call@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5041A1D190B0059AC12 /* call@2x.png */; };
 		B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C50B1A1D190B0059AC12 /* contact_default_feed.png */; };
 		B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C51B1A1D190B0059AC12 /* endcall@2x.png */; };
@@ -478,6 +492,22 @@
 		3400C7951EAF99F4008A8584 /* SelectThreadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectThreadViewController.m; sourceTree = "<group>"; };
 		3400C7971EAFB772008A8584 /* ThreadViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadViewHelper.h; sourceTree = "<group>"; };
 		3400C7981EAFB772008A8584 /* ThreadViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadViewHelper.m; sourceTree = "<group>"; };
+		34074F59203D093A004596AE /* NotificationSoundsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSoundsViewController.m; sourceTree = "<group>"; };
+		34074F5A203D093B004596AE /* NotificationSoundsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSoundsViewController.h; sourceTree = "<group>"; };
+		34074F5F203D0CBD004596AE /* NotificationSounds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSounds.m; sourceTree = "<group>"; };
+		34074F60203D0CBE004596AE /* NotificationSounds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSounds.h; sourceTree = "<group>"; };
+		34074FAD203D14D8004596AE /* aurora.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; name = aurora.m4r; path = Signal/AudioFiles/messageReceivedSounds/aurora.m4r; sourceTree = SOURCE_ROOT; };
+		34074FAF203D14F3004596AE /* bamboo.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; name = bamboo.m4r; path = Signal/AudioFiles/messageReceivedSounds/bamboo.m4r; sourceTree = SOURCE_ROOT; };
+		34074FB0203D14F4004596AE /* circles.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; name = circles.m4r; path = Signal/AudioFiles/messageReceivedSounds/circles.m4r; sourceTree = SOURCE_ROOT; };
+		34074FB1203D14F4004596AE /* chord.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; name = chord.m4r; path = Signal/AudioFiles/messageReceivedSounds/chord.m4r; sourceTree = SOURCE_ROOT; };
+		34074FB2203D14F4004596AE /* complete.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; name = complete.m4r; path = Signal/AudioFiles/messageReceivedSounds/complete.m4r; sourceTree = SOURCE_ROOT; };
+		34074FB3203D14F4004596AE /* hello.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; name = hello.m4r; path = Signal/AudioFiles/messageReceivedSounds/hello.m4r; sourceTree = SOURCE_ROOT; };
+		34074FB4203D14F4004596AE /* input.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; name = input.m4r; path = Signal/AudioFiles/messageReceivedSounds/input.m4r; sourceTree = SOURCE_ROOT; };
+		34074FB5203D14F4004596AE /* note.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; name = note.m4r; path = Signal/AudioFiles/messageReceivedSounds/note.m4r; sourceTree = SOURCE_ROOT; };
+		34074FB6203D14F5004596AE /* popcorn.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; name = popcorn.m4r; path = Signal/AudioFiles/messageReceivedSounds/popcorn.m4r; sourceTree = SOURCE_ROOT; };
+		34074FB7203D14F5004596AE /* pulse.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; name = pulse.m4r; path = Signal/AudioFiles/messageReceivedSounds/pulse.m4r; sourceTree = SOURCE_ROOT; };
+		34074FB8203D14F5004596AE /* synth.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; name = synth.m4r; path = Signal/AudioFiles/messageReceivedSounds/synth.m4r; sourceTree = SOURCE_ROOT; };
+		34074FB9203D14F6004596AE /* keys.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; name = keys.m4r; path = Signal/AudioFiles/messageReceivedSounds/keys.m4r; sourceTree = SOURCE_ROOT; };
 		340B02B61F9FD31800F9CFEC /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = translations/he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewItemTest.m; sourceTree = "<group>"; };
 		340CB2221EAC155C0001CAA1 /* ContactsViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsViewHelper.h; sourceTree = "<group>"; };
@@ -908,7 +938,6 @@
 		B609597A1C2C0FC6004E8797 /* iRate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iRate.h; path = Libraries/iRate/iRate.h; sourceTree = SOURCE_ROOT; };
 		B609597B1C2C0FC6004E8797 /* iRate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iRate.m; path = Libraries/iRate/iRate.m; sourceTree = SOURCE_ROOT; };
 		B60EDE031A05A01700D73516 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		B625CD551ABB589C00E8B23C /* NewMessage.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = NewMessage.aifc; sourceTree = "<group>"; };
 		B633C5041A1D190B0059AC12 /* call@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "call@2x.png"; sourceTree = "<group>"; };
 		B633C50B1A1D190B0059AC12 /* contact_default_feed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = contact_default_feed.png; sourceTree = "<group>"; };
 		B633C51B1A1D190B0059AC12 /* endcall@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "endcall@2x.png"; sourceTree = "<group>"; };
@@ -1086,6 +1115,41 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		34074F54203D0722004596AE /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				34074F63203D1258004596AE /* messageReceivedSounds */,
+				34074F7C203D126D004596AE /* ringtoneSounds */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
+		34074F63203D1258004596AE /* messageReceivedSounds */ = {
+			isa = PBXGroup;
+			children = (
+				34074FAD203D14D8004596AE /* aurora.m4r */,
+				34074FAF203D14F3004596AE /* bamboo.m4r */,
+				34074FB1203D14F4004596AE /* chord.m4r */,
+				34074FB0203D14F4004596AE /* circles.m4r */,
+				34074FB2203D14F4004596AE /* complete.m4r */,
+				34074FB3203D14F4004596AE /* hello.m4r */,
+				34074FB4203D14F4004596AE /* input.m4r */,
+				34074FB9203D14F6004596AE /* keys.m4r */,
+				34074FB5203D14F4004596AE /* note.m4r */,
+				34074FB6203D14F5004596AE /* popcorn.m4r */,
+				34074FB7203D14F5004596AE /* pulse.m4r */,
+				34074FB8203D14F5004596AE /* synth.m4r */,
+			);
+			path = messageReceivedSounds;
+			sourceTree = "<group>";
+		};
+		34074F7C203D126D004596AE /* ringtoneSounds */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ringtoneSounds;
+			sourceTree = "<group>";
+		};
 		34330A581E7875FB00DF2FB9 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -1202,6 +1266,8 @@
 				346129921FD1E30000532771 /* migrations */,
 				347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */,
 				347850681FD9B78A007B8332 /* NoopNotificationsManager.swift */,
+				34074F60203D0CBE004596AE /* NotificationSounds.h */,
+				34074F5F203D0CBD004596AE /* NotificationSounds.m */,
 				45F170AB1E2F0351003FC1F2 /* OWSAudioSession.swift */,
 				346129561FD1D74B00532771 /* Release.h */,
 				346129571FD1D74B00532771 /* Release.m */,
@@ -1352,6 +1418,8 @@
 				34B3F8571E8DF1700035BE1A /* NotificationSettingsOptionsViewController.m */,
 				34B3F8581E8DF1700035BE1A /* NotificationSettingsViewController.h */,
 				34B3F8591E8DF1700035BE1A /* NotificationSettingsViewController.m */,
+				34074F5A203D093B004596AE /* NotificationSoundsViewController.h */,
+				34074F59203D093A004596AE /* NotificationSoundsViewController.m */,
 				34CCAF391F0C2748004084F4 /* OWSAddToContactViewController.h */,
 				34CCAF3A1F0C2748004084F4 /* OWSAddToContactViewController.m */,
 				347E0B772003CD7400BC2F76 /* OWSBackupExportViewController.h */,
@@ -1992,14 +2060,15 @@
 		D221A093169C9E5E00537ABF /* Signal */ = {
 			isa = PBXGroup;
 			children = (
-				B657DDC91911A40500F45B0C /* Signal.entitlements */,
 				34330A581E7875FB00DF2FB9 /* Fonts */,
 				B633C4FD1A1D190B0059AC12 /* Images */,
-				B67EBF5C19194AC60084CCFD /* Settings.bundle */,
-				76EB03C118170B33006006FC /* src */,
-				B660F66C1C29867F00687D6E /* test */,
-				D221A094169C9E5E00537ABF /* Supporting Files */,
 				B66DBF4919D5BBC8006EA940 /* Images.xcassets */,
+				B67EBF5C19194AC60084CCFD /* Settings.bundle */,
+				B657DDC91911A40500F45B0C /* Signal.entitlements */,
+				34074F54203D0722004596AE /* Sounds */,
+				76EB03C118170B33006006FC /* src */,
+				D221A094169C9E5E00537ABF /* Supporting Files */,
+				B660F66C1C29867F00687D6E /* test */,
 			);
 			path = Signal;
 			sourceTree = "<group>";
@@ -2019,7 +2088,6 @@
 		E18AB40618A05754001A532A /* AudioFiles */ = {
 			isa = PBXGroup;
 			children = (
-				B625CD551ABB589C00E8B23C /* NewMessage.aifc */,
 				E18AB40718A05754001A532A /* busy.mp3 */,
 				E18AB40918A05754001A532A /* failure.mp3 */,
 				E18AB40B18A05754001A532A /* outring.mp3 */,
@@ -2103,6 +2171,7 @@
 				45194F901FD7200000333B2C /* ThreadUtil.h in Headers */,
 				346129CC1FD2072E00532771 /* NSAttributedString+OWS.h in Headers */,
 				346129FD1FD5F31400532771 /* OWS102MoveLoggingPreferenceToUserDefaults.h in Headers */,
+				34074F62203D0CBE004596AE /* NotificationSounds.h in Headers */,
 				344F2499200FD03300CFB4F4 /* SharingThreadPickerViewController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2376,23 +2445,33 @@
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
 				AD83FF441A73426500B5C81A /* audio_pause_button.png in Resources */,
+				34074FBF203D14F6004596AE /* input.m4r in Resources */,
+				34074FBB203D14F6004596AE /* circles.m4r in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
 				B10C9B611A7049EC00ECA2BF /* play_icon.png in Resources */,
 				AD83FF401A73426500B5C81A /* audio_pause_button_blue@2x.png in Resources */,
+				34074FC3203D14F6004596AE /* synth.m4r in Resources */,
+				34074FC4203D14F6004596AE /* keys.m4r in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
 				4517642A1DE939FD00EDB8B9 /* ContactCell.xib in Resources */,
+				34074FC1203D14F6004596AE /* popcorn.m4r in Resources */,
+				34074FC2203D14F6004596AE /* pulse.m4r in Resources */,
 				AD83FF431A73426500B5C81A /* audio_play_button@2x.png in Resources */,
+				34074FBE203D14F6004596AE /* hello.m4r in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
 				34B3F8781E8DF1700035BE1A /* ContactsPicker.xib in Resources */,
+				34074FBA203D14F6004596AE /* bamboo.m4r in Resources */,
 				B633C5C31A1D190B0059AC12 /* mute_off@2x.png in Resources */,
 				AD83FF411A73426500B5C81A /* audio_play_button_blue@2x.png in Resources */,
 				FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */,
+				34074FBC203D14F6004596AE /* chord.m4r in Resources */,
+				34074FC0203D14F6004596AE /* note.m4r in Resources */,
+				34074FAE203D14D8004596AE /* aurora.m4r in Resources */,
 				E1370BE018A0686600826894 /* busy.mp3 in Resources */,
 				E1370BE218A0686C00826894 /* failure.mp3 in Resources */,
-				B625CD561ABB589C00E8B23C /* NewMessage.aifc in Resources */,
 				B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */,
 				B10C9B621A7049EC00ECA2BF /* play_icon@2x.png in Resources */,
 				B633C5861A1D190B0059AC12 /* call@2x.png in Resources */,
@@ -2405,6 +2484,7 @@
 				B10C9B5F1A7049EC00ECA2BF /* pause_icon.png in Resources */,
 				AD83FF471A73428300B5C81A /* audio_play_button_blue.png in Resources */,
 				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
+				34074FBD203D14F6004596AE /* complete.m4r in Resources */,
 				AD83FF451A73426500B5C81A /* audio_pause_button@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2782,6 +2862,7 @@
 				347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */,
 				346129761FD1E0B500532771 /* WeakTimer.swift in Sources */,
 				346129F81FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.m in Sources */,
+				34074F61203D0CBE004596AE /* NotificationSounds.m in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				346129701FD1D74C00532771 /* Release.m in Sources */,
 				3478506C1FD9B78A007B8332 /* NoopNotificationsManager.swift in Sources */,
@@ -2977,6 +3058,7 @@
 				34D1F0B11F867BFC0066283D /* OWSUnreadIndicatorCell.m in Sources */,
 				34B3F89C1E8DF3270035BE1A /* BlockListViewController.m in Sources */,
 				34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */,
+				34074F5B203D093B004596AE /* NotificationSoundsViewController.m in Sources */,
 				34C42D5B1F45F7A80072EC04 /* OWSNavigationController.m in Sources */,
 				B609597C1C2C0FC6004E8797 /* iRate.m in Sources */,
 				4574A5D61DD6704700C6B692 /* CallService.swift in Sources */,

@@ -1149,6 +1149,9 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Due to known bugs in Apple's push framework, message previews will only be shown if the message is retrieved within 30 seconds after being sent. The application badge might be inaccurate as a result.";
 
+/* Label for settings view that allows user to change the notification sound. */
+"NOTIFICATIONS_ITEM_SOUND" = "Sound";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "No name or message";
 
@@ -1157,6 +1160,9 @@
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SECTION_INAPP" = "In-App Notifications";
+
+/* Label for settings UI that allows user to change the notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS" = "Sounds";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Sender name & message";
