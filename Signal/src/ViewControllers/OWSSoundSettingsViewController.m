@@ -2,10 +2,12 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "NotificationSoundsViewController.h"
+#import "OWSSoundSettingsViewController.h"
 #import <SignalMessaging/OWSSounds.h>
 
-@interface NotificationSoundsViewController ()
+NS_ASSUME_NONNULL_BEGIN
+
+@interface OWSSoundSettingsViewController ()
 
 @property (nonatomic) BOOL isDirty;
 
@@ -15,17 +17,26 @@
 
 #pragma mark -
 
-@implementation NotificationSoundsViewController
+@implementation OWSSoundSettingsViewController
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 
-    [self setTitle:NSLocalizedString(@"NOTIFICATIONS_ITEM_SOUND",
-                       @"Label for settings view that allows user to change the notification sound.")];
-
-    self.currentSound
-        = (self.thread ? [OWSSounds notificationSoundForThread:self.thread] : [OWSSounds globalNotificationSound]);
+    switch (self.soundType) {
+        case OWSSoundType_Notification:
+            [self setTitle:NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
+                                             @"Label for settings view that allows user to change the notification sound.")];
+            self.currentSound
+            = (self.thread ? [OWSSounds notificationSoundForThread:self.thread] : [OWSSounds globalNotificationSound]);
+            break;
+        case OWSSoundType_Ringtone:
+            [self setTitle:NSLocalizedString(@"SETTINGS_ITEM_RINGTONE_SOUND",
+                                             @"Label for settings view that allows user to change the ringtone sound.")];
+            self.currentSound
+            = (self.thread ? [OWSSounds ringtoneSoundForThread:self.thread] : [OWSSounds globalRingtoneSound]);
+            break;
+    }
 
     [self updateTableContents];
     [self updateNavigationItems];
@@ -39,7 +50,7 @@
 - (void)updateNavigationItems
 {
     self.navigationItem.leftBarButtonItem =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                       target:self
                                                       action:@selector(cancelWasPressed:)];
 
@@ -59,12 +70,22 @@
 {
     OWSTableContents *contents = [OWSTableContents new];
 
-    __weak NotificationSoundsViewController *weakSelf = self;
+    __weak OWSSoundSettingsViewController *weakSelf = self;
 
     OWSTableSection *soundsSection = [OWSTableSection new];
     soundsSection.headerTitle = NSLocalizedString(
         @"NOTIFICATIONS_SECTION_SOUNDS", @"Label for settings UI that allows user to change the notification sound.");
-    for (NSNumber *nsValue in [OWSSounds allNotificationSounds]) {
+    
+    NSArray<NSNumber *> *allSounds;
+    switch (self.soundType) {
+        case OWSSoundType_Notification:
+            allSounds = [OWSSounds allNotificationSounds];
+            break;
+        case OWSSoundType_Ringtone:
+            allSounds = [OWSSounds allRingtoneSounds];
+            break;
+    }
+    for (NSNumber *nsValue in allSounds) {
         OWSSound sound = (OWSSound)nsValue.intValue;
         OWSTableItem *item;
         if (sound == self.currentSound) {
@@ -110,13 +131,26 @@
 
 - (void)saveWasPressed:(id)sender
 {
-    if (self.thread) {
-        [OWSSounds setNotificationSound:self.currentSound forThread:self.thread];
-    } else {
-        [OWSSounds setGlobalNotificationSound:self.currentSound];
+    switch (self.soundType) {
+        case OWSSoundType_Notification:
+            if (self.thread) {
+                [OWSSounds setNotificationSound:self.currentSound forThread:self.thread];
+            } else {
+                [OWSSounds setGlobalNotificationSound:self.currentSound];
+            }
+            break;
+        case OWSSoundType_Ringtone:
+            if (self.thread) {
+                [OWSSounds setRingtoneSound:self.currentSound forThread:self.thread];
+            } else {
+                [OWSSounds setGlobalRingtoneSound:self.currentSound];
+            }
+            break;
     }
 
     [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

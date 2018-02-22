@@ -4,7 +4,7 @@
 
 #import "NotificationSettingsViewController.h"
 #import "NotificationSettingsOptionsViewController.h"
-#import "NotificationSoundsViewController.h"
+#import "OWSSoundSettingsViewController.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 
@@ -31,21 +31,34 @@
     __weak NotificationSettingsViewController *weakSelf = self;
 
     OWSPreferences *prefs = [Environment preferences];
-
+    
+    // Sounds section.
+    
     OWSTableSection *soundsSection = [OWSTableSection new];
-    soundsSection.headerTitle = NSLocalizedString(
-        @"NOTIFICATIONS_SECTION_SOUNDS", @"Label for settings UI that allows user to change the notification sound.");
+    soundsSection.headerTitle = NSLocalizedString(@"SETTINGS_SECTION_SOUNDS",
+                                                  @"Label for the sounds section of settings views.");
     [soundsSection
-        addItem:[OWSTableItem disclosureItemWithText:
-                                  NSLocalizedString(@"NOTIFICATIONS_ITEM_SOUND",
-                                      @"Label for settings view that allows user to change the notification sound.")
-                                         actionBlock:^{
-                                             NotificationSoundsViewController *vc =
-                                                 [NotificationSoundsViewController new];
-                                             [weakSelf.navigationController pushViewController:vc animated:YES];
-                                         }]];
+     addItem:[OWSTableItem disclosureItemWithText:
+              NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
+                                @"Label for settings view that allows user to change the notification sound.")
+                                      actionBlock:^{
+                                          OWSSoundSettingsViewController *vc =
+                                          [OWSSoundSettingsViewController new];
+                                          vc.soundType = OWSSoundType_Notification;
+                                          [weakSelf.navigationController pushViewController:vc animated:YES];
+                                      }]];
+    [soundsSection
+     addItem:[OWSTableItem disclosureItemWithText:
+              NSLocalizedString(@"SETTINGS_ITEM_RINGTONE_SOUND",
+                                @"Label for settings view that allows user to change the ringtone sound.")
+                                      actionBlock:^{
+                                          OWSSoundSettingsViewController *vc =
+                                          [OWSSoundSettingsViewController new];
+                                          vc.soundType = OWSSoundType_Ringtone;
+                                          [weakSelf.navigationController pushViewController:vc animated:YES];
+                                      }]];
     [contents addSection:soundsSection];
-
+    
     OWSTableSection *backgroundSection = [OWSTableSection new];
     backgroundSection.headerTitle = NSLocalizedString(@"NOTIFICATIONS_SECTION_BACKGROUND", nil);
     [backgroundSection addItem:[OWSTableItem itemWithCustomCellBlock:^{

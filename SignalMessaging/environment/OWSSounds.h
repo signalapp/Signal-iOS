@@ -2,6 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+NS_ASSUME_NONNULL_BEGIN
+
 typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_Default = 0,
     // Notification Sounds
@@ -45,15 +47,13 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_Twinkle,
     OWSSound_Uplift,
     OWSSound_Waves,
-
+    
     // Calls
     OWSSound_CallConnecting,
     OWSSound_CallOutboundRinging,
     OWSSound_CallBusy,
     OWSSound_CallFailure,
 };
-
-NS_ASSUME_NONNULL_BEGIN
 
 @class AVAudioPlayer;
 @class TSThread;

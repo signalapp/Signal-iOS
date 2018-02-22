@@ -439,9 +439,6 @@
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Create New Contact";
 
-/* Label for notifications section of conversation settings view. */
-"CONVERSATION_SETTINGS_NOTIFICATIONS_SECTION" = "Notifications";
-
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";
 
@@ -1149,9 +1146,6 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Due to known bugs in Apple's push framework, message previews will only be shown if the message is retrieved within 30 seconds after being sent. The application badge might be inaccurate as a result.";
 
-/* Label for settings view that allows user to change the notification sound. */
-"NOTIFICATIONS_ITEM_SOUND" = "Sound";
-
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "No name or message";
 
@@ -1575,6 +1569,12 @@
 /* content of tweet when inviting via twitter */
 "SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using Signal by @WhisperSystems, get it now.";
 
+/* Label for settings view that allows user to change the notification sound. */
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Notification Sound";
+
+/* Label for settings view that allows user to change the ringtone sound. */
+"SETTINGS_ITEM_RINGTONE_SOUND" = "Ringtone Sound";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Settings";
 
@@ -1604,6 +1604,9 @@
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+
+/* Label for the sounds section of settings views. */
+"SETTINGS_SECTION_SOUNDS" = "Sounds";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Calling";

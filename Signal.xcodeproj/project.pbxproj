@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
-		34074F5B203D093B004596AE /* NotificationSoundsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F59203D093A004596AE /* NotificationSoundsViewController.m */; };
+		34074F5B203D093B004596AE /* OWSSoundSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F59203D093A004596AE /* OWSSoundSettingsViewController.m */; };
 		34074F61203D0CBE004596AE /* OWSSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* OWSSounds.m */; };
 		34074F62203D0CBE004596AE /* OWSSounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 34074F60203D0CBE004596AE /* OWSSounds.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34074FEE203E5436004596AE /* aurora.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FC6203E5435004596AE /* aurora.m4r */; };
@@ -518,8 +518,8 @@
 		3400C7951EAF99F4008A8584 /* SelectThreadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectThreadViewController.m; sourceTree = "<group>"; };
 		3400C7971EAFB772008A8584 /* ThreadViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadViewHelper.h; sourceTree = "<group>"; };
 		3400C7981EAFB772008A8584 /* ThreadViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadViewHelper.m; sourceTree = "<group>"; };
-		34074F59203D093A004596AE /* NotificationSoundsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSoundsViewController.m; sourceTree = "<group>"; };
-		34074F5A203D093B004596AE /* NotificationSoundsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSoundsViewController.h; sourceTree = "<group>"; };
+		34074F59203D093A004596AE /* OWSSoundSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSoundSettingsViewController.m; sourceTree = "<group>"; };
+		34074F5A203D093B004596AE /* OWSSoundSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSoundSettingsViewController.h; sourceTree = "<group>"; };
 		34074F5F203D0CBD004596AE /* OWSSounds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSounds.m; sourceTree = "<group>"; };
 		34074F60203D0CBE004596AE /* OWSSounds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSounds.h; sourceTree = "<group>"; };
 		34074FC6203E5435004596AE /* aurora.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = aurora.m4r; sourceTree = "<group>"; };
@@ -1503,8 +1503,6 @@
 				34B3F8571E8DF1700035BE1A /* NotificationSettingsOptionsViewController.m */,
 				34B3F8581E8DF1700035BE1A /* NotificationSettingsViewController.h */,
 				34B3F8591E8DF1700035BE1A /* NotificationSettingsViewController.m */,
-				34074F5A203D093B004596AE /* NotificationSoundsViewController.h */,
-				34074F59203D093A004596AE /* NotificationSoundsViewController.m */,
 				34CCAF391F0C2748004084F4 /* OWSAddToContactViewController.h */,
 				34CCAF3A1F0C2748004084F4 /* OWSAddToContactViewController.m */,
 				347E0B772003CD7400BC2F76 /* OWSBackupExportViewController.h */,
@@ -1524,6 +1522,8 @@
 				34C42D5A1F45F7A80072EC04 /* OWSNavigationController.m */,
 				34B3F8621E8DF1700035BE1A /* OWSQRCodeScanningViewController.h */,
 				34B3F8631E8DF1700035BE1A /* OWSQRCodeScanningViewController.m */,
+				34074F5A203D093B004596AE /* OWSSoundSettingsViewController.h */,
+				34074F59203D093A004596AE /* OWSSoundSettingsViewController.m */,
 				34B3F8641E8DF1700035BE1A /* PrivacySettingsTableViewController.h */,
 				34B3F8651E8DF1700035BE1A /* PrivacySettingsTableViewController.m */,
 				34CE88E51F2FB9A10098030F /* ProfileViewController.h */,
@@ -3156,7 +3156,7 @@
 				34D1F0B11F867BFC0066283D /* OWSUnreadIndicatorCell.m in Sources */,
 				34B3F89C1E8DF3270035BE1A /* BlockListViewController.m in Sources */,
 				34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */,
-				34074F5B203D093B004596AE /* NotificationSoundsViewController.m in Sources */,
+				34074F5B203D093B004596AE /* OWSSoundSettingsViewController.m in Sources */,
 				34C42D5B1F45F7A80072EC04 /* OWSNavigationController.m in Sources */,
 				B609597C1C2C0FC6004E8797 /* iRate.m in Sources */,
 				4574A5D61DD6704700C6B692 /* CallService.swift in Sources */,
