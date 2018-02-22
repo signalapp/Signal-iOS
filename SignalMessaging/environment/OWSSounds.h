@@ -64,6 +64,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 
 @class AVAudioPlayer;
 @class TSThread;
+@class YapDatabaseReadWriteTransaction;
 
 @interface OWSSounds : NSObject
 
@@ -81,6 +82,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 
 + (OWSSound)globalNotificationSound;
 + (void)setGlobalNotificationSound:(OWSSound)sound;
++ (void)setGlobalNotificationSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (OWSSound)notificationSoundForThread:(TSThread *)thread;
 + (void)setNotificationSound:(OWSSound)sound forThread:(TSThread *)thread;
@@ -91,6 +93,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 
 + (OWSSound)globalRingtoneSound;
 + (void)setGlobalRingtoneSound:(OWSSound)sound;
++ (void)setGlobalRingtoneSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (OWSSound)ringtoneSoundForThread:(TSThread *)thread;
 + (void)setRingtoneSound:(OWSSound)sound forThread:(TSThread *)thread;

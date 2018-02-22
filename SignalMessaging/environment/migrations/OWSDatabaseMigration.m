@@ -50,10 +50,21 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(completion);
 
-    [self.storageManager.newDatabaseConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [self runUpWithTransaction:transaction];
-        }
+    OWSDatabaseConnection *dbConnection = (OWSDatabaseConnection *)self.storageManager.newDatabaseConnection;
+    // These migrations won't be run until storage registrations are enqueued,
+    // but this transaction might begin before all registrations are marked as
+    // complete, so disable this checking.
+    //
+    // TODO: Once we move "app readiness" into AppSetup, we should explicitly
+    // not start these migrations until storage is ready.  We can then remove
+    // this statement which disables checking.
+#ifdef DEBUG
+    dbConnection.canWriteBeforeStorageReady = YES;
+#endif
+
+    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self runUpWithTransaction:transaction];
+    }
         completionBlock:^{
             DDLogInfo(@"Completed migration %@", self.uniqueId);
             [self save];

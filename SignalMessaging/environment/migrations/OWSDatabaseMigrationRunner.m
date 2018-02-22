@@ -8,6 +8,7 @@
 #import "OWS103EnableVideoCalling.h"
 #import "OWS104CreateRecipientIdentities.h"
 #import "OWS105AttachmentFilePaths.h"
+#import "OWS107LegacySounds.h"
 #import "OWSDatabaseMigration.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
@@ -38,7 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWS103EnableVideoCalling alloc] initWithStorageManager:storageManager],
         [[OWS104CreateRecipientIdentities alloc] initWithStorageManager:storageManager],
         [[OWS105AttachmentFilePaths alloc] initWithStorageManager:storageManager],
-        [[OWS106EnsureProfileComplete alloc] initWithStorageManager:storageManager]
+        [[OWS106EnsureProfileComplete alloc] initWithStorageManager:storageManager],
+        [[OWS107LegacySounds alloc] initWithStorageManager:storageManager],
     ];
 }
 

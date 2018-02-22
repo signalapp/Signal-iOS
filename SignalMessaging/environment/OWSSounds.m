@@ -7,6 +7,7 @@
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <YapDatabase/YapDatabase.h>
 
 NSString *const kOWSSoundsStorageNotificationCollection = @"kOWSSoundsStorageNotificationCollection";
 NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlobalNotificationKey";
@@ -388,6 +389,15 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
                         inCollection:kOWSSoundsStorageNotificationCollection];
 }
 
++ (void)setGlobalNotificationSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+
+    [transaction setObject:@(sound)
+                    forKey:kOWSSoundsStorageGlobalNotificationKey
+              inCollection:kOWSSoundsStorageNotificationCollection];
+}
+
 + (OWSSound)notificationSoundForThread:(TSThread *)thread
 {
     OWSSounds *instance = OWSSounds.sharedManager;
@@ -427,6 +437,16 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
     [instance.dbConnection setObject:@(sound)
                               forKey:kOWSSoundsStorageGlobalRingtoneKey
                         inCollection:kOWSSoundsStorageRingtoneCollection];
+}
+
+
++ (void)setGlobalRingtoneSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+
+    [transaction setObject:@(sound)
+                    forKey:kOWSSoundsStorageGlobalRingtoneKey
+              inCollection:kOWSSoundsStorageRingtoneCollection];
 }
 
 + (OWSSound)ringtoneSoundForThread:(TSThread *)thread
