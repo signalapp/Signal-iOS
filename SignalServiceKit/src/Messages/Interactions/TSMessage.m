@@ -282,22 +282,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 // TODO deprecate this and implement something like previewTextWithTransaction: for all TSInteractions
 - (NSString *)description
 {
-    if (self.body.length > 0) {
-        // Use the message text/caption, if any.
-        return self.body;
-    } else if ([self hasAttachments]) {
-        NSString *attachmentId = self.attachmentIds[0];
-        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
-        if (attachment) {
-            return attachment.description;
-        } else {
-            return NSLocalizedString(@"UNKNOWN_ATTACHMENT_LABEL", @"In Inbox view, last message label for thread with corrupted attachment.");
-        }
-    } else {
-        OWSFail(@"%@ message has neither body nor attachment.", self.logTag);
-        // TODO: We should do better here.
-        return @"";
-    }
+    __block NSString *result;
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        result = [self previewTextWithTransaction:transaction];
+    }];
+    return result;
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
