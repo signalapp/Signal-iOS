@@ -1570,10 +1570,10 @@
 "SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using Signal by @WhisperSystems, get it now.";
 
 /* Label for settings view that allows user to change the notification sound. */
-"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Notification Sound";
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Notification";
 
 /* Label for settings view that allows user to change the ringtone sound. */
-"SETTINGS_ITEM_RINGTONE_SOUND" = "Ringtone Sound";
+"SETTINGS_ITEM_RINGTONE_SOUND" = "Ringtone";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Settings";
