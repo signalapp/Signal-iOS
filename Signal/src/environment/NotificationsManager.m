@@ -100,7 +100,7 @@
     };
 
     if ([self shouldPlaySoundForNotification]) {
-        NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+        NotificationSound notificationSound = [NotificationSounds notificationSoundForThread:thread];
         notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
     }
 
@@ -140,7 +140,7 @@
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
     if ([self shouldPlaySoundForNotification]) {
-        NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+        NotificationSound notificationSound = [NotificationSounds notificationSoundForThread:thread];
         notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
     }
 
@@ -181,7 +181,7 @@
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
     if ([self shouldPlaySoundForNotification]) {
-        NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+        NotificationSound notificationSound = [NotificationSounds notificationSoundForThread:thread];
         notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
     }
 
@@ -226,7 +226,7 @@
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             notification.userInfo = @{ Signal_Thread_UserInfo_Key : thread.uniqueId };
             if (shouldPlaySound) {
-                NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+                NotificationSound notificationSound = [NotificationSounds notificationSoundForThread:thread];
                 notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
             }
 
@@ -247,7 +247,7 @@
             [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
         } else {
             if (shouldPlaySound && [Environment.preferences soundInForeground]) {
-                NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+                NotificationSound notificationSound = [NotificationSounds notificationSoundForThread:thread];
                 [NotificationSounds playNotificationSound:notificationSound];
             }
         }
@@ -289,7 +289,7 @@
         if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageText) {
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             if (shouldPlaySound) {
-                NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+                NotificationSound notificationSound = [NotificationSounds notificationSoundForThread:thread];
                 notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
             }
 
@@ -352,7 +352,7 @@
             [[PushManager sharedManager] presentNotification:notification checkForCancel:YES];
         } else {
             if (shouldPlaySound && [Environment.preferences soundInForeground]) {
-                NotificationSound notificationSound = [Environment preferences].globalNotificationSound;
+                NotificationSound notificationSound = [NotificationSounds notificationSoundForThread:thread];
                 [NotificationSounds playNotificationSound:notificationSound];
             }
         }

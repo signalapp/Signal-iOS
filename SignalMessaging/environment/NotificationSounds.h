@@ -3,7 +3,8 @@
 //
 
 typedef NS_ENUM(NSUInteger, NotificationSound) {
-    NotificationSound_Aurora = 0,
+    NotificationSound_Default = 0,
+    NotificationSound_Aurora,
     NotificationSound_Bamboo,
     NotificationSound_Chord,
     NotificationSound_Circles,
@@ -15,10 +16,11 @@ typedef NS_ENUM(NSUInteger, NotificationSound) {
     NotificationSound_Popcorn,
     NotificationSound_Pulse,
     NotificationSound_Synth,
-    NotificationSound_Default = NotificationSound_Note,
 };
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class TSThread;
 
 @interface NotificationSounds : NSObject
 
@@ -31,6 +33,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)filenameForNotificationSound:(NotificationSound)notificationSound;
 
 + (void)playNotificationSound:(NotificationSound)notificationSound;
+
++ (NotificationSound)globalNotificationSound;
++ (void)setGlobalNotificationSound:(NotificationSound)notificationSound;
+
++ (NotificationSound)notificationSoundForThread:(TSThread *)thread;
++ (void)setNotificationSound:(NotificationSound)notificationSound forThread:(TSThread *)thread;
 
 @end
 

@@ -2,8 +2,6 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "NotificationSounds.h"
-
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -56,9 +54,6 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 
 - (void)setIOSUpgradeNagDate:(NSDate *)value;
 - (nullable NSDate *)iOSUpgradeNagDate;
-
-- (NotificationSound)globalNotificationSound;
-- (void)setGlobalNotificationSound:(NotificationSound)notificationSound;
 
 #pragma mark - Calling
 

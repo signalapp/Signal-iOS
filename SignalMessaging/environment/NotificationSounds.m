@@ -4,8 +4,16 @@
 
 #import "NotificationSounds.h"
 #import <AudioToolbox/AudioServices.h>
+#import <SignalServiceKit/TSStorageManager.h>
+#import <SignalServiceKit/TSThread.h>
+#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+
+NSString *const kNotificationSoundsStorageNotificationCollection = @"kNotificationSoundsStorageNotificationCollection";
+NSString *const kNotificationSoundsStorageGlobalNotificationKey = @"kNotificationSoundsStorageGlobalNotificationKey";
 
 @interface NotificationSounds ()
+
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @property (nonatomic) NSMutableDictionary<NSNumber *, NSNumber *> *systemSoundIDMap;
 
@@ -27,11 +35,22 @@
 
 - (instancetype)initDefault
 {
+    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+
+    return [self initWithStorageManager:storageManager];
+}
+
+- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+{
     self = [super init];
 
     if (!self) {
         return self;
     }
+
+    OWSAssert(storageManager);
+
+    _dbConnection = storageManager.newDatabaseConnection;
 
     OWSSingletonAssert();
 
@@ -76,6 +95,7 @@
             return @"Input";
         case NotificationSound_Keys:
             return @"Keys";
+        case NotificationSound_Default:
         case NotificationSound_Note:
             return @"Note";
         case NotificationSound_Popcorn:
@@ -107,6 +127,7 @@
             return @"input.m4r";
         case NotificationSound_Keys:
             return @"keys.m4r";
+        case NotificationSound_Default:
         case NotificationSound_Note:
             return @"note.m4r";
         case NotificationSound_Popcorn:
@@ -159,6 +180,45 @@
 {
     SystemSoundID systemSoundID = [self systemSoundIDForNotificationSound:notificationSound];
     AudioServicesPlayAlertSound(systemSoundID);
+}
+
++ (NotificationSound)defaultNotificationSound
+{
+    return NotificationSound_Note;
+}
+
++ (NotificationSound)globalNotificationSound
+{
+    NotificationSounds *notificationSounds = NotificationSounds.sharedManager;
+    NSNumber *_Nullable value =
+        [notificationSounds.dbConnection objectForKey:kNotificationSoundsStorageGlobalNotificationKey
+                                         inCollection:kNotificationSoundsStorageNotificationCollection];
+    return (value ? (NotificationSound)value.intValue : [self defaultNotificationSound]);
+}
+
++ (void)setGlobalNotificationSound:(NotificationSound)notificationSound
+{
+    NotificationSounds *notificationSounds = NotificationSounds.sharedManager;
+    [notificationSounds.dbConnection setObject:@(notificationSound)
+                                        forKey:kNotificationSoundsStorageGlobalNotificationKey
+                                  inCollection:kNotificationSoundsStorageNotificationCollection];
+}
+
++ (NotificationSound)notificationSoundForThread:(TSThread *)thread
+{
+    NotificationSounds *notificationSounds = NotificationSounds.sharedManager;
+    NSNumber *_Nullable value =
+        [notificationSounds.dbConnection objectForKey:kNotificationSoundsStorageGlobalNotificationKey
+                                         inCollection:kNotificationSoundsStorageNotificationCollection];
+    return (value ? (NotificationSound)value.intValue : [self globalNotificationSound]);
+}
+
++ (void)setNotificationSound:(NotificationSound)notificationSound forThread:(TSThread *)thread
+{
+    NotificationSounds *notificationSounds = NotificationSounds.sharedManager;
+    [notificationSounds.dbConnection setObject:@(notificationSound)
+                                        forKey:thread.uniqueId
+                                  inCollection:kNotificationSoundsStorageNotificationCollection];
 }
 
 @end

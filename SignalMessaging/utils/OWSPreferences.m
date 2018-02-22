@@ -26,7 +26,6 @@ NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
-NSString *const OWSPreferencesKey_GlobalNotificationSound = @"GlobalNotificationSound";
 
 @implementation OWSPreferences
 
@@ -168,17 +167,6 @@ NSString *const OWSPreferencesKey_GlobalNotificationSound = @"GlobalNotification
 - (nullable NSDate *)iOSUpgradeNagDate
 {
     return [self tryGetValueForKey:OWSPreferencesKeyIOSUpgradeNagDate];
-}
-
-- (NotificationSound)globalNotificationSound
-{
-    NSNumber *value = [self tryGetValueForKey:OWSPreferencesKey_GlobalNotificationSound];
-    return value ? (NotificationSound)[value intValue] : NotificationSound_Default;
-}
-
-- (void)setGlobalNotificationSound:(NotificationSound)notificationSound
-{
-    [self setValueForKey:OWSPreferencesKey_GlobalNotificationSound toValue:@(notificationSound)];
 }
 
 #pragma mark - Calling

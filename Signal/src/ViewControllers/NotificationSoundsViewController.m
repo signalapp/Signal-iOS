@@ -3,15 +3,13 @@
 //
 
 #import "NotificationSoundsViewController.h"
-#import <SignalMessaging/Environment.h>
 #import <SignalMessaging/NotificationSounds.h>
-#import <SignalMessaging/OWSPreferences.h>
 
 @interface NotificationSoundsViewController ()
 
 @property (nonatomic) BOOL isDirty;
 
-@property (nonatomic) NotificationSound globalNotificationSound;
+@property (nonatomic) NotificationSound currentNotificationSound;
 
 @end
 
@@ -26,8 +24,8 @@
     [self setTitle:NSLocalizedString(@"NOTIFICATIONS_ITEM_SOUND",
                        @"Label for settings view that allows user to change the notification sound.")];
 
-    OWSPreferences *preferences = [Environment preferences];
-    self.globalNotificationSound = preferences.globalNotificationSound;
+    self.currentNotificationSound = (self.thread ? [NotificationSounds notificationSoundForThread:self.thread]
+                                                 : [NotificationSounds globalNotificationSound]);
 
     [self updateTableContents];
     [self updateNavigationItems];
@@ -69,7 +67,7 @@
     for (NSNumber *nsNotificationSound in [NotificationSounds allNotificationSounds]) {
         NotificationSound notificationSound = (NotificationSound)nsNotificationSound.intValue;
         OWSTableItem *item;
-        if (notificationSound == self.globalNotificationSound) {
+        if (notificationSound == self.currentNotificationSound) {
             item = [OWSTableItem
                 checkmarkItemWithText:[NotificationSounds displayNameForNotificationSound:notificationSound]
                           actionBlock:^{
@@ -96,11 +94,11 @@
 {
     [NotificationSounds playNotificationSound:notificationSound];
 
-    if (self.globalNotificationSound == notificationSound) {
+    if (self.currentNotificationSound == notificationSound) {
         return;
     }
 
-    self.globalNotificationSound = notificationSound;
+    self.currentNotificationSound = notificationSound;
     self.isDirty = YES;
     [self updateTableContents];
     [self updateNavigationItems];
@@ -114,8 +112,11 @@
 
 - (void)saveWasPressed:(id)sender
 {
-    OWSPreferences *preferences = [Environment preferences];
-    preferences.globalNotificationSound = self.globalNotificationSound;
+    if (self.thread) {
+        [NotificationSounds setNotificationSound:self.currentNotificationSound forThread:self.thread];
+    } else {
+        [NotificationSounds setGlobalNotificationSound:self.currentNotificationSound];
+    }
 
     [self.navigationController popViewControllerAnimated:YES];
 }
