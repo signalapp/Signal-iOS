@@ -439,24 +439,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     [contents addSection:mainSection];
 
-    // Notifications section.
-
-    OWSTableSection *notificationsSection = [OWSTableSection new];
-    notificationsSection.headerTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_NOTIFICATIONS_SECTION",
-        @"Label for notifications section of conversation settings view.");
-    [notificationsSection
-        addItem:[OWSTableItem disclosureItemWithText:
-                                  NSLocalizedString(@"NOTIFICATIONS_ITEM_SOUND",
-                                      @"Label for settings view that allows user to change the notification sound.")
-                                         actionBlock:^{
-                                             NotificationSoundsViewController *vc =
-                                                 [NotificationSoundsViewController new];
-                                             vc.thread = weakSelf.thread;
-                                             [weakSelf.navigationController pushViewController:vc animated:YES];
-                                         }]];
-
-    [contents addSection:notificationsSection];
-
     // Group settings section.
 
     if (self.isGroupThread) {
@@ -584,6 +566,24 @@ NS_ASSUME_NONNULL_BEGIN
                                                    actionBlock:nil]];
         [contents addSection:section];
     }
+
+    // Notifications section.
+
+    OWSTableSection *notificationsSection = [OWSTableSection new];
+    notificationsSection.headerTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_NOTIFICATIONS_SECTION",
+        @"Label for notifications section of conversation settings view.");
+    [notificationsSection
+        addItem:[OWSTableItem disclosureItemWithText:
+                                  NSLocalizedString(@"NOTIFICATIONS_ITEM_SOUND",
+                                      @"Label for settings view that allows user to change the notification sound.")
+                                         actionBlock:^{
+                                             NotificationSoundsViewController *vc =
+                                                 [NotificationSoundsViewController new];
+                                             vc.thread = weakSelf.thread;
+                                             [weakSelf.navigationController pushViewController:vc animated:YES];
+                                         }]];
+
+    [contents addSection:notificationsSection];
 
     self.contents = contents;
 }
