@@ -604,9 +604,6 @@
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Save";
 
-/* Short name for edit menu item to share contents of media message. */
-"EDIT_ITEM_SHARE_ACTION" = "Share";
-
 /* No comment provided by engineer. */
 "EDIT_TXT" = "Edit";
 
