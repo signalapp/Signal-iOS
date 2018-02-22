@@ -2825,9 +2825,8 @@ typedef enum : NSUInteger {
         // so rebuild everything.  This is expensive and usually isn't necessary, but
         // there's no alternative.
         //
-        // There's no need to do this when app is in the background or this view isn't
-        // visible.  We will resetMappings when the app re-enters the foreground or this
-        // view becomes visible.
+        // We don't need to do this if we're not observing db modifications since we'll
+        // do it when we resume.
         [self resetMappings];
     }
 }
@@ -4170,9 +4169,14 @@ typedef enum : NSUInteger {
         if (hasAddedNewItems) {
             NSIndexPath *_Nullable indexPathToShow = [self firstIndexPathAtViewHorizonTimestamp];
             if (indexPathToShow) {
+                // The goal is to show _both_ the last item before the "view horizon" and the
+                // first item after the "view horizon".  We can't do "top on first item after"
+                // or "bottom on last item before" or we won't see the other. Unfortunately,
+                // this gets tricky if either is huge.  The largest cells are oversize text,
+                // which should be rare.  Other cells are considerably smaller than a screenful.
                 [self.collectionView scrollToItemAtIndexPath:indexPathToShow
                                             atScrollPosition:UICollectionViewScrollPositionCenteredVertically
-                                                    animated:YES];
+                                                    animated:NO];
             }
         }
         self.viewHorizonTimestamp = nil;
@@ -4327,9 +4331,10 @@ typedef enum : NSUInteger {
     // made in another process (e.g. the SAE) from showing up in other processes.
     // There's a simple workaround: a trivial write to the database flushes changes
     // made from other processes.
-    [self.editingDatabaseConnection setObject:[NSUUID UUID].UUIDString
-                                       forKey:@"conversation_view_noop_mod"
-                                 inCollection:@"temp"];
+    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
+        l
+    }];
 }
 
 #pragma mark - ConversationCollectionViewDelegate

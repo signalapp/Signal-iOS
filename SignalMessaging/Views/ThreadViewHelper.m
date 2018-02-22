@@ -133,6 +133,9 @@ NS_ASSUME_NONNULL_BEGIN
         // External database modifications can't be converted into incremental updates,
         // so rebuild everything.  This is expensive and usually isn't necessary, but
         // there's no alternative.
+        //
+        // We don't need to do this if we're not observing db modifications since we'll
+        // do it when we resume.
         [self.uiDatabaseConnection beginLongLivedReadTransaction];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.threadMappings updateWithTransaction:transaction];
