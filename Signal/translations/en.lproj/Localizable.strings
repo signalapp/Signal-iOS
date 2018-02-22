@@ -433,6 +433,9 @@
 /* Label for button to mute a thread for a year. */
 "CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Mute for one year";
 
+/* Title for the 'mute' section of the conversation settings view. */
+"CONVERSATION_SETTINGS_MUTE_SECTION" = "Mute";
+
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
 

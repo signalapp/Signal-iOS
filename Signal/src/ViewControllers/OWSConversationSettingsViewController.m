@@ -478,6 +478,9 @@ NS_ASSUME_NONNULL_BEGIN
     // Mute thread section.
 
     OWSTableSection *muteSection = [OWSTableSection new];
+    // We need a section header to separate the mute UI from the group settings UI.
+    muteSection.headerTitle = NSLocalizedString(
+        @"CONVERSATION_SETTINGS_MUTE_SECTION", @"Title for the 'mute' section of the conversation settings view.");
     [muteSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
         OWSConversationSettingsViewController *strongSelf = weakSelf;
