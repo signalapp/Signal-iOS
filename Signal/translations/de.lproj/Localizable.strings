@@ -604,9 +604,6 @@
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Speichern";
 
-/* Short name for edit menu item to share contents of media message. */
-"EDIT_ITEM_SHARE_ACTION" = "Teilen";
-
 /* No comment provided by engineer. */
 "EDIT_TXT" = "Bearbeiten";
 
@@ -992,7 +989,7 @@
 "MESSAGE_STATUS_FAILED" = "Versand gescheitert. Für Details antippen.";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+"MESSAGE_STATUS_FAILED_SHORT" = "Gescheitert";
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Gelesen";
@@ -1633,7 +1630,7 @@
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Nicht registriert";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Starte zum Aktualisieren die Signal-App.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Nicht bereit";
@@ -1792,7 +1789,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hallo, sichere Videoanrufe!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal erfordert iOS 9 oder neuer. Bitte aktualisieren über die iOS-Einstellungen: Einstellungen >> Allgemein >> Softwareaktualisierung.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOS aktualisieren";

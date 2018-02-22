@@ -604,9 +604,6 @@
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "Guardar";
 
-/* Short name for edit menu item to share contents of media message. */
-"EDIT_ITEM_SHARE_ACTION" = "Compartir";
-
 /* No comment provided by engineer. */
 "EDIT_TXT" = "Modificar";
 
@@ -992,7 +989,7 @@
 "MESSAGE_STATUS_FAILED" = "Fallo al enviar. Toca para más información.";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+"MESSAGE_STATUS_FAILED_SHORT" = "Fallo";
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Leído";
@@ -1633,7 +1630,7 @@
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Usuario no registrado";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Inicia Signal para actualizar.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Atención";
@@ -1642,7 +1639,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Fallo al enviar adjunto";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Cargando...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Enviando...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "No ha sido posible preparar el adjunto";
@@ -1792,7 +1789,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "¡Saluda a las vídeollamadas seguras!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requiere iOS 9 o posterior. Por favor, actualiza iOS en la aplicación Ajustes >> General >> Actualización de software.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Actualizar iOS";
