@@ -4170,9 +4170,11 @@ typedef enum : NSUInteger {
         if (hasAddedNewItems) {
             NSIndexPath *_Nullable indexPathToShow = [self firstIndexPathAtPreviousLastUnreadTimestamp];
             if (indexPathToShow) {
-                [self.collectionView scrollToItemAtIndexPath:indexPathToShow
-                                            atScrollPosition:UICollectionViewScrollPositionCenteredVertically
-                                                    animated:YES];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.collectionView scrollToItemAtIndexPath:indexPathToShow
+                                                atScrollPosition:UICollectionViewScrollPositionCenteredVertically
+                                                        animated:YES];
+                });
             }
         }
         self.previousLastUnreadTimestamp = nil;
@@ -4307,6 +4309,14 @@ typedef enum : NSUInteger {
     [self ensureDynamicInteractions];
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
+
+    // There appears to be a bug in YapDatabase that sometimes delays modifications
+    // made in another process (e.g. the SAE) from showing up in other processes.
+    // There's a simple workaround: a trivial write to the database flushes changes
+    // made from other processes.
+    [self.editingDatabaseConnection setObject:[NSUUID UUID].UUIDString
+                                       forKey:@"conversation_view_noop_mod"
+                                 inCollection:@"temp"];
 }
 
 #pragma mark - ConversationCollectionViewDelegate
