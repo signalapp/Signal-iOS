@@ -547,13 +547,8 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
     // MARK: - Actions
 
     func shareButtonPressed() {
-        if let messageBody = messageBody {
-            UIPasteboard.general.string = messageBody
-            return
-        }
-
         guard let attachmentStream = attachmentStream else {
-            Logger.error("\(TAG) Message has neither attachment nor message body.")
+            Logger.error("\(TAG) Share button should only be shown with attachment, but no attachment found.")
             return
         }
         AttachmentSharing.showShareUI(forAttachment: attachmentStream)
