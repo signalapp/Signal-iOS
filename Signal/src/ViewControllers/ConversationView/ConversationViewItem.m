@@ -465,9 +465,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION",
                                               @"Short name for edit menu item to copy contents of media message.")
                                    action:self.copyTextActionSelector],
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SHARE_ACTION",
-                                              @"Short name for edit menu item to share contents of media message.")
-                                   action:self.shareTextActionSelector],
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
                                               @"Short name for edit menu item to show message metadata.")
                                    action:self.metadataActionSelector],
@@ -482,9 +479,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (NSArray<UIMenuItem *> *)mediaMenuControllerItems
 {
     return @[
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SHARE_ACTION",
-                                              @"Short name for edit menu item to share contents of media message.")
-                                   action:self.shareMediaActionSelector],
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
                                               @"Short name for edit menu item to show message metadata.")
                                    action:self.metadataActionSelector],

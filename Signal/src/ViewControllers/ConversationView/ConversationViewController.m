@@ -549,6 +549,18 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.loadMoreHeader autoSetDimension:ALDimensionHeight toSize:kLoadMoreHeaderHeight];
 }
 
+- (BOOL)becomeFirstResponder
+{
+    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    return [super becomeFirstResponder];
+}
+
+- (BOOL)resignFirstResponder
+{
+    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    return [super resignFirstResponder];
+}
+
 - (BOOL)canBecomeFirstResponder
 {
     return YES;
