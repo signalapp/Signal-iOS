@@ -254,6 +254,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return YES;
     }
 
+    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
     if ([NSFileManager.defaultManager fileExistsAtPath:TSStorageManager.legacyDatabaseFilePath]) {
         DDLogInfo(@"%@ Legacy Database file size: %@",
             self.logTag,
@@ -287,6 +289,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [self showLaunchFailureUI:error];
         return NO;
     }
+
+    backgroundTask = nil;
 
     return YES;
 }
