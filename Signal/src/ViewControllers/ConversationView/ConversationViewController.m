@@ -4333,7 +4333,6 @@ typedef enum : NSUInteger {
     // made from other processes.
     [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
-        l
     }];
 }
 
