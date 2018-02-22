@@ -308,13 +308,13 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
 
             // Calls
         case OWSSound_CallConnecting:
-            return @"sonarping.mp3";
+            return @"ringback_tone_cept.caf";
         case OWSSound_CallOutboundRinging:
-            return @"outring.mp3";
+            return @"ringback_tone_ansi.caf";
         case OWSSound_CallBusy:
-            return @"busy.mp3";
+            return @"busy_tone_ansi.caf";
         case OWSSound_CallFailure:
-            return @"failure.mp3";
+            return @"end_call_tone_cept.caf";
     }
 }
 

@@ -208,6 +208,10 @@
 		34CCAF381F0C0599004084F4 /* AppUpdateNag.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CCAF371F0C0599004084F4 /* AppUpdateNag.m */; };
 		34CCAF3B1F0C2748004084F4 /* OWSAddToContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CCAF3A1F0C2748004084F4 /* OWSAddToContactViewController.m */; };
 		34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CE88E61F2FB9A10098030F /* ProfileViewController.m */; };
+		34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */; };
+		34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */; };
+		34CF0789203E6B78005C4D61 /* ringback_tone_cept.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0785203E6B77005C4D61 /* ringback_tone_cept.caf */; };
+		34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */; };
 		34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F04F1F7D45A60066283D /* GifPickerCell.swift */; };
 		34D1F0521F7E8EA30066283D /* GiphyDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0511F7E8EA30066283D /* GiphyDownloader.swift */; };
 		34D1F0821F8678AA0066283D /* ConversationHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0661F8678AA0066283D /* ConversationHeaderView.m */; };
@@ -433,11 +437,6 @@
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
-		E1370BE018A0686600826894 /* busy.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40718A05754001A532A /* busy.mp3 */; };
-		E1370BE218A0686C00826894 /* failure.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40918A05754001A532A /* failure.mp3 */; };
-		E1370BE418A0686C00826894 /* outring.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40B18A05754001A532A /* outring.mp3 */; };
-		E1370BE518A0686C00826894 /* r.caf in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40C18A05754001A532A /* r.caf */; };
-		E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40D18A05754001A532A /* sonarping.mp3 */; };
 		EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
 		FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF371A3393DD00B47253 /* error_white@2x.png */; };
@@ -780,6 +779,10 @@
 		34CCAF3A1F0C2748004084F4 /* OWSAddToContactViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAddToContactViewController.m; sourceTree = "<group>"; };
 		34CE88E51F2FB9A10098030F /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
 		34CE88E61F2FB9A10098030F /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
+		34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = busy_tone_ansi.caf; path = Signal/AudioFiles/busy_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
+		34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ringback_tone_ansi.caf; path = Signal/AudioFiles/ringback_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
+		34CF0785203E6B77005C4D61 /* ringback_tone_cept.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ringback_tone_cept.caf; path = Signal/AudioFiles/ringback_tone_cept.caf; sourceTree = SOURCE_ROOT; };
+		34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = end_call_tone_cept.caf; path = Signal/AudioFiles/end_call_tone_cept.caf; sourceTree = SOURCE_ROOT; };
 		34D1F04F1F7D45A60066283D /* GifPickerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerCell.swift; sourceTree = "<group>"; };
 		34D1F0511F7E8EA30066283D /* GiphyDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyDownloader.swift; sourceTree = "<group>"; };
 		34D1F0651F8678AA0066283D /* ConversationHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationHeaderView.h; sourceTree = "<group>"; };
@@ -1070,11 +1073,6 @@
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
 		DF728B4B438716EAF95CEC18 /* Pods-Signal.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.app store release.xcconfig"; sourceTree = "<group>"; };
-		E18AB40718A05754001A532A /* busy.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = busy.mp3; sourceTree = "<group>"; };
-		E18AB40918A05754001A532A /* failure.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = failure.mp3; sourceTree = "<group>"; };
-		E18AB40B18A05754001A532A /* outring.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = outring.mp3; sourceTree = "<group>"; };
-		E18AB40C18A05754001A532A /* r.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = r.caf; sourceTree = "<group>"; };
-		E18AB40D18A05754001A532A /* sonarping.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = sonarping.mp3; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E85DB184824BA9DC302EC8B3 /* Pods-SignalTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.app store release.xcconfig"; sourceTree = "<group>"; };
 		EF764C331DB67CC5000D9A87 /* UIViewController+Permissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+Permissions.h"; path = "util/UIViewController+Permissions.h"; sourceTree = "<group>"; };
@@ -1172,7 +1170,11 @@
 		34074F54203D0722004596AE /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
+				34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */,
+				34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */,
 				34074FC5203E5435004596AE /* messageReceivedSounds */,
+				34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */,
+				34CF0785203E6B77005C4D61 /* ringback_tone_cept.caf */,
 				34074FD2203E5436004596AE /* ringtoneSounds */,
 			);
 			path = Sounds;
@@ -2160,24 +2162,11 @@
 			isa = PBXGroup;
 			children = (
 				B6B6C3C419193F5B00C0B76B /* Translations */,
-				E18AB40618A05754001A532A /* AudioFiles */,
 				D221A099169C9E5E00537ABF /* main.m */,
 				D221A095169C9E5E00537ABF /* Signal-Info.plist */,
 				D221A09B169C9E5E00537ABF /* Signal-Prefix.pch */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		E18AB40618A05754001A532A /* AudioFiles */ = {
-			isa = PBXGroup;
-			children = (
-				E18AB40718A05754001A532A /* busy.mp3 */,
-				E18AB40918A05754001A532A /* failure.mp3 */,
-				E18AB40B18A05754001A532A /* outring.mp3 */,
-				E18AB40C18A05754001A532A /* r.caf */,
-				E18AB40D18A05754001A532A /* sonarping.mp3 */,
-			);
-			path = AudioFiles;
 			sourceTree = "<group>";
 		};
 		FCFA64B11A24F29E0007FB87 /* UI Categories */ = {
@@ -2520,6 +2509,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
 				AD83FF3F1A73426500B5C81A /* audio_pause_button_blue.png in Resources */,
 				3407500C203E5436004596AE /* Sencha.m4r in Resources */,
 				34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */,
@@ -2546,7 +2536,9 @@
 				34074FF9203E5436004596AE /* synth.m4r in Resources */,
 				AD83FF401A73426500B5C81A /* audio_pause_button_blue@2x.png in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
+				34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */,
 				34074FF7203E5436004596AE /* popcorn.m4r in Resources */,
+				34CF0789203E6B78005C4D61 /* ringback_tone_cept.caf in Resources */,
 				34074FFF203E5436004596AE /* Circuit.m4r in Resources */,
 				34074FF8203E5436004596AE /* pulse.m4r in Resources */,
 				4517642A1DE939FD00EDB8B9 /* ContactCell.xib in Resources */,
@@ -2562,10 +2554,8 @@
 				FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */,
 				34075014203E5436004596AE /* Waves.m4r in Resources */,
 				34075011203E5436004596AE /* Summit.m4r in Resources */,
-				E1370BE018A0686600826894 /* busy.mp3 in Resources */,
 				34075006203E5436004596AE /* Opening.m4r in Resources */,
 				34074FF6203E5436004596AE /* note.m4r in Resources */,
-				E1370BE218A0686C00826894 /* failure.mp3 in Resources */,
 				34075009203E5436004596AE /* Radar.m4r in Resources */,
 				34075012203E5436004596AE /* Twinkle.m4r in Resources */,
 				B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */,
@@ -2576,16 +2566,14 @@
 				34074FF5203E5436004596AE /* keys.m4r in Resources */,
 				3407500D203E5436004596AE /* Signal.m4r in Resources */,
 				34075000203E5436004596AE /* Constellation.m4r in Resources */,
-				E1370BE418A0686C00826894 /* outring.mp3 in Resources */,
 				B10C9B601A7049EC00ECA2BF /* pause_icon@2x.png in Resources */,
 				34075002203E5436004596AE /* Crystals.m4r in Resources */,
-				E1370BE518A0686C00826894 /* r.caf in Resources */,
 				FC9120411A39EFB70074545C /* qr@2x.png in Resources */,
 				34075001203E5436004596AE /* Cosmic.m4r in Resources */,
 				34074FFD203E5436004596AE /* By The Seaside.m4r in Resources */,
 				34075013203E5436004596AE /* Uplift.m4r in Resources */,
-				E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */,
 				3407500B203E5436004596AE /* Ripples.m4r in Resources */,
+				34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */,
 				34075010203E5436004596AE /* Stargaze.m4r in Resources */,
 				34074FF0203E5436004596AE /* chord.m4r in Resources */,
 				34074FF4203E5436004596AE /* input.m4r in Resources */,
