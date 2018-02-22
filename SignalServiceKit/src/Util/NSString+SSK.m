@@ -144,7 +144,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [filteredForIndic copy];
 }
 
-+ (NSCharacterSet *)unsafeCharacterSet
++ (NSCharacterSet *)unsafeFilenameCharacterSet
 {
     static NSCharacterSet *characterSet;
     static dispatch_once_t onceToken;
@@ -160,9 +160,9 @@ NS_ASSUME_NONNULL_BEGIN
     return characterSet;
 }
 
-- (NSString *)filterUnsafeCharacters
+- (NSString *)filterUnsafeFilenameCharacters
 {
-    NSCharacterSet *unsafeCharacterSet = [[self class] unsafeCharacterSet];
+    NSCharacterSet *unsafeCharacterSet = [[self class] unsafeFilenameCharacterSet];
     NSRange range = [self rangeOfCharacterFromSet:unsafeCharacterSet];
     if (range.location == NSNotFound) {
         return self;
@@ -184,7 +184,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)filterStringForDisplay
 {
-    return self.ows_stripped.filterForIndicScripts.filterForExcessiveDiacriticals.filterUnsafeCharacters;
+    return self.ows_stripped.filterForIndicScripts.filterForExcessiveDiacriticals;
+}
+
+- (NSString *)filterFilename
+{
+    return self.ows_stripped.filterForIndicScripts.filterForExcessiveDiacriticals.filterUnsafeFilenameCharacters;
 }
 
 - (NSString *)filterForExcessiveDiacriticals

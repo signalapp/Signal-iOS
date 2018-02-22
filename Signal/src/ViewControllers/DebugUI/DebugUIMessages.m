@@ -284,6 +284,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages testZalgoTextInThread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"Test Directional Filenames"
+                        actionBlock:^{
+                            [DebugUIMessages testDirectionalFilenamesInThread:thread];
+                        }],
     ] mutableCopy];
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
@@ -1682,6 +1686,32 @@ NS_ASSUME_NONNULL_BEGIN
                 }
             }
         }];
+}
+
++ (void)testDirectionalFilenamesInThread:(TSThread *)thread
+{
+    for (NSString *filename in @[
+             @"a_test\u202Dabc.exe",
+             @"b_test\u202Eabc.exe",
+             @"c_testabc.exe",
+         ]) {
+        OWSMessageSender *messageSender = [Environment current].messageSender;
+        NSString *utiType = (NSString *)kUTTypeData;
+        const NSUInteger kDataLength = 32;
+        DataSource *_Nullable dataSource =
+            [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:kDataLength] utiType:utiType];
+        [dataSource setSourceFilename:filename];
+        SignalAttachment *attachment =
+            [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
+
+        OWSAssert(attachment);
+        if ([attachment hasError]) {
+            DDLogError(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
+            [DDLog flushLog];
+        }
+        OWSAssert(![attachment hasError]);
+        [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender completion:nil];
+    }
 }
 
 @end

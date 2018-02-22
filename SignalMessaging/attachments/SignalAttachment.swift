@@ -130,7 +130,7 @@ public class SignalAttachment: NSObject {
 
     @objc
     public var sourceFilename: String? {
-        return dataSource.sourceFilename?.filterStringForDisplay()
+        return dataSource.sourceFilename?.filterFilename()
     }
 
     @objc
@@ -311,7 +311,7 @@ public class SignalAttachment: NSObject {
     @objc
     public var filenameOrDefault: String {
         if let filename = sourceFilename {
-            return filename.filterStringForDisplay()
+            return filename.filterFilename()
         } else {
             let kDefaultAttachmentName = "signal"
 
@@ -335,7 +335,7 @@ public class SignalAttachment: NSObject {
         if let filename = sourceFilename {
             let fileExtension = (filename as NSString).pathExtension
             if fileExtension.count > 0 {
-                return fileExtension.filterStringForDisplay()
+                return fileExtension.filterFilename()
             }
         }
         if isOversizeText {

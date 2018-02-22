@@ -192,12 +192,12 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 - (nullable NSString *)sourceFilename
 {
-    return _sourceFilename.filterStringForDisplay;
+    return _sourceFilename.filterFilename;
 }
 
 - (NSString *)contentType
 {
-    return _contentType.filterStringForDisplay;
+    return _contentType.filterFilename;
 }
 
 @end
