@@ -7,6 +7,7 @@
 #import "OWSSoundSettingsViewController.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
+#import <SignalMessaging/OWSSounds.h>
 
 @implementation NotificationSettingsViewController
 
@@ -37,26 +38,37 @@
     OWSTableSection *soundsSection = [OWSTableSection new];
     soundsSection.headerTitle = NSLocalizedString(@"SETTINGS_SECTION_SOUNDS",
                                                   @"Label for the sounds section of settings views.");
-    [soundsSection
-     addItem:[OWSTableItem disclosureItemWithText:
-              NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
-                                @"Label for settings view that allows user to change the notification sound.")
-                                      actionBlock:^{
-                                          OWSSoundSettingsViewController *vc =
-                                          [OWSSoundSettingsViewController new];
-                                          vc.soundType = OWSSoundType_Notification;
-                                          [weakSelf.navigationController pushViewController:vc animated:YES];
-                                      }]];
-    [soundsSection
-     addItem:[OWSTableItem disclosureItemWithText:
-              NSLocalizedString(@"SETTINGS_ITEM_RINGTONE_SOUND",
-                                @"Label for settings view that allows user to change the ringtone sound.")
-                                      actionBlock:^{
-                                          OWSSoundSettingsViewController *vc =
-                                          [OWSSoundSettingsViewController new];
-                                          vc.soundType = OWSSoundType_Ringtone;
-                                          [weakSelf.navigationController pushViewController:vc animated:YES];
-                                      }]];
+
+    [soundsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
+                                                       reuseIdentifier:@"UITableViewCellStyleValue1"];
+        cell.textLabel.text = NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
+            @"Label for settings view that allows user to change the notification sound.");
+        OWSSound sound = [OWSSounds globalNotificationSound];
+        cell.detailTextLabel.text = [OWSSounds displayNameForSound:sound];
+        [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
+        return cell;
+    }
+                               actionBlock:^{
+                                   OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
+                                   vc.soundType = OWSSoundType_Notification;
+                                   [weakSelf.navigationController pushViewController:vc animated:YES];
+                               }]];
+    [soundsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
+                                                       reuseIdentifier:@"UITableViewCellStyleValue1"];
+        cell.textLabel.text = NSLocalizedString(
+            @"SETTINGS_ITEM_RINGTONE_SOUND", @"Label for settings view that allows user to change the ringtone sound.");
+        OWSSound sound = [OWSSounds globalRingtoneSound];
+        cell.detailTextLabel.text = [OWSSounds displayNameForSound:sound];
+        [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
+        return cell;
+    }
+                               actionBlock:^{
+                                   OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
+                                   vc.soundType = OWSSoundType_Ringtone;
+                                   [weakSelf.navigationController pushViewController:vc animated:YES];
+                               }]];
     [contents addSection:soundsSection];
     
     OWSTableSection *backgroundSection = [OWSTableSection new];
