@@ -224,7 +224,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isViewCompletelyAppeared;
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL isAppInBackground;
-@property (nonatomic) BOOL shouldObserveDBModifications;
+@property (nonatomic) BOOL isViewVisibleAndForeground;
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic) BOOL hasUnreadMessages;
 @property (nonatomic) BOOL isPickingMediaAsDocument;
@@ -447,7 +447,7 @@ typedef enum : NSUInteger {
         [self.messageMappings updateWithTransaction:transaction];
     }];
     [self updateMessageMappingRangeOptions];
-    [self updateShouldObserveDBModifications];
+    [self updateIsViewVisibleAndForeground];
 }
 
 - (BOOL)userLeftGroup
@@ -2819,15 +2819,14 @@ typedef enum : NSUInteger {
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    if (self.shouldObserveDBModifications) {
-        // External database modifications can't be converted into incremental updates,
-        // so rebuild everything.  This is expensive and usually isn't necessary, but
-        // there's no alternative.
-        //
-        // We don't need to do this if we're not observing db modifications since we'll
-        // do it when we resume.
-        [self resetMappings];
-    }
+    // External database modifications can't be converted into incremental updates,
+    // so rebuild everything.  This is expensive and usually isn't necessary, but
+    // there's no alternative.
+    //
+    // There's no need to do this when app is in the background or this view isn't
+    // visible.  We will resetMappings when the app re-enters the foreground or this
+    // view becomes visible.
+    [self resetMappings];
 }
 
 - (void)yapDatabaseModified:(NSNotification *)notification
@@ -2837,10 +2836,6 @@ typedef enum : NSUInteger {
     // Currently, we update thread and message state every time
     // the database is modified.  That doesn't seem optimal, but
     // in practice it's efficient enough.
-
-    if (!self.shouldObserveDBModifications) {
-        return;
-    }
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
@@ -3037,6 +3032,11 @@ typedef enum : NSUInteger {
             [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
         }
     };
+
+    if (!self.isViewVisibleAndForeground) {
+        // Don't auto-scroll when the view is not visible.
+        scrollToBottom = NO;
+    }
 
     DDLogVerbose(@"self.viewItems.count: %zd -> %zd", oldViewItemCount, self.viewItems.count);
 
@@ -3459,6 +3459,11 @@ typedef enum : NSUInteger {
 
 - (void)updateLastVisibleTimestamp
 {
+    if (!self.isViewVisibleAndForeground) {
+        // Don't update read last state.
+        return;
+    }
+
     ConversationViewItem *_Nullable lastVisibleViewItem = [self lastVisibleViewItem];
     if (lastVisibleViewItem) {
         uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForSorting;
@@ -4088,16 +4093,18 @@ typedef enum : NSUInteger {
 {
     _isViewVisible = isViewVisible;
 
-    [self updateShouldObserveDBModifications];
+    [self updateIsViewVisibleAndForeground];
     [self updateCellsVisible];
+    [self updateLastVisibleTimestamp];
 }
 
 - (void)setIsAppInBackground:(BOOL)isAppInBackground
 {
     _isAppInBackground = isAppInBackground;
 
-    [self updateShouldObserveDBModifications];
+    [self updateIsViewVisibleAndForeground];
     [self updateCellsVisible];
+    [self updateLastVisibleTimestamp];
 }
 
 - (void)updateCellsVisible
@@ -4108,61 +4115,29 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)updateShouldObserveDBModifications
+- (void)updateIsViewVisibleAndForeground
 {
-    self.shouldObserveDBModifications = self.isViewVisible && !self.isAppInBackground;
+    self.isViewVisibleAndForeground = self.isViewVisible && !self.isAppInBackground;
 }
 
-- (void)setShouldObserveDBModifications:(BOOL)shouldObserveDBModifications
+- (void)setIsViewVisibleAndForeground:(BOOL)isViewVisibleAndForeground
 {
-    if (_shouldObserveDBModifications == shouldObserveDBModifications) {
+    if (_isViewVisibleAndForeground == isViewVisibleAndForeground) {
         return;
     }
 
-    _shouldObserveDBModifications = shouldObserveDBModifications;
+    _isViewVisibleAndForeground = isViewVisibleAndForeground;
 
-    if (self.shouldObserveDBModifications) {
-        DDLogVerbose(@"%@ resume observation of database modifications.", self.logTag);
-        // We need to call resetMappings when we _resume_ observing DB modifications,
-        // since we've been ignore DB modifications so the mappings can be wrong.
-        //
-        // resetMappings can however have the side effect of increasing the mapping's
-        // "window" size.  If that happens, we need to restore the scroll state.
+    if (self.isViewVisibleAndForeground) {
+        DDLogVerbose(@"%@ re-entering \"visible & foreground\"", self.logTag);
 
-        // Snapshot the scroll state by measuring the "distance from top of view to
-        // bottom of content"; if the mapping's "window" size grows, it will grow
-        // _upward_.
-        CGFloat viewTopToContentBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
-
-        NSUInteger oldCellCount = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-
-        // ViewItems modified while we were not observing may be stale.
-        //
-        // TODO: have a more fine-grained cache expiration based on rows modified.
-        [self.viewItemCache removeAllObjects];
-        
-        // Snapshot the "previousLastTimestamp" value; it will be cleared by resetMappings.
-        NSNumber *_Nullable previousLastTimestamp = self.previousLastTimestamp;
-
-        [self resetMappings];
-
-        NSUInteger newCellCount = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-
-        // Detect changes in the mapping's "window" size.
-        if (oldCellCount != newCellCount) {
-            CGFloat newContentHeight = self.safeContentHeight;
-            CGPoint newContentOffset = CGPointMake(0, MAX(0, newContentHeight - viewTopToContentBottom));
-            [self.collectionView setContentOffset:newContentOffset animated:NO];
-        }
-
-        // When we resume observing database changes, we want to scroll to show the user
-        // any new items inserted while we were not observing.  We therefore find the
-        // first item at or after the "view horizon".  See the comments below which explain
-        // the "view horizon".
+        // When view re-enters "visible & foreground", we want to scroll to show the user
+        // any new items inserted while we were not "visible & foreground".  We therefore
+        // find the first item at or after the "view horizon".  See the comments below which
+        // explain the "view horizon".
         ConversationViewItem *_Nullable lastViewItem = self.viewItems.lastObject;
-        BOOL hasAddedNewItems = (lastViewItem &&
-            previousLastTimestamp &&
-                                 lastViewItem.interaction.timestamp > previousLastTimestamp.unsignedLongLongValue);
+        BOOL hasAddedNewItems = (lastViewItem && self.previousLastTimestamp
+            && lastViewItem.interaction.timestamp > self.previousLastTimestamp.unsignedLongLongValue);
 
         DDLogInfo(@"%@ hasAddedNewItems: %d", self.logTag, hasAddedNewItems);
         if (hasAddedNewItems) {
@@ -4178,19 +4153,19 @@ typedef enum : NSUInteger {
                                                     animated:NO];
             }
         }
+        self.previousLastTimestamp = nil;
         self.viewHorizonTimestamp = nil;
-        DDLogVerbose(@"%@ resumed observation of database modifications.", self.logTag);
+        DDLogVerbose(@"%@ re-entered \"visible & foreground\"", self.logTag);
     } else {
-        DDLogVerbose(@"%@ pausing observation of database modifications.", self.logTag);
-        // When stopping observation, try to record the timestamp of the "view horizon".
-        // The "view horizon" is where we'll want to focus the users when we resume
-        // observation if any changes have happened while we weren't observing.
-        // Ideally, we'll focus on those changes.  But we can't skip over unread
+        DDLogVerbose(@"%@ leaving \"visible & foreground\"", self.logTag);
+        // When view leaves "visible & foreground", try to record the timestamp of the
+        // "view horizon". The "view horizon" is where we'll want to focus the users when
+        // we resume observation if any changes have happened while we weren't "visible &
+        // foreground". Ideally, we'll focus on those changes.  But we can't skip over unread
         // interactions, so we prioritize those, if any.
         //
         // We'll use this later to update the view to reflect any changes made while
-        // we were not observing the database.  See extendRangeToIncludeUnobservedItems
-        // and the logic above.
+        // we were not "visible & foreground".
         ConversationViewItem *_Nullable lastViewItem = self.viewItems.lastObject;
         if (lastViewItem) {
             self.previousLastTimestamp = @(lastViewItem.interaction.timestamp);
@@ -4211,13 +4186,13 @@ typedef enum : NSUInteger {
         } else {
             self.viewHorizonTimestamp = nil;
         }
-        DDLogVerbose(@"%@ paused observation of database modifications.", self.logTag);
+        DDLogVerbose(@"%@ left \"visible & foreground\"", self.logTag);
     }
 }
 
 - (nullable NSIndexPath *)firstIndexPathAtViewHorizonTimestamp
 {
-    OWSAssert(self.shouldObserveDBModifications);
+    OWSAssert(self.isViewVisibleAndForeground);
 
     if (!self.viewHorizonTimestamp) {
         return nil;
@@ -4256,52 +4231,6 @@ typedef enum : NSUInteger {
     }
 }
 
-// We stop observing database modifications when the app or this view is not visible
-// (see: shouldObserveDBModifications).  When we resume observing db modifications,
-// we want to extend the "range" of this view to include any items added to this
-// thread while we were not observing.
-- (void)extendRangeToIncludeUnobservedItems
-{
-    if (!self.shouldObserveDBModifications) {
-        return;
-    }
-    if (!self.previousLastTimestamp) {
-        return;
-    }
-
-    uint64_t previousLastTimestamp = self.previousLastTimestamp.unsignedLongLongValue;
-    __block NSUInteger addedItemCount = 0;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [[transaction ext:TSMessageDatabaseViewExtensionName]
-         enumerateRowsInGroup:self.thread.uniqueId
-         withOptions:NSEnumerationReverse
-         usingBlock:^(NSString *collection,
-                      NSString *key,
-                      id object,
-                      id metadata,
-                      NSUInteger index,
-                      BOOL *stop) {
-             
-             if (![object isKindOfClass:[TSInteraction class]]) {
-                 OWSFail(@"Expected a TSInteraction: %@", [object class]);
-                 return;
-             }
-             
-             TSInteraction *interaction = (TSInteraction *)object;
-             if (interaction.timestamp <= previousLastTimestamp) {
-                 *stop = YES;
-                 return;
-             }
-             
-             addedItemCount++;
-         }];
-    }];
-    DDLogInfo(@"%@ extendRangeToIncludeUnobservedItems: %zd", self.logTag, addedItemCount);
-    self.lastRangeLength += addedItemCount;
-    // We only want to do this once, so clear the "previous last timestamp".
-    self.previousLastTimestamp = nil;
-}
-
 - (void)resetMappings
 {
     // If we're entering "active" mode (e.g. view is visible and app is in foreground),
@@ -4313,7 +4242,6 @@ typedef enum : NSUInteger {
         // We need to `beginLongLivedReadTransaction` before we update our
         // mapping in order to jump to the most recent commit.
         [self.uiDatabaseConnection beginLongLivedReadTransaction];
-        [self extendRangeToIncludeUnobservedItems];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.messageMappings updateWithTransaction:transaction];
         }];
