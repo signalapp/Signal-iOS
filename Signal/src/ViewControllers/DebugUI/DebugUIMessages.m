@@ -1690,11 +1690,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)testDirectionalFilenamesInThread:(TSThread *)thread
 {
-    for (NSString *filename in @[
-             @"a_test\u202Dabc.exe",
-             @"b_test\u202Eabc.exe",
-             @"c_testabc.exe",
-         ]) {
+    NSMutableArray<NSString *> *filenames = [@[
+        @"a_test\u202Dabc.exe",
+        @"b_test\u202Eabc.exe",
+        @"c_testabc.exe",
+    ] mutableCopy];
+    __block void (^sendUnsafeFile)(void);
+    sendUnsafeFile = ^{
+        if (filenames.count < 1) {
+            return;
+        }
+        NSString *filename = filenames.lastObject;
+        [filenames removeLastObject];
         OWSMessageSender *messageSender = [Environment current].messageSender;
         NSString *utiType = (NSString *)kUTTypeData;
         const NSUInteger kDataLength = 32;
@@ -1711,7 +1718,11 @@ NS_ASSUME_NONNULL_BEGIN
         }
         OWSAssert(![attachment hasError]);
         [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender completion:nil];
-    }
+
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            sendUnsafeFile();
+        });
+    };
 }
 
 @end
