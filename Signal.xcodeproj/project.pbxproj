@@ -53,6 +53,8 @@
 		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
 		340CB2271EAC25820001CAA1 /* UpdateGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CB2261EAC25820001CAA1 /* UpdateGroupViewController.m */; };
 		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
+		3421FA59203F542E00275549 /* messageReceivedClassic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 3421FA57203F542D00275549 /* messageReceivedClassic.aifc */; };
+		3421FA5A203F542E00275549 /* ringtoneClassic.caf in Resources */ = {isa = PBXBuildFile; fileRef = 3421FA58203F542E00275549 /* ringtoneClassic.caf */; };
 		3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3430FE171F7751D4000EC51B /* GiphyAPI.swift */; };
 		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
@@ -570,6 +572,8 @@
 		341458471FBE11C4005ABCF9 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
 		341F2C0D1F2B8AE700D07D6B /* DebugUIMisc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMisc.h; sourceTree = "<group>"; };
 		341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIMisc.m; sourceTree = "<group>"; };
+		3421FA57203F542D00275549 /* messageReceivedClassic.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; name = messageReceivedClassic.aifc; path = Signal/AudioFiles/messageReceivedClassic.aifc; sourceTree = SOURCE_ROOT; };
+		3421FA58203F542E00275549 /* ringtoneClassic.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ringtoneClassic.caf; path = Signal/AudioFiles/ringtoneClassic.caf; sourceTree = SOURCE_ROOT; };
 		3430FE171F7751D4000EC51B /* GiphyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyAPI.swift; sourceTree = "<group>"; };
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dripicons-v2.ttf"; sourceTree = "<group>"; };
@@ -1171,6 +1175,8 @@
 			isa = PBXGroup;
 			children = (
 				34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */,
+				3421FA57203F542D00275549 /* messageReceivedClassic.aifc */,
+				3421FA58203F542E00275549 /* ringtoneClassic.caf */,
 				34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */,
 				34074FC5203E5435004596AE /* messageReceivedSounds */,
 				34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */,
@@ -2518,6 +2524,7 @@
 				34074FEF203E5436004596AE /* bamboo.m4r in Resources */,
 				34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */,
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,
+				3421FA5A203F542E00275549 /* ringtoneClassic.caf in Resources */,
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
 				34075008203E5436004596AE /* Presto.m4r in Resources */,
 				34074FF1203E5436004596AE /* circles.m4r in Resources */,
@@ -2563,6 +2570,7 @@
 				34074FFE203E5436004596AE /* Chimes.m4r in Resources */,
 				B633C5861A1D190B0059AC12 /* call@2x.png in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
+				3421FA59203F542E00275549 /* messageReceivedClassic.aifc in Resources */,
 				34074FF5203E5436004596AE /* keys.m4r in Resources */,
 				3407500D203E5436004596AE /* Signal.m4r in Resources */,
 				34075000203E5436004596AE /* Constellation.m4r in Resources */,

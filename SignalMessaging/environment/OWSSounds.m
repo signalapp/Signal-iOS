@@ -70,6 +70,7 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
         @(OWSSound_Bamboo),
         @(OWSSound_Chord),
         @(OWSSound_Circles),
+        @(OWSSound_ClassicNotification),
         @(OWSSound_Complete),
         @(OWSSound_Hello),
         @(OWSSound_Input),
@@ -93,6 +94,7 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
         @(OWSSound_By_The_Seaside),
         @(OWSSound_Chimes),
         @(OWSSound_Circuit),
+        @(OWSSound_ClassicRingtone),
         @(OWSSound_Constellation),
         @(OWSSound_Cosmic),
         @(OWSSound_Crystals),
@@ -150,6 +152,8 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
             return @"Pulse";
         case OWSSound_Synth:
             return @"Synth";
+        case OWSSound_ClassicNotification:
+            return @"Classic";
 
             // Ringtone Sounds
         case OWSSound_Apex:
@@ -206,6 +210,8 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
             return @"Uplift";
         case OWSSound_Waves:
             return @"Waves";
+        case OWSSound_ClassicRingtone:
+            return @"Classic";
 
             // Calls
         case OWSSound_CallConnecting:
@@ -257,6 +263,8 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
             return @"pulse.m4r";
         case OWSSound_Synth:
             return @"synth.m4r";
+        case OWSSound_ClassicNotification:
+            return @"messageReceivedClassic.aifc";
 
             // Ringtone Sounds
         case OWSSound_Apex:
@@ -313,6 +321,8 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
             return @"Uplift.m4r";
         case OWSSound_Waves:
             return @"Waves.m4r";
+        case OWSSound_ClassicRingtone:
+            return @"ringtoneClassic.caf";
 
             // Calls
         case OWSSound_CallConnecting:

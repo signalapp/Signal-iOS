@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_Default = 0,
+
     // Notification Sounds
     OWSSound_Aurora,
     OWSSound_Bamboo,
@@ -19,6 +20,8 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_Popcorn,
     OWSSound_Pulse,
     OWSSound_Synth,
+    OWSSound_ClassicNotification,
+
     // Ringtone Sounds
     OWSSound_Apex,
     OWSSound_Beacon,
@@ -47,6 +50,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_Twinkle,
     OWSSound_Uplift,
     OWSSound_Waves,
+    OWSSound_ClassicRingtone,
 
     // Calls
     OWSSound_CallConnecting,
