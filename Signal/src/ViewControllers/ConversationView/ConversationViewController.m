@@ -4160,7 +4160,7 @@ typedef enum : NSUInteger {
         // any new items inserted while we were not observing.  We therefore find the
         // first item which was previously unread and center it in the view.  We don't
         // want to make any assumptions, so we select the item to center on based on
-        // "previous unread timestamp" rather than a specific
+        // "previous unread timestamp" rather than a specific interaction.
         ConversationViewItem *_Nullable lastViewItem = self.viewItems.lastObject;
         BOOL hasAddedNewItems = (lastViewItem &&
             previousLastTimestamp &&
