@@ -3,6 +3,7 @@
 //
 
 #import "OWSSoundSettingsViewController.h"
+#import <AVFoundation/AVFoundation.h>
 #import <SignalMessaging/OWSSounds.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -12,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL isDirty;
 
 @property (nonatomic) OWSSound currentSound;
+
+@property (nonatomic) AVAudioPlayer *audioPlayer;
 
 @end
 
@@ -111,7 +114,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)soundWasSelected:(OWSSound)sound
 {
-    [OWSSounds playSound:sound];
+    [self.audioPlayer stop];
+    self.audioPlayer = [OWSSounds audioPlayerForSound:sound];
+    // Suppress looping in this view.
+    self.audioPlayer.numberOfLoops = 0;
+    [self.audioPlayer play];
 
     if (self.currentSound == sound) {
         return;
@@ -126,6 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)cancelWasPressed:(id)sender
 {
     // TODO: Add "discard changes?" alert.
+    [self.audioPlayer stop];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -148,6 +156,7 @@ NS_ASSUME_NONNULL_BEGIN
             break;
     }
 
+    [self.audioPlayer stop];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
