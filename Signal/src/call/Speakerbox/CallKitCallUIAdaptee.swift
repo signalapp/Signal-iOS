@@ -113,7 +113,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         if Environment.current().preferences.isCallKitPrivacyEnabled() {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             update.remoteHandle = CXHandle(type: .generic, value: callKitId)
-            TSStorageManager.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId:callKitId)
+            TSStorageManager.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId: callKitId)
             update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
         } else {
             update.localizedCallerName = self.contactsManager.stringForConversationTitle(withPhoneIdentifier: call.remotePhoneNumber)
@@ -123,6 +123,12 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         update.hasVideo = call.hasLocalVideo
 
         disableUnsupportedFeatures(callUpdate: update)
+
+        // Update the provider configuration to reflect the caller's ringtone.
+        let sound = OWSSounds.ringtoneSound(for: call.thread)
+        let providerConfiguration = provider.configuration
+        providerConfiguration.ringtoneSound = OWSSounds.filename(for: sound)
+        provider.configuration =  providerConfiguration
 
         // Report the incoming call to the system
         provider.reportNewIncomingCall(with: call.localId, update: update) { error in

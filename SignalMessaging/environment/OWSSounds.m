@@ -3,6 +3,7 @@
 //
 
 #import "OWSSounds.h"
+#import <AVFoundation/AVFoundation.h>
 #import <AudioToolbox/AudioServices.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
@@ -10,6 +11,9 @@
 
 NSString *const kOWSSoundsStorageNotificationCollection = @"kOWSSoundsStorageNotificationCollection";
 NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlobalNotificationKey";
+
+NSString *const kOWSSoundsStorageRingtoneCollection = @"kOWSSoundsStorageRingtoneCollection";
+NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRingtoneKey";
 
 @interface OWSSounds ()
 
@@ -200,6 +204,16 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
             return @"Uplift";
         case OWSSound_Waves:
             return @"Waves";
+
+            // Calls
+        case OWSSound_CallConnecting:
+            return @"Call Connecting";
+        case OWSSound_CallOutboundRinging:
+            return @"Call Outboung Ringing";
+        case OWSSound_CallBusy:
+            return @"Call Busy";
+        case OWSSound_CallFailure:
+            return @"Call Failure";
     }
 }
 
@@ -291,6 +305,16 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
             return @"Uplift.m4r";
         case OWSSound_Waves:
             return @"Waves.m4r";
+
+            // Calls
+        case OWSSound_CallConnecting:
+            return @"sonarping.mp3";
+        case OWSSound_CallOutboundRinging:
+            return @"outring.mp3";
+        case OWSSound_CallBusy:
+            return @"busy.mp3";
+        case OWSSound_CallFailure:
+            return @"failure.mp3";
     }
 }
 
@@ -372,6 +396,68 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     [instance.dbConnection setObject:@(sound)
                               forKey:thread.uniqueId
                         inCollection:kOWSSoundsStorageNotificationCollection];
+}
+
+#pragma mark - Ringtones
+
++ (OWSSound)defaultRingtoneSound
+{
+    return OWSSound_Opening;
+}
+
++ (OWSSound)globalRingtoneSound
+{
+    OWSSounds *instance = OWSSounds.sharedManager;
+    NSNumber *_Nullable value = [instance.dbConnection objectForKey:kOWSSoundsStorageGlobalRingtoneKey
+                                                       inCollection:kOWSSoundsStorageRingtoneCollection];
+    // Default to the global default.
+    return (value ? (OWSSound)value.intValue : [self defaultRingtoneSound]);
+}
+
++ (void)setGlobalRingtoneSound:(OWSSound)sound
+{
+    OWSSounds *instance = OWSSounds.sharedManager;
+    [instance.dbConnection setObject:@(sound)
+                              forKey:kOWSSoundsStorageGlobalRingtoneKey
+                        inCollection:kOWSSoundsStorageRingtoneCollection];
+}
+
++ (OWSSound)ringtoneSoundForThread:(TSThread *)thread
+{
+    OWSSounds *instance = OWSSounds.sharedManager;
+    NSNumber *_Nullable value =
+        [instance.dbConnection objectForKey:thread.uniqueId inCollection:kOWSSoundsStorageRingtoneCollection];
+    // Default to the "global" ringtone sound, which in turn will default to the global default.
+    return (value ? (OWSSound)value.intValue : [self globalRingtoneSound]);
+}
+
++ (void)setRingtoneSound:(OWSSound)sound forThread:(TSThread *)thread
+{
+    OWSSounds *instance = OWSSounds.sharedManager;
+    [instance.dbConnection setObject:@(sound) forKey:thread.uniqueId inCollection:kOWSSoundsStorageRingtoneCollection];
+}
+
+#pragma mark - Calls
+
++ (BOOL)shouldAudioPlayerLoopForSound:(OWSSound)sound
+{
+    return (sound == OWSSound_CallConnecting || sound == OWSSound_CallOutboundRinging ||
+        [self.allRingtoneSounds containsObject:@(sound)]);
+}
+
++ (nullable AVAudioPlayer *)audioPlayerForSound:(OWSSound)sound
+{
+    NSURL *soundURL = [OWSSounds soundURLForSound:sound];
+    NSError *error;
+    AVAudioPlayer *_Nullable player = [[AVAudioPlayer alloc] initWithContentsOfURL:soundURL error:&error];
+    if (error || !player) {
+        OWSFail(@"%@ audioPlayerForSound failed with error: %@.", self.logTag, error);
+        return nil;
+    }
+    if ([self shouldAudioPlayerLoopForSound:sound]) {
+        player.numberOfLoops = -1;
+    }
+    return player;
 }
 
 @end

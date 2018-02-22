@@ -37,7 +37,7 @@ struct AudioSource: Hashable {
         let localizedName = isBuiltInEarPiece ? UIDevice.current.localizedModel : portDescription.portName
 
         self.init(localizedName: localizedName,
-                  image:#imageLiteral(resourceName: "button_phone_white"), // TODO
+                  image: #imageLiteral(resourceName: "button_phone_white"), // TODO
                   isBuiltInSpeaker: false,
                   isBuiltInEarPiece: isBuiltInEarPiece,
                   portDescription: portDescription)
@@ -102,42 +102,6 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
-    class Sound: NSObject {
-
-        static let incomingRing = Sound(filePath: "r", fileExtension: "caf", loop: true)
-        static let outgoingRing = Sound(filePath: "outring", fileExtension: "mp3", loop: true)
-        static let dialing = Sound(filePath: "sonarping", fileExtension: "mp3", loop: true)
-        static let busy = Sound(filePath: "busy", fileExtension: "mp3", loop: false)
-        static let failure = Sound(filePath: "failure", fileExtension: "mp3", loop: false)
-
-        let filePath: String
-        let fileExtension: String
-        let url: URL
-
-        let loop: Bool
-
-        init(filePath: String, fileExtension: String, loop: Bool) {
-            self.filePath = filePath
-            self.fileExtension = fileExtension
-            self.url = Bundle.main.url(forResource: self.filePath, withExtension: self.fileExtension)!
-            self.loop = loop
-        }
-
-        lazy var player: AVAudioPlayer? = {
-            let newPlayer: AVAudioPlayer?
-            do {
-                try newPlayer = AVAudioPlayer(contentsOf: self.url, fileTypeHint: nil)
-                if self.loop {
-                    newPlayer?.numberOfLoops = -1
-                }
-            } catch {
-                owsFail("\(self.logTag) failed to build audio player with error: \(error)")
-                newPlayer = nil
-            }
-            return newPlayer
-        }()
-    }
-
     // MARK: Vibration config
     private let vibrateRepeatDuration = 1.6
 
@@ -175,7 +139,7 @@ protocol CallAudioServiceDelegate: class {
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
         AssertIsOnMainThread()
-        self.handleState(call:call)
+        self.handleState(call: call)
     }
 
     internal func muteDidChange(call: SignalCall, isMuted: Bool) {
@@ -340,7 +304,7 @@ protocol CallAudioServiceDelegate: class {
         // HACK: Without this async, dialing sound only plays once. I don't really understand why. Does the audioSession
         // need some time to settle? Is somethign else interrupting our session?
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
-            self.play(sound: Sound.dialing)
+            self.play(sound: OWSSound.callConnecting)
         }
     }
 
@@ -353,7 +317,7 @@ protocol CallAudioServiceDelegate: class {
         Logger.debug("\(self.logTag) \(#function)")
         AssertIsOnMainThread()
 
-        self.play(sound: Sound.outgoingRing)
+        self.play(sound: OWSSound.callOutboundRinging)
     }
 
     private func handleLocalRinging(call: SignalCall) {
@@ -372,7 +336,7 @@ protocol CallAudioServiceDelegate: class {
         Logger.debug("\(self.logTag) \(#function)")
         AssertIsOnMainThread()
 
-        play(sound: Sound.failure)
+        play(sound: OWSSound.callFailure)
         handleCallEnded(call: call)
     }
 
@@ -389,14 +353,14 @@ protocol CallAudioServiceDelegate: class {
 
         vibrate()
 
-        handleCallEnded(call:call)
+        handleCallEnded(call: call)
     }
 
     private func handleBusy(call: SignalCall) {
         Logger.debug("\(self.logTag) \(#function)")
         AssertIsOnMainThread()
 
-        play(sound: Sound.busy)
+        play(sound: OWSSound.callBusy)
 
         // Let the busy sound play for 4 seconds. The full file is longer than necessary
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 4.0) {
@@ -422,12 +386,12 @@ protocol CallAudioServiceDelegate: class {
         stopAnyRingingVibration()
     }
 
-    private func play(sound: Sound) {
-        guard let newPlayer = sound.player else {
-            owsFail("\(self.logTag) unable to build player")
+    private func play(sound: OWSSound) {
+        guard let newPlayer = OWSSounds.audioPlayer(for: sound) else {
+            owsFail("\(self.logTag) unable to build player for sound: \(OWSSounds.displayName(for: sound))")
             return
         }
-        Logger.info("\(self.logTag) playing sound: \(sound.filePath)")
+        Logger.info("\(self.logTag) playing sound: \(OWSSounds.displayName(for: sound))")
 
         // It's important to stop the current player **before** starting the new player. In the case that 
         // we're playing the same sound, since the player is memoized on the sound instance, we'd otherwise 
@@ -449,7 +413,8 @@ protocol CallAudioServiceDelegate: class {
             self?.ringVibration()
         }
         vibrateTimer?.fire()
-        play(sound: Sound.incomingRing)
+        let sound = OWSSounds.ringtoneSound(for: call.thread)
+        play(sound: sound)
     }
 
     private func stopAnyRingingVibration() {

@@ -10,9 +10,9 @@
 #import "ConversationViewItem.h"
 #import "DateUtil.h"
 #import "DebugUIPage.h"
+#import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
 #import "HomeViewController.h"
-#import "DebugUITableViewController.h"
 #import "MediaDetailViewController.h"
 #import "NSString+OWS.h"
 #import "NotificationsManager.h"
@@ -51,6 +51,7 @@
 #import <SignalMessaging/OWSLogger.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/Release.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/UIColor+OWS.h>

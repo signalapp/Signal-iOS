@@ -45,10 +45,17 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_Twinkle,
     OWSSound_Uplift,
     OWSSound_Waves,
+
+    // Calls
+    OWSSound_CallConnecting,
+    OWSSound_CallOutboundRinging,
+    OWSSound_CallBusy,
+    OWSSound_CallFailure,
 };
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AVAudioPlayer;
 @class TSThread;
 
 @interface OWSSounds : NSObject
@@ -70,6 +77,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSSound)notificationSoundForThread:(TSThread *)thread;
 + (void)setNotificationSound:(OWSSound)sound forThread:(TSThread *)thread;
+
+#pragma mark - Ringtones
+
++ (NSArray<NSNumber *> *)allRingtoneSounds;
+
++ (OWSSound)globalRingtoneSound;
++ (void)setGlobalRingtoneSound:(OWSSound)sound;
+
++ (OWSSound)ringtoneSoundForThread:(TSThread *)thread;
++ (void)setRingtoneSound:(OWSSound)sound forThread:(TSThread *)thread;
+
+#pragma mark - Calls
+
++ (nullable AVAudioPlayer *)audioPlayerForSound:(OWSSound)sound;
 
 @end
 
