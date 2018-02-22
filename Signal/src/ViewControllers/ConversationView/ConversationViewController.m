@@ -229,7 +229,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL hasUnreadMessages;
 @property (nonatomic) BOOL isPickingMediaAsDocument;
 @property (nonatomic, nullable) NSNumber *previousLastTimestamp;
-@property (nonatomic, nullable) NSNumber *previousLastUnreadTimestamp;
+@property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
 
 @end
 
@@ -4156,12 +4156,11 @@ typedef enum : NSUInteger {
             CGPoint newContentOffset = CGPointMake(0, MAX(0, newContentHeight - viewTopToContentBottom));
             [self.collectionView setContentOffset:newContentOffset animated:NO];
         }
-        
+
         // When we resume observing database changes, we want to scroll to show the user
         // any new items inserted while we were not observing.  We therefore find the
-        // first item which was previously unread and center it in the view.  We don't
-        // want to make any assumptions, so we select the item to center on based on
-        // "previous unread timestamp" rather than a specific interaction.
+        // first item at or after the "view horizon".  See the comments below which explain
+        // the "view horizon".
         ConversationViewItem *_Nullable lastViewItem = self.viewItems.lastObject;
         BOOL hasAddedNewItems = (lastViewItem &&
             previousLastTimestamp &&
@@ -4169,18 +4168,22 @@ typedef enum : NSUInteger {
 
         DDLogInfo(@"%@ hasAddedNewItems: %d", self.logTag, hasAddedNewItems);
         if (hasAddedNewItems) {
-            NSIndexPath *_Nullable indexPathToShow = [self firstIndexPathAtPreviousLastUnreadTimestamp];
+            NSIndexPath *_Nullable indexPathToShow = [self firstIndexPathAtViewHorizonTimestamp];
             if (indexPathToShow) {
                 [self.collectionView scrollToItemAtIndexPath:indexPathToShow
                                             atScrollPosition:UICollectionViewScrollPositionCenteredVertically
                                                     animated:YES];
             }
         }
-        self.previousLastUnreadTimestamp = nil;
+        self.viewHorizonTimestamp = nil;
         DDLogVerbose(@"%@ resumed observation of database modifications.", self.logTag);
     } else {
         DDLogVerbose(@"%@ pausing observation of database modifications.", self.logTag);
-        // When stopping observation, try to record the timestamp of the last item.
+        // When stopping observation, try to record the timestamp of the "view horizon".
+        // The "view horizon" is where we'll want to focus the users when we resume
+        // observation if any changes have happened while we weren't observing.
+        // Ideally, we'll focus on those changes.  But we can't skip over unread
+        // interactions, so we prioritize those, if any.
         //
         // We'll use this later to update the view to reflect any changes made while
         // we were not observing the database.  See extendRangeToIncludeUnobservedItems
@@ -4197,26 +4200,30 @@ typedef enum : NSUInteger {
             [[TSDatabaseView unseenDatabaseViewExtension:transaction] firstObjectInGroup:self.thread.uniqueId];
         }];
         if (firstUnseenInteraction) {
-            self.previousLastUnreadTimestamp = @(firstUnseenInteraction.timestamp);
+            // If there are any unread interactions, focus on the first one.
+            self.viewHorizonTimestamp = @(firstUnseenInteraction.timestamp);
+        } else if (lastViewItem) {
+            // Otherwise, focus _just after_ the last interaction.
+            self.viewHorizonTimestamp = @(lastViewItem.interaction.timestamp + 1);
         } else {
-            self.previousLastUnreadTimestamp = nil;
+            self.viewHorizonTimestamp = nil;
         }
         DDLogVerbose(@"%@ paused observation of database modifications.", self.logTag);
     }
 }
 
-- (nullable NSIndexPath *)firstIndexPathAtPreviousLastUnreadTimestamp
+- (nullable NSIndexPath *)firstIndexPathAtViewHorizonTimestamp
 {
     OWSAssert(self.shouldObserveDBModifications);
 
-    if (!self.previousLastUnreadTimestamp) {
+    if (!self.viewHorizonTimestamp) {
         return nil;
     }
     if (self.viewItems.count < 1) {
         return nil;
     }
-    uint64_t previousLastUnreadTimestamp = self.previousLastUnreadTimestamp.unsignedLongLongValue;
-    // Binary search for the first view item whose timestamp >= the "previous last unread" timestamp.
+    uint64_t viewHorizonTimestamp = self.viewHorizonTimestamp.unsignedLongLongValue;
+    // Binary search for the first view item whose timestamp >= the "view horizon" timestamp.
     // We want to move "left" rightward, discarding interactions before this cutoff.
     // We want to move "right" leftward, discarding all-but-the-first interaction after this cutoff.
     // In the end, if we converge on an item _after_ this cutoff, it's the one we want.
@@ -4228,7 +4235,7 @@ typedef enum : NSUInteger {
         OWSAssert(left <= mid);
         OWSAssert(mid < right);
         ConversationViewItem *viewItem  = self.viewItems[mid];
-        if (viewItem.interaction.timestamp >= previousLastUnreadTimestamp) {
+        if (viewItem.interaction.timestamp >= viewHorizonTimestamp) {
             right = mid;
         } else {
             // This is an optimization; it also ensures that we converge.
@@ -4237,11 +4244,11 @@ typedef enum : NSUInteger {
     }
     OWSAssert(left == right);
     ConversationViewItem *viewItem  = self.viewItems[left];
-    if (viewItem.interaction.timestamp >= previousLastUnreadTimestamp) {
-        DDLogInfo(@"%@ firstIndexPathAtPreviousLastUnreadTimestamp: %zd / %zd", self.logTag, left, self.viewItems.count);
+    if (viewItem.interaction.timestamp >= viewHorizonTimestamp) {
+        DDLogInfo(@"%@ firstIndexPathAtViewHorizonTimestamp: %zd / %zd", self.logTag, left, self.viewItems.count);
         return [NSIndexPath indexPathForRow:(NSInteger) left inSection:0];
     } else {
-        DDLogInfo(@"%@ firstIndexPathAtPreviousLastUnreadTimestamp: none / %zd", self.logTag, self.viewItems.count);
+        DDLogInfo(@"%@ firstIndexPathAtViewHorizonTimestamp: none / %zd", self.logTag, self.viewItems.count);
         return nil;
     }
 }
