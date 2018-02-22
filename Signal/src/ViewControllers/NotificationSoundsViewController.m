@@ -3,13 +3,13 @@
 //
 
 #import "NotificationSoundsViewController.h"
-#import <SignalMessaging/NotificationSounds.h>
+#import <SignalMessaging/OWSSounds.h>
 
 @interface NotificationSoundsViewController ()
 
 @property (nonatomic) BOOL isDirty;
 
-@property (nonatomic) NotificationSound currentNotificationSound;
+@property (nonatomic) OWSSound currentSound;
 
 @end
 
@@ -24,8 +24,8 @@
     [self setTitle:NSLocalizedString(@"NOTIFICATIONS_ITEM_SOUND",
                        @"Label for settings view that allows user to change the notification sound.")];
 
-    self.currentNotificationSound = (self.thread ? [NotificationSounds notificationSoundForThread:self.thread]
-                                                 : [NotificationSounds globalNotificationSound]);
+    self.currentSound
+        = (self.thread ? [OWSSounds notificationSoundForThread:self.thread] : [OWSSounds globalNotificationSound]);
 
     [self updateTableContents];
     [self updateNavigationItems];
@@ -64,21 +64,19 @@
     OWSTableSection *soundsSection = [OWSTableSection new];
     soundsSection.headerTitle = NSLocalizedString(
         @"NOTIFICATIONS_SECTION_SOUNDS", @"Label for settings UI that allows user to change the notification sound.");
-    for (NSNumber *nsNotificationSound in [NotificationSounds allNotificationSounds]) {
-        NotificationSound notificationSound = (NotificationSound)nsNotificationSound.intValue;
+    for (NSNumber *nsValue in [OWSSounds allNotificationSounds]) {
+        OWSSound sound = (OWSSound)nsValue.intValue;
         OWSTableItem *item;
-        if (notificationSound == self.currentNotificationSound) {
-            item = [OWSTableItem
-                checkmarkItemWithText:[NotificationSounds displayNameForNotificationSound:notificationSound]
-                          actionBlock:^{
-                              [weakSelf notificationSoundWasSelected:notificationSound];
-                          }];
+        if (sound == self.currentSound) {
+            item = [OWSTableItem checkmarkItemWithText:[OWSSounds displayNameForSound:sound]
+                                           actionBlock:^{
+                                               [weakSelf soundWasSelected:sound];
+                                           }];
         } else {
-            item =
-                [OWSTableItem actionItemWithText:[NotificationSounds displayNameForNotificationSound:notificationSound]
-                                     actionBlock:^{
-                                         [weakSelf notificationSoundWasSelected:notificationSound];
-                                     }];
+            item = [OWSTableItem actionItemWithText:[OWSSounds displayNameForSound:sound]
+                                        actionBlock:^{
+                                            [weakSelf soundWasSelected:sound];
+                                        }];
         }
         [soundsSection addItem:item];
     }
@@ -90,15 +88,15 @@
 
 #pragma mark - Events
 
-- (void)notificationSoundWasSelected:(NotificationSound)notificationSound
+- (void)soundWasSelected:(OWSSound)sound
 {
-    [NotificationSounds playNotificationSound:notificationSound];
+    [OWSSounds playSound:sound];
 
-    if (self.currentNotificationSound == notificationSound) {
+    if (self.currentSound == sound) {
         return;
     }
 
-    self.currentNotificationSound = notificationSound;
+    self.currentSound = sound;
     self.isDirty = YES;
     [self updateTableContents];
     [self updateNavigationItems];
@@ -113,9 +111,9 @@
 - (void)saveWasPressed:(id)sender
 {
     if (self.thread) {
-        [NotificationSounds setNotificationSound:self.currentNotificationSound forThread:self.thread];
+        [OWSSounds setNotificationSound:self.currentSound forThread:self.thread];
     } else {
-        [NotificationSounds setGlobalNotificationSound:self.currentNotificationSound];
+        [OWSSounds setGlobalNotificationSound:self.currentSound];
     }
 
     [self.navigationController popViewControllerAnimated:YES];

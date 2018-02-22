@@ -8,9 +8,9 @@
 #import <AudioToolbox/AudioServices.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/NSString+OWS.h>
-#import <SignalMessaging/NotificationSounds.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSPreferences.h>
+#import <SignalMessaging/OWSSounds.h>
 #import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSContactThread.h>
@@ -100,8 +100,8 @@
     };
 
     if ([self shouldPlaySoundForNotification]) {
-        NotificationSound notificationSound = [NotificationSounds notificationSoundForThread:thread];
-        notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
+        OWSSound sound = [OWSSounds notificationSoundForThread:thread];
+        notification.soundName = [OWSSounds filenameForSound:sound];
     }
 
     NSString *alertMessage;
@@ -140,8 +140,8 @@
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
     if ([self shouldPlaySoundForNotification]) {
-        NotificationSound notificationSound = [NotificationSounds notificationSoundForThread:thread];
-        notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
+        OWSSound sound = [OWSSounds notificationSoundForThread:thread];
+        notification.soundName = [OWSSounds filenameForSound:sound];
     }
 
     NSString *alertMessage;
@@ -181,8 +181,8 @@
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
     if ([self shouldPlaySoundForNotification]) {
-        NotificationSound notificationSound = [NotificationSounds notificationSoundForThread:thread];
-        notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
+        OWSSound sound = [OWSSounds notificationSoundForThread:thread];
+        notification.soundName = [OWSSounds filenameForSound:sound];
     }
 
     NSString *alertMessage;
@@ -226,8 +226,8 @@
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             notification.userInfo = @{ Signal_Thread_UserInfo_Key : thread.uniqueId };
             if (shouldPlaySound) {
-                NotificationSound notificationSound = [NotificationSounds notificationSoundForThread:thread];
-                notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
+                OWSSound sound = [OWSSounds notificationSoundForThread:thread];
+                notification.soundName = [OWSSounds filenameForSound:sound];
             }
 
             NSString *alertBodyString = @"";
@@ -247,8 +247,8 @@
             [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
         } else {
             if (shouldPlaySound && [Environment.preferences soundInForeground]) {
-                NotificationSound notificationSound = [NotificationSounds notificationSoundForThread:thread];
-                [NotificationSounds playNotificationSound:notificationSound];
+                OWSSound sound = [OWSSounds notificationSoundForThread:thread];
+                [OWSSounds playSound:sound];
             }
         }
     });
@@ -289,8 +289,8 @@
         if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && messageText) {
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             if (shouldPlaySound) {
-                NotificationSound notificationSound = [NotificationSounds notificationSoundForThread:thread];
-                notification.soundName = [NotificationSounds filenameForNotificationSound:notificationSound];
+                OWSSound sound = [OWSSounds notificationSoundForThread:thread];
+                notification.soundName = [OWSSounds filenameForSound:sound];
             }
 
             switch (self.notificationPreviewType) {
@@ -352,8 +352,8 @@
             [[PushManager sharedManager] presentNotification:notification checkForCancel:YES];
         } else {
             if (shouldPlaySound && [Environment.preferences soundInForeground]) {
-                NotificationSound notificationSound = [NotificationSounds notificationSoundForThread:thread];
-                [NotificationSounds playNotificationSound:notificationSound];
+                OWSSound sound = [OWSSounds notificationSoundForThread:thread];
+                [OWSSounds playSound:sound];
             }
         }
     });
