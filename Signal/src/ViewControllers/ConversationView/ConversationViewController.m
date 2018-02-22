@@ -115,13 +115,6 @@ typedef enum : NSUInteger {
     kMediaTypeVideo,
 } kMediaTypes;
 
-typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
-    // This mode should only be used when initially configuring the range,
-    // since we want the range to monotonically grow after that.
-    MessagesRangeSizeMode_Truncate,
-    MessagesRangeSizeMode_Normal
-};
-
 #pragma mark -
 
 @interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
@@ -195,7 +188,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic, readonly) UILabel *backButtonUnreadCountLabel;
 @property (nonatomic, readonly) NSUInteger backButtonUnreadCount;
 
-@property (nonatomic) NSUInteger page;
+@property (nonatomic) NSUInteger lastRangeLength;
 @property (nonatomic) BOOL composeOnOpen;
 @property (nonatomic) BOOL callOnOpen;
 @property (nonatomic) BOOL peek;
@@ -235,6 +228,8 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic) BOOL hasUnreadMessages;
 @property (nonatomic) BOOL isPickingMediaAsDocument;
+@property (nonatomic, nullable) NSNumber *previousLastTimestamp;
+@property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
 
 @end
 
@@ -433,7 +428,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     // We need to update the "unread indicator" _before_ we determine the initial range
     // size, since it depends on where the unread indicator is placed.
-    self.page = 0;
+    self.lastRangeLength = 0;
     [self ensureDynamicInteractions];
 
     if (thread.uniqueId.length > 0) {
@@ -451,7 +446,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
-    [self updateMessageMappingRangeOptions:MessagesRangeSizeMode_Truncate];
+    [self updateMessageMappingRangeOptions];
     [self updateShouldObserveDBModifications];
 }
 
@@ -1528,7 +1523,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     // the dynamic interactions and re-layout.  Here we take a "before" snapshot.
     CGFloat scrollDistanceToBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
 
-    self.page = MIN(self.page + 1, (NSUInteger)kYapDatabaseMaxPageCount - 1);
+    self.lastRangeLength = MIN(self.lastRangeLength + kYapDatabasePageSize, (NSUInteger) kYapDatabaseRangeMaxLength);
 
     [self resetMappings];
 
@@ -1546,7 +1541,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
 - (void)updateShowLoadMoreHeader
 {
-    if (self.page == kYapDatabaseMaxPageCount - 1) {
+    if (self.lastRangeLength == kYapDatabaseRangeMaxLength) {
         self.showLoadMoreHeader = NO;
         return;
     }
@@ -1595,20 +1590,19 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self updateBarButtonItems];
 }
 
-- (void)updateMessageMappingRangeOptions:(MessagesRangeSizeMode)mode
+- (void)updateMessageMappingRangeOptions
 {
-    // The "old" range length may have been increased by insertions of new messages
-    // at the bottom of the window.
-    NSUInteger oldLength = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-
-    NSUInteger targetLength = oldLength;
-    if (mode == MessagesRangeSizeMode_Truncate) {
+    NSUInteger rangeLength = 0;
+    
+    if (self.lastRangeLength == 0) {
+        // If this is the first time we're configuring the range length,
+        // try to take into account the position of the unread indicator.
         OWSAssert(self.dynamicInteractions);
-        OWSAssert(self.page == 0);
 
         if (self.dynamicInteractions.unreadIndicatorPosition) {
             NSUInteger unreadIndicatorPosition
                 = (NSUInteger)[self.dynamicInteractions.unreadIndicatorPosition longValue];
+            
             // If there is an unread indicator, increase the initial load window
             // to include it.
             OWSAssert(unreadIndicatorPosition > 0);
@@ -1617,23 +1611,21 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             // We'd like to include at least N seen messages,
             // to give the user the context of where they left off the conversation.
             const NSUInteger kPreferredSeenMessageCount = 1;
-            targetLength = unreadIndicatorPosition + kPreferredSeenMessageCount;
-        } else {
-            // Default to a single page of messages.
-            targetLength = kYapDatabasePageSize;
+            rangeLength = unreadIndicatorPosition + kPreferredSeenMessageCount;
         }
     }
 
-    // The "page-based" range length may have been increased by loading "prev" pages at the
-    // top of the window.
-    NSUInteger rangeLength;
-    while (YES) {
-        rangeLength = kYapDatabasePageSize * (self.page + 1);
-        if (rangeLength >= targetLength) {
-            break;
-        }
-        self.page = self.page + 1;
-    }
+    // Always try to load at least a single page of messages.
+    rangeLength = MAX(rangeLength, kYapDatabasePageSize);
+
+    // Range size should monotonically increase.
+    rangeLength = MAX(rangeLength, self.lastRangeLength);
+
+    // Enforce max range size.
+    rangeLength = MIN(rangeLength, kYapDatabaseRangeMaxLength);
+
+    self.lastRangeLength = rangeLength;
+    
     YapDatabaseViewRangeOptions *rangeOptions =
         [YapDatabaseViewRangeOptions flexibleRangeWithLength:rangeLength offset:0 from:YapDatabaseViewEnd];
 
@@ -2195,7 +2187,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 {
     OWSAssertIsOnMainThread();
 
-    const int currentMaxRangeSize = (int)(self.page + 1) * kYapDatabasePageSize;
+    const int currentMaxRangeSize = (int)self.lastRangeLength;
     const int maxRangeSize = MAX(kConversationInitialMaxRangeSize, currentMaxRangeSize);
 
     // `ensureDynamicInteractionsForThread` should operate on the latest thread contents, so
@@ -2828,10 +2820,15 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    // External database modifications can't be converted into incremental updates,
-    // so rebuild everything.  This is expensive and usually isn't necessary, but
-    // there's no alternative.
-    [self resetMappings];
+    if (self.shouldObserveDBModifications) {
+        // External database modifications can't be converted into incremental updates,
+        // so rebuild everything.  This is expensive and usually isn't necessary, but
+        // there's no alternative.
+        //
+        // We don't need to do this if we're not observing db modifications since we'll
+        // do it when we resume.
+        [self resetMappings];
+    }
 }
 
 - (void)yapDatabaseModified:(NSNotification *)notification
@@ -2905,7 +2902,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         // range that are not within the current mapping's contents.  We
         // may need to extend the mapping's contents to reflect the current
         // range.
-        [self updateMessageMappingRangeOptions:MessagesRangeSizeMode_Normal];
+        [self updateMessageMappingRangeOptions];
         // Calling resetContentAndLayout is a bit expensive.
         // Since by definition this won't affect any cells in the previous
         // range, it should be sufficient to call invalidateLayout.
@@ -4126,6 +4123,7 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
     if (self.shouldObserveDBModifications) {
+        DDLogVerbose(@"%@ resume observation of database modifications.", self.logTag);
         // We need to call resetMappings when we _resume_ observing DB modifications,
         // since we've been ignore DB modifications so the mappings can be wrong.
         //
@@ -4143,6 +4141,9 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         //
         // TODO: have a more fine-grained cache expiration based on rows modified.
         [self.viewItemCache removeAllObjects];
+        
+        // Snapshot the "previousLastTimestamp" value; it will be cleared by resetMappings.
+        NSNumber *_Nullable previousLastTimestamp = self.previousLastTimestamp;
 
         [self resetMappings];
 
@@ -4154,7 +4155,152 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
             CGPoint newContentOffset = CGPointMake(0, MAX(0, newContentHeight - viewTopToContentBottom));
             [self.collectionView setContentOffset:newContentOffset animated:NO];
         }
+
+        // When we resume observing database changes, we want to scroll to show the user
+        // any new items inserted while we were not observing.  We therefore find the
+        // first item at or after the "view horizon".  See the comments below which explain
+        // the "view horizon".
+        ConversationViewItem *_Nullable lastViewItem = self.viewItems.lastObject;
+        BOOL hasAddedNewItems = (lastViewItem &&
+            previousLastTimestamp &&
+                                 lastViewItem.interaction.timestamp > previousLastTimestamp.unsignedLongLongValue);
+
+        DDLogInfo(@"%@ hasAddedNewItems: %d", self.logTag, hasAddedNewItems);
+        if (hasAddedNewItems) {
+            NSIndexPath *_Nullable indexPathToShow = [self firstIndexPathAtViewHorizonTimestamp];
+            if (indexPathToShow) {
+                // The goal is to show _both_ the last item before the "view horizon" and the
+                // first item after the "view horizon".  We can't do "top on first item after"
+                // or "bottom on last item before" or we won't see the other. Unfortunately,
+                // this gets tricky if either is huge.  The largest cells are oversize text,
+                // which should be rare.  Other cells are considerably smaller than a screenful.
+                [self.collectionView scrollToItemAtIndexPath:indexPathToShow
+                                            atScrollPosition:UICollectionViewScrollPositionCenteredVertically
+                                                    animated:NO];
+            }
+        }
+        self.viewHorizonTimestamp = nil;
+        DDLogVerbose(@"%@ resumed observation of database modifications.", self.logTag);
+    } else {
+        DDLogVerbose(@"%@ pausing observation of database modifications.", self.logTag);
+        // When stopping observation, try to record the timestamp of the "view horizon".
+        // The "view horizon" is where we'll want to focus the users when we resume
+        // observation if any changes have happened while we weren't observing.
+        // Ideally, we'll focus on those changes.  But we can't skip over unread
+        // interactions, so we prioritize those, if any.
+        //
+        // We'll use this later to update the view to reflect any changes made while
+        // we were not observing the database.  See extendRangeToIncludeUnobservedItems
+        // and the logic above.
+        ConversationViewItem *_Nullable lastViewItem = self.viewItems.lastObject;
+        if (lastViewItem) {
+            self.previousLastTimestamp = @(lastViewItem.interaction.timestamp);
+        } else {
+            self.previousLastTimestamp = nil;
+        }
+        __block TSInteraction *_Nullable firstUnseenInteraction = nil;
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            firstUnseenInteraction =
+            [[TSDatabaseView unseenDatabaseViewExtension:transaction] firstObjectInGroup:self.thread.uniqueId];
+        }];
+        if (firstUnseenInteraction) {
+            // If there are any unread interactions, focus on the first one.
+            self.viewHorizonTimestamp = @(firstUnseenInteraction.timestamp);
+        } else if (lastViewItem) {
+            // Otherwise, focus _just after_ the last interaction.
+            self.viewHorizonTimestamp = @(lastViewItem.interaction.timestamp + 1);
+        } else {
+            self.viewHorizonTimestamp = nil;
+        }
+        DDLogVerbose(@"%@ paused observation of database modifications.", self.logTag);
     }
+}
+
+- (nullable NSIndexPath *)firstIndexPathAtViewHorizonTimestamp
+{
+    OWSAssert(self.shouldObserveDBModifications);
+
+    if (!self.viewHorizonTimestamp) {
+        return nil;
+    }
+    if (self.viewItems.count < 1) {
+        return nil;
+    }
+    uint64_t viewHorizonTimestamp = self.viewHorizonTimestamp.unsignedLongLongValue;
+    // Binary search for the first view item whose timestamp >= the "view horizon" timestamp.
+    // We want to move "left" rightward, discarding interactions before this cutoff.
+    // We want to move "right" leftward, discarding all-but-the-first interaction after this cutoff.
+    // In the end, if we converge on an item _after_ this cutoff, it's the one we want.
+    // If we converge on an item _before_ this cutoff, there was no interaction that fit our criteria.
+    NSUInteger left = 0, right = self.viewItems.count - 1;
+    while (left != right) {
+        OWSAssert(left < right);
+        NSUInteger mid = (left + right) / 2;
+        OWSAssert(left <= mid);
+        OWSAssert(mid < right);
+        ConversationViewItem *viewItem  = self.viewItems[mid];
+        if (viewItem.interaction.timestamp >= viewHorizonTimestamp) {
+            right = mid;
+        } else {
+            // This is an optimization; it also ensures that we converge.
+            left = mid + 1;
+        }
+    }
+    OWSAssert(left == right);
+    ConversationViewItem *viewItem  = self.viewItems[left];
+    if (viewItem.interaction.timestamp >= viewHorizonTimestamp) {
+        DDLogInfo(@"%@ firstIndexPathAtViewHorizonTimestamp: %zd / %zd", self.logTag, left, self.viewItems.count);
+        return [NSIndexPath indexPathForRow:(NSInteger) left inSection:0];
+    } else {
+        DDLogInfo(@"%@ firstIndexPathAtViewHorizonTimestamp: none / %zd", self.logTag, self.viewItems.count);
+        return nil;
+    }
+}
+
+// We stop observing database modifications when the app or this view is not visible
+// (see: shouldObserveDBModifications).  When we resume observing db modifications,
+// we want to extend the "range" of this view to include any items added to this
+// thread while we were not observing.
+- (void)extendRangeToIncludeUnobservedItems
+{
+    if (!self.shouldObserveDBModifications) {
+        return;
+    }
+    if (!self.previousLastTimestamp) {
+        return;
+    }
+
+    uint64_t previousLastTimestamp = self.previousLastTimestamp.unsignedLongLongValue;
+    __block NSUInteger addedItemCount = 0;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [[transaction ext:TSMessageDatabaseViewExtensionName]
+         enumerateRowsInGroup:self.thread.uniqueId
+         withOptions:NSEnumerationReverse
+         usingBlock:^(NSString *collection,
+                      NSString *key,
+                      id object,
+                      id metadata,
+                      NSUInteger index,
+                      BOOL *stop) {
+             
+             if (![object isKindOfClass:[TSInteraction class]]) {
+                 OWSFail(@"Expected a TSInteraction: %@", [object class]);
+                 return;
+             }
+             
+             TSInteraction *interaction = (TSInteraction *)object;
+             if (interaction.timestamp <= previousLastTimestamp) {
+                 *stop = YES;
+                 return;
+             }
+             
+             addedItemCount++;
+         }];
+    }];
+    DDLogInfo(@"%@ extendRangeToIncludeUnobservedItems: %zd", self.logTag, addedItemCount);
+    self.lastRangeLength += addedItemCount;
+    // We only want to do this once, so clear the "previous last timestamp".
+    self.previousLastTimestamp = nil;
 }
 
 - (void)resetMappings
@@ -4168,10 +4314,11 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
         // We need to `beginLongLivedReadTransaction` before we update our
         // mapping in order to jump to the most recent commit.
         [self.uiDatabaseConnection beginLongLivedReadTransaction];
+        [self extendRangeToIncludeUnobservedItems];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.messageMappings updateWithTransaction:transaction];
         }];
-        [self updateMessageMappingRangeOptions:MessagesRangeSizeMode_Normal];
+        [self updateMessageMappingRangeOptions];
     }
     [self reloadViewItems];
 
@@ -4179,6 +4326,15 @@ typedef NS_ENUM(NSInteger, MessagesRangeSizeMode) {
     [self ensureDynamicInteractions];
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
+
+    // There appears to be a bug in YapDatabase that sometimes delays modifications
+    // made in another process (e.g. the SAE) from showing up in other processes.
+    // There's a simple workaround: a trivial write to the database flushes changes
+    // made from other processes.
+    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
+        l
+    }];
 }
 
 #pragma mark - ConversationCollectionViewDelegate

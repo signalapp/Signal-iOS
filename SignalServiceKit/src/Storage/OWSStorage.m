@@ -76,7 +76,10 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     OWSAssert(delegate);
     OWSAssert(delegate.areAllRegistrationsComplete || self.canWriteBeforeStorageReady);
 
-    OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    OWSBackgroundTask *_Nullable backgroundTask = nil;
+    if (CurrentAppContext().isMainApp) {
+        backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    }
     [super readWriteWithBlock:block];
     backgroundTask = nil;
 }
@@ -100,7 +103,10 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     OWSAssert(delegate);
     OWSAssert(delegate.areAllRegistrationsComplete || self.canWriteBeforeStorageReady);
 
-    __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    __block OWSBackgroundTask *_Nullable backgroundTask = nil;
+    if (CurrentAppContext().isMainApp) {
+        backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    }
     [super asyncReadWriteWithBlock:block completionQueue:completionQueue completionBlock:^{
         if (completionBlock) {
             completionBlock();
