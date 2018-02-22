@@ -193,6 +193,7 @@ NSString *const kNotificationSoundsStorageGlobalNotificationKey = @"kNotificatio
     NSNumber *_Nullable value =
         [notificationSounds.dbConnection objectForKey:kNotificationSoundsStorageGlobalNotificationKey
                                          inCollection:kNotificationSoundsStorageNotificationCollection];
+    // Default to the global default.
     return (value ? (NotificationSound)value.intValue : [self defaultNotificationSound]);
 }
 
@@ -208,8 +209,9 @@ NSString *const kNotificationSoundsStorageGlobalNotificationKey = @"kNotificatio
 {
     NotificationSounds *notificationSounds = NotificationSounds.sharedManager;
     NSNumber *_Nullable value =
-        [notificationSounds.dbConnection objectForKey:kNotificationSoundsStorageGlobalNotificationKey
+        [notificationSounds.dbConnection objectForKey:thread.uniqueId
                                          inCollection:kNotificationSoundsStorageNotificationCollection];
+    // Default to the "global" notification sound, which in turn will default to the global default.
     return (value ? (NotificationSound)value.intValue : [self globalNotificationSound]);
 }
 
