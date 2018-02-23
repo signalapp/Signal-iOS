@@ -12,6 +12,7 @@
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSStorage.h"
 #import "OWSSyncConfigurationMessage.h"
+#import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
@@ -316,6 +317,11 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             } else {
                 DDLogVerbose(@"%@ Enqueuing read receipt for linked devices.", self.logTag);
                 self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
+            }
+
+            if ([message.messageAuthorId isEqualToString:[TSAccountManager localNumber]]) {
+                DDLogVerbose(@"%@ Ignoring read receipt for self-sender.", self.logTag);
+                return;
             }
 
             if ([self areReadReceiptsEnabled]) {
