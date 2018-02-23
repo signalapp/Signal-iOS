@@ -383,7 +383,7 @@ protocol CallAudioServiceDelegate: class {
 
     // MARK: Playing Sounds
 
-    var currentPlayer: AVAudioPlayer?
+    var currentPlayer: OWSAudioPlayer?
 
     private func stopPlayingAnySounds() {
         currentPlayer?.stop()

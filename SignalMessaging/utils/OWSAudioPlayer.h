@@ -4,15 +4,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSVideoAttachmentAdapter;
-
 typedef NS_ENUM(NSInteger, AudioPlaybackState) {
     AudioPlaybackState_Stopped,
     AudioPlaybackState_Playing,
     AudioPlaybackState_Paused,
 };
 
-@protocol OWSAudioAttachmentPlayerDelegate <NSObject>
+@protocol OWSAudioPlayerDelegate <NSObject>
 
 - (AudioPlaybackState)audioPlaybackState;
 - (void)setAudioPlaybackState:(AudioPlaybackState)state;
@@ -23,16 +21,19 @@ typedef NS_ENUM(NSInteger, AudioPlaybackState) {
 
 #pragma mark -
 
-@interface OWSAudioAttachmentPlayer : NSObject
+@interface OWSAudioPlayer : NSObject
 
-@property (nonatomic, readonly, weak) id<OWSAudioAttachmentPlayerDelegate> delegate;
+@property (nonatomic, readonly, weak) id<OWSAudioPlayerDelegate> delegate;
 
 // This property can be used to associate instances of the player with view
 // or model objects.
 @property (nonatomic, weak) id owner;
 
-// An generic initializer.
-- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl delegate:(id<OWSAudioAttachmentPlayerDelegate>)delegate;
+@property (nonatomic) BOOL isLooping;
+
+- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl;
+
+- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl delegate:(id<OWSAudioPlayerDelegate>)delegate;
 
 - (void)play;
 - (void)pause;

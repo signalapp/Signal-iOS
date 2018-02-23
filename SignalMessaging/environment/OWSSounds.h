@@ -36,7 +36,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_DefaultiOSIncomingRingtone = OWSSound_Opening,
 };
 
-@class AVAudioPlayer;
+@class OWSAudioPlayer;
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
 
@@ -64,7 +64,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 
 #pragma mark - AudioPlayer
 
-+ (nullable AVAudioPlayer *)audioPlayerForSound:(OWSSound)sound;
++ (nullable OWSAudioPlayer *)audioPlayerForSound:(OWSSound)sound;
 
 @end
 

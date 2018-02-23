@@ -20,7 +20,7 @@ public protocol MediaDetailPresenter: class {
 }
 
 @objc
-public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
+public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
 
     let TAG = "[MediaMessageView]"
 
@@ -33,7 +33,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
     public let attachment: SignalAttachment
 
     @objc
-    public var audioPlayer: OWSAudioAttachmentPlayer?
+    public var audioPlayer: OWSAudioPlayer?
 
     @objc
     public var audioPlayButton: UIButton?
@@ -143,7 +143,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             return
         }
 
-        audioPlayer = OWSAudioAttachmentPlayer(mediaUrl: dataUrl, delegate: self)
+        audioPlayer = OWSAudioPlayer(mediaUrl: dataUrl, delegate: self)
 
         var subviews = [UIView]()
 
@@ -201,11 +201,11 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         let animatedImageView = YYAnimatedImageView()
         animatedImageView.image = image
         let aspectRatio = image.size.width / image.size.height
-        addSubviewWithScaleAspectFitLayout(view:animatedImageView, aspectRatio:aspectRatio)
+        addSubviewWithScaleAspectFitLayout(view: animatedImageView, aspectRatio: aspectRatio)
         contentView = animatedImageView
 
         animatedImageView.isUserInteractionEnabled = true
-        animatedImageView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(imageTapped)))
+        animatedImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageTapped)))
     }
 
     private func addSubviewWithScaleAspectFitLayout(view: UIView, aspectRatio: CGFloat) {
@@ -216,7 +216,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         // This allows ConversationInputToolbar to place the "cancel" button
         // in the upper-right hand corner of the preview content.
         view.autoCenterInSuperview()
-        view.autoPin(toAspectRatio:aspectRatio)
+        view.autoPin(toAspectRatio: aspectRatio)
         view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)
         view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)
     }
@@ -235,11 +235,11 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         imageView.layer.minificationFilter = kCAFilterTrilinear
         imageView.layer.magnificationFilter = kCAFilterTrilinear
         let aspectRatio = image.size.width / image.size.height
-        addSubviewWithScaleAspectFitLayout(view:imageView, aspectRatio:aspectRatio)
+        addSubviewWithScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
         contentView = imageView
 
         imageView.isUserInteractionEnabled = true
-        imageView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(imageTapped)))
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageTapped)))
     }
 
     private func createVideoPreview() {
@@ -256,13 +256,13 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         imageView.layer.minificationFilter = kCAFilterTrilinear
         imageView.layer.magnificationFilter = kCAFilterTrilinear
         let aspectRatio = image.size.width / image.size.height
-        addSubviewWithScaleAspectFitLayout(view:imageView, aspectRatio:aspectRatio)
+        addSubviewWithScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
         contentView = imageView
 
         // attachment approval provides it's own play button to keep it
         // at the proper zoom scale.
         if mode != .attachmentApproval {
-            let videoPlayIcon = UIImage(named:"play_button")!
+            let videoPlayIcon = UIImage(named: "play_button")!
             let videoPlayButton = UIImageView(image: videoPlayIcon)
             self.videoPlayButton = videoPlayButton
             videoPlayButton.contentMode = .scaleAspectFit
@@ -270,7 +270,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
             videoPlayButton.autoCenterInSuperview()
 
             imageView.isUserInteractionEnabled = true
-            imageView.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(videoTapped)))
+            imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(videoTapped)))
         }
     }
 
@@ -409,7 +409,7 @@ public class MediaMessageView: UIView, OWSAudioAttachmentPlayerDelegate {
         audioPlayer?.togglePlayState()
     }
 
-    // MARK: - OWSAudioAttachmentPlayerDelegate
+    // MARK: - OWSAudioPlayerDelegate
 
     public func audioPlaybackState() -> AudioPlaybackState {
         return playbackState

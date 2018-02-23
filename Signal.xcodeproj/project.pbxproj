@@ -175,6 +175,8 @@
 		34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */; };
 		34C3C78D20409F320000134C /* Opening.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78C20409F320000134C /* Opening.m4r */; };
 		34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78E2040A4F70000134C /* sonarping.mp3 */; };
+		34C3C7922040B0DD0000134C /* OWSAudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		34C3C7932040B0DD0000134C /* OWSAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C3C7912040B0DC0000134C /* OWSAudioPlayer.m */; };
 		34C42D5B1F45F7A80072EC04 /* OWSNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D5A1F45F7A80072EC04 /* OWSNavigationController.m */; };
 		34C6B0A91FA0E46F00D35993 /* test-gif.gif in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A51FA0E46F00D35993 /* test-gif.gif */; };
 		34C6B0AB1FA0E46F00D35993 /* test-mp3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */; };
@@ -301,9 +303,7 @@
 		45464DBC1DFA041F001D3FD6 /* DataChannelMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */; };
 		454A965A1FD6017E008D2A0E /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
 		454A965B1FD601BF008D2A0E /* MediaMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CA1C281F7164F700E51C51 /* MediaMessageView.swift */; };
-		454A965D1FD602B1008D2A0E /* OWSAudioAttachmentPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34533F161EA8D2070006114F /* OWSAudioAttachmentPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		454A965F1FD60EA3008D2A0E /* OWSFlatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454A965E1FD60EA2008D2A0E /* OWSFlatButton.swift */; };
-		454A96601FD61165008D2A0E /* OWSAudioAttachmentPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */; };
 		454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */; };
 		4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4556FA671F54AA9500AF40DD /* DebugUIProfile.swift */; };
 		455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DB1F1FEA0000F86704 /* Metal.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -580,8 +580,6 @@
 		344F2496200FD03200CFB4F4 /* MessageApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MessageApprovalViewController.swift; path = SignalMessaging/attachments/MessageApprovalViewController.swift; sourceTree = SOURCE_ROOT; };
 		344F2497200FD03200CFB4F4 /* SharingThreadPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SharingThreadPickerViewController.m; path = SignalMessaging/attachments/SharingThreadPickerViewController.m; sourceTree = SOURCE_ROOT; };
 		344F2498200FD03200CFB4F4 /* AttachmentApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentApprovalViewController.swift; path = SignalMessaging/attachments/AttachmentApprovalViewController.swift; sourceTree = SOURCE_ROOT; };
-		34533F161EA8D2070006114F /* OWSAudioAttachmentPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioAttachmentPlayer.h; sourceTree = "<group>"; };
-		34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAudioAttachmentPlayer.m; sourceTree = "<group>"; };
 		3461284A1FD0B93F00532771 /* SAELoadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAELoadViewController.swift; sourceTree = "<group>"; };
 		346129331FD1A88700532771 /* OWSSwiftUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSwiftUtils.swift; sourceTree = "<group>"; };
 		346129371FD1B47200532771 /* OWSPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSPreferences.h; sourceTree = "<group>"; };
@@ -727,6 +725,8 @@
 		34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerLayout.swift; sourceTree = "<group>"; };
 		34C3C78C20409F320000134C /* Opening.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Opening.m4r; sourceTree = "<group>"; };
 		34C3C78E2040A4F70000134C /* sonarping.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sonarping.mp3; path = Signal/AudioFiles/sonarping.mp3; sourceTree = SOURCE_ROOT; };
+		34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioPlayer.h; sourceTree = "<group>"; };
+		34C3C7912040B0DC0000134C /* OWSAudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAudioPlayer.m; sourceTree = "<group>"; };
 		34C42D591F45F7A80072EC04 /* OWSNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSNavigationController.h; sourceTree = "<group>"; };
 		34C42D5A1F45F7A80072EC04 /* OWSNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSNavigationController.m; sourceTree = "<group>"; };
 		34C42D621F4734ED0072EC04 /* OWSContactOffersInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactOffersInteraction.h; sourceTree = "<group>"; };
@@ -1224,6 +1224,8 @@
 				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
 				344F248C2007CCD600CFB4F4 /* DisplayableText.swift */,
 				346129AC1FD1F34E00532771 /* ImageCache.swift */,
+				34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */,
+				34C3C7912040B0DC0000134C /* OWSAudioPlayer.m */,
 				45666EC41D99483D008FE134 /* OWSAvatarBuilder.h */,
 				45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */,
 				45855F351D9498A40084F340 /* OWSContactAvatarBuilder.h */,
@@ -1709,8 +1711,6 @@
 			children = (
 				34B3F8391E8DF1700035BE1A /* AttachmentSharing.h */,
 				34B3F83A1E8DF1700035BE1A /* AttachmentSharing.m */,
-				34533F161EA8D2070006114F /* OWSAudioAttachmentPlayer.h */,
-				34533F171EA8D2070006114F /* OWSAudioAttachmentPlayer.m */,
 				34D913491F62D4A500722898 /* SignalAttachment.swift */,
 				34CA1C281F7164F700E51C51 /* MediaMessageView.swift */,
 				45BC829C1FD9C4B400011CF3 /* ShareViewDelegate.swift */,
@@ -2197,12 +2197,12 @@
 				451F8A4B1FD715E1005CB9DA /* OWSGroupAvatarBuilder.h in Headers */,
 				347850721FDAEB17007B8332 /* OWSUserProfile.h in Headers */,
 				451F8A371FD71179005CB9DA /* OWSViewController.h in Headers */,
-				454A965D1FD602B1008D2A0E /* OWSAudioAttachmentPlayer.h in Headers */,
 				451F8A3E1FD713D2005CB9DA /* ThreadViewHelper.h in Headers */,
 				346129391FD1B47300532771 /* OWSPreferences.h in Headers */,
 				344D6CED20069E070042AF96 /* NewNonContactConversationViewController.h in Headers */,
 				346129DE1FD5C02A00532771 /* LockInteractionController.h in Headers */,
 				451F8A451FD71570005CB9DA /* BlockListUIUtils.h in Headers */,
+				34C3C7922040B0DD0000134C /* OWSAudioPlayer.h in Headers */,
 				451F8A4A1FD715D9005CB9DA /* OWSContactAvatarBuilder.h in Headers */,
 				34480B5B1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch in Headers */,
 				45194F921FD7215600333B2C /* OWSContactOffersInteraction.h in Headers */,
@@ -2927,6 +2927,7 @@
 				34480B621FD0A98800BC14EF /* UIColor+OWS.m in Sources */,
 				34480B531FD0A7A400BC14EF /* OWSLogger.m in Sources */,
 				34480B641FD0A98800BC14EF /* UIView+OWS.m in Sources */,
+				34C3C7932040B0DD0000134C /* OWSAudioPlayer.m in Sources */,
 				3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */,
 				344F248520069E9C00CFB4F4 /* CountryCodeViewController.m in Sources */,
 				34480B671FD0AA9400BC14EF /* UIFont+OWS.m in Sources */,
@@ -2979,7 +2980,6 @@
 				34612A071FD7238600532771 /* OWSContactsSyncing.m in Sources */,
 				346129DF1FD5C02A00532771 /* LockInteractionController.m in Sources */,
 				451F8A471FD715BA005CB9DA /* OWSAvatarBuilder.m in Sources */,
-				454A96601FD61165008D2A0E /* OWSAudioAttachmentPlayer.m in Sources */,
 				344D6CEB20069E070042AF96 /* SelectRecipientViewController.m in Sources */,
 				34480B591FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m in Sources */,
 				451F8A441FD7156B005CB9DA /* BlockListUIUtils.m in Sources */,

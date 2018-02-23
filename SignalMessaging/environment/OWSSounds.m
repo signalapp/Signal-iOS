@@ -3,7 +3,7 @@
 //
 
 #import "OWSSounds.h"
-#import <AVFoundation/AVFoundation.h>
+#import "OWSAudioPlayer.h"
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
@@ -16,7 +16,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
-@property (nonatomic, nullable) AVAudioPlayer *audioPlayer;
+@property (nonatomic, nullable) OWSAudioPlayer *audioPlayer;
 
 @end
 
@@ -284,25 +284,20 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     return (sound == OWSSound_CallConnecting || sound == OWSSound_CallOutboundRinging);
 }
 
-+ (nullable AVAudioPlayer *)audioPlayerForSound:(OWSSound)sound
++ (nullable OWSAudioPlayer *)audioPlayerForSound:(OWSSound)sound
 {
     return [self audioPlayerForSound:sound quiet:NO];
 }
 
-+ (nullable AVAudioPlayer *)audioPlayerForSound:(OWSSound)sound quiet:(BOOL)quiet
++ (nullable OWSAudioPlayer *)audioPlayerForSound:(OWSSound)sound quiet:(BOOL)quiet
 {
     NSURL *_Nullable soundURL = [OWSSounds soundURLForSound:sound quiet:(BOOL)quiet];
     if (!soundURL) {
         return nil;
     }
-    NSError *error;
-    AVAudioPlayer *_Nullable player = [[AVAudioPlayer alloc] initWithContentsOfURL:soundURL error:&error];
-    if (error || !player) {
-        OWSFail(@"%@ audioPlayerForSound failed with error: %@.", self.logTag, error);
-        return nil;
-    }
+    OWSAudioPlayer *player = [[OWSAudioPlayer alloc] initWithMediaUrl:soundURL];
     if ([self shouldAudioPlayerLoopForSound:sound]) {
-        player.numberOfLoops = -1;
+        player.isLooping = YES;
     }
     return player;
 }

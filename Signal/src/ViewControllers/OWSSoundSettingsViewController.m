@@ -4,6 +4,7 @@
 
 #import "OWSSoundSettingsViewController.h"
 #import <AVFoundation/AVFoundation.h>
+#import <SignalMessaging/OWSAudioPlayer.h>
 #import <SignalMessaging/OWSSounds.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSSound currentSound;
 
-@property (nonatomic, nullable) AVAudioPlayer *audioPlayer;
+@property (nonatomic, nullable) OWSAudioPlayer *audioPlayer;
 
 @end
 
@@ -108,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioPlayer stop];
     self.audioPlayer = [OWSSounds audioPlayerForSound:sound];
     // Suppress looping in this view.
-    self.audioPlayer.numberOfLoops = 0;
+    self.audioPlayer.isLooping = NO;
     [self.audioPlayer play];
 
     if (self.currentSound == sound) {
