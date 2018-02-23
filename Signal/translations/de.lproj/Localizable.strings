@@ -1630,7 +1630,7 @@
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Nicht registriert";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Zum Aktualisieren oder Registrieren bitte die Signal-App starten.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Nicht bereit";
