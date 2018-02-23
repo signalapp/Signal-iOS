@@ -91,9 +91,21 @@ extension CallUIAdaptee {
             // So we use the non-CallKit call UI.
             Logger.info("\(TAG) choosing non-callkit adaptee for simulator.")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
+        } else if #available(iOS 11, *) {
+            Logger.info("\(TAG) choosing callkit adaptee for iOS11+")
+            let showNames = Environment.preferences().notificationPreviewType() != .noNameNoPreview
+            let useSystemCallLog = Environment.preferences().isSystemCallLogEnabled()
+
+            adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationsAdapter: notificationsAdapter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
         } else if #available(iOS 10.0, *), Environment.current().preferences.isCallKitEnabled() {
-            Logger.info("\(TAG) choosing callkit adaptee for iOS10+")
-            adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationsAdapter: notificationsAdapter)
+            Logger.info("\(TAG) choosing callkit adaptee for iOS10")
+            let hideNames = Environment.preferences().isCallKitPrivacyEnabled() || Environment.preferences().notificationPreviewType() == .noNameNoPreview
+            let showNames = !hideNames
+
+            // All CallKit calls use the system call log on iOS10
+            let useSystemCallLog = true
+
+            adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationsAdapter: notificationsAdapter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
         } else {
             Logger.info("\(TAG) choosing non-callkit adaptee")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
@@ -103,7 +115,8 @@ extension CallUIAdaptee {
 
         super.init()
 
-        SwiftSingletons.register(self)
+        // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
+        // SwiftSingletons.register(self)
 
         callService.addObserverAndSyncState(observer: self)
     }

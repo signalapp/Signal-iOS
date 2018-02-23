@@ -56,7 +56,7 @@
     [contents addSection:soundsSection];
     
     OWSTableSection *backgroundSection = [OWSTableSection new];
-    backgroundSection.headerTitle = NSLocalizedString(@"NOTIFICATIONS_SECTION_BACKGROUND", nil);
+    backgroundSection.headerTitle = NSLocalizedString(@"SETTINGS_NOTIFICATION_CONTENT_TITLE", @"table section header");
     [backgroundSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
                                                        reuseIdentifier:@"UITableViewCellStyleValue1"];
@@ -74,6 +74,8 @@
                                            [NotificationSettingsOptionsViewController new];
                                        [weakSelf.navigationController pushViewController:vc animated:YES];
                                    }]];
+    backgroundSection.footerTitle
+        = NSLocalizedString(@"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION", @"table section footer");
     [contents addSection:backgroundSection];
 
     OWSTableSection *inAppSection = [OWSTableSection new];

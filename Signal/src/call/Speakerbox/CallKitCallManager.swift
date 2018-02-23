@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -18,26 +18,30 @@ import SignalServiceKit
 final class CallKitCallManager: NSObject {
 
     let callController = CXCallController()
+    let showNamesOnCallScreen: Bool
     static let kAnonymousCallHandlePrefix = "Signal:"
 
-    override required init() {
+    required init(showNamesOnCallScreen: Bool) {
         AssertIsOnMainThread()
 
+        self.showNamesOnCallScreen = showNamesOnCallScreen
         super.init()
 
-        SwiftSingletons.register(self)
+        // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
+        // SwiftSingletons.register(self)
     }
 
     // MARK: Actions
 
     func startCall(_ call: SignalCall) {
         var handle: CXHandle
-        if Environment.current().preferences.isCallKitPrivacyEnabled() {
+
+        if showNamesOnCallScreen {
+            handle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
+        } else {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             handle = CXHandle(type: .generic, value: callKitId)
             TSStorageManager.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId:callKitId)
-        } else {
-            handle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
         }
 
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)

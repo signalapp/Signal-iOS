@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "NotificationSettingsOptionsViewController.h"
+#import "Signal-Swift.h"
+#import "SignalApp.h"
 #import <SignalMessaging/Environment.h>
 
 @implementation NotificationSettingsOptionsViewController
@@ -48,6 +50,10 @@
 - (void)setNotificationType:(NotificationType)notificationType
 {
     [Environment.preferences setNotificationPreviewType:notificationType];
+
+    // rebuild callUIAdapter since notification configuration changed.
+    [SignalApp.sharedApp.callService createCallUIAdapter];
+
     [self.navigationController popViewControllerAnimated:YES];
 }
 

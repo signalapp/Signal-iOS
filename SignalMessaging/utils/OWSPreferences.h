@@ -59,8 +59,14 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 
 #pragma mark Callkit
 
+- (BOOL)isSystemCallLogEnabled;
+- (void)setIsSystemCallLogEnabled:(BOOL)flag;
+
+#pragma mark - Legacy CallKit settings
+
 - (BOOL)isCallKitEnabled;
 - (void)setIsCallKitEnabled:(BOOL)flag;
+
 // Returns YES IFF isCallKitEnabled has been set by user.
 - (BOOL)isCallKitEnabledSet;
 
@@ -68,7 +74,6 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 - (void)setIsCallKitPrivacyEnabled:(BOOL)flag;
 // Returns YES IFF isCallKitPrivacyEnabled has been set by user.
 - (BOOL)isCallKitPrivacySet;
-- (BOOL)isCallKitPrivacyAutoDisabled;
 
 #pragma mark direct call connectivity (non-TURN)
 
