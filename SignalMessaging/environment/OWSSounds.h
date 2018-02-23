@@ -23,34 +23,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_ClassicNotification,
 
     // Ringtone Sounds
-    OWSSound_Apex,
-    OWSSound_Beacon,
-    OWSSound_Bulletin,
-    OWSSound_By_The_Seaside,
-    OWSSound_Chimes,
-    OWSSound_Circuit,
-    OWSSound_Constellation,
-    OWSSound_Cosmic,
-    OWSSound_Crystals,
-    OWSSound_Hillside,
-    OWSSound_Illuminate,
-    OWSSound_Night_Owl,
     OWSSound_Opening,
-    OWSSound_Playtime,
-    OWSSound_Presto,
-    OWSSound_Radar,
-    OWSSound_Radiate,
-    OWSSound_Ripples,
-    OWSSound_Sencha,
-    OWSSound_Signal,
-    OWSSound_Silk,
-    OWSSound_Slow_Rise,
-    OWSSound_Stargaze,
-    OWSSound_Summit,
-    OWSSound_Twinkle,
-    OWSSound_Uplift,
-    OWSSound_Waves,
-    OWSSound_ClassicRingtone,
 
     // Calls
     OWSSound_CallConnecting,
@@ -60,6 +33,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 
     // Other
     OWSSound_None,
+    OWSSound_DefaultiOSIncomingRingtone = OWSSound_Opening,
 };
 
 @class AVAudioPlayer;
@@ -88,18 +62,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 + (OWSSound)notificationSoundForThread:(TSThread *)thread;
 + (void)setNotificationSound:(OWSSound)sound forThread:(TSThread *)thread;
 
-#pragma mark - Ringtones
-
-+ (NSArray<NSNumber *> *)allRingtoneSounds;
-
-+ (OWSSound)globalRingtoneSound;
-+ (void)setGlobalRingtoneSound:(OWSSound)sound;
-+ (void)setGlobalRingtoneSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-+ (OWSSound)ringtoneSoundForThread:(TSThread *)thread;
-+ (void)setRingtoneSound:(OWSSound)sound forThread:(TSThread *)thread;
-
-#pragma mark - Calls
+#pragma mark - AudioPlayer
 
 + (nullable AVAudioPlayer *)audioPlayerForSound:(OWSSound)sound;
 

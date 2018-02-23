@@ -46,6 +46,10 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         let iconMaskImage = #imageLiteral(resourceName: "logoSignal")
         providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation(iconMaskImage)
 
+        // We don't set the ringtoneSound property, so that we use either the
+        // default iOS ringtone OR the custom ringtone associated with this user's
+        // system contact, if possible (iOS 11 or later).
+
         return providerConfiguration
     }
 

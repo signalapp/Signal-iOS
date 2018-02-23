@@ -1575,9 +1575,6 @@
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Notification";
 
-/* Label for settings view that allows user to change the ringtone sound. */
-"SETTINGS_ITEM_RINGTONE_SOUND" = "Ringtone";
-
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Settings";
 
@@ -1671,7 +1668,7 @@
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "I'm inviting you to install Signal! Here is the link:";
 
-/* Label for the 'no sound' option that allows users to disable sounds for notifications, ringtones, etc. */
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "None";
 
 /* Alert body after verifying privacy with {{other user's name}} */

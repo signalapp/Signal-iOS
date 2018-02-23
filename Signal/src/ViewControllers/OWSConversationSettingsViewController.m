@@ -592,25 +592,6 @@ NS_ASSUME_NONNULL_BEGIN
                                    vc.thread = weakSelf.thread;
                                    [weakSelf.navigationController pushViewController:vc animated:YES];
                                }]];
-    if (!self.isGroupThread) {
-
-        [soundsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
-                                                           reuseIdentifier:@"UITableViewCellStyleValue1"];
-            cell.textLabel.text = NSLocalizedString(@"SETTINGS_ITEM_RINGTONE_SOUND",
-                @"Label for settings view that allows user to change the ringtone sound.");
-            OWSSound sound = [OWSSounds ringtoneSoundForThread:self.thread];
-            cell.detailTextLabel.text = [OWSSounds displayNameForSound:sound];
-            [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
-            return cell;
-        }
-                                   actionBlock:^{
-                                       OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
-                                       vc.soundType = OWSSoundType_Ringtone;
-                                       vc.thread = weakSelf.thread;
-                                       [weakSelf.navigationController pushViewController:vc animated:YES];
-                                   }]];
-    }
     [contents addSection:soundsSection];
 
     self.contents = contents;

@@ -135,6 +135,10 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
     // MARK: - CallObserver
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
@@ -413,8 +417,7 @@ protocol CallAudioServiceDelegate: class {
             self?.ringVibration()
         }
         vibrateTimer?.fire()
-        let sound = OWSSounds.ringtoneSound(for: call.thread)
-        play(sound: sound)
+        play(sound: .defaultiOSIncomingRingtone)
     }
 
     private func stopAnyRingingVibration() {

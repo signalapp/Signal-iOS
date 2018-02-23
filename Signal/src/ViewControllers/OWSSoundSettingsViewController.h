@@ -6,10 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, OWSSoundType) {
-    OWSSoundType_Notification = 0,
-    OWSSoundType_Ringtone,
-};
+typedef NS_ENUM(NSUInteger, OWSSoundType) { OWSSoundType_Notification = 0 };
 
 @class TSThread;
 

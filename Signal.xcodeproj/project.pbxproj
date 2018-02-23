@@ -23,38 +23,10 @@
 		34074FF7203E5436004596AE /* popcorn.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FCF203E5435004596AE /* popcorn.m4r */; };
 		34074FF8203E5436004596AE /* pulse.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD0203E5435004596AE /* pulse.m4r */; };
 		34074FF9203E5436004596AE /* synth.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD1203E5435004596AE /* synth.m4r */; };
-		34074FFA203E5436004596AE /* Apex.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD3203E5436004596AE /* Apex.m4r */; };
-		34074FFB203E5436004596AE /* Beacon.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD4203E5436004596AE /* Beacon.m4r */; };
-		34074FFC203E5436004596AE /* Bulletin.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD5203E5436004596AE /* Bulletin.m4r */; };
-		34074FFD203E5436004596AE /* By The Seaside.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD6203E5436004596AE /* By The Seaside.m4r */; };
-		34074FFE203E5436004596AE /* Chimes.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD7203E5436004596AE /* Chimes.m4r */; };
-		34074FFF203E5436004596AE /* Circuit.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD8203E5436004596AE /* Circuit.m4r */; };
-		34075000203E5436004596AE /* Constellation.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD9203E5436004596AE /* Constellation.m4r */; };
-		34075001203E5436004596AE /* Cosmic.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FDA203E5436004596AE /* Cosmic.m4r */; };
-		34075002203E5436004596AE /* Crystals.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FDB203E5436004596AE /* Crystals.m4r */; };
-		34075003203E5436004596AE /* Hillside.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FDC203E5436004596AE /* Hillside.m4r */; };
-		34075004203E5436004596AE /* Illuminate.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FDD203E5436004596AE /* Illuminate.m4r */; };
-		34075005203E5436004596AE /* Night Owl.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FDE203E5436004596AE /* Night Owl.m4r */; };
-		34075006203E5436004596AE /* Opening.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FDF203E5436004596AE /* Opening.m4r */; };
-		34075007203E5436004596AE /* Playtime.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE0203E5436004596AE /* Playtime.m4r */; };
-		34075008203E5436004596AE /* Presto.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE1203E5436004596AE /* Presto.m4r */; };
-		34075009203E5436004596AE /* Radar.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE2203E5436004596AE /* Radar.m4r */; };
-		3407500A203E5436004596AE /* Radiate.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE3203E5436004596AE /* Radiate.m4r */; };
-		3407500B203E5436004596AE /* Ripples.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE4203E5436004596AE /* Ripples.m4r */; };
-		3407500C203E5436004596AE /* Sencha.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE5203E5436004596AE /* Sencha.m4r */; };
-		3407500D203E5436004596AE /* Signal.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE6203E5436004596AE /* Signal.m4r */; };
-		3407500E203E5436004596AE /* Silk.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE7203E5436004596AE /* Silk.m4r */; };
-		3407500F203E5436004596AE /* Slow Rise.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE8203E5436004596AE /* Slow Rise.m4r */; };
-		34075010203E5436004596AE /* Stargaze.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE9203E5436004596AE /* Stargaze.m4r */; };
-		34075011203E5436004596AE /* Summit.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FEA203E5436004596AE /* Summit.m4r */; };
-		34075012203E5436004596AE /* Twinkle.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FEB203E5436004596AE /* Twinkle.m4r */; };
-		34075013203E5436004596AE /* Uplift.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FEC203E5436004596AE /* Uplift.m4r */; };
-		34075014203E5436004596AE /* Waves.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FED203E5436004596AE /* Waves.m4r */; };
 		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
 		340CB2271EAC25820001CAA1 /* UpdateGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CB2261EAC25820001CAA1 /* UpdateGroupViewController.m */; };
 		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
 		3421FA59203F542E00275549 /* messageReceivedClassic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 3421FA57203F542D00275549 /* messageReceivedClassic.aifc */; };
-		3421FA5A203F542E00275549 /* ringtoneClassic.caf in Resources */ = {isa = PBXBuildFile; fileRef = 3421FA58203F542E00275549 /* ringtoneClassic.caf */; };
 		3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3430FE171F7751D4000EC51B /* GiphyAPI.swift */; };
 		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
@@ -201,6 +173,7 @@
 		34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2A1F74C12700D7438D /* DebugUIStress.m */; };
 		34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */; };
 		34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */; };
+		34C3C78D20409F320000134C /* Opening.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78C20409F320000134C /* Opening.m4r */; };
 		34C42D5B1F45F7A80072EC04 /* OWSNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D5A1F45F7A80072EC04 /* OWSNavigationController.m */; };
 		34C6B0A91FA0E46F00D35993 /* test-gif.gif in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A51FA0E46F00D35993 /* test-gif.gif */; };
 		34C6B0AB1FA0E46F00D35993 /* test-mp3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */; };
@@ -551,33 +524,6 @@
 		34074FCF203E5435004596AE /* popcorn.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = popcorn.m4r; sourceTree = "<group>"; };
 		34074FD0203E5435004596AE /* pulse.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = pulse.m4r; sourceTree = "<group>"; };
 		34074FD1203E5435004596AE /* synth.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = synth.m4r; sourceTree = "<group>"; };
-		34074FD3203E5436004596AE /* Apex.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Apex.m4r; sourceTree = "<group>"; };
-		34074FD4203E5436004596AE /* Beacon.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Beacon.m4r; sourceTree = "<group>"; };
-		34074FD5203E5436004596AE /* Bulletin.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bulletin.m4r; sourceTree = "<group>"; };
-		34074FD6203E5436004596AE /* By The Seaside.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = "By The Seaside.m4r"; sourceTree = "<group>"; };
-		34074FD7203E5436004596AE /* Chimes.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Chimes.m4r; sourceTree = "<group>"; };
-		34074FD8203E5436004596AE /* Circuit.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Circuit.m4r; sourceTree = "<group>"; };
-		34074FD9203E5436004596AE /* Constellation.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Constellation.m4r; sourceTree = "<group>"; };
-		34074FDA203E5436004596AE /* Cosmic.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Cosmic.m4r; sourceTree = "<group>"; };
-		34074FDB203E5436004596AE /* Crystals.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Crystals.m4r; sourceTree = "<group>"; };
-		34074FDC203E5436004596AE /* Hillside.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Hillside.m4r; sourceTree = "<group>"; };
-		34074FDD203E5436004596AE /* Illuminate.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Illuminate.m4r; sourceTree = "<group>"; };
-		34074FDE203E5436004596AE /* Night Owl.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Night Owl.m4r"; sourceTree = "<group>"; };
-		34074FDF203E5436004596AE /* Opening.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Opening.m4r; sourceTree = "<group>"; };
-		34074FE0203E5436004596AE /* Playtime.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Playtime.m4r; sourceTree = "<group>"; };
-		34074FE1203E5436004596AE /* Presto.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Presto.m4r; sourceTree = "<group>"; };
-		34074FE2203E5436004596AE /* Radar.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Radar.m4r; sourceTree = "<group>"; };
-		34074FE3203E5436004596AE /* Radiate.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Radiate.m4r; sourceTree = "<group>"; };
-		34074FE4203E5436004596AE /* Ripples.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ripples.m4r; sourceTree = "<group>"; };
-		34074FE5203E5436004596AE /* Sencha.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sencha.m4r; sourceTree = "<group>"; };
-		34074FE6203E5436004596AE /* Signal.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Signal.m4r; sourceTree = "<group>"; };
-		34074FE7203E5436004596AE /* Silk.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Silk.m4r; sourceTree = "<group>"; };
-		34074FE8203E5436004596AE /* Slow Rise.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Slow Rise.m4r"; sourceTree = "<group>"; };
-		34074FE9203E5436004596AE /* Stargaze.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Stargaze.m4r; sourceTree = "<group>"; };
-		34074FEA203E5436004596AE /* Summit.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Summit.m4r; sourceTree = "<group>"; };
-		34074FEB203E5436004596AE /* Twinkle.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Twinkle.m4r; sourceTree = "<group>"; };
-		34074FEC203E5436004596AE /* Uplift.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Uplift.m4r; sourceTree = "<group>"; };
-		34074FED203E5436004596AE /* Waves.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Waves.m4r; sourceTree = "<group>"; };
 		340B02B61F9FD31800F9CFEC /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = translations/he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewItemTest.m; sourceTree = "<group>"; };
 		340CB2221EAC155C0001CAA1 /* ContactsViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsViewHelper.h; sourceTree = "<group>"; };
@@ -588,7 +534,6 @@
 		341F2C0D1F2B8AE700D07D6B /* DebugUIMisc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMisc.h; sourceTree = "<group>"; };
 		341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIMisc.m; sourceTree = "<group>"; };
 		3421FA57203F542D00275549 /* messageReceivedClassic.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; name = messageReceivedClassic.aifc; path = Signal/AudioFiles/messageReceivedClassic.aifc; sourceTree = SOURCE_ROOT; };
-		3421FA58203F542E00275549 /* ringtoneClassic.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ringtoneClassic.caf; path = Signal/AudioFiles/ringtoneClassic.caf; sourceTree = SOURCE_ROOT; };
 		3430FE171F7751D4000EC51B /* GiphyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyAPI.swift; sourceTree = "<group>"; };
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dripicons-v2.ttf"; sourceTree = "<group>"; };
@@ -780,6 +725,7 @@
 		34BECE2A1F74C12700D7438D /* DebugUIStress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIStress.m; sourceTree = "<group>"; };
 		34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerViewController.swift; sourceTree = "<group>"; };
 		34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerLayout.swift; sourceTree = "<group>"; };
+		34C3C78C20409F320000134C /* Opening.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Opening.m4r; sourceTree = "<group>"; };
 		34C42D591F45F7A80072EC04 /* OWSNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSNavigationController.h; sourceTree = "<group>"; };
 		34C42D5A1F45F7A80072EC04 /* OWSNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSNavigationController.m; sourceTree = "<group>"; };
 		34C42D621F4734ED0072EC04 /* OWSContactOffersInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactOffersInteraction.h; sourceTree = "<group>"; };
@@ -1211,8 +1157,7 @@
 				34074FC5203E5435004596AE /* messageReceivedSounds */,
 				34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */,
 				34CF0785203E6B77005C4D61 /* ringback_tone_cept.caf */,
-				3421FA58203F542E00275549 /* ringtoneClassic.caf */,
-				34074FD2203E5436004596AE /* ringtoneSounds */,
+				34C3C78B20409F320000134C /* ringtoneSounds */,
 			);
 			path = Sounds;
 			sourceTree = "<group>";
@@ -1247,41 +1192,6 @@
 			);
 			name = messageReceivedSounds;
 			path = Signal/AudioFiles/messageReceivedSounds;
-			sourceTree = SOURCE_ROOT;
-		};
-		34074FD2203E5436004596AE /* ringtoneSounds */ = {
-			isa = PBXGroup;
-			children = (
-				34074FD3203E5436004596AE /* Apex.m4r */,
-				34074FD4203E5436004596AE /* Beacon.m4r */,
-				34074FD5203E5436004596AE /* Bulletin.m4r */,
-				34074FD6203E5436004596AE /* By The Seaside.m4r */,
-				34074FD7203E5436004596AE /* Chimes.m4r */,
-				34074FD8203E5436004596AE /* Circuit.m4r */,
-				34074FD9203E5436004596AE /* Constellation.m4r */,
-				34074FDA203E5436004596AE /* Cosmic.m4r */,
-				34074FDB203E5436004596AE /* Crystals.m4r */,
-				34074FDC203E5436004596AE /* Hillside.m4r */,
-				34074FDD203E5436004596AE /* Illuminate.m4r */,
-				34074FDE203E5436004596AE /* Night Owl.m4r */,
-				34074FDF203E5436004596AE /* Opening.m4r */,
-				34074FE0203E5436004596AE /* Playtime.m4r */,
-				34074FE1203E5436004596AE /* Presto.m4r */,
-				34074FE2203E5436004596AE /* Radar.m4r */,
-				34074FE3203E5436004596AE /* Radiate.m4r */,
-				34074FE4203E5436004596AE /* Ripples.m4r */,
-				34074FE5203E5436004596AE /* Sencha.m4r */,
-				34074FE6203E5436004596AE /* Signal.m4r */,
-				34074FE7203E5436004596AE /* Silk.m4r */,
-				34074FE8203E5436004596AE /* Slow Rise.m4r */,
-				34074FE9203E5436004596AE /* Stargaze.m4r */,
-				34074FEA203E5436004596AE /* Summit.m4r */,
-				34074FEB203E5436004596AE /* Twinkle.m4r */,
-				34074FEC203E5436004596AE /* Uplift.m4r */,
-				34074FED203E5436004596AE /* Waves.m4r */,
-			);
-			name = ringtoneSounds;
-			path = Signal/AudioFiles/ringtoneSounds;
 			sourceTree = SOURCE_ROOT;
 		};
 		34330A581E7875FB00DF2FB9 /* Fonts */ = {
@@ -1610,6 +1520,15 @@
 			);
 			path = GifPicker;
 			sourceTree = "<group>";
+		};
+		34C3C78B20409F320000134C /* ringtoneSounds */ = {
+			isa = PBXGroup;
+			children = (
+				34C3C78C20409F320000134C /* Opening.m4r */,
+			);
+			name = ringtoneSounds;
+			path = Signal/AudioFiles/ringtoneSounds;
+			sourceTree = SOURCE_ROOT;
 		};
 		34C6B0A41FA0E46F00D35993 /* Assets */ = {
 			isa = PBXGroup;
@@ -2563,31 +2482,23 @@
 			files = (
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
 				AD83FF3F1A73426500B5C81A /* audio_pause_button_blue.png in Resources */,
-				3407500C203E5436004596AE /* Sencha.m4r in Resources */,
 				34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */,
 				A5509ECA1A69AB8B00ABA4BC /* Main.storyboard in Resources */,
 				AD83FF421A73426500B5C81A /* audio_play_button.png in Resources */,
 				34074FEF203E5436004596AE /* bamboo.m4r in Resources */,
 				34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */,
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,
-				3421FA5A203F542E00275549 /* ringtoneClassic.caf in Resources */,
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
-				34075008203E5436004596AE /* Presto.m4r in Resources */,
 				34074FF1203E5436004596AE /* circles.m4r in Resources */,
 				AD83FF441A73426500B5C81A /* audio_pause_button.png in Resources */,
-				34075005203E5436004596AE /* Night Owl.m4r in Resources */,
 				34F77053203F5E6800C7CBB7 /* popcorn-quiet.caf in Resources */,
 				34F77054203F5E6800C7CBB7 /* complete-quiet.caf in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
 				34F77045203F5E4C00C7CBB7 /* messageReceivedClassic-quiet.caf in Resources */,
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
-				34075003203E5436004596AE /* Hillside.m4r in Resources */,
-				34074FFA203E5436004596AE /* Apex.m4r in Resources */,
 				34F7705B203F5E6800C7CBB7 /* keys-quiet.caf in Resources */,
-				3407500E203E5436004596AE /* Silk.m4r in Resources */,
 				34F77057203F5E6800C7CBB7 /* chord-quiet.caf in Resources */,
-				34075004203E5436004596AE /* Illuminate.m4r in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
 				B10C9B611A7049EC00ECA2BF /* play_icon.png in Resources */,
 				34074FF3203E5436004596AE /* hello.m4r in Resources */,
@@ -2599,55 +2510,36 @@
 				34F7705D203F5E6800C7CBB7 /* bamboo-quiet.caf in Resources */,
 				34074FF7203E5436004596AE /* popcorn.m4r in Resources */,
 				34CF0789203E6B78005C4D61 /* ringback_tone_cept.caf in Resources */,
-				34074FFF203E5436004596AE /* Circuit.m4r in Resources */,
 				34074FF8203E5436004596AE /* pulse.m4r in Resources */,
 				4517642A1DE939FD00EDB8B9 /* ContactCell.xib in Resources */,
 				AD83FF431A73426500B5C81A /* audio_play_button@2x.png in Resources */,
 				34F77052203F5E6800C7CBB7 /* note-quiet.caf in Resources */,
-				34075007203E5436004596AE /* Playtime.m4r in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
 				34B3F8781E8DF1700035BE1A /* ContactsPicker.xib in Resources */,
 				B633C5C31A1D190B0059AC12 /* mute_off@2x.png in Resources */,
-				3407500F203E5436004596AE /* Slow Rise.m4r in Resources */,
 				34074FF2203E5436004596AE /* complete.m4r in Resources */,
-				34074FFB203E5436004596AE /* Beacon.m4r in Resources */,
 				AD83FF411A73426500B5C81A /* audio_play_button_blue@2x.png in Resources */,
+				34C3C78D20409F320000134C /* Opening.m4r in Resources */,
 				FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */,
-				34075014203E5436004596AE /* Waves.m4r in Resources */,
-				34075011203E5436004596AE /* Summit.m4r in Resources */,
-				34075006203E5436004596AE /* Opening.m4r in Resources */,
 				34074FF6203E5436004596AE /* note.m4r in Resources */,
-				34075009203E5436004596AE /* Radar.m4r in Resources */,
-				34075012203E5436004596AE /* Twinkle.m4r in Resources */,
 				34F77056203F5E6800C7CBB7 /* aurora-quiet.caf in Resources */,
 				B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */,
 				B10C9B621A7049EC00ECA2BF /* play_icon@2x.png in Resources */,
-				34074FFE203E5436004596AE /* Chimes.m4r in Resources */,
 				B633C5861A1D190B0059AC12 /* call@2x.png in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				34F77058203F5E6800C7CBB7 /* circles-quiet.caf in Resources */,
 				3421FA59203F542E00275549 /* messageReceivedClassic.aifc in Resources */,
 				34F7705A203F5E6800C7CBB7 /* pulse-quiet.caf in Resources */,
 				34074FF5203E5436004596AE /* keys.m4r in Resources */,
-				3407500D203E5436004596AE /* Signal.m4r in Resources */,
 				34F77059203F5E6800C7CBB7 /* input-quiet.caf in Resources */,
-				34075000203E5436004596AE /* Constellation.m4r in Resources */,
 				B10C9B601A7049EC00ECA2BF /* pause_icon@2x.png in Resources */,
-				34075002203E5436004596AE /* Crystals.m4r in Resources */,
 				FC9120411A39EFB70074545C /* qr@2x.png in Resources */,
-				34075001203E5436004596AE /* Cosmic.m4r in Resources */,
-				34074FFD203E5436004596AE /* By The Seaside.m4r in Resources */,
-				34075013203E5436004596AE /* Uplift.m4r in Resources */,
-				3407500B203E5436004596AE /* Ripples.m4r in Resources */,
 				34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */,
 				34F7705C203F5E6800C7CBB7 /* hello-quiet.caf in Resources */,
-				34075010203E5436004596AE /* Stargaze.m4r in Resources */,
 				34074FF0203E5436004596AE /* chord.m4r in Resources */,
 				34074FF4203E5436004596AE /* input.m4r in Resources */,
 				B10C9B5F1A7049EC00ECA2BF /* pause_icon.png in Resources */,
-				3407500A203E5436004596AE /* Radiate.m4r in Resources */,
 				AD83FF471A73428300B5C81A /* audio_play_button_blue.png in Resources */,
-				34074FFC203E5436004596AE /* Bulletin.m4r in Resources */,
 				34074FEE203E5436004596AE /* aurora.m4r in Resources */,
 				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
 				AD83FF451A73426500B5C81A /* audio_pause_button@2x.png in Resources */,

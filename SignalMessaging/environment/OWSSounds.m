@@ -12,9 +12,6 @@
 NSString *const kOWSSoundsStorageNotificationCollection = @"kOWSSoundsStorageNotificationCollection";
 NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlobalNotificationKey";
 
-NSString *const kOWSSoundsStorageRingtoneCollection = @"kOWSSoundsStorageRingtoneCollection";
-NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRingtoneKey";
-
 @interface OWSSounds ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
@@ -83,43 +80,6 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
     ];
 }
 
-+ (NSArray<NSNumber *> *)allRingtoneSounds
-{
-    return @[
-        // None should be first.
-        @(OWSSound_None),
-
-        @(OWSSound_Apex),
-        @(OWSSound_Beacon),
-        @(OWSSound_Bulletin),
-        @(OWSSound_By_The_Seaside),
-        @(OWSSound_Chimes),
-        @(OWSSound_Circuit),
-        @(OWSSound_ClassicRingtone),
-        @(OWSSound_Constellation),
-        @(OWSSound_Cosmic),
-        @(OWSSound_Crystals),
-        @(OWSSound_Hillside),
-        @(OWSSound_Illuminate),
-        @(OWSSound_Night_Owl),
-        @(OWSSound_Opening),
-        @(OWSSound_Playtime),
-        @(OWSSound_Presto),
-        @(OWSSound_Radar),
-        @(OWSSound_Radiate),
-        @(OWSSound_Ripples),
-        @(OWSSound_Sencha),
-        @(OWSSound_Signal),
-        @(OWSSound_Silk),
-        @(OWSSound_Slow_Rise),
-        @(OWSSound_Stargaze),
-        @(OWSSound_Summit),
-        @(OWSSound_Twinkle),
-        @(OWSSound_Uplift),
-        @(OWSSound_Waves),
-    ];
-}
-
 + (NSString *)displayNameForSound:(OWSSound)sound
 {
     // TODO: Should we localize these sound names?
@@ -157,62 +117,8 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
             return @"Classic";
 
             // Ringtone Sounds
-        case OWSSound_Apex:
-            return @"Apex";
-        case OWSSound_Beacon:
-            return @"Beacon";
-        case OWSSound_Bulletin:
-            return @"Bulletin";
-        case OWSSound_By_The_Seaside:
-            return @"By The Seaside";
-        case OWSSound_Chimes:
-            return @"Chimes";
-        case OWSSound_Circuit:
-            return @"Circuit";
-        case OWSSound_Constellation:
-            return @"Constellation";
-        case OWSSound_Cosmic:
-            return @"Cosmic";
-        case OWSSound_Crystals:
-            return @"Crystals";
-        case OWSSound_Hillside:
-            return @"Hillside";
-        case OWSSound_Illuminate:
-            return @"Illuminate";
-        case OWSSound_Night_Owl:
-            return @"Night Owl";
         case OWSSound_Opening:
             return @"Opening";
-        case OWSSound_Playtime:
-            return @"Playtime";
-        case OWSSound_Presto:
-            return @"Presto";
-        case OWSSound_Radar:
-            return @"Radar";
-        case OWSSound_Radiate:
-            return @"Radiate";
-        case OWSSound_Ripples:
-            return @"Ripples";
-        case OWSSound_Sencha:
-            return @"Sencha";
-        case OWSSound_Signal:
-            return @"Signal";
-        case OWSSound_Silk:
-            return @"Silk";
-        case OWSSound_Slow_Rise:
-            return @"Slow Rise";
-        case OWSSound_Stargaze:
-            return @"Stargaze";
-        case OWSSound_Summit:
-            return @"Summit";
-        case OWSSound_Twinkle:
-            return @"Twinkle";
-        case OWSSound_Uplift:
-            return @"Uplift";
-        case OWSSound_Waves:
-            return @"Waves";
-        case OWSSound_ClassicRingtone:
-            return @"Classic";
 
             // Calls
         case OWSSound_CallConnecting:
@@ -227,7 +133,7 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
             // Other
         case OWSSound_None:
             return NSLocalizedString(@"SOUNDS_NONE",
-                @"Label for the 'no sound' option that allows users to disable sounds for notifications, ringtones, "
+                @"Label for the 'no sound' option that allows users to disable sounds for notifications, "
                 @"etc.");
     }
 }
@@ -273,62 +179,8 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
             return (quiet ? @"messageReceivedClassic-quiet.caf" : @"messageReceivedClassic.aifc");
 
             // Ringtone Sounds
-        case OWSSound_Apex:
-            return @"Apex.m4r";
-        case OWSSound_Beacon:
-            return @"Beacon.m4r";
-        case OWSSound_Bulletin:
-            return @"Bulletin.m4r";
-        case OWSSound_By_The_Seaside:
-            return @"By The Seaside.m4r";
-        case OWSSound_Chimes:
-            return @"Chimes.m4r";
-        case OWSSound_Circuit:
-            return @"Circuit.m4r";
-        case OWSSound_Constellation:
-            return @"Constellation.m4r";
-        case OWSSound_Cosmic:
-            return @"Cosmic.m4r";
-        case OWSSound_Crystals:
-            return @"Crystals.m4r";
-        case OWSSound_Hillside:
-            return @"Hillside.m4r";
-        case OWSSound_Illuminate:
-            return @"Illuminate.m4r";
-        case OWSSound_Night_Owl:
-            return @"Night Owl.m4r";
         case OWSSound_Opening:
             return @"Opening.m4r";
-        case OWSSound_Playtime:
-            return @"Playtime.m4r";
-        case OWSSound_Presto:
-            return @"Presto.m4r";
-        case OWSSound_Radar:
-            return @"Radar.m4r";
-        case OWSSound_Radiate:
-            return @"Radiate.m4r";
-        case OWSSound_Ripples:
-            return @"Ripples.m4r";
-        case OWSSound_Sencha:
-            return @"Sencha.m4r";
-        case OWSSound_Signal:
-            return @"Signal.m4r";
-        case OWSSound_Silk:
-            return @"Silk.m4r";
-        case OWSSound_Slow_Rise:
-            return @"Slow Rise.m4r";
-        case OWSSound_Stargaze:
-            return @"Stargaze.m4r";
-        case OWSSound_Summit:
-            return @"Summit.m4r";
-        case OWSSound_Twinkle:
-            return @"Twinkle.m4r";
-        case OWSSound_Uplift:
-            return @"Uplift.m4r";
-        case OWSSound_Waves:
-            return @"Waves.m4r";
-        case OWSSound_ClassicRingtone:
-            return @"ringtoneClassic.caf";
 
             // Calls
         case OWSSound_CallConnecting:
@@ -425,61 +277,11 @@ NSString *const kOWSSoundsStorageGlobalRingtoneKey = @"kOWSSoundsStorageGlobalRi
                         inCollection:kOWSSoundsStorageNotificationCollection];
 }
 
-#pragma mark - Ringtones
-
-+ (OWSSound)defaultRingtoneSound
-{
-    return OWSSound_Opening;
-}
-
-+ (OWSSound)globalRingtoneSound
-{
-    OWSSounds *instance = OWSSounds.sharedManager;
-    NSNumber *_Nullable value = [instance.dbConnection objectForKey:kOWSSoundsStorageGlobalRingtoneKey
-                                                       inCollection:kOWSSoundsStorageRingtoneCollection];
-    // Default to the global default.
-    return (value ? (OWSSound)value.intValue : [self defaultRingtoneSound]);
-}
-
-+ (void)setGlobalRingtoneSound:(OWSSound)sound
-{
-    OWSSounds *instance = OWSSounds.sharedManager;
-    [instance.dbConnection setObject:@(sound)
-                              forKey:kOWSSoundsStorageGlobalRingtoneKey
-                        inCollection:kOWSSoundsStorageRingtoneCollection];
-}
-
-
-+ (void)setGlobalRingtoneSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssert(transaction);
-
-    [transaction setObject:@(sound)
-                    forKey:kOWSSoundsStorageGlobalRingtoneKey
-              inCollection:kOWSSoundsStorageRingtoneCollection];
-}
-
-+ (OWSSound)ringtoneSoundForThread:(TSThread *)thread
-{
-    OWSSounds *instance = OWSSounds.sharedManager;
-    NSNumber *_Nullable value =
-        [instance.dbConnection objectForKey:thread.uniqueId inCollection:kOWSSoundsStorageRingtoneCollection];
-    // Default to the "global" ringtone sound, which in turn will default to the global default.
-    return (value ? (OWSSound)value.intValue : [self globalRingtoneSound]);
-}
-
-+ (void)setRingtoneSound:(OWSSound)sound forThread:(TSThread *)thread
-{
-    OWSSounds *instance = OWSSounds.sharedManager;
-    [instance.dbConnection setObject:@(sound) forKey:thread.uniqueId inCollection:kOWSSoundsStorageRingtoneCollection];
-}
-
-#pragma mark - Calls
+#pragma mark - AudioPlayer
 
 + (BOOL)shouldAudioPlayerLoopForSound:(OWSSound)sound
 {
-    return (sound == OWSSound_CallConnecting || sound == OWSSound_CallOutboundRinging ||
-        [self.allRingtoneSounds containsObject:@(sound)]);
+    return (sound == OWSSound_CallConnecting || sound == OWSSound_CallOutboundRinging);
 }
 
 + (nullable AVAudioPlayer *)audioPlayerForSound:(OWSSound)sound

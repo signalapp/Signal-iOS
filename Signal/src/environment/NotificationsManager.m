@@ -60,8 +60,7 @@
     UILocalNotification *notification = [UILocalNotification new];
     notification.category = PushManagerCategoriesIncomingCall;
     // Rather than using notification sounds, we control the ringtone and repeat vibrations with the CallAudioManager.
-    OWSSound sound = [OWSSounds ringtoneSoundForThread:call.thread];
-    notification.soundName = [OWSSounds filenameForSound:sound];
+    notification.soundName = [OWSSounds filenameForSound:OWSSound_DefaultiOSIncomingRingtone];
     NSString *localCallId = call.localId.UUIDString;
     notification.userInfo = @{ PushManagerUserInfoKeysLocalCallId : localCallId };
 

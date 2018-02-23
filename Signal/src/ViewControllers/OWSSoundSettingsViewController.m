@@ -33,12 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
             self.currentSound
             = (self.thread ? [OWSSounds notificationSoundForThread:self.thread] : [OWSSounds globalNotificationSound]);
             break;
-        case OWSSoundType_Ringtone:
-            [self setTitle:NSLocalizedString(@"SETTINGS_ITEM_RINGTONE_SOUND",
-                                             @"Label for settings view that allows user to change the ringtone sound.")];
-            self.currentSound
-            = (self.thread ? [OWSSounds ringtoneSoundForThread:self.thread] : [OWSSounds globalRingtoneSound]);
-            break;
     }
 
     [self updateTableContents];
@@ -83,9 +77,6 @@ NS_ASSUME_NONNULL_BEGIN
     switch (self.soundType) {
         case OWSSoundType_Notification:
             allSounds = [OWSSounds allNotificationSounds];
-            break;
-        case OWSSoundType_Ringtone:
-            allSounds = [OWSSounds allRingtoneSounds];
             break;
     }
     for (NSNumber *nsValue in allSounds) {
@@ -145,13 +136,6 @@ NS_ASSUME_NONNULL_BEGIN
                 [OWSSounds setNotificationSound:self.currentSound forThread:self.thread];
             } else {
                 [OWSSounds setGlobalNotificationSound:self.currentSound];
-            }
-            break;
-        case OWSSoundType_Ringtone:
-            if (self.thread) {
-                [OWSSounds setRingtoneSound:self.currentSound forThread:self.thread];
-            } else {
-                [OWSSounds setGlobalRingtoneSound:self.currentSound];
             }
             break;
     }
