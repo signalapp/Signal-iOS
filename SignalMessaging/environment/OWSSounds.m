@@ -184,7 +184,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
             // Calls
         case OWSSound_CallConnecting:
-            return @"ringback_tone_cept.caf";
+            return @"sonarping.mp3";
         case OWSSound_CallOutboundRinging:
             return @"ringback_tone_ansi.caf";
         case OWSSound_CallBusy:
