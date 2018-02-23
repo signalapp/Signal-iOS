@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -657,7 +657,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
-            Logger.debug("\(self.TAG) didChange IceConnectionState:\(newState.debugDescription)")
+            Logger.info("\(self.TAG) didChange IceConnectionState:\(newState.debugDescription)")
             switch newState {
             case .connected, .completed:
                 if let delegate = self.delegate {
@@ -684,7 +684,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** Called any time the IceGatheringState changes. */
     internal func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceGatheringState) {
-        Logger.debug("\(TAG) didChange IceGatheringState:\(newState.debugDescription)")
+        Logger.info("\(TAG) didChange IceGatheringState:\(newState.debugDescription)")
     }
 
     /** New ice candidate has been found. */
@@ -716,7 +716,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
-            Logger.debug("\(self.TAG) didOpen dataChannel:\(dataChannel)")
+            Logger.info("\(self.TAG) didOpen dataChannel:\(dataChannel)")
             assert(self.dataChannel == nil)
             self.dataChannel = dataChannel
             dataChannel.delegate = self
