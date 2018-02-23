@@ -171,6 +171,13 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     }
 }
 
+// override
+- (void)dismissPressed:(id)sender
+{
+    DDLogDebug(@"%@ tapped dismiss share button", self.logTag);
+    [self cancelShareExperience];
+}
+
 - (void)didTapCancelShareButton
 {
     DDLogDebug(@"%@ tapped cancel share button", self.logTag);
