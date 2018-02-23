@@ -433,9 +433,6 @@
 /* Label for button to mute a thread for a year. */
 "CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Mute for one year";
 
-/* Title for the 'mute' section of the conversation settings view. */
-"CONVERSATION_SETTINGS_MUTE_SECTION" = "Mute";
-
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
 
@@ -1604,6 +1601,9 @@
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+
+/* Label for the notifications section of conversation settings view. */
+"SETTINGS_SECTION_NOTIFICATIONS" = "Notifications";
 
 /* Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Sounds";
