@@ -300,12 +300,8 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     action_reply.title                            = NSLocalizedString(@"PUSH_MANAGER_REPLY", @"");
     action_reply.destructive                      = NO;
     action_reply.authenticationRequired           = NO;
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
-        action_reply.behavior       = UIUserNotificationActionBehaviorTextInput;
-        action_reply.activationMode = UIUserNotificationActivationModeBackground;
-    } else {
-        action_reply.activationMode = UIUserNotificationActivationModeForeground;
-    }
+    action_reply.behavior = UIUserNotificationActionBehaviorTextInput;
+    action_reply.activationMode = UIUserNotificationActivationModeBackground;
 
     UIMutableUserNotificationCategory *messageCategory = [UIMutableUserNotificationCategory new];
     messageCategory.identifier                         = Signal_Full_New_Message_Category;

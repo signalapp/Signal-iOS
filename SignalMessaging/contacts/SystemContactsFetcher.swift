@@ -20,7 +20,6 @@ protocol ContactStoreAdaptee {
     func startObservingChanges(changeHandler: @escaping () -> Void)
 }
 
-@available(iOS 9.0, *)
 class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
     let TAG = "[ContactsFrameworkContactStoreAdaptee]"
     private let contactStore = CNContactStore()
@@ -107,177 +106,6 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
     }
 }
 
-let kAddressBookContactStoreDidChangeNotificationName = NSNotification.Name("AddressBookContactStoreAdapteeDidChange")
-/**
- * System contact fetching compatible with iOS8
- */
-class AddressBookContactStoreAdaptee: ContactStoreAdaptee {
-
-    let TAG = "[AddressBookContactStoreAdaptee]"
-
-    private var addressBook: ABAddressBook = ABAddressBookCreateWithOptions(nil, nil).takeRetainedValue()
-    private var changeHandler: (() -> Void)?
-    let supportsContactEditing = false
-
-    var authorizationStatus: ContactStoreAuthorizationStatus {
-        switch ABAddressBookGetAuthorizationStatus() {
-        case .notDetermined:
-            return .notDetermined
-        case .restricted:
-            return .restricted
-        case .denied:
-            return .denied
-        case .authorized:
-            return .authorized
-        }
-    }
-
-    @objc
-    func runChangeHandler() {
-        guard let changeHandler = self.changeHandler else {
-            owsFail("\(TAG) trying to run change handler before it was registered")
-            return
-        }
-        changeHandler()
-    }
-
-    func startObservingChanges(changeHandler: @escaping () -> Void) {
-        // should only call once
-        assert(self.changeHandler == nil)
-        self.changeHandler = changeHandler
-
-        NotificationCenter.default.addObserver(self, selector: #selector(runChangeHandler), name: kAddressBookContactStoreDidChangeNotificationName, object: nil)
-
-        let callback: ABExternalChangeCallback = { (_, _, _) in
-            // Ideally we'd just call the changeHandler here, but because this is a C style callback in swift, 
-            // we can't capture any state in the closure, so we use a notification as a trampoline
-            NotificationCenter.default.postNotificationNameAsync(kAddressBookContactStoreDidChangeNotificationName, object: nil)
-        }
-
-        ABAddressBookRegisterExternalChangeCallback(addressBook, callback, nil)
-    }
-
-    func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void) {
-        ABAddressBookRequestAccessWithCompletion(addressBook, completionHandler)
-    }
-
-    func fetchContacts() -> Result<[Contact], Error> {
-        // Changes are not reflected unless we create a new address book
-        self.addressBook = ABAddressBookCreateWithOptions(nil, nil).takeRetainedValue()
-
-        let allPeople = ABAddressBookCopyArrayOfAllPeopleInSourceWithSortOrdering(addressBook, nil, ABPersonGetSortOrdering()).takeRetainedValue() as [ABRecord]
-
-        let contacts = allPeople.map { self.buildContact(abRecord: $0) }
-
-        return .success(contacts)
-    }
-
-    private func buildContact(abRecord: ABRecord) -> Contact {
-
-        let addressBookRecord = OWSABRecord(abRecord: abRecord)
-
-        var firstName = addressBookRecord.firstName
-        let lastName = addressBookRecord.lastName
-        let phoneNumbers = addressBookRecord.phoneNumbers
-
-        if firstName == nil && lastName == nil {
-            if let companyName = addressBookRecord.companyName {
-                firstName = companyName
-            } else {
-                firstName = phoneNumbers.first
-            }
-        }
-
-        return Contact(firstName: firstName,
-                       lastName: lastName,
-                       userTextPhoneNumbers: phoneNumbers,
-                       imageData: addressBookRecord.imageData,
-                       contactID: addressBookRecord.recordId)
-    }
-}
-
-/**
- * Wrapper around ABRecord for easy property extraction.
- * Some code lifted from: 
- * https://github.com/SocialbitGmbH/SwiftAddressBook/blob/c1993fa/Pod/Classes/SwiftAddressBookPerson.swift
- */
-struct OWSABRecord {
-
-    public struct MultivalueEntry<T> {
-        public var value: T
-        public var label: String?
-        public let id: Int
-
-        public init(value: T, label: String?, id: Int) {
-            self.value = value
-            self.label = label
-            self.id = id
-        }
-    }
-
-    let abRecord: ABRecord
-
-    init(abRecord: ABRecord) {
-        self.abRecord = abRecord
-    }
-
-    var firstName: String? {
-        return self.extractProperty(kABPersonFirstNameProperty)
-    }
-
-    var lastName: String? {
-        return self.extractProperty(kABPersonLastNameProperty)
-    }
-
-    var companyName: String? {
-        return self.extractProperty(kABPersonOrganizationProperty)
-    }
-
-    var recordId: ABRecordID {
-        return ABRecordGetRecordID(abRecord)
-    }
-
-    // We don't yet support labels for our iOS8 users.
-    var phoneNumbers: [String] {
-        if let result: [MultivalueEntry<String>] = extractMultivalueProperty(kABPersonPhoneProperty) {
-            return result.map { $0.value }
-        } else {
-            return []
-        }
-    }
-
-    var imageData: Data? {
-        guard ABPersonHasImageData(abRecord) else {
-            return nil
-        }
-        guard let data = ABPersonCopyImageData(abRecord)?.takeRetainedValue() else {
-            return nil
-        }
-        return data as Data
-    }
-
-    private func extractProperty<T>(_ propertyName: ABPropertyID) -> T? {
-        let value: AnyObject? = ABRecordCopyValue(self.abRecord, propertyName)?.takeRetainedValue()
-        return value as? T
-    }
-
-    fileprivate func extractMultivalueProperty<T>(_ propertyName: ABPropertyID) -> Array<MultivalueEntry<T>>? {
-        guard let multivalue: ABMultiValue = extractProperty(propertyName) else { return nil }
-        var array = Array<MultivalueEntry<T>>()
-        for i: Int in 0..<(ABMultiValueGetCount(multivalue)) {
-            let value: T? = ABMultiValueCopyValueAtIndex(multivalue, i).takeRetainedValue() as? T
-            if let v: T = value {
-                let id: Int = Int(ABMultiValueGetIdentifierAtIndex(multivalue, i))
-                let optionalLabel = ABMultiValueCopyLabelAtIndex(multivalue, i)?.takeRetainedValue()
-                array.append(MultivalueEntry(value: v,
-                                             label: optionalLabel == nil ? nil : optionalLabel! as String,
-                                             id: id))
-            }
-        }
-        return !array.isEmpty ? array : nil
-    }
-}
-
 public enum ContactStoreAuthorizationStatus {
     case notDetermined,
          restricted,
@@ -290,11 +118,7 @@ class ContactStoreAdapter: ContactStoreAdaptee {
     let adaptee: ContactStoreAdaptee
 
     init() {
-        if #available(iOS 9.0, *) {
-            self.adaptee = ContactsFrameworkContactStoreAdaptee()
-        } else {
-            self.adaptee = AddressBookContactStoreAdaptee()
-        }
+        self.adaptee = ContactsFrameworkContactStoreAdaptee()
     }
 
     var supportsContactEditing: Bool {

@@ -172,37 +172,35 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         // This allows us to zoom in on the media view without zooming in on the button
         if attachment.isVideo {
 
-            if #available(iOS 9.0, *) {
-                guard let videoURL = attachment.dataUrl else {
-                    owsFail("Missing videoURL")
-                    return
-                }
-
-                let player = OWSVideoPlayer(url: videoURL)
-                self.videoPlayer = player
-                player.delegate = self
-
-                let playerView = VideoPlayerView()
-                playerView.player = player.avPlayer
-                self.mediaMessageView.addSubview(playerView)
-                playerView.autoPinEdgesToSuperviewEdges()
-
-                let pauseGesture = UITapGestureRecognizer(target: self, action: #selector(didTapPlayerView(_:)))
-                playerView.addGestureRecognizer(pauseGesture)
-
-                let progressBar = PlayerProgressBar()
-                progressBar.player = player.avPlayer
-                progressBar.delegate = self
-
-                // we don't want the progress bar to zoom during "pinch-to-zoom"
-                // but we do want it to shrink with the media content when the user
-                // pops the keyboard.
-                contentContainer.addSubview(progressBar)
-
-                progressBar.autoPinEdge(.top, to: .bottom, of: topToolbar)
-                progressBar.autoPinWidthToSuperview()
-                progressBar.autoSetDimension(.height, toSize: 44)
+            guard let videoURL = attachment.dataUrl else {
+                owsFail("Missing videoURL")
+                return
             }
+
+            let player = OWSVideoPlayer(url: videoURL)
+            self.videoPlayer = player
+            player.delegate = self
+
+            let playerView = VideoPlayerView()
+            playerView.player = player.avPlayer
+            self.mediaMessageView.addSubview(playerView)
+            playerView.autoPinEdgesToSuperviewEdges()
+
+            let pauseGesture = UITapGestureRecognizer(target: self, action: #selector(didTapPlayerView(_:)))
+            playerView.addGestureRecognizer(pauseGesture)
+
+            let progressBar = PlayerProgressBar()
+            progressBar.player = player.avPlayer
+            progressBar.delegate = self
+
+            // we don't want the progress bar to zoom during "pinch-to-zoom"
+            // but we do want it to shrink with the media content when the user
+            // pops the keyboard.
+            contentContainer.addSubview(progressBar)
+
+            progressBar.autoPinEdge(.top, to: .bottom, of: topToolbar)
+            progressBar.autoPinWidthToSuperview()
+            progressBar.autoSetDimension(.height, toSize: 44)
 
             self.mediaMessageView.videoPlayButton?.isHidden = true
             let playButton = UIButton()
@@ -220,7 +218,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         }
     }
 
-    @available(iOS 9, *)
     public func didTapPlayerView(_ gestureRecognizer: UIGestureRecognizer) {
         assert(self.videoPlayer != nil)
         self.pauseVideo()
@@ -279,44 +276,21 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     private func playVideo() {
         Logger.info("\(TAG) in \(#function)")
 
-        if #available(iOS 9, *) {
-            guard let videoPlayer = self.videoPlayer else {
-                owsFail("\(TAG) video player was unexpectedly nil")
-                return
-            }
-
-            guard let playVideoButton = self.playVideoButton else {
-                owsFail("\(TAG) playVideoButton was unexpectedly nil")
-                return
-            }
-            UIView.animate(withDuration: 0.1) {
-                playVideoButton.alpha = 0.0
-            }
-            videoPlayer.play()
-        } else {
-            self.playLegacyVideo()
-        }
-    }
-
-    private func playLegacyVideo() {
-        if #available(iOS 9, *) {
-            owsFail("should only use legacy video on iOS8")
-        }
-
-        guard let videoURL = self.attachment.dataUrl else {
-            owsFail("videoURL was unexpectedly nil")
+        guard let videoPlayer = self.videoPlayer else {
+            owsFail("\(TAG) video player was unexpectedly nil")
             return
         }
 
-        guard let playerVC = MPMoviePlayerViewController(contentURL: videoURL) else {
-            owsFail("failed to init legacy video player")
+        guard let playVideoButton = self.playVideoButton else {
+            owsFail("\(TAG) playVideoButton was unexpectedly nil")
             return
         }
-
-        self.present(playerVC, animated: true)
+        UIView.animate(withDuration: 0.1) {
+            playVideoButton.alpha = 0.0
+        }
+        videoPlayer.play()
     }
 
-    @available(iOS 9, *)
     private func pauseVideo() {
         guard let videoPlayer = self.videoPlayer else {
             owsFail("\(TAG) video player was unexpectedly nil")
@@ -345,7 +319,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         }
     }
 
-    @available(iOS 9.0, *)
     public func playerProgressBarDidStartScrubbing(_ playerProgressBar: PlayerProgressBar) {
         //  [self.videoPlayer pause];
         guard let videoPlayer = self.videoPlayer else {
@@ -355,7 +328,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         videoPlayer.pause()
     }
 
-    @available(iOS 9.0, *)
     public func playerProgressBar(_ playerProgressBar: PlayerProgressBar, scrubbedToTime time: CMTime) {
         guard let videoPlayer = self.videoPlayer else {
             owsFail("\(TAG) video player was unexpectedly nil")
@@ -365,7 +337,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         videoPlayer.seek(to: time)
     }
 
-    @available(iOS 9.0, *)
     public func playerProgressBar(_ playerProgressBar: PlayerProgressBar, didFinishScrubbingAtTime time: CMTime, shouldResumePlayback: Bool) {
         guard let videoPlayer = self.videoPlayer else {
             owsFail("\(TAG) video player was unexpectedly nil")

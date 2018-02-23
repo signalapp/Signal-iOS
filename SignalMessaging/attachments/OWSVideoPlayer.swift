@@ -7,7 +7,6 @@ import AVFoundation
 
 @objc
 protocol OWSVideoPlayerDelegate: class {
-    @available(iOSApplicationExtension 9.0, *)
     func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer)
 }
 
@@ -19,10 +18,9 @@ public class OWSVideoPlayer: NSObject {
 
     weak var delegate: OWSVideoPlayerDelegate?
 
-    @available(iOS 9.0, *)
     init(url: URL) {
         self.avPlayer = AVPlayer(url: url)
-        self.audioActivity = AudioActivity(audioDescription:  "[OWSVideoPlayer] url:\(url)")
+        self.audioActivity = AudioActivity(audioDescription: "[OWSVideoPlayer] url:\(url)")
 
         super.init()
 
@@ -34,13 +32,11 @@ public class OWSVideoPlayer: NSObject {
 
     // MARK: Playback Controls
 
-    @available(iOS 9.0, *)
     public func pause() {
         avPlayer.pause()
         OWSAudioSession.shared.endAudioActivity(self.audioActivity)
     }
 
-    @available(iOS 9.0, *)
     public func play() {
         OWSAudioSession.shared.setPlaybackCategory(audioActivity: self.audioActivity)
 
@@ -57,7 +53,6 @@ public class OWSVideoPlayer: NSObject {
         avPlayer.play()
     }
 
-    @available(iOS 9.0, *)
     @objc(seekToTime:)
     public func seek(to time: CMTime) {
         avPlayer.seek(to: time)
@@ -66,7 +61,6 @@ public class OWSVideoPlayer: NSObject {
     // MARK: private
 
     @objc
-    @available(iOS 9.0, *)
     private func playerItemDidPlayToCompletion(_ notification: Notification) {
         self.delegate?.videoPlayerDidPlayToCompletion(self)
         OWSAudioSession.shared.endAudioActivity(self.audioActivity)

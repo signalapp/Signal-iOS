@@ -312,18 +312,16 @@ NS_ASSUME_NONNULL_BEGIN
     [self applyInitialMediaViewConstraints];
 
     if (self.isVideo) {
-        if (@available(iOS 9, *)) {
-            PlayerProgressBar *videoProgressBar = [PlayerProgressBar new];
-            videoProgressBar.delegate = self;
-            videoProgressBar.player = self.videoPlayer.avPlayer;
+        PlayerProgressBar *videoProgressBar = [PlayerProgressBar new];
+        videoProgressBar.delegate = self;
+        videoProgressBar.player = self.videoPlayer.avPlayer;
 
-            self.videoProgressBar = videoProgressBar;
-            [self.view addSubview:videoProgressBar];
-            [videoProgressBar autoPinWidthToSuperview];
-            [videoProgressBar autoPinToTopLayoutGuideOfViewController:self withInset:0];
-            CGFloat kVideoProgressBarHeight = 44;
-            [videoProgressBar autoSetDimension:ALDimensionHeight toSize:kVideoProgressBarHeight];
-        }
+        self.videoProgressBar = videoProgressBar;
+        [self.view addSubview:videoProgressBar];
+        [videoProgressBar autoPinWidthToSuperview];
+        [videoProgressBar autoPinToTopLayoutGuideOfViewController:self withInset:0];
+        CGFloat kVideoProgressBarHeight = 44;
+        [videoProgressBar autoSetDimension:ALDimensionHeight toSize:kVideoProgressBarHeight];
 
         UIButton *playVideoButton = [UIButton new];
         self.playVideoButton = playVideoButton;
@@ -380,16 +378,13 @@ NS_ASSUME_NONNULL_BEGIN
     ]];
 
     if (self.isVideo) {
-        // bar button video controls only work on iOS9+
-        if (@available(iOS 9.0, *)) {
-            UIBarButtonItem *playerButton = isPlayingVideo ? self.videoPauseBarButton : self.videoPlayBarButton;
-            [toolbarItems addObjectsFromArray:@[
-                playerButton,
-                [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                              target:nil
-                                                              action:nil],
-            ]];
-        }
+        UIBarButtonItem *playerButton = isPlayingVideo ? self.videoPauseBarButton : self.videoPlayBarButton;
+        [toolbarItems addObjectsFromArray:@[
+            playerButton,
+            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                          target:nil
+                                                          action:nil],
+        ]];
     }
 
     [toolbarItems addObject:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash
@@ -443,24 +438,20 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"%@ Missing video file: %@", self.logTag, self.attachmentStream.mediaURL);
     }
 
-    if (@available(iOS 9.0, *)) {
-        OWSVideoPlayer *player = [[OWSVideoPlayer alloc] initWithUrl:self.attachmentUrl];
-        [player seekToTime:kCMTimeZero];
-        player.delegate = self;
-        self.videoPlayer = player;
+    OWSVideoPlayer *player = [[OWSVideoPlayer alloc] initWithUrl:self.attachmentUrl];
+    [player seekToTime:kCMTimeZero];
+    player.delegate = self;
+    self.videoPlayer = player;
 
-        VideoPlayerView *playerView = [VideoPlayerView new];
-        playerView.player = player.avPlayer;
+    VideoPlayerView *playerView = [VideoPlayerView new];
+    playerView.player = player.avPlayer;
 
-        [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
-                             forConstraints:^{
-                                 [playerView autoSetDimensionsToSize:self.image.size];
-                             }];
+    [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
+                         forConstraints:^{
+                             [playerView autoSetDimensionsToSize:self.image.size];
+                         }];
 
-        return playerView;
-    } else {
-        return [[UIImageView alloc] initWithImage:self.image];
-    }
+    return playerView;
 }
 
 - (void)setAreToolbarsHidden:(BOOL)areToolbarsHidden
@@ -895,18 +886,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)playVideo
 {
-    if (@available(iOS 9, *)) {
-        OWSAssert(self.videoPlayer);
+    OWSAssert(self.videoPlayer);
 
-        [self updateFooterBarButtonItemsWithIsPlayingVideo:YES];
-        self.playVideoButton.hidden = YES;
-        self.areToolbarsHidden = YES;
+    [self updateFooterBarButtonItemsWithIsPlayingVideo:YES];
+    self.playVideoButton.hidden = YES;
+    self.areToolbarsHidden = YES;
 
-        [self.videoPlayer play];
-    } else {
-        [self legacyPlayVideo];
-        return;
-    }
+    [self.videoPlayer play];
 }
 
 - (void)pauseVideo
@@ -956,21 +942,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (shouldResumePlayback) {
         [self.videoPlayer play];
     }
-}
-
-#pragma mark iOS8 Video Playback
-
-// AVPlayer was introduced in iOS9, so on iOS8 we fall back to MPMoviePlayer
-// This causes an unforutnate "double present" since we present the full screen view and then the MPMovie view over top.
-// And similarly a double dismiss.
-- (void)legacyPlayVideo
-{
-    if (@available(iOS 9.0, *)) {
-        OWSFail(@"legacy video is for iOS8 only");
-    }
-    MPMoviePlayerViewController *vc = [[MPMoviePlayerViewController alloc] initWithContentURL:self.attachmentUrl];
-
-    [self presentViewController:vc animated:YES completion:nil];
 }
 
 #pragma mark - Saving images to Camera Roll

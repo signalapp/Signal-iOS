@@ -51,7 +51,7 @@ private class IntroductingReadReceiptsExperienceUpgradeViewController: Experienc
 
                 // Construct the "settings" view & push the "privacy settings" view.
                 let navigationController = AppSettingsViewController.inModalNavigationController()
-                navigationController.pushViewController(PrivacySettingsTableViewController(), animated:false)
+                navigationController.pushViewController(PrivacySettingsTableViewController(), animated: false)
 
                 fromViewController.present(navigationController, animated: true)
             }
@@ -96,7 +96,7 @@ private class IntroductingReadReceiptsExperienceUpgradeViewController: Experienc
         button.setTitle(title, for: .normal)
         button.setTitleColor(UIColor.ows_signalBrandBlue, for: .normal)
         button.isUserInteractionEnabled = true
-        button.addTarget(self, action:#selector(didTapButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         button.titleLabel?.textAlignment = .center
         button.titleLabel?.font = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5(18))
@@ -201,7 +201,7 @@ private class IntroductingProfilesExperienceUpgradeViewController: ExperienceUpg
         button.backgroundColor = UIColor.ows_materialBlue
 
         button.isUserInteractionEnabled = true
-        button.addTarget(self, action:#selector(didTapButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
 
         button.titleLabel?.font = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5(18))
@@ -261,7 +261,7 @@ private class CallKitExperienceUpgradeViewController: ExperienceUpgradeViewContr
         privacySettingsButton.setTitle(privacyTitle, for: .normal)
         privacySettingsButton.setTitleColor(UIColor.ows_signalBrandBlue, for: .normal)
         privacySettingsButton.isUserInteractionEnabled = true
-        privacySettingsButton.addTarget(self, action:#selector(didTapPrivacySettingsButton), for: .touchUpInside)
+        privacySettingsButton.addTarget(self, action: #selector(didTapPrivacySettingsButton), for: .touchUpInside)
         privacySettingsButton.titleLabel?.font = bodyLabel.font
 
         // Privacy Settings Button layout
@@ -282,7 +282,7 @@ private class CallKitExperienceUpgradeViewController: ExperienceUpgradeViewContr
 
             // Construct the "settings" view & push the "privacy settings" view.
             let navigationController = AppSettingsViewController.inModalNavigationController()
-            navigationController.pushViewController(PrivacySettingsTableViewController(), animated:false)
+            navigationController.pushViewController(PrivacySettingsTableViewController(), animated: false)
 
             fromViewController?.present(navigationController, animated: true, completion: nil)
         }
@@ -365,13 +365,9 @@ private class ExperienceUpgradeViewController: OWSViewController {
 }
 
 func setPageControlAppearance() {
-    if #available(iOS 9.0, *) {
-        let pageControl = UIPageControl.appearance(whenContainedInInstancesOf: [UIPageViewController.self])
-        pageControl.pageIndicatorTintColor = UIColor.lightGray
-        pageControl.currentPageIndicatorTintColor = UIColor.ows_materialBlue
-    } else {
-        // iOS8 won't see the page controls =(
-    }
+    let pageControl = UIPageControl.appearance(whenContainedInInstancesOf: [UIPageViewController.self])
+    pageControl.pageIndicatorTintColor = UIColor.lightGray
+    pageControl.currentPageIndicatorTintColor = UIColor.ows_materialBlue
 }
 
 class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControllerDataSource {
@@ -390,7 +386,7 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
         self.experienceUpgrades = experienceUpgrades
 
         setPageControlAppearance()
-        self.pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation:.horizontal, options: nil)
+        self.pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
         super.init(nibName: nil, bundle: nil)
         self.pageViewController.dataSource = self
 
@@ -402,7 +398,7 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
         assert(false)
         // This should never happen, but so as not to explode we give some bogus data
         self.experienceUpgrades = [ExperienceUpgrade()]
-        self.pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation:.horizontal, options: nil)
+        self.pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
         super.init(coder: aDecoder)
         self.pageViewController.dataSource = self
     }
@@ -441,7 +437,7 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
         dismissButton.setTitle(CommonStrings.dismissButton, for: .normal)
         dismissButton.setTitleColor(UIColor.ows_signalBrandBlue, for: .normal)
         dismissButton.isUserInteractionEnabled = true
-        dismissButton.addTarget(self, action:#selector(didTapDismissButton), for: .touchUpInside)
+        dismissButton.addTarget(self, action: #selector(didTapDismissButton), for: .touchUpInside)
         dismissButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5(16))
         let dismissInsetValue: CGFloat = ScaleFromIPhone5(10)
         dismissButton.contentEdgeInsets = UIEdgeInsets(top: dismissInsetValue, left: dismissInsetValue, bottom: dismissInsetValue, right: dismissInsetValue)

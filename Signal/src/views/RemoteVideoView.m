@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "RemoteVideoView.h"
@@ -84,12 +84,9 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    // On iOS8: prints a message saying the feature is unavailable.
-    if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
-        _videoRenderer = [NullVideoRenderer new];
-        [self addSubview:_videoRenderer];
-        [_videoRenderer autoPinEdgesToSuperviewEdges];
-    }
+    _videoRenderer = [NullVideoRenderer new];
+    [self addSubview:_videoRenderer];
+    [_videoRenderer autoPinEdgesToSuperviewEdges];
 
 // Currently RTC only supports metal on 64bit machines
 #if defined(RTC_SUPPORTS_METAL)

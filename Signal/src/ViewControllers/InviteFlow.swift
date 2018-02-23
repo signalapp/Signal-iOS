@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -34,14 +34,12 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
         actionSheetController.addAction(dismissAction())
 
-        if #available(iOS 9.0, *) {
-            if let messageAction = messageAction() {
-                actionSheetController.addAction(messageAction)
-            }
+        if let messageAction = messageAction() {
+            actionSheetController.addAction(messageAction)
+        }
 
-            if let mailAction = mailAction() {
-                actionSheetController.addAction(mailAction)
-            }
+        if let mailAction = mailAction() {
+            actionSheetController.addAction(mailAction)
         }
 
         if let tweetAction = tweetAction() {
@@ -66,14 +64,14 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
             return nil
         }
 
-        let tweetString = NSLocalizedString("SETTINGS_INVITE_TWITTER_TEXT", comment:"content of tweet when inviting via twitter")
+        let tweetString = NSLocalizedString("SETTINGS_INVITE_TWITTER_TEXT", comment: "content of tweet when inviting via twitter")
         twitterViewController.setInitialText(tweetString)
 
         let tweetUrl = URL(string: installUrl)
         twitterViewController.add(tweetUrl)
         twitterViewController.add(#imageLiteral(resourceName: "twitter_sharing_image"))
 
-        let tweetTitle = NSLocalizedString("SHARE_ACTION_TWEET", comment:"action sheet item")
+        let tweetTitle = NSLocalizedString("SHARE_ACTION_TWEET", comment: "action sheet item")
         return UIAlertAction(title: tweetTitle, style: .default) { _ in
             Logger.debug("\(self.TAG) Chose tweet")
 
@@ -87,7 +85,6 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     // MARK: ContactsPickerDelegate
 
-    @available(iOS 9.0, *)
     func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact]) {
         Logger.debug("\(TAG) didSelectContacts:\(contacts)")
 
@@ -108,7 +105,6 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         }
     }
 
-    @available(iOS 9.0, *)
     func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool {
         guard let inviteChannel = channel else {
             Logger.error("\(TAG) unexpected nil channel in contact picker.")
@@ -128,7 +124,6 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     // MARK: SMS
 
-    @available(iOS 9.0, *)
     func messageAction() -> UIAlertAction? {
         guard MFMessageComposeViewController.canSendText() else {
             Logger.info("\(TAG) Device cannot send text")
@@ -164,9 +159,9 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         messageComposeViewController.messageComposeDelegate = self
         messageComposeViewController.recipients = phoneNumbers
 
-        let inviteText = NSLocalizedString("SMS_INVITE_BODY", comment:"body sent to contacts when inviting to Install Signal")
+        let inviteText = NSLocalizedString("SMS_INVITE_BODY", comment: "body sent to contacts when inviting to Install Signal")
         messageComposeViewController.body = inviteText.appending(" \(self.installUrl)")
-        self.presentingViewController.navigationController?.present(messageComposeViewController, animated:true)
+        self.presentingViewController.navigationController?.present(messageComposeViewController, animated: true)
     }
 
     // MARK: MessageComposeViewControllerDelegate
@@ -178,7 +173,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
         switch result {
         case .failed:
-            let warning = UIAlertController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment:"Alert body after invite failed"), preferredStyle: .alert)
+            let warning = UIAlertController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"), preferredStyle: .alert)
             warning.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .default, handler: nil))
             self.presentingViewController.present(warning, animated: true, completion: nil)
         case .sent:
@@ -190,7 +185,6 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     // MARK: Mail
 
-    @available(iOS 9.0, *)
     func mailAction() -> UIAlertAction? {
         guard MFMailComposeViewController.canSendMail() else {
             Logger.info("\(TAG) Device cannot send mail")
@@ -208,21 +202,20 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         }
     }
 
-    @available(iOS 9.0, *)
     func sendMailTo(emails recipientEmails: [String]) {
         let mailComposeViewController = MFMailComposeViewController()
         mailComposeViewController.mailComposeDelegate = self
 
         mailComposeViewController.setBccRecipients(recipientEmails)
 
-        let subject = NSLocalizedString("EMAIL_INVITE_SUBJECT", comment:"subject of email sent to contacts when inviting to install Signal")
-        let bodyFormat = NSLocalizedString("EMAIL_INVITE_BODY", comment:"body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}}")
+        let subject = NSLocalizedString("EMAIL_INVITE_SUBJECT", comment: "subject of email sent to contacts when inviting to install Signal")
+        let bodyFormat = NSLocalizedString("EMAIL_INVITE_BODY", comment: "body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}}")
         let body = String.init(format: bodyFormat, installUrl, homepageUrl)
         mailComposeViewController.setSubject(subject)
         mailComposeViewController.setMessageBody(body, isHTML: false)
 
         self.presentingViewController.dismiss(animated: true) {
-            self.presentingViewController.navigationController?.present(mailComposeViewController, animated:true) {
+            self.presentingViewController.navigationController?.present(mailComposeViewController, animated: true) {
                 UIUtil.applySignalAppearence()
             }
         }
@@ -235,7 +228,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
         switch result {
         case .failed:
-            let warning = UIAlertController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment:"Alert body after invite failed"), preferredStyle: .alert)
+            let warning = UIAlertController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"), preferredStyle: .alert)
             warning.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .default, handler: nil))
             self.presentingViewController.present(warning, animated: true, completion: nil)
         case .sent:
