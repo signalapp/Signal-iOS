@@ -8,6 +8,7 @@
 #import "FingerprintViewController.h"
 #import "OWSAddToContactViewController.h"
 #import "OWSBlockingManager.h"
+#import "OWSSoundSettingsViewController.h"
 #import "PhoneNumber.h"
 #import "ShowGroupMembersViewController.h"
 #import "Signal-Swift.h"
@@ -565,6 +566,37 @@ NS_ASSUME_NONNULL_BEGIN
                                                    actionBlock:nil]];
         [contents addSection:section];
     }
+
+    // Sounds section.
+
+    OWSTableSection *soundsSection = [OWSTableSection new];
+    soundsSection.headerTitle = NSLocalizedString(@"SETTINGS_SECTION_SOUNDS",
+        @"Label for the sounds section of settings views.");
+    [soundsSection
+     addItem:[OWSTableItem disclosureItemWithText:
+              NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
+                                @"Label for settings view that allows user to change the notification sound.")
+                                      actionBlock:^{
+                                          OWSSoundSettingsViewController *vc =
+                                          [OWSSoundSettingsViewController new];
+                                          vc.soundType = OWSSoundType_Notification;
+                                          vc.thread = weakSelf.thread;
+                                          [weakSelf.navigationController pushViewController:vc animated:YES];
+                                      }]];
+    if (!self.isGroupThread) {
+        [soundsSection
+         addItem:[OWSTableItem disclosureItemWithText:
+                  NSLocalizedString(@"SETTINGS_ITEM_RINGTONE_SOUND",
+                                    @"Label for settings view that allows user to change the ringtone sound.")
+                                          actionBlock:^{
+                                              OWSSoundSettingsViewController *vc =
+                                              [OWSSoundSettingsViewController new];
+                                              vc.soundType = OWSSoundType_Ringtone;
+                                              vc.thread = weakSelf.thread;
+                                              [weakSelf.navigationController pushViewController:vc animated:YES];
+                                          }]];
+    }
+    [contents addSection:soundsSection];
 
     self.contents = contents;
 }

@@ -148,19 +148,30 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (OWSTableItem *)disclosureItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
+    return [self itemWithText:text actionBlock:actionBlock accessoryType:UITableViewCellAccessoryDisclosureIndicator];
+}
+
++ (OWSTableItem *)checkmarkItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock
+{
+    return [self itemWithText:text actionBlock:actionBlock accessoryType:UITableViewCellAccessoryCheckmark];
+}
+
++ (OWSTableItem *)itemWithText:(NSString *)text
+                   actionBlock:(nullable OWSTableActionBlock)actionBlock
+                 accessoryType:(UITableViewCellAccessoryType)accessoryType
+{
     OWSAssert(text.length > 0);
     OWSAssert(actionBlock);
 
     OWSTableItem *item = [OWSTableItem new];
     item.itemType = OWSTableItemTypeAction;
-    __weak OWSTableItem *weakItem = item;
     item.actionBlock = actionBlock;
     item.customCellBlock = ^{
         UITableViewCell *cell = [UITableViewCell new];
         cell.textLabel.text = text;
         cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
         cell.textLabel.textColor = [UIColor blackColor];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.accessoryType = accessoryType;
         return cell;
     };
     return item;

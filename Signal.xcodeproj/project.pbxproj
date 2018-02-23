@@ -8,6 +8,48 @@
 
 /* Begin PBXBuildFile section */
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
+		34074F5B203D093B004596AE /* OWSSoundSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F59203D093A004596AE /* OWSSoundSettingsViewController.m */; };
+		34074F61203D0CBE004596AE /* OWSSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* OWSSounds.m */; };
+		34074F62203D0CBE004596AE /* OWSSounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 34074F60203D0CBE004596AE /* OWSSounds.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		34074FEE203E5436004596AE /* aurora.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FC6203E5435004596AE /* aurora.m4r */; };
+		34074FEF203E5436004596AE /* bamboo.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FC7203E5435004596AE /* bamboo.m4r */; };
+		34074FF0203E5436004596AE /* chord.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FC8203E5435004596AE /* chord.m4r */; };
+		34074FF1203E5436004596AE /* circles.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FC9203E5435004596AE /* circles.m4r */; };
+		34074FF2203E5436004596AE /* complete.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FCA203E5435004596AE /* complete.m4r */; };
+		34074FF3203E5436004596AE /* hello.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FCB203E5435004596AE /* hello.m4r */; };
+		34074FF4203E5436004596AE /* input.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FCC203E5435004596AE /* input.m4r */; };
+		34074FF5203E5436004596AE /* keys.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FCD203E5435004596AE /* keys.m4r */; };
+		34074FF6203E5436004596AE /* note.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FCE203E5435004596AE /* note.m4r */; };
+		34074FF7203E5436004596AE /* popcorn.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FCF203E5435004596AE /* popcorn.m4r */; };
+		34074FF8203E5436004596AE /* pulse.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD0203E5435004596AE /* pulse.m4r */; };
+		34074FF9203E5436004596AE /* synth.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD1203E5435004596AE /* synth.m4r */; };
+		34074FFA203E5436004596AE /* Apex.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD3203E5436004596AE /* Apex.m4r */; };
+		34074FFB203E5436004596AE /* Beacon.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD4203E5436004596AE /* Beacon.m4r */; };
+		34074FFC203E5436004596AE /* Bulletin.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD5203E5436004596AE /* Bulletin.m4r */; };
+		34074FFD203E5436004596AE /* By The Seaside.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD6203E5436004596AE /* By The Seaside.m4r */; };
+		34074FFE203E5436004596AE /* Chimes.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD7203E5436004596AE /* Chimes.m4r */; };
+		34074FFF203E5436004596AE /* Circuit.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD8203E5436004596AE /* Circuit.m4r */; };
+		34075000203E5436004596AE /* Constellation.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD9203E5436004596AE /* Constellation.m4r */; };
+		34075001203E5436004596AE /* Cosmic.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FDA203E5436004596AE /* Cosmic.m4r */; };
+		34075002203E5436004596AE /* Crystals.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FDB203E5436004596AE /* Crystals.m4r */; };
+		34075003203E5436004596AE /* Hillside.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FDC203E5436004596AE /* Hillside.m4r */; };
+		34075004203E5436004596AE /* Illuminate.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FDD203E5436004596AE /* Illuminate.m4r */; };
+		34075005203E5436004596AE /* Night Owl.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FDE203E5436004596AE /* Night Owl.m4r */; };
+		34075006203E5436004596AE /* Opening.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FDF203E5436004596AE /* Opening.m4r */; };
+		34075007203E5436004596AE /* Playtime.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE0203E5436004596AE /* Playtime.m4r */; };
+		34075008203E5436004596AE /* Presto.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE1203E5436004596AE /* Presto.m4r */; };
+		34075009203E5436004596AE /* Radar.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE2203E5436004596AE /* Radar.m4r */; };
+		3407500A203E5436004596AE /* Radiate.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE3203E5436004596AE /* Radiate.m4r */; };
+		3407500B203E5436004596AE /* Ripples.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE4203E5436004596AE /* Ripples.m4r */; };
+		3407500C203E5436004596AE /* Sencha.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE5203E5436004596AE /* Sencha.m4r */; };
+		3407500D203E5436004596AE /* Signal.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE6203E5436004596AE /* Signal.m4r */; };
+		3407500E203E5436004596AE /* Silk.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE7203E5436004596AE /* Silk.m4r */; };
+		3407500F203E5436004596AE /* Slow Rise.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE8203E5436004596AE /* Slow Rise.m4r */; };
+		34075010203E5436004596AE /* Stargaze.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FE9203E5436004596AE /* Stargaze.m4r */; };
+		34075011203E5436004596AE /* Summit.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FEA203E5436004596AE /* Summit.m4r */; };
+		34075012203E5436004596AE /* Twinkle.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FEB203E5436004596AE /* Twinkle.m4r */; };
+		34075013203E5436004596AE /* Uplift.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FEC203E5436004596AE /* Uplift.m4r */; };
+		34075014203E5436004596AE /* Waves.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FED203E5436004596AE /* Waves.m4r */; };
 		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
 		340CB2271EAC25820001CAA1 /* UpdateGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CB2261EAC25820001CAA1 /* UpdateGroupViewController.m */; };
 		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
@@ -166,6 +208,10 @@
 		34CCAF381F0C0599004084F4 /* AppUpdateNag.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CCAF371F0C0599004084F4 /* AppUpdateNag.m */; };
 		34CCAF3B1F0C2748004084F4 /* OWSAddToContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CCAF3A1F0C2748004084F4 /* OWSAddToContactViewController.m */; };
 		34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CE88E61F2FB9A10098030F /* ProfileViewController.m */; };
+		34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */; };
+		34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */; };
+		34CF0789203E6B78005C4D61 /* ringback_tone_cept.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0785203E6B77005C4D61 /* ringback_tone_cept.caf */; };
+		34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */; };
 		34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F04F1F7D45A60066283D /* GifPickerCell.swift */; };
 		34D1F0521F7E8EA30066283D /* GiphyDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0511F7E8EA30066283D /* GiphyDownloader.swift */; };
 		34D1F0821F8678AA0066283D /* ConversationHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0661F8678AA0066283D /* ConversationHeaderView.m */; };
@@ -349,7 +395,6 @@
 		B10C9B621A7049EC00ECA2BF /* play_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B10C9B5E1A7049EC00ECA2BF /* play_icon@2x.png */; };
 		B609597C1C2C0FC6004E8797 /* iRate.m in Sources */ = {isa = PBXBuildFile; fileRef = B609597B1C2C0FC6004E8797 /* iRate.m */; };
 		B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EDE031A05A01700D73516 /* AudioToolbox.framework */; };
-		B625CD561ABB589C00E8B23C /* NewMessage.aifc in Resources */ = {isa = PBXBuildFile; fileRef = B625CD551ABB589C00E8B23C /* NewMessage.aifc */; };
 		B633C5861A1D190B0059AC12 /* call@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5041A1D190B0059AC12 /* call@2x.png */; };
 		B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C50B1A1D190B0059AC12 /* contact_default_feed.png */; };
 		B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C51B1A1D190B0059AC12 /* endcall@2x.png */; };
@@ -392,11 +437,6 @@
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
-		E1370BE018A0686600826894 /* busy.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40718A05754001A532A /* busy.mp3 */; };
-		E1370BE218A0686C00826894 /* failure.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40918A05754001A532A /* failure.mp3 */; };
-		E1370BE418A0686C00826894 /* outring.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40B18A05754001A532A /* outring.mp3 */; };
-		E1370BE518A0686C00826894 /* r.caf in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40C18A05754001A532A /* r.caf */; };
-		E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E18AB40D18A05754001A532A /* sonarping.mp3 */; };
 		EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
 		FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF371A3393DD00B47253 /* error_white@2x.png */; };
@@ -478,6 +518,49 @@
 		3400C7951EAF99F4008A8584 /* SelectThreadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectThreadViewController.m; sourceTree = "<group>"; };
 		3400C7971EAFB772008A8584 /* ThreadViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadViewHelper.h; sourceTree = "<group>"; };
 		3400C7981EAFB772008A8584 /* ThreadViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadViewHelper.m; sourceTree = "<group>"; };
+		34074F59203D093A004596AE /* OWSSoundSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSoundSettingsViewController.m; sourceTree = "<group>"; };
+		34074F5A203D093B004596AE /* OWSSoundSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSoundSettingsViewController.h; sourceTree = "<group>"; };
+		34074F5F203D0CBD004596AE /* OWSSounds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSounds.m; sourceTree = "<group>"; };
+		34074F60203D0CBE004596AE /* OWSSounds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSounds.h; sourceTree = "<group>"; };
+		34074FC6203E5435004596AE /* aurora.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = aurora.m4r; sourceTree = "<group>"; };
+		34074FC7203E5435004596AE /* bamboo.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = bamboo.m4r; sourceTree = "<group>"; };
+		34074FC8203E5435004596AE /* chord.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = chord.m4r; sourceTree = "<group>"; };
+		34074FC9203E5435004596AE /* circles.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = circles.m4r; sourceTree = "<group>"; };
+		34074FCA203E5435004596AE /* complete.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = complete.m4r; sourceTree = "<group>"; };
+		34074FCB203E5435004596AE /* hello.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = hello.m4r; sourceTree = "<group>"; };
+		34074FCC203E5435004596AE /* input.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = input.m4r; sourceTree = "<group>"; };
+		34074FCD203E5435004596AE /* keys.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = keys.m4r; sourceTree = "<group>"; };
+		34074FCE203E5435004596AE /* note.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = note.m4r; sourceTree = "<group>"; };
+		34074FCF203E5435004596AE /* popcorn.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = popcorn.m4r; sourceTree = "<group>"; };
+		34074FD0203E5435004596AE /* pulse.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = pulse.m4r; sourceTree = "<group>"; };
+		34074FD1203E5435004596AE /* synth.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = synth.m4r; sourceTree = "<group>"; };
+		34074FD3203E5436004596AE /* Apex.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Apex.m4r; sourceTree = "<group>"; };
+		34074FD4203E5436004596AE /* Beacon.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Beacon.m4r; sourceTree = "<group>"; };
+		34074FD5203E5436004596AE /* Bulletin.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bulletin.m4r; sourceTree = "<group>"; };
+		34074FD6203E5436004596AE /* By The Seaside.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = "By The Seaside.m4r"; sourceTree = "<group>"; };
+		34074FD7203E5436004596AE /* Chimes.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Chimes.m4r; sourceTree = "<group>"; };
+		34074FD8203E5436004596AE /* Circuit.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Circuit.m4r; sourceTree = "<group>"; };
+		34074FD9203E5436004596AE /* Constellation.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Constellation.m4r; sourceTree = "<group>"; };
+		34074FDA203E5436004596AE /* Cosmic.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Cosmic.m4r; sourceTree = "<group>"; };
+		34074FDB203E5436004596AE /* Crystals.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Crystals.m4r; sourceTree = "<group>"; };
+		34074FDC203E5436004596AE /* Hillside.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Hillside.m4r; sourceTree = "<group>"; };
+		34074FDD203E5436004596AE /* Illuminate.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Illuminate.m4r; sourceTree = "<group>"; };
+		34074FDE203E5436004596AE /* Night Owl.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Night Owl.m4r"; sourceTree = "<group>"; };
+		34074FDF203E5436004596AE /* Opening.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Opening.m4r; sourceTree = "<group>"; };
+		34074FE0203E5436004596AE /* Playtime.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Playtime.m4r; sourceTree = "<group>"; };
+		34074FE1203E5436004596AE /* Presto.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Presto.m4r; sourceTree = "<group>"; };
+		34074FE2203E5436004596AE /* Radar.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Radar.m4r; sourceTree = "<group>"; };
+		34074FE3203E5436004596AE /* Radiate.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Radiate.m4r; sourceTree = "<group>"; };
+		34074FE4203E5436004596AE /* Ripples.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ripples.m4r; sourceTree = "<group>"; };
+		34074FE5203E5436004596AE /* Sencha.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sencha.m4r; sourceTree = "<group>"; };
+		34074FE6203E5436004596AE /* Signal.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Signal.m4r; sourceTree = "<group>"; };
+		34074FE7203E5436004596AE /* Silk.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Silk.m4r; sourceTree = "<group>"; };
+		34074FE8203E5436004596AE /* Slow Rise.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Slow Rise.m4r"; sourceTree = "<group>"; };
+		34074FE9203E5436004596AE /* Stargaze.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Stargaze.m4r; sourceTree = "<group>"; };
+		34074FEA203E5436004596AE /* Summit.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Summit.m4r; sourceTree = "<group>"; };
+		34074FEB203E5436004596AE /* Twinkle.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Twinkle.m4r; sourceTree = "<group>"; };
+		34074FEC203E5436004596AE /* Uplift.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Uplift.m4r; sourceTree = "<group>"; };
+		34074FED203E5436004596AE /* Waves.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Waves.m4r; sourceTree = "<group>"; };
 		340B02B61F9FD31800F9CFEC /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = translations/he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewItemTest.m; sourceTree = "<group>"; };
 		340CB2221EAC155C0001CAA1 /* ContactsViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsViewHelper.h; sourceTree = "<group>"; };
@@ -696,6 +779,10 @@
 		34CCAF3A1F0C2748004084F4 /* OWSAddToContactViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAddToContactViewController.m; sourceTree = "<group>"; };
 		34CE88E51F2FB9A10098030F /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
 		34CE88E61F2FB9A10098030F /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
+		34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = busy_tone_ansi.caf; path = Signal/AudioFiles/busy_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
+		34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ringback_tone_ansi.caf; path = Signal/AudioFiles/ringback_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
+		34CF0785203E6B77005C4D61 /* ringback_tone_cept.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ringback_tone_cept.caf; path = Signal/AudioFiles/ringback_tone_cept.caf; sourceTree = SOURCE_ROOT; };
+		34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = end_call_tone_cept.caf; path = Signal/AudioFiles/end_call_tone_cept.caf; sourceTree = SOURCE_ROOT; };
 		34D1F04F1F7D45A60066283D /* GifPickerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerCell.swift; sourceTree = "<group>"; };
 		34D1F0511F7E8EA30066283D /* GiphyDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyDownloader.swift; sourceTree = "<group>"; };
 		34D1F0651F8678AA0066283D /* ConversationHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationHeaderView.h; sourceTree = "<group>"; };
@@ -908,7 +995,6 @@
 		B609597A1C2C0FC6004E8797 /* iRate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iRate.h; path = Libraries/iRate/iRate.h; sourceTree = SOURCE_ROOT; };
 		B609597B1C2C0FC6004E8797 /* iRate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iRate.m; path = Libraries/iRate/iRate.m; sourceTree = SOURCE_ROOT; };
 		B60EDE031A05A01700D73516 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		B625CD551ABB589C00E8B23C /* NewMessage.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = NewMessage.aifc; sourceTree = "<group>"; };
 		B633C5041A1D190B0059AC12 /* call@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "call@2x.png"; sourceTree = "<group>"; };
 		B633C50B1A1D190B0059AC12 /* contact_default_feed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = contact_default_feed.png; sourceTree = "<group>"; };
 		B633C51B1A1D190B0059AC12 /* endcall@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "endcall@2x.png"; sourceTree = "<group>"; };
@@ -987,11 +1073,6 @@
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
 		DF728B4B438716EAF95CEC18 /* Pods-Signal.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.app store release.xcconfig"; sourceTree = "<group>"; };
-		E18AB40718A05754001A532A /* busy.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = busy.mp3; sourceTree = "<group>"; };
-		E18AB40918A05754001A532A /* failure.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = failure.mp3; sourceTree = "<group>"; };
-		E18AB40B18A05754001A532A /* outring.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = outring.mp3; sourceTree = "<group>"; };
-		E18AB40C18A05754001A532A /* r.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = r.caf; sourceTree = "<group>"; };
-		E18AB40D18A05754001A532A /* sonarping.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = sonarping.mp3; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E85DB184824BA9DC302EC8B3 /* Pods-SignalTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.app store release.xcconfig"; sourceTree = "<group>"; };
 		EF764C331DB67CC5000D9A87 /* UIViewController+Permissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+Permissions.h"; path = "util/UIViewController+Permissions.h"; sourceTree = "<group>"; };
@@ -1086,6 +1167,74 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		34074F54203D0722004596AE /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */,
+				34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */,
+				34074FC5203E5435004596AE /* messageReceivedSounds */,
+				34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */,
+				34CF0785203E6B77005C4D61 /* ringback_tone_cept.caf */,
+				34074FD2203E5436004596AE /* ringtoneSounds */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
+		34074FC5203E5435004596AE /* messageReceivedSounds */ = {
+			isa = PBXGroup;
+			children = (
+				34074FC6203E5435004596AE /* aurora.m4r */,
+				34074FC7203E5435004596AE /* bamboo.m4r */,
+				34074FC8203E5435004596AE /* chord.m4r */,
+				34074FC9203E5435004596AE /* circles.m4r */,
+				34074FCA203E5435004596AE /* complete.m4r */,
+				34074FCB203E5435004596AE /* hello.m4r */,
+				34074FCC203E5435004596AE /* input.m4r */,
+				34074FCD203E5435004596AE /* keys.m4r */,
+				34074FCE203E5435004596AE /* note.m4r */,
+				34074FCF203E5435004596AE /* popcorn.m4r */,
+				34074FD0203E5435004596AE /* pulse.m4r */,
+				34074FD1203E5435004596AE /* synth.m4r */,
+			);
+			name = messageReceivedSounds;
+			path = Signal/AudioFiles/messageReceivedSounds;
+			sourceTree = SOURCE_ROOT;
+		};
+		34074FD2203E5436004596AE /* ringtoneSounds */ = {
+			isa = PBXGroup;
+			children = (
+				34074FD3203E5436004596AE /* Apex.m4r */,
+				34074FD4203E5436004596AE /* Beacon.m4r */,
+				34074FD5203E5436004596AE /* Bulletin.m4r */,
+				34074FD6203E5436004596AE /* By The Seaside.m4r */,
+				34074FD7203E5436004596AE /* Chimes.m4r */,
+				34074FD8203E5436004596AE /* Circuit.m4r */,
+				34074FD9203E5436004596AE /* Constellation.m4r */,
+				34074FDA203E5436004596AE /* Cosmic.m4r */,
+				34074FDB203E5436004596AE /* Crystals.m4r */,
+				34074FDC203E5436004596AE /* Hillside.m4r */,
+				34074FDD203E5436004596AE /* Illuminate.m4r */,
+				34074FDE203E5436004596AE /* Night Owl.m4r */,
+				34074FDF203E5436004596AE /* Opening.m4r */,
+				34074FE0203E5436004596AE /* Playtime.m4r */,
+				34074FE1203E5436004596AE /* Presto.m4r */,
+				34074FE2203E5436004596AE /* Radar.m4r */,
+				34074FE3203E5436004596AE /* Radiate.m4r */,
+				34074FE4203E5436004596AE /* Ripples.m4r */,
+				34074FE5203E5436004596AE /* Sencha.m4r */,
+				34074FE6203E5436004596AE /* Signal.m4r */,
+				34074FE7203E5436004596AE /* Silk.m4r */,
+				34074FE8203E5436004596AE /* Slow Rise.m4r */,
+				34074FE9203E5436004596AE /* Stargaze.m4r */,
+				34074FEA203E5436004596AE /* Summit.m4r */,
+				34074FEB203E5436004596AE /* Twinkle.m4r */,
+				34074FEC203E5436004596AE /* Uplift.m4r */,
+				34074FED203E5436004596AE /* Waves.m4r */,
+			);
+			name = ringtoneSounds;
+			path = Signal/AudioFiles/ringtoneSounds;
+			sourceTree = SOURCE_ROOT;
+		};
 		34330A581E7875FB00DF2FB9 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -1203,6 +1352,8 @@
 				347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */,
 				347850681FD9B78A007B8332 /* NoopNotificationsManager.swift */,
 				45F170AB1E2F0351003FC1F2 /* OWSAudioSession.swift */,
+				34074F60203D0CBE004596AE /* OWSSounds.h */,
+				34074F5F203D0CBD004596AE /* OWSSounds.m */,
 				346129561FD1D74B00532771 /* Release.h */,
 				346129571FD1D74B00532771 /* Release.m */,
 				346129581FD1D74B00532771 /* SignalKeyingStorage.h */,
@@ -1371,6 +1522,8 @@
 				34C42D5A1F45F7A80072EC04 /* OWSNavigationController.m */,
 				34B3F8621E8DF1700035BE1A /* OWSQRCodeScanningViewController.h */,
 				34B3F8631E8DF1700035BE1A /* OWSQRCodeScanningViewController.m */,
+				34074F5A203D093B004596AE /* OWSSoundSettingsViewController.h */,
+				34074F59203D093A004596AE /* OWSSoundSettingsViewController.m */,
 				34B3F8641E8DF1700035BE1A /* PrivacySettingsTableViewController.h */,
 				34B3F8651E8DF1700035BE1A /* PrivacySettingsTableViewController.m */,
 				34CE88E51F2FB9A10098030F /* ProfileViewController.h */,
@@ -1992,14 +2145,15 @@
 		D221A093169C9E5E00537ABF /* Signal */ = {
 			isa = PBXGroup;
 			children = (
-				B657DDC91911A40500F45B0C /* Signal.entitlements */,
 				34330A581E7875FB00DF2FB9 /* Fonts */,
 				B633C4FD1A1D190B0059AC12 /* Images */,
-				B67EBF5C19194AC60084CCFD /* Settings.bundle */,
-				76EB03C118170B33006006FC /* src */,
-				B660F66C1C29867F00687D6E /* test */,
-				D221A094169C9E5E00537ABF /* Supporting Files */,
 				B66DBF4919D5BBC8006EA940 /* Images.xcassets */,
+				B67EBF5C19194AC60084CCFD /* Settings.bundle */,
+				B657DDC91911A40500F45B0C /* Signal.entitlements */,
+				34074F54203D0722004596AE /* Sounds */,
+				76EB03C118170B33006006FC /* src */,
+				D221A094169C9E5E00537ABF /* Supporting Files */,
+				B660F66C1C29867F00687D6E /* test */,
 			);
 			path = Signal;
 			sourceTree = "<group>";
@@ -2008,25 +2162,11 @@
 			isa = PBXGroup;
 			children = (
 				B6B6C3C419193F5B00C0B76B /* Translations */,
-				E18AB40618A05754001A532A /* AudioFiles */,
 				D221A099169C9E5E00537ABF /* main.m */,
 				D221A095169C9E5E00537ABF /* Signal-Info.plist */,
 				D221A09B169C9E5E00537ABF /* Signal-Prefix.pch */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		E18AB40618A05754001A532A /* AudioFiles */ = {
-			isa = PBXGroup;
-			children = (
-				B625CD551ABB589C00E8B23C /* NewMessage.aifc */,
-				E18AB40718A05754001A532A /* busy.mp3 */,
-				E18AB40918A05754001A532A /* failure.mp3 */,
-				E18AB40B18A05754001A532A /* outring.mp3 */,
-				E18AB40C18A05754001A532A /* r.caf */,
-				E18AB40D18A05754001A532A /* sonarping.mp3 */,
-			);
-			path = AudioFiles;
 			sourceTree = "<group>";
 		};
 		FCFA64B11A24F29E0007FB87 /* UI Categories */ = {
@@ -2103,6 +2243,7 @@
 				45194F901FD7200000333B2C /* ThreadUtil.h in Headers */,
 				346129CC1FD2072E00532771 /* NSAttributedString+OWS.h in Headers */,
 				346129FD1FD5F31400532771 /* OWS102MoveLoggingPreferenceToUserDefaults.h in Headers */,
+				34074F62203D0CBE004596AE /* OWSSounds.h in Headers */,
 				344F2499200FD03300CFB4F4 /* SharingThreadPickerViewController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2368,42 +2509,79 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
 				AD83FF3F1A73426500B5C81A /* audio_pause_button_blue.png in Resources */,
+				3407500C203E5436004596AE /* Sencha.m4r in Resources */,
 				34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */,
 				A5509ECA1A69AB8B00ABA4BC /* Main.storyboard in Resources */,
 				AD83FF421A73426500B5C81A /* audio_play_button.png in Resources */,
+				34074FEF203E5436004596AE /* bamboo.m4r in Resources */,
 				34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */,
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
+				34075008203E5436004596AE /* Presto.m4r in Resources */,
+				34074FF1203E5436004596AE /* circles.m4r in Resources */,
 				AD83FF441A73426500B5C81A /* audio_pause_button.png in Resources */,
+				34075005203E5436004596AE /* Night Owl.m4r in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
+				34075003203E5436004596AE /* Hillside.m4r in Resources */,
+				34074FFA203E5436004596AE /* Apex.m4r in Resources */,
+				3407500E203E5436004596AE /* Silk.m4r in Resources */,
+				34075004203E5436004596AE /* Illuminate.m4r in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
 				B10C9B611A7049EC00ECA2BF /* play_icon.png in Resources */,
+				34074FF3203E5436004596AE /* hello.m4r in Resources */,
+				34074FF9203E5436004596AE /* synth.m4r in Resources */,
 				AD83FF401A73426500B5C81A /* audio_pause_button_blue@2x.png in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
+				34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */,
+				34074FF7203E5436004596AE /* popcorn.m4r in Resources */,
+				34CF0789203E6B78005C4D61 /* ringback_tone_cept.caf in Resources */,
+				34074FFF203E5436004596AE /* Circuit.m4r in Resources */,
+				34074FF8203E5436004596AE /* pulse.m4r in Resources */,
 				4517642A1DE939FD00EDB8B9 /* ContactCell.xib in Resources */,
 				AD83FF431A73426500B5C81A /* audio_play_button@2x.png in Resources */,
+				34075007203E5436004596AE /* Playtime.m4r in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
 				34B3F8781E8DF1700035BE1A /* ContactsPicker.xib in Resources */,
 				B633C5C31A1D190B0059AC12 /* mute_off@2x.png in Resources */,
+				3407500F203E5436004596AE /* Slow Rise.m4r in Resources */,
+				34074FF2203E5436004596AE /* complete.m4r in Resources */,
+				34074FFB203E5436004596AE /* Beacon.m4r in Resources */,
 				AD83FF411A73426500B5C81A /* audio_play_button_blue@2x.png in Resources */,
 				FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */,
-				E1370BE018A0686600826894 /* busy.mp3 in Resources */,
-				E1370BE218A0686C00826894 /* failure.mp3 in Resources */,
-				B625CD561ABB589C00E8B23C /* NewMessage.aifc in Resources */,
+				34075014203E5436004596AE /* Waves.m4r in Resources */,
+				34075011203E5436004596AE /* Summit.m4r in Resources */,
+				34075006203E5436004596AE /* Opening.m4r in Resources */,
+				34074FF6203E5436004596AE /* note.m4r in Resources */,
+				34075009203E5436004596AE /* Radar.m4r in Resources */,
+				34075012203E5436004596AE /* Twinkle.m4r in Resources */,
 				B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */,
 				B10C9B621A7049EC00ECA2BF /* play_icon@2x.png in Resources */,
+				34074FFE203E5436004596AE /* Chimes.m4r in Resources */,
 				B633C5861A1D190B0059AC12 /* call@2x.png in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
-				E1370BE418A0686C00826894 /* outring.mp3 in Resources */,
+				34074FF5203E5436004596AE /* keys.m4r in Resources */,
+				3407500D203E5436004596AE /* Signal.m4r in Resources */,
+				34075000203E5436004596AE /* Constellation.m4r in Resources */,
 				B10C9B601A7049EC00ECA2BF /* pause_icon@2x.png in Resources */,
-				E1370BE518A0686C00826894 /* r.caf in Resources */,
+				34075002203E5436004596AE /* Crystals.m4r in Resources */,
 				FC9120411A39EFB70074545C /* qr@2x.png in Resources */,
-				E1370BE618A0686C00826894 /* sonarping.mp3 in Resources */,
+				34075001203E5436004596AE /* Cosmic.m4r in Resources */,
+				34074FFD203E5436004596AE /* By The Seaside.m4r in Resources */,
+				34075013203E5436004596AE /* Uplift.m4r in Resources */,
+				3407500B203E5436004596AE /* Ripples.m4r in Resources */,
+				34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */,
+				34075010203E5436004596AE /* Stargaze.m4r in Resources */,
+				34074FF0203E5436004596AE /* chord.m4r in Resources */,
+				34074FF4203E5436004596AE /* input.m4r in Resources */,
 				B10C9B5F1A7049EC00ECA2BF /* pause_icon.png in Resources */,
+				3407500A203E5436004596AE /* Radiate.m4r in Resources */,
 				AD83FF471A73428300B5C81A /* audio_play_button_blue.png in Resources */,
+				34074FFC203E5436004596AE /* Bulletin.m4r in Resources */,
+				34074FEE203E5436004596AE /* aurora.m4r in Resources */,
 				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
 				AD83FF451A73426500B5C81A /* audio_pause_button@2x.png in Resources */,
 			);
@@ -2782,6 +2960,7 @@
 				347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */,
 				346129761FD1E0B500532771 /* WeakTimer.swift in Sources */,
 				346129F81FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.m in Sources */,
+				34074F61203D0CBE004596AE /* OWSSounds.m in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				346129701FD1D74C00532771 /* Release.m in Sources */,
 				3478506C1FD9B78A007B8332 /* NoopNotificationsManager.swift in Sources */,
@@ -2977,6 +3156,7 @@
 				34D1F0B11F867BFC0066283D /* OWSUnreadIndicatorCell.m in Sources */,
 				34B3F89C1E8DF3270035BE1A /* BlockListViewController.m in Sources */,
 				34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */,
+				34074F5B203D093B004596AE /* OWSSoundSettingsViewController.m in Sources */,
 				34C42D5B1F45F7A80072EC04 /* OWSNavigationController.m in Sources */,
 				B609597C1C2C0FC6004E8797 /* iRate.m in Sources */,
 				4574A5D61DD6704700C6B692 /* CallService.swift in Sources */,

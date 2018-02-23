@@ -1155,6 +1155,9 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SECTION_INAPP" = "In-App Notifications";
 
+/* Label for settings UI that allows user to change the notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS" = "Sounds";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Sender name & message";
 
@@ -1566,6 +1569,12 @@
 /* content of tweet when inviting via twitter */
 "SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using Signal by @WhisperSystems, get it now.";
 
+/* Label for settings view that allows user to change the notification sound. */
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Notification";
+
+/* Label for settings view that allows user to change the ringtone sound. */
+"SETTINGS_ITEM_RINGTONE_SOUND" = "Ringtone";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Settings";
 
@@ -1595,6 +1604,9 @@
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+
+/* Label for the sounds section of settings views. */
+"SETTINGS_SECTION_SOUNDS" = "Sounds";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Calling";

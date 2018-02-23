@@ -76,6 +76,12 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
                          customRowHeight:(CGFloat)customRowHeight
                              actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
++ (OWSTableItem *)checkmarkItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
++ (OWSTableItem *)itemWithText:(NSString *)text
+                   actionBlock:(nullable OWSTableActionBlock)actionBlock
+                 accessoryType:(UITableViewCellAccessoryType)accessoryType;
+
 + (OWSTableItem *)subPageItemWithText:(NSString *)text actionBlock:(nullable OWSTableSubPageBlock)actionBlock;
 
 + (OWSTableItem *)subPageItemWithText:(NSString *)text
