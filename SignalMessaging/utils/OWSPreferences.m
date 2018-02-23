@@ -190,10 +190,36 @@ NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExten
     return preference != nil;
 }
 
+- (BOOL)isCallKitPrivacyAutoDisabled
+{
+    // In iOS 10.2.1, Apple fixed a bug wherein call history was backed up to iCloud.
+    //
+    // See: https://support.apple.com/en-us/HT207482
+    //
+    // In iOS 11, Apple introduced a property CXProviderConfiguration.includesCallsInRecents
+    // that allows us to prevent Signal calls made with CallKit from showing up in the device's
+    // call history.
+    //
+    // Therefore in versions of iOS after 11, we have no need of call privacy.
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
 - (BOOL)isCallKitPrivacyEnabled
 {
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled];
-    return preference ? [preference boolValue] : YES;
+    if ([self isCallKitPrivacyAutoDisabled]) {
+        return NO;
+    }
+    NSNumber *_Nullable preference = [self tryGetValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled];
+    if (preference) {
+        return [preference boolValue];
+    } else {
+        // Private by default.
+        return YES;
+    }
 }
 
 - (void)setIsCallKitPrivacyEnabled:(BOOL)flag

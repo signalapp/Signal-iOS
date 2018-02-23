@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "PrivacySettingsTableViewController.h"
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                             isOn:[Environment.preferences isCallKitEnabled]
                                                           target:weakSelf
                                                         selector:@selector(didToggleEnableCallKitSwitch:)]];
-        if (Environment.preferences.isCallKitEnabled) {
+        if (Environment.preferences.isCallKitEnabled && !Environment.preferences.isCallKitPrivacyAutoDisabled) {
             [callKitSection
                 addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE",
                                                              @"Label for 'CallKit privacy' preference")

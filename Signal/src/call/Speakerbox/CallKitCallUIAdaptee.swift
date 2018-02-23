@@ -50,6 +50,10 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // default iOS ringtone OR the custom ringtone associated with this user's
         // system contact, if possible (iOS 11 or later).
 
+        if #available(iOS 11.0, *) {
+            providerConfiguration.includesCallsInRecents = false
+        }
+
         return providerConfiguration
     }
 

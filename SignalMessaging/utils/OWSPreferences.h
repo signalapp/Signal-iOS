@@ -68,6 +68,7 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 - (void)setIsCallKitPrivacyEnabled:(BOOL)flag;
 // Returns YES IFF isCallKitPrivacyEnabled has been set by user.
 - (BOOL)isCallKitPrivacySet;
+- (BOOL)isCallKitPrivacyAutoDisabled;
 
 #pragma mark direct call connectivity (non-TURN)
 
