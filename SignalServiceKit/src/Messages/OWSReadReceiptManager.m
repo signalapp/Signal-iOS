@@ -363,7 +363,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                                                                        ofClass:[TSOutgoingMessage class]
                                                                                withTransaction:transaction];
                 if (messages.count > 1) {
-                    OWSFail(@"%@ More than one matching message with timestamp: %llu.", self.logTag, sentTimestamp);
+                    DDLogError(@"%@ More than one matching message with timestamp: %llu.", self.logTag, sentTimestamp);
                 }
                 if (messages.count > 0) {
                     // TODO: We might also need to "mark as read by recipient" any older messages
