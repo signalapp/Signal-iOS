@@ -4,6 +4,7 @@
 
 #import "OWSSoundSettingsViewController.h"
 #import <AVFoundation/AVFoundation.h>
+#import <SignalMessaging/OWSAudioPlayer.h>
 #import <SignalMessaging/OWSSounds.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSSound currentSound;
 
-@property (nonatomic) AVAudioPlayer *audioPlayer;
+@property (nonatomic, nullable) OWSAudioPlayer *audioPlayer;
 
 @end
 
@@ -26,20 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLoad];
 
-    switch (self.soundType) {
-        case OWSSoundType_Notification:
-            [self setTitle:NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
-                                             @"Label for settings view that allows user to change the notification sound.")];
-            self.currentSound
-            = (self.thread ? [OWSSounds notificationSoundForThread:self.thread] : [OWSSounds globalNotificationSound]);
-            break;
-        case OWSSoundType_Ringtone:
-            [self setTitle:NSLocalizedString(@"SETTINGS_ITEM_RINGTONE_SOUND",
-                                             @"Label for settings view that allows user to change the ringtone sound.")];
-            self.currentSound
-            = (self.thread ? [OWSSounds ringtoneSoundForThread:self.thread] : [OWSSounds globalRingtoneSound]);
-            break;
-    }
+    [self setTitle:NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
+                                     @"Label for settings view that allows user to change the notification sound.")];
+    self.currentSound
+    = (self.thread ? [OWSSounds notificationSoundForThread:self.thread] : [OWSSounds globalNotificationSound]);
 
     [self updateTableContents];
     [self updateNavigationItems];
@@ -79,15 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
     soundsSection.headerTitle = NSLocalizedString(
         @"NOTIFICATIONS_SECTION_SOUNDS", @"Label for settings UI that allows user to change the notification sound.");
     
-    NSArray<NSNumber *> *allSounds;
-    switch (self.soundType) {
-        case OWSSoundType_Notification:
-            allSounds = [OWSSounds allNotificationSounds];
-            break;
-        case OWSSoundType_Ringtone:
-            allSounds = [OWSSounds allRingtoneSounds];
-            break;
-    }
+    NSArray<NSNumber *> *allSounds = [OWSSounds allNotificationSounds];
     for (NSNumber *nsValue in allSounds) {
         OWSSound sound = (OWSSound)nsValue.intValue;
         OWSTableItem *item;
@@ -117,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioPlayer stop];
     self.audioPlayer = [OWSSounds audioPlayerForSound:sound];
     // Suppress looping in this view.
-    self.audioPlayer.numberOfLoops = 0;
+    self.audioPlayer.isLooping = NO;
     [self.audioPlayer play];
 
     if (self.currentSound == sound) {
@@ -139,21 +122,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)saveWasPressed:(id)sender
 {
-    switch (self.soundType) {
-        case OWSSoundType_Notification:
-            if (self.thread) {
-                [OWSSounds setNotificationSound:self.currentSound forThread:self.thread];
-            } else {
-                [OWSSounds setGlobalNotificationSound:self.currentSound];
-            }
-            break;
-        case OWSSoundType_Ringtone:
-            if (self.thread) {
-                [OWSSounds setRingtoneSound:self.currentSound forThread:self.thread];
-            } else {
-                [OWSSounds setGlobalRingtoneSound:self.currentSound];
-            }
-            break;
+    if (self.thread) {
+        [OWSSounds setNotificationSound:self.currentSound forThread:self.thread];
+    } else {
+        [OWSSounds setGlobalNotificationSound:self.currentSound];
     }
 
     [self.audioPlayer stop];

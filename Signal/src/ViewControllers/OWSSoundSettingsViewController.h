@@ -6,16 +6,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, OWSSoundType) {
-    OWSSoundType_Notification = 0,
-    OWSSoundType_Ringtone,
-};
-
 @class TSThread;
 
 @interface OWSSoundSettingsViewController : OWSTableViewController
-
-@property (nonatomic) OWSSoundType soundType;
 
 // This property is optional.  If it is not set, we are
 // editing the global notification sound.

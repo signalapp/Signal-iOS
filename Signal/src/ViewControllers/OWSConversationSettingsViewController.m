@@ -20,6 +20,7 @@
 #import <SignalMessaging/OWSAvatarBuilder.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
@@ -476,8 +477,46 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Mute thread section.
 
-    OWSTableSection *muteSection = [OWSTableSection new];
-    [muteSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+    OWSTableSection *notificationsSection = [OWSTableSection new];
+    // We need a section header to separate the notifications UI from the group settings UI.
+    notificationsSection.headerTitle = NSLocalizedString(
+        @"SETTINGS_SECTION_NOTIFICATIONS", @"Label for the notifications section of conversation settings view.");
+
+    [notificationsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+        OWSConversationSettingsViewController *strongSelf = weakSelf;
+        OWSCAssert(strongSelf);
+        cell.preservesSuperviewLayoutMargins = YES;
+        cell.contentView.preservesSuperviewLayoutMargins = YES;
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+        UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_notification_sound"];
+        [cell.contentView addSubview:iconView];
+        [iconView autoVCenterInSuperview];
+        [iconView autoPinLeadingToSuperview];
+
+        UILabel *rowLabel = [UILabel new];
+        rowLabel.text = NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
+            @"Label for settings view that allows user to change the notification sound.");
+        rowLabel.textColor = [UIColor blackColor];
+        rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
+        rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        [cell.contentView addSubview:rowLabel];
+        [rowLabel autoVCenterInSuperview];
+        [rowLabel autoPinLeadingToTrailingOfView:iconView margin:weakSelf.iconSpacing];
+
+        OWSSound sound = [OWSSounds notificationSoundForThread:self.thread];
+        cell.detailTextLabel.text = [OWSSounds displayNameForSound:sound];
+        return cell;
+    }
+                                      customRowHeight:45.f
+                                      actionBlock:^{
+                                          OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
+                                          vc.thread = weakSelf.thread;
+                                          [weakSelf.navigationController pushViewController:vc animated:YES];
+                                      }]];
+
+    [notificationsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
         OWSConversationSettingsViewController *strongSelf = weakSelf;
         OWSCAssert(strongSelf);
@@ -530,13 +569,13 @@ NS_ASSUME_NONNULL_BEGIN
         cell.detailTextLabel.text = muteStatus;
         return cell;
     }
-                             customRowHeight:45.f
-                             actionBlock:^{
-                                 [weakSelf showMuteUnmuteActionSheet];
-                             }]];
-    muteSection.footerTitle
+                                      customRowHeight:45.f
+                                      actionBlock:^{
+                                          [weakSelf showMuteUnmuteActionSheet];
+                                      }]];
+    notificationsSection.footerTitle
         = NSLocalizedString(@"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.");
-    [contents addSection:muteSection];
+    [contents addSection:notificationsSection];
 
     // Block user section.
 
@@ -566,37 +605,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                    actionBlock:nil]];
         [contents addSection:section];
     }
-
-    // Sounds section.
-
-    OWSTableSection *soundsSection = [OWSTableSection new];
-    soundsSection.headerTitle = NSLocalizedString(@"SETTINGS_SECTION_SOUNDS",
-        @"Label for the sounds section of settings views.");
-    [soundsSection
-     addItem:[OWSTableItem disclosureItemWithText:
-              NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
-                                @"Label for settings view that allows user to change the notification sound.")
-                                      actionBlock:^{
-                                          OWSSoundSettingsViewController *vc =
-                                          [OWSSoundSettingsViewController new];
-                                          vc.soundType = OWSSoundType_Notification;
-                                          vc.thread = weakSelf.thread;
-                                          [weakSelf.navigationController pushViewController:vc animated:YES];
-                                      }]];
-    if (!self.isGroupThread) {
-        [soundsSection
-         addItem:[OWSTableItem disclosureItemWithText:
-                  NSLocalizedString(@"SETTINGS_ITEM_RINGTONE_SOUND",
-                                    @"Label for settings view that allows user to change the ringtone sound.")
-                                          actionBlock:^{
-                                              OWSSoundSettingsViewController *vc =
-                                              [OWSSoundSettingsViewController new];
-                                              vc.soundType = OWSSoundType_Ringtone;
-                                              vc.thread = weakSelf.thread;
-                                              [weakSelf.navigationController pushViewController:vc animated:YES];
-                                          }]];
-    }
-    [contents addSection:soundsSection];
 
     self.contents = contents;
 }

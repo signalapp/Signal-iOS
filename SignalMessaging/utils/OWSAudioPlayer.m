@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSAudioAttachmentPlayer.h"
+#import "OWSAudioPlayer.h"
 #import "TSAttachmentStream.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -10,7 +10,27 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSAudioAttachmentPlayer () <AVAudioPlayerDelegate>
+// A no-op delegate implementation to be used when we don't need a delegate.
+@interface OWSAudioPlayerDelegateStub : NSObject <OWSAudioPlayerDelegate>
+
+@property (nonatomic) AudioPlaybackState audioPlaybackState;
+
+@end
+
+#pragma mark -
+
+@implementation OWSAudioPlayerDelegateStub
+
+- (void)setAudioProgress:(CGFloat)progress duration:(CGFloat)duration
+{
+    // Do nothing;
+}
+
+@end
+
+#pragma mark -
+
+@interface OWSAudioPlayer () <AVAudioPlayerDelegate>
 
 @property (nonatomic, readonly) NSURL *mediaUrl;
 @property (nonatomic, nullable) AVAudioPlayer *audioPlayer;
@@ -21,9 +41,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation OWSAudioAttachmentPlayer
+@implementation OWSAudioPlayer
 
-- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl delegate:(id<OWSAudioAttachmentPlayerDelegate>)delegate
+- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl
+{
+    return [self initWithMediaUrl:mediaUrl delegate:[OWSAudioPlayerDelegateStub new]];
+}
+
+- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl delegate:(id<OWSAudioPlayerDelegate>)delegate
 {
     self = [super init];
     if (!self) {
@@ -92,6 +117,9 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
         self.audioPlayer.delegate = self;
+        if (self.isLooping) {
+            self.audioPlayer.numberOfLoops = -1;
+        }
     }
 
     [self.audioPlayer play];

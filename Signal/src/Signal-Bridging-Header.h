@@ -17,7 +17,7 @@
 #import "NSString+OWS.h"
 #import "NotificationsManager.h"
 #import "OWSAnyTouchGestureRecognizer.h"
-#import "OWSAudioAttachmentPlayer.h"
+#import "OWSAudioPlayer.h"
 #import "OWSBezierPathView.h"
 #import "OWSCallNotificationsAdaptee.h"
 #import "OWSDatabaseMigration.h"

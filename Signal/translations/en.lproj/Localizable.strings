@@ -1572,9 +1572,6 @@
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Notification";
 
-/* Label for settings view that allows user to change the ringtone sound. */
-"SETTINGS_ITEM_RINGTONE_SOUND" = "Ringtone";
-
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Settings";
 
@@ -1604,6 +1601,9 @@
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+
+/* Label for the notifications section of conversation settings view. */
+"SETTINGS_SECTION_NOTIFICATIONS" = "Notifications";
 
 /* Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Sounds";
@@ -1667,6 +1667,9 @@
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "I'm inviting you to install Signal! Here is the link:";
+
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
+"SOUNDS_NONE" = "None";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";

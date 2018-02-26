@@ -45,7 +45,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 @property (nonatomic, nullable) NSValue *cachedCellSize;
 
-#pragma mark - OWSAudioAttachmentPlayerDelegate
+#pragma mark - OWSAudioPlayerDelegate
 
 @property (nonatomic) AudioPlaybackState audioPlaybackState;
 @property (nonatomic) CGFloat audioProgressSeconds;
@@ -242,7 +242,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
-#pragma mark - OWSAudioAttachmentPlayerDelegate
+#pragma mark - OWSAudioPlayerDelegate
 
 - (void)setAudioPlaybackState:(AudioPlaybackState)audioPlaybackState
 {

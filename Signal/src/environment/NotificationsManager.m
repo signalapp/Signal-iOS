@@ -60,8 +60,7 @@
     UILocalNotification *notification = [UILocalNotification new];
     notification.category = PushManagerCategoriesIncomingCall;
     // Rather than using notification sounds, we control the ringtone and repeat vibrations with the CallAudioManager.
-    OWSSound sound = [OWSSounds ringtoneSoundForThread:call.thread];
-    notification.soundName = [OWSSounds filenameForSound:sound];
+    notification.soundName = [OWSSounds filenameForSound:OWSSound_DefaultiOSIncomingRingtone];
     NSString *localCallId = call.localId.UUIDString;
     notification.userInfo = @{ PushManagerUserInfoKeysLocalCallId : localCallId };
 
@@ -354,7 +353,8 @@
         } else {
             if (shouldPlaySound && [Environment.preferences soundInForeground]) {
                 OWSSound sound = [OWSSounds notificationSoundForThread:thread];
-                [OWSSounds playSound:sound];
+                // We play the "quiet" variation of sounds if possible for notifications in the foreground.
+                [OWSSounds playSound:sound quiet:YES];
             }
         }
     });

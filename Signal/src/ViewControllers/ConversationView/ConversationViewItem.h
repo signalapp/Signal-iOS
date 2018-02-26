@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewLayout.h"
-#import "OWSAudioAttachmentPlayer.h"
+#import "OWSAudioPlayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -38,7 +38,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 //
 // Critically, this class implements ConversationViewLayoutItem
 // and does caching of the cell's size.
-@interface ConversationViewItem : NSObject <ConversationViewLayoutItem, OWSAudioAttachmentPlayerDelegate>
+@interface ConversationViewItem : NSObject <ConversationViewLayoutItem, OWSAudioPlayerDelegate>
 
 @property (nonatomic, readonly) TSInteraction *interaction;
 

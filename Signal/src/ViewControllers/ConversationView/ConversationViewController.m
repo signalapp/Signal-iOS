@@ -21,7 +21,7 @@
 #import "MediaDetailViewController.h"
 #import "NSAttributedString+OWS.h"
 #import "NewGroupViewController.h"
-#import "OWSAudioAttachmentPlayer.h"
+#import "OWSAudioPlayer.h"
 #import "OWSContactOffersCell.h"
 #import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
@@ -172,7 +172,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache;
 
 @property (nonatomic, nullable) AVAudioRecorder *audioRecorder;
-@property (nonatomic, nullable) OWSAudioAttachmentPlayer *audioAttachmentPlayer;
+@property (nonatomic, nullable) OWSAudioPlayer *audioAttachmentPlayer;
 @property (nonatomic, nullable) NSUUID *voiceMessageUUID;
 
 @property (nonatomic, nullable) NSTimer *readTimer;
@@ -2077,8 +2077,7 @@ typedef enum : NSUInteger {
         [self.audioAttachmentPlayer stop];
         self.audioAttachmentPlayer = nil;
     }
-    self.audioAttachmentPlayer =
-        [[OWSAudioAttachmentPlayer alloc] initWithMediaUrl:attachmentStream.mediaURL delegate:viewItem];
+    self.audioAttachmentPlayer = [[OWSAudioPlayer alloc] initWithMediaUrl:attachmentStream.mediaURL delegate:viewItem];
     // Associate the player with this media adapter.
     self.audioAttachmentPlayer.owner = viewItem;
     [self.audioAttachmentPlayer play];
