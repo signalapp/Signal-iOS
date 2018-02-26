@@ -1150,7 +1150,7 @@
 "NOTIFICATIONS_NONE" = "No Name or Content";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SECTION_INAPP" = "In-App Notifications";
+"NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
 
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Sounds";
@@ -1163,9 +1163,6 @@
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Show";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SOUND" = "Notification Sounds";
 
 /* No comment provided by engineer. */
 "OK" = "OK";
@@ -1567,7 +1564,7 @@
 "SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using Signal by @WhisperSystems, get it now.";
 
 /* Label for settings view that allows user to change the notification sound. */
-"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Notification";
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Settings";
@@ -1614,7 +1611,7 @@
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Notifications";
 
-/* Label for the sounds section of settings views. */
+/* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Sounds";
 
 /* settings topic header for table section */
@@ -1787,6 +1784,15 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
+
+/* Description for notification audio customization */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now specify default and per thread text tones. And calls now respect your system contact's ringtone.";
+
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Review Notification Settings";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Updated Call and Message Sounds";
 
 /* button label shown one time, after user upgrades app */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Set up Your Profile";

@@ -36,8 +36,8 @@
     // Sounds section.
     
     OWSTableSection *soundsSection = [OWSTableSection new];
-    soundsSection.headerTitle = NSLocalizedString(@"SETTINGS_SECTION_SOUNDS",
-                                                  @"Label for the sounds section of settings views.");
+    soundsSection.headerTitle
+        = NSLocalizedString(@"SETTINGS_SECTION_SOUNDS", @"Header Label for the sounds section of settings views.");
 
     [soundsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
@@ -53,6 +53,10 @@
                                    OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
                                    [weakSelf.navigationController pushViewController:vc animated:YES];
                                }]];
+    [soundsSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"NOTIFICATIONS_SECTION_INAPP", nil)
+                                                       isOn:[prefs soundInForeground]
+                                                     target:weakSelf
+                                                   selector:@selector(didToggleSoundNotificationsSwitch:)]];
     [contents addSection:soundsSection];
     
     OWSTableSection *backgroundSection = [OWSTableSection new];
@@ -78,13 +82,6 @@
         = NSLocalizedString(@"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION", @"table section footer");
     [contents addSection:backgroundSection];
 
-    OWSTableSection *inAppSection = [OWSTableSection new];
-    inAppSection.headerTitle = NSLocalizedString(@"NOTIFICATIONS_SECTION_INAPP", nil);
-    [inAppSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"NOTIFICATIONS_SOUND", nil)
-                                                      isOn:[prefs soundInForeground]
-                                                    target:weakSelf
-                                                  selector:@selector(didToggleSoundNotificationsSwitch:)]];
-    [contents addSection:inAppSection];
 
     self.contents = contents;
 }
