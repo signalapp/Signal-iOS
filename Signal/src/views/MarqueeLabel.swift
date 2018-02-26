@@ -1,5 +1,10 @@
+//  Grabbed from: https://github.com/cbpowell/MarqueeLabel-Swift/blob/cd331f3cfc3f9d7114ffa5aa4f243f1d5eda9d0d/Classes/MarqueeLabel.swift
+//  License: MIT License
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  MarqueeLabel.swift
+//
+//  Created by Charles Powell on 8/6/14.
+//  Copyright (c) 2015 Charles Powell. All rights reserved.
 //
 
 import UIKit
