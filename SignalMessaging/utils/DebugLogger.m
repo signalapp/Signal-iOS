@@ -11,9 +11,13 @@
 #pragma mark Logging - Production logging wants us to write some logs to a file in case we need it for debugging.
 #import <CocoaLumberjack/DDTTYLogger.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
+const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
+
 @interface DebugLogger ()
 
-@property (nonatomic) DDFileLogger *fileLogger;
+@property (nonatomic, nullable) DDFileLogger *fileLogger;
 
 @end
 
@@ -66,9 +70,8 @@
     // 24 hour rolling.
     self.fileLogger.rollingFrequency = kDayInterval;
     // Keep last 3 days of logs - or last 3 logs (if logs rollover due to max file size).
-    self.fileLogger.logFileManager.maximumNumberOfLogFiles = 3;
-    // Raise the max file size per log file to 3 MB.
-    self.fileLogger.maximumFileSize = 1024 * 1024 * 3;
+    self.fileLogger.logFileManager.maximumNumberOfLogFiles = 24;
+    self.fileLogger.maximumFileSize = kMaxDebugLogFileSize;
     self.fileLogger.logFormatter = [OWSScrubbingLogFormatter new];
 
     [DDLog addLogger:self.fileLogger];
@@ -133,3 +136,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

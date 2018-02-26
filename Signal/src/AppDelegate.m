@@ -324,7 +324,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
                                                    style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction *_Nonnull action) {
-                                                     [Pastelog submitLogsWithShareCompletion:^{
+                                                     [Pastelog submitLogsWithCompletion:^{
                                                          DDLogInfo(
                                                              @"%@ exiting after sharing debug logs.", self.logTag);
                                                          [DDLog flushLog];
