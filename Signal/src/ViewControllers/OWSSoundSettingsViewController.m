@@ -27,14 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLoad];
 
-    switch (self.soundType) {
-        case OWSSoundType_Notification:
-            [self setTitle:NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
-                                             @"Label for settings view that allows user to change the notification sound.")];
-            self.currentSound
-            = (self.thread ? [OWSSounds notificationSoundForThread:self.thread] : [OWSSounds globalNotificationSound]);
-            break;
-    }
+    [self setTitle:NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
+                                     @"Label for settings view that allows user to change the notification sound.")];
+    self.currentSound
+    = (self.thread ? [OWSSounds notificationSoundForThread:self.thread] : [OWSSounds globalNotificationSound]);
 
     [self updateTableContents];
     [self updateNavigationItems];
@@ -74,12 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
     soundsSection.headerTitle = NSLocalizedString(
         @"NOTIFICATIONS_SECTION_SOUNDS", @"Label for settings UI that allows user to change the notification sound.");
     
-    NSArray<NSNumber *> *allSounds;
-    switch (self.soundType) {
-        case OWSSoundType_Notification:
-            allSounds = [OWSSounds allNotificationSounds];
-            break;
-    }
+    NSArray<NSNumber *> *allSounds = [OWSSounds allNotificationSounds];
     for (NSNumber *nsValue in allSounds) {
         OWSSound sound = (OWSSound)nsValue.intValue;
         OWSTableItem *item;
@@ -131,14 +122,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)saveWasPressed:(id)sender
 {
-    switch (self.soundType) {
-        case OWSSoundType_Notification:
-            if (self.thread) {
-                [OWSSounds setNotificationSound:self.currentSound forThread:self.thread];
-            } else {
-                [OWSSounds setGlobalNotificationSound:self.currentSound];
-            }
-            break;
+    if (self.thread) {
+        [OWSSounds setNotificationSound:self.currentSound forThread:self.thread];
+    } else {
+        [OWSSounds setGlobalNotificationSound:self.currentSound];
     }
 
     [self.audioPlayer stop];

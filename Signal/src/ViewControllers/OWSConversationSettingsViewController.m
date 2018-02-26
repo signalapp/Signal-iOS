@@ -512,7 +512,6 @@ NS_ASSUME_NONNULL_BEGIN
                                       customRowHeight:45.f
                                       actionBlock:^{
                                           OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
-                                          vc.soundType = OWSSoundType_Notification;
                                           vc.thread = weakSelf.thread;
                                           [weakSelf.navigationController pushViewController:vc animated:YES];
                                       }]];

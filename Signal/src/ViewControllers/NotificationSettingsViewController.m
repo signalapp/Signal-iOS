@@ -51,7 +51,6 @@
     }
                                actionBlock:^{
                                    OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
-                                   vc.soundType = OWSSoundType_Notification;
                                    [weakSelf.navigationController pushViewController:vc animated:YES];
                                }]];
     [contents addSection:soundsSection];
