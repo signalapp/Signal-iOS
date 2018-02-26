@@ -10,38 +10,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)ows_thinFontWithSize:(CGFloat)size
 {
-    if (@available(iOS 8.2, *)) {
-        return [UIFont systemFontOfSize:size weight:UIFontWeightThin];
-    } else {
-        return [UIFont fontWithName:@"HelveticaNeue-Thin" size:size];
-    }
+    return [UIFont systemFontOfSize:size weight:UIFontWeightThin];
 }
 
 + (UIFont *)ows_lightFontWithSize:(CGFloat)size
 {
-    if (@available(iOS 8.2, *)) {
-        return [UIFont systemFontOfSize:size weight:UIFontWeightLight];
-    } else {
-        return [UIFont fontWithName:@"HelveticaNeue-Light" size:size];
-    }
+    return [UIFont systemFontOfSize:size weight:UIFontWeightLight];
 }
 
 + (UIFont *)ows_regularFontWithSize:(CGFloat)size
 {
-    if (@available(iOS 8.2, *)) {
-        return [UIFont systemFontOfSize:size weight:UIFontWeightRegular];
-    } else {
-        return [UIFont fontWithName:@"HelveticaNeue" size:size];
-    }
+    return [UIFont systemFontOfSize:size weight:UIFontWeightRegular];
 }
 
 + (UIFont *)ows_mediumFontWithSize:(CGFloat)size
 {
-    if (@available(iOS 8.2, *)) {
-        return [UIFont systemFontOfSize:size weight:UIFontWeightMedium];
-    } else {
-        return [UIFont fontWithName:@"HelveticaNeue-Medium" size:size];
-    }
+    return [UIFont systemFontOfSize:size weight:UIFontWeightMedium];
 }
 
 + (UIFont *)ows_boldFontWithSize:(CGFloat)size
@@ -85,25 +69,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)ows_dynamicTypeTitle2Font
 {
-    if (@available(iOS 9.0, *)) {
-        return [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
-    } else {
-        // Dynamic title font for ios8 defaults to bold 12.0 pt, whereas ios9+ it's 22.0pt regular weight.
-        // Here we chose to break dynamic font, in order to have uniform style across versions.
-        // It's already huge, so it's unlikely to present a usability issue.
-        // Handy font translations: http://swiftiostutorials.com/comparison-of-system-fonts-on-ios-8-and-ios-9/
-        return [self ows_regularFontWithSize:22.0];
-    }
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
 }
 
 + (UIFont *)ows_dynamicTypeHeadlineFont
 {
-    if (@available(iOS 9.0, *)) {
-        return [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-    } else {
-        // See ows_dynamicTypeTitle2Font.
-        return [self ows_regularFontWithSize:17.0];
-    }
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
 }
 
 @end

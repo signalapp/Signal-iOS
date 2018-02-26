@@ -1,15 +1,14 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
 import Contacts
 import SignalServiceKit
 
-@available(iOS 9.0, *)
 class ContactCell: UITableViewCell {
 
-    static let nib = UINib(nibName:"ContactCell", bundle: nil)
+    static let nib = UINib(nibName: "ContactCell", bundle: nil)
 
     @IBOutlet weak var contactTextLabel: UILabel!
     @IBOutlet weak var contactDetailTextLabel: UILabel!
@@ -48,7 +47,7 @@ class ContactCell: UITableViewCell {
         self.contact = contact
 
         if contactTextLabel != nil {
-            contactTextLabel.attributedText = contact.cnContact?.formattedFullName(font:contactTextLabel.font)
+            contactTextLabel.attributedText = contact.cnContact?.formattedFullName(font: contactTextLabel.font)
         }
 
         updateSubtitleBasedonType(subtitleType, contact: contact)
@@ -65,7 +64,7 @@ class ContactCell: UITableViewCell {
             let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: contact.fullName,
                                                         colorSeed: contactIdForDeterminingBackgroundColor,
                                                         diameter: kAvatarWidth,
-                                                        contactsManager:contactsManager)
+                                                        contactsManager: contactsManager)
 
             self.contactImageView?.image = avatarBuilder.buildDefaultImage()
         } else {
@@ -92,7 +91,6 @@ class ContactCell: UITableViewCell {
     }
 }
 
-@available(iOS 9.0, *)
 fileprivate extension CNContact {
     /**
      * Bold the sorting portion of the name. e.g. if we sort by family name, bold the family name.
@@ -102,7 +100,7 @@ fileprivate extension CNContact {
 
         let boldDescriptor = font.fontDescriptor.withSymbolicTraits(.traitBold)
         let boldAttributes = [
-            NSFontAttributeName: UIFont(descriptor:boldDescriptor!, size: 0)
+            NSFontAttributeName: UIFont(descriptor: boldDescriptor!, size: 0)
         ]
 
         if let attributedName = CNContactFormatter.attributedString(from: self, style: .fullName, defaultAttributes: nil) {

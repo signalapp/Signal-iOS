@@ -21,8 +21,8 @@ An Objective-C library for communicating with the Signal messaging service.
   s.source           = { :git => "https://github.com/signalapp/SignalServiceKit.git", :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/FredericJacobs'
 
-  s.platform     = :ios, '8.0'
-  #s.ios.deployment_target = '8.0'
+  s.platform     = :ios, '9.0'
+  #s.ios.deployment_target = '9.0'
   #s.osx.deployment_target = '10.9'
   s.requires_arc = true
   s.source_files = 'SignalServiceKit/src/**/*.{h,m,mm}'

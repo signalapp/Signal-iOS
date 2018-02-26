@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputTextView.h"
@@ -215,14 +215,10 @@ NS_ASSUME_NONNULL_BEGIN
                                action:(SEL)action
                  discoverabilityTitle:(NSString *)discoverabilityTitle
 {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(9, 0)) {
-        return [UIKeyCommand keyCommandWithInput:input
-                                   modifierFlags:modifierFlags
-                                          action:action
-                            discoverabilityTitle:discoverabilityTitle];
-    } else {
-        return [UIKeyCommand keyCommandWithInput:input modifierFlags:modifierFlags action:action];
-    }
+    return [UIKeyCommand keyCommandWithInput:input
+                               modifierFlags:modifierFlags
+                                      action:action
+                        discoverabilityTitle:discoverabilityTitle];
 }
 
 - (void)modifiedReturnPressed:(UIKeyCommand *)sender

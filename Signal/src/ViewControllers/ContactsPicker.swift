@@ -11,7 +11,6 @@ import UIKit
 import Contacts
 import SignalServiceKit
 
-@available(iOS 9.0, *)
 public protocol ContactsPickerDelegate {
     func contactsPicker(_: ContactsPicker, didContactFetchFailed error: NSError)
     func contactsPicker(_: ContactsPicker, didCancel error: NSError)
@@ -20,7 +19,6 @@ public protocol ContactsPickerDelegate {
     func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool
 }
 
-@available(iOS 9.0, *)
 public extension ContactsPickerDelegate {
     func contactsPicker(_: ContactsPicker, didContactFetchFailed error: NSError) { }
     func contactsPicker(_: ContactsPicker, didCancel error: NSError) { }
@@ -34,7 +32,6 @@ public enum SubtitleCellValue {
     case email
 }
 
-@available(iOS 9.0, *)
 open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
     @IBOutlet var tableView: UITableView!
@@ -336,10 +333,8 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
     }
 }
 
-@available(iOS 9.0, *)
 let ContactSortOrder = computeSortOrder()
 
-@available(iOS 9.0, *)
 func computeSortOrder() -> CNContactSortOrder {
     let comparator = CNContact.comparator(forNameSortOrder: .userDefault)
 
@@ -360,7 +355,6 @@ func computeSortOrder() -> CNContactSortOrder {
     }
 }
 
-@available(iOS 9.0, *)
 fileprivate extension CNContact {
     /**
      * Sorting Key used by collation

@@ -5,7 +5,6 @@
 import Foundation
 import AVFoundation
 
-@available(iOS 9.0, *)
 @objc
 public class VideoPlayerView: UIView {
     var player: AVPlayer? {
@@ -27,7 +26,6 @@ public class VideoPlayerView: UIView {
     }
 }
 
-@available(iOS 9.0, *)
 @objc
 public protocol PlayerProgressBarDelegate {
     func playerProgressBarDidStartScrubbing(_ playerProgressBar: PlayerProgressBar)
@@ -35,7 +33,6 @@ public protocol PlayerProgressBarDelegate {
     func playerProgressBar(_ playerProgressBar: PlayerProgressBar, didFinishScrubbingAtTime time: CMTime, shouldResumePlayback: Bool)
 }
 
-@available(iOS 9.0, *)
 @objc
 public class PlayerProgressBar: UIView {
     public let TAG = "[PlayerProgressBar]"
@@ -150,7 +147,7 @@ public class PlayerProgressBar: UIView {
     @objc
     private func handleSliderTouchUp(_ slider: UISlider) {
         let sliderTime = time(slider: slider)
-        self.delegate?.playerProgressBar(self, didFinishScrubbingAtTime: sliderTime, shouldResumePlayback:wasPlayingWhenScrubbingStarted)
+        self.delegate?.playerProgressBar(self, didFinishScrubbingAtTime: sliderTime, shouldResumePlayback: wasPlayingWhenScrubbingStarted)
     }
 
     @objc

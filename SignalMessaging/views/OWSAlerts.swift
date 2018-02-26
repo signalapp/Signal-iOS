@@ -10,8 +10,8 @@ import Foundation
     /// Cleanup and present alert for no permissions
     @objc
     public class func showNoMicrophonePermissionAlert() {
-        let alertTitle = NSLocalizedString("CALL_AUDIO_PERMISSION_TITLE", comment:"Alert title when calling and permissions for microphone are missing")
-        let alertMessage = NSLocalizedString("CALL_AUDIO_PERMISSION_MESSAGE", comment:"Alert message when calling and permissions for microphone are missing")
+        let alertTitle = NSLocalizedString("CALL_AUDIO_PERMISSION_TITLE", comment: "Alert title when calling and permissions for microphone are missing")
+        let alertMessage = NSLocalizedString("CALL_AUDIO_PERMISSION_MESSAGE", comment: "Alert message when calling and permissions for microphone are missing")
         let alertController = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
         let dismissAction = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel)
 
@@ -68,6 +68,8 @@ import Foundation
     @objc
     public class func showIOSUpgradeNagIfNecessary() {
         // Only show the nag to iOS 8 users.
+        //
+        // NOTE: Our current minimum iOS version is 9, so this should never show.
         if #available(iOS 9.0, *) {
             return
         }
@@ -88,9 +90,9 @@ import Foundation
 
         Environment.preferences().setIOSUpgradeNagDate(Date())
 
-        OWSAlerts.showAlert(withTitle:NSLocalizedString("UPGRADE_IOS_ALERT_TITLE",
-                                                        comment:"Title for the alert indicating that user should upgrade iOS."),
-                            message:NSLocalizedString("UPGRADE_IOS_ALERT_MESSAGE",
-                                                      comment:"Message for the alert indicating that user should upgrade iOS."))
+        OWSAlerts.showAlert(withTitle: NSLocalizedString("UPGRADE_IOS_ALERT_TITLE",
+                                                        comment: "Title for the alert indicating that user should upgrade iOS."),
+                            message: NSLocalizedString("UPGRADE_IOS_ALERT_MESSAGE",
+                                                      comment: "Message for the alert indicating that user should upgrade iOS."))
     }
 }

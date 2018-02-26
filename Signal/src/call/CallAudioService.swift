@@ -453,13 +453,7 @@ protocol CallAudioServiceDelegate: class {
     var availableInputs: [AudioSource] {
         guard let availableInputs = avAudioSession.availableInputs else {
             // I'm not sure why this would happen, but it may indicate an error.
-            // In practice, I haven't seen it on iOS9+.
-            //
-            // I *have* seen it on iOS8, but it doesn't seem to cause any problems,
-            // so we do *not* trigger the assert on that platform.
-            if #available(iOS 9.0, *) {
-                owsFail("No available inputs or inputs not ready")
-            }
+            owsFail("No available inputs or inputs not ready")
             return [AudioSource.builtInSpeaker]
         }
 
