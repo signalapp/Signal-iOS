@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "PrivacySettingsTableViewController.h"
@@ -80,7 +80,19 @@ NS_ASSUME_NONNULL_BEGIN
                                                     selector:@selector(didToggleCallsHideIPAddressSwitch:)]];
     [contents addSection:callingSection];
 
-    if ([UIDevice currentDevice].supportsCallKit) {
+    if (@available(iOS 11, *)) {
+        OWSTableSection *callKitSection = [OWSTableSection new];
+        [callKitSection
+            addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
+                                                         @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
+                                                         @"Short table cell label")
+                                                isOn:[Environment.preferences isSystemCallLogEnabled]
+                                              target:weakSelf
+                                            selector:@selector(didToggleEnableSystemCallLogSwitch:)]];
+        callKitSection.footerTitle = NSLocalizedString(
+            @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION", @"Settings table section footer.");
+        [contents addSection:callKitSection];
+    } else if (@available(iOS 10, *)) {
         OWSTableSection *callKitSection = [OWSTableSection new];
         callKitSection.footerTitle
             = NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.");
@@ -173,17 +185,32 @@ NS_ASSUME_NONNULL_BEGIN
     [Environment.preferences setDoCallsHideIPAddress:enabled];
 }
 
+- (void)didToggleEnableSystemCallLogSwitch:(UISwitch *)sender
+{
+    DDLogInfo(@"%@ user toggled call kit preference: %@", self.logTag, (sender.isOn ? @"ON" : @"OFF"));
+    [[Environment current].preferences setIsSystemCallLogEnabled:sender.isOn];
+
+    // rebuild callUIAdapter since CallKit configuration changed.
+    [SignalApp.sharedApp.callService createCallUIAdapter];
+}
+
 - (void)didToggleEnableCallKitSwitch:(UISwitch *)sender {
     DDLogInfo(@"%@ user toggled call kit preference: %@", self.logTag, (sender.isOn ? @"ON" : @"OFF"));
     [[Environment current].preferences setIsCallKitEnabled:sender.isOn];
+
     // rebuild callUIAdapter since CallKit vs not changed.
     [SignalApp.sharedApp.callService createCallUIAdapter];
+
+    // Show/Hide dependent switch: CallKit privacy
     [self updateTableContents];
 }
 
 - (void)didToggleEnableCallKitPrivacySwitch:(UISwitch *)sender {
     DDLogInfo(@"%@ user toggled call kit privacy preference: %@", self.logTag, (sender.isOn ? @"ON" : @"OFF"));
     [[Environment current].preferences setIsCallKitPrivacyEnabled:!sender.isOn];
+
+    // rebuild callUIAdapter since CallKit configuration changed.
+    [SignalApp.sharedApp.callService createCallUIAdapter];
 }
 
 #pragma mark - Log util

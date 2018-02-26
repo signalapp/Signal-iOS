@@ -26,6 +26,7 @@ NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
+NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
 
 @implementation OWSPreferences
 
@@ -173,36 +174,122 @@ NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExten
 
 #pragma mark CallKit
 
+- (BOOL)isSystemCallLogEnabled
+{
+    if (@available(iOS 11, *)) {
+        // do nothing
+    } else {
+        OWSFail(@"%@ Call Logging can only be configured on iOS11+", self.logTag);
+        return NO;
+    }
+
+    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeySystemCallLogEnabled];
+
+    if (preference) {
+        return preference.boolValue;
+    } else {
+        // For legacy users, who may have previously intentionally disabled CallKit because they
+        // didn't want their calls showing up in the call log, we want to disable call logging
+        NSNumber *callKitPreference = [self tryGetValueForKey:OWSPreferencesKeyCallKitEnabled];
+        if (callKitPreference && !callKitPreference.boolValue) {
+            // user explicitly opted out of callKit, so disable system call logging.
+            return NO;
+        }
+    }
+
+    // For everyone else, including new users, enable by default.
+    return YES;
+}
+
+- (void)setIsSystemCallLogEnabled:(BOOL)flag
+{
+    if (@available(iOS 11, *)) {
+        // do nothing
+    } else {
+        OWSFail(@"%@ Call Logging can only be configured on iOS11+", self.logTag);
+        return;
+    }
+
+    [self setValueForKey:OWSPreferencesKeySystemCallLogEnabled toValue:@(flag)];
+}
+
+// In iOS 10.2.1, Apple fixed a bug wherein call history was backed up to iCloud.
+//
+// See: https://support.apple.com/en-us/HT207482
+//
+// In iOS 11, Apple introduced a property CXProviderConfiguration.includesCallsInRecents
+// that allows us to prevent Signal calls made with CallKit from showing up in the device's
+// call history.
+//
+// Therefore in versions of iOS after 11, we have no need of call privacy.
+#pragma mark Legacy CallKit
+
 - (BOOL)isCallKitEnabled
 {
+    if (@available(iOS 11, *)) {
+        OWSFail(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
+        return NO;
+    }
+
     NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyCallKitEnabled];
     return preference ? [preference boolValue] : YES;
 }
 
 - (void)setIsCallKitEnabled:(BOOL)flag
 {
+    if (@available(iOS 11, *)) {
+        OWSFail(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
+        return;
+    }
+
     [self setValueForKey:OWSPreferencesKeyCallKitEnabled toValue:@(flag)];
+    OWSFail(@"Rev callUIAdaptee to get new setting");
 }
 
 - (BOOL)isCallKitEnabledSet
 {
+    if (@available(iOS 11, *)) {
+        OWSFail(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
+        return NO;
+    }
+
     NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyCallKitEnabled];
     return preference != nil;
 }
 
 - (BOOL)isCallKitPrivacyEnabled
 {
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled];
-    return preference ? [preference boolValue] : YES;
+    if (@available(iOS 11, *)) {
+        OWSFail(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
+        return NO;
+    }
+
+    NSNumber *_Nullable preference = [self tryGetValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled];
+    if (preference) {
+        return [preference boolValue];
+    } else {
+        // Private by default.
+        return YES;
+    }
 }
 
 - (void)setIsCallKitPrivacyEnabled:(BOOL)flag
 {
+    if (@available(iOS 11, *)) {
+        OWSFail(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
+        return;
+    }
+
     [self setValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled toValue:@(flag)];
 }
 
 - (BOOL)isCallKitPrivacySet
 {
+    if (@available(iOS 11, *)) {
+        OWSFail(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
+        return NO;
+    }
+
     NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled];
     return preference != nil;
 }

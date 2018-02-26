@@ -59,8 +59,14 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 
 #pragma mark Callkit
 
+- (BOOL)isSystemCallLogEnabled;
+- (void)setIsSystemCallLogEnabled:(BOOL)flag;
+
+#pragma mark - Legacy CallKit settings
+
 - (BOOL)isCallKitEnabled;
 - (void)setIsCallKitEnabled:(BOOL)flag;
+
 // Returns YES IFF isCallKitEnabled has been set by user.
 - (BOOL)isCallKitEnabledSet;
 

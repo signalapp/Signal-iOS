@@ -1026,8 +1026,18 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         updateRemoteVideoLayout()
     }
 
-    internal func dismissIfPossible(shouldDelay: Bool, ignoreNag: Bool = false, completion: (() -> Swift.Void)? = nil) {
+    internal func dismissIfPossible(shouldDelay: Bool, ignoreNag ignoreNagParam: Bool = false, completion: (() -> Swift.Void)? = nil) {
         callUIAdapter.audioService.delegate = nil
+
+        let ignoreNag: Bool = {
+            // Nothing to nag about on iOS11
+            if #available(iOS 11, *) {
+                return true
+            } else {
+                // otherwise on iOS10, nag as specified
+                return ignoreNagParam
+            }
+        }()
 
         if hasDismissed {
             // Don't dismiss twice.

@@ -24,14 +24,15 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     internal let callService: CallService
     internal let notificationsAdapter: CallNotificationsAdapter
     internal let contactsManager: OWSContactsManager
+    private let showNamesOnCallScreen: Bool
     private let provider: CXProvider
-    let audioActivity: AudioActivity
+    private let audioActivity: AudioActivity
 
     // CallKit handles incoming ringer stop/start for us. Yay!
     let hasManualRinger = false
 
     // The app's provider configuration, representing its CallKit capabilities
-    static var providerConfiguration: CXProviderConfiguration {
+    class func buildProviderConfiguration(useSystemCallLog: Bool) -> CXProviderConfiguration {
         let localizedName = NSLocalizedString("APPLICATION_NAME", comment: "Name of application")
         let providerConfiguration = CXProviderConfiguration(localizedName: localizedName)
 
@@ -50,24 +51,35 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // default iOS ringtone OR the custom ringtone associated with this user's
         // system contact, if possible (iOS 11 or later).
 
+        if #available(iOS 11.0, *) {
+            providerConfiguration.includesCallsInRecents = useSystemCallLog
+        } else {
+            // not configurable for iOS10+
+            assert(useSystemCallLog)
+        }
+
         return providerConfiguration
     }
 
-    init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter) {
+    init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter, showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {
         AssertIsOnMainThread()
 
         Logger.debug("\(self.TAG) \(#function)")
 
-        self.callManager = CallKitCallManager()
+        self.callManager = CallKitCallManager(showNamesOnCallScreen: showNamesOnCallScreen)
         self.callService = callService
         self.contactsManager = contactsManager
         self.notificationsAdapter = notificationsAdapter
-        self.provider = CXProvider(configuration: type(of: self).providerConfiguration)
+
+        let providerConfiguration = type(of: self).buildProviderConfiguration(useSystemCallLog: useSystemCallLog)
+        self.provider = CXProvider(configuration: providerConfiguration)
+
         self.audioActivity = AudioActivity(audioDescription: "[CallKitCallUIAdaptee]")
+        self.showNamesOnCallScreen = showNamesOnCallScreen
 
         super.init()
 
-        SwiftSingletons.register(self)
+        // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
 
         self.provider.setDelegate(self, queue: nil)
     }
@@ -112,14 +124,15 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
-        if Environment.current().preferences.isCallKitPrivacyEnabled() {
+
+        if showNamesOnCallScreen {
+            update.localizedCallerName = self.contactsManager.stringForConversationTitle(withPhoneIdentifier: call.remotePhoneNumber)
+            update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
+        } else {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             update.remoteHandle = CXHandle(type: .generic, value: callKitId)
             TSStorageManager.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId: callKitId)
             update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
-        } else {
-            update.localizedCallerName = self.contactsManager.stringForConversationTitle(withPhoneIdentifier: call.remotePhoneNumber)
-            update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
         }
 
         update.hasVideo = call.hasLocalVideo
@@ -254,8 +267,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         action.fulfill()
         self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
 
-        if Environment.current().preferences.isCallKitPrivacyEnabled() {
-            // Update the name used in the CallKit UI for outgoing calls.
+        // Update the name used in the CallKit UI for outgoing calls when the user prefers not to show names
+        // in ther notifications
+        if !showNamesOnCallScreen {
             let update = CXCallUpdate()
             update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME",
                                                            comment: "The generic name used for calls if CallKit privacy is enabled")

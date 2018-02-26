@@ -112,10 +112,8 @@
         }
         case NotificationNameNoPreview:
         case NotificationNamePreview: {
-            alertMessage = (([UIDevice currentDevice].supportsCallKit &&
-                                [[Environment current].preferences isCallKitPrivacyEnabled])
-                    ? [CallStrings missedCallNotificationBodyWithoutCallerName]
-                    : [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], callerName]);
+            alertMessage =
+                [NSString stringWithFormat:[CallStrings missedCallNotificationBodyWithCallerName], callerName];
             break;
         }
     }
@@ -152,12 +150,8 @@
         }
         case NotificationNameNoPreview:
         case NotificationNamePreview: {
-            alertMessage = (([UIDevice currentDevice].supportsCallKit &&
-                                [[Environment current].preferences isCallKitPrivacyEnabled])
-                    ? [CallStrings missedCallWithIdentityChangeNotificationBodyWithoutCallerName]
-                    : [NSString
-                          stringWithFormat:[CallStrings missedCallWithIdentityChangeNotificationBodyWithCallerName],
-                          callerName]);
+            alertMessage = [NSString
+                stringWithFormat:[CallStrings missedCallWithIdentityChangeNotificationBodyWithCallerName], callerName];
             break;
         }
     }
@@ -193,12 +187,8 @@
         }
         case NotificationNameNoPreview:
         case NotificationNamePreview: {
-            alertMessage = (([UIDevice currentDevice].supportsCallKit &&
-                                [[Environment current].preferences isCallKitPrivacyEnabled])
-                    ? [CallStrings missedCallWithIdentityChangeNotificationBodyWithoutCallerName]
-                    : [NSString
-                          stringWithFormat:[CallStrings missedCallWithIdentityChangeNotificationBodyWithCallerName],
-                          callerName]);
+            alertMessage = [NSString
+                stringWithFormat:[CallStrings missedCallWithIdentityChangeNotificationBodyWithCallerName], callerName];
             break;
         }
     }
