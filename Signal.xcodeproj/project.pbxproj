@@ -11,18 +11,6 @@
 		34074F5B203D093B004596AE /* OWSSoundSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F59203D093A004596AE /* OWSSoundSettingsViewController.m */; };
 		34074F61203D0CBE004596AE /* OWSSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* OWSSounds.m */; };
 		34074F62203D0CBE004596AE /* OWSSounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 34074F60203D0CBE004596AE /* OWSSounds.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		34074FEE203E5436004596AE /* aurora.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FC6203E5435004596AE /* aurora.m4r */; };
-		34074FEF203E5436004596AE /* bamboo.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FC7203E5435004596AE /* bamboo.m4r */; };
-		34074FF0203E5436004596AE /* chord.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FC8203E5435004596AE /* chord.m4r */; };
-		34074FF1203E5436004596AE /* circles.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FC9203E5435004596AE /* circles.m4r */; };
-		34074FF2203E5436004596AE /* complete.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FCA203E5435004596AE /* complete.m4r */; };
-		34074FF3203E5436004596AE /* hello.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FCB203E5435004596AE /* hello.m4r */; };
-		34074FF4203E5436004596AE /* input.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FCC203E5435004596AE /* input.m4r */; };
-		34074FF5203E5436004596AE /* keys.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FCD203E5435004596AE /* keys.m4r */; };
-		34074FF6203E5436004596AE /* note.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FCE203E5435004596AE /* note.m4r */; };
-		34074FF7203E5436004596AE /* popcorn.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FCF203E5435004596AE /* popcorn.m4r */; };
-		34074FF8203E5436004596AE /* pulse.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD0203E5435004596AE /* pulse.m4r */; };
-		34074FF9203E5436004596AE /* synth.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34074FD1203E5435004596AE /* synth.m4r */; };
 		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
 		340CB2271EAC25820001CAA1 /* UpdateGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CB2261EAC25820001CAA1 /* UpdateGroupViewController.m */; };
 		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
@@ -223,18 +211,6 @@
 		34F77040203F55D000C7CBB7 /* OWS107LegacySounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F7703E203F55D000C7CBB7 /* OWS107LegacySounds.m */; };
 		34F77041203F55D000C7CBB7 /* OWS107LegacySounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 34F7703F203F55D000C7CBB7 /* OWS107LegacySounds.h */; };
 		34F77045203F5E4C00C7CBB7 /* messageReceivedClassic-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77044203F5E4B00C7CBB7 /* messageReceivedClassic-quiet.caf */; };
-		34F77052203F5E6800C7CBB7 /* note-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77046203F5E6200C7CBB7 /* note-quiet.caf */; };
-		34F77053203F5E6800C7CBB7 /* popcorn-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77047203F5E6200C7CBB7 /* popcorn-quiet.caf */; };
-		34F77054203F5E6800C7CBB7 /* complete-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77048203F5E6200C7CBB7 /* complete-quiet.caf */; };
-		34F77055203F5E6800C7CBB7 /* synth-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77049203F5E6200C7CBB7 /* synth-quiet.caf */; };
-		34F77056203F5E6800C7CBB7 /* aurora-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F7704A203F5E6300C7CBB7 /* aurora-quiet.caf */; };
-		34F77057203F5E6800C7CBB7 /* chord-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F7704B203F5E6300C7CBB7 /* chord-quiet.caf */; };
-		34F77058203F5E6800C7CBB7 /* circles-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F7704C203F5E6300C7CBB7 /* circles-quiet.caf */; };
-		34F77059203F5E6800C7CBB7 /* input-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F7704D203F5E6300C7CBB7 /* input-quiet.caf */; };
-		34F7705A203F5E6800C7CBB7 /* pulse-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F7704E203F5E6700C7CBB7 /* pulse-quiet.caf */; };
-		34F7705B203F5E6800C7CBB7 /* keys-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F7704F203F5E6700C7CBB7 /* keys-quiet.caf */; };
-		34F7705C203F5E6800C7CBB7 /* hello-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77050203F5E6700C7CBB7 /* hello-quiet.caf */; };
-		34F7705D203F5E6800C7CBB7 /* bamboo-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77051203F5E6700C7CBB7 /* bamboo-quiet.caf */; };
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
 		4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */; };
 		450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
@@ -332,6 +308,30 @@
 		45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A6DAD51EBBF85500893231 /* ReminderView.swift */; };
 		45AE48511E0732D6004D96C2 /* TurnServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */; };
 		45B27B862037FFB400A539DF /* DebugUIFileBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B27B852037FFB400A539DF /* DebugUIFileBrowser.swift */; };
+		45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5B2044AAB300CD42F8 /* aurora-quiet.aifc */; };
+		45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5C2044AAB300CD42F8 /* synth-quiet.aifc */; };
+		45B74A762044AAB600CD42F8 /* keys-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5D2044AAB400CD42F8 /* keys-quiet.aifc */; };
+		45B74A772044AAB600CD42F8 /* hello.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5E2044AAB400CD42F8 /* hello.aifc */; };
+		45B74A782044AAB600CD42F8 /* bamboo-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5F2044AAB400CD42F8 /* bamboo-quiet.aifc */; };
+		45B74A792044AAB600CD42F8 /* input.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A602044AAB400CD42F8 /* input.aifc */; };
+		45B74A7A2044AAB600CD42F8 /* keys.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A612044AAB400CD42F8 /* keys.aifc */; };
+		45B74A7B2044AAB600CD42F8 /* chord.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A622044AAB400CD42F8 /* chord.aifc */; };
+		45B74A7C2044AAB600CD42F8 /* hello-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A632044AAB400CD42F8 /* hello-quiet.aifc */; };
+		45B74A7D2044AAB600CD42F8 /* popcorn-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A642044AAB400CD42F8 /* popcorn-quiet.aifc */; };
+		45B74A7E2044AAB600CD42F8 /* complete.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A652044AAB400CD42F8 /* complete.aifc */; };
+		45B74A7F2044AAB600CD42F8 /* note-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A662044AAB400CD42F8 /* note-quiet.aifc */; };
+		45B74A802044AAB600CD42F8 /* pulse-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A672044AAB500CD42F8 /* pulse-quiet.aifc */; };
+		45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A682044AAB500CD42F8 /* chord-quiet.aifc */; };
+		45B74A822044AAB600CD42F8 /* pulse.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A692044AAB500CD42F8 /* pulse.aifc */; };
+		45B74A832044AAB600CD42F8 /* circles.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6A2044AAB500CD42F8 /* circles.aifc */; };
+		45B74A842044AAB600CD42F8 /* popcorn.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6B2044AAB500CD42F8 /* popcorn.aifc */; };
+		45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6C2044AAB500CD42F8 /* bamboo.aifc */; };
+		45B74A862044AAB600CD42F8 /* note.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6D2044AAB500CD42F8 /* note.aifc */; };
+		45B74A872044AAB600CD42F8 /* complete-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6E2044AAB500CD42F8 /* complete-quiet.aifc */; };
+		45B74A882044AAB600CD42F8 /* aurora.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6F2044AAB500CD42F8 /* aurora.aifc */; };
+		45B74A892044AAB600CD42F8 /* circles-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A702044AAB500CD42F8 /* circles-quiet.aifc */; };
+		45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A722044AAB600CD42F8 /* synth.aifc */; };
+		45B74A8C2044AAB600CD42F8 /* input-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A732044AAB600CD42F8 /* input-quiet.aifc */; };
 		45B9EE9C200E91FB005D2F2D /* MediaDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 45B9EE9B200E91FB005D2F2D /* MediaDetailViewController.m */; };
 		45BB93381E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */; };
 		45BC829D1FD9C4B400011CF3 /* ShareViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BC829C1FD9C4B400011CF3 /* ShareViewDelegate.swift */; };
@@ -513,18 +513,6 @@
 		34074F5A203D093B004596AE /* OWSSoundSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSoundSettingsViewController.h; sourceTree = "<group>"; };
 		34074F5F203D0CBD004596AE /* OWSSounds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSounds.m; sourceTree = "<group>"; };
 		34074F60203D0CBE004596AE /* OWSSounds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSounds.h; sourceTree = "<group>"; };
-		34074FC6203E5435004596AE /* aurora.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = aurora.m4r; sourceTree = "<group>"; };
-		34074FC7203E5435004596AE /* bamboo.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = bamboo.m4r; sourceTree = "<group>"; };
-		34074FC8203E5435004596AE /* chord.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = chord.m4r; sourceTree = "<group>"; };
-		34074FC9203E5435004596AE /* circles.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = circles.m4r; sourceTree = "<group>"; };
-		34074FCA203E5435004596AE /* complete.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = complete.m4r; sourceTree = "<group>"; };
-		34074FCB203E5435004596AE /* hello.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = hello.m4r; sourceTree = "<group>"; };
-		34074FCC203E5435004596AE /* input.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = input.m4r; sourceTree = "<group>"; };
-		34074FCD203E5435004596AE /* keys.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = keys.m4r; sourceTree = "<group>"; };
-		34074FCE203E5435004596AE /* note.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = note.m4r; sourceTree = "<group>"; };
-		34074FCF203E5435004596AE /* popcorn.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = popcorn.m4r; sourceTree = "<group>"; };
-		34074FD0203E5435004596AE /* pulse.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = pulse.m4r; sourceTree = "<group>"; };
-		34074FD1203E5435004596AE /* synth.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = synth.m4r; sourceTree = "<group>"; };
 		340B02B61F9FD31800F9CFEC /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = translations/he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewItemTest.m; sourceTree = "<group>"; };
 		340CB2221EAC155C0001CAA1 /* ContactsViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsViewHelper.h; sourceTree = "<group>"; };
@@ -814,18 +802,6 @@
 		34F7703E203F55D000C7CBB7 /* OWS107LegacySounds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS107LegacySounds.m; sourceTree = "<group>"; };
 		34F7703F203F55D000C7CBB7 /* OWS107LegacySounds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS107LegacySounds.h; sourceTree = "<group>"; };
 		34F77044203F5E4B00C7CBB7 /* messageReceivedClassic-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "messageReceivedClassic-quiet.caf"; path = "Signal/AudioFiles/messageReceivedClassic-quiet.caf"; sourceTree = SOURCE_ROOT; };
-		34F77046203F5E6200C7CBB7 /* note-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "note-quiet.caf"; sourceTree = "<group>"; };
-		34F77047203F5E6200C7CBB7 /* popcorn-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "popcorn-quiet.caf"; sourceTree = "<group>"; };
-		34F77048203F5E6200C7CBB7 /* complete-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "complete-quiet.caf"; sourceTree = "<group>"; };
-		34F77049203F5E6200C7CBB7 /* synth-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "synth-quiet.caf"; sourceTree = "<group>"; };
-		34F7704A203F5E6300C7CBB7 /* aurora-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "aurora-quiet.caf"; sourceTree = "<group>"; };
-		34F7704B203F5E6300C7CBB7 /* chord-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "chord-quiet.caf"; sourceTree = "<group>"; };
-		34F7704C203F5E6300C7CBB7 /* circles-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "circles-quiet.caf"; sourceTree = "<group>"; };
-		34F7704D203F5E6300C7CBB7 /* input-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "input-quiet.caf"; sourceTree = "<group>"; };
-		34F7704E203F5E6700C7CBB7 /* pulse-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "pulse-quiet.caf"; sourceTree = "<group>"; };
-		34F7704F203F5E6700C7CBB7 /* keys-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "keys-quiet.caf"; sourceTree = "<group>"; };
-		34F77050203F5E6700C7CBB7 /* hello-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "hello-quiet.caf"; sourceTree = "<group>"; };
-		34F77051203F5E6700C7CBB7 /* bamboo-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "bamboo-quiet.caf"; sourceTree = "<group>"; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = views/OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
 		435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
@@ -908,6 +884,30 @@
 		45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TurnServerInfo.swift; sourceTree = "<group>"; };
 		45B201741DAECBFD00C461E0 /* Signal-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Signal-Bridging-Header.h"; sourceTree = "<group>"; };
 		45B27B852037FFB400A539DF /* DebugUIFileBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIFileBrowser.swift; sourceTree = "<group>"; };
+		45B74A5B2044AAB300CD42F8 /* aurora-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "aurora-quiet.aifc"; sourceTree = "<group>"; };
+		45B74A5C2044AAB300CD42F8 /* synth-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "synth-quiet.aifc"; sourceTree = "<group>"; };
+		45B74A5D2044AAB400CD42F8 /* keys-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "keys-quiet.aifc"; sourceTree = "<group>"; };
+		45B74A5E2044AAB400CD42F8 /* hello.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = hello.aifc; sourceTree = "<group>"; };
+		45B74A5F2044AAB400CD42F8 /* bamboo-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "bamboo-quiet.aifc"; sourceTree = "<group>"; };
+		45B74A602044AAB400CD42F8 /* input.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = input.aifc; sourceTree = "<group>"; };
+		45B74A612044AAB400CD42F8 /* keys.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = keys.aifc; sourceTree = "<group>"; };
+		45B74A622044AAB400CD42F8 /* chord.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = chord.aifc; sourceTree = "<group>"; };
+		45B74A632044AAB400CD42F8 /* hello-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "hello-quiet.aifc"; sourceTree = "<group>"; };
+		45B74A642044AAB400CD42F8 /* popcorn-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "popcorn-quiet.aifc"; sourceTree = "<group>"; };
+		45B74A652044AAB400CD42F8 /* complete.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = complete.aifc; sourceTree = "<group>"; };
+		45B74A662044AAB400CD42F8 /* note-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "note-quiet.aifc"; sourceTree = "<group>"; };
+		45B74A672044AAB500CD42F8 /* pulse-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "pulse-quiet.aifc"; sourceTree = "<group>"; };
+		45B74A682044AAB500CD42F8 /* chord-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "chord-quiet.aifc"; sourceTree = "<group>"; };
+		45B74A692044AAB500CD42F8 /* pulse.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = pulse.aifc; sourceTree = "<group>"; };
+		45B74A6A2044AAB500CD42F8 /* circles.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = circles.aifc; sourceTree = "<group>"; };
+		45B74A6B2044AAB500CD42F8 /* popcorn.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = popcorn.aifc; sourceTree = "<group>"; };
+		45B74A6C2044AAB500CD42F8 /* bamboo.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = bamboo.aifc; sourceTree = "<group>"; };
+		45B74A6D2044AAB500CD42F8 /* note.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = note.aifc; sourceTree = "<group>"; };
+		45B74A6E2044AAB500CD42F8 /* complete-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "complete-quiet.aifc"; sourceTree = "<group>"; };
+		45B74A6F2044AAB500CD42F8 /* aurora.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = aurora.aifc; sourceTree = "<group>"; };
+		45B74A702044AAB500CD42F8 /* circles-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "circles-quiet.aifc"; sourceTree = "<group>"; };
+		45B74A722044AAB600CD42F8 /* synth.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = synth.aifc; sourceTree = "<group>"; };
+		45B74A732044AAB600CD42F8 /* input-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "input-quiet.aifc"; sourceTree = "<group>"; };
 		45B9EE9A200E91FB005D2F2D /* MediaDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaDetailViewController.h; sourceTree = "<group>"; };
 		45B9EE9B200E91FB005D2F2D /* MediaDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaDetailViewController.m; sourceTree = "<group>"; };
 		45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIDevice+featureSupport.swift"; sourceTree = "<group>"; };
@@ -1168,30 +1168,30 @@
 		34074FC5203E5435004596AE /* messageReceivedSounds */ = {
 			isa = PBXGroup;
 			children = (
-				34F7704A203F5E6300C7CBB7 /* aurora-quiet.caf */,
-				34074FC6203E5435004596AE /* aurora.m4r */,
-				34074FC7203E5435004596AE /* bamboo.m4r */,
-				34F77051203F5E6700C7CBB7 /* bamboo-quiet.caf */,
-				34F7704B203F5E6300C7CBB7 /* chord-quiet.caf */,
-				34074FC8203E5435004596AE /* chord.m4r */,
-				34F7704C203F5E6300C7CBB7 /* circles-quiet.caf */,
-				34074FC9203E5435004596AE /* circles.m4r */,
-				34F77048203F5E6200C7CBB7 /* complete-quiet.caf */,
-				34074FCA203E5435004596AE /* complete.m4r */,
-				34074FCB203E5435004596AE /* hello.m4r */,
-				34F77050203F5E6700C7CBB7 /* hello-quiet.caf */,
-				34F7704D203F5E6300C7CBB7 /* input-quiet.caf */,
-				34074FCC203E5435004596AE /* input.m4r */,
-				34074FCD203E5435004596AE /* keys.m4r */,
-				34F7704F203F5E6700C7CBB7 /* keys-quiet.caf */,
-				34F77046203F5E6200C7CBB7 /* note-quiet.caf */,
-				34074FCE203E5435004596AE /* note.m4r */,
-				34F77047203F5E6200C7CBB7 /* popcorn-quiet.caf */,
-				34074FCF203E5435004596AE /* popcorn.m4r */,
-				34074FD0203E5435004596AE /* pulse.m4r */,
-				34F7704E203F5E6700C7CBB7 /* pulse-quiet.caf */,
-				34F77049203F5E6200C7CBB7 /* synth-quiet.caf */,
-				34074FD1203E5435004596AE /* synth.m4r */,
+				45B74A5B2044AAB300CD42F8 /* aurora-quiet.aifc */,
+				45B74A6F2044AAB500CD42F8 /* aurora.aifc */,
+				45B74A5F2044AAB400CD42F8 /* bamboo-quiet.aifc */,
+				45B74A6C2044AAB500CD42F8 /* bamboo.aifc */,
+				45B74A682044AAB500CD42F8 /* chord-quiet.aifc */,
+				45B74A622044AAB400CD42F8 /* chord.aifc */,
+				45B74A702044AAB500CD42F8 /* circles-quiet.aifc */,
+				45B74A6A2044AAB500CD42F8 /* circles.aifc */,
+				45B74A6E2044AAB500CD42F8 /* complete-quiet.aifc */,
+				45B74A652044AAB400CD42F8 /* complete.aifc */,
+				45B74A632044AAB400CD42F8 /* hello-quiet.aifc */,
+				45B74A5E2044AAB400CD42F8 /* hello.aifc */,
+				45B74A732044AAB600CD42F8 /* input-quiet.aifc */,
+				45B74A602044AAB400CD42F8 /* input.aifc */,
+				45B74A5D2044AAB400CD42F8 /* keys-quiet.aifc */,
+				45B74A612044AAB400CD42F8 /* keys.aifc */,
+				45B74A662044AAB400CD42F8 /* note-quiet.aifc */,
+				45B74A6D2044AAB500CD42F8 /* note.aifc */,
+				45B74A642044AAB400CD42F8 /* popcorn-quiet.aifc */,
+				45B74A6B2044AAB500CD42F8 /* popcorn.aifc */,
+				45B74A672044AAB500CD42F8 /* pulse-quiet.aifc */,
+				45B74A692044AAB500CD42F8 /* pulse.aifc */,
+				45B74A5C2044AAB300CD42F8 /* synth-quiet.aifc */,
+				45B74A722044AAB600CD42F8 /* synth.aifc */,
 			);
 			name = messageReceivedSounds;
 			path = Signal/AudioFiles/messageReceivedSounds;
@@ -2484,68 +2484,68 @@
 			buildActionMask = 2147483647;
 			files = (
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
+				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
+				45B74A7D2044AAB600CD42F8 /* popcorn-quiet.aifc in Resources */,
+				45B74A792044AAB600CD42F8 /* input.aifc in Resources */,
 				AD83FF3F1A73426500B5C81A /* audio_pause_button_blue.png in Resources */,
 				34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */,
 				A5509ECA1A69AB8B00ABA4BC /* Main.storyboard in Resources */,
 				AD83FF421A73426500B5C81A /* audio_play_button.png in Resources */,
-				34074FEF203E5436004596AE /* bamboo.m4r in Resources */,
+				45B74A762044AAB600CD42F8 /* keys-quiet.aifc in Resources */,
 				34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */,
 				B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */,
 				B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */,
-				34074FF1203E5436004596AE /* circles.m4r in Resources */,
+				45B74A7F2044AAB600CD42F8 /* note-quiet.aifc in Resources */,
+				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,
 				AD83FF441A73426500B5C81A /* audio_pause_button.png in Resources */,
-				34F77053203F5E6800C7CBB7 /* popcorn-quiet.caf in Resources */,
-				34F77054203F5E6800C7CBB7 /* complete-quiet.caf in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
 				34F77045203F5E4C00C7CBB7 /* messageReceivedClassic-quiet.caf in Resources */,
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
-				34F7705B203F5E6800C7CBB7 /* keys-quiet.caf in Resources */,
-				34F77057203F5E6800C7CBB7 /* chord-quiet.caf in Resources */,
+				45B74A872044AAB600CD42F8 /* complete-quiet.aifc in Resources */,
 				B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */,
+				45B74A7E2044AAB600CD42F8 /* complete.aifc in Resources */,
+				45B74A802044AAB600CD42F8 /* pulse-quiet.aifc in Resources */,
 				B10C9B611A7049EC00ECA2BF /* play_icon.png in Resources */,
-				34074FF3203E5436004596AE /* hello.m4r in Resources */,
-				34074FF9203E5436004596AE /* synth.m4r in Resources */,
 				AD83FF401A73426500B5C81A /* audio_pause_button_blue@2x.png in Resources */,
+				45B74A882044AAB600CD42F8 /* aurora.aifc in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
 				34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */,
-				34F77055203F5E6800C7CBB7 /* synth-quiet.caf in Resources */,
-				34F7705D203F5E6800C7CBB7 /* bamboo-quiet.caf in Resources */,
 				34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */,
-				34074FF7203E5436004596AE /* popcorn.m4r in Resources */,
-				34074FF8203E5436004596AE /* pulse.m4r in Resources */,
 				4517642A1DE939FD00EDB8B9 /* ContactCell.xib in Resources */,
 				AD83FF431A73426500B5C81A /* audio_play_button@2x.png in Resources */,
-				34F77052203F5E6800C7CBB7 /* note-quiet.caf in Resources */,
+				45B74A7A2044AAB600CD42F8 /* keys.aifc in Resources */,
+				45B74A772044AAB600CD42F8 /* hello.aifc in Resources */,
+				45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
 				34B3F8781E8DF1700035BE1A /* ContactsPicker.xib in Resources */,
+				45B74A892044AAB600CD42F8 /* circles-quiet.aifc in Resources */,
 				B633C5C31A1D190B0059AC12 /* mute_off@2x.png in Resources */,
-				34074FF2203E5436004596AE /* complete.m4r in Resources */,
+				45B74A832044AAB600CD42F8 /* circles.aifc in Resources */,
 				AD83FF411A73426500B5C81A /* audio_play_button_blue@2x.png in Resources */,
 				34C3C78D20409F320000134C /* Opening.m4r in Resources */,
 				FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */,
-				34074FF6203E5436004596AE /* note.m4r in Resources */,
-				34F77056203F5E6800C7CBB7 /* aurora-quiet.caf in Resources */,
 				B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */,
 				B10C9B621A7049EC00ECA2BF /* play_icon@2x.png in Resources */,
 				B633C5861A1D190B0059AC12 /* call@2x.png in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
-				34F77058203F5E6800C7CBB7 /* circles-quiet.caf in Resources */,
+				45B74A782044AAB600CD42F8 /* bamboo-quiet.aifc in Resources */,
 				3421FA59203F542E00275549 /* messageReceivedClassic.aifc in Resources */,
-				34F7705A203F5E6800C7CBB7 /* pulse-quiet.caf in Resources */,
-				34074FF5203E5436004596AE /* keys.m4r in Resources */,
-				34F77059203F5E6800C7CBB7 /* input-quiet.caf in Resources */,
+				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
 				B10C9B601A7049EC00ECA2BF /* pause_icon@2x.png in Resources */,
 				FC9120411A39EFB70074545C /* qr@2x.png in Resources */,
+				45B74A842044AAB600CD42F8 /* popcorn.aifc in Resources */,
 				34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */,
-				34F7705C203F5E6800C7CBB7 /* hello-quiet.caf in Resources */,
-				34074FF0203E5436004596AE /* chord.m4r in Resources */,
-				34074FF4203E5436004596AE /* input.m4r in Resources */,
 				B10C9B5F1A7049EC00ECA2BF /* pause_icon.png in Resources */,
+				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
+				45B74A7B2044AAB600CD42F8 /* chord.aifc in Resources */,
 				AD83FF471A73428300B5C81A /* audio_play_button_blue.png in Resources */,
-				34074FEE203E5436004596AE /* aurora.m4r in Resources */,
+				45B74A862044AAB600CD42F8 /* note.aifc in Resources */,
 				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
 				AD83FF451A73426500B5C81A /* audio_pause_button@2x.png in Resources */,
+				45B74A7C2044AAB600CD42F8 /* hello-quiet.aifc in Resources */,
+				45B74A8C2044AAB600CD42F8 /* input-quiet.aifc in Resources */,
+				45B74A822044AAB600CD42F8 /* pulse.aifc in Resources */,
 				45A2F005204473A3002E978A /* NewMessage.aifc in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
