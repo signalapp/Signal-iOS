@@ -4,6 +4,7 @@
 
 #import "OWSSounds.h"
 #import "OWSAudioPlayer.h"
+#import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
@@ -245,6 +246,36 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 + (void)setGlobalNotificationSound:(OWSSound)sound
 {
+    // Fallback push notifications play a sound specified by the server, but we don't want to store this configuration
+    // on the server. Instead, we create a file with the same name as the default to be played when receiving
+    // a fallback notification.
+    NSString *dirPath = [[OWSFileSystem appLibraryDirectoryPath] stringByAppendingPathComponent:@"Sounds"];
+    [OWSFileSystem ensureDirectoryExists:dirPath];
+
+    // This name is specified in the payload by the Signal Service when requesting fallback push notifications.
+    NSString *kDefaultNotificationSoundFilename = @"NewMessage.aifc";
+    NSString *defaultSoundPath = [dirPath stringByAppendingPathComponent:kDefaultNotificationSoundFilename];
+
+    DDLogDebug(@"%@ writing new default sound to %@", self.logTag, defaultSoundPath);
+
+    NSURL *_Nullable soundURL = [OWSSounds soundURLForSound:sound quiet:NO];
+    OWSAssert(soundURL);
+
+    // Quick way to achieve an atomic "copy" operation that allows overwriting if the user has previously specified
+    // a default notification sound.
+    NSData *soundData = [NSData dataWithContentsOfURL:soundURL];
+    BOOL success = [soundData writeToFile:defaultSoundPath atomically:YES];
+
+    // The globally configured sound the user has configured is unprotected, so that we can still play the sound if the
+    // user hasn't authenticated after power-cycling their device.
+    [OWSFileSystem protectFileOrFolderAtPath:defaultSoundPath fileProtectionType:NSFileProtectionNone];
+
+    if (!success) {
+        OWSProdLogAndFail(
+            @"%@ Unable to write new default sound data from: %@ to :%@", self.logTag, soundURL, defaultSoundPath);
+        return;
+    }
+
     OWSSounds *instance = OWSSounds.sharedManager;
     [instance.dbConnection setObject:@(sound)
                               forKey:kOWSSoundsStorageGlobalNotificationKey

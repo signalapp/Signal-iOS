@@ -102,9 +102,9 @@ NS_ASSUME_NONNULL_BEGIN
                    }];
     [subsectionItems addObject:sharedDataFileBrowserItem];
     OWSTableItem *documentsFileBrowserItem = [OWSTableItem
-        disclosureItemWithText:@"📁 Document Dir"
+        disclosureItemWithText:@"📁 App Container"
                    actionBlock:^{
-                       NSURL *baseURL = [NSURL URLWithString:[OWSFileSystem appDocumentDirectoryPath]];
+                       NSURL *baseURL = [NSURL URLWithString:[OWSFileSystem appLibraryDirectoryPath]];
                        DebugUIFileBrowser *fileBrowser = [[DebugUIFileBrowser alloc] initWithFileURL:baseURL];
                        [viewController.navigationController pushViewController:fileBrowser animated:YES];
                    }];
