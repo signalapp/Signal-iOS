@@ -4,14 +4,290 @@
 
 #import "OWSBackgroundTask.h"
 #import "AppContext.h"
+#import "NSTimer+OWS.h"
 #import "Threading.h"
+
+NS_ASSUME_NONNULL_BEGIN
+
+typedef void (^BackgroundTaskExpirationBlock)(void);
+typedef NSNumber *OWSTaskId;
+
+// This class can be safely accessed and used from any thread.
+@interface OWSBackgroundTaskManager ()
+
+// This property should only be accessed while synchronized on this instance.
+@property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskId;
+
+// This property should only be accessed while synchronized on this instance.
+@property (nonatomic) NSMutableDictionary<OWSTaskId, BackgroundTaskExpirationBlock> *expirationMap;
+
+// This property should only be accessed while synchronized on this instance.
+@property (nonatomic) unsigned long long idCounter;
+
+// Note that this flag is set a little early in "will resign active".
+//
+// This property should only be accessed while synchronized on this instance.
+@property (nonatomic) BOOL isAppActive;
+
+// We use this timer to provide continuity and reduce churn,
+// so that if one OWSBackgroundTask ends right before another
+// begins, we use a single uninterrupted background that
+// spans their lifetimes.
+//
+// This property should only be accessed while synchronized on this instance.
+@property (nonatomic, nullable) NSTimer *continuityTimer;
+
+@end
+
+#pragma mark -
+
+@implementation OWSBackgroundTaskManager
+
++ (instancetype)sharedManager
+{
+    static OWSBackgroundTaskManager *sharedMyManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedMyManager = [[self alloc] initDefault];
+    });
+    return sharedMyManager;
+}
+
+- (instancetype)initDefault
+{
+    OWSAssertIsOnMainThread();
+
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    self.backgroundTaskId = UIBackgroundTaskInvalid;
+    self.expirationMap = [NSMutableDictionary new];
+    self.idCounter = 0;
+    self.isAppActive = CurrentAppContext().isMainAppAndActive;
+
+    OWSSingletonAssert();
+
+    [self observeNotifications];
+
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)observeNotifications
+{
+    if (!CurrentAppContext().isMainApp) {
+        return;
+    }
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:OWSApplicationDidBecomeActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:OWSApplicationWillResignActiveNotification
+                                               object:nil];
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+    OWSAssertIsOnMainThread();
+
+    @synchronized(self)
+    {
+        self.isAppActive = YES;
+
+        [self ensureBackgroundTaskState];
+    }
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application
+{
+    OWSAssertIsOnMainThread();
+
+    @synchronized(self)
+    {
+        self.isAppActive = NO;
+
+        [self ensureBackgroundTaskState];
+    }
+}
+
+// Returns nil if adding this task _should have_ started a
+// background task, but the background task couldn't be begun.
+// In that case expirationBlock will not be called.
+- (nullable OWSTaskId)addTask:(BackgroundTaskExpirationBlock)expirationBlock
+{
+    OWSAssert(expirationBlock);
+
+    OWSTaskId _Nullable taskId;
+
+    @synchronized(self)
+    {
+        self.idCounter = self.idCounter + 1;
+        taskId = @(self.idCounter);
+        self.expirationMap[taskId] = expirationBlock;
+
+        if (![self ensureBackgroundTaskState]) {
+            [self.expirationMap removeObjectForKey:taskId];
+            return nil;
+        }
+
+        [self.continuityTimer invalidate];
+        self.continuityTimer = nil;
+
+        return taskId;
+    }
+}
+
+- (void)removeTask:(OWSTaskId)taskId
+{
+    OWSAssert(taskId);
+
+    @synchronized(self)
+    {
+        OWSAssert(self.expirationMap[taskId] != nil);
+
+        [self.expirationMap removeObjectForKey:taskId];
+
+        // Keep the background task active (if necessary) for an
+        // extra fraction of a second to provide continuity between
+        // tasks.
+        [self.continuityTimer invalidate];
+        self.continuityTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.25f
+                                                                    target:self
+                                                                  selector:@selector(timerDidFire)
+                                                                  userInfo:nil
+                                                                   repeats:NO];
+
+        [self ensureBackgroundTaskState];
+    }
+}
+
+// Begins or end a background task if necessary.
+- (BOOL)ensureBackgroundTaskState
+{
+    if (!CurrentAppContext().isMainApp) {
+        // We can't create background tasks in the SAE, but pretend that we succeeded.
+        return YES;
+    }
+
+    @synchronized(self)
+    {
+        // We only want to have a background task if we are:
+        // a) "not active" AND
+        // b1) there is more than one active instance of OWSBackgroundTask.
+        // b2) or there _was_ an active instance recently.
+        BOOL shouldHaveBackgroundTask = (!self.isAppActive && (self.expirationMap.count > 0 || self.continuityTimer));
+        BOOL hasBackgroundTask = self.backgroundTaskId != UIBackgroundTaskInvalid;
+
+        if (shouldHaveBackgroundTask == hasBackgroundTask) {
+            // Current state is correct.
+            return YES;
+        } else if (shouldHaveBackgroundTask) {
+            DDLogInfo(@"%@ Starting background task.", self.logTag);
+            return [self startBackgroundTask];
+        } else {
+            // Need to end background task.
+            DDLogInfo(@"%@ Ending background task.", self.logTag);
+            UIBackgroundTaskIdentifier backgroundTaskId = self.backgroundTaskId;
+            self.backgroundTaskId = UIBackgroundTaskInvalid;
+            [CurrentAppContext() endBackgroundTask:backgroundTaskId];
+            return YES;
+        }
+    }
+}
+
+// Returns NO if the background task cannot be begun.
+- (BOOL)startBackgroundTask
+{
+    OWSAssert(CurrentAppContext().isMainApp);
+
+    @synchronized(self)
+    {
+        OWSAssert(self.backgroundTaskId == UIBackgroundTaskInvalid);
+
+        self.backgroundTaskId = [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
+            // Supposedly [UIApplication beginBackgroundTaskWithExpirationHandler]'s handler
+            // will always be called on the main thread, but in practice we've observed
+            // otherwise.
+            //
+            // See:
+            // https://developer.apple.com/documentation/uikit/uiapplication/1623031-beginbackgroundtaskwithexpiratio)
+            OWSAssert([NSThread isMainThread]);
+
+            [self backgroundTaskExpired];
+        }];
+
+        // If a background task could not be begun, call the completion block.
+        if (self.backgroundTaskId == UIBackgroundTaskInvalid) {
+            DDLogError(@"%@ background task could not be started.", self.logTag);
+
+            return NO;
+        }
+        return YES;
+    }
+}
+
+- (void)backgroundTaskExpired
+{
+    UIBackgroundTaskIdentifier backgroundTaskId;
+    NSDictionary<OWSTaskId, BackgroundTaskExpirationBlock> *expirationMap;
+
+    @synchronized(self)
+    {
+        backgroundTaskId = self.backgroundTaskId;
+        self.backgroundTaskId = UIBackgroundTaskInvalid;
+
+        expirationMap = [self.expirationMap copy];
+        [self.expirationMap removeAllObjects];
+    }
+
+    // It'd be nice to do this work synchronously, but it seems unsafe to
+    // depend on all expiration blocks being cheap.
+    //
+    // OWSBackgroundTask's API guarantees that completionBlock will always
+    // be called on the main thread, so facilitate that by dispatching async
+    // to main queue here.  That way we can ensure that we don't end the
+    // background task until all of the completion blocks have completed.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        for (BackgroundTaskExpirationBlock expirationBlock in expirationMap) {
+            expirationBlock();
+        }
+        if (backgroundTaskId != UIBackgroundTaskInvalid) {
+            // Apparently we need to "end" even expired background tasks.
+            [CurrentAppContext() endBackgroundTask:backgroundTaskId];
+        }
+    });
+}
+
+- (void)timerDidFire
+{
+    @synchronized(self)
+    {
+        [self.continuityTimer invalidate];
+        self.continuityTimer = nil;
+
+        [self ensureBackgroundTaskState];
+    }
+}
+
+@end
+
+#pragma mark -
 
 @interface OWSBackgroundTask ()
 
 @property (nonatomic, readonly) NSString *label;
 
 // This property should only be accessed while synchronized on this instance.
-@property (nonatomic) UIBackgroundTaskIdentifier backgroundTaskId;
+@property (nonatomic, nullable) OWSTaskId taskId;
 
 // This property should only be accessed while synchronized on this instance.
 @property (nonatomic, nullable) BackgroundTaskCompletionBlock completionBlock;
@@ -76,24 +352,14 @@
 
 - (void)startBackgroundTask
 {
-    // beginBackgroundTaskWithExpirationHandler must be called on the main thread.
     __weak typeof(self) weakSelf = self;
-    self.backgroundTaskId = [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
-        // Supposedly [UIApplication beginBackgroundTaskWithExpirationHandler]'s handler
-        // will always be called on the main thread, but in practice we've observed
-        // otherwise.  We use DispatchSyncMainThreadSafe() (note the sync) to ensure that
-        // this work is done on the main thread.
-        //
-        // See: https://developer.apple.com/documentation/uikit/uiapplication/1623031-beginbackgroundtaskwithexpiratio)
-        //
-        // Note the usage of OWSCAssert() to avoid capturing a reference to self.
-        OWSCAssert([NSThread isMainThread]);
-
-        DispatchSyncMainThreadSafe(^{
+    self.taskId = [OWSBackgroundTaskManager.sharedManager addTask:^{
+        DispatchMainThreadSafe(^{
             OWSBackgroundTask *strongSelf = weakSelf;
             if (!strongSelf) {
                 return;
             }
+            DDLogVerbose(@"%@ task expired", strongSelf.logTag);
 
             // Make a local copy of completionBlock to ensure that it is called
             // exactly once.
@@ -101,11 +367,11 @@
 
             @synchronized(strongSelf)
             {
-                if (strongSelf.backgroundTaskId == UIBackgroundTaskInvalid) {
+                if (!strongSelf.taskId) {
                     return;
                 }
                 DDLogInfo(@"%@ %@ background task expired.", strongSelf.logTag, strongSelf.label);
-                strongSelf.backgroundTaskId = UIBackgroundTaskInvalid;
+                strongSelf.taskId = nil;
 
                 completionBlock = strongSelf.completionBlock;
                 strongSelf.completionBlock = nil;
@@ -118,9 +384,8 @@
     }];
 
     // If a background task could not be begun, call the completion block.
-    if (self.backgroundTaskId == UIBackgroundTaskInvalid) {
-
-        DDLogInfo(@"%@ %@ background task could not be started.", self.logTag, self.label);
+    if (!self.taskId) {
+        DDLogError(@"%@ %@ background task could not be started.", self.logTag, self.label);
 
         // Make a local copy of completionBlock to ensure that it is called
         // exactly once.
@@ -131,7 +396,9 @@
             self.completionBlock = nil;
         }
         if (completionBlock) {
-            completionBlock(BackgroundTaskState_CouldNotStart);
+            DispatchMainThreadSafe(^{
+                completionBlock(BackgroundTaskState_CouldNotStart);
+            });
         }
     }
 }
@@ -139,32 +406,28 @@
 - (void)endBackgroundTask
 {
     // Make a local copy of this state, since this method is called by `dealloc`.
-    UIBackgroundTaskIdentifier backgroundTaskId;
     BackgroundTaskCompletionBlock _Nullable completionBlock;
 
     @synchronized(self)
     {
-        backgroundTaskId = self.backgroundTaskId;
+        if (!self.taskId) {
+            return;
+        }
+        [OWSBackgroundTaskManager.sharedManager removeTask:self.taskId];
+        self.taskId = nil;
+
         completionBlock = self.completionBlock;
         self.completionBlock = nil;
     }
 
-    if (backgroundTaskId == UIBackgroundTaskInvalid) {
-        OWSAssert(!completionBlock);
-        return;
-    }
-
     // endBackgroundTask must be called on the main thread.
     DispatchMainThreadSafe(^{
-
         if (completionBlock) {
             completionBlock(BackgroundTaskState_Success);
-        }
-
-        if (backgroundTaskId != UIBackgroundTaskInvalid) {
-            [CurrentAppContext() endBackgroundTask:backgroundTaskId];
         }
     });
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
