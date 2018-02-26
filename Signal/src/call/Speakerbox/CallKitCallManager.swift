@@ -28,7 +28,6 @@ final class CallKitCallManager: NSObject {
         super.init()
 
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
-        // SwiftSingletons.register(self)
     }
 
     // MARK: Actions

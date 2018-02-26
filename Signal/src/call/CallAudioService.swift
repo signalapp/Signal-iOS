@@ -124,7 +124,6 @@ protocol CallAudioServiceDelegate: class {
         super.init()
 
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
-        // SwiftSingletons.register(self)
 
         // Configure audio session so we don't prompt user with Record permission until call is connected.
 

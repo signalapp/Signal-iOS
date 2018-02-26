@@ -192,7 +192,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
         // didn't want their calls showing up in the call log, we want to disable call logging
         NSNumber *callKitPreference = [self tryGetValueForKey:OWSPreferencesKeyCallKitEnabled];
         if (callKitPreference && !callKitPreference.boolValue) {
-            // user expclitily opted out of callKit, so disable system call logging.
+            // user explicitly opted out of callKit, so disable system call logging.
             return NO;
         }
     }
