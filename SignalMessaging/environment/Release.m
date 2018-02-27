@@ -7,7 +7,6 @@
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
 #import <SignalServiceKit/ContactsUpdater.h>
-#import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 
@@ -19,7 +18,6 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         // Order matters here.
-        [[OWSBackgroundTaskManager sharedManager] observeNotifications];
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
         OWSContactsManager *contactsManager = [OWSContactsManager new];

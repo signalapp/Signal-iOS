@@ -10,6 +10,7 @@
 #import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSStorage.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
 
@@ -25,6 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        // Order matters here.
+        [[OWSBackgroundTaskManager sharedManager] observeNotifications];
+
         [Environment setCurrent:[Release releaseEnvironment]];
 
         id<OWSCallMessageHandler> callMessageHandler = callMessageHandlerBlock();
