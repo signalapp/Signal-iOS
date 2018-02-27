@@ -73,7 +73,7 @@ class ExperienceUpgradeFinder: NSObject {
             // introducingProfiles,
             // introducingReadReceipts,
             configurableNotificationAudio
-        ].compactMap { $0 }
+        ].flatMap { $0 }
     }
 
     // MARK: - Instance Methods
