@@ -53,7 +53,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ no grupo %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send your debug logs to our team so that we can try to resolve this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal não pode iniciar. Por favor envie os seus relatórios de errors para a nossa equipa para que consigamos resolver o problema.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Erro";
@@ -113,7 +113,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Não foi possível redimensionar a imagem em anexo.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Unable to process video.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Incapaz de processar o vídeo.";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Não foi possível processar a imagem em anexo.";
@@ -152,7 +152,7 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Alta Voz";
 
 /* Message indicating that backup export is complete. */
-"BACKUP_EXPORT_COMPLETE_MESSAGE" = "Backup complete.";
+"BACKUP_EXPORT_COMPLETE_MESSAGE" = "Backup completo.";
 
 /* Label for button that copies backup password to the pasteboard. */
 "BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "Copiar Password";
@@ -161,19 +161,19 @@
 "BACKUP_EXPORT_FAILED_MESSAGE" = "BACKUP_EXPORT_FAILED_MESSAGE";
 
 /* Message indicating that backup export is in progress. */
-"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "Exporting Backup...";
+"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "A exportar o Backup...";
 
 /* Format for message indicating that backup export is complete. Embeds: {{the backup password}}. */
-"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Your backup password is: %@. Make sure to keep a copy of this password or you won't be able to restore from this backup.";
+"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "A sua password é: %@. Assegure-se de ter uma cópia desta password ou não poderá recuperar dados a partir deste Backup.";
 
 /* Label for button that 'send backup' in the current conversation. */
-"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Send Backup as Message";
+"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Enviar Backup como Mensagem";
 
 /* Message indicating that sending the backup failed. */
-"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Sending Backup Failed.";
+"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Envio do Backup Falhou.";
 
 /* Message indicating that sending the backup succeeded. */
-"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "Backup Sent.";
+"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "Backup Enviado.";
 
 /* Label for button that opens share UI for backup. */
 "BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Partilhar Backup";
@@ -185,28 +185,28 @@
 "BACKUP_FILENAME_FORMAT" = "Backup Signal %@";
 
 /* Message indicating that backup import is complete. */
-"BACKUP_IMPORT_COMPLETE_MESSAGE" = "Restore Complete";
+"BACKUP_IMPORT_COMPLETE_MESSAGE" = "Recuperação Concluída";
 
 /* Label for button confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "Restore";
+"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "Recuperar";
 
 /* Message for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "To restore this backup you must restart the Signal app. Warning: you will lose all of your current Signal data.";
+"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "Para recuperar deste Backup necessita de reiniciar o Signal. Atenção: poderá perder os dados do Signal actual.";
 
 /* Title for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "Restore Backup?";
+"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "Recuperar Backup?";
 
 /* Message indicating that backup import failed. */
-"BACKUP_IMPORT_FAILED_MESSAGE" = "Restore Failed";
+"BACKUP_IMPORT_FAILED_MESSAGE" = "Recuperação Falhou";
 
 /* Message indicating that backup import is in progress. */
-"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Restoring Backup...";
+"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "A Recuperar do Backup...";
 
 /* Label for button that restarts app to complete restore. */
-"BACKUP_IMPORT_RESTART_BUTTON" = "Restart App";
+"BACKUP_IMPORT_RESTART_BUTTON" = "Reiniciar";
 
 /* Title for the 'backup import' view. */
-"BACKUP_IMPORT_VIEW_TITLE" = "Restore Backup";
+"BACKUP_IMPORT_VIEW_TITLE" = "Recuperar Backup";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Utilizadores bloqueados não lhe poderão telefonar ou enviar mensagens.";
@@ -499,11 +499,20 @@
 /* The day before today. */
 "DATE_YESTERDAY" = "Ontem";
 
-/* Message indicating that the debug log is being uploaded. */
-"DEBUG_LOG_ACTIVITY_INDICATOR" = "Enviar Relatório de Erros...";
+/* Error indicating that the debug logs could not be copied. */
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+
+/* Error indicating that the debug logs could not be packaged. */
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+
+/* Error indicating that a debug log could not be uploaded. */
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "Que deseja fazer com o endereço para o seu Relatório de Erros?";
+
+/* Error indicating that no debug logs could be found. */
+"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
 
 /* Label for the 'Open a Bug Report' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Abrir Relatório de Bugs";
@@ -515,16 +524,14 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Suporte via Email";
 
 /* Label for the 'send to last thread' option of the the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send to Last Thread";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Adicionar à última Thread de Erros";
 
 /* Label for the 'send to self' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Enviar para Mim";
 
-/* Title of the debug log alert. */
+/* Title of the alert shown for failures while uploading debug logs.
+   Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Mais Um Passo";
-
-/* Title of the alert indicating the debug log upload failed. */
-"DEBUG_LOG_FAILURE_ALERT_TITLE" = "Falha a Enviar Relatório de Erros";
 
 /* Message of the alert before redirecting to Github Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "O link para o \"gist\" foi copiado para o seu clipboard. Vai ser redireccionado para a lista de problemas do GitHub.";
@@ -1063,7 +1070,7 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Pode dar acesso nas Definições.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal Requires Access to your Media Library to do this.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal Necessita de Acesso a sua Biblioteca de Media para fazer isto.";
 
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Chamada não atendida de %@.";
@@ -1618,7 +1625,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "O seu número de segurança com %@ mudou recentemente.  Poderá querer verificá-lo na aplicação principal antes de reenviar.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "A Carregar...";
@@ -1630,7 +1637,7 @@
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Não Registado";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Lançar Signal pra actualizar ou registar.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Não Preparado";
@@ -1645,7 +1652,7 @@
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Incapaz de Preparar Anexo";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "Partilhar pelo Signal";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = " Mostrar Novo Número de Segurança ";
@@ -1702,7 +1709,7 @@
 "TIME_AMOUNT_WEEKS" = "%@ semanas";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@sem";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Cancelar";

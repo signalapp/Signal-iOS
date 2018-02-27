@@ -285,6 +285,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages testZalgoTextInThread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"Test Directional Filenames"
+                        actionBlock:^{
+                            [DebugUIMessages testDirectionalFilenamesInThread:thread];
+                        }],
     ] mutableCopy];
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
@@ -1683,6 +1687,43 @@ NS_ASSUME_NONNULL_BEGIN
                 }
             }
         }];
+}
+
++ (void)testDirectionalFilenamesInThread:(TSThread *)thread
+{
+    NSMutableArray<NSString *> *filenames = [@[
+        @"a_test\u202Dabc.exe",
+        @"b_test\u202Eabc.exe",
+        @"c_testabc.exe",
+    ] mutableCopy];
+    __block void (^sendUnsafeFile)(void);
+    sendUnsafeFile = ^{
+        if (filenames.count < 1) {
+            return;
+        }
+        NSString *filename = filenames.lastObject;
+        [filenames removeLastObject];
+        OWSMessageSender *messageSender = [Environment current].messageSender;
+        NSString *utiType = (NSString *)kUTTypeData;
+        const NSUInteger kDataLength = 32;
+        DataSource *_Nullable dataSource =
+            [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:kDataLength] utiType:utiType];
+        [dataSource setSourceFilename:filename];
+        SignalAttachment *attachment =
+            [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
+
+        OWSAssert(attachment);
+        if ([attachment hasError]) {
+            DDLogError(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
+            [DDLog flushLog];
+        }
+        OWSAssert(![attachment hasError]);
+        [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender completion:nil];
+
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            sendUnsafeFile();
+        });
+    };
 }
 
 @end

@@ -499,11 +499,20 @@
 /* The day before today. */
 "DATE_YESTERDAY" = "Igår";
 
-/* Message indicating that the debug log is being uploaded. */
-"DEBUG_LOG_ACTIVITY_INDICATOR" = "Skickar debug-logg...";
+/* Error indicating that the debug logs could not be copied. */
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+
+/* Error indicating that the debug logs could not be packaged. */
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+
+/* Error indicating that a debug log could not be uploaded. */
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "Vad vill du göra med länken till din debuglogg?";
+
+/* Error indicating that no debug logs could be found. */
+"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
 
 /* Label for the 'Open a Bug Report' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Öppna en buggrapport";
@@ -520,11 +529,9 @@
 /* Label for the 'send to self' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Skicka till mig själv";
 
-/* Title of the debug log alert. */
+/* Title of the alert shown for failures while uploading debug logs.
+   Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Ett steg till";
-
-/* Title of the alert indicating the debug log upload failed. */
-"DEBUG_LOG_FAILURE_ALERT_TITLE" = "Kunde inte skicka in debug-loggen";
 
 /* Message of the alert before redirecting to Github Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist-länken kopierades till urklipp. Du kommer bli skickad vidare till listan över issues på GitHub.";
@@ -1630,7 +1637,7 @@
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Inte registrerad";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Starta appen Signal för att uppdatera eller registrera.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Inte klar";

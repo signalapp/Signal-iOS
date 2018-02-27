@@ -8,6 +8,7 @@
 #import "ContactsManagerProtocol.h"
 #import "NSDate+OWS.h"
 #import "NSTimer+OWS.h"
+#import "OWSBackgroundTask.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesFinder.h"
@@ -88,6 +89,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     uint64_t now = [NSDate ows_millisecondTimeStamp];
 
+    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
     __block uint expirationCount = 0;
     [self.databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
@@ -106,6 +109,8 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     DDLogDebug(@"%@ Removed %u expired messages", self.logTag, expirationCount);
+
+    backgroundTask = nil;
 }
 
 // This method should only be called on the serialQueue.
@@ -203,6 +208,8 @@ NS_ASSUME_NONNULL_BEGIN
 // This method should only be called on the serialQueue.
 - (void)setExpirationsForThread:(TSThread *)thread
 {
+    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
     uint64_t now = [NSDate ows_millisecondTimeStamp];
     [self.databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.disappearingMessagesFinder
@@ -220,6 +227,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                  }
                                            transaction:transaction];
     }];
+
+    backgroundTask = nil;
 }
 
 + (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
@@ -233,6 +242,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(message);
     OWSAssert(contactsManager);
+
+    __block OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
         // Become eventually consistent in the case that the remote changed their settings at the same time.
@@ -280,6 +291,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         configuration:disappearingMessagesConfiguration]
                 save];
         }
+
+        backgroundTask = nil;
     });
 }
 

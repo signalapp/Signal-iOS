@@ -83,30 +83,32 @@ NS_ASSUME_NONNULL_BEGIN
     };
 
     void (^presentSettingsDialog)(void) = ^(void) {
-        UIAlertController *alert = [UIAlertController
-            alertControllerWithTitle:NSLocalizedString(@"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE",
-                                         @"Alert title when user has previously denied media library access")
-                             message:NSLocalizedString(@"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE",
-                                         @"Alert body when user has previously denied media library access")
-                      preferredStyle:UIAlertControllerStyleAlert];
+        DispatchMainThreadSafe(^{
+            UIAlertController *alert = [UIAlertController
+                alertControllerWithTitle:NSLocalizedString(@"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE",
+                                             @"Alert title when user has previously denied media library access")
+                                 message:NSLocalizedString(@"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE",
+                                             @"Alert body when user has previously denied media library access")
+                          preferredStyle:UIAlertControllerStyleAlert];
 
-        UIAlertAction *openSettingsAction =
-            [UIAlertAction actionWithTitle:CommonStrings.openSettingsButton
-                                     style:UIAlertActionStyleDefault
-                                   handler:^(UIAlertAction *_Nonnull action) {
-                                       [[UIApplication sharedApplication] openSystemSettings];
-                                       completionCallback(NO);
-                                   }];
-        [alert addAction:openSettingsAction];
+            UIAlertAction *openSettingsAction =
+                [UIAlertAction actionWithTitle:CommonStrings.openSettingsButton
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction *_Nonnull action) {
+                                           [[UIApplication sharedApplication] openSystemSettings];
+                                           completionCallback(NO);
+                                       }];
+            [alert addAction:openSettingsAction];
 
-        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
-                                                                style:UIAlertActionStyleCancel
-                                                              handler:^(UIAlertAction *action) {
-                                                                  completionCallback(NO);
-                                                              }];
-        [alert addAction:dismissAction];
+            UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
+                                                                    style:UIAlertActionStyleCancel
+                                                                  handler:^(UIAlertAction *action) {
+                                                                      completionCallback(NO);
+                                                                  }];
+            [alert addAction:dismissAction];
 
-        [self presentViewController:alert animated:YES completion:nil];
+            [self presentViewController:alert animated:YES completion:nil];
+        });
     };
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {

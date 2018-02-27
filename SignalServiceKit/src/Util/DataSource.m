@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setSourceFilename:(nullable NSString *)sourceFilename
 {
-    _sourceFilename = sourceFilename.filterStringForDisplay;
+    _sourceFilename = sourceFilename.filterFilename;
 }
 
 @end

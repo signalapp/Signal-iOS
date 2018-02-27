@@ -499,11 +499,20 @@
 /* The day before today. */
 "DATE_YESTERDAY" = "Dün";
 
-/* Message indicating that the debug log is being uploaded. */
-"DEBUG_LOG_ACTIVITY_INDICATOR" = "Hata Kaydı Gönderiliyor";
+/* Error indicating that the debug logs could not be copied. */
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+
+/* Error indicating that the debug logs could not be packaged. */
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+
+/* Error indicating that a debug log could not be uploaded. */
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "Hata kaydınızı içeren bu bağlantı adresiyle ne yapmak istersiniz?";
+
+/* Error indicating that no debug logs could be found. */
+"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
 
 /* Label for the 'Open a Bug Report' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Bir Hata Raporu Aç";
@@ -520,11 +529,9 @@
 /* Label for the 'send to self' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Kendine Gönder";
 
-/* Title of the debug log alert. */
+/* Title of the alert shown for failures while uploading debug logs.
+   Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Bir Adım Daha";
-
-/* Title of the alert indicating the debug log upload failed. */
-"DEBUG_LOG_FAILURE_ALERT_TITLE" = "Hata Kaydını Gönderirken Bir Hata Oluştu";
 
 /* Message of the alert before redirecting to Github Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist linki kopyalandı. GitHub issue listesine aktarılmak üzeresiniz.";
