@@ -243,7 +243,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(message);
     OWSAssert(contactsManager);
 
-    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    __block OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
         // Become eventually consistent in the case that the remote changed their settings at the same time.
