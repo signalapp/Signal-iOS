@@ -155,7 +155,7 @@
 "BACKUP_EXPORT_COMPLETE_MESSAGE" = "備份完成。";
 
 /* Label for button that copies backup password to the pasteboard. */
-"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "復制密碼";
+"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "複製密碼";
 
 /* Message indicating that backup export failed. */
 "BACKUP_EXPORT_FAILED_MESSAGE" = "備份_匯出_失敗_訊息";
@@ -437,7 +437,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "直到%@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "創建新聯絡人";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "建立新聯絡人";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "解除靜音";
@@ -482,7 +482,7 @@
 "COUNTRYCODE_SELECT_TITLE" = "選擇國碼";
 
 /* Accessibility label for the create group new group button */
-"CREATE_NEW_GROUP" = "創建新群組";
+"CREATE_NEW_GROUP" = "建立新群組";
 
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "移動與更改大小";
@@ -499,11 +499,20 @@
 /* The day before today. */
 "DATE_YESTERDAY" = "昨天";
 
-/* Message indicating that the debug log is being uploaded. */
-"DEBUG_LOG_ACTIVITY_INDICATOR" = "送出偵錯紀錄...";
+/* Error indicating that the debug logs could not be copied. */
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+
+/* Error indicating that the debug logs could not be packaged. */
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+
+/* Error indicating that a debug log could not be uploaded. */
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "你要怎麼把這連結傳送到這偵錯紀錄？";
+
+/* Error indicating that no debug logs could be found. */
+"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
 
 /* Label for the 'Open a Bug Report' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "開啟一個錯誤報告";
@@ -520,11 +529,9 @@
 /* Label for the 'send to self' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "傳送給自己";
 
-/* Title of the debug log alert. */
+/* Title of the alert shown for failures while uploading debug logs.
+   Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "再一個步驟";
-
-/* Title of the alert indicating the debug log upload failed. */
-"DEBUG_LOG_FAILURE_ALERT_TITLE" = "傳送偵錯紀錄失敗";
 
 /* Message of the alert before redirecting to Github Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "本連結已複製至剪貼簿。你現在將導至 GitHub 錯誤回報列表。";
@@ -761,7 +768,7 @@
 "GROUP_AVATAR_CHANGED" = "頭像變更成功。";
 
 /* No comment provided by engineer. */
-"GROUP_CREATED" = "群組已成功創建。";
+"GROUP_CREATED" = "群組已建立。";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "不是所有的成員都可以加入此群組。請點擊重試。";
@@ -836,7 +843,7 @@
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "要查看聯絡人的名字，請在系統設定中允許連結聯絡人。";
 
 /* notification body */
-"INCOMING_CALL" = "來電中...";
+"INCOMING_CALL" = "來電...";
 
 /* notification body */
 "INCOMING_CALL_FROM" = "來自%@的電話";
@@ -905,7 +912,7 @@
 "LINK_NEW_DEVICE_TITLE" = "連結新的裝置";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "已結的裝置";
+"LINKED_DEVICES_TITLE" = "已連結的裝置";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "裝置連結失敗";
@@ -1108,7 +1115,7 @@
 "NEW_GROUP_ADD_PHOTO_ACTION" = "設定群組照片";
 
 /* The title for the 'create group' button. */
-"NEW_GROUP_CREATE_BUTTON" = "新創";
+"NEW_GROUP_CREATE_BUTTON" = "建立";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "新群組";
@@ -1180,7 +1187,7 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@設定訊息銷毀時間為%@。";
 
 /* No comment provided by engineer. */
-"OUTGOING_CALL" = "正在撥出電話";
+"OUTGOING_CALL" = "撥出電話";
 
 /* No comment provided by engineer. */
 "OUTGOING_INCOMPLETE_CALL" = "未回應的撥出電話";
@@ -1312,7 +1319,7 @@
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "點擊這裡獲得更多資訊。";
 
 /* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "資訊名稱";
+"PROFILE_VIEW_PROFILE_NAME_FIELD" = "用戶名稱";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "儲存";
@@ -1498,10 +1505,10 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "已根據你的電話號碼啟動審查規避。";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "審查規避只能在聯網時啟動。";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "審查規避只能在連上網路時啟動。";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "不需要審查規避，你已經連接上 Signal服務。";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "你已經連接上 Signal服務，所以不需要啟動審查規避。";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "審查規避";
@@ -1630,7 +1637,7 @@
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "尚未註冊";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "啟動 Signal 來更新或註冊。";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "還沒準備好";
@@ -1750,7 +1757,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "你的裝置未支持這項功能。";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "你無法移除群組成員。只能讓他們自行退出，或者你可以新創一個不含該成員的群組。";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "你無法移除群組成員。只能讓他們自行退出，或者你可以建立一個不含該成員的新群組。";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "不允許";
