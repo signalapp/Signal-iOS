@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)filterStringForDisplay;
 
+- (NSString *)filterFilename;
+
 - (BOOL)isValidE164;
 
 @end

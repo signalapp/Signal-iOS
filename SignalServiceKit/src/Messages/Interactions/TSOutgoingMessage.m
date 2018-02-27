@@ -529,6 +529,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     [builder setId:attachmentStream.serverId];
     OWSAssert(attachmentStream.contentType.length > 0);
     [builder setContentType:attachmentStream.contentType];
+    DDLogVerbose(@"%@ Sending attachment with filename: '%@'", self.logTag, filename);
     [builder setFileName:filename];
     [builder setSize:attachmentStream.byteCount];
     [builder setKey:attachmentStream.encryptionKey];
