@@ -523,7 +523,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                           utiType:kUTTypeContact as String)
     }
 
-    private class func utiTypeForItem(itemProvider: NSItemProvider) -> String? {
+    private class func utiType(itemProvider: NSItemProvider) -> String? {
         Logger.info("\(self.logTag) utiTypeForItem: \(itemProvider.registeredTypeIdentifiers)")
 
         if isUrlItem(itemProvider:itemProvider) {
@@ -537,6 +537,25 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             UTTypeConformsTo(utiType as CFString, kUTTypeData)
         }
         return matchingUtiType
+    }
+
+    private class func preferredItemProvider(inputItem: NSExtensionItem) -> NSItemProvider? {
+        guard let attachments = inputItem.attachments else {
+            return nil
+        }
+
+        // Prefer a URL provider if available
+        if let preferredAttachment = attachments.first(where: { (attachment: Any) -> Bool in
+            guard let itemProvider = attachment as? NSItemProvider else {
+                return false
+            }
+            return isUrlItem(itemProvider: itemProvider)
+        }) {
+                return preferredAttachment as? NSItemProvider
+        }
+
+        // else return whatever is available
+        return inputItem.attachments?.first as? NSItemProvider
     }
 
     private class func createDataSource(utiType: String, url: URL, customFileName: String?) -> DataSource? {
@@ -574,9 +593,14 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return Promise(error: error)
         }
 
-        // TODO Multiple attachments. In that case I'm unclear if we'll
-        // be given multiple inputItems or a single inputItem with multiple attachments.
-        guard let itemProvider: NSItemProvider = inputItem.attachments?.first as? NSItemProvider else {
+        // A single inputItem can have multiple attachments, e.g. sharing from Firefox gives
+        // one url attachment and another text attachment, where the the url would be https://some-news.com/articles/123-cat-stuck-in-tree
+        // and the text attachment would be something like "Breaking news - cat stuck in tree"
+        //
+        // FIXME: For now, we prefer the URL provider and discard the text provider, since it's more useful to share the URL than the caption
+        // but we *should* include both. This will be a bigger change though since our share extension is currently heavily predicated
+        // on one itemProvider per share.
+        guard let itemProvider: NSItemProvider = type(of: self).preferredItemProvider(inputItem: inputItem) else {
             let error = ShareViewControllerError.assertionError(description: "No item provider in input item attachments")
             return Promise(error: error)
         }
@@ -591,7 +615,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // * UTIs aren't very descriptive (there are far more MIME types than UTI types)
         //   so in the case of file attachments we try to refine the attachment type
         //   using the file extension.
-        guard let srcUtiType = ShareViewController.utiTypeForItem(itemProvider: itemProvider) else {
+        guard let srcUtiType = ShareViewController.utiType(itemProvider: itemProvider) else {
             let error = ShareViewControllerError.unsupportedMedia
             return Promise(error: error)
         }
