@@ -350,16 +350,23 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 + (void)setupStorage
 {
+    __block OWSBackgroundTask *_Nullable backgroundTask =
+        [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
     for (OWSStorage *storage in self.allStorages) {
         [storage runSyncRegistrations];
     }
 
     for (OWSStorage *storage in self.allStorages) {
         [storage runAsyncRegistrationsWithCompletion:^{
-            
-            [self postRegistrationCompleteNotificationIfPossible];
+            if ([self postRegistrationCompleteNotificationIfPossible]) {
+                // If all registrations are complete, clean up the
+                // registration process.
 
-            ((OWSDatabase *)storage.database).registrationConnectionCached = nil;
+                ((OWSDatabase *)storage.database).registrationConnectionCached = nil;
+
+                backgroundTask = nil;
+            }
         }];
     }
 }
@@ -369,10 +376,11 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     return self.database.registrationConnection;
 }
 
-+ (void)postRegistrationCompleteNotificationIfPossible
+// Returns YES IFF all registrations are complete.
++ (BOOL)postRegistrationCompleteNotificationIfPossible
 {
     if (!self.isStorageReady) {
-        return;
+        return NO;
     }
 
     static dispatch_once_t onceToken;
@@ -381,6 +389,8 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
                                                                  object:nil
                                                                userInfo:nil];
     });
+
+    return YES;
 }
 
 + (BOOL)isStorageReady
