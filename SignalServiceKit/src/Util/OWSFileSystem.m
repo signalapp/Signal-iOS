@@ -38,13 +38,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path
 {
+    return
+        [self protectFileOrFolderAtPath:path fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
+}
+
++ (BOOL)protectFileOrFolderAtPath:(NSString *)path fileProtectionType:(NSFileProtectionType)fileProtectionType
+{
     DDLogVerbose(@"%@ protecting file at path: %@", self.logTag, path);
     if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
         return NO;
     }
 
     NSError *error;
-    NSDictionary *fileProtection = @{ NSFileProtectionKey : NSFileProtectionCompleteUntilFirstUserAuthentication };
+    NSDictionary *fileProtection = @{ NSFileProtectionKey : fileProtectionType };
     [[NSFileManager defaultManager] setAttributes:fileProtection ofItemAtPath:path error:&error];
 
     NSDictionary *resourcesAttrs = @{ NSURLIsExcludedFromBackupKey : @YES };
@@ -84,6 +90,14 @@ NS_ASSUME_NONNULL_BEGIN
             DDLogDebug(@"%@ path: %@ has attributes: %@", self.logTag, path, attributes);
         }
     }
+}
+
++ (NSString *)appLibraryDirectoryPath
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *documentDirectoryURL =
+        [[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    return [documentDirectoryURL path];
 }
 
 + (NSString *)appDocumentDirectoryPath

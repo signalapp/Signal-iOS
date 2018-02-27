@@ -9,9 +9,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path;
++ (BOOL)protectFileOrFolderAtPath:(NSString *)path fileProtectionType:(NSFileProtectionType)fileProtectionType;
+
 + (BOOL)protectRecursiveContentsAtPath:(NSString *)path;
 
 + (NSString *)appDocumentDirectoryPath;
+
++ (NSString *)appLibraryDirectoryPath;
 
 + (NSString *)appSharedDataDirectoryPath;
 
