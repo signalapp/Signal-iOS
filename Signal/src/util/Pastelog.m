@@ -13,7 +13,6 @@
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/Threading.h>
-#import <sys/sysctl.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -60,8 +59,8 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                                                                 cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
                                                             timeoutInterval:30];
     [request setHTTPMethod:@"POST"];
-    [request addValue:@"logs.zip" forHTTPHeaderField:@"filename"];
-    [request addValue:@"application/application/zip" forHTTPHeaderField:@"Content-Type"];
+    [request addValue:fileUrl.lastPathComponent forHTTPHeaderField:@"filename"];
+    [request addValue:@"application/zip" forHTTPHeaderField:@"Content-Type"];
     NSData *_Nullable data = [NSData dataWithContentsOfURL:fileUrl];
     if (!data) {
         [self failWithError:[NSError errorWithDomain:@"PastelogKit"
@@ -337,11 +336,17 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     };
 
     // Phase 1. Make a local copy of all of the log files.
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    [dateFormatter setLocale:[NSLocale currentLocale]];
+    [dateFormatter setDateFormat:@"yyyy.MM.dd hh.mm.ss"];
+    NSString *dateString = [dateFormatter stringFromDate:[NSDate new]];
+    NSString *logsName = [[dateString stringByAppendingString:@" "] stringByAppendingString:NSUUID.UUID.UUIDString];
     NSString *tempDirectory = NSTemporaryDirectory();
     NSString *zipFilePath =
-        [tempDirectory stringByAppendingPathComponent:[NSUUID.UUID.UUIDString stringByAppendingPathExtension:@"zip"]];
-    NSString *zipDirPath = [tempDirectory stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
+        [tempDirectory stringByAppendingPathComponent:[logsName stringByAppendingPathExtension:@"zip"]];
+    NSString *zipDirPath = [tempDirectory stringByAppendingPathComponent:logsName];
     [OWSFileSystem ensureDirectoryExists:zipDirPath];
+    [OWSFileSystem protectFileOrFolderAtPath:zipDirPath];
 
     NSArray<NSString *> *logFilePaths = DebugLogger.sharedLogger.allLogFilePaths;
     if (logFilePaths.count < 1) {
@@ -358,6 +363,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                 @"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS", @"Error indicating that the debug logs could not be copied."));
             return;
         }
+        [OWSFileSystem protectFileOrFolderAtPath:copyFilePath];
     }
 
     // Phase 2. Zip up the log files.
@@ -369,6 +375,9 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         return;
     }
 
+    [OWSFileSystem protectFileOrFolderAtPath:zipFilePath];
+    [OWSFileSystem deleteFile:zipDirPath];
+
     // Phase 3. Upload the log files.
 
     __weak Pastelog *weakSelf = self;
@@ -379,6 +388,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                 // Ignore events from obsolete uploaders.
                 return;
             }
+            [OWSFileSystem deleteFile:zipFilePath];
             success(url);
         }
         failure:^(DebugLogUploader *uploader, NSError *error) {
@@ -386,6 +396,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                 // Ignore events from obsolete uploaders.
                 return;
             }
+            [OWSFileSystem deleteFile:zipFilePath];
             failure(NSLocalizedString(
                 @"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG", @"Error indicating that a debug log could not be uploaded."));
         }];

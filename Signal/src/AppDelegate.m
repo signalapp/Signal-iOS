@@ -46,6 +46,7 @@
 #import <SignalServiceKit/TSStorageManager+Calling.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
+#import <sys/sysctl.h>
 
 @import WebRTC;
 @import Intents;
@@ -396,6 +397,15 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if (languageCode.length > 0) {
         DDLogInfo(@"Language Code: %@", languageCode);
     }
+
+    size_t size;
+    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    char *machine = malloc(size);
+    sysctlbyname("hw.machine", machine, &size, NULL, 0);
+    NSString *platform = [NSString stringWithUTF8String:machine];
+    free(machine);
+
+    DDLogInfo(@"iPhone Version: %@", platform);
 }
 
 - (UIViewController *)loadingRootViewController
