@@ -68,6 +68,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                                             userInfo:@{ NSLocalizedDescriptionKey : @"Could not load data." }]];
         return;
     }
+    // TODO:
     [request setHTTPBody:data];
 
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
