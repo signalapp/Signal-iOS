@@ -19,7 +19,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         // Order matters here.
-        [OWSBackgroundTaskManager sharedManager];
+        [[OWSBackgroundTaskManager sharedManager] observeNotifications];
         TSStorageManager *storageManager = [TSStorageManager sharedManager];
         TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
         OWSContactsManager *contactsManager = [OWSContactsManager new];

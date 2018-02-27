@@ -70,8 +70,6 @@ typedef NSNumber *OWSTaskId;
 
     OWSSingletonAssert();
 
-    [self observeNotifications];
-
     return self;
 }
 
@@ -119,10 +117,14 @@ typedef NSNumber *OWSTaskId;
     }
 }
 
+// This method registers a new task with this manager.  We only bother
+// requesting a background task from iOS if the app is inactive (or about
+// to become inactive), so this will often not start a background task.
+//
 // Returns nil if adding this task _should have_ started a
 // background task, but the background task couldn't be begun.
 // In that case expirationBlock will not be called.
-- (nullable OWSTaskId)addTask:(BackgroundTaskExpirationBlock)expirationBlock
+- (nullable OWSTaskId)addTaskWithExpirationBlock:(BackgroundTaskExpirationBlock)expirationBlock
 {
     OWSAssert(expirationBlock);
 
@@ -156,9 +158,12 @@ typedef NSNumber *OWSTaskId;
 
         [self.expirationMap removeObjectForKey:taskId];
 
-        // Keep the background task active (if necessary) for an
-        // extra fraction of a second to provide continuity between
-        // tasks.
+        // This timer will ensure that we keep the background task active (if necessary)
+        // for an extra fraction of a second to provide continuity between tasks.
+        // This makes it easier and safer to use background tasks, since most code
+        // should be able to ensure background tasks by "narrowly" wrapping
+        // their core logic with a OWSBackgroundTask and not worrying about "hand off"
+        // between OWSBackgroundTasks.
         [self.continuityTimer invalidate];
         self.continuityTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.25f
                                                                     target:self
@@ -182,8 +187,8 @@ typedef NSNumber *OWSTaskId;
     {
         // We only want to have a background task if we are:
         // a) "not active" AND
-        // b1) there is more than one active instance of OWSBackgroundTask.
-        // b2) or there _was_ an active instance recently.
+        // b1) there is one or more active instance of OWSBackgroundTask OR...
+        // b2) ...there _was_ an active instance recently.
         BOOL shouldHaveBackgroundTask = (!self.isAppActive && (self.expirationMap.count > 0 || self.continuityTimer));
         BOOL hasBackgroundTask = self.backgroundTaskId != UIBackgroundTaskInvalid;
 
@@ -225,7 +230,7 @@ typedef NSNumber *OWSTaskId;
             [self backgroundTaskExpired];
         }];
 
-        // If a background task could not be begun, call the completion block.
+        // If the background task could not begin, return NO to indicate that.
         if (self.backgroundTaskId == UIBackgroundTaskInvalid) {
             DDLogError(@"%@ background task could not be started.", self.logTag);
 
@@ -249,14 +254,13 @@ typedef NSNumber *OWSTaskId;
         [self.expirationMap removeAllObjects];
     }
 
-    // It'd be nice to do this work synchronously, but it seems unsafe to
-    // depend on all expiration blocks being cheap.
-    //
-    // OWSBackgroundTask's API guarantees that completionBlock will always
-    // be called on the main thread, so facilitate that by dispatching async
-    // to main queue here.  That way we can ensure that we don't end the
-    // background task until all of the completion blocks have completed.
-    dispatch_async(dispatch_get_main_queue(), ^{
+    // Supposedly [UIApplication beginBackgroundTaskWithExpirationHandler]'s handler
+    // will always be called on the main thread, but in practice we've observed
+    // otherwise.  OWSBackgroundTask's API guarantees that completionBlock will
+    // always be called on the main thread, so we use DispatchSyncMainThreadSafe()
+    // to ensure that.  We thereby ensure that we don't end the background task
+    // until all of the completion blocks have completed.
+    DispatchSyncMainThreadSafe(^{
         for (BackgroundTaskExpirationBlock expirationBlock in expirationMap) {
             expirationBlock();
         }
@@ -353,7 +357,7 @@ typedef NSNumber *OWSTaskId;
 - (void)startBackgroundTask
 {
     __weak typeof(self) weakSelf = self;
-    self.taskId = [OWSBackgroundTaskManager.sharedManager addTask:^{
+    self.taskId = [OWSBackgroundTaskManager.sharedManager addTaskWithExpirationBlock:^{
         DispatchMainThreadSafe(^{
             OWSBackgroundTask *strongSelf = weakSelf;
             if (!strongSelf) {

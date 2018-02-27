@@ -19,6 +19,8 @@ typedef void (^BackgroundTaskCompletionBlock)(BackgroundTaskState backgroundTask
 
 + (instancetype)sharedManager;
 
+- (void)observeNotifications;
+
 @end
 
 #pragma mark -
