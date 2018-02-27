@@ -2,14 +2,17 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+NS_ASSUME_NONNULL_BEGIN
+
+typedef void (^SubmitDebugLogsCompletion)(void);
+
 @interface Pastelog : NSObject
 
-typedef void (^DebugLogsUploadedBlock)(NSError *error, NSString *urlString);
-typedef void (^DebugLogsSharedBlock)(void);
+- (instancetype)init NS_UNAVAILABLE;
 
-+(void)submitLogs;
-+ (void)submitLogsWithShareCompletion:(nullable DebugLogsSharedBlock)block;
-+ (void)submitLogsWithUploadCompletion:(DebugLogsUploadedBlock)block;
-+ (void)submitLogsWithUploadCompletion:(DebugLogsUploadedBlock)block forFileLogger:(DDFileLogger *)fileLogger;
++ (void)submitLogs;
++ (void)submitLogsWithCompletion:(nullable SubmitDebugLogsCompletion)completion;
 
 @end
+
+NS_ASSUME_NONNULL_END
