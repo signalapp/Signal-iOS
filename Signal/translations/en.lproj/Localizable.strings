@@ -1149,7 +1149,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "No Name or Content";
 
-/* No comment provided by engineer. */
+/* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
 
 /* Label for settings UI that allows user to change the notification sound. */

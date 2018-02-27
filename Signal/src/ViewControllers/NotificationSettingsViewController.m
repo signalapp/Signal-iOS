@@ -53,7 +53,11 @@
                                    OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
                                    [weakSelf.navigationController pushViewController:vc animated:YES];
                                }]];
-    [soundsSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"NOTIFICATIONS_SECTION_INAPP", nil)
+
+    NSString *inAppSoundsLabelText = NSLocalizedString(@"NOTIFICATIONS_SECTION_INAPP",
+        @"Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the "
+        @"foreground.");
+    [soundsSection addItem:[OWSTableItem switchItemWithText:inAppSoundsLabelText
                                                        isOn:[prefs soundInForeground]
                                                      target:weakSelf
                                                    selector:@selector(didToggleSoundNotificationsSwitch:)]];
