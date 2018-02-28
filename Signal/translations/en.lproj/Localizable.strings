@@ -1534,7 +1534,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through the Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear History Logs";
+"SETTINGS_CLEAR_HISTORY" = "Clear Conversation History";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Copyright Open Whisper Systems \n Licensed under the GPLv3";
@@ -1545,14 +1545,14 @@
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all your history (messages, attachments, call history …) ? This action cannot be reverted.";
 
-/* No comment provided by engineer. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "I'm sure.";
+/* Confirmation text for button which deletes all message, calling, attachments, etc. */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Delete Everything";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "Help";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "History Log";
+"SETTINGS_HISTORYLOG_TITLE" = "Clear Conversation History";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Information";
@@ -1582,10 +1582,10 @@
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Caller's Name & Number";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Disabling this will prevent calls from appearing in the \"Recents\" list in the iOS Phone app.";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Show calls in the \"Recents\" list in the iOS Phone app.";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "System Call Logs";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Show Calls in Recents";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Call Integration";
@@ -1786,7 +1786,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
 
 /* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now specify default and per thread text tones. And calls now respect your system contact's ringtone.";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now choose default and per-conversation notification sounds, and calls will respect the ringtone you've choosen for each system contact.";
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Review Notification Settings";

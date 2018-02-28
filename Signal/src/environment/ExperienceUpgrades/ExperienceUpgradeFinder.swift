@@ -58,7 +58,7 @@ class ExperienceUpgradeFinder: NSObject {
         return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingCustomNotificationAudio.rawValue,
                                  title: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE", comment: "Header for upgrade experience"),
                                  body: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION", comment: "Description for notification audio customization"),
-                                 image:#imageLiteral(resourceName: "introductory_splash_read_receipts"))
+                                 image:#imageLiteral(resourceName: "introductory_splash_custom_audio"))
     }
 
     // Keep these ordered by increasing uniqueId.
