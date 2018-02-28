@@ -14,58 +14,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// As of RTC M61, iOS8 crashes when ending calls while de-alloc'ing the EAGLVideoView.
-// WebRTC doesn't seem to support iOS8 - e.g. their Podfile requires iOS9+, and they
-// unconditionally require MetalKit on a 64bit iOS8 device (which crashes).
-// Until WebRTC supports iOS8, we show a "upgrade iOS to see remote video" view
-// to our few remaining iOS8 users
-@interface NullVideoRenderer : UIView <RTCVideoRenderer>
-
-@end
-
-@implementation NullVideoRenderer
-
-- (instancetype)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (!self) {
-        return self;
-    }
-
-    self.backgroundColor = UIColor.blackColor;
-
-    UILabel *label = [UILabel new];
-    label.numberOfLines = 0;
-    label.text
-        = NSLocalizedString(@"CALL_REMOTE_VIDEO_DISABLED", @"Text shown on call screen in place of remote video");
-    label.textAlignment = NSTextAlignmentCenter;
-    label.font = [UIFont ows_boldFontWithSize:ScaleFromIPhone5(20)];
-    label.textColor = UIColor.whiteColor;
-    label.lineBreakMode = NSLineBreakByWordWrapping;
-
-    [self addSubview:label];
-    [label autoVCenterInSuperview];
-    [label autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5(16)];
-
-    return self;
-}
-
-#pragma mark - RTCVideoRenderer
-
-/** The size of the frame. */
-- (void)setSize:(CGSize)size
-{
-    // Do nothing.
-}
-
-/** The frame to be displayed. */
-- (void)renderFrame:(nullable RTCVideoFrame *)frame
-{
-    // Do nothing.
-}
-
-@end
-
 @interface RemoteVideoView () <RTCEAGLVideoViewDelegate>
 
 @property (nonatomic, readonly) __kindof UIView<RTCVideoRenderer> *videoRenderer;
@@ -83,10 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
-
-    _videoRenderer = [NullVideoRenderer new];
-    [self addSubview:_videoRenderer];
-    [_videoRenderer autoPinEdgesToSuperviewEdges];
 
 // Currently RTC only supports metal on 64bit machines
 #if defined(RTC_SUPPORTS_METAL)
