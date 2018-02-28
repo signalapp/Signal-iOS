@@ -13,7 +13,11 @@
     self = [super initWithURL:URL
                   cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
               timeoutInterval:textSecureHTTPTimeOut];
-    self.parameters = [NSMutableDictionary dictionary];
+    if (!self) {
+        return nil;
+    }
+
+    self.parameters = @{};
 
     return self;
 }
@@ -33,11 +37,14 @@
     return nil;
 }
 
-#pragma clang diagnostic pop
-
-- (void)makeAuthenticatedRequest {
-    OWSAssert([TSAccountManager serverAuthToken]);
-    [self.parameters addEntriesFromDictionary:@{ @"Authorization" : [TSAccountManager serverAuthToken] }];
++ (instancetype)requestWithUrl:(NSURL *)url
+                        method:(NSString *)method
+                    parameters:(NSDictionary<NSString *, id> *)parameters
+{
+    TSRequest *request = [[TSRequest alloc] initWithURL:url];
+    [request setHTTPMethod:method];
+    request.parameters = parameters;
+    return request;
 }
 
 @end

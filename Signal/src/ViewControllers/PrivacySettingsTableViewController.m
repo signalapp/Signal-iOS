@@ -7,6 +7,7 @@
 #import "Signal-Swift.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
+#import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -120,7 +121,31 @@ NS_ASSUME_NONNULL_BEGIN
                                                          }]];
     [contents addSection:historyLogsSection];
 
-    self.contents = contents;
+    OWSTableSection *twoFactorAuthSection = [OWSTableSection new];
+    twoFactorAuthSection.headerTitle = NSLocalizedString(
+        @"SETTINGS_TWO_FACTOR_AUTH_TITLE", @"Title for the 'two factor auth' section of the privacy settings.");
+    BOOL is2FAEnabled = [OWS2FAManager.sharedManager is2FAEnabled];
+    [twoFactorAuthSection
+        addItem:[OWSTableItem
+                    disclosureItemWithText:
+                        (is2FAEnabled ? NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_ENABLE",
+                                            @"Label for the 'enable two factor auth' item of the privacy settings.")
+                                      : NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_DISABLE",
+                                            @"Label for the 'disable two factor auth' item of the privacy settings."))
+                    actionBlock:^{
+                        if (is2FAEnabled) {
+                            [weakSelf disable2FA];
+                        } else {
+                            [weakSelf enable2FA];
+                        }
+                    }]];
+    [contents addSection:twoFactorAuthSection];
+
+    OWS2FAManager
+        .h
+
+            self.contents
+        = contents;
 }
 
 #pragma mark - Events
@@ -212,6 +237,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     // rebuild callUIAdapter since CallKit configuration changed.
     [SignalApp.sharedApp.callService createCallUIAdapter];
+}
+
+- (void)enable2FA
+{
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+}
+
+- (void)disable2FA
+{
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 }
 
 #pragma mark - Log util

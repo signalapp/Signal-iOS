@@ -1,23 +1,21 @@
 //
-//  TSGetRecipientPrekey.m
-//  TextSecureiOS
-//
-//  Created by Christine Corbett Moran on 11/30/13.
-//  Copyright (c) 2013 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSConstants.h"
 #import "TSRecipientPrekeyRequest.h"
+#import "TSConstants.h"
 
 @implementation TSRecipientPrekeyRequest
 
 - (TSRequest *)initWithRecipient:(NSString *)recipientNumber deviceId:(NSString *)deviceId {
-    NSString *recipientInformation = recipientNumber;
+    self = [super
+        initWithURL:[NSURL
+                        URLWithString:[NSString
+                                          stringWithFormat:@"%@/%@/%@", textSecureKeysAPI, recipientNumber, deviceId]]];
 
-    self = [super initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/%@",
-                                                                              textSecureKeysAPI,
-                                                                              recipientInformation,
-                                                                              deviceId]]];
+    if (!self) {
+        return nil;
+    }
 
     self.HTTPMethod = @"GET";
     self.parameters = nil;

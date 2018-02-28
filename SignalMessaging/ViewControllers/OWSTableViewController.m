@@ -83,7 +83,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 @interface OWSTableItem ()
 
-@property (nonatomic) OWSTableItemType itemType;
 @property (nonatomic, nullable) NSString *title;
 @property (nonatomic, nullable) OWSTableActionBlock actionBlock;
 
@@ -102,7 +101,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSAssert(title.length > 0);
 
     OWSTableItem *item = [OWSTableItem new];
-    item.itemType = OWSTableItemTypeAction;
     item.actionBlock = actionBlock;
     item.title = title;
     return item;
@@ -116,7 +114,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSAssert(customRowHeight > 0);
 
     OWSTableItem *item = [OWSTableItem new];
-    item.itemType = (actionBlock != nil ? OWSTableItemTypeAction : OWSTableItemTypeDefault);
     item.actionBlock = actionBlock;
     item.customCell = customCell;
     item.customRowHeight = @(customRowHeight);
@@ -140,7 +137,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSAssert(customCellBlock);
 
     OWSTableItem *item = [OWSTableItem new];
-    item.itemType = (actionBlock != nil ? OWSTableItemTypeAction : OWSTableItemTypeDefault);
     item.actionBlock = actionBlock;
     item.customCellBlock = customCellBlock;
     return item;
@@ -164,7 +160,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSAssert(actionBlock);
 
     OWSTableItem *item = [OWSTableItem new];
-    item.itemType = OWSTableItemTypeAction;
     item.actionBlock = actionBlock;
     item.customCellBlock = ^{
         UITableViewCell *cell = [UITableViewCell new];
@@ -188,13 +183,34 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return item;
 }
 
++ (OWSTableItem *)disclosureItemWithText:(NSString *)text
+                              detailText:(NSString *)detailText
+                             actionBlock:(nullable OWSTableActionBlock)actionBlock
+{
+    OWSAssert(text.length > 0);
+    OWSAssert(actionBlock);
+
+    OWSTableItem *item = [OWSTableItem new];
+    item.actionBlock = actionBlock;
+    item.customCellBlock = ^{
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
+                                                       reuseIdentifier:@"UITableViewCellStyleValue1"];
+        cell.textLabel.text = text;
+        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+        cell.textLabel.textColor = [UIColor blackColor];
+        cell.detailTextLabel.text = detailText;
+        [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
+        return cell;
+    };
+    return item;
+}
+
 + (OWSTableItem *)subPageItemWithText:(NSString *)text actionBlock:(nullable OWSTableSubPageBlock)actionBlock
 {
     OWSAssert(text.length > 0);
     OWSAssert(actionBlock);
 
     OWSTableItem *item = [OWSTableItem new];
-    item.itemType = OWSTableItemTypeAction;
     __weak OWSTableItem *weakItem = item;
     item.actionBlock = ^{
         OWSTableItem *strongItem = weakItem;
@@ -233,7 +249,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSAssert(actionBlock);
 
     OWSTableItem *item = [OWSTableItem new];
-    item.itemType = OWSTableItemTypeAction;
     item.actionBlock = actionBlock;
     item.customCellBlock = ^{
         UITableViewCell *cell = [UITableViewCell new];
@@ -250,7 +265,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSAssert(text.length > 0);
 
     OWSTableItem *item = [OWSTableItem new];
-    item.itemType = OWSTableItemTypeAction;
     item.customCellBlock = ^{
         UITableViewCell *cell = [UITableViewCell new];
         cell.textLabel.text = text;
@@ -282,7 +296,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSAssert(text.length > 0);
 
     OWSTableItem *item = [OWSTableItem new];
-    item.itemType = OWSTableItemTypeAction;
     item.customCellBlock = ^{
         UITableViewCell *cell = [UITableViewCell new];
         cell.textLabel.text = text;
@@ -300,7 +313,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSAssert(accessoryText.length > 0);
 
     OWSTableItem *item = [OWSTableItem new];
-    item.itemType = OWSTableItemTypeAction;
     item.customCellBlock = ^{
         UITableViewCell *cell = [UITableViewCell new];
         cell.textLabel.text = text;
@@ -337,7 +349,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSAssert(selector);
 
     OWSTableItem *item = [OWSTableItem new];
-    item.itemType = OWSTableItemTypeAction;
     __weak id weakTarget = target;
     item.customCellBlock = ^{
         UITableViewCell *cell = [UITableViewCell new];

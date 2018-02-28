@@ -1,14 +1,9 @@
 //
-//  TSRegisterForPushRequest.m
-//  TextSecureiOS
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
-//  Created by Frederic Jacobs on 10/13/13.
-//  Copyright (c) 2013 Open Whisper Systems. All rights reserved.
-//
-
-#import "TSConstants.h"
 
 #import "TSRegisterForPushRequest.h"
+#import "TSConstants.h"
 
 @implementation TSRegisterForPushRequest
 
@@ -16,13 +11,19 @@
     self =
         [super initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", textSecureAccountsAPI, @"apn"]]];
 
+    if (!self) {
+        return nil;
+    }
+
     self.HTTPMethod = @"PUT";
 
-    self.parameters = [@{ @"apnRegistrationId" : identifier } mutableCopy];
+    NSMutableDictionary *parameters = [@{ @"apnRegistrationId" : identifier } mutableCopy];
 
     if (voipId) {
-        [self.parameters setObject:voipId forKeyedSubscript:@"voipRegistrationId"];
+        parameters[@"voipRegistrationId"] = voipId;
     }
+
+    self.parameters = parameters;
 
     return self;
 }

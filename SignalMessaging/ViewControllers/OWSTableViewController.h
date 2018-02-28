@@ -44,11 +44,6 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 
 #pragma mark -
 
-typedef NS_ENUM(NSInteger, OWSTableItemType) {
-    OWSTableItemTypeDefault,
-    OWSTableItemTypeAction,
-};
-
 typedef void (^OWSTableActionBlock)(void);
 typedef void (^OWSTableSubPageBlock)(UIViewController *viewController);
 typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
@@ -71,6 +66,10 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
                               actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)disclosureItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
++ (OWSTableItem *)disclosureItemWithText:(NSString *)text
+                              detailText:(NSString *)detailText
+                             actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)disclosureItemWithText:(NSString *)text
                          customRowHeight:(CGFloat)customRowHeight

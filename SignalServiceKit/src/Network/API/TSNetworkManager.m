@@ -98,8 +98,9 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         [sessionManager.requestSerializer
             setAuthorizationHeaderFieldWithUsername:((TSVerifyCodeRequest *)request).numberToValidate
                                            password:[request.parameters objectForKey:@"AuthKey"]];
-        [request.parameters removeObjectForKey:@"AuthKey"];
-        [sessionManager PUT:request.URL.absoluteString parameters:request.parameters success:success failure:failure];
+        NSMutableDictionary *parameters = [request.parameters mutableCopy];
+        [parameters removeObjectForKey:@"AuthKey"];
+        [sessionManager PUT:request.URL.absoluteString parameters:parameters success:success failure:failure];
     } else {
         if (![request isKindOfClass:[TSRequestVerificationCodeRequest class]]) {
             [sessionManager.requestSerializer

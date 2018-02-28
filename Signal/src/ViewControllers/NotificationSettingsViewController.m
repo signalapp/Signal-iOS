@@ -38,21 +38,15 @@
     OWSTableSection *soundsSection = [OWSTableSection new];
     soundsSection.headerTitle
         = NSLocalizedString(@"SETTINGS_SECTION_SOUNDS", @"Header Label for the sounds section of settings views.");
-
-    [soundsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
-                                                       reuseIdentifier:@"UITableViewCellStyleValue1"];
-        cell.textLabel.text = NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
-            @"Label for settings view that allows user to change the notification sound.");
-        OWSSound sound = [OWSSounds globalNotificationSound];
-        cell.detailTextLabel.text = [OWSSounds displayNameForSound:sound];
-        [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
-        return cell;
-    }
-                               actionBlock:^{
-                                   OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
-                                   [weakSelf.navigationController pushViewController:vc animated:YES];
-                               }]];
+    [soundsSection
+        addItem:[OWSTableItem disclosureItemWithText:
+                                  NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
+                                      @"Label for settings view that allows user to change the notification sound.")
+                                          detailText:[OWSSounds displayNameForSound:[OWSSounds globalNotificationSound]]
+                                         actionBlock:^{
+                                             OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
+                                             [weakSelf.navigationController pushViewController:vc animated:YES];
+                                         }]];
 
     NSString *inAppSoundsLabelText = NSLocalizedString(@"NOTIFICATIONS_SECTION_INAPP",
         @"Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the "
@@ -65,23 +59,15 @@
     
     OWSTableSection *backgroundSection = [OWSTableSection new];
     backgroundSection.headerTitle = NSLocalizedString(@"SETTINGS_NOTIFICATION_CONTENT_TITLE", @"table section header");
-    [backgroundSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
-                                                       reuseIdentifier:@"UITableViewCellStyleValue1"];
-
-        NotificationType notifType = [prefs notificationPreviewType];
-        NSString *detailString     = [prefs nameForNotificationPreviewType:notifType];
-        cell.textLabel.text = NSLocalizedString(@"NOTIFICATIONS_SHOW", nil);
-        cell.detailTextLabel.text = detailString;
-        [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
-
-        return cell;
-    }
-                                   actionBlock:^{
-                                       NotificationSettingsOptionsViewController *vc =
-                                           [NotificationSettingsOptionsViewController new];
-                                       [weakSelf.navigationController pushViewController:vc animated:YES];
-                                   }]];
+    [backgroundSection
+        addItem:[OWSTableItem
+                    disclosureItemWithText:NSLocalizedString(@"NOTIFICATIONS_SHOW", nil)
+                                detailText:[prefs nameForNotificationPreviewType:[prefs notificationPreviewType]]
+                               actionBlock:^{
+                                   NotificationSettingsOptionsViewController *vc =
+                                       [NotificationSettingsOptionsViewController new];
+                                   [weakSelf.navigationController pushViewController:vc animated:YES];
+                               }]];
     backgroundSection.footerTitle
         = NSLocalizedString(@"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION", @"table section footer");
     [contents addSection:backgroundSection];

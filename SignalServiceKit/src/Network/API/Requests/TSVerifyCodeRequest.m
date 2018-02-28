@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSVerifyCodeRequest.h"
 #import "TSAccountManager.h"
 #import "TSAttributes.h"
 #import "TSConstants.h"
-#import "TSVerifyCodeRequest.h"
 
 @implementation TSVerifyCodeRequest
 
@@ -17,11 +17,10 @@
         initWithURL:[NSURL URLWithString:[NSString
                                              stringWithFormat:@"%@/code/%@", textSecureAccountsAPI, verificationCode]]];
 
-    NSDictionary *attributes =
-        [TSAttributes attributesWithSignalingKey:signalingKey serverAuthToken:authKey manualMessageFetching:NO];
-
     _numberToValidate = phoneNumber;
-    [self.parameters addEntriesFromDictionary:attributes];
+
+    self.parameters =
+        [TSAttributes attributesWithSignalingKey:signalingKey serverAuthToken:authKey manualMessageFetching:NO];
 
     [self setHTTPMethod:@"PUT"];
 

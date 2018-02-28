@@ -12,6 +12,9 @@
                                                                               textSecureAccountsAPI,
                                                                               [self stringForTransport:transport],
                                                                               phoneNumber]]];
+    if (!self) {
+        return nil;
+    }
 
     self.parameters = nil;
     [self setHTTPMethod:@"GET"];
@@ -28,9 +31,6 @@
         default:
             OWSRaiseException(@"Unsupported transport exception", @"Transport %u in enum is not supported.", transport);
     }
-}
-
-- (void)makeAuthenticatedRequest {
 }
 
 @end

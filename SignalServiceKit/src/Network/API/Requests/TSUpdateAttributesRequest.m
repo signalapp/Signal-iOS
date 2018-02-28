@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSUpdateAttributesRequest.h"
 #import "TSAttributes.h"
 #import "TSConstants.h"
-#import "TSUpdateAttributesRequest.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self) {
         [self setHTTPMethod:@"PUT"];
-        [self.parameters addEntriesFromDictionary:[TSAttributes attributesFromStorageWithManualMessageFetching:enableManualMessageFetching]];
+        self.parameters = [TSAttributes attributesFromStorageWithManualMessageFetching:enableManualMessageFetching];
     }
     
     return self;

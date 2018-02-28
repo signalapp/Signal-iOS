@@ -1,11 +1,13 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 @interface TSRequest : NSMutableURLRequest
 
-@property (nonatomic, retain) NSMutableDictionary *parameters;
+@property (nonatomic) NSDictionary *parameters;
 
-- (void)makeAuthenticatedRequest;
++ (instancetype)requestWithUrl:(NSURL *)url
+                        method:(NSString *)method
+                    parameters:(NSDictionary<NSString *, id> *)parameters;
 
 @end

@@ -1,4 +1,6 @@
-//  Copyright (c) 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSDeviceProvisioningRequest.h"
 #import "TSConstants.h"
@@ -17,7 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.HTTPMethod = @"PUT";
-    [self.parameters addEntriesFromDictionary:@{ @"body" : [messageBody base64EncodedString] }];
+
+    self.parameters = @{
+        @"body" : [messageBody base64EncodedString],
+    };
 
     return self;
 }
