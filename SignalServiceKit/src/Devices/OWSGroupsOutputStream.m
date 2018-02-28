@@ -35,11 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
         [groupBuilder setAvatarBuilder:avatarBuilder];
     }
 
-    NSData *groupData = [[groupBuilder build] data];
-    uint32_t groupDataLength = (uint32_t)groupData.length;
-    [self.delegateStream writeRawVarint32:groupDataLength];
-    [self.delegateStream writeRawData:groupData];
-
     TSGroupThread *_Nullable groupThread = [TSGroupThread threadWithGroupId:group.groupId transaction:transaction];
     if (groupThread) {
         OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration =
@@ -49,6 +44,12 @@ NS_ASSUME_NONNULL_BEGIN
             [groupBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];
         }
     }
+
+    NSData *groupData = [[groupBuilder build] data];
+    uint32_t groupDataLength = (uint32_t)groupData.length;
+
+    [self.delegateStream writeRawVarint32:groupDataLength];
+    [self.delegateStream writeRawData:groupData];
 
     if (avatarPng) {
         [self.delegateStream writeRawData:avatarPng];
