@@ -381,21 +381,9 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 
 - (void)unsetRecordedAPNSTokens
 {
-    DDLogWarn(@"%@ Forgetting recorded APNS tokens", self.tag);
+    DDLogWarn(@"%@ Forgetting recorded APNS tokens", self.logTag);
     [self setValueForKey:OWSPreferencesKeyLastRecordedPushToken toValue:nil];
     [self setValueForKey:OWSPreferencesKeyLastRecordedVoipToken toValue:nil];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.tag;
 }
 
 @end

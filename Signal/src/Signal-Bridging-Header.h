@@ -24,7 +24,6 @@
 #import "OWSDatabaseMigration.h"
 #import "OWSNavigationController.h"
 #import "OWSProgressView.h"
-#import "OWSViewController.h"
 #import "OWSWebRTCDataProtos.pb.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
@@ -53,6 +52,7 @@
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/OWSSounds.h>
+#import <SignalMessaging/OWSViewController.h>
 #import <SignalMessaging/Release.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/UIColor+OWS.h>

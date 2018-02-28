@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBezierPathView.h"
@@ -91,13 +91,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self setNeedsDisplay];
-}
-
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
 }
 
 @end

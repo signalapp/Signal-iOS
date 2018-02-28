@@ -101,16 +101,4 @@
     return lastPreKeyId;
 }
 
-#pragma mark - Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@+PreKeyStore]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.logTag;
-}
-
 @end

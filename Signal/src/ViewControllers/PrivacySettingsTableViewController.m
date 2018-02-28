@@ -4,6 +4,7 @@
 
 #import "PrivacySettingsTableViewController.h"
 #import "BlockListViewController.h"
+#import "OWS2FASettingsViewController.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
@@ -20,6 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.title = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
 
     [self updateTableContents];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self enable2FA];
+    });
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -128,10 +133,10 @@ NS_ASSUME_NONNULL_BEGIN
     [twoFactorAuthSection
         addItem:[OWSTableItem
                     disclosureItemWithText:
-                        (is2FAEnabled ? NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_ENABLE",
-                                            @"Label for the 'enable two factor auth' item of the privacy settings.")
-                                      : NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_DISABLE",
-                                            @"Label for the 'disable two factor auth' item of the privacy settings."))
+                        (is2FAEnabled ? NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_DISABLE",
+                                            @"Label for the 'disable two factor auth' item of the privacy settings.")
+                                      : NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_ENABLE",
+                                            @"Label for the 'enable two factor auth' item of the privacy settings."))
                     actionBlock:^{
                         if (is2FAEnabled) {
                             [weakSelf disable2FA];
@@ -141,11 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
                     }]];
     [contents addSection:twoFactorAuthSection];
 
-    OWS2FAManager
-        .h
-
-            self.contents
-        = contents;
+    self.contents = contents;
 }
 
 #pragma mark - Events
@@ -155,7 +156,6 @@ NS_ASSUME_NONNULL_BEGIN
     BlockListViewController *vc = [BlockListViewController new];
     [self.navigationController pushViewController:vc animated:YES];
 }
-
 
 - (void)clearHistoryLogs
 {
@@ -242,23 +242,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)enable2FA
 {
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    OWS2FASettingsViewController *vc = [OWS2FASettingsViewController new];
+    vc.mode = Enable2FAMode_Status;
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)disable2FA
 {
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-}
-
-#pragma mark - Log util
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.logTag;
 }
 
 @end

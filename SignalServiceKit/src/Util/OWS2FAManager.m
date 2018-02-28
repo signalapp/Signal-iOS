@@ -69,7 +69,12 @@ NSString *const kOWS2FAManager_IsEnabledKey = @"kOWS2FAManager_IsEnabledKey";
                             defaultValue:NO];
 }
 
-- (void)enable2FAWithPin:(NSString *)pin success:(OWS2FASuccess)success failure:(OWS2FAFailure)failure
+- (void)setIs2FAEnabled:(BOOL)value
+{
+    [self.dbConnection setBool:value forKey:kOWS2FAManager_IsEnabledKey inCollection:kOWS2FAManager_Collection];
+}
+
+- (void)enable2FAWithPin:(NSString *)pin success:(nullable OWS2FASuccess)success failure:(nullable OWS2FAFailure)failure
 {
     OWSAssert(pin.length > 0);
     OWSAssert(success);
@@ -78,25 +83,42 @@ NSString *const kOWS2FAManager_IsEnabledKey = @"kOWS2FAManager_IsEnabledKey";
     TSRequest *request = [OWSRequestFactory enable2FARequestWithPin:pin];
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
-            success();
+            OWSAssertIsOnMainThread();
+
+            [self setIs2FAEnabled:YES];
+
+            if (success) {
+                success();
+            }
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            failure(error);
+            OWSAssertIsOnMainThread();
+
+            if (failure) {
+                failure(error);
+            }
         }];
 }
 
-- (void)disable2FAWithSuccess:(OWS2FASuccess)success failure:(OWS2FAFailure)failure
+- (void)disable2FAWithSuccess:(nullable OWS2FASuccess)success failure:(nullable OWS2FAFailure)failure
 {
-    OWSAssert(success);
-    OWSAssert(failure);
-
     TSRequest *request = [OWSRequestFactory disable2FARequest];
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
-            success();
+            OWSAssertIsOnMainThread();
+
+            [self setIs2FAEnabled:NO];
+
+            if (success) {
+                success();
+            }
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            failure(error);
+            OWSAssertIsOnMainThread();
+
+            if (failure) {
+                failure(error);
+            }
         }];
 }
 

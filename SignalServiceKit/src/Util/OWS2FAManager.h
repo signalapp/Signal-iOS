@@ -16,9 +16,11 @@ typedef void (^OWS2FAFailure)(NSError *error);
 
 - (BOOL)is2FAEnabled;
 
-- (void)enable2FAWithPin:(NSString *)pin success:(OWS2FASuccess)success failure:(OWS2FAFailure)failure;
+- (void)enable2FAWithPin:(NSString *)pin
+                 success:(nullable OWS2FASuccess)success
+                 failure:(nullable OWS2FAFailure)failure;
 
-- (void)disable2FAWithSuccess:(OWS2FASuccess)success failure:(OWS2FAFailure)failure;
+- (void)disable2FAWithSuccess:(nullable OWS2FASuccess)success failure:(nullable OWS2FAFailure)failure;
 
 @end
 
