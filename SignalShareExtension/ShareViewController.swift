@@ -492,7 +492,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE",
                                                comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
-            OWSAlerts.showAlert(withTitle: alertTitle,
+            OWSAlerts.showAlert(title: alertTitle,
                                 message: error.localizedDescription,
                                 buttonTitle: CommonStrings.cancelButton) { _ in
                                     strongSelf.shareViewWasCancelled()

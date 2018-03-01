@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
     return value;
 }
 
-    - (nullable NSDictionary *)dictionaryForKey : (NSString *)key inCollection : (NSString *)collection
+- (nullable NSDictionary *)dictionaryForKey : (NSString *)key inCollection:(NSString *)collection
 {
     OWSAssert(key.length > 0);
     OWSAssert(collection.length > 0);

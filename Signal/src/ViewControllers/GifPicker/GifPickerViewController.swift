@@ -454,7 +454,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         progressiveSearchTimer = nil
 
         guard let text = searchBar.text else {
-            OWSAlerts.showAlert(withTitle: NSLocalizedString("ALERT_ERROR_TITLE",
+            OWSAlerts.showAlert(title: NSLocalizedString("ALERT_ERROR_TITLE",
                                                              comment: ""),
                                 message: NSLocalizedString("GIF_PICKER_VIEW_MISSING_QUERY",
                                                            comment: "Alert message shown when user tries to search for GIFs without entering any search terms."))
