@@ -1398,9 +1398,7 @@
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Country Code";
 
-/* Placeholder text
-//                                                         for the phone number textfield
-   Placeholder text for the phone number textfield */
+/* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Enter Number";
 
 /* No comment provided by engineer. */
@@ -1430,9 +1428,7 @@
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Activate This Device";
 
-/* Message of alert indicating that users needs to enter a
-//                                                        valid phone number to register.
-   Message of alert indicating that users needs to enter a valid phone number to register. */
+/* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a valid phone number to register.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
@@ -1441,9 +1437,7 @@
 /* Message of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a phone number to register.";
 
-/* Title of alert indicating that users needs to enter a phone number to
-//                                              register.
-   Title of alert indicating that users needs to enter a phone number to register. */
+/* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "No Phone Number";
 
 /* No comment provided by engineer. */

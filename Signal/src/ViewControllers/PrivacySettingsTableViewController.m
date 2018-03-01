@@ -21,10 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.title = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
 
     [self updateTableContents];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self show2FASettings];
-    });
 }
 
 - (void)viewDidAppear:(BOOL)animated
