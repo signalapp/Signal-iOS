@@ -210,7 +210,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view addSubview:underscoreView];
     [underscoreView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.pinTextfield withOffset:3];
     [underscoreView autoPinWidthToSuperviewWithMargin:self.hMargin];
-    //    [underscoreView autoSetDimension:ALDimensionWidth toSize:textFieldWidth];
     [underscoreView autoHCenterInSuperview];
     [underscoreView autoSetDimension:ALDimensionHeight toSize:1.f];
 
