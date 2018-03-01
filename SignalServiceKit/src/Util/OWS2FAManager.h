@@ -4,6 +4,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const NSNotificationName_2FAStateDidChange;
+
 typedef void (^OWS2FASuccess)(void);
 typedef void (^OWS2FAFailure)(NSError *error);
 

@@ -3,12 +3,15 @@
 //
 
 #import "OWS2FAManager.h"
+#import "NSNotificationCenter+OWS.h"
 #import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 #import "TSStorageManager.h"
 #import "YapDatabaseConnection+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *const NSNotificationName_2FAStateDidChange = @"NSNotificationName_2FAStateDidChange";
 
 NSString *const kOWS2FAManager_Collection = @"kOWS2FAManager_Collection";
 NSString *const kOWS2FAManager_IsEnabledKey = @"kOWS2FAManager_IsEnabledKey";
@@ -72,6 +75,10 @@ NSString *const kOWS2FAManager_IsEnabledKey = @"kOWS2FAManager_IsEnabledKey";
 - (void)setIs2FAEnabled:(BOOL)value
 {
     [self.dbConnection setBool:value forKey:kOWS2FAManager_IsEnabledKey inCollection:kOWS2FAManager_Collection];
+
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
+                                                             object:nil
+                                                           userInfo:nil];
 }
 
 - (void)enable2FAWithPin:(NSString *)pin success:(nullable OWS2FASuccess)success failure:(nullable OWS2FAFailure)failure

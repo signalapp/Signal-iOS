@@ -38,6 +38,16 @@ NS_ASSUME_NONNULL_BEGIN
     self.title = NSLocalizedString(@"ENABLE_2FA_VIEW_TITLE", @"Title for the 'enable two factor auth PIN' views.");
 
     [self createContents];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(stateDidChange:)
+                                                 name:NSNotificationName_2FAStateDidChange
+                                               object:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)createContents
@@ -72,15 +82,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [super viewWillAppear:animated];
 
-    if (self.mode == OWS2FASettingsMode_Status) {
-        // Ever time we re-enter the "status" view, recreate its
-        // contents wholesale since we may have just enabled or
-        // disabled 2FA.
-        [self createContents];
-    } else {
-        // If we're using a table, refresh its contents.
-        [self updateTableContents];
-    }
+    // If we're using a table, refresh its contents.
+    [self updateTableContents];
 
     [self updateNavigationItems];
 }
@@ -413,7 +416,7 @@ NS_ASSUME_NONNULL_BEGIN
                       }
                           failure:^(NSError *error) {
                               [modalActivityIndicator dismissWithCompletion:^{
-                                  [weakSelf createContents];
+                                  [weakSelf updateTableContents];
 
                                   [OWSAlerts
                                       showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")
@@ -475,6 +478,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)backButtonWasPressed
 {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)stateDidChange:(NSNotification *)notification
+{
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    if (self.mode == OWS2FASettingsMode_Status) {
+        [self createContents];
+    }
 }
 
 @end
