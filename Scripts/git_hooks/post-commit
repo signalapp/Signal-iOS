@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+Scripts/reverse_integration_check.py
