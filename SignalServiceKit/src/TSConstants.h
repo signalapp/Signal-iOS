@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #ifndef TextSecureKit_Constants_h
@@ -51,6 +51,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecureProfileAPIFormat @"v1/profile/%@"
 #define textSecureSetProfileNameAPIFormat @"v1/profile/name/%@"
 #define textSecureProfileAvatarFormAPI @"v1/profile/form/avatar"
+#define textSecure2FAAPI @"/v1/accounts/pin"
 
 #define SignalApplicationGroup @"group.org.whispersystems.signal.group"
 

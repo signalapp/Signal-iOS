@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSViewController.h"
+#import <SignalMessaging/OWSViewController.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

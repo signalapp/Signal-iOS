@@ -4,9 +4,11 @@
 
 #import "PrivacySettingsTableViewController.h"
 #import "BlockListViewController.h"
+#import "OWS2FASettingsViewController.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
+#import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -120,6 +122,25 @@ NS_ASSUME_NONNULL_BEGIN
                                                          }]];
     [contents addSection:historyLogsSection];
 
+    OWSTableSection *twoFactorAuthSection = [OWSTableSection new];
+    twoFactorAuthSection.headerTitle = NSLocalizedString(
+        @"SETTINGS_TWO_FACTOR_AUTH_TITLE", @"Title for the 'two factor auth' section of the privacy settings.");
+    [twoFactorAuthSection
+        addItem:
+            [OWSTableItem
+                disclosureItemWithText:NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_ITEM",
+                                           @"Label for the 'two factor auth' item of the privacy settings.")
+                            detailText:
+                                ([OWS2FAManager.sharedManager is2FAEnabled]
+                                        ? NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_ENABLED",
+                                              @"Indicates that 'two factor auth' is enabled in the privacy settings.")
+                                        : NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_DISABLED",
+                                              @"Indicates that 'two factor auth' is disabled in the privacy settings."))
+                            actionBlock:^{
+                                [weakSelf show2FASettings];
+                            }]];
+    [contents addSection:twoFactorAuthSection];
+
     self.contents = contents;
 }
 
@@ -130,7 +151,6 @@ NS_ASSUME_NONNULL_BEGIN
     BlockListViewController *vc = [BlockListViewController new];
     [self.navigationController pushViewController:vc animated:YES];
 }
-
 
 - (void)clearHistoryLogs
 {
@@ -214,16 +234,13 @@ NS_ASSUME_NONNULL_BEGIN
     [SignalApp.sharedApp.callService createCallUIAdapter];
 }
 
-#pragma mark - Log util
-
-+ (NSString *)tag
+- (void)show2FASettings
 {
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-- (NSString *)tag
-{
-    return self.class.logTag;
+    OWS2FASettingsViewController *vc = [OWS2FASettingsViewController new];
+    vc.mode = OWS2FASettingsMode_Status;
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 @end

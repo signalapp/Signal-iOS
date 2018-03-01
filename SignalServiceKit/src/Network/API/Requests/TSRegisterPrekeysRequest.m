@@ -1,14 +1,13 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSConstants.h"
 #import "TSRegisterPrekeysRequest.h"
-
-#import <Curve25519Kit/Curve25519.h>
+#import "TSConstants.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/PreKeyRecord.h>
 #import <AxolotlKit/SignedPreKeyStore.h>
+#import <Curve25519Kit/Curve25519.h>
 
 @implementation TSRegisterPrekeysRequest
 
@@ -17,6 +16,10 @@
        signedPreKeyRecord:(SignedPreKeyRecord *)signedRecord
          preKeyLastResort:(PreKeyRecord *)lastResort {
     self            = [super initWithURL:[NSURL URLWithString:textSecureKeysAPI]];
+    if (!self) {
+        return nil;
+    }
+
     self.HTTPMethod = @"PUT";
 
     NSString *publicIdentityKey          = [[identityKeyPublic prependKeyType] base64EncodedStringWithOptions:0];

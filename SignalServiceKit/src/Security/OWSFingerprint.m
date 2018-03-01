@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFingerprint.h"
@@ -307,16 +307,6 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     CGImageRelease(cgImage);
 
     return qrImage;
-}
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.logTag;
 }
 
 @end

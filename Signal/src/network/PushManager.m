@@ -484,14 +484,4 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
     });
 }
 
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.logTag;
-}
-
 @end

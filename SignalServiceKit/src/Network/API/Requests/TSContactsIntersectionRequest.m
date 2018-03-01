@@ -1,14 +1,9 @@
 //
-//  TSContactsIntersection.m
-//  TextSecureiOS
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
-//  Created by Frederic Jacobs on 10/12/13.
-//  Copyright (c) 2013 Open Whisper Systems. All rights reserved.
-//
-
-#import "TSConstants.h"
 
 #import "TSContactsIntersectionRequest.h"
+#import "TSConstants.h"
 
 @implementation TSContactsIntersectionRequest
 
@@ -16,9 +11,15 @@
     self = [self
         initWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", textSecureDirectoryAPI, @"tokens"]]];
 
+    if (!self) {
+        return nil;
+    }
+
     self.HTTPMethod = @"PUT";
 
-    [self.parameters addEntriesFromDictionary:@{ @"contacts" : hashes }];
+    self.parameters = @{
+        @"contacts" : hashes,
+    };
 
     return self;
 }

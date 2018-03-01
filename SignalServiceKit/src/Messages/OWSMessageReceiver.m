@@ -339,18 +339,6 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         }];
 }
 
-#pragma mark Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.logTag;
-}
-
 @end
 
 #pragma mark - OWSMessageReceiver

@@ -215,18 +215,6 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     [storage asyncRegisterExtension:[self databaseExtension] withName:OWSMessageContentJobFinderExtensionName];
 }
 
-#pragma mark Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.logTag;
-}
-
 @end
 
 #pragma mark - Queue Processing
@@ -363,18 +351,6 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                                       transaction:transaction];
         }
     }];
-}
-
-#pragma mark Logging
-
-+ (NSString *)tag
-{
-    return [NSString stringWithFormat:@"[%@]", self.class];
-}
-
-- (NSString *)tag
-{
-    return self.class.logTag;
 }
 
 @end

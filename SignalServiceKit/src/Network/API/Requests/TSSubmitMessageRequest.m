@@ -1,14 +1,9 @@
 //
-//  TSSubmitMessageRequest.m
-//  TextSecureiOS
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
-//  Created by Christine Corbett Moran on 11/30/13.
-//  Copyright (c) 2013 Open Whisper Systems. All rights reserved.
-//
-
-#import "TSConstants.h"
 
 #import "TSSubmitMessageRequest.h"
+#import "TSConstants.h"
 
 @implementation TSSubmitMessageRequest
 
@@ -18,17 +13,21 @@
                        timeStamp:(uint64_t)timeStamp {
     self =
         [super initWithURL:[NSURL URLWithString:[textSecureMessagesAPI stringByAppendingString:contactRegisteredID]]];
+    if (!self) {
+        return nil;
+    }
 
-    NSMutableDictionary *allMessages =
-        [@{ @"messages" : messages,
-            @"timestamp" : [NSNumber numberWithUnsignedLongLong:timeStamp] } mutableCopy];
+    NSMutableDictionary *parameters = [@{
+        @"messages" : messages,
+        @"timestamp" : @(timeStamp),
+    } mutableCopy];
 
     if (relay) {
-        [allMessages setObject:relay forKey:@"relay"];
+        parameters[@"relay"] = relay;
     }
 
     [self setHTTPMethod:@"PUT"];
-    [self setParameters:allMessages];
+    self.parameters = parameters;
     return self;
 }
 
