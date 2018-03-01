@@ -42,6 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
             [groupBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];
+        } else {
+            // Rather than *not* set the field, we expicitly set it to 0 so desktop
+            // can easily distinguish between a modern client declaring "off" vs a
+            // legacy client "not specifying".
+            [groupBuilder setExpireTimer:0];
         }
     }
 
