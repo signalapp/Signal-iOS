@@ -12,7 +12,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#pragma mark -
+// TODO: ?
+const NSUInteger kMin2FAPinLength = 4;
+const NSUInteger kMax2FAPinLength = 14;
 
 @implementation ViewControllerUtils
 
@@ -71,6 +73,44 @@ NS_ASSUME_NONNULL_BEGIN
     textField.text = textAfterReformat;
     UITextPosition *pos =
         [textField positionFromPosition:textField.beginningOfDocument offset:(NSInteger)cursorPositionAfterReformat];
+    [textField setSelectedTextRange:[textField textRangeFromPosition:pos toPosition:pos]];
+}
+
++ (void)ows2FAPINTextField:(UITextField *)textField
+    shouldChangeCharactersInRange:(NSRange)range
+                replacementString:(NSString *)insertionText
+{
+    // * We only want to let the user enter decimal digits.
+    // * The user should be able to copy and paste freely.
+    // * Invalid input should be simply ignored.
+    //
+    // We accomplish this by being permissive and trying to "take as much of the user
+    // input as possible".
+    //
+    // * Always accept deletes.
+    // * Ignore invalid input.
+    // * Take partial input if possible.
+
+    NSString *oldText = textField.text;
+    // Construct the new contents of the text field by:
+    // 1. Determining the "left" substring: the contents of the old text _before_ the deletion range.
+    //    Filtering will remove non-decimal digit characters.
+    NSString *left = [oldText substringToIndex:range.location].digitsOnly;
+    // 2. Determining the "right" substring: the contents of the old text _after_ the deletion range.
+    NSString *right = [oldText substringFromIndex:range.location + range.length].digitsOnly;
+    // 3. Determining the "center" substring: the contents of the new insertion text.
+    NSString *center = insertionText.digitsOnly;
+    // 4. Construct the "raw" new text by concatenating left, center and right.
+    NSString *textAfterChange = [[left stringByAppendingString:center] stringByAppendingString:right];
+    // 5. Ensure we don't exceed the maximum length for a PIN.
+    if (textAfterChange.length > kMax2FAPinLength) {
+        textAfterChange = [textAfterChange substringToIndex:kMax2FAPinLength];
+    }
+    // 6. Construct the final text.
+    textField.text = textAfterChange;
+    NSUInteger cursorPositionAfterChange = MIN(left.length + center.length, textAfterChange.length);
+    UITextPosition *pos =
+        [textField positionFromPosition:textField.beginningOfDocument offset:(NSInteger)cursorPositionAfterChange];
     [textField setSelectedTextRange:[textField textRangeFromPosition:pos toPosition:pos]];
 }
 

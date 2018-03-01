@@ -80,6 +80,7 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 + (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode
+                          pin:(nullable NSString *)pin
                       success:(void (^)(void))successBlock
                       failure:(void (^)(NSError *error))failureBlock;
 

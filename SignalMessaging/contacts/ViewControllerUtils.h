@@ -6,6 +6,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern const NSUInteger kMin2FAPinLength;
+extern const NSUInteger kMax2FAPinLength;
+
 @interface ViewControllerUtils : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -17,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText
                       countryCode:(NSString *)countryCode;
+
++ (void)ows2FAPINTextField:(UITextField *)textField
+    shouldChangeCharactersInRange:(NSRange)range
+                replacementString:(NSString *)insertionText;
 
 + (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode callingCode:(NSString *)callingCode;
 

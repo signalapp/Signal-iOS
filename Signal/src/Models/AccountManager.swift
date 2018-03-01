@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -34,11 +34,13 @@ class AccountManager: NSObject {
 
     // MARK: registration
 
-    @objc func register(verificationCode: String) -> AnyPromise {
-        return AnyPromise(register(verificationCode: verificationCode))
+    @objc func register(verificationCode: String,
+                        pin: String?) -> AnyPromise {
+        return AnyPromise(register(verificationCode: verificationCode, pin: pin))
     }
 
-    func register(verificationCode: String) -> Promise<Void> {
+    func register(verificationCode: String,
+                  pin: String?) -> Promise<Void> {
         guard verificationCode.count > 0 else {
             let error = OWSErrorWithCodeDescription(.userError,
                                                     NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
@@ -48,7 +50,7 @@ class AccountManager: NSObject {
 
         Logger.debug("\(self.TAG) registering with signal server")
         let registrationPromise: Promise<Void> = firstly {
-            self.registerForTextSecure(verificationCode: verificationCode)
+            self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
         }.then {
             self.syncPushTokens()
         }.recover { (error) -> Promise<Void> in
@@ -71,11 +73,13 @@ class AccountManager: NSObject {
         return registrationPromise
     }
 
-    private func registerForTextSecure(verificationCode: String) -> Promise<Void> {
+    private func registerForTextSecure(verificationCode: String,
+                                       pin: String?) -> Promise<Void> {
         return Promise { fulfill, reject in
-            self.textSecureAccountManager.verifyAccount(withCode:verificationCode,
-                                                        success:fulfill,
-                                                        failure:reject)
+            self.textSecureAccountManager.verifyAccount(withCode: verificationCode,
+                                                        pin: pin,
+                                                        success: fulfill,
+                                                        failure: reject)
         }
     }
 
@@ -95,16 +99,16 @@ class AccountManager: NSObject {
 
     func updatePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
         return Promise { fulfill, reject in
-            self.textSecureAccountManager.registerForPushNotifications(pushToken:pushToken,
-                                                                       voipToken:voipToken,
-                                                                       success:fulfill,
-                                                                       failure:reject)
+            self.textSecureAccountManager.registerForPushNotifications(pushToken: pushToken,
+                                                                       voipToken: voipToken,
+                                                                       success: fulfill,
+                                                                       failure: reject)
         }
     }
 
     func registerForManualMessageFetching() -> Promise<Void> {
         return Promise { fulfill, reject in
-            self.textSecureAccountManager.registerForManualMessageFetching(success:fulfill, failure:reject)
+            self.textSecureAccountManager.registerForManualMessageFetching(success: fulfill, failure: reject)
         }
     }
 
@@ -119,7 +123,7 @@ class AccountManager: NSObject {
                                                 }
 
                                                 if let responseDictionary = responseObject as? [String: AnyObject] {
-                                                    if let turnServerInfo = TurnServerInfo(attributes:responseDictionary) {
+                                                    if let turnServerInfo = TurnServerInfo(attributes: responseDictionary) {
                                                         return fulfill(turnServerInfo)
                                                     }
                                                     Logger.error("\(self.TAG) unexpected server response:\(responseDictionary)")

@@ -113,18 +113,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.pinTextfield = [UITextField new];
     self.pinTextfield.textColor = [UIColor blackColor];
-    switch (self.mode) {
-        case OWS2FASettingsMode_SelectPIN:
-            self.pinTextfield.placeholder = NSLocalizedString(@"ENABLE_2FA_VIEW_SELECT_PIN_DEFAULT_TEXT",
-                @"Text field placeholder for 'two factor auth pin' when selecting a pin.");
-            break;
-        case OWS2FASettingsMode_ConfirmPIN:
-            self.pinTextfield.placeholder = NSLocalizedString(@"ENABLE_2FA_VIEW_CONFIRM_PIN_DEFAULT_TEXT",
-                @"Text field placeholder for 'two factor auth pin' when confirming a pin.");
-            break;
-        case OWS2FASettingsMode_Status:
-            OWSFail(@"%@ invalid mode.", self.logTag) break;
-    }
+    self.pinTextfield.placeholder
+        = NSLocalizedString(@"2FA_PIN_DEFAULT_TEXT", @"Text field placeholder when entering a 'two-factor auth pin'.");
     self.pinTextfield.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
     self.pinTextfield.textAlignment = NSTextAlignmentCenter;
     self.pinTextfield.keyboardType = UIKeyboardTypeNumberPad;
@@ -203,14 +193,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.pinTextfield autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:instructionsLabel withOffset:kVSpacing];
     [self.pinTextfield autoPinWidthToSuperviewWithMargin:self.hMargin];
-    [self.pinTextfield autoHCenterInSuperview];
 
     UIView *underscoreView = [UIView new];
     underscoreView.backgroundColor = [UIColor colorWithWhite:0.5 alpha:1.f];
     [self.view addSubview:underscoreView];
     [underscoreView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.pinTextfield withOffset:3];
     [underscoreView autoPinWidthToSuperviewWithMargin:self.hMargin];
-    [underscoreView autoHCenterInSuperview];
     [underscoreView autoSetDimension:ALDimensionHeight toSize:1.f];
 
     [self updateNavigationItems];
@@ -269,8 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
     //       view is pushed on top of this one, not how the "back"
     //       button looks when this view is visible.
     self.navigationItem.backBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"VERIFICATION_BACK_BUTTON",
-                                                   @"button text for back button on verification view")
+        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
                                          style:UIBarButtonItemStylePlain
                                         target:self
                                         action:@selector(backButtonWasPressed)];
@@ -293,41 +280,9 @@ NS_ASSUME_NONNULL_BEGIN
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText
 {
-    // TODO: ?
-    const NSUInteger kMaxPinLength = 14;
-
-    // * We only want to let the user enter decimal digits.
-    // * The user should be able to copy and paste freely.
-    // * Invalid input should be simply ignored.
-    //
-    // We accomplish this by being permissive and trying to "take as much of the user
-    // input as possible".
-    //
-    // * Always accept deletes.
-    // * Ignore invalid input.
-    // * Take partial input if possible.
-
-    NSString *oldText = textField.text;
-    // Construct the new contents of the text field by:
-    // 1. Determining the "left" substring: the contents of the old text _before_ the deletion range.
-    //    Filtering will remove non-decimal digit characters.
-    NSString *left = [oldText substringToIndex:range.location].digitsOnly;
-    // 2. Determining the "right" substring: the contents of the old text _after_ the deletion range.
-    NSString *right = [oldText substringFromIndex:range.location + range.length].digitsOnly;
-    // 3. Determining the "center" substring: the contents of the new insertion text.
-    NSString *center = insertionText.digitsOnly;
-    // 4. Construct the "raw" new text by concatenating left, center and right.
-    NSString *textAfterChange = [[left stringByAppendingString:center] stringByAppendingString:right];
-    // 5. Ensure we don't exceed the maximum length for a PIN.
-    if (textAfterChange.length > kMaxPinLength) {
-        textAfterChange = [textAfterChange substringToIndex:kMaxPinLength];
-    }
-    // 6. Construct the final text.
-    textField.text = textAfterChange;
-    NSUInteger cursorPositionAfterChange = MIN(left.length + center.length, textAfterChange.length);
-    UITextPosition *pos =
-        [textField positionFromPosition:textField.beginningOfDocument offset:(NSInteger)cursorPositionAfterChange];
-    [textField setSelectedTextRange:[textField textRangeFromPosition:pos toPosition:pos]];
+    [ViewControllerUtils ows2FAPINTextField:textField
+              shouldChangeCharactersInRange:range
+                          replacementString:insertionText];
 
     [self updateNavigationItems];
 
@@ -379,8 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasValidPin
 {
-    const NSUInteger kMinPinLength = 4;
-    return self.pinTextfield.text.length >= kMinPinLength;
+    return self.pinTextfield.text.length >= kMin2FAPinLength;
 }
 
 - (void)showEnable2FAWorkUI
@@ -470,7 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    [self.navigationController popToViewController:self.root2FAViewController animated:NO];
+    [self.navigationController popToViewController:self.root2FAViewController animated:YES];
 }
 
 - (void)backButtonWasPressed
