@@ -23,17 +23,17 @@ import Foundation
     }
 
     @objc
-    public class func showAlert(withTitle title: String) {
-        self.showAlert(withTitle: title, message: nil, buttonTitle: nil)
+    public class func showAlert(title: String) {
+        self.showAlert(title: title, message: nil, buttonTitle: nil)
     }
 
     @objc
-    public class func showAlert(withTitle title: String?, message: String) {
-        self.showAlert(withTitle: title, message: message, buttonTitle: nil)
+    public class func showAlert(title: String?, message: String) {
+        self.showAlert(title: title, message: message, buttonTitle: nil)
     }
 
     @objc
-    public class func showAlert(withTitle title: String?, message: String? = nil, buttonTitle: String? = nil, buttonAction: ((UIAlertAction) -> Void)? = nil) {
+    public class func showAlert(title: String?, message: String? = nil, buttonTitle: String? = nil, buttonAction: ((UIAlertAction) -> Void)? = nil) {
         let actionTitle = buttonTitle ?? NSLocalizedString("OK", comment: "")
 
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -42,7 +42,7 @@ import Foundation
     }
 
     @objc
-    public class func showConfirmationAlert(withTitle title: String, message: String? = nil, proceedTitle: String? = nil, proceedAction: @escaping (UIAlertAction) -> Void) {
+    public class func showConfirmationAlert(title: String, message: String? = nil, proceedTitle: String? = nil, proceedAction: @escaping (UIAlertAction) -> Void) {
         assert(title.count > 0)
 
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -88,7 +88,7 @@ import Foundation
 
         Environment.preferences().setIOSUpgradeNagDate(Date())
 
-        OWSAlerts.showAlert(withTitle: NSLocalizedString("UPGRADE_IOS_ALERT_TITLE",
+        OWSAlerts.showAlert(title: NSLocalizedString("UPGRADE_IOS_ALERT_TITLE",
                                                         comment: "Title for the alert indicating that user should upgrade iOS."),
                             message: NSLocalizedString("UPGRADE_IOS_ALERT_MESSAGE",
                                                       comment: "Message for the alert indicating that user should upgrade iOS."))

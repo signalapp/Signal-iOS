@@ -34,13 +34,14 @@ NS_ASSUME_NONNULL_BEGIN
     return object;
 }
 
-- (nullable id)objectForKey:(NSString *)key inCollection:(NSString *)collection ofExpectedType:(Class) class {
+- (nullable id)objectForKey:(NSString *)key inCollection:(NSString *)collection ofExpectedType:(Class)class
+{
     id _Nullable value = [self objectForKey:key inCollection:collection];
     OWSAssert(!value || [value isKindOfClass:class]);
     return value;
 }
 
-    - (nullable NSDictionary *)dictionaryForKey : (NSString *)key inCollection : (NSString *)collection
+- (nullable NSDictionary *)dictionaryForKey:(NSString *)key inCollection:(NSString *)collection
 {
     return [self objectForKey:key inCollection:collection ofExpectedType:[NSDictionary class]];
 }
@@ -59,6 +60,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSNumber *_Nullable value = [self objectForKey:key inCollection:collection ofExpectedType:[NSNumber class]];
     return value ? [value boolValue] : defaultValue;
+}
+
+- (double)doubleForKey:(NSString *)key inCollection:(NSString *)collection defaultValue:(double)defaultValue
+{
+    NSNumber *_Nullable value = [self objectForKey:key inCollection:collection ofExpectedType:[NSNumber class]];
+    return value ? [value doubleValue] : defaultValue;
 }
 
 - (nullable NSData *)dataForKey:(NSString *)key inCollection:(NSString *)collection
@@ -126,6 +133,14 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)setBool:(BOOL)value forKey:(NSString *)key inCollection:(NSString *)collection
+{
+    OWSAssert(key.length > 0);
+    OWSAssert(collection.length > 0);
+
+    [self setObject:@(value) forKey:key inCollection:collection];
+}
+
+- (void)setDouble:(double)value forKey:(NSString *)key inCollection:(NSString *)collection
 {
     OWSAssert(key.length > 0);
     OWSAssert(collection.length > 0);

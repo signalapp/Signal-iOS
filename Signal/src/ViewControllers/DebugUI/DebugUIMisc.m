@@ -106,6 +106,16 @@ NS_ASSUME_NONNULL_BEGIN
                                                              animated:YES];
                                            }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Show 2FA Reminder"
+                                     actionBlock:^() {
+                                         UINavigationController *navController =
+                                             [OWS2FAReminderViewController wrappedInNavController];
+                                         [[[UIApplication sharedApplication] frontmostViewController]
+                                             presentViewController:navController
+                                                          animated:YES
+                                                        completion:nil];
+                                     }]];
+
 #ifdef DEBUG
     [items addObject:[OWSTableItem subPageItemWithText:@"Share UIImage"
                                            actionBlock:^(UIViewController *viewController) {
