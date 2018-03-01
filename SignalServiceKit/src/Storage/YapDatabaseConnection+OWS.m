@@ -117,7 +117,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection
 {
-    OWSAssert(object);
     OWSAssert(key.length > 0);
     OWSAssert(collection.length > 0);
 
