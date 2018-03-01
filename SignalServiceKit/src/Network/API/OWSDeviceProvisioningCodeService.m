@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceProvisioningCodeService.h"
-#import "OWSDeviceProvisioningCodeRequest.h"
+#import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -39,7 +39,8 @@ NSString *const OWSDeviceProvisioningCodeServiceProvisioningCodeKey = @"verifica
 - (void)requestProvisioningCodeWithSuccess:(void (^)(NSString *))successCallback
                                    failure:(void (^)(NSError *))failureCallback
 {
-    [self.networkManager makeRequest:[OWSDeviceProvisioningCodeRequest new]
+    TSRequest *request = [OWSRequestFactory deviceProvisioningCodeRequest];
+    [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             DDLogVerbose(@"ProvisioningCode request succeeded");
             if ([(NSObject *)responseObject isKindOfClass:[NSDictionary class]]) {

@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSDevice;
 @class TSRequest;
 
 @interface OWSRequestFactory : NSObject
@@ -13,6 +14,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSRequest *)enable2FARequestWithPin:(NSString *)pin;
 
 + (TSRequest *)disable2FARequest;
+
++ (TSRequest *)acknowledgeMessageDeliveryRequestWithSource:(NSString *)source timestamp:(UInt64)timestamp;
+
++ (TSRequest *)deleteDeviceRequestWithDevice:(OWSDevice *)device;
+
++ (TSRequest *)deviceProvisioningCodeRequest;
+
++ (TSRequest *)deviceProvisioningRequestWithMessageBody:(NSData *)messageBody ephemeralDeviceId:(NSString *)deviceId;
 
 @end
 

@@ -73,7 +73,6 @@
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
-#import <SignalServiceKit/OWSAcknowledgeMessageDeliveryRequest.h>
 #import <SignalServiceKit/OWSAnalytics.h>
 #import <SignalServiceKit/OWSAnalyticsEvents.h>
 #import <SignalServiceKit/OWSAsserts.h>
@@ -99,6 +98,7 @@
 #import <SignalServiceKit/OWSOutgoingCallMessage.h>
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
+#import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSTurnServerInfoRequest.h>
