@@ -72,7 +72,6 @@
         = NSLocalizedString(@"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION", @"table section footer");
     [contents addSection:backgroundSection];
 
-
     self.contents = contents;
 }
 
