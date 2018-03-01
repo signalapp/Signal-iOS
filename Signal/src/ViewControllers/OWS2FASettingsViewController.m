@@ -322,8 +322,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (textAfterChange.length > kMaxPinLength) {
         textAfterChange = [textAfterChange substringToIndex:kMaxPinLength];
     }
-    // 6. Construct the "formatted" new text by inserting a hyphen if necessary.
-    // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
+    // 6. Construct the final text.
     textField.text = textAfterChange;
     NSUInteger cursorPositionAfterChange = MIN(left.length + center.length, textAfterChange.length);
     UITextPosition *pos =

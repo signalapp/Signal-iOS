@@ -5,6 +5,8 @@
 #import "TSRegisterForPushRequest.h"
 #import "TSConstants.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation TSRegisterForPushRequest
 
 - (id)initWithPushIdentifier:(NSString *)identifier voipIdentifier:(NSString *)voipId {
@@ -17,15 +19,15 @@
 
     self.HTTPMethod = @"PUT";
 
-    NSMutableDictionary *parameters = [@{ @"apnRegistrationId" : identifier } mutableCopy];
-
-    if (voipId) {
-        parameters[@"voipRegistrationId"] = voipId;
-    }
-
-    self.parameters = parameters;
+    OWSAssert(voipId);
+    self.parameters = @{
+        @"apnRegistrationId" : identifier,
+        @"voipRegistrationId" : voipId ?: @"",
+    };
 
     return self;
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
