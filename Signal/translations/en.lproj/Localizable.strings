@@ -1668,11 +1668,14 @@
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "Support";
 
-/* Label for the 'disable two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_DISABLE" = "Disable Two-Step Verification";
+/* Indicates that 'two factor auth' is disabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "Disabled";
 
-/* Label for the 'enable two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ENABLE" = "Enable Two-Step Verification";
+/* Indicates that 'two factor auth' is enabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Enabled";
+
+/* Label for the 'two factor auth' item of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Two-Step Verification";
 
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Two-Step Verification";

@@ -37,14 +37,23 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.title = NSLocalizedString(@"ENABLE_2FA_VIEW_TITLE", @"Title for the 'enable two factor auth PIN' views.");
 
+    [self createContents];
+}
+
+- (void)createContents
+{
+    for (UIView *subview in self.view.subviews) {
+        [subview removeFromSuperview];
+    }
+
     switch (self.mode) {
-        case Enable2FAMode_Status:
+        case OWS2FASettingsMode_Status:
             [self createStatusContents];
             break;
-        case Enable2FAMode_SelectPIN:
+        case OWS2FASettingsMode_SelectPIN:
             [self createSelectCodeContents];
             break;
-        case Enable2FAMode_ConfirmPIN:
+        case OWS2FASettingsMode_ConfirmPIN:
             [self createConfirmCodeContents];
             break;
     }
@@ -52,10 +61,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    switch (self.mode) {
+        case OWS2FASettingsMode_Status:
+            break;
+        case OWS2FASettingsMode_SelectPIN:
+        case OWS2FASettingsMode_ConfirmPIN:
+            OWSAssert(![OWS2FAManager.sharedManager is2FAEnabled]);
+            break;
+    }
+
     [super viewWillAppear:animated];
 
-    // If we're using a table, refresh its contents.
-    [self updateTableContents];
+    if (self.mode == OWS2FASettingsMode_Status) {
+        // Ever time we re-enter the "status" view, recreate its
+        // contents wholesale since we may have just enabled or
+        // disabled 2FA.
+        [self createContents];
+    } else {
+        // If we're using a table, refresh its contents.
+        [self updateTableContents];
+    }
 
     [self updateNavigationItems];
 }
@@ -86,15 +111,15 @@ NS_ASSUME_NONNULL_BEGIN
     self.pinTextfield = [UITextField new];
     self.pinTextfield.textColor = [UIColor blackColor];
     switch (self.mode) {
-        case Enable2FAMode_SelectPIN:
+        case OWS2FASettingsMode_SelectPIN:
             self.pinTextfield.placeholder = NSLocalizedString(@"ENABLE_2FA_VIEW_SELECT_PIN_DEFAULT_TEXT",
                 @"Text field placeholder for 'two factor auth pin' when selecting a pin.");
             break;
-        case Enable2FAMode_ConfirmPIN:
+        case OWS2FASettingsMode_ConfirmPIN:
             self.pinTextfield.placeholder = NSLocalizedString(@"ENABLE_2FA_VIEW_CONFIRM_PIN_DEFAULT_TEXT",
                 @"Text field placeholder for 'two factor auth pin' when confirming a pin.");
             break;
-        case Enable2FAMode_Status:
+        case OWS2FASettingsMode_Status:
             OWSFail(@"%@ invalid mode.", self.logTag) break;
     }
     self.pinTextfield.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
@@ -198,7 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Only some modes use a table.
     switch (self.mode) {
-        case Enable2FAMode_Status: {
+        case OWS2FASettingsMode_Status: {
             OWSTableContents *contents = [OWSTableContents new];
             OWSTableSection *section = [OWSTableSection new];
             if ([OWS2FAManager.sharedManager is2FAEnabled]) {
@@ -222,8 +247,8 @@ NS_ASSUME_NONNULL_BEGIN
             self.tableViewController.contents = contents;
             break;
         }
-        case Enable2FAMode_SelectPIN:
-        case Enable2FAMode_ConfirmPIN:
+        case OWS2FASettingsMode_SelectPIN:
+        case OWS2FASettingsMode_ConfirmPIN:
             return;
     }
 }
@@ -231,10 +256,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldHaveNextButton
 {
     switch (self.mode) {
-        case Enable2FAMode_Status:
+        case OWS2FASettingsMode_Status:
             return NO;
-        case Enable2FAMode_SelectPIN:
-        case Enable2FAMode_ConfirmPIN:
+        case OWS2FASettingsMode_SelectPIN:
+        case OWS2FASettingsMode_ConfirmPIN:
             return [self hasValidPin];
     }
 }
@@ -325,20 +350,21 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     switch (self.mode) {
-        case Enable2FAMode_Status:
+        case OWS2FASettingsMode_Status:
             OWSFail(@"%@ status mode should not have a next button.", self.logTag);
             return;
-        case Enable2FAMode_SelectPIN: {
+        case OWS2FASettingsMode_SelectPIN: {
             OWSAssert(self.hasValidPin);
 
             OWS2FASettingsViewController *vc = [OWS2FASettingsViewController new];
-            vc.mode = Enable2FAMode_ConfirmPIN;
+            vc.mode = OWS2FASettingsMode_ConfirmPIN;
             vc.candidatePin = self.pinTextfield.text;
-            vc.root2FAViewController = self;
+            OWSAssert(self.root2FAViewController);
+            vc.root2FAViewController = self.root2FAViewController;
             [self.navigationController pushViewController:vc animated:YES];
             break;
         }
-        case Enable2FAMode_ConfirmPIN: {
+        case OWS2FASettingsMode_ConfirmPIN: {
             OWSAssert(self.hasValidPin);
 
             if ([self.pinTextfield.text isEqualToString:self.candidatePin]) {
@@ -370,7 +396,7 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     OWS2FASettingsViewController *vc = [OWS2FASettingsViewController new];
-    vc.mode = Enable2FAMode_SelectPIN;
+    vc.mode = OWS2FASettingsMode_SelectPIN;
     vc.root2FAViewController = self;
     [self.navigationController pushViewController:vc animated:YES];
 }
@@ -394,7 +420,7 @@ NS_ASSUME_NONNULL_BEGIN
                       }
                           failure:^(NSError *error) {
                               [modalActivityIndicator dismissWithCompletion:^{
-                                  [weakSelf updateTableContents];
+                                  [weakSelf createContents];
 
                                   [OWSAlerts
                                       showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")

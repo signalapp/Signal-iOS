@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self enable2FA];
+        [self show2FASettings];
     });
 }
 
@@ -129,21 +129,20 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *twoFactorAuthSection = [OWSTableSection new];
     twoFactorAuthSection.headerTitle = NSLocalizedString(
         @"SETTINGS_TWO_FACTOR_AUTH_TITLE", @"Title for the 'two factor auth' section of the privacy settings.");
-    BOOL is2FAEnabled = [OWS2FAManager.sharedManager is2FAEnabled];
     [twoFactorAuthSection
-        addItem:[OWSTableItem
-                    disclosureItemWithText:
-                        (is2FAEnabled ? NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_DISABLE",
-                                            @"Label for the 'disable two factor auth' item of the privacy settings.")
-                                      : NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_ENABLE",
-                                            @"Label for the 'enable two factor auth' item of the privacy settings."))
-                    actionBlock:^{
-                        if (is2FAEnabled) {
-                            [weakSelf disable2FA];
-                        } else {
-                            [weakSelf enable2FA];
-                        }
-                    }]];
+        addItem:
+            [OWSTableItem
+                disclosureItemWithText:NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_ITEM",
+                                           @"Label for the 'two factor auth' item of the privacy settings.")
+                            detailText:
+                                ([OWS2FAManager.sharedManager is2FAEnabled]
+                                        ? NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_ENABLED",
+                                              @"Indicates that 'two factor auth' is enabled in the privacy settings.")
+                                        : NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_DISABLED",
+                                              @"Indicates that 'two factor auth' is disabled in the privacy settings."))
+                            actionBlock:^{
+                                [weakSelf show2FASettings];
+                            }]];
     [contents addSection:twoFactorAuthSection];
 
     self.contents = contents;
@@ -239,18 +238,13 @@ NS_ASSUME_NONNULL_BEGIN
     [SignalApp.sharedApp.callService createCallUIAdapter];
 }
 
-- (void)enable2FA
+- (void)show2FASettings
 {
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     OWS2FASettingsViewController *vc = [OWS2FASettingsViewController new];
-    vc.mode = Enable2FAMode_Status;
+    vc.mode = OWS2FASettingsMode_Status;
     [self.navigationController pushViewController:vc animated:YES];
-}
-
-- (void)disable2FA
-{
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 }
 
 @end

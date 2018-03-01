@@ -7,9 +7,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSUInteger, Enable2FAMode) {
-    Enable2FAMode_Status = 0,
-    Enable2FAMode_SelectPIN,
-    Enable2FAMode_ConfirmPIN,
+    OWS2FASettingsMode_Status = 0,
+    OWS2FASettingsMode_SelectPIN,
+    OWS2FASettingsMode_ConfirmPIN,
 };
 
 @interface OWS2FASettingsViewController : OWSViewController
