@@ -6,12 +6,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSGroupModel;
+@class TSGroupThread;
 @class YapDatabaseReadTransaction;
 
 @interface OWSGroupsOutputStream : OWSChunkedOutputStream
 
-- (void)writeGroup:(TSGroupModel *)group transaction:(YapDatabaseReadTransaction *)transaction;
+- (void)writeGroup:(TSGroupThread *)groupThread transaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

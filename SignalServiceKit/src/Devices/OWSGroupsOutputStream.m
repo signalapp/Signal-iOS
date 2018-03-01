@@ -14,10 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSGroupsOutputStream
 
-- (void)writeGroup:(TSGroupModel *)group transaction:(YapDatabaseReadTransaction *)transaction
+- (void)writeGroup:(TSGroupThread *)groupThread transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(group);
+    OWSAssert(groupThread);
     OWSAssert(transaction);
+
+    TSGroupModel *group = groupThread.groupModel;
+    OWSAssert(group);
 
     OWSSignalServiceProtosGroupDetailsBuilder *groupBuilder = [OWSSignalServiceProtosGroupDetailsBuilder new];
     [groupBuilder setId:group.groupId];
@@ -35,19 +38,16 @@ NS_ASSUME_NONNULL_BEGIN
         [groupBuilder setAvatarBuilder:avatarBuilder];
     }
 
-    TSGroupThread *_Nullable groupThread = [TSGroupThread threadWithGroupId:group.groupId transaction:transaction];
-    if (groupThread) {
-        OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration =
-            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:groupThread.uniqueId transaction:transaction];
+    OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:groupThread.uniqueId transaction:transaction];
 
-        if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
-            [groupBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];
-        } else {
-            // Rather than *not* set the field, we expicitly set it to 0 so desktop
-            // can easily distinguish between a modern client declaring "off" vs a
-            // legacy client "not specifying".
-            [groupBuilder setExpireTimer:0];
-        }
+    if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
+        [groupBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];
+    } else {
+        // Rather than *not* set the field, we expicitly set it to 0 so desktop
+        // can easily distinguish between a modern client declaring "off" vs a
+        // legacy client "not specifying".
+        [groupBuilder setExpireTimer:0];
     }
 
     NSData *groupData = [[groupBuilder build] data];
