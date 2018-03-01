@@ -56,8 +56,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                DDLogVerbose(@"Ignoring non group thread in thread collection: %@", obj);
                                                return;
                                            }
-                                           TSGroupModel *group = ((TSGroupThread *)obj).groupModel;
-                                           [groupsOutputStream writeGroup:group transaction:transaction];
+                                           TSGroupThread *groupThread = (TSGroupThread *)obj;
+                                           [groupsOutputStream writeGroup:groupThread transaction:transaction];
                                        }];
 
     [groupsOutputStream flush];
