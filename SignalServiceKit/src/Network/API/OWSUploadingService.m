@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUploadingService.h"
@@ -8,6 +8,7 @@
 #import "NSNotificationCenter+OWS.h"
 #import "OWSError.h"
 #import "OWSMessageSender.h"
+#import "OWSRequestFactory.h"
 #import "TSAttachmentStream.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
@@ -67,8 +68,8 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 
     [self fireProgressNotification:kAttachmentUploadProgressTheta attachmentId:attachmentStream.uniqueId];
 
-    TSRequest *allocateAttachment = [[TSAllocAttachmentRequest alloc] init];
-    [self.networkManager makeRequest:allocateAttachment
+    TSRequest *request = [OWSRequestFactory allocAttachmentRequest];
+    [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             dispatch_async([OWSDispatch attachmentsQueue], ^{ // TODO can we move this queue specification up a level?
                 if (![responseObject isKindOfClass:[NSDictionary class]]) {

@@ -23,6 +23,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)deviceProvisioningRequestWithMessageBody:(NSData *)messageBody ephemeralDeviceId:(NSString *)deviceId;
 
++ (TSRequest *)getDevicesRequest;
+
++ (TSRequest *)getMessagesRequest;
+
++ (TSRequest *)getProfileRequestWithRecipientId:(NSString *)recipientId;
+
++ (TSRequest *)turnServerInfoRequest;
+
++ (TSRequest *)allocAttachmentRequest;
+
++ (TSRequest *)attachmentRequestWithAttachmentId:(UInt64)attachmentId relay:(nullable NSString *)relay;
+
 @end
 
 NS_ASSUME_NONNULL_END

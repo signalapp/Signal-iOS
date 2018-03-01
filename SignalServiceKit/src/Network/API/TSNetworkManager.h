@@ -6,8 +6,6 @@
  *  TSNetworkManager imports all TSRequests to prevent massive imports
  in classes that call TSNetworkManager
  */
-#import "TSAllocAttachmentRequest.h"
-#import "TSAttachmentRequest.h"
 #import "TSAvailablePreKeysCountRequest.h"
 #import "TSContactsIntersectionRequest.h"
 #import "TSCurrentSignedPreKeyRequest.h"

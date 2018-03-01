@@ -5,7 +5,6 @@
 #import "OWSDevicesService.h"
 #import "OWSDevice.h"
 #import "OWSError.h"
-#import "OWSGetDevicesRequest.h"
 #import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 #import <Mantle/MTLJSONAdapter.h>
@@ -17,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)getDevicesWithSuccess:(void (^)(NSArray<OWSDevice *> *))successCallback
                       failure:(void (^)(NSError *))failureCallback
 {
-    OWSGetDevicesRequest *request = [OWSGetDevicesRequest new];
+    TSRequest *request = [OWSRequestFactory getDevicesRequest];
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             DDLogVerbose(@"Get devices request succeeded");

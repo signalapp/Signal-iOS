@@ -116,7 +116,7 @@ class AccountManager: NSObject {
 
     func getTurnServerInfo() -> Promise<TurnServerInfo> {
         return Promise { fulfill, reject in
-            self.networkManager.makeRequest(TurnServerInfoRequest(),
+            self.networkManager.makeRequest(OWSRequestFactory.turnServerInfoRequest(),
                                             success: { (_: URLSessionDataTask, responseObject: Any?) in
                                                 guard responseObject != nil else {
                                                     return reject(OWSErrorMakeUnableToProcessServerResponseError())

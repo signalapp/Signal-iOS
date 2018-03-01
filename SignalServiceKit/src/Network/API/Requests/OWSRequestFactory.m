@@ -67,6 +67,51 @@ NS_ASSUME_NONNULL_BEGIN
                           }];
 }
 
++ (TSRequest *)getDevicesRequest
+{
+    NSString *path = [NSString stringWithFormat:textSecureDevicesAPIFormat, @""];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
++ (TSRequest *)getMessagesRequest
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/messages"] method:@"GET" parameters:@{}];
+}
+
++ (TSRequest *)getProfileRequestWithRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    NSString *path = [NSString stringWithFormat:textSecureProfileAPIFormat, recipientId];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
++ (TSRequest *)turnServerInfoRequest
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/accounts/turn"] method:@"GET" parameters:@{}];
+}
+
++ (TSRequest *)allocAttachmentRequest
+{
+    NSString *path = [NSString stringWithFormat:@"%@", textSecureAttachmentsAPI];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
++ (TSRequest *)attachmentRequestWithAttachmentId:(UInt64)attachmentId relay:(nullable NSString *)relay
+{
+    OWSAssert(attachmentId > 0);
+    OWSAssert(relay.length > 0);
+
+    NSString *path = [NSString stringWithFormat:@"%@/%llu", textSecureAttachmentsAPI, attachmentId];
+
+    // TODO: Should this be in the parameters?
+    if (relay.length > 0) {
+        path = [path stringByAppendingFormat:@"?relay=%@", relay];
+    }
+
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -165,10 +165,9 @@ class MessageFetcherJob: NSObject {
 
     private func fetchUndeliveredMessages() -> Promise<(envelopes: [OWSSignalServiceProtosEnvelope], more: Bool)> {
         return Promise { fulfill, reject in
-            let messagesRequest = OWSGetMessagesRequest()
-
+            let request = OWSRequestFactory.getMessagesRequest()
             self.networkManager.makeRequest(
-                messagesRequest,
+                request,
                 success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
                     guard let (envelopes, more) = self.parseMessagesResponse(responseObject: responseObject) else {
                         Logger.error("\(self.logTag) response object had unexpected content")
