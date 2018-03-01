@@ -142,12 +142,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     [alertController addAction:[OWSAlerts cancelAction]];
 
-    UIAlertAction *deleteAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON", @"")
-                                 style:UIAlertActionStyleDestructive
-                               handler:^(UIAlertAction *_Nonnull action) {
-                                   [self deleteThreadsAndMessages];
-                               }];
+    UIAlertAction *deleteAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
+                            @"Confirmation text for button which deletes all message, calling, attachments, etc.")
+                  style:UIAlertActionStyleDestructive
+                handler:^(UIAlertAction *_Nonnull action) {
+                    [self deleteThreadsAndMessages];
+                }];
     [alertController addAction:deleteAction];
 
     [self presentViewController:alertController animated:true completion:nil];

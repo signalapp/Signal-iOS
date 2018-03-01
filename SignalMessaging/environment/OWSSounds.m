@@ -177,7 +177,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         case OWSSound_Synth:
             return (quiet ? @"synth-quiet.aifc" : @"synth.aifc");
         case OWSSound_ClassicNotification:
-            return (quiet ? @"messageReceivedClassic-quiet.aifc" : @"messageReceivedClassic.aifc");
+            return (quiet ? @"classic-quiet.aifc" : @"classic.aifc");
 
             // Ringtone Sounds
         case OWSSound_Opening:

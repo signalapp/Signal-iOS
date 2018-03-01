@@ -14,7 +14,6 @@
 		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
 		340CB2271EAC25820001CAA1 /* UpdateGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CB2261EAC25820001CAA1 /* UpdateGroupViewController.m */; };
 		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
-		3421FA59203F542E00275549 /* messageReceivedClassic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 3421FA57203F542D00275549 /* messageReceivedClassic.aifc */; };
 		3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3430FE171F7751D4000EC51B /* GiphyAPI.swift */; };
 		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
@@ -208,8 +207,11 @@
 		34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0F1EFC2684007F6822 /* DebugUIPage.m */; };
 		34E8BF381EE9E2FD00F5F4CA /* FingerprintViewScanController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E8BF371EE9E2FD00F5F4CA /* FingerprintViewScanController.m */; };
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
-		34F77045203F5E4C00C7CBB7 /* messageReceivedClassic-quiet.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34F77044203F5E4B00C7CBB7 /* messageReceivedClassic-quiet.caf */; };
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
+		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
+		4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BC20470A5B00CEE724 /* classic.aifc */; };
+		4503F1C3204711D300CEE724 /* OWS107LegacySounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 4503F1C1204711D200CEE724 /* OWS107LegacySounds.m */; };
+		4503F1C4204711D300CEE724 /* OWS107LegacySounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 4503F1C2204711D200CEE724 /* OWS107LegacySounds.h */; };
 		4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */; };
 		450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
 		450998681FD8C0FF00D89EB3 /* AttachmentSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83A1E8DF1700035BE1A /* AttachmentSharing.m */; };
@@ -520,7 +522,6 @@
 		341458471FBE11C4005ABCF9 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
 		341F2C0D1F2B8AE700D07D6B /* DebugUIMisc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMisc.h; sourceTree = "<group>"; };
 		341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIMisc.m; sourceTree = "<group>"; };
-		3421FA57203F542D00275549 /* messageReceivedClassic.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; name = messageReceivedClassic.aifc; path = Signal/AudioFiles/messageReceivedClassic.aifc; sourceTree = SOURCE_ROOT; };
 		3430FE171F7751D4000EC51B /* GiphyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyAPI.swift; sourceTree = "<group>"; };
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dripicons-v2.ttf"; sourceTree = "<group>"; };
@@ -797,10 +798,13 @@
 		34E8BF371EE9E2FD00F5F4CA /* FingerprintViewScanController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FingerprintViewScanController.m; sourceTree = "<group>"; };
 		34F308A01ECB469700BB7697 /* OWSBezierPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBezierPathView.h; sourceTree = "<group>"; };
 		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
-		34F77044203F5E4B00C7CBB7 /* messageReceivedClassic-quiet.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "messageReceivedClassic-quiet.caf"; path = "Signal/AudioFiles/messageReceivedClassic-quiet.caf"; sourceTree = SOURCE_ROOT; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = views/OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
 		435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
+		4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "classic-quiet.aifc"; sourceTree = "<group>"; };
+		4503F1BC20470A5B00CEE724 /* classic.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = classic.aifc; sourceTree = "<group>"; };
+		4503F1C1204711D200CEE724 /* OWS107LegacySounds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS107LegacySounds.m; sourceTree = "<group>"; };
+		4503F1C2204711D200CEE724 /* OWS107LegacySounds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS107LegacySounds.h; sourceTree = "<group>"; };
 		4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExperienceUpgrade.swift; path = ExperienceUpgrades/ExperienceUpgrade.swift; sourceTree = "<group>"; };
 		4509E7991DD653700025A59F /* WebRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebRTC.framework; path = Carthage/Build/iOS/WebRTC.framework; sourceTree = "<group>"; };
 		450D19111F85236600970622 /* RemoteVideoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteVideoView.h; sourceTree = "<group>"; };
@@ -1151,8 +1155,6 @@
 				45A2F004204473A3002E978A /* NewMessage.aifc */,
 				34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */,
 				34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */,
-				34F77044203F5E4B00C7CBB7 /* messageReceivedClassic-quiet.caf */,
-				3421FA57203F542D00275549 /* messageReceivedClassic.aifc */,
 				34074FC5203E5435004596AE /* messageReceivedSounds */,
 				34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */,
 				34C3C78B20409F320000134C /* ringtoneSounds */,
@@ -1172,6 +1174,8 @@
 				45B74A622044AAB400CD42F8 /* chord.aifc */,
 				45B74A702044AAB500CD42F8 /* circles-quiet.aifc */,
 				45B74A6A2044AAB500CD42F8 /* circles.aifc */,
+				4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */,
+				4503F1BC20470A5B00CEE724 /* classic.aifc */,
 				45B74A6E2044AAB500CD42F8 /* complete-quiet.aifc */,
 				45B74A652044AAB400CD42F8 /* complete.aifc */,
 				45B74A632044AAB400CD42F8 /* hello-quiet.aifc */,
@@ -1340,6 +1344,8 @@
 				346129F31FD5F31400532771 /* OWS105AttachmentFilePaths.h */,
 				346129EA1FD5F31300532771 /* OWS105AttachmentFilePaths.m */,
 				346129F11FD5F31400532771 /* OWS106EnsureProfileComplete.swift */,
+				4503F1C2204711D200CEE724 /* OWS107LegacySounds.h */,
+				4503F1C1204711D200CEE724 /* OWS107LegacySounds.m */,
 				346129931FD1E30000532771 /* OWSDatabaseMigration.h */,
 				346129941FD1E30000532771 /* OWSDatabaseMigration.m */,
 				346129E51FD5C0C600532771 /* OWSDatabaseMigrationRunner.h */,
@@ -2169,6 +2175,7 @@
 				34480B551FD0A7A400BC14EF /* DebugLogger.h in Headers */,
 				344F248420069E9C00CFB4F4 /* CountryCodeViewController.h in Headers */,
 				346129CA1FD2072E00532771 /* UIImage+OWS.h in Headers */,
+				4503F1C4204711D300CEE724 /* OWS107LegacySounds.h in Headers */,
 				346129711FD1D74C00532771 /* SignalKeyingStorage.h in Headers */,
 				34612A011FD5F31400532771 /* OWS104CreateRecipientIdentities.h in Headers */,
 				450998691FD8C10200D89EB3 /* AttachmentSharing.h in Headers */,
@@ -2476,6 +2483,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */,
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
 				45B74A7D2044AAB600CD42F8 /* popcorn-quiet.aifc in Resources */,
@@ -2492,7 +2500,6 @@
 				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,
 				AD83FF441A73426500B5C81A /* audio_pause_button.png in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
-				34F77045203F5E4C00C7CBB7 /* messageReceivedClassic-quiet.caf in Resources */,
 				B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */,
 				FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */,
 				45B74A872044AAB600CD42F8 /* complete-quiet.aifc in Resources */,
@@ -2523,7 +2530,7 @@
 				B633C5861A1D190B0059AC12 /* call@2x.png in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				45B74A782044AAB600CD42F8 /* bamboo-quiet.aifc in Resources */,
-				3421FA59203F542E00275549 /* messageReceivedClassic.aifc in Resources */,
+				4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */,
 				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
 				B10C9B601A7049EC00ECA2BF /* pause_icon@2x.png in Resources */,
 				FC9120411A39EFB70074545C /* qr@2x.png in Resources */,
@@ -2970,6 +2977,7 @@
 				451F8A3F1FD71455005CB9DA /* OWSTableViewController.m in Sources */,
 				451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */,
 				451F8A481FD715BA005CB9DA /* OWSContactAvatarBuilder.m in Sources */,
+				4503F1C3204711D300CEE724 /* OWS107LegacySounds.m in Sources */,
 				346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */,
 				346129D21FD2085A00532771 /* CommonStrings.swift in Sources */,
 				45F59A082028E4FB00E8D2B0 /* OWSAudioSession.swift in Sources */,
