@@ -65,10 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<OWSDatabaseMigration *> *migrationsToRun = [NSMutableArray new];
     for (OWSDatabaseMigration *migration in migrations) {
-        if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId]) {
-            DDLogDebug(@"%@ Skipping previously run migration: %@", self.logTag, migration);
-        } else {
-            DDLogWarn(@"%@ Running migration: %@", self.logTag, migration);
+        if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId] == nil) {
             [migrationsToRun addObject:migration];
         }
     }
