@@ -109,7 +109,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         BOOL didChange;
         if (_avatarUrlPath == nil && avatarUrlPath == nil) {
             didChange = NO;
-        } else if (_avatarUrlPath != nil && avatarUrlPath != nil) {
+        } else if (_avatarUrlPath != nil || avatarUrlPath != nil) {
             didChange = YES;
         } else {
             didChange = [_avatarUrlPath isEqualToString:avatarUrlPath];
@@ -202,18 +202,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                  }];
         }
     });
-}
-
-- (void)updateWithProfileName:(nullable NSString *)profileName
-                 dbConnection:(YapDatabaseConnection *)dbConnection
-                   completion:(nullable OWSUserProfileCompletion)completion
-{
-    [self applyChanges:^(OWSUserProfile *userProfile) {
-        [userProfile setProfileName:[profileName ows_stripped]];
-    }
-          functionName:__PRETTY_FUNCTION__
-          dbConnection:dbConnection
-            completion:completion];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName

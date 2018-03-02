@@ -912,25 +912,13 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             return;
         }
 
-        // If we're transitioning from (no avatar -> no avatar) or from (same avatar -> same avatar),
-        // don't bother updating the avatar.
-        BOOL canSkipAvatarUpdate = ((avatarUrlPath.length == 0 && userProfile.avatarUrlPath.length == 0
-                                        && userProfile.avatarFileName.length == 0)
-            || (avatarUrlPath.length > 0 && userProfile.avatarUrlPath.length > 0 &&
-                   [avatarUrlPath isEqualToString:userProfile.avatarUrlPath] && userProfile.avatarFileName));
-
         NSString *_Nullable profileName =
             [self decryptProfileNameData:profileNameEncrypted profileKey:userProfile.profileKey];
 
-        if (canSkipAvatarUpdate) {
-            [userProfile updateWithProfileName:profileName dbConnection:self.dbConnection completion:nil];
-        } else {
-            [userProfile updateWithProfileName:profileName
-                                 avatarUrlPath:avatarUrlPath
-                                avatarFileName:nil
-                                  dbConnection:self.dbConnection
-                                    completion:nil];
-        }
+        [userProfile updateWithProfileName:profileName
+                             avatarUrlPath:avatarUrlPath
+                              dbConnection:self.dbConnection
+                                completion:nil];
 
         // If we're updating the profile that corresponds to our local number,
         // update the local profile as well.
