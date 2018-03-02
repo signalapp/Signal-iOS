@@ -26,7 +26,7 @@ public class ProfileFetcherJob: NSObject {
 
     @objc
     public class func run(recipientId: String, networkManager: TSNetworkManager, ignoreThrottling: Bool) {
-        ProfileFetcherJob(networkManager: networkManager, ignoreThrottling:ignoreThrottling).run(recipientIds: [recipientId])
+        ProfileFetcherJob(networkManager: networkManager, ignoreThrottling: ignoreThrottling).run(recipientIds: [recipientId])
     }
 
     public init(networkManager: TSNetworkManager, ignoreThrottling: Bool = false) {
@@ -95,7 +95,7 @@ public class ProfileFetcherJob: NSObject {
 
         Logger.error("\(self.TAG) getProfile: \(recipientId)")
 
-        let request = OWSGetProfileRequest(recipientId: recipientId)
+        let request = OWSRequestFactory.getProfileRequest(withRecipientId: recipientId)
 
         let (promise, fulfill, reject) = Promise<SignalServiceProfile>.pending()
 

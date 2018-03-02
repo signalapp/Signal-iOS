@@ -101,7 +101,7 @@ NSString *const TSStorageManagerKeyPrekeyCurrentSignedPrekeyId = @"currentSigned
 
 #pragma mark - Prekey update failures
 
-- (int)prekeyUpdateFailureCount;
+- (int)prekeyUpdateFailureCount
 {
     NSNumber *value = [self.dbReadConnection objectForKey:TSStorageManagerKeyPrekeyUpdateFailureCount
                                              inCollection:TSStorageManagerSignedPreKeyMetadataCollection];

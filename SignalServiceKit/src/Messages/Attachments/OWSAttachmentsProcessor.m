@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAttachmentsProcessor.h"
@@ -9,9 +9,9 @@
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSError.h"
+#import "OWSRequestFactory.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachmentPointer.h"
-#import "TSAttachmentRequest.h"
 #import "TSAttachmentStream.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
@@ -186,9 +186,10 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     if (attachment.serverId < 100) {
         DDLogError(@"%@ Suspicious attachment id: %llu", self.logTag, (unsigned long long)attachment.serverId);
     }
-    TSAttachmentRequest *attachmentRequest = [[TSAttachmentRequest alloc] initWithId:attachment.serverId relay:attachment.relay];
+    TSRequest *request =
+        [OWSRequestFactory attachmentRequestWithAttachmentId:attachment.serverId relay:attachment.relay];
 
-    [self.networkManager makeRequest:attachmentRequest
+    [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             if (![responseObject isKindOfClass:[NSDictionary class]]) {
                 DDLogError(@"%@ Failed retrieval of attachment. Response had unexpected format.", self.logTag);

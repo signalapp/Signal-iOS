@@ -7,8 +7,6 @@
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSSignalService.h"
 #import "TSAccountManager.h"
-#import "TSRecipientPrekeyRequest.h"
-#import "TSSubmitMessageRequest.h"
 #import "TSVerifyCodeRequest.h"
 #import <AFNetworking/AFNetworking.h>
 
@@ -71,15 +69,6 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     OWSAssert(failureBlock);
 
     DDLogInfo(@"%@ Making request: %@", self.logTag, request);
-    if (!CurrentAppContext().isMainApp) {
-        if (![request isKindOfClass:[TSRecipientPrekeyRequest class]]
-            && ![request isKindOfClass:[TSSubmitMessageRequest class]]
-            && ![request isKindOfClass:[TSContactsIntersectionRequest class]]
-            && ![request isKindOfClass:[TSAllocAttachmentRequest class]]) {
-            // The SAE should only make requests directly related to message sending.
-            OWSFail(@"%@ Making unexpected request: %@", self.logTag, request);
-        }
-    }
 
     // TODO: Remove this logging when the call connection issues have been resolved.
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, id responseObject) {
@@ -102,7 +91,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         [parameters removeObjectForKey:@"AuthKey"];
         [sessionManager PUT:request.URL.absoluteString parameters:parameters success:success failure:failure];
     } else {
-        if (![request isKindOfClass:[TSRequestVerificationCodeRequest class]]) {
+        if (request.shouldHaveAuthorizationHeaders) {
             [sessionManager.requestSerializer
                 setAuthorizationHeaderFieldWithUsername:[TSAccountManager localNumber]
                                                password:[TSAccountManager serverAuthToken]];

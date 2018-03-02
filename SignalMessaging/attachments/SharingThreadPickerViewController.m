@@ -38,7 +38,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 @implementation SharingThreadPickerViewController
 
-- (instancetype)initWithShareViewDelegate:(id<ShareViewDelegate>)shareViewDelegate;
+- (instancetype)initWithShareViewDelegate:(id<ShareViewDelegate>)shareViewDelegate
 {
     self = [super init];
     if (!self) {

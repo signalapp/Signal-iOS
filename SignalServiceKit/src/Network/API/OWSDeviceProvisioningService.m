@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceProvisioningService.h"
-#import "OWSDeviceProvisioningRequest.h"
+#import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -38,9 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
                          success:(void (^)(void))successCallback
                          failure:(void (^)(NSError *))failureCallback
 {
-    OWSDeviceProvisioningRequest *request =
-        [[OWSDeviceProvisioningRequest alloc] initWithMessageBody:messageBody ephemeralDeviceId:deviceId];
-
+    TSRequest *request =
+        [OWSRequestFactory deviceProvisioningRequestWithMessageBody:messageBody ephemeralDeviceId:deviceId];
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             DDLogVerbose(@"Provisioning request succeeded");

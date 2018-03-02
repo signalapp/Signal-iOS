@@ -3,9 +3,9 @@
 //
 
 #import "OWS103EnableVideoCalling.h"
+#import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
-#import <SignalServiceKit/TSUpdateAttributesRequest.h>
 
 // Increment a similar constant for every future DBMigration
 static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
@@ -25,7 +25,7 @@ static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
     DDLogWarn(@"%@ running migration...", self.logTag);
     if ([TSAccountManager isRegistered]) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithManualMessageFetching:NO];
+            TSRequest *request = [OWSRequestFactory updateAttributesRequestWithManualMessageFetching:NO];
             [[TSNetworkManager sharedManager] makeRequest:request
                 success:^(NSURLSessionDataTask *task, id responseObject) {
                     DDLogInfo(@"%@ successfully ran", self.logTag);

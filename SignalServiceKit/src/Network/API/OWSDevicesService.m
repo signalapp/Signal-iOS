@@ -1,12 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDevicesService.h"
-#import "OWSDeleteDeviceRequest.h"
 #import "OWSDevice.h"
 #import "OWSError.h"
-#import "OWSGetDevicesRequest.h"
+#import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 #import <Mantle/MTLJSONAdapter.h>
 
@@ -17,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)getDevicesWithSuccess:(void (^)(NSArray<OWSDevice *> *))successCallback
                       failure:(void (^)(NSError *))failureCallback
 {
-    OWSGetDevicesRequest *request = [OWSGetDevicesRequest new];
+    TSRequest *request = [OWSRequestFactory getDevicesRequest];
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             DDLogVerbose(@"Get devices request succeeded");
@@ -44,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
              success:(void (^)(void))successCallback
              failure:(void (^)(NSError *))failureCallback
 {
-    OWSDeleteDeviceRequest *request = [[OWSDeleteDeviceRequest alloc] initWithDevice:device];
+    TSRequest *request = [OWSRequestFactory deleteDeviceRequestWithDevice:device];
 
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {

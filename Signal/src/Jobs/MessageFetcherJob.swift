@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -118,7 +118,7 @@ class MessageFetcherJob: NSObject {
             return nil
         }
 
-        guard let type = OWSSignalServiceProtosEnvelopeType(rawValue:typeInt) else {
+        guard let type = OWSSignalServiceProtosEnvelopeType(rawValue: typeInt) else {
             Logger.error("\(self.logTag) message body type was invalid")
             return nil
         }
@@ -165,10 +165,9 @@ class MessageFetcherJob: NSObject {
 
     private func fetchUndeliveredMessages() -> Promise<(envelopes: [OWSSignalServiceProtosEnvelope], more: Bool)> {
         return Promise { fulfill, reject in
-            let messagesRequest = OWSGetMessagesRequest()
-
+            let request = OWSRequestFactory.getMessagesRequest()
             self.networkManager.makeRequest(
-                messagesRequest,
+                request,
                 success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
                     guard let (envelopes, more) = self.parseMessagesResponse(responseObject: responseObject) else {
                         Logger.error("\(self.logTag) response object had unexpected content")
@@ -189,7 +188,7 @@ class MessageFetcherJob: NSObject {
     }
 
     private func acknowledgeDelivery(envelope: OWSSignalServiceProtosEnvelope) {
-        let request = OWSAcknowledgeMessageDeliveryRequest(source: envelope.source, timestamp: envelope.timestamp)
+        let request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withSource: envelope.source, timestamp: envelope.timestamp)
         self.networkManager.makeRequest(request,
                                         success: { (_: URLSessionDataTask?, _: Any?) -> Void in
                                             Logger.debug("\(self.logTag) acknowledged delivery for message at timestamp: \(envelope.timestamp)")
