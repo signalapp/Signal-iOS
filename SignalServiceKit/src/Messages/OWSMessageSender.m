@@ -984,6 +984,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     if (deviceMessages.count == 0) {
+        // This might happen:
+        //
+        // * The first (after upgrading?) time we send a sync message to our linked devices.
+        // * After unlinking all linked devices.
+        // * After trying and failing to link a device.
+        //
+        // When we're not sure if we have linked devices, we need to try
+        // to send self-sync messages even if they have no device messages
+        // so that we can learn from the service whether or not there are
+        // linked devices that we don't know about.
         DDLogWarn(@"%@ Sending a message with no device messages.", self.logTag);
     }
 
