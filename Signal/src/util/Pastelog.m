@@ -5,6 +5,7 @@
 #import "Pastelog.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
+#import <AFNetworking/AFNetworking.h>
 #import <SSZipArchive/SSZipArchive.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
@@ -13,6 +14,9 @@
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/Threading.h>
+
+// TODO: Remove
+#import "NSData+hexString.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,9 +30,10 @@ typedef void (^UploadDebugLogsFailure)(NSString *localizedErrorMessage);
 typedef void (^DebugLogUploadSuccess)(DebugLogUploader *uploader, NSURL *url);
 typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error);
 
-@interface DebugLogUploader : NSObject <NSURLConnectionDelegate, NSURLConnectionDataDelegate>
+@interface DebugLogUploader : NSObject
 
-@property (nonatomic) NSMutableData *responseData;
+@property (nonatomic) NSURL *fileUrl;
+@property (nonatomic) NSString *mimeType;
 @property (nonatomic, nullable) DebugLogUploadSuccess success;
 @property (nonatomic, nullable) DebugLogUploadFailure failure;
 
@@ -43,103 +48,135 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     DDLogVerbose(@"Dealloc: %@", self.logTag);
 }
 
-- (void)uploadFileWithURL:(NSURL *)fileUrl success:(DebugLogUploadSuccess)success failure:(DebugLogUploadFailure)failure
+- (void)uploadFileWithURL:(NSURL *)fileUrl
+                 mimeType:(NSString *)mimeType
+                  success:(DebugLogUploadSuccess)success
+                  failure:(DebugLogUploadFailure)failure
 {
     OWSAssert(fileUrl);
+    OWSAssert(mimeType.length > 0);
     OWSAssert(success);
     OWSAssert(failure);
 
+    self.fileUrl = fileUrl;
+    self.mimeType = mimeType;
     self.success = success;
     self.failure = failure;
-    self.responseData = [NSMutableData new];
 
-    NSURL *url = [NSURL URLWithString:@"https://filebin.net"];
+    // TODO: Remove
+    NSData *data = [NSData dataWithContentsOfURL:fileUrl];
+    DDLogInfo(@"%@ data: %zd", self.logTag, data.length);
+    NSData *header = [data subdataWithRange:NSMakeRange(0, MIN((NSUInteger)256, data.length))];
+    NSString *hexString = [header hexadecimalString];
+    DDLogInfo(@"%@ hexString: %@", self.logTag, hexString);
 
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url
-                                                                cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-                                                            timeoutInterval:30];
-    [request setHTTPMethod:@"POST"];
-    [request addValue:fileUrl.lastPathComponent forHTTPHeaderField:@"filename"];
-    [request addValue:@"application/zip" forHTTPHeaderField:@"Content-Type"];
-    NSData *_Nullable data = [NSData dataWithContentsOfURL:fileUrl];
-    if (!data) {
-        [self failWithError:[NSError errorWithDomain:@"PastelogKit"
-                                                code:10002
-                                            userInfo:@{ NSLocalizedDescriptionKey : @"Could not load data." }]];
-        return;
-    }
-    // TODO:
-    [request setHTTPBody:data];
-
-    NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
-    [connection start];
+    [self getUploadParameters];
 }
 
-#pragma mark - Delegate Methods
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+- (void)getUploadParameters
 {
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    __weak DebugLogUploader *weakSelf = self;
 
-    [self.responseData appendData:data];
+    // TODO: Remove
+    // The JSON object it returns has two elements, URL, and "fields". Just POST to "ur" with a multipart/form-data body
+    // that has each KV pair in "fields" encoded as a form element. Add your file, called "file", and what you post will
+    // be at debuglogs.org/fields['key']
+
+    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+    AFHTTPSessionManager *sessionManager =
+        [[AFHTTPSessionManager alloc] initWithBaseURL:nil sessionConfiguration:sessionConf];
+    sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
+    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+    NSString *urlString = @"https://debuglogs.org/";
+    [sessionManager GET:urlString
+        parameters:nil
+        progress:nil
+        success:^(NSURLSessionDataTask *task, id _Nullable responseObject) {
+            if (![responseObject isKindOfClass:[NSDictionary class]]) {
+                DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
+                [weakSelf
+                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                return;
+            }
+            NSString *uploadUrl = responseObject[@"url"];
+            if (![uploadUrl isKindOfClass:[NSString class]] || uploadUrl.length < 1) {
+                DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
+                [weakSelf
+                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                return;
+            }
+            NSDictionary *fields = responseObject[@"fields"];
+            if (![fields isKindOfClass:[NSDictionary class]] || fields.count < 1) {
+                DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
+                [weakSelf
+                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                return;
+            }
+            for (NSString *fieldName in fields) {
+                NSString *fieldValue = fields[fieldName];
+                if (![fieldName isKindOfClass:[NSString class]] || fieldName.length < 1
+                    || ![fieldValue isKindOfClass:[NSString class]] || fieldValue.length < 1) {
+                    DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
+                    [weakSelf failWithError:OWSErrorWithCodeDescription(
+                                                OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                    return;
+                }
+            }
+            NSString *_Nullable uploadKey = fields[@"key"];
+            if (![uploadKey isKindOfClass:[NSString class]] || uploadKey.length < 1) {
+                DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
+                [weakSelf
+                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                return;
+            }
+            [weakSelf uploadFileWithUploadUrl:uploadUrl fields:fields uploadKey:uploadKey];
+        }
+        failure:^(NSURLSessionDataTask *_Nullable task, NSError *error) {
+            DDLogError(@"%@ failed: %@", weakSelf.logTag, urlString);
+            [weakSelf failWithError:error];
+        }];
 }
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+- (void)uploadFileWithUploadUrl:(NSString *)uploadUrl fields:(NSDictionary *)fields uploadKey:(NSString *)uploadKey
 {
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSAssert(uploadUrl.length > 0);
+    OWSAssert(fields);
+    OWSAssert(uploadKey.length > 0);
 
-    NSError *error;
-    NSDictionary *_Nullable dict = [NSJSONSerialization JSONObjectWithData:self.responseData options:0 error:&error];
-    if (error) {
-        DDLogError(@"%@ response length: %zd", self.logTag, self.responseData.length);
-        [self failWithError:error];
-        return;
-    }
+    __weak DebugLogUploader *weakSelf = self;
+    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+    AFHTTPSessionManager *sessionManager =
+        [[AFHTTPSessionManager alloc] initWithBaseURL:nil sessionConfiguration:sessionConf];
+    sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
+    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+    [sessionManager POST:uploadUrl
+        parameters:@{}
+        constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+            for (NSString *fieldName in fields) {
+                NSString *fieldValue = fields[fieldName];
+                [formData appendPartWithFormData:[fieldValue dataUsingEncoding:NSUTF8StringEncoding] name:fieldName];
+            }
+            NSError *error;
+            BOOL success = [formData appendPartWithFileURL:weakSelf.fileUrl
+                                                      name:@"file"
+                                                  fileName:weakSelf.fileUrl.lastPathComponent
+                                                  mimeType:weakSelf.mimeType
+                                                     error:&error];
+            if (!success || error) {
+                DDLogError(@"%@ failed: %@, error: %@", weakSelf.logTag, uploadUrl, error);
+            }
+        }
+        progress:nil
+        success:^(NSURLSessionDataTask *task, id _Nullable responseObject) {
+            DDLogVerbose(@"%@ Response: %@, %@", weakSelf.logTag, uploadUrl, responseObject);
 
-    if (![dict isKindOfClass:[NSDictionary class]]) {
-        DDLogError(@"%@ response (1): %@", self.logTag, dict);
-        [self failWithError:[NSError errorWithDomain:@"PastelogKit"
-                                                code:10003
-                                            userInfo:@{ NSLocalizedDescriptionKey : @"Malformed response (root)." }]];
-        return;
-    }
-
-    NSArray<id> *_Nullable links = [dict objectForKey:@"links"];
-    if (![links isKindOfClass:[NSArray class]]) {
-        DDLogError(@"%@ response (2): %@", self.logTag, dict);
-        [self failWithError:[NSError errorWithDomain:@"PastelogKit"
-                                                code:10004
-                                            userInfo:@{ NSLocalizedDescriptionKey : @"Malformed response (links)." }]];
-        return;
-    }
-    NSString *_Nullable urlString = nil;
-    for (NSDictionary *linkMap in links) {
-        if (![linkMap isKindOfClass:[NSDictionary class]]) {
-            DDLogError(@"%@ response (2): %@", self.logTag, dict);
-            [self failWithError:[NSError
-                                    errorWithDomain:@"PastelogKit"
-                                               code:10005
-                                           userInfo:@{ NSLocalizedDescriptionKey : @"Malformed response (linkMap)." }]];
-            return;
+            NSString *urlString = [NSString stringWithFormat:@"https://debuglogs.org/%@", uploadKey];
+            [self succeedWithUrl:[NSURL URLWithString:urlString]];
         }
-        NSString *_Nullable linkRel = [linkMap objectForKey:@"rel"];
-        if (![linkRel isKindOfClass:[NSString class]]) {
-            DDLogError(@"%@ response (linkRel): %@", self.logTag, dict);
-            continue;
-        }
-        if (![linkRel isEqualToString:@"file"]) {
-            DDLogError(@"%@ response (linkRel value): %@", self.logTag, dict);
-            continue;
-        }
-        NSString *_Nullable linkHref = [linkMap objectForKey:@"href"];
-        if (![linkHref isKindOfClass:[NSString class]]) {
-            DDLogError(@"%@ response (linkHref): %@", self.logTag, dict);
-            continue;
-        }
-        urlString = linkHref;
-        break;
-    }
-    [self succeedWithUrl:[NSURL URLWithString:urlString]];
+        failure:^(NSURLSessionDataTask *_Nullable task, NSError *error) {
+            DDLogError(@"%@ failed: %@", weakSelf.logTag, uploadUrl);
+            [weakSelf failWithError:error];
+        }];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
@@ -383,6 +420,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     __weak Pastelog *weakSelf = self;
     self.currentUploader = [DebugLogUploader new];
     [self.currentUploader uploadFileWithURL:[NSURL fileURLWithPath:zipFilePath]
+        mimeType:@"application/zip"
         success:^(DebugLogUploader *uploader, NSURL *url) {
             if (uploader != weakSelf.currentUploader) {
                 // Ignore events from obsolete uploaders.
