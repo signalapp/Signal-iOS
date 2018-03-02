@@ -139,6 +139,10 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         dbConnection:(YapDatabaseConnection *)dbConnection
           completion:(nullable OWSUserProfileCompletion)completion
 {
+    // self might be the latest instance, so take a "before" snapshot
+    // before any changes have been made.
+    __block NSDictionary *beforeSnapshot = [self.dictionaryValue copy];
+
     changeBlock(self);
 
     __block BOOL didChange = YES;
@@ -146,11 +150,16 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         NSString *collection = [[self class] collection];
         OWSUserProfile *_Nullable latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
         if (latestInstance) {
-            NSDictionary *beforeSnapshot = latestInstance.dictionaryValue;
+            // If self is NOT the latest instance, take a new "before" snapshot
+            // before updating.
+            if (self != latestInstance) {
+                beforeSnapshot = [latestInstance.dictionaryValue copy];
+            }
 
             changeBlock(latestInstance);
 
-            NSDictionary *afterSnapshot = latestInstance.dictionaryValue;
+            NSDictionary *afterSnapshot = [latestInstance.dictionaryValue copy];
+
             if ([beforeSnapshot isEqual:afterSnapshot]) {
                 DDLogVerbose(@"%@ Ignoring redundant update in %s: %@",
                     self.logTag,
