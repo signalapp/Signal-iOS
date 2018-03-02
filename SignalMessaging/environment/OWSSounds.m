@@ -62,8 +62,9 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 + (NSArray<NSNumber *> *)allNotificationSounds
 {
     return @[
-        // None should be first.
+        // None and Note (default) should be first.
         @(OWSSound_None),
+        @(OWSSound_Note),
 
         @(OWSSound_Aurora),
         @(OWSSound_Bamboo),
@@ -74,7 +75,6 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         @(OWSSound_Hello),
         @(OWSSound_Input),
         @(OWSSound_Keys),
-        @(OWSSound_Note),
         @(OWSSound_Popcorn),
         @(OWSSound_Pulse),
         @(OWSSound_Synth),
@@ -89,7 +89,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
             OWSFail(@"%@ invalid argument.", self.logTag);
             return @"";
 
-            // Notification Sounds
+        // Notification Sounds
         case OWSSound_Aurora:
             return @"Aurora";
         case OWSSound_Bamboo:
@@ -117,11 +117,9 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         case OWSSound_ClassicNotification:
             return @"Classic";
 
-            // Ringtone Sounds
+        // Call Audio
         case OWSSound_Opening:
             return @"Opening";
-
-            // Calls
         case OWSSound_CallConnecting:
             return @"Call Connecting";
         case OWSSound_CallOutboundRinging:
@@ -131,7 +129,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         case OWSSound_CallFailure:
             return @"Call Failure";
 
-            // Other
+        // Other
         case OWSSound_None:
             return NSLocalizedString(@"SOUNDS_NONE",
                 @"Label for the 'no sound' option that allows users to disable sounds for notifications, "
@@ -246,6 +244,27 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 + (void)setGlobalNotificationSound:(OWSSound)sound
 {
+    [self.sharedManager setGlobalNotificationSound:sound];
+}
+
+- (void)setGlobalNotificationSound:(OWSSound)sound
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self setGlobalNotificationSound:sound transaction:transaction];
+    }];
+}
+
++ (void)setGlobalNotificationSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self.sharedManager setGlobalNotificationSound:sound transaction:transaction];
+}
+
+- (void)setGlobalNotificationSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+
+    DDLogInfo(@"%@ Setting global notification sound to: %@", self.logTag, [[self class] displayNameForSound:sound]);
+
     // Fallback push notifications play a sound specified by the server, but we don't want to store this configuration
     // on the server. Instead, we create a file with the same name as the default to be played when receiving
     // a fallback notification.
@@ -275,16 +294,6 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
             @"%@ Unable to write new default sound data from: %@ to :%@", self.logTag, soundURL, defaultSoundPath);
         return;
     }
-
-    OWSSounds *instance = OWSSounds.sharedManager;
-    [instance.dbConnection setObject:@(sound)
-                              forKey:kOWSSoundsStorageGlobalNotificationKey
-                        inCollection:kOWSSoundsStorageNotificationCollection];
-}
-
-+ (void)setGlobalNotificationSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssert(transaction);
 
     [transaction setObject:@(sound)
                     forKey:kOWSSoundsStorageGlobalNotificationKey
