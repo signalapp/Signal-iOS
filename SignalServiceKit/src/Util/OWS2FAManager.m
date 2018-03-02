@@ -73,14 +73,23 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 
 - (BOOL)is2FAEnabled
 {
-    return [self.dbConnection boolForKey:kOWS2FAManager_IsEnabledKey
-                            inCollection:kOWS2FAManager_Collection
-                            defaultValue:NO];
+    return [self.dbConnection hasObjectForKey:kOWS2FAManager_PINKey inCollection:kOWS2FAManager_Collection];
 }
 
-- (void)setIs2FAEnabled:(BOOL)value
+- (void)set2FANotEnabled
 {
-    [self.dbConnection setBool:value forKey:kOWS2FAManager_IsEnabledKey inCollection:kOWS2FAManager_Collection];
+    [self.dbConnection removeObjectForKey:kOWS2FAManager_PINKey inCollection:kOWS2FAManager_Collection];
+
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
+                                                             object:nil
+                                                           userInfo:nil];
+}
+
+- (void)set2FAEnabledWithPin:(NSString *)pin
+{
+    OWSAssert(pin.length > 0);
+
+    [self.dbConnection setObject:pin forKey:kOWS2FAManager_PINKey inCollection:kOWS2FAManager_Collection];
 
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
                                                              object:nil
@@ -107,6 +116,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
             OWSAssertIsOnMainThread();
 
             [self mark2FAAsEnabledWithPin:pin];
+
             if (success) {
                 success();
             }
@@ -127,7 +137,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
         success:^(NSURLSessionDataTask *task, id responseObject) {
             OWSAssertIsOnMainThread();
 
-            [self setIs2FAEnabled:NO];
+            [self set2FANotEnabled];
 
             if (success) {
                 success();
