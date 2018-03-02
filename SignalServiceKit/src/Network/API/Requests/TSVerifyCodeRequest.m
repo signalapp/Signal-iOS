@@ -22,12 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(signalingKey.length > 0);
     OWSAssert(authKey.length > 0);
 
-    self = [super
-        initWithURL:[NSURL URLWithString:[NSString
-                                             stringWithFormat:@"%@/code/%@", textSecureAccountsAPI, verificationCode]]];
-
-    _numberToValidate = phoneNumber;
-
+    NSURL *url =
+        [NSURL URLWithString:[NSString stringWithFormat:@"%@/code/%@", textSecureAccountsAPI, verificationCode]];
     NSMutableDictionary *parameters =
         [[TSAttributes attributesWithSignalingKey:signalingKey serverAuthToken:authKey manualMessageFetching:NO]
             mutableCopy];
@@ -35,9 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(pin.length > 0);
         parameters[@"pin"] = pin;
     }
-    self.parameters = parameters;
+    self = [super initWithURL:url method:@"PUT" parameters:parameters];
 
-    [self setHTTPMethod:@"PUT"];
+    _numberToValidate = phoneNumber;
 
     return self;
 }
