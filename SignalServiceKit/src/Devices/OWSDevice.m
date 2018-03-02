@@ -19,9 +19,6 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 
 @interface OWSDeviceManager ()
 
-// This property should only be accessed while synchronized on self.
-@property (atomic, nullable) NSNumber *mayHaveLinkedDevicesCached;
-
 @property (atomic) NSDate *lastReceivedSyncMessage;
 
 @end
@@ -49,30 +46,34 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 {
     OWSAssert(dbConnection);
 
-    @synchronized(self)
-    {
-        if (!self.mayHaveLinkedDevicesCached) {
-            self.mayHaveLinkedDevicesCached = @([dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
-                                                            inCollection:kTSStorageManager_OWSDeviceCollection
-                                                            defaultValue:YES]);
-        }
+    return [dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
+                       inCollection:kTSStorageManager_OWSDeviceCollection
+                       defaultValue:YES];
+}
 
-        return [self.mayHaveLinkedDevicesCached boolValue];
-    }
+// In order to avoid skipping necessary sync messages, the default value
+// for mayHaveLinkedDevices is YES.  Once we've successfully sent a
+// sync message with no device messages (e.g. the service has confirmed
+// that we have no linked devices), we can set mayHaveLinkedDevices to NO
+// to avoid unnecessary message sends for sync messages until we learn
+// of a linked device (e.g. through the device linking UI or by receiving
+// a sync message, etc.).
+- (void)clearMayHaveLinkedDevicesIfNotSet
+{
+    // Note that we write async to avoid opening transactions within transactions.
+    [TSStorageManager.sharedManager.newDatabaseConnection
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            if (![transaction objectForKey:kTSStorageManager_MayHaveLinkedDevices
+                              inCollection:kTSStorageManager_OWSDeviceCollection]) {
+                [transaction setObject:@(NO)
+                                forKey:kTSStorageManager_MayHaveLinkedDevices
+                          inCollection:kTSStorageManager_OWSDeviceCollection];
+            }
+        }];
 }
 
 - (void)setMayHaveLinkedDevices
 {
-    @synchronized(self)
-    {
-        if (self.mayHaveLinkedDevicesCached != nil && self.mayHaveLinkedDevicesCached.boolValue) {
-            // Skip redundant writes.
-            return;
-        }
-
-        self.mayHaveLinkedDevicesCached = @(YES);
-    }
-
     // Note that we write async to avoid opening transactions within transactions.
     [TSStorageManager.sharedManager.newDatabaseConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
