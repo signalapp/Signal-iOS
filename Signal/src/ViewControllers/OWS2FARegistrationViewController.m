@@ -245,7 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   [modalActivityIndicator dismissWithCompletion:^{
                                       OWSAssertIsOnMainThread();
 
-                                      [weakSelf vericationWasCompleted];
+                                      [weakSelf verificationWasCompleted];
                                   }];
                               });
                           })
@@ -257,12 +257,11 @@ NS_ASSUME_NONNULL_BEGIN
                                   [modalActivityIndicator dismissWithCompletion:^{
                                       OWSAssertIsOnMainThread();
 
-                                      [OWSAlerts
-                                          showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")
-                                                     message:NSLocalizedString(@"REGISTER_2FA_REGISTRATION_FAILED",
-                                                                 @"Error indicating that attempt to register with "
-                                                                 @"'two-factor "
-                                                                 @"auth' failed.")];
+                                      [OWSAlerts showAlertWithTitle:NSLocalizedString(
+                                                                        @"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE",
+                                                                        @"Title for alert indicating that attempt to "
+                                                                        @"register with 'two-factor auth' failed.")
+                                                            message:error.localizedDescription];
 
                                       [weakSelf.pinTextfield becomeFirstResponder];
                                   }];
@@ -271,7 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
                   }];
 }
 
-- (void)vericationWasCompleted
+- (void)verificationWasCompleted
 {
     [ProfileViewController presentForRegistration:self.navigationController];
 }

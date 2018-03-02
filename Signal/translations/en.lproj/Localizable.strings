@@ -280,9 +280,6 @@
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Call";
 
-/* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Please upgrade to iOS 9 or newer to see remote video.";
-
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
 
@@ -1392,8 +1389,8 @@
 /* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
 "REGISTER_2FA_INSTRUCTIONS" = "This phone number has Registration Lock enabled. Please enter the Registration Lock PIN.\n\nYour Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
 
-/* Error indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED" = "Registration failed.";
+/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
+"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registration Failed";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Submit";

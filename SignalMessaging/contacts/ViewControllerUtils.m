@@ -12,9 +12,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// TODO: ?
 const NSUInteger kMin2FAPinLength = 4;
-const NSUInteger kMax2FAPinLength = 14;
+const NSUInteger kMax2FAPinLength = 16;
 
 @implementation ViewControllerUtils
 

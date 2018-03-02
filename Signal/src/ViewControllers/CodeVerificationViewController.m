@@ -67,12 +67,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.navigationItem.backBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
-                                         style:UIBarButtonItemStylePlain
-                                        target:self
-                                        action:@selector(backButtonWasPressed)];
-
     [self createViews];
     
     [self initializeKeyboardHandlers];
@@ -273,7 +267,7 @@ NS_ASSUME_NONNULL_BEGIN
             DDLogInfo(@"%@ Successfully registered Signal account.", weakSelf.logTag);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf stopActivityIndicator];
-                [weakSelf vericationWasCompleted];
+                [weakSelf verificationWasCompleted];
             });
         })
         .catch(^(NSError *error) {
@@ -301,7 +295,7 @@ NS_ASSUME_NONNULL_BEGIN
         });
 }
 
-- (void)vericationWasCompleted
+- (void)verificationWasCompleted
 {
     [ProfileViewController presentForRegistration:self.navigationController];
 }
@@ -490,11 +484,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.challengeTextField.selectedTextRange = [self.challengeTextField textRangeFromPosition:newPosition
                                                                                     toPosition:newPosition];
     [self submitVerificationCode];
-}
-
-- (void)backButtonWasPressed
-{
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end
