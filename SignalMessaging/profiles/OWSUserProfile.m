@@ -109,11 +109,13 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         BOOL didChange;
         if (_avatarUrlPath == nil && avatarUrlPath == nil) {
             didChange = NO;
-        } else if (_avatarUrlPath != nil && avatarUrlPath != nil) {
+        } else if (_avatarUrlPath != nil || avatarUrlPath != nil) {
             didChange = YES;
         } else {
             didChange = [_avatarUrlPath isEqualToString:avatarUrlPath];
         }
+
+        _avatarUrlPath = avatarUrlPath;
 
         if (didChange) {
             // If the avatarURL changed, the avatarFileName can't be valid.
@@ -137,7 +139,9 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         dbConnection:(YapDatabaseConnection *)dbConnection
           completion:(nullable OWSUserProfileCompletion)completion
 {
-    NSDictionary *beforeSnapshot = self.dictionaryValue;
+    // self might be the latest instance, so take a "before" snapshot
+    // before any changes have been made.
+    __block NSDictionary *beforeSnapshot = [self.dictionaryValue copy];
 
     changeBlock(self);
 
@@ -146,12 +150,21 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         NSString *collection = [[self class] collection];
         OWSUserProfile *_Nullable latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
         if (latestInstance) {
+            // If self is NOT the latest instance, take a new "before" snapshot
+            // before updating.
+            if (self != latestInstance) {
+                beforeSnapshot = [latestInstance.dictionaryValue copy];
+            }
+
             changeBlock(latestInstance);
 
-            NSDictionary *afterSnapshot = latestInstance.dictionaryValue;
+            NSDictionary *afterSnapshot = [latestInstance.dictionaryValue copy];
+
             if ([beforeSnapshot isEqual:afterSnapshot]) {
-                DDLogVerbose(
-                    @"%@ Ignoring redundant update in %s: %@", self.logTag, functionName, self.debugDescription);
+                DDLogVerbose(@"%@ Ignoring redundant update in %s: %@",
+                    self.logTag,
+                    functionName,
+                    self.debugDescription);
                 didChange = NO;
             } else {
                 [latestInstance saveWithTransaction:transaction];
