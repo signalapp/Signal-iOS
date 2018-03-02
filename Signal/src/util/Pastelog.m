@@ -8,6 +8,7 @@
 #import "zlib.h"
 #import <AFNetworking/AFNetworking.h>
 #import <SSZipArchive/SSZipArchive.h>
+#import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/AppContext.h>
@@ -326,10 +327,18 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
             addAction:[UIAlertAction
                           actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_BUG_REPORT",
                                               @"Label for the 'Open a Bug Report' option of the the debug log alert.")
-                                    style:UIAlertActionStyleCancel
+                                    style:UIAlertActionStyleDefault
                                   handler:^(UIAlertAction *action) {
                                       [Pastelog.sharedManager prepareRedirection:url completion:completion];
                                   }]];
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SHARE",
+                                                            @"Label for the 'Share' option of the the debug log alert.")
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction *action) {
+                                                    [AttachmentSharing showShareUIForText:url.absoluteString
+                                                                               completion:completion];
+                                                }]];
+        [alert addAction:[OWSAlerts cancelAction]];
         UIViewController *presentingViewController
             = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
         [presentingViewController presentViewController:alert animated:NO completion:nil];

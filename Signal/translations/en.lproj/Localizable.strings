@@ -529,6 +529,9 @@
 /* Label for the 'send to self' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Send to Self";
 
+/* Label for the 'Share' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "Share";
+
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "One More Step";
