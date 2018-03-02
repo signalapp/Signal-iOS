@@ -7,7 +7,6 @@
 #import "NSString+OWS.h"
 #import "OWSUserProfile.h"
 #import "UIImage+OWS.h"
-#import <AFNetworking/AFNetworking.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/Cryptography.h>
@@ -784,12 +783,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return nil;
 }
 
-- (void)downloadAvatarForUserProfile:(OWSUserProfile *)userProfileParameter
+- (void)downloadAvatarForUserProfile:(OWSUserProfile *)userProfile
 {
-    OWSAssert(userProfileParameter);
-
-    // Make a local copy.
-    OWSUserProfile *userProfile = [userProfileParameter copy];
+    OWSAssert(userProfile);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (userProfile.avatarUrlPath.length < 1) {
@@ -815,6 +811,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             }
             [self.currentAvatarDownloads addObject:userProfile.recipientId];
         }
+
+        DDLogVerbose(@"%@ downloading profile avatar: %@", self.logTag, userProfile.uniqueId);
 
         NSString *tempDirectory = NSTemporaryDirectory();
         NSString *tempFilePath = [tempDirectory stringByAppendingPathComponent:fileName];
@@ -919,7 +917,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
         [userProfile updateWithProfileName:profileName
                              avatarUrlPath:avatarUrlPath
-                            avatarFileName:userProfile.avatarFileName // use existing file name if already downloaded
                               dbConnection:self.dbConnection
                                 completion:nil];
 
@@ -930,18 +927,17 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             OWSUserProfile *localUserProfile = self.localUserProfile;
             OWSAssert(localUserProfile);
 
-            // Don't clear avatarFileName optimistically.
-            // * The profile avatar probably isn't out of sync.
-            // * If the profile avatar is out of sync, it can be synced on next app launch.
-            // * We don't want to touch local avatar state until we've
-            //   downloaded the latest avatar by downloadAvatarForUserProfile.
             [localUserProfile updateWithProfileName:profileName
                                       avatarUrlPath:avatarUrlPath
                                        dbConnection:self.dbConnection
                                          completion:nil];
         }
 
-        if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length == 0) {
+        // Whenever we change avatarUrlPath, OWSUserProfile clears avatarFileName.
+        // So if avatarUrlPath is set and avatarFileName is not set, we should to
+        // download this avatar. downloadAvatarForUserProfile will de-bounce
+        // downloads.
+        if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length < 1) {
             [self downloadAvatarForUserProfile:userProfile];
         }
     });

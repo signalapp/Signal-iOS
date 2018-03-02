@@ -29,7 +29,8 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeMessageDeletedBeforeSent = 777410,
     OWSErrorCodeDatabaseConversionFatalError = 777411,
     OWSErrorCodeMoveFileToSharedDataContainerError = 777412,
-    OWSErrorCodeRegistrationMissing2FAPIN = 777413
+    OWSErrorCodeRegistrationMissing2FAPIN = 777413,
+    OWSErrorCodeDebugLogUploadFailed = 777414,
 };
 
 extern NSString *const OWSErrorRecipientIdentifierKey;

@@ -5,6 +5,10 @@
 #import "Pastelog.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
+#import "zlib.h"
+#import <AFNetworking/AFNetworking.h>
+#import <SSZipArchive/SSZipArchive.h>
+#import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/AppContext.h>
@@ -12,13 +16,227 @@
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/Threading.h>
-#import <sys/sysctl.h>
 
-@interface Pastelog () <NSURLConnectionDelegate, NSURLConnectionDataDelegate, UIAlertViewDelegate>
+NS_ASSUME_NONNULL_BEGIN
+
+typedef void (^UploadDebugLogsSuccess)(NSURL *url);
+typedef void (^UploadDebugLogsFailure)(NSString *localizedErrorMessage);
+
+#pragma mark -
+
+@class DebugLogUploader;
+
+typedef void (^DebugLogUploadSuccess)(DebugLogUploader *uploader, NSURL *url);
+typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error);
+
+@interface DebugLogUploader : NSObject
+
+@property (nonatomic) NSURL *fileUrl;
+@property (nonatomic) NSString *mimeType;
+@property (nonatomic, nullable) DebugLogUploadSuccess success;
+@property (nonatomic, nullable) DebugLogUploadFailure failure;
+
+@end
+
+#pragma mark -
+
+@implementation DebugLogUploader
+
+- (void)dealloc
+{
+    DDLogVerbose(@"Dealloc: %@", self.logTag);
+}
+
+- (void)uploadFileWithURL:(NSURL *)fileUrl
+                 mimeType:(NSString *)mimeType
+                  success:(DebugLogUploadSuccess)success
+                  failure:(DebugLogUploadFailure)failure
+{
+    OWSAssert(fileUrl);
+    OWSAssert(mimeType.length > 0);
+    OWSAssert(success);
+    OWSAssert(failure);
+
+    self.fileUrl = fileUrl;
+    self.mimeType = mimeType;
+    self.success = success;
+    self.failure = failure;
+
+    [self getUploadParameters];
+}
+
+- (void)getUploadParameters
+{
+    __weak DebugLogUploader *weakSelf = self;
+
+    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+    AFHTTPSessionManager *sessionManager =
+        [[AFHTTPSessionManager alloc] initWithBaseURL:nil sessionConfiguration:sessionConf];
+    sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
+    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+    NSString *urlString = @"https://debuglogs.org/";
+    [sessionManager GET:urlString
+        parameters:nil
+        progress:nil
+        success:^(NSURLSessionDataTask *task, id _Nullable responseObject) {
+            if (![responseObject isKindOfClass:[NSDictionary class]]) {
+                DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
+                [weakSelf
+                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                return;
+            }
+            NSString *uploadUrl = responseObject[@"url"];
+            if (![uploadUrl isKindOfClass:[NSString class]] || uploadUrl.length < 1) {
+                DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
+                [weakSelf
+                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                return;
+            }
+            NSDictionary *fields = responseObject[@"fields"];
+            if (![fields isKindOfClass:[NSDictionary class]] || fields.count < 1) {
+                DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
+                [weakSelf
+                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                return;
+            }
+            for (NSString *fieldName in fields) {
+                NSString *fieldValue = fields[fieldName];
+                if (![fieldName isKindOfClass:[NSString class]] || fieldName.length < 1
+                    || ![fieldValue isKindOfClass:[NSString class]] || fieldValue.length < 1) {
+                    DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
+                    [weakSelf failWithError:OWSErrorWithCodeDescription(
+                                                OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                    return;
+                }
+            }
+            NSString *_Nullable uploadKey = fields[@"key"];
+            if (![uploadKey isKindOfClass:[NSString class]] || uploadKey.length < 1) {
+                DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
+                [weakSelf
+                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                return;
+            }
+            
+            // Add a file extension to the upload's key.
+            NSString *fileExtension = weakSelf.fileUrl.lastPathComponent.pathExtension;
+            uploadKey = [uploadKey stringByAppendingPathExtension:fileExtension];
+            NSMutableDictionary *updatedFields = [fields mutableCopy];
+            updatedFields[@"key"] = uploadKey;
+            
+            [weakSelf uploadFileWithUploadUrl:uploadUrl fields:updatedFields uploadKey:uploadKey];
+        }
+        failure:^(NSURLSessionDataTask *_Nullable task, NSError *error) {
+            DDLogError(@"%@ failed: %@", weakSelf.logTag, urlString);
+            [weakSelf failWithError:error];
+        }];
+}
+
+- (void)uploadFileWithUploadUrl:(NSString *)uploadUrl fields:(NSDictionary *)fields uploadKey:(NSString *)uploadKey
+{
+    OWSAssert(uploadUrl.length > 0);
+    OWSAssert(fields);
+    OWSAssert(uploadKey.length > 0);
+
+    __weak DebugLogUploader *weakSelf = self;
+    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+    AFHTTPSessionManager *sessionManager =
+        [[AFHTTPSessionManager alloc] initWithBaseURL:nil sessionConfiguration:sessionConf];
+    sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
+    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    [sessionManager POST:uploadUrl
+        parameters:@{}
+        constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+            for (NSString *fieldName in fields) {
+                NSString *fieldValue = fields[fieldName];
+                [formData appendPartWithFormData:[fieldValue dataUsingEncoding:NSUTF8StringEncoding] name:fieldName];
+            }
+            NSError *error;
+            BOOL success = [formData appendPartWithFileURL:weakSelf.fileUrl
+                                                      name:@"file"
+                                                  fileName:weakSelf.fileUrl.lastPathComponent
+                                                  mimeType:weakSelf.mimeType
+                                                     error:&error];
+            if (!success || error) {
+                DDLogError(@"%@ failed: %@, error: %@", weakSelf.logTag, uploadUrl, error);
+            }
+        }
+        progress:nil
+        success:^(NSURLSessionDataTask *task, id _Nullable responseObject) {
+            DDLogVerbose(@"%@ Response: %@, %@", weakSelf.logTag, uploadUrl, responseObject);
+
+            NSString *urlString = [NSString stringWithFormat:@"https://debuglogs.org/%@", uploadKey];
+            [self succeedWithUrl:[NSURL URLWithString:urlString]];
+        }
+        failure:^(NSURLSessionDataTask *_Nullable task, NSError *error) {
+            DDLogError(@"%@ failed: %@", weakSelf.logTag, uploadUrl);
+            [weakSelf failWithError:error];
+        }];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+
+    NSInteger statusCode = httpResponse.statusCode;
+    // We'll accept any 2xx status code.
+    NSInteger statusCodeClass = statusCode - (statusCode % 100);
+    if (statusCodeClass != 200) {
+        DDLogError(@"%@ statusCode: %zd, %zd", self.logTag, statusCode, statusCodeClass);
+        DDLogError(@"%@ headers: %@", self.logTag, httpResponse.allHeaderFields);
+        [self failWithError:[NSError errorWithDomain:@"PastelogKit"
+                                                code:10001
+                                            userInfo:@{ NSLocalizedDescriptionKey : @"Invalid response code." }]];
+    }
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [self failWithError:error];
+}
+
+- (void)failWithError:(NSError *)error
+{
+    OWSAssert(error);
+
+    DDLogError(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, error);
+
+    DispatchMainThreadSafe(^{
+        // Call the completions exactly once.
+        if (self.failure) {
+            self.failure(self, error);
+        }
+        self.success = nil;
+        self.failure = nil;
+    });
+}
+
+- (void)succeedWithUrl:(NSURL *)url
+{
+    OWSAssert(url);
+
+    DDLogVerbose(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, url);
+
+    DispatchMainThreadSafe(^{
+        // Call the completions exactly once.
+        if (self.success) {
+            self.success(self, url);
+        }
+        self.success = nil;
+        self.failure = nil;
+    });
+}
+
+@end
+
+#pragma mark -
+
+@interface Pastelog () <UIAlertViewDelegate>
 
 @property (nonatomic) UIAlertController *loadingAlert;
-@property (nonatomic) NSMutableData *responseData;
-@property (nonatomic) DebugLogsUploadedBlock block;
+
+@property (nonatomic) DebugLogUploader *currentUploader;
 
 @end
 
@@ -26,237 +244,244 @@
 
 @implementation Pastelog
 
-+(void)submitLogs {
-    [self submitLogsWithShareCompletion:nil];
-}
-
-+ (void)submitLogsWithShareCompletion:(nullable DebugLogsSharedBlock)shareCompletionParam
++ (instancetype)sharedManager
 {
-    DebugLogsSharedBlock shareCompletion = ^{
-        if (shareCompletionParam) {
-            // Wait a moment. If PasteLog opens a URL, it needs a moment to complete.
-            dispatch_after(
-                dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), shareCompletionParam);
-        }
-    };
-
-    [self submitLogsWithUploadCompletion:^(NSError *error, NSString *urlString) {
-        if (!error) {
-            UIAlertController *alert = [UIAlertController
-                alertControllerWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_TITLE", @"Title of the debug log alert.")
-                                 message:NSLocalizedString(
-                                             @"DEBUG_LOG_ALERT_MESSAGE", @"Message of the debug log alert.")
-                          preferredStyle:UIAlertControllerStyleAlert];
-            [alert
-                addAction:[UIAlertAction
-                              actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EMAIL",
-                                                  @"Label for the 'email debug log' option of the the debug log alert.")
-                                        style:UIAlertActionStyleDefault
-                                      handler:^(UIAlertAction *_Nonnull action) {
-                                          [Pastelog.sharedManager submitEmail:urlString];
-
-                                          shareCompletion();
-                                      }]];
-            [alert addAction:[UIAlertAction
-                                 actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_COPY_LINK",
-                                                     @"Label for the 'copy link' option of the the debug log alert.")
-                                           style:UIAlertActionStyleDefault
-                                         handler:^(UIAlertAction *_Nonnull action) {
-                                             UIPasteboard *pb = [UIPasteboard generalPasteboard];
-                                             [pb setString:urlString];
-
-                                             shareCompletion();
-                                         }]];
-#ifdef DEBUG
-            [alert addAction:[UIAlertAction
-                                 actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF",
-                                                     @"Label for the 'send to self' option of the the debug log alert.")
-                                           style:UIAlertActionStyleDefault
-                                         handler:^(UIAlertAction *_Nonnull action) {
-                                             [Pastelog.sharedManager sendToSelf:urlString];
-                                         }]];
-            [alert addAction:[UIAlertAction
-                                 actionWithTitle:
-                                     NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD",
-                                         @"Label for the 'send to last thread' option of the the debug log alert.")
-                                           style:UIAlertActionStyleDefault
-                                         handler:^(UIAlertAction *_Nonnull action) {
-                                             [Pastelog.sharedManager sendToMostRecentThread:urlString];
-                                         }]];
-#endif
-            [alert addAction:
-                       [UIAlertAction
-                           actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_BUG_REPORT",
-                                               @"Label for the 'Open a Bug Report' option of the the debug log alert.")
-                                     style:UIAlertActionStyleCancel
-                                   handler:^(UIAlertAction *_Nonnull action) {
-                                       [Pastelog.sharedManager prepareRedirection:urlString
-                                                                  shareCompletion:shareCompletion];
-                                   }]];
-            UIViewController *presentingViewController
-                = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
-            [presentingViewController presentViewController:alert animated:NO completion:nil];
-        } else{
-            UIAlertView *alertView =
-                [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"DEBUG_LOG_FAILURE_ALERT_TITLE",
-                                                       @"Title of the alert indicating the debug log upload failed.")
-                                           message:error.localizedDescription
-                                          delegate:nil
-                                 cancelButtonTitle:@"OK"
-                                 otherButtonTitles:nil, nil];
-            [alertView show];
-        }
-    }];
-}
-
-+ (void)submitLogsWithUploadCompletion:(DebugLogsUploadedBlock)block
-{
-    [self submitLogsWithUploadCompletion:block forFileLogger:[[DDFileLogger alloc] init]];
-}
-
-+ (void)submitLogsWithUploadCompletion:(DebugLogsUploadedBlock)block forFileLogger:(DDFileLogger *)fileLogger
-{
-
-    [self sharedManager].block = block;
-
-    [self sharedManager].loadingAlert =
-        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"DEBUG_LOG_ACTIVITY_INDICATOR",
-                                                        @"Message indicating that the debug log is being uploaded.")
-                                            message:nil
-                                     preferredStyle:UIAlertControllerStyleAlert];
-    UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
-    [presentingViewController presentViewController:[self sharedManager].loadingAlert animated:NO completion:nil];
-
-    NSArray<NSString *> *logFilePaths = DebugLogger.sharedLogger.allLogFilePaths;
-
-    NSMutableDictionary *gistFiles = [NSMutableDictionary new];
-
-    for (NSString *logFilePath in logFilePaths) {
-        NSError *error;
-        NSString *logContents =
-            [NSString stringWithContentsOfFile:logFilePath encoding:NSUTF8StringEncoding error:&error];
-        if (error) {
-            OWSFail(@"%@ Error loading log file contents: %@", self.logTag, error);
-            continue;
-        }
-        gistFiles[logFilePath.lastPathComponent] = @{
-            @"content" : logContents,
-        };
-    }
-
-    NSDictionary *gistDict = @{@"description":[self gistDescription], @"files":gistFiles};
-
-    NSData *postData = [NSJSONSerialization dataWithJSONObject:gistDict options:0 error:nil];
-
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:@"https://api.github.com/gists"] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:30];
-
-    [[self sharedManager] setResponseData:[NSMutableData data]];
-    [[self sharedManager] setBlock:block];
-
-    [request setHTTPMethod:@"POST"];
-    [request setHTTPBody:postData];
-
-    NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:[self sharedManager]];
-
-    [connection start];
-
-}
-
-+(Pastelog*)sharedManager {
     static Pastelog *sharedMyManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedMyManager = [[self alloc] init];
+        sharedMyManager = [[self alloc] initDefault];
     });
     return sharedMyManager;
 }
 
--(instancetype)init {
-    if (self = [super init]) {
-        self.responseData = [NSMutableData data];
+- (instancetype)initDefault
+{
+    self = [super init];
 
-        OWSSingletonAssert();
+    if (!self) {
+        return self;
     }
+
+    OWSSingletonAssert();
+
     return self;
 }
 
-+(NSString*)gistDescription{
-    size_t size;
-    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-    char *machine = malloc(size);
-    sysctlbyname("hw.machine", machine, &size, NULL, 0);
-    NSString *platform = [NSString stringWithUTF8String:machine];
-    free(machine);
-
-    NSString *gistDesc = [NSString stringWithFormat:@"iPhone Version: %@, iOS Version: %@", platform,[UIDevice currentDevice].systemVersion];
-
-    return gistDesc;
++ (void)submitLogs
+{
+    [self submitLogsWithCompletion:nil];
 }
 
-#pragma mark Network delegates
++ (void)submitLogsWithCompletion:(nullable SubmitDebugLogsCompletion)completionParam
+{
+    SubmitDebugLogsCompletion completion = ^{
+        if (completionParam) {
+            // Wait a moment. If PasteLog opens a URL, it needs a moment to complete.
+            dispatch_after(
+                dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), completionParam);
+        }
+    };
 
--(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data{
-    [self.responseData appendData:data];
+    [self uploadLogsWithSuccess:^(NSURL *url) {
+        UIAlertController *alert = [UIAlertController
+            alertControllerWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_TITLE", @"Title of the debug log alert.")
+                             message:NSLocalizedString(@"DEBUG_LOG_ALERT_MESSAGE", @"Message of the debug log alert.")
+                      preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction
+                             actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EMAIL",
+                                                 @"Label for the 'email debug log' option of the the debug log alert.")
+                                       style:UIAlertActionStyleDefault
+                                     handler:^(UIAlertAction *action) {
+                                         [Pastelog.sharedManager submitEmail:url];
+
+                                         completion();
+                                     }]];
+        [alert addAction:[UIAlertAction
+                             actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_COPY_LINK",
+                                                 @"Label for the 'copy link' option of the the debug log alert.")
+                                       style:UIAlertActionStyleDefault
+                                     handler:^(UIAlertAction *action) {
+                                         UIPasteboard *pb = [UIPasteboard generalPasteboard];
+                                         [pb setString:url.absoluteString];
+
+                                         completion();
+                                     }]];
+#ifdef DEBUG
+        [alert addAction:[UIAlertAction
+                             actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF",
+                                                 @"Label for the 'send to self' option of the the debug log alert.")
+                                       style:UIAlertActionStyleDefault
+                                     handler:^(UIAlertAction *action) {
+                                         [Pastelog.sharedManager sendToSelf:url];
+                                     }]];
+        [alert
+            addAction:[UIAlertAction
+                          actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD",
+                                              @"Label for the 'send to last thread' option of the the debug log alert.")
+                                    style:UIAlertActionStyleDefault
+                                  handler:^(UIAlertAction *action) {
+                                      [Pastelog.sharedManager sendToMostRecentThread:url];
+                                  }]];
+#endif
+        [alert
+            addAction:[UIAlertAction
+                          actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_BUG_REPORT",
+                                              @"Label for the 'Open a Bug Report' option of the the debug log alert.")
+                                    style:UIAlertActionStyleDefault
+                                  handler:^(UIAlertAction *action) {
+                                      [Pastelog.sharedManager prepareRedirection:url completion:completion];
+                                  }]];
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SHARE",
+                                                            @"Label for the 'Share' option of the the debug log alert.")
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction *action) {
+                                                    [AttachmentSharing showShareUIForText:url.absoluteString
+                                                                               completion:completion];
+                                                }]];
+        [alert addAction:[OWSAlerts cancelAction]];
+        UIViewController *presentingViewController
+            = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
+        [presentingViewController presentViewController:alert animated:NO completion:nil];
+    }];
 }
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    [self.loadingAlert
-        dismissViewControllerAnimated:NO
-                           completion:^{
-                               NSError *error;
-                               NSDictionary *dict =
-                                   [NSJSONSerialization JSONObjectWithData:self.responseData options:0 error:&error];
-                               if (!error) {
-                                   self.block(nil, [dict objectForKey:@"html_url"]);
-                               } else {
-                                   DDLogError(@"Error on debug response: %@", error);
-                                   self.block(error, nil);
-                               }
-                           }];
-    self.loadingAlert = nil;
++ (void)uploadLogsWithSuccess:(nullable UploadDebugLogsSuccess)success
+{
+    OWSAssert(success);
+
+    [[self sharedManager] uploadLogsWithSuccess:success
+                                        failure:^(NSString *localizedErrorMessage) {
+                                            [Pastelog showFailureAlertWithMessage:localizedErrorMessage];
+                                        }];
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+- (void)uploadLogsWithSuccess:(nullable UploadDebugLogsSuccess)successParam failure:(UploadDebugLogsFailure)failureParam
+{
+    OWSAssert(successParam);
+    OWSAssert(failureParam);
 
-    NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+    // Ensure that we call the completions on the main thread.
+    UploadDebugLogsSuccess success = ^(NSURL *url) {
+        if (successParam) {
+            DispatchMainThreadSafe(^{
+                successParam(url);
+            });
+        }
+    };
+    UploadDebugLogsFailure failure = ^(NSString *localizedErrorMessage) {
+        DispatchMainThreadSafe(^{
+            failureParam(localizedErrorMessage);
+        });
+    };
 
-    if ( [httpResponse statusCode] != 201) {
-        DDLogError(@"Failed to submit debug log: %@", httpResponse.debugDescription);
-        [self.loadingAlert
-            dismissViewControllerAnimated:NO
-                               completion:^{
-                                   [connection cancel];
-                                   self.block([NSError errorWithDomain:@"PastelogKit" code:10001 userInfo:@{}], nil);
-                               }];
-        self.loadingAlert = nil;
+    // Phase 1. Make a local copy of all of the log files.
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    [dateFormatter setLocale:[NSLocale currentLocale]];
+    [dateFormatter setDateFormat:@"yyyy.MM.dd hh.mm.ss"];
+    NSString *dateString = [dateFormatter stringFromDate:[NSDate new]];
+    NSString *logsName = [[dateString stringByAppendingString:@" "] stringByAppendingString:NSUUID.UUID.UUIDString];
+    NSString *tempDirectory = NSTemporaryDirectory();
+    NSString *zipFilePath =
+        [tempDirectory stringByAppendingPathComponent:[logsName stringByAppendingPathExtension:@"zip"]];
+    NSString *zipDirPath = [tempDirectory stringByAppendingPathComponent:logsName];
+    [OWSFileSystem ensureDirectoryExists:zipDirPath];
+    [OWSFileSystem protectFileOrFolderAtPath:zipDirPath];
+
+    NSArray<NSString *> *logFilePaths = DebugLogger.sharedLogger.allLogFilePaths;
+    if (logFilePaths.count < 1) {
+        failure(NSLocalizedString(@"DEBUG_LOG_ALERT_NO_LOGS", @"Error indicating that no debug logs could be found."));
+        return;
     }
+
+    for (NSString *logFilePath in logFilePaths) {
+        NSString *copyFilePath = [zipDirPath stringByAppendingPathComponent:logFilePath.lastPathComponent];
+        NSError *error;
+        [[NSFileManager defaultManager] copyItemAtPath:logFilePath toPath:copyFilePath error:&error];
+        if (error) {
+            failure(NSLocalizedString(
+                @"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS", @"Error indicating that the debug logs could not be copied."));
+            return;
+        }
+        [OWSFileSystem protectFileOrFolderAtPath:copyFilePath];
+    }
+
+    // Phase 2. Zip up the log files.
+    BOOL zipSuccess = [SSZipArchive createZipFileAtPath:zipFilePath
+                                withContentsOfDirectory:zipDirPath
+                                    keepParentDirectory:YES
+                                       compressionLevel:Z_DEFAULT_COMPRESSION
+                                               password:nil
+                                                    AES:NO
+                                        progressHandler:nil];
+    if (!zipSuccess) {
+        failure(NSLocalizedString(
+            @"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS", @"Error indicating that the debug logs could not be packaged."));
+        return;
+    }
+
+    [OWSFileSystem protectFileOrFolderAtPath:zipFilePath];
+    [OWSFileSystem deleteFile:zipDirPath];
+
+    // Phase 3. Upload the log files.
+
+    __weak Pastelog *weakSelf = self;
+    self.currentUploader = [DebugLogUploader new];
+    [self.currentUploader uploadFileWithURL:[NSURL fileURLWithPath:zipFilePath]
+        mimeType:@"application/zip"
+        success:^(DebugLogUploader *uploader, NSURL *url) {
+            if (uploader != weakSelf.currentUploader) {
+                // Ignore events from obsolete uploaders.
+                return;
+            }
+            [OWSFileSystem deleteFile:zipFilePath];
+            success(url);
+        }
+        failure:^(DebugLogUploader *uploader, NSError *error) {
+            if (uploader != weakSelf.currentUploader) {
+                // Ignore events from obsolete uploaders.
+                return;
+            }
+            [OWSFileSystem deleteFile:zipFilePath];
+            failure(NSLocalizedString(
+                @"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG", @"Error indicating that a debug log could not be uploaded."));
+        }];
 }
 
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-    [self.loadingAlert dismissViewControllerAnimated:NO
-                                          completion:^{
-                                              DDLogError(@"Uploading logs failed with error: %@", error);
-                                              self.block(error, nil);
-                                          }];
-    self.loadingAlert = nil;
++ (void)showFailureAlertWithMessage:(NSString *)message
+{
+    UIAlertController *alert = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_TITLE",
+                                     @"Title of the alert shown for failures while uploading debug logs.")
+                         message:message
+                  preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                              style:UIAlertActionStyleDefault
+                                            handler:nil]];
+    UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
+    [presentingViewController presentViewController:alert animated:NO completion:nil];
 }
 
 #pragma mark Logs submission
 
-- (void)submitEmail:(NSString*)url {
+- (void)submitEmail:(NSURL *)url
+{
     NSString *emailAddress = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"LOGS_EMAIL"];
 
-    NSString *urlString = [NSString stringWithString: [[NSString stringWithFormat:@"mailto:%@?subject=iOS%%20Debug%%20Log&body=", emailAddress] stringByAppendingString:[[NSString stringWithFormat:@"Log URL: %@ \n Tell us about the issue: ", url]stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
+    NSString *body = [NSString stringWithFormat:@"Log URL: %@ \n Tell us about the issue: ", url];
+    NSString *escapedBody =
+        [body stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
+    NSString *urlString =
+        [NSString stringWithFormat:@"mailto:%@?subject=iOS%%20Debug%%20Log&body=%@", emailAddress, escapedBody];
 
-    [UIApplication.sharedApplication openURL: [NSURL URLWithString: urlString]];
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:urlString]];
 }
 
-- (void)prepareRedirection:(NSString *)url shareCompletion:(DebugLogsSharedBlock)shareCompletion
+- (void)prepareRedirection:(NSURL *)url completion:(SubmitDebugLogsCompletion)completion
 {
-    OWSAssert(shareCompletion);
+    OWSAssert(completion);
 
     UIPasteboard *pb = [UIPasteboard generalPasteboard];
-    [pb setString:url];
+    [pb setString:url.absoluteString];
 
     UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE",
@@ -267,18 +492,18 @@
     [alert addAction:[UIAlertAction
                          actionWithTitle:NSLocalizedString(@"OK", @"")
                                    style:UIAlertActionStyleDefault
-                                 handler:^(UIAlertAction *_Nonnull action) {
+                                 handler:^(UIAlertAction *action) {
                                      [UIApplication.sharedApplication
                                          openURL:[NSURL URLWithString:[[NSBundle mainBundle]
                                                                           objectForInfoDictionaryKey:@"LOGS_URL"]]];
 
-                                     shareCompletion();
+                                     completion();
                                  }]];
     UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
     [presentingViewController presentViewController:alert animated:NO completion:nil];
 }
 
-- (void)sendToSelf:(NSString *)url
+- (void)sendToSelf:(NSURL *)url
 {
     if (![TSAccountManager isRegistered]) {
         return;
@@ -288,35 +513,39 @@
 
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
-        [TSStorageManager.dbReadWriteConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
-            }];
-        [ThreadUtil sendMessageWithText:url inThread:thread messageSender:messageSender];
+        [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+        }];
+        [ThreadUtil sendMessageWithText:url.absoluteString inThread:thread messageSender:messageSender];
     });
 
     // Also copy to pasteboard.
-    [[UIPasteboard generalPasteboard] setString:url];
+    [[UIPasteboard generalPasteboard] setString:url.absoluteString];
 }
 
-- (void)sendToMostRecentThread:(NSString *)url
+- (void)sendToMostRecentThread:(NSURL *)url
 {
     if (![TSAccountManager isRegistered]) {
         return;
     }
-    OWSMessageSender *messageSender = Environment.current.messageSender;
 
+    __block TSThread *thread = nil;
+    [TSStorageManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        thread = [[transaction ext:TSThreadDatabaseViewExtensionName] firstObjectInGroup:TSInboxGroup];
+    }];
     DispatchMainThreadSafe(^{
-        __block TSThread *thread = nil;
-        [TSStorageManager.dbReadWriteConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                thread = [[transaction ext:TSThreadDatabaseViewExtensionName] firstObjectInGroup:[TSThread collection]];
-            }];
-        [ThreadUtil sendMessageWithText:url inThread:thread messageSender:messageSender];
+        if (thread) {
+            OWSMessageSender *messageSender = Environment.current.messageSender;
+            [ThreadUtil sendMessageWithText:url.absoluteString inThread:thread messageSender:messageSender];
+        } else {
+            [Pastelog showFailureAlertWithMessage:@"Could not find last thread."];
+        }
     });
 
     // Also copy to pasteboard.
-    [[UIPasteboard generalPasteboard] setString:url];
+    [[UIPasteboard generalPasteboard] setString:url.absoluteString];
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
