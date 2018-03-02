@@ -7,20 +7,30 @@
 #import "TSAttributes.h"
 #import "TSConstants.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation TSVerifyCodeRequest
 
 - (TSRequest *)initWithVerificationCode:(NSString *)verificationCode
                               forNumber:(NSString *)phoneNumber
+                                    pin:(nullable NSString *)pin
                            signalingKey:(NSString *)signalingKey
-                                authKey:(NSString *)authKey {
+                                authKey:(NSString *)authKey
+{
     self = [super
         initWithURL:[NSURL URLWithString:[NSString
                                              stringWithFormat:@"%@/code/%@", textSecureAccountsAPI, verificationCode]]];
 
     _numberToValidate = phoneNumber;
 
-    self.parameters =
-        [TSAttributes attributesWithSignalingKey:signalingKey serverAuthToken:authKey manualMessageFetching:NO];
+    NSMutableDictionary *parameters =
+        [[TSAttributes attributesWithSignalingKey:signalingKey serverAuthToken:authKey manualMessageFetching:NO]
+            mutableCopy];
+    if (pin) {
+        OWSAssert(pin.length > 0);
+        parameters[@"pin"] = pin;
+    }
+    self.parameters = parameters;
 
     [self setHTTPMethod:@"PUT"];
 
@@ -28,3 +38,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

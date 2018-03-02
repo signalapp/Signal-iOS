@@ -42,7 +42,6 @@
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "UIFont+OWS.h"
-#import "UIViewController+OWS.h"
 #import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"
 #import <AVFoundation/AVFoundation.h>
@@ -68,6 +67,7 @@
 #import <SignalMessaging/TSUnreadIndicatorInteraction.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/UIUtil.h>
+#import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>

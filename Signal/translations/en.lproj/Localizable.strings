@@ -1,3 +1,6 @@
+/* Text field placeholder when entering a 'two-factor auth pin'. */
+"2FA_PIN_DEFAULT_TEXT" = "••••••";
+
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Not Now";
 
@@ -151,6 +154,9 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
 
+/* button text for back button */
+"BACK_BUTTON" = "Back";
+
 /* Message indicating that backup export is complete. */
 "BACKUP_EXPORT_COMPLETE_MESSAGE" = "Backup complete.";
 
@@ -273,9 +279,6 @@
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Call";
-
-/* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Please upgrade to iOS 9 or newer to see remote video.";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";
@@ -643,17 +646,14 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Squeaky Freaking Clean.";
 
-/* Text field placeholder for 'two factor auth pin' when confirming a pin. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_DEFAULT_TEXT" = "••••••";
-
 /* Indicates that user should confirm their 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirm your PIN.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Could not disable two-step verification.";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Could not disable Registration Lock.";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Could not enable two-step verification.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Could not enable Registration Lock.";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
 "ENABLE_2FA_VIEW_DISABLE_2FA" = "Disable";
@@ -667,20 +667,17 @@
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Pin does not match.";
 
-/* Text field placeholder for 'two factor auth pin' when selecting a pin. */
-"ENABLE_2FA_VIEW_SELECT_PIN_DEFAULT_TEXT" = "******";
-
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Enter a PIN which you'll be asked for when you register your phone number with Signal.  Your PIN must have at least 4 digits.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Enter a Registration Lock PIN. You will be asked to enter this PIN the next time you register this phone number with Signal.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "For added security, enable two-step verification, which will require a PIN when registering your phone number with Signal again.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "For increased security, enable a Registration Lock PIN that will be required in order to register this phone number with Signal again.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Two-step verification is enabled. You'll need to enter your PIN when registering your phone number with Signal again.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registration Lock is enabled. You'll need to enter your PIN when registering your phone number with Signal again.";
 
 /* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "Two-Step Verification";
+"ENABLE_2FA_VIEW_TITLE" = "Registration Lock";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Busy.";
@@ -1382,6 +1379,21 @@
 
 /* No comment provided by engineer. */
 "RATING_TITLE" = "Support Signal!";
+
+/* Label for 'I forgot my PIN' link in the 2FA registration view. */
+"REGISTER_2FA_FORGOT_PIN" = "I forgot my PIN.";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration of this phone number will be possible without your Registration Lock PIN after 7 days have passed since the phone number was last active on Signal.";
+
+/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
+"REGISTER_2FA_INSTRUCTIONS" = "This phone number has Registration Lock enabled. Please enter the Registration Lock PIN.\n\nYour Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+
+/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
+"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registration Failed";
+
+/* Label for 'submit' button in the 2FA registration view. */
+"REGISTER_2FA_SUBMIT_BUTTON" = "Submit";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Welcome!";

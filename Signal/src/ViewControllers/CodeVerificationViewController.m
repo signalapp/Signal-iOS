@@ -1,12 +1,13 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "CodeVerificationViewController.h"
+#import "OWS2FARegistrationViewController.h"
 #import "ProfileViewController.h"
 #import "Signal-Swift.h"
-#import "UIViewController+OWS.h"
 #import <PromiseKit/AnyPromise.h>
+#import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
@@ -65,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     [self createViews];
     
     [self initializeKeyboardHandlers];
@@ -259,28 +260,42 @@ NS_ASSUME_NONNULL_BEGIN
     [self startActivityIndicator];
     OWSProdInfo([OWSAnalyticsEvents registrationRegisteringCode]);
     __weak CodeVerificationViewController *weakSelf = self;
-    [self.accountManager registerWithVerificationCode:[self validationCodeFromTextField]]
+    [self.accountManager registerWithVerificationCode:[self validationCodeFromTextField] pin:nil]
         .then(^{
             OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
 
             DDLogInfo(@"%@ Successfully registered Signal account.", weakSelf.logTag);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf stopActivityIndicator];
-                [weakSelf vericationWasCompleted];
+                [weakSelf verificationWasCompleted];
             });
         })
-        .catch(^(NSError *_Nonnull error) {
+        .catch(^(NSError *error) {
+            DDLogError(@"%@ error: %@, %@, %zd", weakSelf.logTag, [error class], error.domain, error.code);
             OWSProdInfo([OWSAnalyticsEvents registrationRegistrationFailed]);
             DDLogError(@"%@ error verifying challenge: %@", weakSelf.logTag, error);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf stopActivityIndicator];
-                [weakSelf presentAlertWithVerificationError:error];
-                [weakSelf.challengeTextField becomeFirstResponder];
+
+                if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
+                    && error.code == OWSErrorCodeRegistrationMissing2FAPIN) {
+                    CodeVerificationViewController *strongSelf = weakSelf;
+                    if (!strongSelf) {
+                        return;
+                    }
+                    DDLogInfo(@"%@ Showing 2FA registration view.", strongSelf.logTag);
+                    OWS2FARegistrationViewController *viewController = [OWS2FARegistrationViewController new];
+                    viewController.verificationCode = strongSelf.validationCodeFromTextField;
+                    [strongSelf.navigationController pushViewController:viewController animated:YES];
+                } else {
+                    [weakSelf presentAlertWithVerificationError:error];
+                    [weakSelf.challengeTextField becomeFirstResponder];
+                }
             });
         });
 }
 
-- (void)vericationWasCompleted
+- (void)verificationWasCompleted
 {
     [ProfileViewController presentForRegistration:self.navigationController];
 }

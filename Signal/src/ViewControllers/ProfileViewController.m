@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ProfileViewController.h"
@@ -12,9 +12,9 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import "UIViewController+OWS.h"
 #import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/TSStorageManager.h>
 

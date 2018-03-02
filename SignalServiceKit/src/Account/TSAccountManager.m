@@ -309,7 +309,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     TSAccountManager *manager = [self sharedInstance];
     NSString *number          = manager.phoneNumberAwaitingVerification;
 
-    assert(number);
+    OWSAssert(number);
 
     [self registerWithPhoneNumber:number success:successBlock failure:failureBlock smsVerification:YES];
 }
@@ -319,7 +319,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     TSAccountManager *manager = [self sharedInstance];
     NSString *number          = manager.phoneNumberAwaitingVerification;
 
-    assert(number);
+    OWSAssert(number);
 
     [self registerWithPhoneNumber:number success:successBlock failure:failureBlock smsVerification:NO];
 }
@@ -340,6 +340,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 }
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode
+                          pin:(nullable NSString *)pin
                       success:(void (^)(void))successBlock
                       failure:(void (^)(NSError *error))failureBlock
 {
@@ -347,12 +348,13 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     NSString *signalingKey = [[self class] generateNewSignalingKeyToken];
     NSString *phoneNumber = self.phoneNumberAwaitingVerification;
 
-    assert(signalingKey);
-    assert(authToken);
-    assert(phoneNumber);
+    OWSAssert(signalingKey);
+    OWSAssert(authToken);
+    OWSAssert(phoneNumber);
 
     TSVerifyCodeRequest *request = [[TSVerifyCodeRequest alloc] initWithVerificationCode:verificationCode
                                                                                forNumber:phoneNumber
+                                                                                     pin:pin
                                                                             signalingKey:signalingKey
                                                                                  authKey:authToken];
 
@@ -390,6 +392,13 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
                         NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION",
                             "Alert body, during registration"));
                     failureBlock(userError);
+                    break;
+                }
+                case 423: {
+                    DDLogError(@"%@ 2FA PIN required: %ld", self.logTag, error.code);
+                    NSError *error = OWSErrorWithCodeDescription(
+                        OWSErrorCodeRegistrationMissing2FAPIN, @"Registration missing 2FA PIN.");
+                    failureBlock(error);
                     break;
                 }
                 default: {

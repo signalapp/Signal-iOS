@@ -272,8 +272,8 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
 #pragma mark methods which use AES CBC
 + (NSData *)decryptAppleMessagePayload:(NSData *)payload withSignalingKey:(NSString *)signalingKeyString {
-    assert(payload);
-    assert(signalingKeyString);
+    OWSAssert(payload);
+    OWSAssert(signalingKeyString);
 
     unsigned char version[1];
     unsigned char iv[16];

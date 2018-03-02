@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "NumberUtil.h"
@@ -83,7 +83,7 @@
 }
 
 + (NSUInteger)assertConvertIntToNSUInteger:(int)value {
-    assert(0 <= value);
+    OWSAssert(0 <= value);
     return (NSUInteger)value;
 }
 
@@ -93,7 +93,7 @@
 }
 
 + (int)assertConvertNSUIntegerToInt:(NSUInteger)value {
-    assert(value <= INT32_MAX);
+    OWSAssert(value <= INT32_MAX);
     return (int)value;
 }
 
