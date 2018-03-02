@@ -912,6 +912,13 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             return;
         }
 
+        // If we're transitioning from (no avatar -> no avatar) or from (same avatar -> same avatar),
+        // don't bother updating the avatar.
+        BOOL canSkipAvatarUpdate = ((avatarUrlPath.length == 0 && userProfile.avatarUrlPath.length == 0
+                                        && userProfile.avatarFileName.length == 0)
+            || (avatarUrlPath.length > 0 && userProfile.avatarUrlPath.length > 0 &&
+                   [avatarUrlPath isEqualToString:userProfile.avatarUrlPath] && userProfile.avatarFileName));
+
         NSString *_Nullable profileName =
             [self decryptProfileNameData:profileNameEncrypted profileKey:userProfile.profileKey];
 
@@ -938,7 +945,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                                          completion:nil];
         }
 
-        if (avatarUrlPath.length > 0) {
+        if (avatarUrlPath.length > 0 && !canSkipAvatarUpdate) {
             [self downloadAvatarForUserProfile:userProfile];
         }
     });
