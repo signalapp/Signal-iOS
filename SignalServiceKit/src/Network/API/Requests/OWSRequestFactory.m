@@ -112,6 +112,45 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
++ (TSRequest *)availablePreKeysCountRequest
+{
+    NSString *path = [NSString stringWithFormat:@"%@", textSecureKeysAPI];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
++ (TSRequest *)contactsIntersectionRequestWithHashesArray:(NSArray *)hashes
+{
+    OWSAssert(hashes.count > 0);
+
+    NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureDirectoryAPI, @"tokens"];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path]
+                              method:@"PUT"
+                          parameters:@{
+                              @"contacts" : hashes,
+                          }];
+}
+
++ (TSRequest *)currentSignedPreKeyRequest
+{
+    NSString *path = textSecureSignedKeysAPI;
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
++ (TSRequest *)profileAvatarUploadFormRequest
+{
+    NSString *path = textSecureProfileAvatarFormAPI;
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
++ (TSRequest *)recipientPrekeyRequestWithRecipient:(NSString *)recipientNumber deviceId:(NSString *)deviceId
+{
+    OWSAssert(recipientNumber.length > 0);
+    OWSAssert(deviceId.length > 0);
+
+    NSString *path = [NSString stringWithFormat:@"%@/%@/%@", textSecureKeysAPI, recipientNumber, deviceId];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

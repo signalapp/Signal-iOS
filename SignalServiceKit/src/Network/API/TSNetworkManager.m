@@ -7,7 +7,6 @@
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSSignalService.h"
 #import "TSAccountManager.h"
-#import "TSRecipientPrekeyRequest.h"
 #import "TSSubmitMessageRequest.h"
 #import "TSVerifyCodeRequest.h"
 #import <AFNetworking/AFNetworking.h>

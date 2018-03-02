@@ -1,13 +1,13 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactsUpdater.h"
 #import "Contact.h"
 #import "Cryptography.h"
 #import "OWSError.h"
+#import "OWSRequestFactory.h"
 #import "PhoneNumber.h"
-#import "TSContactsIntersectionRequest.h"
 #import "TSNetworkManager.h"
 #import "TSStorageManager.h"
 #import <YapDatabase/YapDatabase.h>
@@ -163,7 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
       }
       NSArray *hashes = [phoneNumbersByHashes allKeys];
 
-      TSRequest *request = [[TSContactsIntersectionRequest alloc] initWithHashesArray:hashes];
+      TSRequest *request = [OWSRequestFactory contactsIntersectionRequestWithHashesArray:hashes];
       [[TSNetworkManager sharedManager] makeRequest:request
           success:^(NSURLSessionDataTask *tsTask, id responseDict) {
               NSMutableDictionary *attributesForIdentifier = [NSMutableDictionary dictionary];

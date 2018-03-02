@@ -6,10 +6,6 @@
  *  TSNetworkManager imports all TSRequests to prevent massive imports
  in classes that call TSNetworkManager
  */
-#import "TSAvailablePreKeysCountRequest.h"
-#import "TSContactsIntersectionRequest.h"
-#import "TSCurrentSignedPreKeyRequest.h"
-#import "TSRecipientPrekeyRequest.h"
 #import "TSRegisterForPushRequest.h"
 #import "TSRegisterPrekeysRequest.h"
 #import "TSRequestVerificationCodeRequest.h"
@@ -41,10 +37,7 @@ typedef void (^TSNetworkManagerFailure)(NSURLSessionDataTask *task, NSError *err
 - (void)makeRequest:(TSRequest *)request
     completionQueue:(dispatch_queue_t)completionQueue
             success:(TSNetworkManagerSuccess)success
-            failure:(TSNetworkManagerFailure)failure NS_SWIFT_NAME(makeRequest(_:shouldCompleteOnMainQueue
-:success
-:failure
-:));
+            failure:(TSNetworkManagerFailure)failure NS_SWIFT_NAME(makeRequest(_:shouldCompleteOnMainQueue:success:failure:));
 
 @end
 

@@ -16,6 +16,7 @@
 #import "OWSMessageServiceParams.h"
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "OWSOutgoingSyncMessage.h"
+#import "OWSRequestFactory.h"
 #import "OWSUploadingService.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "SignalRecipient.h"
@@ -1339,7 +1340,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // are called _off_ the main thread.  Otherwise we'll deadlock if the main
         // thread is blocked on opening a transaction.
         TSRequest *request =
-            [[TSRecipientPrekeyRequest alloc] initWithRecipient:identifier deviceId:[deviceNumber stringValue]];
+            [OWSRequestFactory recipientPrekeyRequestWithRecipient:identifier deviceId:[deviceNumber stringValue]];
         [self.networkManager makeRequest:request
             completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
             success:^(NSURLSessionDataTask *task, id responseObject) {

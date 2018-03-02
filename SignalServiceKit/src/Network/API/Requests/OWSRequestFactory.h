@@ -35,6 +35,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)attachmentRequestWithAttachmentId:(UInt64)attachmentId relay:(nullable NSString *)relay;
 
++ (TSRequest *)availablePreKeysCountRequest;
+
++ (TSRequest *)contactsIntersectionRequestWithHashesArray:(NSArray *)hashes;
+
++ (TSRequest *)currentSignedPreKeyRequest;
+
++ (TSRequest *)profileAvatarUploadFormRequest;
+
++ (TSRequest *)recipientPrekeyRequestWithRecipient:(NSString *)recipientNumber deviceId:(NSString *)deviceId;
+
 @end
 
 NS_ASSUME_NONNULL_END

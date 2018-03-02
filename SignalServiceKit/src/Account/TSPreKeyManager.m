@@ -7,6 +7,7 @@
 #import "NSDate+OWS.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSIdentityManager.h"
+#import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 #import "TSRegisterSignedPrekeyRequest.h"
 #import "TSStorageHeaders.h"
@@ -236,7 +237,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     // one-time keys in this case.
     //
     // We do not need a "one-time only" mode.
-    TSAvailablePreKeysCountRequest *preKeyCountRequest = [[TSAvailablePreKeysCountRequest alloc] init];
+    TSRequest *preKeyCountRequest = [OWSRequestFactory availablePreKeysCountRequest];
     [[TSNetworkManager sharedManager] makeRequest:preKeyCountRequest
         success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
             NSString *preKeyCountKey = @"count";
@@ -295,7 +296,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
                 // If we didn't update the prekeys, our local "current signed key" state should
                 // agree with the service's "current signed key" state.  Let's verify that,
                 // since it's closely related to the issues we saw with the 2.7.0.10 release.
-                TSRequest *currentSignedPreKey = [[TSCurrentSignedPreKeyRequest alloc] init];
+                TSRequest *currentSignedPreKey = [OWSRequestFactory currentSignedPreKeyRequest];
                 [[TSNetworkManager sharedManager] makeRequest:currentSignedPreKey
                     success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
                         NSString *keyIdDictKey = @"keyId";

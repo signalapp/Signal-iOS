@@ -25,7 +25,6 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSNetworkManager.h>
-#import <SignalServiceKit/TSProfileAvatarUploadFormRequest.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
@@ -364,7 +363,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
-        TSProfileAvatarUploadFormRequest *formRequest = [TSProfileAvatarUploadFormRequest new];
+        TSRequest *formRequest = [OWSRequestFactory profileAvatarUploadFormRequest];
 
         // TODO: Since this form request causes the server to reset my avatar URL, if the update fails
         // at some point from here on out, we want the user to understand they probably no longer have
