@@ -814,6 +814,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             [self.currentAvatarDownloads addObject:userProfile.recipientId];
         }
 
+        DDLogVerbose(@"%@ downloading profile avatar: %@", self.logTag, userProfile.uniqueId);
+
         NSString *tempDirectory = NSTemporaryDirectory();
         NSString *tempFilePath = [tempDirectory stringByAppendingPathComponent:fileName];
 
