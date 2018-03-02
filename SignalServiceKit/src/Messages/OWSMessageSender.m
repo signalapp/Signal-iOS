@@ -934,9 +934,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     NSString *localNumber = [TSAccountManager localNumber];
-    if ([localNumber isEqualToString:recipient.uniqueId]) {
+    BOOL isLocalNumber = [localNumber isEqualToString:recipient.uniqueId];
+    if (isLocalNumber) {
         OWSAssert([message isKindOfClass:[OWSOutgoingSyncMessage class]]);
-        // Messages send to the "local number" should be sync messages.
+        // Messages sent to the "local number" should be sync messages.
         //
         // We can skip sending sync messages if we know that we have no linked
         // devices. However, we need to be sure to handle the case where the
@@ -956,6 +957,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         // 2. Check SignalRecipient's state.
         BOOL hasDeviceMessages = deviceMessages.count > 0;
+
+        DDLogInfo(@"%@ mayHaveLinkedDevices: %d, hasDeviceMessages: %d",
+            self.logTag,
+            mayHaveLinkedDevices,
+            hasDeviceMessages);
 
         if (!mayHaveLinkedDevices && !hasDeviceMessages) {
             DDLogInfo(@"%@ Ignoring sync message without secondary devices: %@", self.logTag, [message class]);
@@ -982,13 +988,28 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSAssert(deviceMessages.count > 0);
     }
 
+    if (deviceMessages.count == 0) {
+        DDLogWarn(@"%@ Sending a message with no device messages.", self.logTag);
+    }
+
     TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId
                                                                                messages:deviceMessages
                                                                                   relay:recipient.relay
                                                                               timeStamp:message.timestamp];
-
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
+            if (isLocalNumber && deviceMessages.count == 0) {
+                DDLogInfo(@"%@ Sent a message with no device messages; clearing 'mayHaveLinkedDevices'.", self.logTag);
+                // In order to avoid skipping necessary sync messages, the default value
+                // for mayHaveLinkedDevices is YES.  Once we've successfully sent a
+                // sync message with no device messages (e.g. the service has confirmed
+                // that we have no linked devices), we can set mayHaveLinkedDevices to NO
+                // to avoid unnecessary message sends for sync messages until we learn
+                // of a linked device (e.g. through the device linking UI or by receiving
+                // a sync message, etc.).
+                [OWSDeviceManager.sharedManager clearMayHaveLinkedDevicesIfNotSet];
+            }
+
             dispatch_async([OWSDispatch sendingQueue], ^{
                 [recipient save];
                 [self handleMessageSentLocally:message];
