@@ -303,7 +303,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
                       withKey:(NSData *)key
                        digest:(nullable NSData *)digest
                  unpaddedSize:(UInt32)unpaddedSize
-                        error:(NSError **)error;
+                        error:(NSError **)error
 {
     if (digest.length <= 0) {
         // This *could* happen with sufficiently outdated clients.

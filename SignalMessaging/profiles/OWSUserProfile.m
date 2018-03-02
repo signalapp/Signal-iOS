@@ -262,7 +262,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
                dbConnection:(YapDatabaseConnection *)dbConnection
-                 completion:(nullable OWSUserProfileCompletion)completion;
+                 completion:(nullable OWSUserProfileCompletion)completion
 {
     [self applyChanges:^(OWSUserProfile *userProfile) {
         [userProfile setProfileKey:profileKey];
@@ -279,7 +279,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 - (void)updateWithProfileKey:(OWSAES256Key *)profileKey
                 dbConnection:(YapDatabaseConnection *)dbConnection
-                  completion:(nullable OWSUserProfileCompletion)completion;
+                  completion:(nullable OWSUserProfileCompletion)completion
 {
     OWSAssert(profileKey);
 

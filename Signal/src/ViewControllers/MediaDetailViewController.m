@@ -714,7 +714,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Presentation
 
-- (void)presentFromViewController:(UIViewController *)viewController replacingView:(UIView *)view;
+- (void)presentFromViewController:(UIViewController *)viewController replacingView:(UIView *)view
 {
     self.replacingView = view;
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self];

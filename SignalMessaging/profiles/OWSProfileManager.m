@@ -710,7 +710,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     }];
 }
 
-- (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId;
+- (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         OWSAES256Key *_Nullable profileKey = [OWSAES256Key keyWithData:profileKeyData];
@@ -895,7 +895,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (void)updateProfileForRecipientId:(NSString *)recipientId
                profileNameEncrypted:(nullable NSData *)profileNameEncrypted
-                      avatarUrlPath:(nullable NSString *)avatarUrlPath;
+                      avatarUrlPath:(nullable NSString *)avatarUrlPath
 {
     OWSAssert(recipientId.length > 0);
 

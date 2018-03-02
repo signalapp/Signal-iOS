@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSLinkedDeviceReadReceipt.h"
@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSLinkedDeviceReadReceipt
 
-- (instancetype)initWithSenderId:(NSString *)senderId timestamp:(uint64_t)timestamp;
+- (instancetype)initWithSenderId:(NSString *)senderId timestamp:(uint64_t)timestamp
 {
     OWSAssert(senderId.length > 0 && timestamp > 0);
 

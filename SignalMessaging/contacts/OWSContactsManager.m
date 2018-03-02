@@ -223,7 +223,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     });
 }
 
-- (void)buildSignalAccountsAndClearStaleCache:(BOOL)shouldClearStaleCache;
+- (void)buildSignalAccountsAndClearStaleCache:(BOOL)shouldClearStaleCache
 {
     dispatch_async(self.serialQueue, ^{
         NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];

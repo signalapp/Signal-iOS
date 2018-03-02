@@ -147,7 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
     [UIApplication.sharedApplication endBackgroundTask:backgroundTaskIdentifier];
 }
 
-- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects;
+- (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects
 {
     if (UIApplication.sharedApplication.isIdleTimerDisabled != shouldBeBlocking) {
         if (shouldBeBlocking) {

@@ -256,7 +256,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (nullable DataSource *)dataSourceWithURL:(NSURL *)fileUrl;
++ (nullable DataSource *)dataSourceWithURL:(NSURL *)fileUrl
 {
     OWSAssert(fileUrl);
 
@@ -268,7 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
     return instance;
 }
 
-+ (nullable DataSource *)dataSourceWithFilePath:(NSString *)filePath;
++ (nullable DataSource *)dataSourceWithFilePath:(NSString *)filePath
 {
     OWSAssert(filePath);
 

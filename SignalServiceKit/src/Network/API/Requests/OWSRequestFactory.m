@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSRequestFactory
 
-+ (TSRequest *)enable2FARequestWithPin:(NSString *)pin;
++ (TSRequest *)enable2FARequestWithPin:(NSString *)pin
 {
     OWSAssert(pin.length > 0);
 
@@ -212,8 +212,8 @@ NS_ASSUME_NONNULL_BEGIN
                                            relay:(nullable NSString *)relay
                                        timeStamp:(uint64_t)timeStamp
 {
+    // NOTE: messages may be empty; See comments in OWSDeviceManager.
     OWSAssert(recipientId.length > 0);
-    OWSAssert(messages.count > 0);
     OWSAssert(timeStamp > 0);
 
     NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientId];
