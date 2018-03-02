@@ -3,13 +3,14 @@
 //
 
 #import "OWSRequestFactory.h"
+#import "NSData+Base64.h"
+#import "OWS2FAManager.h"
 #import "OWSDevice.h"
 #import "TSAttributes.h"
 #import "TSConstants.h"
 #import "TSRequest.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/SignedPreKeyRecord.h>
-#import <SignalServiceKit/NSData+Base64.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -171,10 +172,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSRequest *)updateAttributesRequestWithManualMessageFetching:(BOOL)enableManualMessageFetching
 {
     NSString *path = [textSecureAccountsAPI stringByAppendingString:textSecureAttributesAPI];
+    NSString *_Nullable pin = [OWS2FAManager.sharedManager pinCode];
     return [TSRequest
         requestWithUrl:[NSURL URLWithString:path]
                 method:@"PUT"
-            parameters:[TSAttributes attributesFromStorageWithManualMessageFetching:enableManualMessageFetching]];
+            parameters:[TSAttributes attributesFromStorageWithManualMessageFetching:enableManualMessageFetching
+                                                                                pin:pin]];
 }
 
 + (TSRequest *)unregisterAccountRequest

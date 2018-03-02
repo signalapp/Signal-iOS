@@ -14,7 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const NSNotificationName_2FAStateDidChange = @"NSNotificationName_2FAStateDidChange";
 
 NSString *const kOWS2FAManager_Collection = @"kOWS2FAManager_Collection";
-NSString *const kOWS2FAManager_IsEnabledKey = @"kOWS2FAManager_IsEnabledKey";
 NSString *const kOWS2FAManager_LastSuccessfulReminderDateKey = @"kOWS2FAManager_LastSuccessfulReminderDateKey";
 NSString *const kOWS2FAManager_PinCode = @"kOWS2FAManager_PinCode";
 NSString *const kOWS2FAManager_RepetitionInterval = @"kOWS2FAManager_RepetitionInterval";
@@ -71,25 +70,19 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     return self;
 }
 
+- (nullable NSString *)pinCode
+{
+    return [self.dbConnection objectForKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
+}
+
 - (BOOL)is2FAEnabled
 {
-    return [self.dbConnection hasObjectForKey:kOWS2FAManager_PINKey inCollection:kOWS2FAManager_Collection];
+    return self.pinCode != nil;
 }
 
 - (void)set2FANotEnabled
 {
-    [self.dbConnection removeObjectForKey:kOWS2FAManager_PINKey inCollection:kOWS2FAManager_Collection];
-
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
-                                                             object:nil
-                                                           userInfo:nil];
-}
-
-- (void)set2FAEnabledWithPin:(NSString *)pin
-{
-    OWSAssert(pin.length > 0);
-
-    [self.dbConnection setObject:pin forKey:kOWS2FAManager_PINKey inCollection:kOWS2FAManager_Collection];
+    [self.dbConnection removeObjectForKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
 
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
                                                              object:nil
@@ -98,8 +91,13 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 
 - (void)mark2FAAsEnabledWithPin:(NSString *)pin
 {
-    [self setIs2FAEnabled:YES];
-    [self storePinCode:pin];
+    OWSAssert(pin.length > 0);
+
+    [self.dbConnection setObject:pin forKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
+
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
+                                                             object:nil
+                                                           userInfo:nil];
 }
 
 - (void)requestEnable2FAWithPin:(NSString *)pin
@@ -154,16 +152,6 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 
 
 #pragma mark - Reminders
-
-- (void)storePinCode:(nullable NSString *)pinCode
-{
-    [self.dbConnection setObject:pinCode forKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
-}
-
-- (nullable NSString *)pinCode
-{
-    return [self.dbConnection objectForKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
-}
 
 - (nullable NSDate *)lastSuccessfulReminderDate
 {
