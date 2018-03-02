@@ -5,6 +5,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSDevice;
+@class PreKeyRecord;
+@class SignedPreKeyRecord;
 @class TSRequest;
 
 typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVoice = 1, TSVerificationTransportSMS };
@@ -55,6 +57,18 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)requestVerificationCodeRequestWithPhoneNumber:(NSString *)phoneNumber
                                                    transport:(TSVerificationTransport)transport;
+
++ (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
+                                        messages:(NSArray *)messages
+                                           relay:(nullable NSString *)relay
+                                       timeStamp:(uint64_t)timeStamp;
+
++ (TSRequest *)registerSignedPrekeyRequestWithSignedPreKeyRecord:(SignedPreKeyRecord *)signedPreKey;
+
++ (TSRequest *)registerPrekeysRequestWithPrekeyArray:(NSArray *)prekeys
+                                         identityKey:(NSData *)identityKeyPublic
+                                        signedPreKey:(SignedPreKeyRecord *)signedPreKey
+                                    preKeyLastResort:(PreKeyRecord *)preKeyLastResort;
 
 @end
 

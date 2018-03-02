@@ -8,13 +8,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSVerifyCodeRequest : TSRequest
 
+@property (nonatomic, readonly) NSString *numberToValidate;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 - (TSRequest *)initWithVerificationCode:(NSString *)verificationCode
                               forNumber:(NSString *)phoneNumber
                                     pin:(nullable NSString *)pin
                            signalingKey:(NSString *)signalingKey
                                 authKey:(NSString *)authKey;
-
-@property (nonatomic, readonly) NSString *numberToValidate;
 
 @end
 

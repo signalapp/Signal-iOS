@@ -2,13 +2,6 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-/**
- *  TSNetworkManager imports all TSRequests to prevent massive imports
- in classes that call TSNetworkManager
- */
-#import "TSRegisterPrekeysRequest.h"
-#import "TSSubmitMessageRequest.h"
-#import "TSVerifyCodeRequest.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,6 +12,8 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error);
 
 typedef void (^TSNetworkManagerSuccess)(NSURLSessionDataTask *task, id responseObject);
 typedef void (^TSNetworkManagerFailure)(NSURLSessionDataTask *task, NSError *error);
+
+@class TSRequest;
 
 @interface TSNetworkManager : NSObject
 

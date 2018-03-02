@@ -7,6 +7,8 @@
 #import "TSAttributes.h"
 #import "TSConstants.h"
 #import "TSRequest.h"
+#import <AxolotlKit/NSData+keyVersionByte.h>
+#import <AxolotlKit/SignedPreKeyRecord.h>
 #import <SignalServiceKit/NSData+Base64.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -203,6 +205,80 @@ NS_ASSUME_NONNULL_BEGIN
         case TSVerificationTransportVoice:
             return @"voice";
     }
+}
+
++ (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
+                                        messages:(NSArray *)messages
+                                           relay:(nullable NSString *)relay
+                                       timeStamp:(uint64_t)timeStamp
+{
+    OWSAssert(recipientId.length > 0);
+    OWSAssert(messages.count > 0);
+    OWSAssert(timeStamp > 0);
+
+    NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientId];
+    NSMutableDictionary *parameters = [@{
+        @"messages" : messages,
+        @"timestamp" : @(timeStamp),
+    } mutableCopy];
+
+    if (relay) {
+        parameters[@"relay"] = relay;
+    }
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
+}
+
++ (TSRequest *)registerSignedPrekeyRequestWithSignedPreKeyRecord:(SignedPreKeyRecord *)signedPreKey
+{
+    OWSAssert(signedPreKey);
+
+    NSString *path = textSecureSignedKeysAPI;
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path]
+                              method:@"PUT"
+                          parameters:[self dictionaryFromSignedPreKey:signedPreKey]];
+}
+
++ (TSRequest *)registerPrekeysRequestWithPrekeyArray:(NSArray *)prekeys
+                                         identityKey:(NSData *)identityKeyPublic
+                                        signedPreKey:(SignedPreKeyRecord *)signedPreKey
+                                    preKeyLastResort:(PreKeyRecord *)preKeyLastResort
+{
+    OWSAssert(prekeys.count > 0);
+    OWSAssert(identityKeyPublic.length > 0);
+    OWSAssert(signedPreKey);
+    OWSAssert(preKeyLastResort);
+
+    NSString *path = textSecureKeysAPI;
+    NSString *publicIdentityKey = [[identityKeyPublic prependKeyType] base64EncodedStringWithOptions:0];
+    NSMutableArray *serializedPrekeyList = [NSMutableArray array];
+    for (PreKeyRecord *preKey in prekeys) {
+        [serializedPrekeyList addObject:[self dictionaryFromPreKey:preKey]];
+    }
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path]
+                              method:@"PUT"
+                          parameters:@{
+                              @"preKeys" : serializedPrekeyList,
+                              @"lastResortKey" : [self dictionaryFromPreKey:preKeyLastResort],
+                              @"signedPreKey" : [self dictionaryFromSignedPreKey:signedPreKey],
+                              @"identityKey" : publicIdentityKey
+                          }];
+}
+
++ (NSDictionary *)dictionaryFromPreKey:(PreKeyRecord *)preKey
+{
+    return @{
+        @"keyId" : @(preKey.Id),
+        @"publicKey" : [[preKey.keyPair.publicKey prependKeyType] base64EncodedStringWithOptions:0],
+    };
+}
+
++ (NSDictionary *)dictionaryFromSignedPreKey:(SignedPreKeyRecord *)preKey
+{
+    return @{
+        @"keyId" : @(preKey.Id),
+        @"publicKey" : [[preKey.keyPair.publicKey prependKeyType] base64EncodedStringWithOptions:0],
+        @"signature" : [preKey.signature base64EncodedStringWithOptions:0]
+    };
 }
 
 @end

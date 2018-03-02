@@ -9,7 +9,6 @@
 #import "OWSIdentityManager.h"
 #import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
-#import "TSRegisterSignedPrekeyRequest.h"
 #import "TSStorageHeaders.h"
 #import "TSStorageManager+SignedPreKeyStore.h"
 
@@ -161,14 +160,13 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
             // service to prevent race conditions and other edge cases.
             [storageManager storePreKeyRecords:preKeys];
 
-            request = [[TSRegisterPrekeysRequest alloc]
-                initWithPrekeyArray:preKeys
-                        identityKey:identityKeyPair.publicKey
-                 signedPreKeyRecord:signedPreKey
-                   preKeyLastResort:lastResortPreKey];
+            request = [OWSRequestFactory registerPrekeysRequestWithPrekeyArray:preKeys
+                                                                   identityKey:identityKeyPair.publicKey
+                                                                  signedPreKey:signedPreKey
+                                                              preKeyLastResort:lastResortPreKey];
         } else {
             description = @"just signed prekey";
-            request = [[TSRegisterSignedPrekeyRequest alloc] initWithSignedPreKeyRecord:signedPreKey];
+            request = [OWSRequestFactory registerSignedPrekeyRequestWithSignedPreKeyRecord:signedPreKey];
         }
 
         [[TSNetworkManager sharedManager] makeRequest:request

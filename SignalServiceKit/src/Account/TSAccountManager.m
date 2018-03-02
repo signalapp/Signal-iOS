@@ -14,6 +14,7 @@
 #import "TSNetworkManager.h"
 #import "TSPreKeyManager.h"
 #import "TSStorageManager+SessionStore.h"
+#import "TSVerifyCodeRequest.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <YapDatabase/YapDatabase.h>
 

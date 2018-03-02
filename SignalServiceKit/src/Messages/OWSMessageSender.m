@@ -998,10 +998,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         DDLogWarn(@"%@ Sending a message with no device messages.", self.logTag);
     }
 
-    TSSubmitMessageRequest *request = [[TSSubmitMessageRequest alloc] initWithRecipient:recipient.uniqueId
-                                                                               messages:deviceMessages
-                                                                                  relay:recipient.relay
-                                                                              timeStamp:message.timestamp];
+    TSRequest *request = [OWSRequestFactory submitMessageRequestWithRecipient:recipient.uniqueId
+                                                                     messages:deviceMessages
+                                                                        relay:recipient.relay
+                                                                    timeStamp:message.timestamp];
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             if (isLocalNumber && deviceMessages.count == 0) {
