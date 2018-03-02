@@ -74,13 +74,25 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSNumber *nsValue in allSounds) {
         OWSSound sound = (OWSSound)nsValue.intValue;
         OWSTableItem *item;
+
+        NSString *soundLabelText = ^{
+            NSString *baseName = [OWSSounds displayNameForSound:sound];
+            if (sound == OWSSound_Note) {
+                NSString *noteStringFormat = NSLocalizedString(@"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT",
+                    @"Format string for the default 'Note' sound. Embeds the system {{sound name}}.");
+                return [NSString stringWithFormat:noteStringFormat, baseName];
+            } else {
+                return [OWSSounds displayNameForSound:sound];
+            }
+        }();
+
         if (sound == self.currentSound) {
-            item = [OWSTableItem checkmarkItemWithText:[OWSSounds displayNameForSound:sound]
+            item = [OWSTableItem checkmarkItemWithText:soundLabelText
                                            actionBlock:^{
                                                [weakSelf soundWasSelected:sound];
                                            }];
         } else {
-            item = [OWSTableItem actionItemWithText:[OWSSounds displayNameForSound:sound]
+            item = [OWSTableItem actionItemWithText:soundLabelText
                                         actionBlock:^{
                                             [weakSelf soundWasSelected:sound];
                                         }];

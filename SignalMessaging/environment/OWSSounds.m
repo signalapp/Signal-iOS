@@ -62,8 +62,9 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 + (NSArray<NSNumber *> *)allNotificationSounds
 {
     return @[
-        // None should be first.
+        // None and Note (default) should be first.
         @(OWSSound_None),
+        @(OWSSound_Note),
 
         @(OWSSound_Aurora),
         @(OWSSound_Bamboo),
@@ -74,7 +75,6 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         @(OWSSound_Hello),
         @(OWSSound_Input),
         @(OWSSound_Keys),
-        @(OWSSound_Note),
         @(OWSSound_Popcorn),
         @(OWSSound_Pulse),
         @(OWSSound_Synth),
@@ -89,7 +89,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
             OWSFail(@"%@ invalid argument.", self.logTag);
             return @"";
 
-            // Notification Sounds
+        // Notification Sounds
         case OWSSound_Aurora:
             return @"Aurora";
         case OWSSound_Bamboo:
@@ -117,11 +117,9 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         case OWSSound_ClassicNotification:
             return @"Classic";
 
-            // Ringtone Sounds
+        // Call Audio
         case OWSSound_Opening:
             return @"Opening";
-
-            // Calls
         case OWSSound_CallConnecting:
             return @"Call Connecting";
         case OWSSound_CallOutboundRinging:
@@ -131,7 +129,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         case OWSSound_CallFailure:
             return @"Call Failure";
 
-            // Other
+        // Other
         case OWSSound_None:
             return NSLocalizedString(@"SOUNDS_NONE",
                 @"Label for the 'no sound' option that allows users to disable sounds for notifications, "
@@ -286,6 +284,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 {
     OWSAssert(transaction);
 
+    DDLogInfo(@"%@ Setting global notification sound to: %s", sound);
     [transaction setObject:@(sound)
                     forKey:kOWSSoundsStorageGlobalNotificationKey
               inCollection:kOWSSoundsStorageNotificationCollection];
