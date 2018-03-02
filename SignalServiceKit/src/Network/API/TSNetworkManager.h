@@ -6,12 +6,8 @@
  *  TSNetworkManager imports all TSRequests to prevent massive imports
  in classes that call TSNetworkManager
  */
-#import "TSRegisterForPushRequest.h"
 #import "TSRegisterPrekeysRequest.h"
-#import "TSRequestVerificationCodeRequest.h"
 #import "TSSubmitMessageRequest.h"
-#import "TSUnregisterAccountRequest.h"
-#import "TSUpdateAttributesRequest.h"
 #import "TSVerifyCodeRequest.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
 

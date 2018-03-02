@@ -10,6 +10,7 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
+#import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <YapDatabase/YapDatabase.h>
@@ -137,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         __block BOOL success;
 
-        TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithManualMessageFetching:NO];
+        TSRequest *request = [OWSRequestFactory updateAttributesRequestWithManualMessageFetching:NO];
         [[TSNetworkManager sharedManager] makeRequest:request
             success:^(NSURLSessionDataTask *task, id responseObject) {
                 success = YES;

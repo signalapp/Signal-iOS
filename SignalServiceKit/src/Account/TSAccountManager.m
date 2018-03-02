@@ -9,10 +9,10 @@
 #import "NSNotificationCenter+OWS.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSError.h"
+#import "OWSRequestFactory.h"
 #import "SecurityUtils.h"
 #import "TSNetworkManager.h"
 #import "TSPreKeyManager.h"
-#import "TSSocketManager.h"
 #import "TSStorageManager+SessionStore.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <YapDatabase/YapDatabase.h>
@@ -244,9 +244,8 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
                                           failure:(void (^)(NSError *))failureHandler
                                  remainingRetries:(int)remainingRetries
 {
-    TSRegisterForPushRequest *request =
-        [[TSRegisterForPushRequest alloc] initWithPushIdentifier:pushToken voipIdentifier:voipToken];
-
+    TSRequest *request =
+        [OWSRequestFactory registerForPushRequestWithPushIdentifier:pushToken voipIdentifier:voipToken];
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             successHandler();
@@ -284,10 +283,11 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     TSAccountManager *manager = [self sharedInstance];
     manager.phoneNumberAwaitingVerification = phoneNumber;
 
-    [[TSNetworkManager sharedManager]
-        makeRequest:[[TSRequestVerificationCodeRequest alloc]
-                        initWithPhoneNumber:phoneNumber
-                                  transport:isSMS ? TSVerificationTransportSMS : TSVerificationTransportVoice]
+    TSRequest *request =
+        [OWSRequestFactory requestVerificationCodeRequestWithPhoneNumber:phoneNumber
+                                                               transport:(isSMS ? TSVerificationTransportSMS
+                                                                                : TSVerificationTransportVoice)];
+    [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             DDLogInfo(@"%@ Successfully requested verification code request for number: %@ method:%@",
                 self.logTag,
@@ -327,7 +327,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 - (void)registerForManualMessageFetchingWithSuccess:(void (^)(void))successBlock
                                             failure:(void (^)(NSError *error))failureBlock
 {
-    TSUpdateAttributesRequest *request = [[TSUpdateAttributesRequest alloc] initWithManualMessageFetching:YES];
+    TSRequest *request = [OWSRequestFactory updateAttributesRequestWithManualMessageFetching:YES];
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *_Nonnull task, id _Nonnull responseObject) {
             DDLogInfo(@"%@ updated server with account attributes to enableManualFetching", self.logTag);
@@ -464,7 +464,8 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 
 + (void)unregisterTextSecureWithSuccess:(void (^)(void))success failure:(void (^)(NSError *error))failureBlock
 {
-    [[TSNetworkManager sharedManager] makeRequest:[[TSUnregisterAccountRequest alloc] init]
+    TSRequest *request = [OWSRequestFactory unregisterAccountRequest];
+    [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             DDLogInfo(@"%@ Successfully unregistered", self.logTag);
             success();

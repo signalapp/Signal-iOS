@@ -4,6 +4,7 @@
 
 #import "OWSRequestFactory.h"
 #import "OWSDevice.h"
+#import "TSAttributes.h"
 #import "TSConstants.h"
 #import "TSRequest.h"
 #import <SignalServiceKit/NSData+Base64.h>
@@ -149,6 +150,59 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *path = [NSString stringWithFormat:@"%@/%@/%@", textSecureKeysAPI, recipientNumber, deviceId];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
++ (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier voipIdentifier:(NSString *)voipId
+{
+    OWSAssert(identifier.length > 0);
+    OWSAssert(voipId.length > 0);
+
+    NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureAccountsAPI, @"apn"];
+    OWSAssert(voipId);
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path]
+                              method:@"PUT"
+                          parameters:@{
+                              @"apnRegistrationId" : identifier,
+                              @"voipRegistrationId" : voipId ?: @"",
+                          }];
+}
+
++ (TSRequest *)updateAttributesRequestWithManualMessageFetching:(BOOL)enableManualMessageFetching
+{
+    NSString *path = [textSecureAccountsAPI stringByAppendingString:textSecureAttributesAPI];
+    return [TSRequest
+        requestWithUrl:[NSURL URLWithString:path]
+                method:@"PUT"
+            parameters:[TSAttributes attributesFromStorageWithManualMessageFetching:enableManualMessageFetching]];
+}
+
++ (TSRequest *)unregisterAccountRequest
+{
+    NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureAccountsAPI, @"apn"];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
+}
+
++ (TSRequest *)requestVerificationCodeRequestWithPhoneNumber:(NSString *)phoneNumber
+                                                   transport:(TSVerificationTransport)transport
+{
+    OWSAssert(phoneNumber.length > 0);
+    NSString *path = [NSString stringWithFormat:@"%@/%@/code/%@?client=ios",
+                               textSecureAccountsAPI,
+                               [self stringForTransport:transport],
+                               phoneNumber];
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
++ (NSString *)stringForTransport:(TSVerificationTransport)transport
+{
+    switch (transport) {
+        case TSVerificationTransportSMS:
+            return @"sms";
+        case TSVerificationTransportVoice:
+            return @"voice";
+    }
 }
 
 @end

@@ -18,6 +18,7 @@
     }
 
     self.parameters = @{};
+    self.shouldHaveAuthorizationHeaders = YES;
 
     return self;
 }

@@ -7,6 +7,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSDevice;
 @class TSRequest;
 
+typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVoice = 1, TSVerificationTransportSMS };
+
 @interface OWSRequestFactory : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -44,6 +46,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSRequest *)profileAvatarUploadFormRequest;
 
 + (TSRequest *)recipientPrekeyRequestWithRecipient:(NSString *)recipientNumber deviceId:(NSString *)deviceId;
+
++ (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier voipIdentifier:(NSString *)voipId;
+
++ (TSRequest *)updateAttributesRequestWithManualMessageFetching:(BOOL)enableManualMessageFetching;
+
++ (TSRequest *)unregisterAccountRequest;
+
++ (TSRequest *)requestVerificationCodeRequestWithPhoneNumber:(NSString *)phoneNumber
+                                                   transport:(TSVerificationTransport)transport;
 
 @end
 

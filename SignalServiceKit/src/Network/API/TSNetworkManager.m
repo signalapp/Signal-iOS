@@ -92,7 +92,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         [parameters removeObjectForKey:@"AuthKey"];
         [sessionManager PUT:request.URL.absoluteString parameters:parameters success:success failure:failure];
     } else {
-        if (![request isKindOfClass:[TSRequestVerificationCodeRequest class]]) {
+        if (request.shouldHaveAuthorizationHeaders) {
             [sessionManager.requestSerializer
                 setAuthorizationHeaderFieldWithUsername:[TSAccountManager localNumber]
                                                password:[TSAccountManager serverAuthToken]];
