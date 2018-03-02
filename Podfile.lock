@@ -211,7 +211,7 @@ SPEC CHECKSUMS:
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SignalServiceKit: c639443811f2670986006f5b661cb1a862de66ab
+  SignalServiceKit: 5cc6e8e249f381c5eaee8693c0dff20fc1a3eee0
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
   SSZipArchive: 14401ade5f8e82aba1ff03e9f88e9de60937ae60
@@ -222,4 +222,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 66db99df53e7593362ebb004bea5d2215ca00e8e
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.4.0
