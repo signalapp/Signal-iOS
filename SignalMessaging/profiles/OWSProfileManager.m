@@ -914,13 +914,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             return;
         }
 
-        // If we're transitioning from (no avatar -> no avatar) or from (same avatar -> same avatar),
-        // don't bother updating the avatar.
-        BOOL canSkipAvatarUpdate = ((avatarUrlPath.length == 0 && userProfile.avatarUrlPath.length == 0
-                                        && userProfile.avatarFileName.length == 0)
-            || (avatarUrlPath.length > 0 && userProfile.avatarUrlPath.length > 0 &&
-                   [avatarUrlPath isEqualToString:userProfile.avatarUrlPath] && userProfile.avatarFileName));
-
         NSString *_Nullable profileName =
             [self decryptProfileNameData:profileNameEncrypted profileKey:userProfile.profileKey];
 
@@ -936,18 +929,17 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             OWSUserProfile *localUserProfile = self.localUserProfile;
             OWSAssert(localUserProfile);
 
-            // Don't clear avatarFileName optimistically.
-            // * The profile avatar probably isn't out of sync.
-            // * If the profile avatar is out of sync, it can be synced on next app launch.
-            // * We don't want to touch local avatar state until we've
-            //   downloaded the latest avatar by downloadAvatarForUserProfile.
             [localUserProfile updateWithProfileName:profileName
                                       avatarUrlPath:avatarUrlPath
                                        dbConnection:self.dbConnection
                                          completion:nil];
         }
 
-        if (avatarUrlPath.length > 0 && !canSkipAvatarUpdate) {
+        // Whenever we change avatarUrlPath, OWSUserProfile clears avatarFileName.
+        // So if avatarUrlPath is set and avatarFileName is not set, we should to
+        // download this avatar. downloadAvatarForUserProfile will de-bounce
+        // downloads.
+        if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length < 1) {
             [self downloadAvatarForUserProfile:userProfile];
         }
     });
