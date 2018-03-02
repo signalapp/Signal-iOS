@@ -244,6 +244,27 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 + (void)setGlobalNotificationSound:(OWSSound)sound
 {
+    [self.sharedManager setGlobalNotificationSound:sound];
+}
+
+- (void)setGlobalNotificationSound:(OWSSound)sound
+{
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self setGlobalNotificationSound:sound transaction:transaction];
+    }];
+}
+
++ (void)setGlobalNotificationSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self.sharedManager setGlobalNotificationSound:sound transaction:transaction];
+}
+
+- (void)setGlobalNotificationSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+
+    DDLogInfo(@"%@ Setting global notification sound to: %@", self.logTag, [[self class] displayNameForSound:sound]);
+
     // Fallback push notifications play a sound specified by the server, but we don't want to store this configuration
     // on the server. Instead, we create a file with the same name as the default to be played when receiving
     // a fallback notification.
@@ -274,17 +295,6 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         return;
     }
 
-    OWSSounds *instance = OWSSounds.sharedManager;
-    [instance.dbConnection setObject:@(sound)
-                              forKey:kOWSSoundsStorageGlobalNotificationKey
-                        inCollection:kOWSSoundsStorageNotificationCollection];
-}
-
-+ (void)setGlobalNotificationSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssert(transaction);
-
-    DDLogInfo(@"%@ Setting global notification sound to: %s", sound);
     [transaction setObject:@(sound)
                     forKey:kOWSSoundsStorageGlobalNotificationKey
               inCollection:kOWSSoundsStorageNotificationCollection];
