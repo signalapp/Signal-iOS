@@ -1112,9 +1112,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [OWSPreferences setIsReadyForAppExtensions];
 
     [self ensureRootViewController];
-
-    // TODO: Remove
-    [Pastelog submitLogs];
 }
 
 - (void)registrationStateDidChange

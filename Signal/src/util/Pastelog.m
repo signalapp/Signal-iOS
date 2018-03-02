@@ -5,6 +5,7 @@
 #import "Pastelog.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
+#import "zlib.h"
 #import <AFNetworking/AFNetworking.h>
 #import <SSZipArchive/SSZipArchive.h>
 #import <SignalMessaging/DebugLogger.h>
@@ -14,9 +15,6 @@
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/Threading.h>
-
-// TODO: Remove
-#import "NSData+hexString.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -63,24 +61,12 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     self.success = success;
     self.failure = failure;
 
-    // TODO: Remove
-    NSData *data = [NSData dataWithContentsOfURL:fileUrl];
-    DDLogInfo(@"%@ data: %zd", self.logTag, data.length);
-    NSData *header = [data subdataWithRange:NSMakeRange(0, MIN((NSUInteger)256, data.length))];
-    NSString *hexString = [header hexadecimalString];
-    DDLogInfo(@"%@ hexString: %@", self.logTag, hexString);
-
     [self getUploadParameters];
 }
 
 - (void)getUploadParameters
 {
     __weak DebugLogUploader *weakSelf = self;
-
-    // TODO: Remove
-    // The JSON object it returns has two elements, URL, and "fields". Just POST to "ur" with a multipart/form-data body
-    // that has each KV pair in "fields" encoded as a form element. Add your file, called "file", and what you post will
-    // be at debuglogs.org/fields['key']
 
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
@@ -129,6 +115,8 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                     failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
                 return;
             }
+            NSString *fileExtension = weakSelf.fileUrl.lastPathComponent.pathExtension;
+            uploadKey = [uploadKey stringByAppendingPathExtension:fileExtension];
             [weakSelf uploadFileWithUploadUrl:uploadUrl fields:fields uploadKey:uploadKey];
         }
         failure:^(NSURLSessionDataTask *_Nullable task, NSError *error) {
@@ -148,7 +136,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     AFHTTPSessionManager *sessionManager =
         [[AFHTTPSessionManager alloc] initWithBaseURL:nil sessionConfiguration:sessionConf];
     sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
-    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
     [sessionManager POST:uploadUrl
         parameters:@{}
         constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
@@ -297,7 +285,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                              actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EMAIL",
                                                  @"Label for the 'email debug log' option of the the debug log alert.")
                                        style:UIAlertActionStyleDefault
-                                     handler:^(UIAlertAction *_Nonnull action) {
+                                     handler:^(UIAlertAction *action) {
                                          [Pastelog.sharedManager submitEmail:url];
 
                                          completion();
@@ -306,7 +294,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                              actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_COPY_LINK",
                                                  @"Label for the 'copy link' option of the the debug log alert.")
                                        style:UIAlertActionStyleDefault
-                                     handler:^(UIAlertAction *_Nonnull action) {
+                                     handler:^(UIAlertAction *action) {
                                          UIPasteboard *pb = [UIPasteboard generalPasteboard];
                                          [pb setString:url.absoluteString];
 
@@ -317,7 +305,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                              actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF",
                                                  @"Label for the 'send to self' option of the the debug log alert.")
                                        style:UIAlertActionStyleDefault
-                                     handler:^(UIAlertAction *_Nonnull action) {
+                                     handler:^(UIAlertAction *action) {
                                          [Pastelog.sharedManager sendToSelf:url];
                                      }]];
         [alert
@@ -325,7 +313,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                           actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD",
                                               @"Label for the 'send to last thread' option of the the debug log alert.")
                                     style:UIAlertActionStyleDefault
-                                  handler:^(UIAlertAction *_Nonnull action) {
+                                  handler:^(UIAlertAction *action) {
                                       [Pastelog.sharedManager sendToMostRecentThread:url];
                                   }]];
 #endif
@@ -334,7 +322,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                           actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_BUG_REPORT",
                                               @"Label for the 'Open a Bug Report' option of the the debug log alert.")
                                     style:UIAlertActionStyleCancel
-                                  handler:^(UIAlertAction *_Nonnull action) {
+                                  handler:^(UIAlertAction *action) {
                                       [Pastelog.sharedManager prepareRedirection:url completion:completion];
                                   }]];
         UIViewController *presentingViewController
@@ -404,8 +392,13 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     }
 
     // Phase 2. Zip up the log files.
-    BOOL zipSuccess =
-        [SSZipArchive createZipFileAtPath:zipFilePath withContentsOfDirectory:zipDirPath withPassword:nil];
+    BOOL zipSuccess = [SSZipArchive createZipFileAtPath:zipFilePath
+                                withContentsOfDirectory:zipDirPath
+                                    keepParentDirectory:YES
+                                       compressionLevel:Z_DEFAULT_COMPRESSION
+                                               password:nil
+                                                    AES:NO
+                                        progressHandler:nil];
     if (!zipSuccess) {
         failure(NSLocalizedString(
             @"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS", @"Error indicating that the debug logs could not be packaged."));
@@ -460,7 +453,11 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 {
     NSString *emailAddress = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"LOGS_EMAIL"];
 
-    NSString *urlString = [NSString stringWithString: [[NSString stringWithFormat:@"mailto:%@?subject=iOS%%20Debug%%20Log&body=", emailAddress] stringByAppendingString:[[NSString stringWithFormat:@"Log URL: %@ \n Tell us about the issue: ", url]stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
+    NSString *body = [NSString stringWithFormat:@"Log URL: %@ \n Tell us about the issue: ", url];
+    NSString *escapedBody =
+        [body stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
+    NSString *urlString =
+        [NSString stringWithFormat:@"mailto:%@?subject=iOS%%20Debug%%20Log&body=%@", emailAddress, escapedBody];
 
     [UIApplication.sharedApplication openURL:[NSURL URLWithString:urlString]];
 }
@@ -481,7 +478,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     [alert addAction:[UIAlertAction
                          actionWithTitle:NSLocalizedString(@"OK", @"")
                                    style:UIAlertActionStyleDefault
-                                 handler:^(UIAlertAction *_Nonnull action) {
+                                 handler:^(UIAlertAction *action) {
                                      [UIApplication.sharedApplication
                                          openURL:[NSURL URLWithString:[[NSBundle mainBundle]
                                                                           objectForInfoDictionaryKey:@"LOGS_URL"]]];
@@ -502,10 +499,9 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
-        [TSStorageManager.dbReadWriteConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
-            }];
+        [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+        }];
         [ThreadUtil sendMessageWithText:url.absoluteString inThread:thread messageSender:messageSender];
     });
 
@@ -518,15 +514,18 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     if (![TSAccountManager isRegistered]) {
         return;
     }
-    OWSMessageSender *messageSender = Environment.current.messageSender;
 
+    __block TSThread *thread = nil;
+    [TSStorageManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        thread = [[transaction ext:TSThreadDatabaseViewExtensionName] firstObjectInGroup:TSInboxGroup];
+    }];
     DispatchMainThreadSafe(^{
-        __block TSThread *thread = nil;
-        [TSStorageManager.dbReadWriteConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                thread = [[transaction ext:TSThreadDatabaseViewExtensionName] firstObjectInGroup:[TSThread collection]];
-            }];
-        [ThreadUtil sendMessageWithText:url.absoluteString inThread:thread messageSender:messageSender];
+        if (thread) {
+            OWSMessageSender *messageSender = Environment.current.messageSender;
+            [ThreadUtil sendMessageWithText:url.absoluteString inThread:thread messageSender:messageSender];
+        } else {
+            [Pastelog showFailureAlertWithMessage:@"Could not find last thread."];
+        }
     });
 
     // Also copy to pasteboard.
