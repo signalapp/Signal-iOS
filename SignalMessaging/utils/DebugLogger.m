@@ -70,7 +70,7 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
     // 24 hour rolling.
     self.fileLogger.rollingFrequency = kDayInterval;
     // Keep last 3 days of logs - or last 3 logs (if logs rollover due to max file size).
-    self.fileLogger.logFileManager.maximumNumberOfLogFiles = 24;
+    self.fileLogger.logFileManager.maximumNumberOfLogFiles = 3;
     self.fileLogger.maximumFileSize = kMaxDebugLogFileSize;
     self.fileLogger.logFormatter = [OWSScrubbingLogFormatter new];
 
