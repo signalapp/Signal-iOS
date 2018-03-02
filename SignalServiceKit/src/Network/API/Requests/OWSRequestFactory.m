@@ -103,7 +103,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSRequest *)attachmentRequestWithAttachmentId:(UInt64)attachmentId relay:(nullable NSString *)relay
 {
     OWSAssert(attachmentId > 0);
-    OWSAssert(relay.length > 0);
 
     NSString *path = [NSString stringWithFormat:@"%@/%llu", textSecureAttachmentsAPI, attachmentId];
 
