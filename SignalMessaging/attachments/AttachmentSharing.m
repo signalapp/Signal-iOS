@@ -8,6 +8,8 @@
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/Threading.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation AttachmentSharing
 
 + (void)showShareUIForAttachment:(TSAttachmentStream *)stream
@@ -19,20 +21,32 @@
 
 + (void)showShareUIForURL:(NSURL *)url
 {
+    [self showShareUIForURL:url completion:nil];
+}
+
++ (void)showShareUIForURL:(NSURL *)url completion:(nullable AttachmentSharingCompletion)completion
+{
     OWSAssert(url);
 
     [AttachmentSharing showShareUIForActivityItems:@[
         url,
-    ]];
+    ]
+                                        completion:completion];
 }
 
 + (void)showShareUIForText:(NSString *)text
+{
+    [self showShareUIForText:text completion:nil];
+}
+
++ (void)showShareUIForText:(NSString *)text completion:(nullable AttachmentSharingCompletion)completion
 {
     OWSAssert(text);
 
     [AttachmentSharing showShareUIForActivityItems:@[
         text,
-    ]];
+    ]
+                                        completion:completion];
 }
 
 #ifdef DEBUG
@@ -42,11 +56,12 @@
 
     [AttachmentSharing showShareUIForActivityItems:@[
         image,
-    ]];
+    ]
+                                        completion:nil];
 }
 #endif
 
-+ (void)showShareUIForActivityItems:(NSArray *)activityItems
++ (void)showShareUIForActivityItems:(NSArray *)activityItems completion:(nullable AttachmentSharingCompletion)completion
 {
     OWSAssert(activityItems);
 
@@ -67,6 +82,10 @@
             } else if (completed) {
                 DDLogInfo(@"%@ Did share with activityType: %@", self.logTag, activityType);
             }
+
+            if (completion) {
+                DispatchMainThreadSafe(completion);
+            }
         }];
 
         UIViewController *fromViewController = CurrentAppContext().frontmostViewController;
@@ -84,3 +103,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

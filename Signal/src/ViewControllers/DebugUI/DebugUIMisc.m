@@ -10,7 +10,6 @@
 #import "RegistrationViewController.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
-#import <AFNetworking/AFNetworking.h>
 #import <AxolotlKit/PreKeyBundle.h>
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/Environment.h>
