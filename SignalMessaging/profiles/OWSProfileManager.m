@@ -785,12 +785,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return nil;
 }
 
-- (void)downloadAvatarForUserProfile:(OWSUserProfile *)userProfileParameter
+- (void)downloadAvatarForUserProfile:(OWSUserProfile *)userProfile
 {
-    OWSAssert(userProfileParameter);
-
-    // Make a local copy.
-    OWSUserProfile *userProfile = [userProfileParameter copy];
+    OWSAssert(userProfile);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (userProfile.avatarUrlPath.length < 1) {
@@ -915,14 +912,25 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             return;
         }
 
+        // If we're transitioning from (no avatar -> no avatar) or from (same avatar -> same avatar),
+        // don't bother updating the avatar.
+        BOOL canSkipAvatarUpdate = ((avatarUrlPath.length == 0 && userProfile.avatarUrlPath.length == 0
+                                        && userProfile.avatarFileName.length == 0)
+            || (avatarUrlPath.length > 0 && userProfile.avatarUrlPath.length > 0 &&
+                   [avatarUrlPath isEqualToString:userProfile.avatarUrlPath] && userProfile.avatarFileName));
+
         NSString *_Nullable profileName =
             [self decryptProfileNameData:profileNameEncrypted profileKey:userProfile.profileKey];
 
-        [userProfile updateWithProfileName:profileName
-                             avatarUrlPath:avatarUrlPath
-                            avatarFileName:userProfile.avatarFileName // use existing file name if already downloaded
-                              dbConnection:self.dbConnection
-                                completion:nil];
+        if (canSkipAvatarUpdate) {
+            [userProfile updateWithProfileName:profileName dbConnection:self.dbConnection completion:nil];
+        } else {
+            [userProfile updateWithProfileName:profileName
+                                 avatarUrlPath:avatarUrlPath
+                                avatarFileName:nil
+                                  dbConnection:self.dbConnection
+                                    completion:nil];
+        }
 
         // If we're updating the profile that corresponds to our local number,
         // update the local profile as well.
@@ -942,7 +950,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                                          completion:nil];
         }
 
-        if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length == 0) {
+        if (avatarUrlPath.length > 0) {
             [self downloadAvatarForUserProfile:userProfile];
         }
     });

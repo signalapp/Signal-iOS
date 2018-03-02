@@ -115,6 +115,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             didChange = [_avatarUrlPath isEqualToString:avatarUrlPath];
         }
 
+        _avatarUrlPath = avatarUrlPath;
+
         if (didChange) {
             // If the avatarURL changed, the avatarFileName can't be valid.
             // Clear it.
@@ -137,8 +139,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         dbConnection:(YapDatabaseConnection *)dbConnection
           completion:(nullable OWSUserProfileCompletion)completion
 {
-    NSDictionary *beforeSnapshot = self.dictionaryValue;
-
     changeBlock(self);
 
     __block BOOL didChange = YES;
@@ -146,12 +146,16 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         NSString *collection = [[self class] collection];
         OWSUserProfile *_Nullable latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
         if (latestInstance) {
+            NSDictionary *beforeSnapshot = latestInstance.dictionaryValue;
+
             changeBlock(latestInstance);
 
             NSDictionary *afterSnapshot = latestInstance.dictionaryValue;
             if ([beforeSnapshot isEqual:afterSnapshot]) {
-                DDLogVerbose(
-                    @"%@ Ignoring redundant update in %s: %@", self.logTag, functionName, self.debugDescription);
+                DDLogVerbose(@"%@ Ignoring redundant update in %s: %@",
+                    self.logTag,
+                    functionName,
+                    self.debugDescription);
                 didChange = NO;
             } else {
                 [latestInstance saveWithTransaction:transaction];
@@ -198,6 +202,18 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                  }];
         }
     });
+}
+
+- (void)updateWithProfileName:(nullable NSString *)profileName
+                 dbConnection:(YapDatabaseConnection *)dbConnection
+                   completion:(nullable OWSUserProfileCompletion)completion
+{
+    [self applyChanges:^(OWSUserProfile *userProfile) {
+        [userProfile setProfileName:[profileName ows_stripped]];
+    }
+          functionName:__PRETTY_FUNCTION__
+          dbConnection:dbConnection
+            completion:completion];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName

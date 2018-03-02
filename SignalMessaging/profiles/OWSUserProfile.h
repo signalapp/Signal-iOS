@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/TSYapDatabaseObject.h>
@@ -40,6 +40,10 @@ extern NSString *const kLocalProfileUniqueId;
 + (BOOL)localUserProfileExists:(YapDatabaseConnection *)dbConnection;
 
 #pragma mark - Update With... Methods
+
+- (void)updateWithProfileName:(nullable NSString *)profileName
+                 dbConnection:(YapDatabaseConnection *)dbConnection
+                   completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
