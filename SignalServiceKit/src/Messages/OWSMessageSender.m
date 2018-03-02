@@ -958,11 +958,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // 2. Check SignalRecipient's state.
         BOOL hasDeviceMessages = deviceMessages.count > 0;
 
-        DDLogInfo(@"%@ mayHaveLinkedDevices: %d, hasDeviceMessages: %d",
-            self.logTag,
-            mayHaveLinkedDevices,
-            hasDeviceMessages);
-
         if (!mayHaveLinkedDevices && !hasDeviceMessages) {
             DDLogInfo(@"%@ Ignoring sync message without secondary devices: %@", self.logTag, [message class]);
             OWSAssert([message isKindOfClass:[OWSOutgoingSyncMessage class]]);
