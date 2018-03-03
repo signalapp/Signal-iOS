@@ -88,13 +88,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Methods
 
+- (void)playWithCurrentAudioCategory
+{
+    OWSAssertIsOnMainThread();
+    [OWSAudioSession.shared startAudioActivity:self.audioActivity];
+
+    [self play];
+}
+
+- (void)playWithPlaybackAudioCategory
+{
+    OWSAssertIsOnMainThread();
+    [OWSAudioSession.shared setPlaybackCategoryWithAudioActivity:self.audioActivity];
+
+    [self play];
+}
+
 - (void)play
 {
     OWSAssertIsOnMainThread();
     OWSAssert(self.mediaUrl);
     OWSAssert([self.delegate audioPlaybackState] != AudioPlaybackState_Playing);
-
-    [OWSAudioSession.shared setPlaybackCategoryWithAudioActivity:self.audioActivity];
 
     [self.audioPlayerPoller invalidate];
 
