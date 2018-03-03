@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.audioPlayer = [OWSSounds audioPlayerForSound:sound];
     // Suppress looping in this view.
     self.audioPlayer.isLooping = NO;
-    [self.audioPlayer play];
+    [self.audioPlayer playWithPlaybackAudioCategory];
 
     if (self.currentSound == sound) {
         return;

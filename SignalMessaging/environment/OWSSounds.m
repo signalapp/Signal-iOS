@@ -209,21 +209,25 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     return url;
 }
 
-+ (void)playSound:(OWSSound)sound
++ (void)playSound:(OWSSound)sound shouldRespectSilentSwitch:(BOOL)shouldRespectSilentSwitch
 {
-    [self.sharedManager playSound:sound quiet:NO];
+    [self.sharedManager playSound:sound quiet:NO shouldRespectSilentSwitch:shouldRespectSilentSwitch];
 }
 
-+ (void)playSound:(OWSSound)sound quiet:(BOOL)quiet
++ (void)playSound:(OWSSound)sound quiet:(BOOL)quiet shouldRespectSilentSwitch:(BOOL)shouldRespectSilentSwitch
 {
-    [self.sharedManager playSound:sound quiet:quiet];
+    [self.sharedManager playSound:sound quiet:quiet shouldRespectSilentSwitch:shouldRespectSilentSwitch];
 }
 
-- (void)playSound:(OWSSound)sound quiet:(BOOL)quiet
+- (void)playSound:(OWSSound)sound quiet:(BOOL)quiet shouldRespectSilentSwitch:(BOOL)shouldRespectSilentSwitch
 {
     [self.audioPlayer stop];
     self.audioPlayer = [OWSSounds audioPlayerForSound:sound quiet:quiet];
-    [self.audioPlayer play];
+    if (shouldRespectSilentSwitch) {
+        [self.audioPlayer playWithCurrentAudioCategory];
+    } else {
+        [self.audioPlayer playWithPlaybackAudioCategory];
+    }
 }
 
 #pragma mark - Notifications
