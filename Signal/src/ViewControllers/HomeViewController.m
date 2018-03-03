@@ -516,7 +516,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     // we were launched from a voip notification.
     if (!self.hasShownAnyUnseenUpgradeExperiences) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateForeground) {
+            if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
                 return;
             }
             [self displayAnyUnseenUpgradeExperience];
