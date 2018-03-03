@@ -47,7 +47,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 @property (nonatomic) UISegmentedControl *segmentedControl;
 @property (nonatomic) id previewingContext;
 @property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
-@property (nonatomic) BOOL viewHasEverAppeared;
+@property (nonatomic) BOOL hasShownAnyUnseenUpgradeExperiences;
 
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL isAppInBackground;
@@ -510,15 +510,18 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
             });
         }];
     }
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-
-    if (!self.viewHasEverAppeared) {
-        self.viewHasEverAppeared = YES;
-        [self displayAnyUnseenUpgradeExperience];
+    
+    // We want to show the user the upgrade experience as soon as the app is visible to them.
+    // It cannot go in viewDidAppear, which is called while the app is in the background if
+    // we were launched from a voip notification.
+    if (!self.hasShownAnyUnseenUpgradeExperiences) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
+                return;
+            }
+            [self displayAnyUnseenUpgradeExperience];
+            self.hasShownAnyUnseenUpgradeExperiences = YES;
+        });
     }
 }
 
