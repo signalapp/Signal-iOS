@@ -259,11 +259,18 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     DDLogDebug(@"%@ writing new default sound to %@", self.logTag, defaultSoundPath);
 
     NSURL *_Nullable soundURL = [OWSSounds soundURLForSound:sound quiet:NO];
-    OWSAssert(soundURL);
+
+    NSData *soundData = ^{
+        if (soundURL) {
+            return [NSData dataWithContentsOfURL:soundURL];
+        } else {
+            OWSAssert(sound == OWSSound_None);
+            return [NSData new];
+        }
+    }();
 
     // Quick way to achieve an atomic "copy" operation that allows overwriting if the user has previously specified
     // a default notification sound.
-    NSData *soundData = [NSData dataWithContentsOfURL:soundURL];
     BOOL success = [soundData writeToFile:defaultSoundPath atomically:YES];
 
     // The globally configured sound the user has configured is unprotected, so that we can still play the sound if the
