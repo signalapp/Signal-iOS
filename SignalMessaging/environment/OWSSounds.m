@@ -17,8 +17,6 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
-@property (nonatomic, nullable) OWSAudioPlayer *audioPlayer;
-
 @end
 
 #pragma mark -
@@ -207,27 +205,6 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
                                                    withExtension:filename.pathExtension];
     OWSAssert(url);
     return url;
-}
-
-+ (void)playSound:(OWSSound)sound shouldRespectSilentSwitch:(BOOL)shouldRespectSilentSwitch
-{
-    [self.sharedManager playSound:sound quiet:NO shouldRespectSilentSwitch:shouldRespectSilentSwitch];
-}
-
-+ (void)playSound:(OWSSound)sound quiet:(BOOL)quiet shouldRespectSilentSwitch:(BOOL)shouldRespectSilentSwitch
-{
-    [self.sharedManager playSound:sound quiet:quiet shouldRespectSilentSwitch:shouldRespectSilentSwitch];
-}
-
-- (void)playSound:(OWSSound)sound quiet:(BOOL)quiet shouldRespectSilentSwitch:(BOOL)shouldRespectSilentSwitch
-{
-    [self.audioPlayer stop];
-    self.audioPlayer = [OWSSounds audioPlayerForSound:sound quiet:quiet];
-    if (shouldRespectSilentSwitch) {
-        [self.audioPlayer playWithAmbientAudioCategory];
-    } else {
-        [self.audioPlayer playWithPlaybackAudioCategory];
-    }
 }
 
 #pragma mark - Notifications

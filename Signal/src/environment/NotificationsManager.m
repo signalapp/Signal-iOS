@@ -25,6 +25,7 @@
 @property (nonatomic, readonly) NotificationType notificationPreviewType;
 
 @property (nonatomic, readonly) NSMutableArray<NSDate *> *notificationHistory;
+@property (nonatomic, nullable) OWSAudioPlayer *audioPlayer;
 
 @end
 
@@ -238,7 +239,8 @@
         } else {
             if (shouldPlaySound && [Environment.preferences soundInForeground]) {
                 OWSSound sound = [OWSSounds notificationSoundForThread:thread];
-                [OWSSounds playSound:sound quiet:YES shouldRespectSilentSwitch:YES];
+                self.audioPlayer = [OWSSounds audioPlayerForSound:sound];
+                [self.audioPlayer playAsForegroundAlert];
             }
         }
     });
@@ -343,8 +345,8 @@
         } else {
             if (shouldPlaySound && [Environment.preferences soundInForeground]) {
                 OWSSound sound = [OWSSounds notificationSoundForThread:thread];
-                // We play the "quiet" variation of sounds if possible for notifications in the foreground.
-                [OWSSounds playSound:sound quiet:YES shouldRespectSilentSwitch:YES];
+                self.audioPlayer = [OWSSounds audioPlayerForSound:sound];
+                [self.audioPlayer playAsForegroundAlert];
             }
         }
     });
