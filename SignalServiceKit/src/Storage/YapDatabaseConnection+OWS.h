@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)hasObjectForKey:(NSString *)key inCollection:(NSString *)collection;
 - (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection;
 - (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection defaultValue:(BOOL)defaultValue;
+- (double)doubleForKey:(NSString *)key inCollection:(NSString *)collection defaultValue:(double)defaultValue;
 - (int)intForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable id)objectForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable NSDate *)dateForKey:(NSString *)key inCollection:(NSString *)collection;
@@ -31,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)setBool:(BOOL)value forKey:(NSString *)key inCollection:(NSString *)collection;
+- (void)setDouble:(double)value forKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)removeObjectForKey:(NSString *)string inCollection:(NSString *)collection;
 - (void)setInt:(int)integer forKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)setDate:(NSDate *)value forKey:(NSString *)key inCollection:(NSString *)collection;

@@ -103,7 +103,7 @@ class DebugUIFileBrowser: OWSTableViewController {
                 return attributes.map { (fileAttribute: FileAttributeKey, value: Any) in
                     let title = fileAttribute.rawValue.replacingOccurrences(of: "NSFile", with: "")
                     return OWSTableItem(title: "\(title): \(value)") {
-                        OWSAlerts.showAlert(withTitle: title, message: "\(value)")
+                        OWSAlerts.showAlert(title: title, message: "\(value)")
                     }
                 }
             } catch {
@@ -132,7 +132,7 @@ class DebugUIFileBrowser: OWSTableViewController {
                     }
 
                     guard let inputString = textField.text, inputString.count >= 4 else {
-                        OWSAlerts.showAlert(withTitle: "new file name missing or less than 4 chars")
+                        OWSAlerts.showAlert(title: "new file name missing or less than 4 chars")
                         return
                     }
 
@@ -177,7 +177,7 @@ class DebugUIFileBrowser: OWSTableViewController {
                     }
 
                     guard let inputString = textField.text, inputString.count >= 4 else {
-                        OWSAlerts.showAlert(withTitle: "new file dir missing or less than 4 chars")
+                        OWSAlerts.showAlert(title: "new file dir missing or less than 4 chars")
                         return
                     }
 
@@ -206,7 +206,7 @@ class DebugUIFileBrowser: OWSTableViewController {
                     return
                 }
 
-                OWSAlerts.showConfirmationAlert(withTitle: "Delete \(strongSelf.fileURL.path)?") { _ in
+                OWSAlerts.showConfirmationAlert(title: "Delete \(strongSelf.fileURL.path)?") { _ in
                     Logger.debug("\(strongSelf.logTag) deleting file at \(strongSelf.fileURL.path)")
                     do {
                         try strongSelf.fileManager.removeItem(atPath: strongSelf.fileURL.path)
@@ -295,7 +295,7 @@ class DebugUIFileBrowser: OWSTableViewController {
                     }
 
                     guard let inputString = textField.text, inputString.count >= 4 else {
-                        OWSAlerts.showAlert(withTitle: "file name missing or less than 4 chars")
+                        OWSAlerts.showAlert(title: "file name missing or less than 4 chars")
                         return
                     }
 
@@ -333,7 +333,7 @@ class DebugUIFileBrowser: OWSTableViewController {
                     }
 
                     guard let inputString = textField.text, inputString.count >= 4 else {
-                        OWSAlerts.showAlert(withTitle: "dir name missing or less than 4 chars")
+                        OWSAlerts.showAlert(title: "dir name missing or less than 4 chars")
                         return
                     }
 

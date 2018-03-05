@@ -392,7 +392,7 @@ NS_ASSUME_NONNULL_BEGIN
         presentFromViewController:self
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [OWS2FAManager.sharedManager enable2FAWithPin:self.candidatePin
+                      [OWS2FAManager.sharedManager requestEnable2FAWithPin:self.candidatePin
                           success:^{
                               [modalActivityIndicator dismissWithCompletion:^{
                                   [weakSelf showCompleteUI];
@@ -408,10 +408,10 @@ NS_ASSUME_NONNULL_BEGIN
                                   [weakSelf updateTableContents];
 
                                   [OWSAlerts
-                                      showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")
-                                                 message:NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA",
+                                      showAlertWithTitle:NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA",
                                                              @"Error indicating that attempt to enable 'two-factor "
-                                                             @"auth' failed.")];
+                                                             @"auth' failed.")
+                                                 message:error.localizedDescription];
                               }];
                           }];
                   }];
