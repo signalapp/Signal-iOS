@@ -1444,10 +1444,10 @@
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verification Failed";
 
-/* Error message indicating that regitration failed due to a missing or incorrect verification code. */
+/* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "The numbers you submitted don't match what we sent. Want to double check?";
 
-/* Error message indicating that regitration failed due to a missing or incorrect 2FA PIN. */
+/* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Incorrect Registration Lock PIN.";
 
 /* No comment provided by engineer. */

@@ -394,7 +394,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
                 case 403: {
                     NSError *userError = OWSErrorWithCodeDescription(OWSErrorCodeUserError,
                         NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION",
-                            "Error message indicating that regitration failed due to a missing or incorrect "
+                            "Error message indicating that registration failed due to a missing or incorrect "
                             "verification code."));
                     failureBlock(userError);
                     break;
@@ -411,7 +411,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
                     DDLogError(@"%@ 2FA PIN required: %ld", self.logTag, error.code);
                     NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeRegistrationMissing2FAPIN,
                         NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN",
-                            "Error message indicating that regitration failed due to a missing or incorrect 2FA PIN."));
+                            "Error message indicating that registration failed due to a missing or incorrect 2FA PIN."));
                     failureBlock(error);
                     break;
                 }
