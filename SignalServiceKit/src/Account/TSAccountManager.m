@@ -386,24 +386,37 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
             if (!IsNSErrorNetworkFailure(error)) {
                 OWSProdError([OWSAnalyticsEvents accountsErrorVerifyAccountRequestFailed]);
             }
+            OWSAssert([error.domain isEqualToString:TSNetworkManagerDomain]);
+
             DDLogWarn(@"%@ Error verifying code: %@", self.logTag, error.debugDescription);
+
             switch (error.code) {
                 case 403: {
                     NSError *userError = OWSErrorWithCodeDescription(OWSErrorCodeUserError,
                         NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION",
-                            "Alert body, during registration"));
+                            "Error message indicating that registration failed due to a missing or incorrect "
+                            "verification code."));
+                    failureBlock(userError);
+                    break;
+                }
+                case 413: {
+                    // In the case of the "rate limiting" error, we want to show the
+                    // "recovery suggestion", not the error's "description."
+                    NSError *userError
+                        = OWSErrorWithCodeDescription(OWSErrorCodeUserError, error.localizedRecoverySuggestion);
                     failureBlock(userError);
                     break;
                 }
                 case 423: {
                     DDLogError(@"%@ 2FA PIN required: %ld", self.logTag, error.code);
-                    NSError *error = OWSErrorWithCodeDescription(
-                        OWSErrorCodeRegistrationMissing2FAPIN, @"Registration missing 2FA PIN.");
+                    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeRegistrationMissing2FAPIN,
+                        NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN",
+                            "Error message indicating that registration failed due to a missing or incorrect 2FA PIN."));
                     failureBlock(error);
                     break;
                 }
                 default: {
-                    DDLogError(@"%@ verifying code failed with unhandled error: %@", self.logTag, error);
+                    DDLogError(@"%@ verifying code failed with unknown error: %@", self.logTag, error);
                     failureBlock(error);
                     break;
                 }
