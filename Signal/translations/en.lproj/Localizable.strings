@@ -1420,6 +1420,9 @@
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Country Code";
 
+/* Navigation title shown when user is re-registering after having enabled registration lock */
+"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Registration Lock";
+
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Enter Number";
 

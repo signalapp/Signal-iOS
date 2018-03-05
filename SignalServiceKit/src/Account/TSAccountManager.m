@@ -408,10 +408,11 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
                     break;
                 }
                 case 423: {
+                    NSString *localizedMessage = NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN",
+                        "Error message indicating that registration failed due to a missing or incorrect 2FA PIN.");
                     DDLogError(@"%@ 2FA PIN required: %ld", self.logTag, error.code);
-                    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeRegistrationMissing2FAPIN,
-                        NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN",
-                            "Error message indicating that registration failed due to a missing or incorrect 2FA PIN."));
+                    NSError *error
+                        = OWSErrorWithCodeDescription(OWSErrorCodeRegistrationMissing2FAPIN, localizedMessage);
                     failureBlock(error);
                     break;
                 }
