@@ -400,7 +400,7 @@ protocol CallAudioServiceDelegate: class {
         // we're playing the same sound, since the player is memoized on the sound instance, we'd otherwise 
         // stop the sound we just started.
         self.currentPlayer?.stop()
-        newPlayer.play()
+        newPlayer.playWithCurrentAudioCategory()
         self.currentPlayer = newPlayer
     }
 

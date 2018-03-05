@@ -35,7 +35,12 @@ typedef NS_ENUM(NSInteger, AudioPlaybackState) {
 
 - (instancetype)initWithMediaUrl:(NSURL *)mediaUrl delegate:(id<OWSAudioPlayerDelegate>)delegate;
 
-- (void)play;
+// respects silent switch
+- (void)playWithCurrentAudioCategory;
+
+// will ensure sound is audible, even if silent switch is enabled
+- (void)playWithPlaybackAudioCategory;
+
 - (void)pause;
 - (void)stop;
 - (void)togglePlayState;

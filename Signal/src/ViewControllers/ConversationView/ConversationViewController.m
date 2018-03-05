@@ -2080,7 +2080,7 @@ typedef enum : NSUInteger {
     self.audioAttachmentPlayer = [[OWSAudioPlayer alloc] initWithMediaUrl:attachmentStream.mediaURL delegate:viewItem];
     // Associate the player with this media adapter.
     self.audioAttachmentPlayer.owner = viewItem;
-    [self.audioAttachmentPlayer play];
+    [self.audioAttachmentPlayer playWithPlaybackAudioCategory];
 }
 
 - (void)didTapTruncatedTextMessage:(ConversationViewItem *)conversationItem
