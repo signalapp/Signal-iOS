@@ -54,6 +54,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLoad];
 
+    // The navigation bar is hidden in the registration workflow.
+    if (self.navigationController.navigationBarHidden) {
+        [self.navigationController setNavigationBarHidden:NO animated:YES];
+    }
+    self.navigationItem.hidesBackButton = YES;
+
+    self.title = NSLocalizedString(@"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE",
+        @"Navigation title shown when user is re-registering after having enabled registration lock");
+
     self.view.backgroundColor = UIColor.whiteColor;
 
     PinEntryView *entryView = [PinEntryView new];
@@ -65,7 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
         @"REGISTER_2FA_INSTRUCTIONS", @"Instructions to enter the 'two-factor auth pin' in the 2FA registration view.");
 
     // Layout
-
     [entryView autoPinEdgesToSuperviewMargins];
 }
 
