@@ -10,27 +10,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// void runSyncRegistrationsForStorage(OWSStorage *storage);
-// void runAsyncRegistrationsForStorage(OWSStorage *storage);
-
 @interface OWSBackupStorage : OWSStorage
 
 - (instancetype)init NS_UNAVAILABLE;
 
-//+ (instancetype)sharedManager NS_SWIFT_NAME(shared());
-//
+- (instancetype)initStorage NS_UNAVAILABLE;
+
+- (instancetype)initBackupStorageWithdatabaseDirPath:(NSString *)databaseDirPath
+                                     databaseKeySpec:(NSData *)databaseKeySpec NS_DESIGNATED_INITIALIZER;
+
 - (YapDatabaseConnection *)dbConnection;
-//
-//+ (nullable NSError *)migrateToSharedData;
-//
-//+ (NSString *)databaseFilePath;
-//
-//+ (NSString *)legacyDatabaseFilePath;
-//+ (NSString *)legacyDatabaseFilePath_SHM;
-//+ (NSString *)legacyDatabaseFilePath_WAL;
-//+ (NSString *)sharedDataDatabaseFilePath;
-//+ (NSString *)sharedDataDatabaseFilePath_SHM;
-//+ (NSString *)sharedDataDatabaseFilePath_WAL;
 
 @end
 
