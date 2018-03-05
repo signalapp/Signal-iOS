@@ -3,27 +3,10 @@
 //
 
 #import "OWSBackupStorage.h"
-
-//#import "AppContext.h"
-//#import "OWSAnalytics.h"
-//#import "OWSBatchMessageProcessor.h"
-//#import "OWSDisappearingMessagesFinder.h"
-//#import "OWSFailedAttachmentDownloadsJob.h"
-//#import "OWSFailedMessagesJob.h"
-//#import "OWSFileSystem.h"
-//#import "OWSIncomingMessageFinder.h"
-//#import "OWSMessageReceiver.h"
+#import "OWSFileSystem.h"
 #import "OWSStorage+Subclass.h"
 
-//#import "TSDatabaseSecondaryIndexes.h"
-//#import "TSDatabaseView.h"
-
 NS_ASSUME_NONNULL_BEGIN
-
-NSString *const OWSBackupStorageExceptionName_CouldNotCreateDatabaseDirectory
-    = @"OWSBackupStorageExceptionName_CouldNotCreateDatabaseDirectory";
-
-#pragma mark -
 
 @interface OWSBackupStorage ()
 
@@ -32,34 +15,32 @@ NSString *const OWSBackupStorageExceptionName_CouldNotCreateDatabaseDirectory
 @property (atomic) BOOL areAsyncRegistrationsComplete;
 @property (atomic) BOOL areSyncRegistrationsComplete;
 
+@property (nonatomic, readonly) NSString *databaseDirPath;
+@property (nonatomic, readonly) NSData *databaseKeySpec;
+
 @end
 
 #pragma mark -
 
 @implementation OWSBackupStorage
 
-//+ (instancetype)sharedManager
-//{
-//    static OWSBackupStorage *sharedManager = nil;
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        sharedManager = [[self alloc] initStorage];
-//
-//#if TARGET_OS_IPHONE
-//        [OWSBackupStorage protectFiles];
-//#endif
-//    });
-//    return sharedManager;
-//}
+@synthesize databaseKeySpec = _databaseKeySpec;
 
-- (instancetype)initStorage
+- (instancetype)initBackupStorageWithdatabaseDirPath:(NSString *)databaseDirPath
+                                     databaseKeySpec:(NSData *)databaseKeySpec
 {
+    OWSAssert(databaseDirPath.length > 0);
+    OWSAssert(databaseKeySpec.length > 0);
+    OWSAssert([OWSFileSystem ensureDirectoryExists:databaseDirPath]);
+
     self = [super initStorage];
 
     if (self) {
-        _dbConnection = self.newDatabaseConnection;
+        [self protectFiles];
 
-        OWSSingletonAssert();
+        _dbConnection = self.newDatabaseConnection;
+        _databaseDirPath = databaseDirPath;
+        _databaseKeySpec = databaseKeySpec;
     }
 
     return self;
@@ -68,7 +49,6 @@ NSString *const OWSBackupStorageExceptionName_CouldNotCreateDatabaseDirectory
 - (void)resetStorage
 {
     _dbConnection = nil;
-    //    _dbReadWriteConnection = nil;
 
     [super resetStorage];
 }
@@ -113,108 +93,60 @@ NSString *const OWSBackupStorageExceptionName_CouldNotCreateDatabaseDirectory
                                        }];
 }
 
-+ (void)protectFiles
+- (void)protectFiles
 {
-    // TODO:
+    DDLogInfo(@"%@ Database file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath]);
+    DDLogInfo(@"%@ \t SHM file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath_SHM]);
+    DDLogInfo(@"%@ \t WAL file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath_WAL]);
 
-    //    DDLogInfo(
-    //        @"%@ Database file size: %@", self.logTag, [OWSFileSystem
-    //        fileSizeOfPath:self.sharedDataDatabaseFilePath]);
-    //    DDLogInfo(
-    //        @"%@ \t SHM file size: %@", self.logTag, [OWSFileSystem
-    //        fileSizeOfPath:self.sharedDataDatabaseFilePath_SHM]);
-    //    DDLogInfo(
-    //        @"%@ \t WAL file size: %@", self.logTag, [OWSFileSystem
-    //        fileSizeOfPath:self.sharedDataDatabaseFilePath_WAL]);
-    //
-    //    // Protect the entire new database directory.
-    //    [OWSFileSystem protectFileOrFolderAtPath:self.sharedDataDatabaseDirPath];
+    // Protect the entire new database directory.
+    [OWSFileSystem protectFileOrFolderAtPath:self.databaseDirPath];
 }
-
-//+ (NSString *)legacyDatabaseDirPath
-//{
-//    return [OWSFileSystem appDocumentDirectoryPath];
-//}
-//
-//+ (NSString *)sharedDataDatabaseDirPath
-//{
-//    NSString *databaseDirPath = [[OWSFileSystem appSharedDataDirectoryPath]
-//    stringByAppendingPathComponent:@"database"];
-//
-//    if (![OWSFileSystem ensureDirectoryExists:databaseDirPath]) {
-//        OWSRaiseException(
-//            OWSBackupStorageExceptionName_CouldNotCreateDatabaseDirectory, @"Could not create new database
-//            directory");
-//    }
-//    return databaseDirPath;
-//}
 
 + (NSString *)databaseFilename
 {
     return @"SignalBackup.sqlite";
 }
 
-//+ (NSString *)databaseFilename_SHM
-//{
-//    return [self.databaseFilename stringByAppendingString:@"-shm"];
-//}
-//
-//+ (NSString *)databaseFilename_WAL
-//{
-//    return [self.databaseFilename stringByAppendingString:@"-wal"];
-//}
-//
-//+ (NSString *)legacyDatabaseFilePath
-//{
-//    return [self.legacyDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
-//}
-//
-//+ (NSString *)legacyDatabaseFilePath_SHM
-//{
-//    return [self.legacyDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
-//}
-//
-//+ (NSString *)legacyDatabaseFilePath_WAL
-//{
-//    return [self.legacyDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
-//}
-//
-//+ (NSString *)sharedDataDatabaseFilePath
-//{
-//    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename];
-//}
-//
-//+ (NSString *)sharedDataDatabaseFilePath_SHM
-//{
-//    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
-//}
-//
-//+ (NSString *)sharedDataDatabaseFilePath_WAL
-//{
-//    return [self.sharedDataDatabaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
-//}
+- (NSString *)databaseFilename
+{
+    return OWSBackupStorage.databaseFilename;
+}
 
-//+ (NSString *)databaseFilePath
-//{
-//    DDLogVerbose(@"%@ databasePath: %@", self.logTag, OWSBackupStorage.sharedDataDatabaseFilePath);
-//
-//    return self.sharedDataDatabaseFilePath;
-//}
-//
-//- (NSString *)databaseFilePath
-//{
-//    return OWSBackupStorage.databaseFilePath;
-//}
+- (NSString *)databaseFilename_SHM
+{
+    return [self.databaseFilename stringByAppendingString:@"-shm"];
+}
 
-//+ (YapDatabaseConnection *)dbReadConnection
-//{
-//    return OWSBackupStorage.sharedManager.dbReadConnection;
-//}
-//
-//+ (YapDatabaseConnection *)dbReadWriteConnection
-//{
-//    return OWSBackupStorage.sharedManager.dbReadWriteConnection;
-//}
+- (NSString *)databaseFilename_WAL
+{
+    return [self.databaseFilename stringByAppendingString:@"-wal"];
+}
+
+- (NSString *)databaseFilePath
+{
+    return [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename];
+}
+
+- (NSString *)databaseFilePath_SHM
+{
+    return [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename_SHM];
+}
+
+- (NSString *)databaseFilePath_WAL
+{
+    return [self.databaseDirPath stringByAppendingPathComponent:self.databaseFilename_WAL];
+}
+
+- (NSData *)databaseKeySpec
+{
+    return self.databaseKeySpec;
+}
+
+- (void)ensureDatabaseKeySpecExists
+{
+    // Do nothing.
+}
 
 @end
 
