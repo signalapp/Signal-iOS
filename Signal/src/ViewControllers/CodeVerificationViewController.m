@@ -302,29 +302,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)presentAlertWithVerificationError:(NSError *)error
 {
-    UIAlertController *alertController;
-    // In the case of the "rate limiting" error, we want to show the
-    // "recovery suggestion", not the error's "description."
-    if ([error.domain isEqualToString:TSNetworkManagerDomain] &&
-        error.code == 413) {
-        alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_TITLE",
-                                                                      @"Alert view title")
-                                                              message:error.localizedRecoverySuggestion
-                                                       preferredStyle:UIAlertControllerStyleAlert];
-    } else {
-        alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_TITLE",
-                                                                                        @"Alert view title")
-                                                              message:error.localizedDescription
-                                                       preferredStyle:UIAlertControllerStyleAlert];
-    }
-    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
-                                                            style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction *action) {
-                                                              [_challengeTextField becomeFirstResponder];
-                                                          }];
-    [alertController addAction:dismissAction];
+    UIAlertController *alert;
+    alert = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_TITLE", @"Alert view title")
+                         message:error.localizedDescription
+                  preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:CommonStrings.dismissButton
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *action) {
+                                                [_challengeTextField becomeFirstResponder];
+                                            }]];
 
-    [self presentViewController:alertController animated:YES completion:nil];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (NSString *)validationCodeFromTextField {
