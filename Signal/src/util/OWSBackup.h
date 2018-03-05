@@ -46,6 +46,9 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 
 + (instancetype)sharedManager;
 
+- (BOOL)isBackupEnabled;
+- (void)setIsBackupEnabled:(BOOL)value;
+
 //- (void)exportBackup:(nullable TSThread *)currentThread skipPassword:(BOOL)skipPassword;
 //
 //- (void)importBackup:(NSString *)backupZipPath password:(NSString *_Nullable)password;

@@ -24,7 +24,7 @@
 		340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC887204DAC8C007AEB0F /* BlockListViewController.m */; };
 		340FC8B2204DAC8D007AEB0F /* AdvancedSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */; };
 		340FC8B3204DAC8D007AEB0F /* AppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88D204DAC8C007AEB0F /* AppSettingsViewController.m */; };
-		340FC8B4204DAC8D007AEB0F /* OWSBackupExportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88E204DAC8C007AEB0F /* OWSBackupExportViewController.m */; };
+		340FC8B4204DAC8D007AEB0F /* OWSBackupSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88E204DAC8C007AEB0F /* OWSBackupSettingsViewController.m */; };
 		340FC8B5204DAC8D007AEB0F /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC893204DAC8C007AEB0F /* AboutTableViewController.m */; };
 		340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC896204DAC8C007AEB0F /* OWSQRCodeScanningViewController.m */; };
 		340FC8B7204DAC8D007AEB0F /* OWSConversationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC89A204DAC8D007AEB0F /* OWSConversationSettingsViewController.m */; };
@@ -543,7 +543,7 @@
 		340FC88B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSettingsOptionsViewController.h; sourceTree = "<group>"; };
 		340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvancedSettingsTableViewController.m; sourceTree = "<group>"; };
 		340FC88D204DAC8C007AEB0F /* AppSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppSettingsViewController.m; sourceTree = "<group>"; };
-		340FC88E204DAC8C007AEB0F /* OWSBackupExportViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupExportViewController.m; sourceTree = "<group>"; };
+		340FC88E204DAC8C007AEB0F /* OWSBackupSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupSettingsViewController.m; sourceTree = "<group>"; };
 		340FC88F204DAC8C007AEB0F /* PrivacySettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrivacySettingsTableViewController.h; sourceTree = "<group>"; };
 		340FC890204DAC8C007AEB0F /* BlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListViewController.h; sourceTree = "<group>"; };
 		340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkDeviceViewController.h; sourceTree = "<group>"; };
@@ -1240,7 +1240,7 @@
 				340FC88A204DAC8C007AEB0F /* NotificationSettingsViewController.h */,
 				340FC87C204DAC8C007AEB0F /* NotificationSettingsViewController.m */,
 				340FC87F204DAC8C007AEB0F /* OWSBackupSettingsViewController.h */,
-				340FC88E204DAC8C007AEB0F /* OWSBackupExportViewController.m */,
+				340FC88E204DAC8C007AEB0F /* OWSBackupSettingsViewController.m */,
 				340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */,
 				340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */,
 				340FC895204DAC8C007AEB0F /* OWSLinkedDevicesTableViewController.h */,
@@ -3059,7 +3059,7 @@
 				341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */,
 				340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */,
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
-				340FC8B4204DAC8D007AEB0F /* OWSBackupExportViewController.m in Sources */,
+				340FC8B4204DAC8D007AEB0F /* OWSBackupSettingsViewController.m in Sources */,
 				34D1F0871F8678AA0066283D /* ConversationViewItem.m in Sources */,
 				B6DA6B071B8A2F9A00CA6F98 /* AppStoreRating.m in Sources */,
 				451A13B11E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */,

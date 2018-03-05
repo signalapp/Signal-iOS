@@ -163,7 +163,8 @@
 /* Message indicating that backup export is complete. */
 "BACKUP_EXPORT_COMPLETE_MESSAGE" = "Backup complete.";
 
-/* Label for button that copies backup password to the pasteboard. */
+/* Label for button that copies backup password to the
+//                                                    pasteboard. */
 "BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "Copy Password";
 
 /* Message indicating that backup export failed. */
@@ -175,10 +176,12 @@
 /* Format for message indicating that backup export is complete. Embeds: {{the backup password}}. */
 "BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Your backup password is: %@. Make sure to keep a copy of this password or you won't be able to restore from this backup.";
 
-/* Label for button that 'send backup' in the current conversation. */
+/* Label for button that 'send backup' in the current
+//                                                    conversation. */
 "BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Send Backup as Message";
 
-/* Message indicating that sending the backup failed. */
+/* Message indicating that sending
+//                                                                                    the backup failed. */
 "BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Sending Backup Failed.";
 
 /* Message indicating that sending the backup succeeded. */
@@ -187,7 +190,8 @@
 /* Label for button that opens share UI for backup. */
 "BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Share Backup";
 
-/* Title for the 'backup export' view. */
+/* Title for the 'backup export'
+//    view. */
 "BACKUP_EXPORT_VIEW_TITLE" = "Backup";
 
 /* Format for backup filenames. Embeds: {{the date and time of the backup}}. Should not include characters like slash (/ or \\) or colon (:). */
@@ -1580,7 +1584,10 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
 
 /* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "SETTINGS_BACKUP";
+"SETTINGS_BACKUP" = "Backup";
+
+/* Label for switch in settings that controls whether or not backup is enabled. */
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Backup Enabled";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add…";

@@ -18,8 +18,12 @@
 //#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import "NSNotificationCenter+OWS.h"
 #import <SignalServiceKit/OWSBackupStorage.h>
+#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NSString *const NSNotificationNameBackupStateDidChange = @"NSNotificationNameBackupStateDidChange";
+
+NSString *const OWSPrimaryStorage_OWSBackupCollection = @"OWSPrimaryStorage_OWSBackupCollection";
+NSString *const OWSBackup_IsBackupEnabledKey = @"OWSBackup_IsBackupEnabledKey";
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -42,7 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
 // NSString *const Keychain_ImportBackupService = @"OWSKeychainService";
 // NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
 
-@interface OWSStorage (OWSBackup)
+@interface OWSBackup ()
+
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 //- (NSData *)databasePassword;
 //
@@ -73,6 +79,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSBackup
 
+@synthesize dbConnection = _dbConnection;
+
 + (instancetype)sharedManager
 {
     static OWSBackup *sharedMyManager = nil;
@@ -85,26 +93,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initDefault
 {
-    //    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    //    OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
-    //
-    //    return [self initWithPrimaryStorage:primaryStorage messageSender:messageSender];
-    //}
-    //
-    //- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
-    //                         messageSender:(OWSMessageSender *)messageSender
-    //{
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+
+    return [self initWithPrimaryStorage:primaryStorage];
+}
+
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+{
     self = [super init];
 
     if (!self) {
         return self;
     }
 
-    //    OWSAssert(primaryStorage);
-    //    OWSAssert(messageSender);
-    //
-    //    _dbConnection = primaryStorage.newDatabaseConnection;
-    //    _messageSender = messageSender;
+    OWSAssert(primaryStorage);
+
+    _dbConnection = primaryStorage.newDatabaseConnection;
 
     _backupExportState = OWSBackupState_AtRest;
 
@@ -139,6 +143,24 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setBackupExportState:(OWSBackupState)backupExportState
 {
     _backupExportState = backupExportState;
+
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameBackupStateDidChange
+                                                             object:nil
+                                                           userInfo:nil];
+}
+
+- (BOOL)isBackupEnabled
+{
+    return [self.dbConnection boolForKey:OWSBackup_IsBackupEnabledKey
+                            inCollection:OWSPrimaryStorage_OWSBackupCollection
+                            defaultValue:NO];
+}
+
+- (void)setIsBackupEnabled:(BOOL)value
+{
+    [self.dbConnection setBool:value
+                        forKey:OWSBackup_IsBackupEnabledKey
+                  inCollection:OWSPrimaryStorage_OWSBackupCollection];
 
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameBackupStateDidChange
                                                              object:nil
