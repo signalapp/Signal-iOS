@@ -1,6 +1,8 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
+
+NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSUInteger, BackgroundTaskState) {
     BackgroundTaskState_Success,
@@ -9,6 +11,19 @@ typedef NS_ENUM(NSUInteger, BackgroundTaskState) {
 };
 
 typedef void (^BackgroundTaskCompletionBlock)(BackgroundTaskState backgroundTaskState);
+
+// This class can be safely accessed and used from any thread.
+@interface OWSBackgroundTaskManager : NSObject
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)sharedManager;
+
+- (void)observeNotifications;
+
+@end
+
+#pragma mark -
 
 // This class makes it easier and safer to use background tasks.
 //
@@ -41,3 +56,5 @@ typedef void (^BackgroundTaskCompletionBlock)(BackgroundTaskState backgroundTask
                                completionBlock:(BackgroundTaskCompletionBlock)completionBlock;
 
 @end
+
+NS_ASSUME_NONNULL_END
