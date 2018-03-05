@@ -7,10 +7,10 @@
 #import "NSDate+OWS.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSIdentityManager.h"
+#import "OWSPrimaryStorage+SignedPreKeyStore.h"
 #import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 #import "TSStorageHeaders.h"
-#import "TSStorageManager+SignedPreKeyStore.h"
 
 // Time before deletion of signed prekeys (measured in seconds)
 //
@@ -52,30 +52,30 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 {
     // Only disable message sending if we have failed more than N times
     // over a period of at least M days.
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
-    return ([storageManager prekeyUpdateFailureCount] >= kMaxPrekeyUpdateFailureCount &&
-        [storageManager firstPrekeyUpdateFailureDate] != nil
-        && fabs([[storageManager firstPrekeyUpdateFailureDate] timeIntervalSinceNow])
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+    return ([primaryStorage prekeyUpdateFailureCount] >= kMaxPrekeyUpdateFailureCount &&
+        [primaryStorage firstPrekeyUpdateFailureDate] != nil
+        && fabs([[primaryStorage firstPrekeyUpdateFailureDate] timeIntervalSinceNow])
             >= kSignedPreKeyUpdateFailureMaxFailureDuration);
 }
 
 + (void)incrementPreKeyUpdateFailureCount
 {
     // Record a prekey update failure.
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
-    int failureCount = [storageManager incrementPrekeyUpdateFailureCount];
-    if (failureCount == 1 || ![storageManager firstPrekeyUpdateFailureDate]) {
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+    int failureCount = [primaryStorage incrementPrekeyUpdateFailureCount];
+    if (failureCount == 1 || ![primaryStorage firstPrekeyUpdateFailureDate]) {
         // If this is the "first" failure, record the timestamp of that
         // failure.
-        [storageManager setFirstPrekeyUpdateFailureDate:[NSDate new]];
+        [primaryStorage setFirstPrekeyUpdateFailureDate:[NSDate new]];
     }
 }
 
 + (void)clearPreKeyUpdateFailureCount
 {
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
-    [storageManager clearFirstPrekeyUpdateFailureDate];
-    [storageManager clearPrekeyUpdateFailureCount];
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+    [primaryStorage clearFirstPrekeyUpdateFailureDate];
+    [primaryStorage clearPrekeyUpdateFailureCount];
 }
 
 // We should never dispatch sync to this queue.
@@ -133,7 +133,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         lastPreKeyCheckTimestamp = [NSDate date];
 
         RefreshPreKeysMode modeCopy = mode;
-        TSStorageManager *storageManager = [TSStorageManager sharedManager];
+        OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
         ECKeyPair *identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
 
         if (!identityKeyPair) {
@@ -144,21 +144,21 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
             modeCopy = RefreshPreKeysMode_SignedAndOneTime;
         }
 
-        SignedPreKeyRecord *signedPreKey = [storageManager generateRandomSignedRecord];
+        SignedPreKeyRecord *signedPreKey = [primaryStorage generateRandomSignedRecord];
         // Store the new signed key immediately, before it is sent to the
         // service to prevent race conditions and other edge cases.
-        [storageManager storeSignedPreKey:signedPreKey.Id signedPreKeyRecord:signedPreKey];
+        [primaryStorage storeSignedPreKey:signedPreKey.Id signedPreKeyRecord:signedPreKey];
 
         NSArray *preKeys = nil;
         TSRequest *request;
         NSString *description;
         if (modeCopy == RefreshPreKeysMode_SignedAndOneTime) {
             description = @"signed and one-time prekeys";
-            PreKeyRecord *lastResortPreKey = [storageManager getOrGenerateLastResortKey];
-            preKeys = [storageManager generatePreKeyRecords];
+            PreKeyRecord *lastResortPreKey = [primaryStorage getOrGenerateLastResortKey];
+            preKeys = [primaryStorage generatePreKeyRecords];
             // Store the new one-time keys immediately, before they are sent to the
             // service to prevent race conditions and other edge cases.
-            [storageManager storePreKeyRecords:preKeys];
+            [primaryStorage storePreKeyRecords:preKeys];
 
             request = [OWSRequestFactory registerPrekeysRequestWithPrekeyArray:preKeys
                                                                    identityKey:identityKeyPair.publicKey
@@ -175,10 +175,10 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
                 // Mark signed prekey as accepted by service.
                 [signedPreKey markAsAcceptedByService];
-                [storageManager storeSignedPreKey:signedPreKey.Id signedPreKeyRecord:signedPreKey];
+                [primaryStorage storeSignedPreKey:signedPreKey.Id signedPreKeyRecord:signedPreKey];
 
                 // On success, update the "current" signed prekey state.
-                [storageManager setCurrentSignedPrekeyId:signedPreKey.Id];
+                [primaryStorage setCurrentSignedPrekeyId:signedPreKey.Id];
 
                 successHandler();
 
@@ -261,14 +261,15 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
                 updatePreKeys(RefreshPreKeysMode_SignedAndOneTime);
                 didUpdatePreKeys = YES;
             } else {
-                TSStorageManager *storageManager = [TSStorageManager sharedManager];
-                NSNumber *currentSignedPrekeyId = [storageManager currentSignedPrekeyId];
+                OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+                NSNumber *currentSignedPrekeyId = [primaryStorage currentSignedPrekeyId];
                 BOOL shouldUpdateSignedPrekey = NO;
                 if (!currentSignedPrekeyId) {
                     DDLogError(@"%@ %s Couldn't find current signed prekey id", self.logTag, __PRETTY_FUNCTION__);
                     shouldUpdateSignedPrekey = YES;
                 } else {
-                    SignedPreKeyRecord *currentRecord = [storageManager loadSignedPrekeyOrNil:currentSignedPrekeyId.intValue];
+                    SignedPreKeyRecord *currentRecord =
+                        [primaryStorage loadSignedPrekeyOrNil:currentSignedPrekeyId.intValue];
                     if (!currentRecord) {
                         OWSFail(@"%@ %s Couldn't find signed prekey for id: %@",
                             self.logTag,
@@ -301,8 +302,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
                         NSNumber *keyId = [responseObject objectForKey:keyIdDictKey];
                         OWSAssert(keyId);
 
-                        TSStorageManager *storageManager = [TSStorageManager sharedManager];
-                        NSNumber *currentSignedPrekeyId = [storageManager currentSignedPrekeyId];
+                        OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+                        NSNumber *currentSignedPrekeyId = [primaryStorage currentSignedPrekeyId];
 
                         if (!keyId || !currentSignedPrekeyId || ![currentSignedPrekeyId isEqualToNumber:keyId]) {
                             DDLogError(
@@ -343,8 +344,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 }
 
 + (void)clearSignedPreKeyRecords {
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
-    NSNumber *currentSignedPrekeyId = [storageManager currentSignedPrekeyId];
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+    NSNumber *currentSignedPrekeyId = [primaryStorage currentSignedPrekeyId];
     [self clearSignedPreKeyRecordsWithKeyId:currentSignedPrekeyId success:nil];
 }
 
@@ -358,12 +359,12 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     // We use prekeyQueue to serialize this logic and ensure that only
     // one thread is "registering" or "clearing" prekeys at a time.
     dispatch_async(TSPreKeyManager.prekeyQueue, ^{
-        TSStorageManager *storageManager = [TSStorageManager sharedManager];
-        SignedPreKeyRecord *currentRecord = [storageManager loadSignedPrekeyOrNil:keyId.intValue];
+        OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+        SignedPreKeyRecord *currentRecord = [primaryStorage loadSignedPrekeyOrNil:keyId.intValue];
         if (!currentRecord) {
             OWSFail(@"%@ %s Couldn't find signed prekey for id: %@", self.logTag, __PRETTY_FUNCTION__, keyId);
         }
-        NSArray *allSignedPrekeys = [storageManager loadSignedPreKeys];
+        NSArray *allSignedPrekeys = [primaryStorage loadSignedPreKeys];
         NSArray *oldSignedPrekeys
             = (currentRecord != nil ? [self removeCurrentRecord:currentRecord fromRecords:allSignedPrekeys]
                                     : allSignedPrekeys);
@@ -416,7 +417,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
             }
 
             oldSignedPreKeyCount--;
-            [storageManager removeSignedPreKey:signedPrekey.Id];
+            [primaryStorage removeSignedPreKey:signedPrekey.Id];
         }
 
         if (successHandler) {

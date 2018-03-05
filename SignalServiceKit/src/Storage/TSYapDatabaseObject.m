@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSYapDatabaseObject.h"
-#import "TSStorageManager.h"
+#import "OWSPrimaryStorage.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -91,9 +91,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [[self class] dbReadWriteConnection];
 }
 
-- (TSStorageManager *)storageManager
+- (OWSPrimaryStorage *)primaryStorage
 {
-    return [[self class] storageManager];
+    return [[self class] primaryStorage];
 }
 
 #pragma mark Class Methods
@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (YapDatabaseConnection *)dbReadConnection
 {
-    // We use TSYapDatabaseObject's dbReadWriteConnection (not TSStorageManager's
+    // We use TSYapDatabaseObject's dbReadWriteConnection (not OWSPrimaryStorage's
     // dbReadConnection) for consistency, since we tend to [TSYapDatabaseObject
     // save] and want to write to the same connection we read from.  To get true
     // consistency, we'd want to update entities by reading & writing from within
@@ -124,14 +124,14 @@ NS_ASSUME_NONNULL_BEGIN
     static YapDatabaseConnection *dbReadWriteConnection = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        dbReadWriteConnection = [self storageManager].newDatabaseConnection;
+        dbReadWriteConnection = [self primaryStorage].newDatabaseConnection;
     });
     return dbReadWriteConnection;
 }
 
-+ (TSStorageManager *)storageManager
++ (OWSPrimaryStorage *)primaryStorage
 {
-    return [TSStorageManager sharedManager];
+    return [OWSPrimaryStorage sharedManager];
 }
 
 + (NSString *)collection

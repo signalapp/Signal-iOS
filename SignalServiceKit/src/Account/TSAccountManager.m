@@ -9,11 +9,11 @@
 #import "NSNotificationCenter+OWS.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSError.h"
+#import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSRequestFactory.h"
 #import "SecurityUtils.h"
 #import "TSNetworkManager.h"
 #import "TSPreKeyManager.h"
-#import "TSStorageManager+SessionStore.h"
 #import "TSVerifyCodeRequest.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <YapDatabase/YapDatabase.h>
@@ -48,7 +48,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 @synthesize isRegistered = _isRegistered;
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        storageManager:(TSStorageManager *)storageManager
+                        primaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
     if (!self) {
@@ -56,7 +56,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     }
 
     _networkManager = networkManager;
-    _dbConnection = [storageManager newDatabaseConnection];
+    _dbConnection = [primaryStorage newDatabaseConnection];
 
     OWSSingletonAssert();
 
@@ -81,7 +81,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     static id sharedInstance = nil;
     dispatch_once(&onceToken, ^{
         sharedInstance = [[self alloc] initWithNetworkManager:[TSNetworkManager sharedManager]
-                                               storageManager:[TSStorageManager sharedManager]];
+                                               primaryStorage:[OWSPrimaryStorage sharedManager]];
     });
 
     return sharedInstance;
@@ -106,7 +106,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [transaction removeAllObjectsInCollection:TSAccountManager_UserAccountCollection];
 
-            [[TSStorageManager sharedManager] resetSessionStore:transaction];
+            [[OWSPrimaryStorage sharedManager] resetSessionStore:transaction];
         }];
     }
 }

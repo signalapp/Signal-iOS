@@ -110,7 +110,7 @@ protocol CallServiceObserver: class {
     private let accountManager: AccountManager
     private let messageSender: MessageSender
     private let contactsManager: OWSContactsManager
-    private let storageManager: TSStorageManager
+    private let primaryStorage: OWSPrimaryStorage
 
     // Exposed by environment.m
     internal let notificationsAdapter: CallNotificationsAdapter
@@ -209,7 +209,7 @@ protocol CallServiceObserver: class {
         self.contactsManager = contactsManager
         self.messageSender = messageSender
         self.notificationsAdapter = notificationsAdapter
-        self.storageManager = TSStorageManager.shared()
+        self.primaryStorage = OWSPrimaryStorage.shared()
 
         super.init()
 
@@ -557,7 +557,7 @@ protocol CallServiceObserver: class {
 
         self.call = newCall
 
-        var backgroundTask = OWSBackgroundTask(label:"\(#function)", completionBlock: { [weak self] status in
+        var backgroundTask = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
             AssertIsOnMainThread()
 
             guard status == .expired else {
@@ -1414,7 +1414,7 @@ protocol CallServiceObserver: class {
     public func handleFailedCall(failedCall: SignalCall?, error: CallError) {
         AssertIsOnMainThread()
 
-        if case CallError.assertionError(description:let description) = error {
+        if case CallError.assertionError(description: let description) = error {
             owsFail(description)
         }
 

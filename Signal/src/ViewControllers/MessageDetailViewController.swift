@@ -60,7 +60,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         self.viewItem = viewItem
         self.message = message
         self.mode = mode
-        self.databaseConnection = TSStorageManager.shared().newDatabaseConnection()
+        self.databaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -83,7 +83,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         NotificationCenter.default.addObserver(self,
             selector: #selector(yapDatabaseModified),
             name: NSNotification.Name.YapDatabaseModified,
-            object: TSStorageManager.shared().dbNotificationObject)
+            object: OWSPrimaryStorage.shared().dbNotificationObject)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -263,13 +263,13 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
                                                      comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
                              value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp,
-                                                                              isRTL:self.view.isRTL())))
+                                                                              isRTL: self.view.isRTL())))
 
         if message as? TSIncomingMessage != nil {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                                                          comment: "Label for the 'received date & time' field of the 'message metadata' view."),
                                  value: DateUtil.formatPastTimestampRelativeToNow(message.timestampForSorting(),
-                                                                                  isRTL:self.view.isRTL())))
+                                                                                  isRTL: self.view.isRTL())))
         }
 
         rows += addAttachmentMetadataRows()
@@ -295,7 +295,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         }
 
         if let mediaMessageView = mediaMessageView {
-            mediaMessageView.autoMatch(.height, to: .width, of: mediaMessageView, withOffset:0, relation: .lessThanOrEqual)
+            mediaMessageView.autoMatch(.height, to: .width, of: mediaMessageView, withOffset: 0, relation: .lessThanOrEqual)
         }
 
         updateTextLayout()
@@ -362,7 +362,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
             messageTextProxyView.addSubview(messageTextView)
             messageTextView.autoPinWidthToSuperview()
             self.messageTextTopConstraint = messageTextView.autoPinEdge(toSuperviewEdge: .top, withInset: 0)
-            self.messageTextHeightLayoutConstraint = messageTextView.autoSetDimension(.height, toSize:0)
+            self.messageTextHeightLayoutConstraint = messageTextView.autoSetDimension(.height, toSize: 0)
 
             let bubbleView = UIImageView(image: bubbleImageData.messageBubbleImage)
             self.bubbleView = bubbleView
@@ -373,13 +373,13 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
             messageTextProxyView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing, withInset: messageTailEdgeMargin)
             messageTextProxyView.autoPinEdge(toSuperviewEdge: isIncoming ? .trailing : .leading, withInset: messageNoTailEdgeMargin)
             messageTextProxyView.autoPinHeightToSuperview(withMargin: 10)
-            self.messageTextProxyViewHeightConstraint = messageTextProxyView.autoSetDimension(.height, toSize:0)
+            self.messageTextProxyViewHeightConstraint = messageTextProxyView.autoSetDimension(.height, toSize: 0)
 
             let row = UIView()
             row.addSubview(bubbleView)
             bubbleView.autoPinHeightToSuperview()
             bubbleView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing, withInset: bubbleViewHMargin)
-            self.bubbleViewWidthConstraint = bubbleView.autoSetDimension(.width, toSize:0)
+            self.bubbleViewWidthConstraint = bubbleView.autoSetDimension(.width, toSize: 0)
             rows.append(row)
         }
 
@@ -705,13 +705,13 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         let maxBubbleWidth = bubbleSuperview.width() - (bubbleViewHMargin * 2)
         let maxTextWidth = maxBubbleWidth - (messageTailEdgeMargin + messageNoTailEdgeMargin)
         // Measure the total text size.
-        let textSize = messageTextView.sizeThatFits(CGSize(width:maxTextWidth, height:CGFloat.greatestFiniteMagnitude))
+        let textSize = messageTextView.sizeThatFits(CGSize(width: maxTextWidth, height: CGFloat.greatestFiniteMagnitude))
         // Measure the size of the scroll view viewport.
         let scrollViewSize = scrollView.frame.size
         // Obtain the current scroll view content offset (scroll state).
         let scrollViewContentOffset = scrollView.contentOffset
         // Obtain the location of the text view proxy relative to the content view.
-        let textProxyOffset = contentView.convert(CGPoint.zero, from:messageTextProxyView)
+        let textProxyOffset = contentView.convert(CGPoint.zero, from: messageTextProxyView)
 
         // 1. The bubble view's width should fit the text content.
         let bubbleViewWidth = ceil(textSize.width + messageTailEdgeMargin + messageNoTailEdgeMargin)
@@ -738,7 +738,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
 
         // 5. We want to scroll the text view's content so that the text view
         //    renders the appropriate content for the scrollview's scroll state.
-        messageTextView.contentOffset = CGPoint(x:0, y:messageTextViewY)
+        messageTextView.contentOffset = CGPoint(x: 0, y: messageTextViewY)
     }
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -751,7 +751,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
 
     public func presentDetails(mediaMessageView: MediaMessageView, fromView: UIView) {
         let window = UIApplication.shared.keyWindow
-        let convertedRect = fromView.convert(fromView.bounds, to:window)
+        let convertedRect = fromView.convert(fromView.bounds, to: window)
         guard let attachmentStream = self.attachmentStream else {
             owsFail("attachment stream unexpectedly nil")
             return

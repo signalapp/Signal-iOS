@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInteraction.h"
 #import "NSDate+OWS.h"
+#import "OWSPrimaryStorage+messageIDs.h"
 #import "TSDatabaseSecondaryIndexes.h"
-#import "TSStorageManager+messageIDs.h"
 #import "TSThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
     if (!self.uniqueId) {
-        self.uniqueId = [TSStorageManager getAndIncrementMessageIdWithTransaction:transaction];
+        self.uniqueId = [OWSPrimaryStorage getAndIncrementMessageIdWithTransaction:transaction];
     }
 
     [super saveWithTransaction:transaction];

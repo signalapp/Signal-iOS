@@ -176,7 +176,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)deleteThreadsAndMessages
 {
-    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction removeAllObjectsInCollection:[TSThread collection]];
         [transaction removeAllObjectsInCollection:[SignalRecipient collection]];
         [transaction removeAllObjectsInCollection:[TSInteraction collection]];

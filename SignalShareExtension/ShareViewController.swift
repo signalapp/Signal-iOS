@@ -32,7 +32,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         super.loadView()
 
         // This should be the first thing we do.
-        let appContext = ShareAppExtensionContext(rootViewController:self)
+        let appContext = ShareAppExtensionContext(rootViewController: self)
         SetCurrentAppContext(appContext)
 
         DebugLogger.shared().enableTTYLogging()
@@ -60,7 +60,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
 
         // If we haven't migrated the database file to the shared data
-        // directory we can't load it, and therefore can't init TSSStorageManager,
+        // directory we can't load it, and therefore can't init TSSPrimaryStorage,
         // and therefore don't want to setup most of our machinery (Environment,
         // most of the singletons, etc.).  We just want to show an error view and
         // abort.
@@ -307,19 +307,19 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         Logger.info("iOS Version: \(UIDevice.current.systemVersion)}")
 
         let locale = NSLocale.current as NSLocale
-        if let localeIdentifier = locale.object(forKey:NSLocale.Key.identifier) as? String,
+        if let localeIdentifier = locale.object(forKey: NSLocale.Key.identifier) as? String,
             localeIdentifier.count > 0 {
             Logger.info("Locale Identifier: \(localeIdentifier)")
         } else {
             owsFail("Locale Identifier: Unknown")
         }
-        if let countryCode = locale.object(forKey:NSLocale.Key.countryCode) as? String,
+        if let countryCode = locale.object(forKey: NSLocale.Key.countryCode) as? String,
             countryCode.count > 0 {
             Logger.info("Country Code: \(countryCode)")
         } else {
             owsFail("Country Code: Unknown")
         }
-        if let languageCode = locale.object(forKey:NSLocale.Key.languageCode) as? String,
+        if let languageCode = locale.object(forKey: NSLocale.Key.languageCode) as? String,
             languageCode.count > 0 {
             Logger.info("Language Code: \(languageCode)")
         } else {
@@ -334,7 +334,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                              comment: "Title indicating that the share extension cannot be used until the main app has been launched at least once.")
         let failureMessage = NSLocalizedString("SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE",
                                                comment: "Message indicating that the share extension cannot be used until the main app has been launched at least once.")
-        showErrorView(title:failureTitle, message:failureMessage)
+        showErrorView(title: failureTitle, message: failureMessage)
     }
 
     private func showNotRegisteredView() {
@@ -342,11 +342,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                              comment: "Title indicating that the share extension cannot be used until the user has registered in the main app.")
         let failureMessage = NSLocalizedString("SHARE_EXTENSION_NOT_REGISTERED_MESSAGE",
                                                comment: "Message indicating that the share extension cannot be used until the user has registered in the main app.")
-        showErrorView(title:failureTitle, message:failureMessage)
+        showErrorView(title: failureTitle, message: failureMessage)
     }
 
     private func showErrorView(title: String, message: String) {
-        let viewController = SAEFailedViewController(delegate:self, title:title, message:message)
+        let viewController = SAEFailedViewController(delegate: self, title: title, message: message)
         self.showPrimaryViewController(viewController)
     }
 
@@ -514,21 +514,21 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     private class func isUrlItem(itemProvider: NSItemProvider) -> Bool {
-        return itemMatchesSpecificUtiType(itemProvider:itemProvider,
-                                          utiType:kUTTypeURL as String)
+        return itemMatchesSpecificUtiType(itemProvider: itemProvider,
+                                          utiType: kUTTypeURL as String)
     }
 
     private class func isContactItem(itemProvider: NSItemProvider) -> Bool {
-        return itemMatchesSpecificUtiType(itemProvider:itemProvider,
-                                          utiType:kUTTypeContact as String)
+        return itemMatchesSpecificUtiType(itemProvider: itemProvider,
+                                          utiType: kUTTypeContact as String)
     }
 
     private class func utiType(itemProvider: NSItemProvider) -> String? {
         Logger.info("\(self.logTag) utiTypeForItem: \(itemProvider.registeredTypeIdentifiers)")
 
-        if isUrlItem(itemProvider:itemProvider) {
+        if isUrlItem(itemProvider: itemProvider) {
             return kUTTypeURL as String
-        } else if isContactItem(itemProvider:itemProvider) {
+        } else if isContactItem(itemProvider: itemProvider) {
             return kUTTypeContact as String
         }
 
@@ -565,7 +565,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // NOTE: SharingThreadPickerViewController will try to unpack them
             //       and send them as normal text messages if possible.
             let urlString = url.absoluteString
-            return DataSourceValue.dataSource(withOversizeText:urlString)
+            return DataSourceValue.dataSource(withOversizeText: urlString)
         } else if UTTypeConformsTo(utiType as CFString, kUTTypeText) {
             // Share text as oversize text messages.
             //
@@ -642,23 +642,23 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 return
             }
 
-            Logger.info("\(strongSelf.logTag) value type: \(type(of:value))")
+            Logger.info("\(strongSelf.logTag) value type: \(type(of: value))")
 
             if let data = value as? Data {
                 // Although we don't support contacts _yet_, when we do we'll want to make
                 // sure they are shared with a reasonable filename.
-                if ShareViewController.itemMatchesSpecificUtiType(itemProvider:itemProvider,
-                                                                  utiType:kUTTypeVCard as String) {
+                if ShareViewController.itemMatchesSpecificUtiType(itemProvider: itemProvider,
+                                                                  utiType: kUTTypeVCard as String) {
                     customFileName = "Contact.vcf"
                 }
 
-                let customFileExtension = MIMETypeUtil.fileExtension(forUTIType:srcUtiType)
+                let customFileExtension = MIMETypeUtil.fileExtension(forUTIType: srcUtiType)
                 guard let tempFilePath = OWSFileSystem.writeData(toTemporaryFile: data, fileExtension: customFileExtension) else {
                     let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
                     reject(writeError)
                     return
                 }
-                let fileUrl = URL(fileURLWithPath:tempFilePath)
+                let fileUrl = URL(fileURLWithPath: tempFilePath)
                 fulfill((itemUrl: fileUrl, utiType: srcUtiType))
             } else if let string = value as? String {
                 Logger.debug("\(strongSelf.logTag) string provider: \(string)")
@@ -667,13 +667,13 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     reject(writeError)
                     return
                 }
-                guard let tempFilePath = OWSFileSystem.writeData(toTemporaryFile:data, fileExtension:"txt") else {
+                guard let tempFilePath = OWSFileSystem.writeData(toTemporaryFile: data, fileExtension: "txt") else {
                     let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
                     reject(writeError)
                     return
                 }
 
-                let fileUrl = URL(fileURLWithPath:tempFilePath)
+                let fileUrl = URL(fileURLWithPath: tempFilePath)
 
                 isConvertibleToTextMessage = !itemProvider.registeredTypeIdentifiers.contains(kUTTypeFileURL as String)
 
@@ -693,9 +693,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 }
             } else if let image = value as? UIImage {
                 if let data = UIImagePNGRepresentation(image) {
-                    let tempFilePath = OWSFileSystem.temporaryFilePath(withFileExtension:"png")
+                    let tempFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: "png")
                     do {
-                        let url = NSURL.fileURL(withPath:tempFilePath)
+                        let url = NSURL.fileURL(withPath: tempFilePath)
                         try data.write(to: url)
                         fulfill((url, srcUtiType))
                     } catch {

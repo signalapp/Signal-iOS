@@ -5,8 +5,8 @@
 #import "OWSAnalytics.h"
 #import "AppContext.h"
 #import "OWSBackgroundTask.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSQueues.h"
-#import "TSStorageManager.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Reachability/Reachability.h>
@@ -62,16 +62,16 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 }
 
 // We lazy-create the analytics DB connection, so that we can handle
-// errors that occur while initializing TSStorageManager.
+// errors that occur while initializing OWSPrimaryStorage.
 + (YapDatabaseConnection *)dbConnection
 {
     static YapDatabaseConnection *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        TSStorageManager *storageManager = [TSStorageManager sharedManager];
-        OWSAssert(storageManager);
+        OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+        OWSAssert(primaryStorage);
         // Use a newDatabaseConnection so as not to block reads in the launch path.
-        instance = storageManager.newDatabaseConnection;
+        instance = primaryStorage.newDatabaseConnection;
     });
     return instance;
 }

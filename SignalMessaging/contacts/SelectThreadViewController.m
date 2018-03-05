@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     _threadViewHelper = [ThreadViewHelper new];
     _threadViewHelper.delegate = self;
 
-    _uiDatabaseConnection = [[TSStorageManager sharedManager] newDatabaseConnection];
+    _uiDatabaseConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
 #ifdef DEBUG
     _uiDatabaseConnection.permittedTransactions = YDB_AnyReadTransaction;
 #endif
@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
-                                               object:TSStorageManager.sharedManager.dbNotificationObject];
+                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification
@@ -333,7 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __block TSThread *thread = nil;
-    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientId transaction:transaction];
     }];
     OWSAssert(thread);

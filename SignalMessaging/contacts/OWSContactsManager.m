@@ -15,9 +15,9 @@
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSError.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSStorageManager.h>
 
 @import Contacts;
 
@@ -51,8 +51,8 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     // TODO: We need to configure the limits of this cache.
     _avatarCache = [ImageCache new];
 
-    _dbReadConnection = [TSStorageManager sharedManager].newDatabaseConnection;
-    _dbWriteConnection = [TSStorageManager sharedManager].newDatabaseConnection;
+    _dbReadConnection = [OWSPrimaryStorage sharedManager].newDatabaseConnection;
+    _dbWriteConnection = [OWSPrimaryStorage sharedManager].newDatabaseConnection;
 
     _allContacts = @[];
     _allContactsMap = @{};

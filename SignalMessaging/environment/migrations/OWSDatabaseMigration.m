@@ -3,27 +3,27 @@
 //
 
 #import "OWSDatabaseMigration.h"
-#import <SignalServiceKit/TSStorageManager.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDatabaseMigration
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super initWithUniqueId:[self.class migrationId]];
     if (!self) {
         return self;
     }
 
-    _storageManager = storageManager;
+    _primaryStorage = primaryStorage;
 
     return self;
 }
 
 + (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
 {
-    if ([propertyKey isEqualToString:@"storageManager"]) {
+    if ([propertyKey isEqualToString:@"primaryStorage"]) {
         return MTLPropertyStorageNone;
     } else {
         return [super storageBehaviorForPropertyWithKey:propertyKey];
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(completion);
 
-    OWSDatabaseConnection *dbConnection = (OWSDatabaseConnection *)self.storageManager.newDatabaseConnection;
+    OWSDatabaseConnection *dbConnection = (OWSDatabaseConnection *)self.primaryStorage.newDatabaseConnection;
     // These migrations won't be run until storage registrations are enqueued,
     // but this transaction might begin before all registrations are marked as
     // complete, so disable this checking.
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
     static dispatch_once_t onceToken;
     static YapDatabaseConnection *sharedDBConnection;
     dispatch_once(&onceToken, ^{
-        sharedDBConnection = [TSStorageManager sharedManager].newDatabaseConnection;
+        sharedDBConnection = [OWSPrimaryStorage sharedManager].newDatabaseConnection;
 
         OWSAssert([sharedDBConnection isKindOfClass:[OWSDatabaseConnection class]]);
         ((OWSDatabaseConnection *)sharedDBConnection).canWriteBeforeStorageReady = YES;

@@ -2,20 +2,21 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSPrimaryStorage+PreKeyStore.h"
+#import "OWSPrimaryStorage+keyFromIntLong.h"
 #import "TSStorageKeys.h"
-#import "TSStorageManager+PreKeyStore.h"
-#import "TSStorageManager+keyFromIntLong.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionBuilder.h>
 
-#define TSStorageManagerPreKeyStoreCollection @"TSStorageManagerPreKeyStoreCollection"
+#define OWSPrimaryStoragePreKeyStoreCollection @"TSStorageManagerPreKeyStoreCollection"
 #define TSNextPrekeyIdKey @"TSStorageInternalSettingsNextPreKeyId"
 #define BATCH_SIZE 100
 
-@implementation TSStorageManager (PreKeyStore)
+@implementation OWSPrimaryStorage (PreKeyStore)
 
-- (PreKeyRecord *)getOrGenerateLastResortKey {
+- (PreKeyRecord *)getOrGenerateLastResortKey
+{
     if ([self containsPreKey:kPreKeyOfLastResortId]) {
         return [self loadPreKey:kPreKeyOfLastResortId];
     } else {
@@ -26,15 +27,17 @@
     }
 }
 
-- (NSArray *)generatePreKeyRecords {
+- (NSArray *)generatePreKeyRecords
+{
     NSMutableArray *preKeyRecords = [NSMutableArray array];
 
-    @synchronized(self) {
+    @synchronized(self)
+    {
         int preKeyId = [self nextPreKeyId];
 
         DDLogInfo(@"%@ building %d new preKeys starting from preKeyId: %d", self.logTag, BATCH_SIZE, preKeyId);
         for (int i = 0; i < BATCH_SIZE; i++) {
-            ECKeyPair *keyPair   = [Curve25519 generateKeyPair];
+            ECKeyPair *keyPair = [Curve25519 generateKeyPair];
             PreKeyRecord *record = [[PreKeyRecord alloc] initWithId:preKeyId keyPair:keyPair];
 
             [preKeyRecords addObject:record];
@@ -48,17 +51,19 @@
     return preKeyRecords;
 }
 
-- (void)storePreKeyRecords:(NSArray *)preKeyRecords {
+- (void)storePreKeyRecords:(NSArray *)preKeyRecords
+{
     for (PreKeyRecord *record in preKeyRecords) {
         [self.dbReadWriteConnection setObject:record
                                        forKey:[self keyFromInt:record.Id]
-                                 inCollection:TSStorageManagerPreKeyStoreCollection];
+                                 inCollection:OWSPrimaryStoragePreKeyStoreCollection];
     }
 }
 
-- (PreKeyRecord *)loadPreKey:(int)preKeyId {
+- (PreKeyRecord *)loadPreKey:(int)preKeyId
+{
     PreKeyRecord *preKeyRecord = [self.dbReadConnection preKeyRecordForKey:[self keyFromInt:preKeyId]
-                                                              inCollection:TSStorageManagerPreKeyStoreCollection];
+                                                              inCollection:OWSPrimaryStoragePreKeyStoreCollection];
 
     if (!preKeyRecord) {
         OWSRaiseException(InvalidKeyIdException, @"No pre key found matching key id");
@@ -67,24 +72,28 @@
     }
 }
 
-- (void)storePreKey:(int)preKeyId preKeyRecord:(PreKeyRecord *)record {
+- (void)storePreKey:(int)preKeyId preKeyRecord:(PreKeyRecord *)record
+{
     [self.dbReadWriteConnection setObject:record
                                    forKey:[self keyFromInt:preKeyId]
-                             inCollection:TSStorageManagerPreKeyStoreCollection];
+                             inCollection:OWSPrimaryStoragePreKeyStoreCollection];
 }
 
-- (BOOL)containsPreKey:(int)preKeyId {
+- (BOOL)containsPreKey:(int)preKeyId
+{
     PreKeyRecord *preKeyRecord = [self.dbReadConnection preKeyRecordForKey:[self keyFromInt:preKeyId]
-                                                              inCollection:TSStorageManagerPreKeyStoreCollection];
+                                                              inCollection:OWSPrimaryStoragePreKeyStoreCollection];
     return (preKeyRecord != nil);
 }
 
-- (void)removePreKey:(int)preKeyId {
+- (void)removePreKey:(int)preKeyId
+{
     [self.dbReadWriteConnection removeObjectForKey:[self keyFromInt:preKeyId]
-                                      inCollection:TSStorageManagerPreKeyStoreCollection];
+                                      inCollection:OWSPrimaryStoragePreKeyStoreCollection];
 }
 
-- (int)nextPreKeyId {
+- (int)nextPreKeyId
+{
     int lastPreKeyId =
         [self.dbReadConnection intForKey:TSNextPrekeyIdKey inCollection:TSStorageInternalSettingsCollection];
 

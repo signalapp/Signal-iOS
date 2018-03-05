@@ -38,12 +38,12 @@
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSOrphanedDataCleaner.h>
+#import <SignalServiceKit/OWSPrimaryStorage+Calling.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
-#import <SignalServiceKit/TSStorageManager+Calling.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/sysctl.h>
@@ -118,7 +118,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     SetRandFunctionSeed();
 
-    // XXX - careful when moving this. It must happen before we initialize TSStorageManager.
+    // XXX - careful when moving this. It must happen before we initialize OWSPrimaryStorage.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
 #if RELEASE
@@ -221,7 +221,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return;
     }
 
-    if (![TSStorageManager isDatabasePasswordAccessible]) {
+    if (![OWSPrimaryStorage isDatabasePasswordAccessible]) {
         DDLogInfo(
             @"%@ exiting because we are in the background and the database password is not accessible.", self.logTag);
         [DDLog flushLog];
@@ -237,12 +237,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // TODO: Remove this logging once we have high confidence
     // in our migration logic.
     NSArray<NSString *> *paths = @[
-        TSStorageManager.legacyDatabaseFilePath,
-        TSStorageManager.legacyDatabaseFilePath_SHM,
-        TSStorageManager.legacyDatabaseFilePath_WAL,
-        TSStorageManager.sharedDataDatabaseFilePath,
-        TSStorageManager.sharedDataDatabaseFilePath_SHM,
-        TSStorageManager.sharedDataDatabaseFilePath_WAL,
+        OWSPrimaryStorage.legacyDatabaseFilePath,
+        OWSPrimaryStorage.legacyDatabaseFilePath_SHM,
+        OWSPrimaryStorage.legacyDatabaseFilePath_WAL,
+        OWSPrimaryStorage.sharedDataDatabaseFilePath,
+        OWSPrimaryStorage.sharedDataDatabaseFilePath_SHM,
+        OWSPrimaryStorage.sharedDataDatabaseFilePath_WAL,
     ];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     for (NSString *path in paths) {
@@ -257,16 +257,16 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
-    if ([NSFileManager.defaultManager fileExistsAtPath:TSStorageManager.legacyDatabaseFilePath]) {
+    if ([NSFileManager.defaultManager fileExistsAtPath:OWSPrimaryStorage.legacyDatabaseFilePath]) {
         DDLogInfo(@"%@ Legacy Database file size: %@",
             self.logTag,
-            [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath]);
+            [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath]);
         DDLogInfo(@"%@ \t Legacy SHM file size: %@",
             self.logTag,
-            [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath_SHM]);
+            [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath_SHM]);
         DDLogInfo(@"%@ \t Legacy WAL file size: %@",
             self.logTag,
-            [OWSFileSystem fileSizeOfPath:TSStorageManager.legacyDatabaseFilePath_WAL]);
+            [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath_WAL]);
     }
 
     NSError *_Nullable error = [self convertDatabaseIfNecessary];
@@ -276,7 +276,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     if (!error) {
-        error = [TSStorageManager migrateToSharedData];
+        error = [OWSPrimaryStorage migrateToSharedData];
     }
     if (!error) {
         error = [OWSProfileManager migrateToSharedData];
@@ -340,7 +340,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 {
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    NSString *databaseFilePath = [TSStorageManager legacyDatabaseFilePath];
+    NSString *databaseFilePath = [OWSPrimaryStorage legacyDatabaseFilePath];
     if (![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]) {
         DDLogVerbose(@"%@ no legacy database file found", self.logTag);
         return nil;
@@ -619,8 +619,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
                 // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
                 // sent before the app exited should be marked as failures.
-                [[[OWSFailedMessagesJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
-                [[[OWSFailedAttachmentDownloadsJob alloc] initWithStorageManager:[TSStorageManager sharedManager]] run];
+                [[[OWSFailedMessagesJob alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]] run];
+                [[[OWSFailedAttachmentDownloadsJob alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
+                    run];
 
                 [AppStoreRating setupRatingLibrary];
             });
@@ -781,7 +782,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [AppReadiness runNowOrWhenAppIsReady:^{
             NSString *_Nullable phoneNumber = handle;
             if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-                phoneNumber = [[TSStorageManager sharedManager] phoneNumberForCallKitId:handle];
+                phoneNumber = [[OWSPrimaryStorage sharedManager] phoneNumberForCallKitId:handle];
                 if (phoneNumber.length < 1) {
                     DDLogWarn(
                         @"%@ ignoring attempt to initiate video call to unknown anonymous signal user.", self.logTag);
@@ -840,7 +841,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [AppReadiness runNowOrWhenAppIsReady:^{
             NSString *_Nullable phoneNumber = handle;
             if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-                phoneNumber = [[TSStorageManager sharedManager] phoneNumberForCallKitId:handle];
+                phoneNumber = [[OWSPrimaryStorage sharedManager] phoneNumberForCallKitId:handle];
                 if (phoneNumber.length < 1) {
                     DDLogWarn(
                         @"%@ ignoring attempt to initiate audio call to unknown anonymous signal user.", self.logTag);
@@ -1123,7 +1124,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if ([TSAccountManager isRegistered]) {
         DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
 
-        [[TSStorageManager sharedManager].newDatabaseConnection
+        [[OWSPrimaryStorage sharedManager].newDatabaseConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
             }];

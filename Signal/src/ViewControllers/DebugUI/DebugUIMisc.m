@@ -16,11 +16,11 @@
 #import <SignalMessaging/UIImage+OWS.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <SignalServiceKit/TSStorageManager+SessionStore.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -161,7 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearHasDismissedOffers
 {
-    [TSStorageManager.dbReadWriteConnection
+    [OWSPrimaryStorage.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             NSMutableArray<TSContactThread *> *contactThreads = [NSMutableArray new];
             [transaction
@@ -189,10 +189,10 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *fileName = filePath.lastPathComponent;
 
     __block BOOL success;
-    [TSStorageManager.sharedManager.newDatabaseConnection
+    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             NSError *error;
-            success = [[NSFileManager defaultManager] copyItemAtPath:TSStorageManager.databaseFilePath
+            success = [[NSFileManager defaultManager] copyItemAtPath:OWSPrimaryStorage.databaseFilePath
                                                               toPath:filePath
                                                                error:&error];
             if (!success || error) {
@@ -210,7 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
     DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
     [dataSource setSourceFilename:fileName];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
-    NSData *databasePassword = [TSStorageManager.sharedManager databasePassword];
+    NSData *databasePassword = [OWSPrimaryStorage.sharedManager databasePassword];
     attachment.captionText = [databasePassword hexadecimalString];
     if (!attachment || [attachment hasError]) {
         OWSFail(@"%@ attachment[%@]: %@", self.logTag, [attachment sourceFilename], [attachment errorName]);
@@ -224,7 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"sqlite"];
     NSString *fileName = filePath.lastPathComponent;
 
-    NSError *error = [TSStorageManager.sharedManager.newDatabaseConnection backupToPath:filePath];
+    NSError *error = [OWSPrimaryStorage.sharedManager.newDatabaseConnection backupToPath:filePath];
     if (error) {
         OWSFail(@"%@ Could not copy database file: %@.", self.logTag, error);
         return;

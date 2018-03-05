@@ -196,7 +196,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
@@ -269,7 +269,7 @@ typedef enum : NSUInteger {
     _contactsUpdater = [Environment current].contactsUpdater;
     _messageSender = [Environment current].messageSender;
     _outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
-    _storageManager = [TSStorageManager sharedManager];
+    _primaryStorage = [OWSPrimaryStorage sharedManager];
     _networkManager = [TSNetworkManager sharedManager];
     _blockingManager = [OWSBlockingManager sharedManager];
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
@@ -294,7 +294,7 @@ typedef enum : NSUInteger {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
                                                  name:YapDatabaseModifiedNotification
-                                               object:TSStorageManager.sharedManager.dbNotificationObject];
+                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification
@@ -1664,9 +1664,9 @@ typedef enum : NSUInteger {
                     OWSAttachmentsProcessor *processor =
                         [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
                                                                     networkManager:self.networkManager
-                                                                    storageManager:self.storageManager];
+                                                                    primaryStorage:self.primaryStorage];
                     [processor fetchAttachmentsForMessage:message
-                        storageManager:self.storageManager
+                        primaryStorage:self.primaryStorage
                         success:^(TSAttachmentStream *_Nonnull attachmentStream) {
                             DDLogInfo(
                                 @"%@ Successfully redownloaded attachment in thread: %@", self.logTag, message.thread);
@@ -1837,7 +1837,7 @@ typedef enum : NSUInteger {
                     TSContactThread *contactThread = (TSContactThread *)self.thread;
                     [OWSSessionResetJob runWithContactThread:contactThread
                                                messageSender:self.messageSender
-                                              storageManager:self.storageManager];
+                                              primaryStorage:self.primaryStorage];
                 }];
     [alertController addAction:resetSessionAction];
 
@@ -2799,7 +2799,7 @@ typedef enum : NSUInteger {
 {
     NSAssert([NSThread isMainThread], @"Must access uiDatabaseConnection on main thread!");
     if (!_uiDatabaseConnection) {
-        _uiDatabaseConnection = [self.storageManager newDatabaseConnection];
+        _uiDatabaseConnection = [self.primaryStorage newDatabaseConnection];
         [_uiDatabaseConnection beginLongLivedReadTransaction];
     }
     return _uiDatabaseConnection;
@@ -2808,7 +2808,7 @@ typedef enum : NSUInteger {
 - (YapDatabaseConnection *)editingDatabaseConnection
 {
     if (!_editingDatabaseConnection) {
-        _editingDatabaseConnection = [self.storageManager newDatabaseConnection];
+        _editingDatabaseConnection = [self.primaryStorage newDatabaseConnection];
     }
     return _editingDatabaseConnection;
 }

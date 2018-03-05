@@ -8,7 +8,7 @@
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBlockedPhoneNumbersMessage.h"
 #import "OWSMessageSender.h"
-#import "TSStorageManager.h"
+#import "OWSPrimaryStorage.h"
 #import "TextSecureKitEnv.h"
 #import "YapDatabaseConnection+OWS.h"
 
@@ -50,13 +50,14 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 
 - (instancetype)initDefault
 {
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
     OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
 
-    return [self initWithStorageManager:storageManager messageSender:messageSender];
+    return [self initWithPrimaryStorage:primaryStorage messageSender:messageSender];
 }
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager messageSender:(OWSMessageSender *)messageSender
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+                         messageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
 
@@ -64,10 +65,10 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
         return self;
     }
 
-    OWSAssert(storageManager);
+    OWSAssert(primaryStorage);
     OWSAssert(messageSender);
 
-    _dbConnection = storageManager.newDatabaseConnection;
+    _dbConnection = primaryStorage.newDatabaseConnection;
     _messageSender = messageSender;
 
     OWSSingletonAssert();
