@@ -224,7 +224,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     [self.audioPlayer stop];
     self.audioPlayer = [OWSSounds audioPlayerForSound:sound quiet:quiet];
     if (shouldRespectSilentSwitch) {
-        [self.audioPlayer playWithCurrentAudioCategory];
+        [self.audioPlayer playWithAmbientAudioCategory];
     } else {
         [self.audioPlayer playWithPlaybackAudioCategory];
     }

@@ -3203,7 +3203,7 @@ typedef enum : NSUInteger {
     NSURL *fileURL = [NSURL fileURLWithPath:filepath];
 
     // Setup audio session
-    BOOL configuredAudio = [OWSAudioSession.shared setRecordCategoryWithAudioActivity:self.voiceNoteAudioActivity];
+    BOOL configuredAudio = [OWSAudioSession.shared startRecordingAudioActivity:self.voiceNoteAudioActivity];
     if (!configuredAudio) {
         OWSFail(@"%@ Couldn't configure audio session", self.logTag);
         [self cancelVoiceMemo];
