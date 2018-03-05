@@ -4,9 +4,9 @@
 
 #import "OWS2FAManager.h"
 #import "NSNotificationCenter+OWS.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
-#import "TSStorageManager.h"
 #import "YapDatabaseConnection+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -44,13 +44,13 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 
 - (instancetype)initDefault
 {
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
     TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
 
-    return [self initWithStorageManager:storageManager networkManager:networkManager];
+    return [self initWithPrimaryStorage:primaryStorage networkManager:networkManager];
 }
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
                         networkManager:(TSNetworkManager *)networkManager
 {
     self = [super init];
@@ -59,10 +59,10 @@ const NSUInteger kDaySecs = kHourSecs * 24;
         return self;
     }
 
-    OWSAssert(storageManager);
+    OWSAssert(primaryStorage);
     OWSAssert(networkManager);
 
-    _dbConnection = storageManager.newDatabaseConnection;
+    _dbConnection = primaryStorage.newDatabaseConnection;
     _networkManager = networkManager;
 
     OWSSingletonAssert();

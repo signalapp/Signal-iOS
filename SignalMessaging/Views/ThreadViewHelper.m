@@ -4,8 +4,8 @@
 
 #import "ThreadViewHelper.h"
 #import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSDatabaseView.h>
-#import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ grouping ] view:TSThreadDatabaseViewExtensionName];
     [self.threadMappings setIsReversed:YES forGroup:grouping];
 
-    self.uiDatabaseConnection = [TSStorageManager.sharedManager newDatabaseConnection];
+    self.uiDatabaseConnection = [OWSPrimaryStorage.sharedManager newDatabaseConnection];
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModified:)
                                                      name:YapDatabaseModifiedNotification
-                                                   object:TSStorageManager.sharedManager.dbNotificationObject];
+                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModifiedExternally:)
                                                      name:YapDatabaseModifiedExternallyNotification
@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         [[NSNotificationCenter defaultCenter] removeObserver:self
                                                         name:YapDatabaseModifiedNotification
-                                                      object:TSStorageManager.sharedManager.dbNotificationObject];
+                                                      object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] removeObserver:self
                                                         name:YapDatabaseModifiedExternallyNotification
                                                       object:nil];

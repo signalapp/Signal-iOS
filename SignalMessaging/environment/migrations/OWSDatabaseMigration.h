@@ -8,13 +8,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^OWSDatabaseMigrationCompletion)(void);
 
-@class TSStorageManager;
+@class OWSPrimaryStorage;
 
 @interface OWSDatabaseMigration : TSYapDatabaseObject
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager;
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage;
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 
 // Prefer nonblocking (async) migrations by overriding `runUpWithTransaction:` in a subclass.
 // Blocking migrations running too long will crash the app, effectively bricking install

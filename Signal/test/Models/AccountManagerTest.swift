@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -48,7 +48,7 @@ class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
 
 class AccountManagerTest: XCTestCase {
 
-    let tsAccountManager = FailingTSAccountManager(networkManager: TSNetworkManager.shared(), storageManager: TSStorageManager.shared())
+    let tsAccountManager = FailingTSAccountManager(networkManager: TSNetworkManager.shared(), primaryStorage: OWSPrimaryStorage.shared())
     var preferences = OWSPreferences()
 
     func testRegisterWhenEmptyCode() {
@@ -96,7 +96,7 @@ class AccountManagerTest: XCTestCase {
         Environment.clearCurrentForTests()
         Environment.setCurrent(Release.releaseEnvironment())
 
-        let tsAccountManager = TokenObtainingTSAccountManager(networkManager: TSNetworkManager.shared(), storageManager: TSStorageManager.shared())
+        let tsAccountManager = TokenObtainingTSAccountManager(networkManager: TSNetworkManager.shared(), primaryStorage: OWSPrimaryStorage.shared())
 
         let accountManager = AccountManager(textSecureAccountManager: tsAccountManager, preferences: self.preferences)
 

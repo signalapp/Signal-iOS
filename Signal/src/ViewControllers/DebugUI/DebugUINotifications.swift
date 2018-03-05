@@ -36,7 +36,7 @@ class DebugUINotifications: DebugUIPage {
         }
 
         var sectionItems = [
-            OWSTableItem(title:"Last Incoming Message") { [weak self] in
+            OWSTableItem(title: "Last Incoming Message") { [weak self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -44,7 +44,7 @@ class DebugUINotifications: DebugUIPage {
                 Logger.info("\(strongSelf.logTag) scheduling notification for incoming message.")
                 strongSelf.delayedNotificationDispatch {
                     Logger.info("\(strongSelf.logTag) dispatching")
-                    TSStorageManager.shared().newDatabaseConnection().read { (transaction) in
+                    OWSPrimaryStorage.shared().newDatabaseConnection().read { (transaction) in
                         guard let viewTransaction = transaction.ext(TSMessageDatabaseViewExtensionName) as? YapDatabaseViewTransaction  else {
                             owsFail("unable to build view transaction")
                             return
@@ -68,7 +68,7 @@ class DebugUINotifications: DebugUIPage {
 
         if let contactThread = thread as? TSContactThread {
             sectionItems += [
-                OWSTableItem(title:"Call Missed") { [weak self] in
+                OWSTableItem(title: "Call Missed") { [weak self] in
                     guard let strongSelf = self else {
                         return
                     }
@@ -77,7 +77,7 @@ class DebugUINotifications: DebugUIPage {
                         strongSelf.notificationsAdapter.presentMissedCall(call, callerName: thread.name())
                     }
                 },
-                OWSTableItem(title:"Call Rejected: New Safety Number") { [weak self] in
+                OWSTableItem(title: "Call Rejected: New Safety Number") { [weak self] in
                     guard let strongSelf = self else {
                         return
                     }
@@ -86,7 +86,7 @@ class DebugUINotifications: DebugUIPage {
                         strongSelf.notificationsAdapter.presentMissedCallBecauseOfNewIdentity(call: call, callerName: thread.name())
                     }
                 },
-                OWSTableItem(title:"Call Rejected: No Longer Verified") { [weak self] in
+                OWSTableItem(title: "Call Rejected: No Longer Verified") { [weak self] in
                     guard let strongSelf = self else {
                         return
                     }

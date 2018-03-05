@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIDiskUsage.h"
@@ -7,9 +7,9 @@
 #import "Signal-Swift.h"
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSOrphanedDataCleaner.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSInteraction.h>
-#import <SignalServiceKit/TSStorageManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -47,9 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)saveAllAttachments
 {
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
-    [storageManager.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+    [primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
         [transaction enumerateKeysAndObjectsInCollection:TSAttachmentStream.collection
                                               usingBlock:^(NSString *key, TSAttachment *attachment, BOOL *stop) {
@@ -79,9 +78,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteOldMessages:(NSTimeInterval)maxAgeSeconds
 {
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
-    [storageManager.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+    [primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         NSMutableArray<NSString *> *threadIds = [NSMutableArray new];
         YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
         [interactionsByThread enumerateGroupsUsingBlock:^(NSString *group, BOOL *stop) {

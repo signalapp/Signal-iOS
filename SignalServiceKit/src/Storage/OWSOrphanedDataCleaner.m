@@ -4,10 +4,10 @@
 
 #import "OWSOrphanedDataCleaner.h"
 #import "NSDate+OWS.h"
+#import "OWSPrimaryStorage.h"
 #import "TSAttachmentStream.h"
 #import "TSInteraction.h"
 #import "TSMessage.h"
-#import "TSStorageManager.h"
 #import "TSThread.h"
 #import <YapDatabase/YapDatabase.h>
 
@@ -54,8 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
     long long totalFileSize = [self fileSizeOfFilePaths:diskFilePaths.allObjects];
     NSUInteger fileCount = diskFilePaths.count;
 
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
-    YapDatabaseConnection *databaseConnection = storageManager.newDatabaseConnection;
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+    YapDatabaseConnection *databaseConnection = primaryStorage.newDatabaseConnection;
 
     __block int attachmentStreamCount = 0;
     NSMutableSet<NSString *> *attachmentFilePaths = [NSMutableSet new];

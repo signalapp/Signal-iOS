@@ -3,8 +3,8 @@
 //
 
 #import "OWSFailedAttachmentDownloadsJob.h"
+#import "OWSPrimaryStorage.h"
 #import "TSAttachmentPointer.h"
-#import "TSStorageManager.h"
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
@@ -16,7 +16,7 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 
 @interface OWSFailedAttachmentDownloadsJob ()
 
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 
 @end
 
@@ -24,14 +24,14 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 
 @implementation OWSFailedAttachmentDownloadsJob
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _storageManager = storageManager;
+    _primaryStorage = primaryStorage;
 
     return self;
 }
@@ -77,7 +77,7 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 - (void)run
 {
     __block uint count = 0;
-    [[self.storageManager newDatabaseConnection]
+    [[self.primaryStorage newDatabaseConnection]
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [self enumerateAttemptingOutAttachmentsWithBlock:^(TSAttachmentPointer *attachment) {
                 // sanity check
@@ -121,12 +121,12 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 // Useful for tests, don't use in app startup path because it's slow.
 - (void)blockingRegisterDatabaseExtensions
 {
-    [self.storageManager registerExtension:[self.class indexDatabaseExtension]
+    [self.primaryStorage registerExtension:[self.class indexDatabaseExtension]
                                   withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex];
 }
 #endif
 
-+ (void)asyncRegisterDatabaseExtensionsWithStorageManager:(OWSStorage *)storage
++ (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage
 {
     [storage asyncRegisterExtension:[self indexDatabaseExtension]
                            withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex];

@@ -9,6 +9,7 @@
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSError.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachmentPointer.h"
@@ -18,7 +19,6 @@
 #import "TSInfoMessage.h"
 #import "TSMessage.h"
 #import "TSNetworkManager.h"
-#import "TSStorageManager.h"
 #import "TSThread.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 
@@ -35,7 +35,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 @interface OWSAttachmentsProcessor ()
 
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) NSArray<TSAttachmentPointer *> *supportedAttachmentPointers;
 
 @end
@@ -44,7 +44,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 
 - (instancetype)initWithAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
                            networkManager:(TSNetworkManager *)networkManager
-                           storageManager:(TSStorageManager *)storageManager
+                           primaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
     if (!self) {
@@ -52,7 +52,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     }
 
     _networkManager = networkManager;
-    _storageManager = storageManager;
+    _primaryStorage = primaryStorage;
 
     _supportedAttachmentPointers = @[ attachmentPointer ];
     _supportedAttachmentIds = @[ attachmentPointer.uniqueId ];
@@ -65,7 +65,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                                    relay:(nullable NSString *)relay
                                   thread:(TSThread *)thread
                           networkManager:(TSNetworkManager *)networkManager
-                          storageManager:(TSStorageManager *)storageManager
+                          primaryStorage:(OWSPrimaryStorage *)primaryStorage
                              transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     self = [super init];
@@ -74,7 +74,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     }
 
     _networkManager = networkManager;
-    _storageManager = storageManager;
+    _primaryStorage = primaryStorage;
 
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
     NSMutableArray<TSAttachmentPointer *> *supportedAttachmentPointers = [NSMutableArray new];
@@ -121,11 +121,11 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 }
 
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
-                    storageManager:(TSStorageManager *)storageManager
+                    primaryStorage:(OWSPrimaryStorage *)primaryStorage
                            success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
                            failure:(void (^)(NSError *error))failureHandler
 {
-    [[storageManager newDatabaseConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [[primaryStorage newDatabaseConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self fetchAttachmentsForMessage:message
                              transaction:transaction
                                  success:successHandler

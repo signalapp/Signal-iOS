@@ -7,6 +7,7 @@
 #import "NSNotificationCenter+OWS.h"
 #import "OWSLinkedDeviceReadReceipt.h"
 #import "OWSMessageSender.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReadReceiptsForSenderMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
@@ -16,7 +17,6 @@
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
-#import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
 #import "Threading.h"
 #import "YapDatabaseConnection+OWS.h"
@@ -156,13 +156,13 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 - (instancetype)initDefault
 {
     OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
 
-    return [self initWithMessageSender:messageSender storageManager:storageManager];
+    return [self initWithMessageSender:messageSender primaryStorage:primaryStorage];
 }
 
 - (instancetype)initWithMessageSender:(OWSMessageSender *)messageSender
-                       storageManager:(TSStorageManager *)storageManager
+                       primaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
 
@@ -171,7 +171,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     }
 
     _messageSender = messageSender;
-    _dbConnection = storageManager.newDatabaseConnection;
+    _dbConnection = primaryStorage.newDatabaseConnection;
 
     _toLinkedDevicesReadReceiptMap = [NSMutableDictionary new];
     _toSenderReadReceiptMap = [NSMutableDictionary new];

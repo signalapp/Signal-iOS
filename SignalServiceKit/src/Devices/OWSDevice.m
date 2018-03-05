@@ -5,7 +5,7 @@
 #import "OWSDevice.h"
 #import "NSDate+OWS.h"
 #import "OWSError.h"
-#import "TSStorageManager.h"
+#import "OWSPrimaryStorage.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"
@@ -14,8 +14,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 uint32_t const OWSDevicePrimaryDeviceId = 1;
-NSString *const kTSStorageManager_OWSDeviceCollection = @"kTSStorageManager_OWSDeviceCollection";
-NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_MayHaveLinkedDevices";
+NSString *const kOWSPrimaryStorage_OWSDeviceCollection = @"kOWSPrimaryStorage_OWSDeviceCollection";
+NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kOWSPrimaryStorage_MayHaveLinkedDevices";
 
 @interface OWSDeviceManager ()
 
@@ -46,8 +46,8 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 {
     OWSAssert(dbConnection);
 
-    return [dbConnection boolForKey:kTSStorageManager_MayHaveLinkedDevices
-                       inCollection:kTSStorageManager_OWSDeviceCollection
+    return [dbConnection boolForKey:kOWSPrimaryStorage_MayHaveLinkedDevices
+                       inCollection:kOWSPrimaryStorage_OWSDeviceCollection
                        defaultValue:YES];
 }
 
@@ -61,13 +61,13 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 - (void)clearMayHaveLinkedDevicesIfNotSet
 {
     // Note that we write async to avoid opening transactions within transactions.
-    [TSStorageManager.sharedManager.newDatabaseConnection
+    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            if (![transaction objectForKey:kTSStorageManager_MayHaveLinkedDevices
-                              inCollection:kTSStorageManager_OWSDeviceCollection]) {
+            if (![transaction objectForKey:kOWSPrimaryStorage_MayHaveLinkedDevices
+                              inCollection:kOWSPrimaryStorage_OWSDeviceCollection]) {
                 [transaction setObject:@(NO)
-                                forKey:kTSStorageManager_MayHaveLinkedDevices
-                          inCollection:kTSStorageManager_OWSDeviceCollection];
+                                forKey:kOWSPrimaryStorage_MayHaveLinkedDevices
+                          inCollection:kOWSPrimaryStorage_OWSDeviceCollection];
             }
         }];
 }
@@ -75,11 +75,11 @@ NSString *const kTSStorageManager_MayHaveLinkedDevices = @"kTSStorageManager_May
 - (void)setMayHaveLinkedDevices
 {
     // Note that we write async to avoid opening transactions within transactions.
-    [TSStorageManager.sharedManager.newDatabaseConnection
+    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [transaction setObject:@(YES)
-                            forKey:kTSStorageManager_MayHaveLinkedDevices
-                      inCollection:kTSStorageManager_OWSDeviceCollection];
+                            forKey:kOWSPrimaryStorage_MayHaveLinkedDevices
+                      inCollection:kOWSPrimaryStorage_OWSDeviceCollection];
         }];
 }
 

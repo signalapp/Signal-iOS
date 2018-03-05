@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalKeyingStorage.h"
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SecurityUtils.h>
-#import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 #define SignalKeyingCollection @"SignalKeyingCollection"
@@ -50,7 +50,7 @@
 
 + (void)storeData:(NSData *)data forKey:(NSString *)key
 {
-    [TSStorageManager.dbReadWriteConnection setObject:data forKey:key inCollection:SignalKeyingCollection];
+    [OWSPrimaryStorage.dbReadWriteConnection setObject:data forKey:key inCollection:SignalKeyingCollection];
 }
 
 + (NSData *)dataForKey:(NSString *)key andVerifyLength:(uint)length
@@ -66,17 +66,17 @@
 
 + (NSData *)dataForKey:(NSString *)key
 {
-    return [TSStorageManager.dbReadConnection dataForKey:key inCollection:SignalKeyingCollection];
+    return [OWSPrimaryStorage.dbReadConnection dataForKey:key inCollection:SignalKeyingCollection];
 }
 
 + (NSString *)stringForKey:(NSString *)key
 {
-    return [TSStorageManager.dbReadConnection stringForKey:key inCollection:SignalKeyingCollection];
+    return [OWSPrimaryStorage.dbReadConnection stringForKey:key inCollection:SignalKeyingCollection];
 }
 
 + (void)storeString:(NSString *)string forKey:(NSString *)key
 {
-    [TSStorageManager.dbReadWriteConnection setObject:string forKey:key inCollection:SignalKeyingCollection];
+    [OWSPrimaryStorage.dbReadWriteConnection setObject:string forKey:key inCollection:SignalKeyingCollection];
 }
 
 @end

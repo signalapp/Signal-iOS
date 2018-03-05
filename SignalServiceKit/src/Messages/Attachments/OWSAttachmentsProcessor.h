@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -8,13 +8,13 @@ extern NSString *const kAttachmentDownloadProgressNotification;
 extern NSString *const kAttachmentDownloadProgressKey;
 extern NSString *const kAttachmentDownloadAttachmentIDKey;
 
+@class OWSPrimaryStorage;
+@class OWSSignalServiceProtosAttachmentPointer;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSMessage;
 @class TSNetworkManager;
-@class TSStorageManager;
 @class TSThread;
-@class OWSSignalServiceProtosAttachmentPointer;
 @class YapDatabaseReadWriteTransaction;
 
 /**
@@ -34,7 +34,7 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
                                    relay:(nullable NSString *)relay
                                   thread:(TSThread *)thread
                           networkManager:(TSNetworkManager *)networkManager
-                          storageManager:(TSStorageManager *)storageManager
+                          primaryStorage:(OWSPrimaryStorage *)primaryStorage
                              transaction:(YapDatabaseReadWriteTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 /*
@@ -42,10 +42,10 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
  */
 - (instancetype)initWithAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
                            networkManager:(TSNetworkManager *)networkManager
-                           storageManager:(TSStorageManager *)storageManager NS_DESIGNATED_INITIALIZER;
+                           primaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
-                    storageManager:(TSStorageManager *)storageManager
+                    primaryStorage:(OWSPrimaryStorage *)primaryStorage
                            success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
                            failure:(void (^)(NSError *error))failureHandler;
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message

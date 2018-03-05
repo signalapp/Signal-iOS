@@ -10,12 +10,12 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 
 @class ContactsUpdater;
 @class OWSBlockingManager;
+@class OWSPrimaryStorage;
 @class OWSUploadingService;
 @class SignalRecipient;
 @class TSInvalidIdentityKeySendingErrorMessage;
 @class TSNetworkManager;
 @class TSOutgoingMessage;
-@class TSStorageManager;
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
 
@@ -57,7 +57,7 @@ NS_SWIFT_NAME(MessageSender)
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        storageManager:(TSStorageManager *)storageManager
+                        primaryStorage:(OWSPrimaryStorage *)primaryStorage
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        contactsUpdater:(ContactsUpdater *)contactsUpdater;
 

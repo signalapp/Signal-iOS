@@ -11,7 +11,7 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/TSStorageManager.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -212,7 +212,7 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
     OWSAES256Key *encryptionKey = [OWSAES256Key generateRandomKey];
     self.encryptionKey = encryptionKey;
 
-    NSData *databasePassword = [TSStorageManager sharedManager].databasePassword;
+    NSData *databasePassword = [OWSPrimaryStorage sharedManager].databasePassword;
 
     // TODO: We don't want this to reside unencrypted on disk even temporarily.
     // We need to encrypt this with a key that we hide in the keychain.
@@ -246,7 +246,7 @@ NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
     // Use a read/write transaction to acquire a file lock on the database files.
     //
     // TODO: If we use multiple database files, lock them too.
-    [TSStorageManager.sharedManager.newDatabaseConnection
+    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             if (![self copyDirectory:OWSFileSystem.appDocumentDirectoryPath
                           dstDirName:OWSBackup_AppDocumentDirName

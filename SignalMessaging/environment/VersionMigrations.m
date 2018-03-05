@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!previousVersion) {
         DDLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
         OWSDatabaseMigrationRunner *runner =
-            [[OWSDatabaseMigrationRunner alloc] initWithStorageManager:[TSStorageManager sharedManager]];
+            [[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]];
         [runner assumeAllExistingMigrationsRun];
         dispatch_async(dispatch_get_main_queue(), ^{
             completion();
@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self clearBloomFilterCache];
     }
 
-    [[[OWSDatabaseMigrationRunner alloc] initWithStorageManager:[TSStorageManager sharedManager]]
+    [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
         runAllOutstandingWithCompletion:completion];
 }
 
@@ -183,7 +183,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *deleteError;
         if ([fm removeItemAtPath:bloomFilterPath error:&deleteError]) {
             DDLogInfo(@"Successfully removed bloom filter cache.");
-            [TSStorageManager.dbReadWriteConnection
+            [OWSPrimaryStorage.dbReadWriteConnection
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                     [transaction removeAllObjectsInCollection:@"TSRecipient"];
                 }];

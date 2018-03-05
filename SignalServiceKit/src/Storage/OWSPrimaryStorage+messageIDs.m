@@ -1,24 +1,25 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSStorageManager+messageIDs.h"
+#import "OWSPrimaryStorage+messageIDs.h"
 #import <YapDatabase/YapDatabase.h>
 
 #define TSStorageParametersCollection @"TSStorageParametersCollection"
 #define TSMessagesLatestId @"TSMessagesLatestId"
 
-@implementation TSStorageManager (messageIDs)
+@implementation OWSPrimaryStorage (messageIDs)
 
-+ (NSString *)getAndIncrementMessageIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
++ (NSString *)getAndIncrementMessageIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
     NSString *messageId = [transaction objectForKey:TSMessagesLatestId inCollection:TSStorageParametersCollection];
     if (!messageId) {
         messageId = @"0";
     }
 
     NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-    numberFormatter.numberStyle        = NSNumberFormatterDecimalStyle;
-    NSNumber *myNumber                 = [numberFormatter numberFromString:messageId];
+    numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+    NSNumber *myNumber = [numberFormatter numberFromString:messageId];
 
     unsigned long long nextMessageId = [myNumber unsignedLongLongValue];
     nextMessageId++;

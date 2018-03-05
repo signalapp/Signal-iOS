@@ -4,18 +4,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSPrimaryStorage;
 @class OWSStorage;
-@class TSStorageManager;
 @class YapDatabaseReadTransaction;
 
 @interface OWSIncomingMessageFinder : NSObject
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 /**
  * Must be called before using this finder.
  */
-+ (void)asyncRegisterExtensionWithStorageManager:(OWSStorage *)storage;
++ (void)asyncRegisterExtensionWithPrimaryStorage:(OWSStorage *)storage;
 
 /**
  * Detects existance of a duplicate incoming message.
