@@ -743,6 +743,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }
 
     [_segmentedControl setTitle:unreadString forSegmentAtIndex:0];
+    [_segmentedControl sizeToFit];
     [_segmentedControl.superview setNeedsLayout];
     [_segmentedControl reloadInputViews];
 }
