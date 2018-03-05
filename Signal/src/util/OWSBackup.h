@@ -4,71 +4,55 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const OWSBackup_FileExtension;
+// extern NSString *const OWSBackup_FileExtension;
 
-@protocol OWSBackupDelegate <NSObject>
+extern NSString *const NSNotificationNameBackupStateDidChange;
 
-- (void)backupStateDidChange;
-
-- (void)backupProgressDidChange;
-
-@end
-
-#pragma mark -
+//@protocol OWSBackupDelegate <NSObject>
+//
+//- (void)backupStateDidChange;
+//
+//- (void)backupProgressDidChange;
+//
+//@end
+//
+//#pragma mark -
 
 typedef NS_ENUM(NSUInteger, OWSBackupState) {
+    OWSBackupState_AtRest = 0,
     OWSBackupState_InProgress,
-    OWSBackupState_Cancelled,
-    OWSBackupState_Complete,
+    //    OWSBackupState_Cancelled,
     OWSBackupState_Failed,
 };
 
 @class TSThread;
 
-// We restore backups as part of the app launch process.
-//
-// applicationDidFinishLaunching must complete quickly even for
-// large backups, to prevent the app from being killed on launch.
-// Therefore, we break up backup import/restoration into two parts:
-//
-// * Preparation (which includes the costly decryption/unzip of the
-//   backup file)
-// * Completion (file moves, NSUserDefaults writes, keychain writes).
-//
-// To protect data during backup and restore, we:
-//
-// * Optionally encrypt backup files with a password.
-// * Separately encrypt files containing keychain & NSUserDefaults data.
-// * Delete data from disk ASAP.
 @interface OWSBackup : NSObject
 
-@property (nonatomic, weak) id<OWSBackupDelegate> delegate;
+@property (nonatomic, readonly) OWSBackupState backupExportState;
 
-// An instance of `OWSBackup` is used for three separate tasks:
+//@property (nonatomic, readonly) CGFloat backupProgress;
 //
-// * Backup export
-// * Backup import preparation
-// * Backup import completion
+//// If non-nil, backup is encrypted.
+//@property (nonatomic, nullable, readonly) NSString *backupPassword;
 //
-// The "backup state" and "progress" apply to all three tasks.
-@property (nonatomic, readonly) OWSBackupState backupState;
-@property (nonatomic, readonly) CGFloat backupProgress;
+//// Only applies to "backup export" task.
+//@property (nonatomic, nullable, readonly) TSThread *currentThread;
+//
+//@property (nonatomic, readonly) NSString *backupZipPath;
+//
 
-// If non-nil, backup is encrypted.
-@property (nonatomic, nullable, readonly) NSString *backupPassword;
+- (instancetype)init NS_UNAVAILABLE;
 
-// Only applies to "backup export" task.
-@property (nonatomic, nullable, readonly) TSThread *currentThread;
++ (instancetype)sharedManager;
 
-@property (nonatomic, readonly) NSString *backupZipPath;
-
-- (void)exportBackup:(nullable TSThread *)currentThread skipPassword:(BOOL)skipPassword;
-
-- (void)importBackup:(NSString *)backupZipPath password:(NSString *_Nullable)password;
-
-- (void)cancel;
-
-+ (void)applicationDidFinishLaunching;
+//- (void)exportBackup:(nullable TSThread *)currentThread skipPassword:(BOOL)skipPassword;
+//
+//- (void)importBackup:(NSString *)backupZipPath password:(NSString *_Nullable)password;
+//
+//- (void)cancel;
+//
+//+ (void)applicationDidFinishLaunching;
 
 @end
 

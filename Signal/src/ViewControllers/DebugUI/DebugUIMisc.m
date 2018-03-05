@@ -4,7 +4,6 @@
 
 #import "DebugUIMisc.h"
 #import "OWSBackup.h"
-#import "OWSBackupExportViewController.h"
 #import "OWSCountryMetadata.h"
 #import "OWSTableViewController.h"
 #import "RegistrationViewController.h"
@@ -96,15 +95,6 @@ NS_ASSUME_NONNULL_BEGIN
                                              [DebugUIMisc sendUnencryptedDatabase:thread];
                                          }]];
     }
-    [items addObject:[OWSTableItem subPageItemWithText:@"Export Backup w/o Password"
-                                           actionBlock:^(UIViewController *viewController) {
-                                               OWSBackupExportViewController *backupViewController =
-                                                   [OWSBackupExportViewController new];
-                                               [backupViewController exportBackup:thread skipPassword:YES];
-                                               [viewController.navigationController
-                                                   pushViewController:backupViewController
-                                                             animated:YES];
-                                           }]];
 
 #ifdef DEBUG
     [items addObject:[OWSTableItem subPageItemWithText:@"Share UIImage"
