@@ -193,30 +193,6 @@
 /* Format for backup filenames. Embeds: {{the date and time of the backup}}. Should not include characters like slash (/ or \\) or colon (:). */
 "BACKUP_FILENAME_FORMAT" = "Signal Backup %@";
 
-/* Message indicating that backup import is complete. */
-"BACKUP_IMPORT_COMPLETE_MESSAGE" = "Restore Complete";
-
-/* Label for button confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "Restore";
-
-/* Message for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "To restore this backup you must restart the Signal app. Warning: you will lose all of your current Signal data.";
-
-/* Title for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "Restore Backup?";
-
-/* Message indicating that backup import failed. */
-"BACKUP_IMPORT_FAILED_MESSAGE" = "Restore Failed";
-
-/* Message indicating that backup import is in progress. */
-"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Restoring Backup...";
-
-/* Label for button that restarts app to complete restore. */
-"BACKUP_IMPORT_RESTART_BUTTON" = "Restart App";
-
-/* Title for the 'backup import' view. */
-"BACKUP_IMPORT_VIEW_TITLE" = "Restore Backup";
-
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
 
@@ -1602,6 +1578,9 @@
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
+
+/* Label for the backup view in app settings. */
+"SETTINGS_BACKUP" = "SETTINGS_BACKUP";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add…";

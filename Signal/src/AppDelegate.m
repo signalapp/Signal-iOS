@@ -10,7 +10,6 @@
 #import "MainAppContext.h"
 #import "NotificationsManager.h"
 #import "OWS2FASettingsViewController.h"
-#import "OWSBackup.h"
 #import "OWSNavigationController.h"
 #import "Pastelog.h"
 #import "PushManager.h"
@@ -148,10 +147,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [AppVersion instance];
 
     [self startupLogging];
-
-    // If a backup restore is in progress, try to complete it.
-    // Otherwise, cleanup backup state.
-    [OWSBackup applicationDidFinishLaunching];
 
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).
