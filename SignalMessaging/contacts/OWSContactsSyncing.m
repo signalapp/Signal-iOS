@@ -16,9 +16,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kOWSPrimaryStorageOWSContactsSyncingCollection = @"kOWSPrimaryStorageOWSContactsSyncingCollection";
+NSString *const kOWSPrimaryStorageOWSContactsSyncingCollection = @"kTSStorageManagerOWSContactsSyncingCollection";
 NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
-    = @"kOWSPrimaryStorageOWSContactsSyncingLastMessageKey";
+    = @"kTSStorageManagerOWSContactsSyncingLastMessageKey";
 
 @interface OWSContactsSyncing ()
 

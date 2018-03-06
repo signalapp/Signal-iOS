@@ -14,8 +14,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 uint32_t const OWSDevicePrimaryDeviceId = 1;
-NSString *const kOWSPrimaryStorage_OWSDeviceCollection = @"kOWSPrimaryStorage_OWSDeviceCollection";
-NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kOWSPrimaryStorage_MayHaveLinkedDevices";
+NSString *const kOWSPrimaryStorage_OWSDeviceCollection = @"kTSStorageManager_OWSDeviceCollection";
+NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_MayHaveLinkedDevices";
 
 @interface OWSDeviceManager ()
 

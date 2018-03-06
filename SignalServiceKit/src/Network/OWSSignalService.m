@@ -15,13 +15,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kOWSPrimaryStorage_OWSSignalService = @"kOWSPrimaryStorage_OWSSignalService";
+NSString *const kOWSPrimaryStorage_OWSSignalService = @"kTSStorageManager_OWSSignalService";
 NSString *const kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
-    = @"kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated";
+    = @"kTSStorageManager_isCensorshipCircumventionManuallyActivated";
 NSString *const kOWSPrimaryStorage_ManualCensorshipCircumventionDomain
-    = @"kOWSPrimaryStorage_ManualCensorshipCircumventionDomain";
+    = @"kTSStorageManager_ManualCensorshipCircumventionDomain";
 NSString *const kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode
-    = @"kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode";
+    = @"kTSStorageManager_ManualCensorshipCircumventionCountryCode";
 
 NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     @"kNSNotificationName_IsCensorshipCircumventionActiveDidChange";
