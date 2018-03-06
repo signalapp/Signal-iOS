@@ -10,11 +10,11 @@ class SafetyNumberConfirmationAlert: NSObject {
     let TAG = "[SafetyNumberConfirmationAlert]"
 
     private let contactsManager: OWSContactsManager
-    private let storageManager: TSStorageManager
+    private let primaryStorage: OWSPrimaryStorage
 
     init(contactsManager: OWSContactsManager) {
         self.contactsManager = contactsManager
-        self.storageManager = TSStorageManager.shared()
+        self.primaryStorage = OWSPrimaryStorage.shared()
     }
 
     public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
@@ -59,12 +59,12 @@ class SafetyNumberConfirmationAlert: NSObject {
                                            comment: "Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}}")
         let body = String(format: bodyFormat, displayName)
 
-        let actionSheetController = UIAlertController(title: title, message:body, preferredStyle: .actionSheet)
+        let actionSheetController = UIAlertController(title: title, message: body, preferredStyle: .actionSheet)
 
         let confirmAction = UIAlertAction(title: confirmationText, style: .default) { _ in
             Logger.info("\(self.TAG) Confirmed identity: \(untrustedIdentity)")
 
-        self.storageManager.newDatabaseConnection().asyncReadWrite { (transaction) in
+        self.primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
             OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, recipientId: untrustedIdentity.recipientId, isUserInitiatedChange: true, transaction: transaction)
                 DispatchQueue.main.async {
                     completion(true)
@@ -103,7 +103,7 @@ class SafetyNumberConfirmationAlert: NSObject {
             Logger.info("\(self.TAG) Missing frontmostViewController")
             return
         }
-        FingerprintViewController.present(from:fromViewController, recipientId:theirRecipientId)
+        FingerprintViewController.present(from: fromViewController, recipientId: theirRecipientId)
     }
 
     private func untrustedIdentityForSending(recipientIds: [String]) -> OWSRecipientIdentity? {

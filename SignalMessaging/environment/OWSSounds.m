@@ -5,7 +5,7 @@
 #import "OWSSounds.h"
 #import "OWSAudioPlayer.h"
 #import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/TSStorageManager.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <YapDatabase/YapDatabase.h>
@@ -37,12 +37,12 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 - (instancetype)initDefault
 {
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
 
-    return [self initWithStorageManager:storageManager];
+    return [self initWithPrimaryStorage:primaryStorage];
 }
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
 
@@ -50,9 +50,9 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         return self;
     }
 
-    OWSAssert(storageManager);
+    OWSAssert(primaryStorage);
 
-    _dbConnection = storageManager.newDatabaseConnection;
+    _dbConnection = primaryStorage.newDatabaseConnection;
 
     OWSSingletonAssert();
 

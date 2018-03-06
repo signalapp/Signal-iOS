@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSStorageManager.h"
+#import "OWSPrimaryStorage.h"
 #import "AppContext.h"
 #import "OWSAnalytics.h"
 #import "OWSBatchMessageProcessor.h"
@@ -18,7 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory
+NSString *const OWSPrimaryStorageExceptionName_CouldNotCreateDatabaseDirectory
     = @"TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory";
 
 void runSyncRegistrationsForStorage(OWSStorage *storage)
@@ -50,15 +50,15 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:storage];
 
     // Register extensions which aren't essential for rendering threads async.
-    [OWSIncomingMessageFinder asyncRegisterExtensionWithStorageManager:storage];
+    [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:storage];
     [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:storage];
     [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:storage];
-    [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithStorageManager:storage];
-    [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithStorageManager:storage];
+    [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
+    [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
 }
 
 #pragma mark -
-@interface TSStorageManager ()
+@interface OWSPrimaryStorage ()
 
 @property (nonatomic, readonly, nullable) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly, nullable) YapDatabaseConnection *dbReadWriteConnection;
@@ -70,16 +70,17 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 
 #pragma mark -
 
-@implementation TSStorageManager
+@implementation OWSPrimaryStorage
 
-+ (instancetype)sharedManager {
-    static TSStorageManager *sharedManager = nil;
++ (instancetype)sharedManager
+{
+    static OWSPrimaryStorage *sharedManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedManager = [[self alloc] initStorage];
 
 #if TARGET_OS_IPHONE
-        [TSStorageManager protectFiles];
+        [OWSPrimaryStorage protectFiles];
 #endif
     });
     return sharedManager;
@@ -149,9 +150,12 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 
 + (void)protectFiles
 {
-    DDLogInfo(@"%@ Database file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath]);
-    DDLogInfo(@"%@ \t SHM file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_SHM]);
-    DDLogInfo(@"%@ \t WAL file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_WAL]);
+    DDLogInfo(
+        @"%@ Database file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath]);
+    DDLogInfo(
+        @"%@ \t SHM file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_SHM]);
+    DDLogInfo(
+        @"%@ \t WAL file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_WAL]);
 
     // Protect the entire new database directory.
     [OWSFileSystem protectFileOrFolderAtPath:self.sharedDataDatabaseDirPath];
@@ -168,7 +172,7 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 
     if (![OWSFileSystem ensureDirectoryExists:databaseDirPath]) {
         OWSRaiseException(
-            TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory, @"Could not create new database directory");
+            OWSPrimaryStorageExceptionName_CouldNotCreateDatabaseDirectory, @"Could not create new database directory");
     }
     return databaseDirPath;
 }
@@ -297,24 +301,24 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 
 + (NSString *)databaseFilePath
 {
-    DDLogVerbose(@"%@ databasePath: %@", self.logTag, TSStorageManager.sharedDataDatabaseFilePath);
+    DDLogVerbose(@"%@ databasePath: %@", self.logTag, OWSPrimaryStorage.sharedDataDatabaseFilePath);
 
     return self.sharedDataDatabaseFilePath;
 }
 
 - (NSString *)databaseFilePath
 {
-    return TSStorageManager.databaseFilePath;
+    return OWSPrimaryStorage.databaseFilePath;
 }
 
 + (YapDatabaseConnection *)dbReadConnection
 {
-    return TSStorageManager.sharedManager.dbReadConnection;
+    return OWSPrimaryStorage.sharedManager.dbReadConnection;
 }
 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
-    return TSStorageManager.sharedManager.dbReadWriteConnection;
+    return OWSPrimaryStorage.sharedManager.dbReadWriteConnection;
 }
 
 @end

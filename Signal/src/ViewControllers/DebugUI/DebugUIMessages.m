@@ -13,6 +13,7 @@
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SecurityUtils.h>
@@ -20,7 +21,6 @@
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <SignalServiceKit/TSStorageManager+SessionStore.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -753,8 +753,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<TSInteraction *> *result = [NSMutableArray new];
 
-    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         if ([thread isKindOfClass:[TSContactThread class]]) {
             TSContactThread *contactThread = (TSContactThread *)thread;
 
@@ -883,7 +882,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                            inThread:thread
                                                   failedMessageType:TSErrorMessageNonBlockingIdentityChange
                                                         recipientId:@"+19174054215"]];
-
     }];
 
     return result;
@@ -894,7 +892,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
 
     NSArray<TSInteraction *> *messages = [self unsavedSystemMessagesInThread:thread];
-    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (TSInteraction *message in messages) {
             [message saveWithTransaction:transaction];
         }
@@ -907,7 +905,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<TSInteraction *> *messages = [self unsavedSystemMessagesInThread:thread];
     TSInteraction *message = messages[(NSUInteger)arc4random_uniform((uint32_t)messages.count)];
-    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [message saveWithTransaction:transaction];
     }];
 }
@@ -968,7 +966,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)createFakeUnreadMessages:(int)counter thread:(TSThread *)thread
 {
-    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (int i = 0; i < counter; i++) {
             NSString *randomText = [self randomText];
             TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -1009,7 +1007,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     const NSUInteger kMaxBatchSize = 2500;
     if (counter < kMaxBatchSize) {
-        [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [self sendFakeMessages:counter thread:thread isTextOnly:isTextOnly transaction:transaction];
         }];
     } else {
@@ -1017,7 +1015,7 @@ NS_ASSUME_NONNULL_BEGIN
             NSUInteger remainder = counter;
             while (remainder > 0) {
                 NSUInteger batchSize = MIN(kMaxBatchSize, remainder);
-                [TSStorageManager.dbReadWriteConnection
+                [OWSPrimaryStorage.dbReadWriteConnection
                     readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         [self sendFakeMessages:batchSize thread:thread isTextOnly:isTextOnly transaction:transaction];
                     }];
@@ -1121,7 +1119,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                          inThread:thread
                                                                       messageBody:nil
@@ -1190,7 +1188,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
 
     __block TSGroupThread *thread;
-    [TSStorageManager.dbReadWriteConnection
+    [OWSPrimaryStorage.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
         }];
@@ -1273,7 +1271,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *envelopeData = [envelopeBuilder build].data;
     OWSAssert(envelopeData);
 
-    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [[OWSBatchMessageProcessor sharedInstance] enqueueEnvelopeData:envelopeData
                                                          plaintextData:plaintextData
                                                            transaction:transaction];
@@ -1338,7 +1336,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self resurrectNewOutgoingMessages2:messageCount thread:thread transaction:transaction];
         },
     ];
-    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         int actionCount = 1 + (int)arc4random_uniform(3);
         for (int actionIdx = 0; actionIdx < actionCount; actionIdx++) {
             ActionBlock actionBlock = actionBlocks[(NSUInteger)arc4random_uniform((uint32_t)actionBlocks.count)];
@@ -1493,7 +1491,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         DDLogInfo(@"%@ resurrectNewOutgoingMessages1.2: %zd", self.logTag, count);
-        [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (TSOutgoingMessage *message in messages) {
                 [message removeWithTransaction:transaction];
             }
@@ -1533,18 +1531,19 @@ NS_ASSUME_NONNULL_BEGIN
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         DDLogInfo(@"%@ resurrectNewOutgoingMessages2.2: %zd", self.logTag, count);
-        [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (TSOutgoingMessage *message in messages) {
                 [message removeWithTransaction:transaction];
             }
         }];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             DDLogInfo(@"%@ resurrectNewOutgoingMessages2.3: %zd", self.logTag, count);
-            [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                for (TSOutgoingMessage *message in messages) {
-                    [message saveWithTransaction:transaction];
-                }
-            }];
+            [OWSPrimaryStorage.dbReadWriteConnection
+                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    for (TSOutgoingMessage *message in messages) {
+                        [message saveWithTransaction:transaction];
+                    }
+                }];
         });
     });
 }
@@ -1573,7 +1572,7 @@ NS_ASSUME_NONNULL_BEGIN
     [recipientIds removeObject:[TSAccountManager localNumber]];
     NSString *recipientId = (recipientIds.count > 0 ? recipientIds.firstObject : @"+19174054215");
 
-    [TSStorageManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (NSNumber *timestamp in timestamps) {
             NSString *randomText = [self randomText];
             {
@@ -1612,7 +1611,7 @@ NS_ASSUME_NONNULL_BEGIN
         @"non-crashing string",
     ];
 
-    [TSStorageManager.sharedManager.dbReadWriteConnection
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (NSString *string in strings) {
                 // DO NOT log these strings with the debugger attached.
@@ -1654,7 +1653,7 @@ NS_ASSUME_NONNULL_BEGIN
         @"This is some normal text",
     ];
 
-    [TSStorageManager.sharedManager.dbReadWriteConnection
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (NSString *string in strings) {
                 DDLogInfo(@"%@ sending zalgo", self.logTag);

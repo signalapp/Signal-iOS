@@ -16,6 +16,10 @@
 #import "OWSMessageServiceParams.h"
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "OWSOutgoingSyncMessage.h"
+#import "OWSPrimaryStorage+PreKeyStore.h"
+#import "OWSPrimaryStorage+SignedPreKeyStore.h"
+#import "OWSPrimaryStorage+sessionStore.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
 #import "OWSUploadingService.h"
 #import "PreKeyBundle+jsonDict.h"
@@ -30,10 +34,6 @@
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSPreKeyManager.h"
-#import "TSStorageManager+PreKeyStore.h"
-#import "TSStorageManager+SignedPreKeyStore.h"
-#import "TSStorageManager+sessionStore.h"
-#import "TSStorageManager.h"
 #import "TSThread.h"
 #import "Threading.h"
 #import <AxolotlKit/AxolotlExceptions.h>
@@ -313,7 +313,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 @interface OWSMessageSender ()
 
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
-@property (nonatomic, readonly) TSStorageManager *storageManager;
+@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) OWSUploadingService *uploadingService;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
@@ -326,7 +326,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 @implementation OWSMessageSender
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        storageManager:(TSStorageManager *)storageManager
+                        primaryStorage:(OWSPrimaryStorage *)primaryStorage
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        contactsUpdater:(ContactsUpdater *)contactsUpdater
 {
@@ -336,13 +336,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     _networkManager = networkManager;
-    _storageManager = storageManager;
+    _primaryStorage = primaryStorage;
     _contactsManager = contactsManager;
     _contactsUpdater = contactsUpdater;
     _sendingQueueMap = [NSMutableDictionary new];
 
     _uploadingService = [[OWSUploadingService alloc] initWithNetworkManager:networkManager];
-    _dbConnection = storageManager.newDatabaseConnection;
+    _dbConnection = primaryStorage.newDatabaseConnection;
 
     OWSSingletonAssert();
 
@@ -1139,7 +1139,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             if (extraDevices && extraDevices.count > 0) {
                 DDLogInfo(@"%@ removing extra devices: %@", self.logTag, extraDevices);
                 for (NSNumber *extraDeviceId in extraDevices) {
-                    [self.storageManager deleteSessionForContact:recipient.uniqueId
+                    [self.primaryStorage deleteSessionForContact:recipient.uniqueId
                                                         deviceId:extraDeviceId.intValue
                                                  protocolContext:transaction];
                 }
@@ -1293,7 +1293,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         messageDict = [self encryptedMessageWithPlaintext:plainText
                                                               toRecipient:recipient.uniqueId
                                                                  deviceId:deviceNumber
-                                                            keyingStorage:self.storageManager
+                                                            keyingStorage:self.primaryStorage
                                                                  isSilent:message.isSilent
                                                               transaction:transaction];
                     } @catch (NSException *exception) {
@@ -1326,7 +1326,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (NSDictionary *)encryptedMessageWithPlaintext:(NSData *)plainText
                                     toRecipient:(NSString *)identifier
                                        deviceId:(NSNumber *)deviceNumber
-                                  keyingStorage:(TSStorageManager *)storage
+                                  keyingStorage:(OWSPrimaryStorage *)storage
                                        isSilent:(BOOL)isSilent
                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -1478,9 +1478,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (NSUInteger i = 0; i < [devices count]; i++) {
                 int deviceNumber = [devices[i] intValue];
-                [[TSStorageManager sharedManager] deleteSessionForContact:identifier
-                                                                 deviceId:deviceNumber
-                                                          protocolContext:transaction];
+                [[OWSPrimaryStorage sharedManager] deleteSessionForContact:identifier
+                                                                  deviceId:deviceNumber
+                                                           protocolContext:transaction];
             }
         }];
         completionHandler();

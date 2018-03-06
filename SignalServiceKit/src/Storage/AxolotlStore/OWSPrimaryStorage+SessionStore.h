@@ -2,12 +2,12 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSStorageManager.h"
+#import "OWSPrimaryStorage.h"
 #import <AxolotlKit/SessionStore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSStorageManager (SessionStore) <SessionStore>
+@interface OWSPrimaryStorage (SessionStore) <SessionStore>
 
 - (void)archiveAllSessionsForContact:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext;
 

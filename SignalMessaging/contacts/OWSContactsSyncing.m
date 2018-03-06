@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactsSyncing.h"
@@ -9,15 +9,15 @@
 #import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSStorageManager.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kTSStorageManagerOWSContactsSyncingCollection = @"kTSStorageManagerOWSContactsSyncingCollection";
-NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey
+NSString *const kOWSPrimaryStorageOWSContactsSyncingCollection = @"kTSStorageManagerOWSContactsSyncingCollection";
+NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
     = @"kTSStorageManagerOWSContactsSyncingLastMessageKey";
 
 @interface OWSContactsSyncing ()
@@ -122,8 +122,8 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey
         NSData *messageData = [syncContactsMessage buildPlainTextAttachmentData];
 
         NSData *lastMessageData =
-            [TSStorageManager.dbReadConnection objectForKey:kTSStorageManagerOWSContactsSyncingLastMessageKey
-                                               inCollection:kTSStorageManagerOWSContactsSyncingCollection];
+            [OWSPrimaryStorage.dbReadConnection objectForKey:kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
+                                                inCollection:kOWSPrimaryStorageOWSContactsSyncingCollection];
 
         if (lastMessageData && [lastMessageData isEqual:messageData]) {
             // Ignore redundant contacts sync message.
@@ -140,9 +140,9 @@ NSString *const kTSStorageManagerOWSContactsSyncingLastMessageKey
             success:^{
                 DDLogInfo(@"%@ Successfully sent contacts sync message.", self.logTag);
 
-                [TSStorageManager.dbReadWriteConnection setObject:messageData
-                                                           forKey:kTSStorageManagerOWSContactsSyncingLastMessageKey
-                                                     inCollection:kTSStorageManagerOWSContactsSyncingCollection];
+                [OWSPrimaryStorage.dbReadWriteConnection setObject:messageData
+                                                            forKey:kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
+                                                      inCollection:kOWSPrimaryStorageOWSContactsSyncingCollection];
 
                 dispatch_async(self.serialQueue, ^{
                     self.isRequestInFlight = NO;

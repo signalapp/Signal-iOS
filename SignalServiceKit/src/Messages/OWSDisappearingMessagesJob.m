@@ -12,9 +12,9 @@
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesFinder.h"
+#import "OWSPrimaryStorage.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
-#import "TSStorageManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 // Can we move to Signal-iOS?
@@ -40,19 +40,19 @@ NS_ASSUME_NONNULL_BEGIN
     static OWSDisappearingMessagesJob *sharedJob = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedJob = [[self alloc] initWithStorageManager:[TSStorageManager sharedManager]];
+        sharedJob = [[self alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]];
     });
     return sharedJob;
 }
 
-- (instancetype)initWithStorageManager:(TSStorageManager *)storageManager
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _databaseConnection = storageManager.newDatabaseConnection;
+    _databaseConnection = primaryStorage.newDatabaseConnection;
     _disappearingMessagesFinder = [OWSDisappearingMessagesFinder new];
 
     OWSSingletonAssert();

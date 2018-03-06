@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const TSStorageManagerTrustedKeysCollection;
+extern NSString *const OWSPrimaryStorageTrustedKeysCollection;
 
 // This notification will be fired whenever identities are created
 // or their verification state changes.

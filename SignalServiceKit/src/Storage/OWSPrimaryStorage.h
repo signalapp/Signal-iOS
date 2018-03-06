@@ -9,12 +9,11 @@ NS_ASSUME_NONNULL_BEGIN
 void runSyncRegistrationsForStorage(OWSStorage *storage);
 void runAsyncRegistrationsForStorage(OWSStorage *storage);
 
-// TODO: Rename to OWSPrimaryStorage?
-@interface TSStorageManager : OWSStorage
+@interface OWSPrimaryStorage : OWSStorage
 
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (instancetype)sharedManager;
++ (instancetype)sharedManager NS_SWIFT_NAME(shared());
 
 - (YapDatabaseConnection *)dbReadConnection;
 - (YapDatabaseConnection *)dbReadWriteConnection;

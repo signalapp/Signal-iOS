@@ -52,16 +52,16 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (nullable id)tryGetValueForKey:(NSString *)key
 {
     OWSAssert(key != nil);
-    return [TSStorageManager.dbReadConnection objectForKey:key inCollection:OWSPreferencesSignalDatabaseCollection];
+    return [OWSPrimaryStorage.dbReadConnection objectForKey:key inCollection:OWSPreferencesSignalDatabaseCollection];
 }
 
 - (void)setValueForKey:(NSString *)key toValue:(nullable id)value
 {
     OWSAssert(key != nil);
 
-    [TSStorageManager.dbReadWriteConnection setObject:value
-                                               forKey:key
-                                         inCollection:OWSPreferencesSignalDatabaseCollection];
+    [OWSPrimaryStorage.dbReadWriteConnection setObject:value
+                                                forKey:key
+                                          inCollection:OWSPreferencesSignalDatabaseCollection];
 }
 
 #pragma mark - Specific Preferences

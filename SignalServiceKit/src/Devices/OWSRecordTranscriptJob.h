@@ -1,14 +1,14 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSIncomingSentMessageTranscript;
+@class OWSPrimaryStorage;
 @class OWSReadReceiptManager;
 @class TSAttachmentStream;
 @class TSNetworkManager;
-@class TSStorageManager;
 @class YapDatabaseReadWriteTransaction;
 
 @protocol ContactsManagerProtocol;
@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript;
 - (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
                                        networkManager:(TSNetworkManager *)networkManager
-                                       storageManager:(TSStorageManager *)storageManager
+                                       primaryStorage:(OWSPrimaryStorage *)primaryStorage
                                    readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
                                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
     NS_DESIGNATED_INITIALIZER;

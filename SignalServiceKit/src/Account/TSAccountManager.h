@@ -11,8 +11,8 @@ extern NSString *const TSRegistrationErrorUserInfoHTTPStatus;
 extern NSString *const RegistrationStateDidChangeNotification;
 extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
+@class OWSPrimaryStorage;
 @class TSNetworkManager;
-@class TSStorageManager;
 @class YapDatabaseReadWriteTransaction;
 
 @interface TSAccountManager : NSObject
@@ -22,7 +22,7 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        storageManager:(TSStorageManager *)storageManager NS_DESIGNATED_INITIALIZER;
+                        primaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedInstance;
 

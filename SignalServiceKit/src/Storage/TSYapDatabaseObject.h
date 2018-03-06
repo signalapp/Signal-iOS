@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel+NSCoding.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSStorageManager;
+@class OWSPrimaryStorage;
 @class YapDatabaseConnection;
 @class YapDatabaseReadTransaction;
 @class YapDatabaseReadWriteTransaction;
@@ -68,8 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (YapDatabaseConnection *)dbReadWriteConnection;
 + (YapDatabaseConnection *)dbReadWriteConnection;
 
-- (TSStorageManager *)storageManager;
-+ (TSStorageManager *)storageManager;
+- (OWSPrimaryStorage *)primaryStorage;
++ (OWSPrimaryStorage *)primaryStorage;
 
 /**
  *  Fetches the object with the provided identifier
