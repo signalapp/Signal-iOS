@@ -17,6 +17,8 @@ typedef NS_ENUM(NSUInteger, NotificationType) {
 extern NSString *const OWSPreferencesSignalDatabaseCollection;
 extern NSString *const OWSPreferencesKeyEnableDebugLog;
 
+@class YapDatabaseReadWriteTransaction;
+
 @interface OWSPreferences : NSObject
 
 #pragma mark - Helpers
