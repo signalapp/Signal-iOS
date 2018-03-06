@@ -64,6 +64,8 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 
 #pragma mark - Legacy CallKit settings
 
+- (void)applyCallLoggingSettingsForLegacyUsersWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 - (BOOL)isCallKitEnabled;
 - (void)setIsCallKitEnabled:(BOOL)flag;
 
