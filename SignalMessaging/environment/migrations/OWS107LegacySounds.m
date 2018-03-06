@@ -22,7 +22,7 @@ static NSString *const OWS107LegacySoundsMigrationId = @"107";
 {
     OWSAssert(transaction);
 
-    [OWSSounds setGlobalNotificationSound:OWSSound_ClassicNotification transaction:transaction];
+    [OWSSounds setGlobalNotificationSound:OWSSound_SignalClassic transaction:transaction];
 }
 
 @end

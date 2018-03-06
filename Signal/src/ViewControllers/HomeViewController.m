@@ -47,7 +47,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 @property (nonatomic) UISegmentedControl *segmentedControl;
 @property (nonatomic) id previewingContext;
 @property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
-@property (nonatomic) BOOL hasShownAnyUnseenUpgradeExperiences;
 
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL isAppInBackground;
@@ -287,6 +286,13 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [self updateBarButtonItems];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    [self displayAnyUnseenUpgradeExperience];
+}
+
 - (void)updateBarButtonItems
 {
     const CGFloat kBarButtonSize = 44;
@@ -510,19 +516,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
             });
         }];
     }
-    
-    // We want to show the user the upgrade experience as soon as the app is visible to them.
-    // It cannot go in viewDidAppear, which is called while the app is in the background if
-    // we were launched from a voip notification.
-    if (!self.hasShownAnyUnseenUpgradeExperiences) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
-                return;
-            }
-            [self displayAnyUnseenUpgradeExperience];
-            self.hasShownAnyUnseenUpgradeExperiences = YES;
-        });
-    }
 }
 
 #pragma mark - startup
@@ -532,19 +525,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     OWSAssertIsOnMainThread();
 
     __block NSArray<ExperienceUpgrade *> *unseenUpgrades;
-    [self.editingDbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         unseenUpgrades = [ExperienceUpgradeFinder.sharedManager allUnseenWithTransaction:transaction];
     }];
     return unseenUpgrades;
-}
-
-- (void)markAllUpgradeExperiencesAsSeen
-{
-    OWSAssertIsOnMainThread();
-
-    [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
-    }];
 }
 
 - (void)displayAnyUnseenUpgradeExperience
@@ -556,11 +540,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     if (unseenUpgrades.count > 0) {
         ExperienceUpgradesPageViewController *experienceUpgradeViewController =
             [[ExperienceUpgradesPageViewController alloc] initWithExperienceUpgrades:unseenUpgrades];
-        [self presentViewController:experienceUpgradeViewController
-                           animated:YES
-                         completion:^{
-                             [self markAllUpgradeExperiencesAsSeen];
-                         }];
+        [self presentViewController:experienceUpgradeViewController animated:YES completion:nil];
     } else if (!self.hasBeenPresented && [ProfileViewController shouldDisplayProfileViewOnLaunch]) {
         [ProfileViewController presentForUpgradeOrNag:self];
     } else {
