@@ -8,11 +8,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 // extern NSString *const NSNotificationNameBackupStateDidChange;
 
+@class OWSBackupExport;
+
 @protocol OWSBackupExportDelegate <NSObject>
 
-- (void)backupExportDidSucceed;
+// TODO: This should eventually be the backup key stored in the Signal Service
+//       and retrieved with the backup PIN.
+- (nullable NSData *)backupKey;
 
-- (void)backupExportDidFailWithError:(NSError *)error;
+- (void)backupExportDidSucceed:(OWSBackupExport *)backupExport;
+
+- (void)backupExportDidFail:(OWSBackupExport *)backupExport error:(NSError *)error;
 
 @end
 
@@ -34,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithDelegate:(id<OWSBackupExportDelegate>)delegate
                   primaryStorage:(OWSPrimaryStorage *)primaryStorage;
 
-- (void)start;
+- (void)startAsync;
 
 - (void)cancel;
 

@@ -92,6 +92,8 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     self = [super initStorage];
 
     if (self) {
+        [self loadDatabase];
+
         _dbReadConnection = self.newDatabaseConnection;
         _dbReadWriteConnection = self.newDatabaseConnection;
 
