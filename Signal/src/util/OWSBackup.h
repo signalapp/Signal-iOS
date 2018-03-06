@@ -4,25 +4,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// extern NSString *const OWSBackup_FileExtension;
-
 extern NSString *const NSNotificationNameBackupStateDidChange;
 
-//@protocol OWSBackupDelegate <NSObject>
-//
-//- (void)backupStateDidChange;
-//
-//- (void)backupProgressDidChange;
-//
-//@end
-//
-//#pragma mark -
-
 typedef NS_ENUM(NSUInteger, OWSBackupState) {
-    OWSBackupState_AtRest = 0,
+    // Has never backed up, not trying to backup yet.
+    OWSBackupState_Idle = 0,
+    // Backing up.
     OWSBackupState_InProgress,
-    //    OWSBackupState_Cancelled,
+    // Last backup failed.
     OWSBackupState_Failed,
+    // Last backup succeeded.
+    OWSBackupState_Succeeded,
 };
 
 @class TSThread;
@@ -30,17 +22,6 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 @interface OWSBackup : NSObject
 
 @property (nonatomic, readonly) OWSBackupState backupExportState;
-
-//@property (nonatomic, readonly) CGFloat backupProgress;
-//
-//// If non-nil, backup is encrypted.
-//@property (nonatomic, nullable, readonly) NSString *backupPassword;
-//
-//// Only applies to "backup export" task.
-//@property (nonatomic, nullable, readonly) TSThread *currentThread;
-//
-//@property (nonatomic, readonly) NSString *backupZipPath;
-//
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -50,14 +31,6 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 - (void)setIsBackupEnabled:(BOOL)value;
 
 - (void)setup;
-
-//- (void)exportBackup:(nullable TSThread *)currentThread skipPassword:(BOOL)skipPassword;
-//
-//- (void)importBackup:(NSString *)backupZipPath password:(NSString *_Nullable)password;
-//
-//- (void)cancel;
-//
-//+ (void)applicationDidFinishLaunching;
 
 @end
 
