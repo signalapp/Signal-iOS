@@ -150,6 +150,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                 NSString *fieldValue = fields[fieldName];
                 [formData appendPartWithFormData:[fieldValue dataUsingEncoding:NSUTF8StringEncoding] name:fieldName];
             }
+            [formData appendPartWithFormData:[weakSelf.mimeType dataUsingEncoding:NSUTF8StringEncoding] name:@"content-type"];
             NSError *error;
             BOOL success = [formData appendPartWithFileURL:weakSelf.fileUrl
                                                       name:@"file"
