@@ -74,7 +74,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         @(OWSSound_Keys),
         @(OWSSound_Popcorn),
         @(OWSSound_Pulse),
-        @(OWSSound_ClassicNotification),
+        @(OWSSound_SignalClassic),
         @(OWSSound_Synth),
     ];
 }
@@ -112,7 +112,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
             return @"Pulse";
         case OWSSound_Synth:
             return @"Synth";
-        case OWSSound_ClassicNotification:
+        case OWSSound_SignalClassic:
             return @"Signal Classic";
 
         // Call Audio
@@ -172,7 +172,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
             return (quiet ? @"pulse-quiet.aifc" : @"pulse.aifc");
         case OWSSound_Synth:
             return (quiet ? @"synth-quiet.aifc" : @"synth.aifc");
-        case OWSSound_ClassicNotification:
+        case OWSSound_SignalClassic:
             return (quiet ? @"classic-quiet.aifc" : @"classic.aifc");
 
             // Ringtone Sounds

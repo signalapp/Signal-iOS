@@ -20,7 +20,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_Popcorn,
     OWSSound_Pulse,
     OWSSound_Synth,
-    OWSSound_ClassicNotification,
+    OWSSound_SignalClassic,
 
     // Ringtone Sounds
     OWSSound_Opening,
