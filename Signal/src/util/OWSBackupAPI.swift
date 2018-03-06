@@ -12,21 +12,21 @@ import CloudKit
         return "test-\(NSUUID().uuidString)"
     }
 
-    @objc
-    public class func recordIdForAttachmentStream(value: TSAttachmentStream) -> String {
-        guard let uniqueId = value.uniqueId else {
-            owsFail("Database entity missing uniqueId.")
-            return "unknown"
-        }
-        return "attachment-stream-\(uniqueId)"
-    }
+//    @objc
+//    public class func recordNameForTest(value: TSAttachmentStream) -> String {
+//        guard let uniqueId = value.uniqueId else {
+//            owsFail("Database entity missing uniqueId.")
+//            return "unknown"
+//        }
+//        return "attachment-stream-\(uniqueId)"
+//    }
 
     @objc
     public class func saveTestFileToCloud(fileUrl: URL,
                                           success: @escaping (String) -> Swift.Void,
                                           failure: @escaping (Error) -> Swift.Void) {
         saveFileToCloud(fileUrl: fileUrl,
-                        recordId: recordIdForTest(),
+                        recordName: NSUUID().uuidString,
                         recordType: "test",
                         success: success,
                         failure: failure)
@@ -37,22 +37,39 @@ import CloudKit
                                             success: @escaping (String) -> Swift.Void,
                                             failure: @escaping (Error) -> Swift.Void) {
         saveFileToCloud(fileUrl: fileUrl,
-                        recordId: NSUUID().uuidString,
+                        recordName: NSUUID().uuidString,
                         recordType: "backupFile",
+                        success: success,
+                        failure: failure)
+    }
+
+    // TODO:
+    static let manifestRecordName = "manifest_"
+    static let manifestRecordType = "manifest"
+    static let payloadKey = "payload"
+
+    @objc
+    public class func upsertManifestFileToCloud(fileUrl: URL,
+                                            success: @escaping (String) -> Swift.Void,
+                                            failure: @escaping (Error) -> Swift.Void) {
+        // We want to use a well-known record id and type for manifest files.
+        upsertFileToCloud(fileUrl: fileUrl,
+                        recordName: manifestRecordName,
+                        recordType: manifestRecordType,
                         success: success,
                         failure: failure)
     }
 
     @objc
     public class func saveFileToCloud(fileUrl: URL,
-                                      recordId: String,
+                                      recordName: String,
                                       recordType: String,
                                       success: @escaping (String) -> Swift.Void,
                                       failure: @escaping (Error) -> Swift.Void) {
-        let recordID = CKRecordID(recordName: recordId)
+        let recordID = CKRecordID(recordName: recordName)
         let record = CKRecord(recordType: recordType, recordID: recordID)
         let asset = CKAsset(fileURL: fileUrl)
-        record["payload"] = asset
+        record[payloadKey] = asset
 
         saveRecordToCloud(record: record,
                           success: success,
@@ -84,6 +101,54 @@ import CloudKit
                 success(recordName)
             }
         }
+    }
+
+    @objc
+    public class func upsertFileToCloud(fileUrl: URL,
+                                        recordName: String,
+                                        recordType: String,
+                                        success: @escaping (String) -> Swift.Void,
+                                        failure: @escaping (Error) -> Swift.Void) {
+        let recordId = CKRecordID(recordName: recordName)
+        let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
+        fetchOperation.perRecordCompletionBlock = { (record, recordId, error) in
+            if let error = error {
+                if let ckerror = error as? CKError {
+                    if ckerror.code == .unknownItem {
+                        // No record found to update, saving new record.
+                        saveFileToCloud(fileUrl: fileUrl,
+                                          recordName: recordName,
+                                          recordType: recordType,
+                                          success: success,
+                                          failure: failure)
+                        return
+                    }
+                    Logger.error("\(self.logTag) error fetching record: \(error) \(ckerror.code).")
+                } else {
+                    Logger.error("\(self.logTag) error fetching record: \(error).")
+                }
+                failure(error)
+                return
+            }
+            guard let record = record else {
+                Logger.error("\(self.logTag) error missing record.")
+                Logger.flush()
+                failure(OWSErrorWithCodeDescription(.exportBackupError,
+                                                    NSLocalizedString("BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED",
+                                                                      comment: "Error indicating the a backup export failed to save a file to the cloud.")))
+                return
+            }
+            Logger.verbose("\(self.logTag) updating record.")
+            let asset = CKAsset(fileURL: fileUrl)
+            record[payloadKey] = asset
+            saveRecordToCloud(record: record,
+                              success: success,
+                              failure: failure)
+
+        }
+        let myContainer = CKContainer.default()
+        let privateDatabase = myContainer.privateCloudDatabase
+        privateDatabase.add(fetchOperation)
     }
 
     @objc
