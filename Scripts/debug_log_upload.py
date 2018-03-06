@@ -28,10 +28,13 @@ def execute_command(command):
         print e.output
         sys.exit(1)
 
-        
+def add_field(curl_command, form_key, form_value):
+    curl_command.append('-F')
+    curl_command.append("%s=%s" % (form_key, form_value))
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Precommit cleanup script.')
-    parser.add_argument('--file', help='used for starting a new version.')
+    parser.add_argument('--file', required=True, help='used for starting a new version.')
 
     args = parser.parse_args()
     
@@ -41,24 +44,30 @@ if __name__ == '__main__':
     
     upload_url = params['url']
     upload_fields = params['fields']
-    upload_key = upload_fields['key']
+
+    upload_key = upload_fields.pop('key')
     upload_key = upload_key + os.path.splitext(args.file)[1]
-    upload_fields['key'] = upload_key
     
     download_url = 'https://debuglogs.org/' + upload_key
     print 'download_url:', download_url
     
     curl_command = ['curl', '-v', '-i', '-X', 'POST']
+
+    # key must appear before other fields
+    add_field(curl_command, 'key', upload_key)
     for field_name in upload_fields:
-        field_value = upload_fields[field_name]
-        curl_command.append('-F')
-        curl_command.append("'%s=%s'" % (field_name, field_value, ))
+        add_field(curl_command, field_name, upload_fields[field_name])
+
+    add_field(curl_command, "content-type", "application/octet-stream")
+ 
     curl_command.append('-F')
-    curl_command.append("'file=@%s'" % (args.file,))
+    curl_command.append("file=@%s" % (args.file,))
     curl_command.append(upload_url)
     
-    # execute_command(curl_command)
     print ' '.join(curl_command)
+
+    print 'Running...'
+    execute_command(curl_command)
 
     print 'download_url:', download_url
     

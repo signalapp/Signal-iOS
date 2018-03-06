@@ -12,6 +12,7 @@
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSStorageManager.h>
@@ -150,6 +151,9 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                 NSString *fieldValue = fields[fieldName];
                 [formData appendPartWithFormData:[fieldValue dataUsingEncoding:NSUTF8StringEncoding] name:fieldName];
             }
+            [formData appendPartWithFormData:[weakSelf.mimeType dataUsingEncoding:NSUTF8StringEncoding]
+                                        name:@"content-type"];
+
             NSError *error;
             BOOL success = [formData appendPartWithFileURL:weakSelf.fileUrl
                                                       name:@"file"
@@ -168,7 +172,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
             [self succeedWithUrl:[NSURL URLWithString:urlString]];
         }
         failure:^(NSURLSessionDataTask *_Nullable task, NSError *error) {
-            DDLogError(@"%@ failed: %@", weakSelf.logTag, uploadUrl);
+            DDLogError(@"%@ upload: %@ failed with error: %@", weakSelf.logTag, uploadUrl, error);
             [weakSelf failWithError:error];
         }];
 }
@@ -427,7 +431,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     __weak Pastelog *weakSelf = self;
     self.currentUploader = [DebugLogUploader new];
     [self.currentUploader uploadFileWithURL:[NSURL fileURLWithPath:zipFilePath]
-        mimeType:@"application/zip"
+        mimeType:OWSMimeTypeApplicationZip
         success:^(DebugLogUploader *uploader, NSURL *url) {
             if (uploader != weakSelf.currentUploader) {
                 // Ignore events from obsolete uploaders.

@@ -255,6 +255,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
         }
     }();
 
+    DDLogInfo(@"%@ Migrating setting - System Call Log Enabled: %d", self.logTag, shouldLogCallsInRecents);
     [self setValueForKey:OWSPreferencesKeySystemCallLogEnabled
                  toValue:@(shouldLogCallsInRecents)
              transaction:transaction];
