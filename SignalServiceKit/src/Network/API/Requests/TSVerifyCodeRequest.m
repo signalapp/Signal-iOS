@@ -24,13 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSURL *url =
         [NSURL URLWithString:[NSString stringWithFormat:@"%@/code/%@", textSecureAccountsAPI, verificationCode]];
-    NSMutableDictionary *parameters =
-        [[TSAttributes attributesWithSignalingKey:signalingKey serverAuthToken:authKey manualMessageFetching:NO]
-            mutableCopy];
-    if (pin) {
-        OWSAssert(pin.length > 0);
-        parameters[@"pin"] = pin;
-    }
+    NSDictionary *parameters =
+        [TSAttributes attributesWithSignalingKey:signalingKey serverAuthToken:authKey manualMessageFetching:NO pin:pin];
     self = [super initWithURL:url method:@"PUT" parameters:parameters];
 
     _numberToValidate = phoneNumber;
