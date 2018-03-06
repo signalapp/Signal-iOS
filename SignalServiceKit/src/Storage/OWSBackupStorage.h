@@ -29,6 +29,10 @@ typedef NSData *_Nullable (^BackupStorageKeySpecBlock)(void);
 - (void)runAsyncRegistrationsWithCompletion:(void (^_Nonnull)(void))completion;
 - (BOOL)areAllRegistrationsComplete;
 
+- (NSString *)databaseFilePath;
+- (NSString *)databaseFilePath_SHM;
+- (NSString *)databaseFilePath_WAL;
+
 @end
 
 NS_ASSUME_NONNULL_END

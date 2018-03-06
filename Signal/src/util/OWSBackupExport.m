@@ -5,7 +5,7 @@
 #import "OWSBackupExport.h"
 
 //#import "NSUserDefaults+OWS.h"
-//#import "Signal-Swift.h"
+#import "Signal-Swift.h"
 #import "zlib.h"
 
 //#import <SAMKeychain/SAMKeychain.h>
@@ -62,19 +62,27 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
 
 @property (nonatomic, weak) id<OWSBackupExportDelegate> delegate;
 
-@property (nonatomic, readonly) YapDatabaseConnection *srcDBConnection;
+@property (nonatomic, nullable) YapDatabaseConnection *srcDBConnection;
 
-@property (nonatomic, readonly) YapDatabaseConnection *dstDBConnection;
+@property (nonatomic, nullable) YapDatabaseConnection *dstDBConnection;
 
 // Indicates that the backup succeeded, failed or was cancelled.
 @property (atomic) BOOL isComplete;
 
-@property (atomic, nullable) OWSBackupStorage *backupStorage;
+@property (nonatomic, nullable) OWSBackupStorage *backupStorage;
 
-@property (atomic, nullable) NSData *databaseSalt;
+@property (nonatomic, nullable) NSData *databaseSalt;
 
-@property (atomic, nullable) OWSBackgroundTask *backgroundTask;
+@property (nonatomic, nullable) OWSBackgroundTask *backgroundTask;
 
+@property (nonatomic) NSMutableArray<NSString *> *databaseFilePaths;
+// A map of "record name"-to-"file name".
+@property (nonatomic) NSMutableDictionary<NSString *, NSString *> *databaseRecordMap;
+
+@property (nonatomic, nullable) NSString *manifestFilePath;
+@property (nonatomic, nullable) NSString *manifestRecordName;
+
+@property (nonatomic) NSString *exportDirPath;
 //- (NSData *)databasePassword;
 //
 //+ (void)storeDatabasePassword:(NSString *)password;
@@ -156,23 +164,30 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
 
 - (void)startAsync
 {
+    OWSAssertIsOnMainThread();
+
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self start];
-    });
+    self.backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
+    __weak OWSBackupExport *weakSelf = self;
+    [OWSBackupAPI checkCloudKitAccessWithCompletion:^(BOOL hasAccess) {
+        if (hasAccess) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [weakSelf start];
+            });
+        }
+    }];
 }
 
 - (void)start
 {
-    self.backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-
+    __weak OWSBackupExport *weakSelf = self;
     [self configureExport:^(BOOL success) {
         if (!success) {
             [self failWithErrorDescription:
                       NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
                           @"Error indicating the a backup export could not export the user's data.")];
-            ;
             return;
         }
 
@@ -183,15 +198,18 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
             [self failWithErrorDescription:
                       NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
                           @"Error indicating the a backup export could not export the user's data.")];
-            ;
             return;
         }
         if (self.isComplete) {
             return;
         }
-        // TODO:
-
-        [self succeed];
+        [self saveToCloud:^(NSError *_Nullable error) {
+            if (error) {
+                [weakSelf failWithError:error];
+            } else {
+                [weakSelf succeed];
+            }
+        }];
     }];
 }
 
@@ -200,10 +218,11 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     NSString *temporaryDirectory = NSTemporaryDirectory();
-    NSString *exportDirPath = [temporaryDirectory stringByAppendingString:[NSUUID UUID].UUIDString];
-    NSString *exportDatabaseDirPath = [exportDirPath stringByAppendingPathComponent:@"Database"];
+    self.exportDirPath = [temporaryDirectory stringByAppendingString:[NSUUID UUID].UUIDString];
+    NSString *exportDatabaseDirPath = [self.exportDirPath stringByAppendingPathComponent:@"Database"];
     self.databaseSalt = [Randomness generateRandomBytes:(int)kSQLCipherSaltLength];
-    if (![OWSFileSystem ensureDirectoryExists:exportDirPath]) {
+
+    if (![OWSFileSystem ensureDirectoryExists:self.exportDirPath]) {
         DDLogError(@"%@ Could not create exportDirPath.", self.logTag);
         return completion(NO);
     }
@@ -337,6 +356,117 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
 
     [self.backupStorage logFileSizes];
 
+    // Capture the list of files to save.
+    self.databaseFilePaths = [@[
+        self.backupStorage.databaseFilePath,
+        self.backupStorage.databaseFilePath_WAL,
+        self.backupStorage.databaseFilePath_SHM,
+    ] mutableCopy];
+
+    // Close the database.
+    self.dstDBConnection = nil;
+    self.backupStorage = nil;
+
+    return YES;
+}
+
+- (void)saveToCloud:(OWSBackupExportCompletion)completion
+{
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    self.databaseRecordMap = [NSMutableDictionary new];
+
+    [self saveNextFileToCloud:completion];
+}
+
+- (void)saveNextFileToCloud:(OWSBackupExportCompletion)completion
+{
+    if (self.isComplete) {
+        return;
+    }
+
+    __weak OWSBackupExport *weakSelf = self;
+
+    if (self.databaseFilePaths.count > 0) {
+        NSString *filePath = self.databaseFilePaths.lastObject;
+        [self.databaseFilePaths removeLastObject];
+        // Database files are encrypted and can be safely stored unencrypted in the cloud.
+        // TODO: Security review.
+        [OWSBackupAPI saveBackupFileToCloudWithFileUrl:[NSURL fileURLWithPath:filePath]
+            success:^(NSString *recordName) {
+                // Ensure that we continue to perform the backup export
+                // off the main thread.
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    OWSBackupExport *strongSelf = weakSelf;
+                    if (!strongSelf) {
+                        return;
+                    }
+                    strongSelf.databaseRecordMap[recordName] = [filePath lastPathComponent];
+                    [strongSelf saveNextFileToCloud:completion];
+                });
+            }
+            failure:^(NSError *error) {
+                // Database files are critical so any error uploading them is unrecoverable.
+                completion(error);
+            }];
+        return;
+    }
+
+    if (!self.manifestFilePath) {
+        if (![self writeManifestFile]) {
+            completion(OWSErrorWithCodeDescription(OWSErrorCodeExportBackupFailed,
+                NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
+                    @"Error indicating the a backup export could not export the user's data.")));
+            return;
+        }
+        OWSAssert(self.manifestFilePath);
+
+        [OWSBackupAPI saveBackupFileToCloudWithFileUrl:[NSURL fileURLWithPath:self.manifestFilePath]
+            success:^(NSString *recordName) {
+                // Ensure that we continue to perform the backup export
+                // off the main thread.
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    OWSBackupExport *strongSelf = weakSelf;
+                    if (!strongSelf) {
+                        return;
+                    }
+                    strongSelf.manifestRecordName = recordName;
+                    [strongSelf saveNextFileToCloud:completion];
+                });
+            }
+            failure:^(NSError *error) {
+                // The manifest file is critical so any error uploading them is unrecoverable.
+                completion(error);
+            }];
+        return;
+    }
+
+
+    // All files have been saved to the cloud.
+    completion(nil);
+}
+
+- (BOOL)writeManifestFile
+{
+    OWSAssert(self.databaseRecordMap.count > 0);
+    OWSAssert(self.exportDirPath.length > 0);
+
+    NSDictionary *json = @{
+        @"database_files" : self.databaseRecordMap,
+    };
+    NSError *error;
+    NSData *_Nullable jsonData =
+        [NSJSONSerialization dataWithJSONObject:json options:NSJSONWritingPrettyPrinted error:&error];
+    if (!jsonData || error) {
+        DDLogError(@"%@ error encoding manifest file: %@", self.logTag, error);
+        return NO;
+    }
+    // TODO: Encrypt the manifest.
+    self.manifestFilePath = [self.exportDirPath stringByAppendingPathComponent:@"manifest.json"];
+    if (![jsonData writeToFile:self.manifestFilePath atomically:YES]) {
+        DDLogError(@"%@ error writing manifest file: %@", self.logTag, error);
+        return NO;
+    }
     return YES;
 }
 
