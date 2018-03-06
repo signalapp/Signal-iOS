@@ -68,7 +68,6 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         @(OWSSound_Bamboo),
         @(OWSSound_Chord),
         @(OWSSound_Circles),
-        @(OWSSound_ClassicNotification),
         @(OWSSound_Complete),
         @(OWSSound_Hello),
         @(OWSSound_Input),
@@ -76,6 +75,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         @(OWSSound_Popcorn),
         @(OWSSound_Pulse),
         @(OWSSound_Synth),
+        @(OWSSound_ClassicNotification),
     ];
 }
 
@@ -113,7 +113,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         case OWSSound_Synth:
             return @"Synth";
         case OWSSound_ClassicNotification:
-            return @"Classic";
+            return @"Signal Classic";
 
         // Call Audio
         case OWSSound_Opening:
