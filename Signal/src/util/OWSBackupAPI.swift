@@ -142,6 +142,9 @@ import CloudKit
                                         failure: @escaping (Error) -> Swift.Void) {
         let recordId = CKRecordID(recordName: recordName)
         let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
+        // Don't download the file; we're just using the fetch to check whether or
+        // not this record already exists.
+        fetchOperation.desiredKeys = []
         fetchOperation.perRecordCompletionBlock = { (record, recordId, error) in
             if let error = error {
                 if let ckerror = error as? CKError {
@@ -189,6 +192,9 @@ import CloudKit
                                         failure: @escaping (Error) -> Swift.Void) {
         let recordId = CKRecordID(recordName: recordName)
         let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
+        // Don't download the file; we're just using the fetch to check whether or
+        // not this record already exists.
+        fetchOperation.desiredKeys = []
         fetchOperation.perRecordCompletionBlock = { (record, recordId, error) in
             if let error = error {
                 if let ckerror = error as? CKError {
