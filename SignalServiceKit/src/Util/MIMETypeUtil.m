@@ -19,6 +19,7 @@ NSString *const OWSMimeTypeApplicationOctetStream = @"application/octet-stream";
 NSString *const OWSMimeTypeImagePng = @"image/png";
 NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
 NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
+NSString *const OWSMimeTypeApplicationZip = @"application/zip";
 
 NSString *const kOversizeTextAttachmentUTI = @"org.whispersystems.oversize-text-attachment";
 NSString *const kOversizeTextAttachmentFileExtension = @"txt";
@@ -1250,7 +1251,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"application/yang" : @"yang",
             @"application/yin+xml" : @"yin",
             @"application/ynd.ms-pkipko" : @"pko",
-            @"application/zip" : @"zip",
+            OWSMimeTypeApplicationZip : @"zip",
             @"audio/aac" : @"aac",
             @"audio/adpcm" : @"adp",
             @"audio/aiff" : @"aiff",
@@ -2557,7 +2558,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"z7" : @"application/x-zmachine",
             @"z8" : @"application/x-zmachine",
             @"zaz" : @"application/vnd.zzazz.deck+xml",
-            @"zip" : @"application/zip",
+            @"zip" : OWSMimeTypeApplicationZip,
             @"zir" : @"application/vnd.zul",
             @"zirz" : @"application/vnd.zul",
             @"zmm" : @"application/vnd.handheld-entertainment+xml",

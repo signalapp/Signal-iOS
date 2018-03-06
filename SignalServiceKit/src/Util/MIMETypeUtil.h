@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSMimeTypeApplicationOctetStream;
+extern NSString *const OWSMimeTypeApplicationZip;
 extern NSString *const OWSMimeTypeImagePng;
 extern NSString *const OWSMimeTypeOversizeTextMessage;
 extern NSString *const OWSMimeTypeUnknownForTests;
