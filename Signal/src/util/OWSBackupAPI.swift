@@ -12,15 +12,6 @@ import CloudKit
         return "test-\(NSUUID().uuidString)"
     }
 
-//    @objc
-//    public class func recordNameForTest(value: TSAttachmentStream) -> String {
-//        guard let uniqueId = value.uniqueId else {
-//            owsFail("Database entity missing uniqueId.")
-//            return "unknown"
-//        }
-//        return "attachment-stream-\(uniqueId)"
-//    }
-
     @objc
     public class func saveTestFileToCloud(fileUrl: URL,
                                           success: @escaping (String) -> Swift.Void,
