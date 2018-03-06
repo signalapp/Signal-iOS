@@ -64,9 +64,12 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSBackupAPI checkCloudKitAccessWithCompletion:^(BOOL hasAccess) {
         if (hasAccess) {
             [OWSBackupAPI saveTestFileToCloudWithFileUrl:[NSURL fileURLWithPath:filePath]
-                                              completion:^(NSError *_Nullable error){
-                                                  // Do nothing, the API method will log for us.
-                                              }];
+                                                 success:^(NSString *recordName) {
+                                                     // Do nothing, the API method will log for us.
+                                                 }
+                                                 failure:^(NSError *error){
+                                                     // Do nothing, the API method will log for us.
+                                                 }];
         }
     }];
 }

@@ -23,30 +23,46 @@ import CloudKit
 
     @objc
     public class func saveTestFileToCloud(fileUrl: URL,
-                                          completion: @escaping (Error?) -> Swift.Void) {
+                                          success: @escaping (String) -> Swift.Void,
+                                          failure: @escaping (Error) -> Swift.Void) {
         saveFileToCloud(fileUrl: fileUrl,
                         recordId: recordIdForTest(),
                         recordType: "test",
-                        completion: completion)
+                        success: success,
+                        failure: failure)
+    }
+
+    @objc
+    public class func saveBackupFileToCloud(fileUrl: URL,
+                                            success: @escaping (String) -> Swift.Void,
+                                            failure: @escaping (Error) -> Swift.Void) {
+        saveFileToCloud(fileUrl: fileUrl,
+                        recordId: NSUUID().uuidString,
+                        recordType: "backupFile",
+                        success: success,
+                        failure: failure)
     }
 
     @objc
     public class func saveFileToCloud(fileUrl: URL,
                                       recordId: String,
                                       recordType: String,
-                                      completion: @escaping (Error?) -> Swift.Void) {
+                                      success: @escaping (String) -> Swift.Void,
+                                      failure: @escaping (Error) -> Swift.Void) {
         let recordID = CKRecordID(recordName: recordId)
         let record = CKRecord(recordType: recordType, recordID: recordID)
         let asset = CKAsset(fileURL: fileUrl)
         record["payload"] = asset
 
         saveRecordToCloud(record: record,
-                          completion: completion)
+                          success: success,
+                          failure: failure)
     }
 
     @objc
     public class func saveRecordToCloud(record: CKRecord,
-                                        completion: @escaping (Error?) -> Swift.Void) {
+                                        success: @escaping (String) -> Swift.Void,
+                                        failure: @escaping (Error) -> Swift.Void) {
 
         let myContainer = CKContainer.default()
         let privateDatabase = myContainer.privateCloudDatabase
@@ -55,10 +71,17 @@ import CloudKit
 
             if let error = error {
                 Logger.error("\(self.logTag) error saving record: \(error)")
-                completion(error)
+                failure(error)
             } else {
+                guard let recordName = record?.recordID.recordName else {
+                    Logger.error("\(self.logTag) error retrieving saved record's name.")
+                    failure(OWSErrorWithCodeDescription(.exportBackupError,
+                                                        NSLocalizedString("BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED",
+                                                                          comment: "Error indicating the a backup export failed to save a file to the cloud.")))
+                    return
+                }
                 Logger.info("\(self.logTag) saved record.")
-                completion(nil)
+                success(recordName)
             }
         }
     }
