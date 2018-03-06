@@ -56,7 +56,7 @@ import Foundation
 
     @objc
     public class func showErrorAlert(withMessage message: String) {
-        self.showAlert(withTitle: CommonStrings.errorAlertTitle, message: message, buttonTitle: nil)
+        self.showAlert(title: CommonStrings.errorAlertTitle, message: message, buttonTitle: nil)
     }
 
     @objc
