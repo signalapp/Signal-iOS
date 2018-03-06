@@ -20,6 +20,7 @@
 #import "SignalsNavigationController.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
+#import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/AppSetup.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
@@ -205,6 +206,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange)
                                                  name:RegistrationStateDidChangeNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(registrationLockDidChange:)
+                                                 name:NSNotificationName_2FAStateDidChange
                                                object:nil];
 
     DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.logTag);
@@ -594,6 +599,20 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.logTag);
 }
 
+- (void)enableBackgroundRefreshIfNecessary
+{
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        if (OWS2FAManager.sharedManager.is2FAEnabled && [TSAccountManager isRegistered]) {
+            // Ping server once a day to keep-alive 2FA clients.
+            const NSTimeInterval kBackgroundRefreshInterval = 24 * 60 * 60;
+            [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:kBackgroundRefreshInterval];
+        } else {
+            [[UIApplication sharedApplication]
+                setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
+        }
+    }];
+}
+
 - (void)handleActivation
 {
     OWSAssertIsOnMainThread();
@@ -618,6 +637,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.
                 [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
+
+                [self enableBackgroundRefreshIfNecessary];
 
                 // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
                 // sent before the app exited should be marked as failures.
@@ -989,7 +1010,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 - (void)application:(UIApplication *)application
     handleActionWithIdentifier:(NSString *)identifier
           forLocalNotification:(UILocalNotification *)notification
-             completionHandler:(void (^)())completionHandler
+             completionHandler:(void (^)(void))completionHandler
 {
     OWSAssertIsOnMainThread();
 
@@ -1016,7 +1037,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     handleActionWithIdentifier:(NSString *)identifier
           forLocalNotification:(UILocalNotification *)notification
               withResponseInfo:(NSDictionary *)responseInfo
-             completionHandler:(void (^)())completionHandler
+             completionHandler:(void (^)(void))completionHandler
 {
     OWSAssertIsOnMainThread();
 
@@ -1037,6 +1058,28 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
                             forLocalNotification:notification
                                 withResponseInfo:responseInfo
                                completionHandler:completionHandler];
+    }];
+}
+
+- (void)application:(UIApplication *)application
+    performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
+{
+    DDLogInfo(@"%@ performing background fetch", self.logTag);
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        __block AnyPromise *job = [[SignalApp sharedApp].messageFetcherJob run].then(^{
+            // HACK: Call completion handler after n seconds.
+            //
+            // We don't currently have a convenient API to know when message fetching is *done* when
+            // working with the websocket.
+            //
+            // We *could* substantially rewrite the TSSocketManager to take advantage of the `empty` message
+            // But once our REST endpoint is fixed to properly de-enqueue fallback notifications, we can easily
+            // use the rest endpoint here rather than the websocket and circumvent making changes to critical code.
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                completionHandler(UIBackgroundFetchResultNewData);
+                job = nil;
+            });
+        });
     }];
 }
 
@@ -1136,6 +1179,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     DDLogInfo(@"registrationStateDidChange");
 
+    [self enableBackgroundRefreshIfNecessary];
+
     if ([TSAccountManager isRegistered]) {
         DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
 
@@ -1151,6 +1196,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         // For non-legacy users, read receipts are on by default.
         [OWSReadReceiptManager.sharedManager setAreReadReceiptsEnabled:YES];
     }
+}
+
+- (void)registrationLockDidChange:(NSNotification *)notification
+{
+    [self enableBackgroundRefreshIfNecessary];
 }
 
 - (void)ensureRootViewController
