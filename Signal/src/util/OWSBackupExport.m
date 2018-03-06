@@ -2,31 +2,28 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSBackup.h"
+#import "OWSBackupExport.h"
 
 //#import "NSUserDefaults+OWS.h"
 //#import "Signal-Swift.h"
-//#import "zlib.h"
+#import "zlib.h"
 
 //#import <SAMKeychain/SAMKeychain.h>
-//#import <SSZipArchive/SSZipArchive.h>
+#import <SSZipArchive/SSZipArchive.h>
 
 //#import <SignalMessaging/SignalMessaging-Swift.h>
 //#import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 
 //#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import "NSNotificationCenter+OWS.h"
-#import "OWSBackupExport.h"
-#import <SignalServiceKit/AppContext.h>
+//#import "NSNotificationCenter+OWS.h"
 #import <SignalServiceKit/OWSBackupStorage.h>
-#import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
-NSString *const NSNotificationNameBackupStateDidChange = @"NSNotificationNameBackupStateDidChange";
-
-NSString *const OWSPrimaryStorage_OWSBackupCollection = @"OWSPrimaryStorage_OWSBackupCollection";
-NSString *const OWSBackup_IsBackupEnabledKey = @"OWSBackup_IsBackupEnabledKey";
+// NSString *const NSNotificationNameBackupStateDidChange = @"NSNotificationNameBackupStateDidChange";
+//
+// NSString *const OWSPrimaryStorage_OWSBackupCollection = @"OWSPrimaryStorage_OWSBackupCollection";
+// NSString *const OWSBackup_IsBackupEnabledKey = @"OWSBackup_IsBackupEnabledKey";
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -49,14 +46,24 @@ NS_ASSUME_NONNULL_BEGIN
 // NSString *const Keychain_ImportBackupService = @"OWSKeychainService";
 // NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
 
-@interface OWSBackup ()
+@interface OWSBackupExport () <SSZipArchiveDelegate>
+
+@property (nonatomic, weak) id<OWSBackupExportDelegate> delegate;
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
-// This property should only be accessed on the main thread.
-@property (nonatomic, nullable) OWSBackupExport *backupExport;
+// Indicates that the backup succeeded, failed or was cancelled.
+@property (atomic) BOOL isComplete;
 
-//<SSZipArchiveDelegate>
+//- (NSData *)databasePassword;
+//
+//+ (void)storeDatabasePassword:(NSString *)password;
+
+//@end
+//
+//#pragma mark -
+//
+//@interface OWSBackupExport () <SSZipArchiveDelegate>
 
 //@property (nonatomic) OWSBackupState backupState;
 //
@@ -75,28 +82,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation OWSBackup
+@implementation OWSBackupExport
 
 @synthesize dbConnection = _dbConnection;
 
-+ (instancetype)sharedManager
-{
-    static OWSBackup *sharedMyManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedMyManager = [[self alloc] initDefault];
-    });
-    return sharedMyManager;
-}
+//+ (instancetype)sharedManager
+//{
+//    static OWSBackup *sharedMyManager = nil;
+//    static dispatch_once_t onceToken;
+//    dispatch_once(&onceToken, ^{
+//        sharedMyManager = [[self alloc] initDefault];
+//    });
+//    return sharedMyManager;
+//}
+//
+//- (instancetype)initDefault
+//{
+//    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+//
+//    return [self initWithPrimaryStorage:primaryStorage];
+//}
 
-- (instancetype)initDefault
-{
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-
-    return [self initWithPrimaryStorage:primaryStorage];
-}
-
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)initWithDelegate:(id<OWSBackupExportDelegate>)delegate
+                  primaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
 
@@ -106,20 +114,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssert(primaryStorage);
 
+    self.delegate = delegate;
     _dbConnection = primaryStorage.newDatabaseConnection;
 
-    _backupExportState = OWSBackupState_AtRest;
+    //    _backupExportState = OWSBackupState_AtRest;
 
     OWSSingletonAssert();
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationDidBecomeActive:)
-                                                 name:OWSApplicationDidBecomeActiveNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(registrationStateDidChange)
-                                                 name:RegistrationStateDidChangeNotification
-                                               object:nil];
 
     return self;
 }
@@ -129,8 +129,48 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)start
+{
+    // TODO:
+}
+
+- (void)cancel
+{
+    // TODO:
+    self.isComplete = YES;
+}
+
+- (void)succeed
+{
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    self.isComplete = YES;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.delegate backupExportDidSucceed];
+    });
+    // TODO:
+}
+
+- (void)failWithError:(NSError *)error
+{
+    DDLogError(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, error);
+
+    self.isComplete = YES;
+
+    // TODO:
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.delegate backupExportDidFailWithError:error];
+    });
+}
+
 //- (void)observeNotifications
 //{
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(applicationDidBecomeActive:)
+//                                                 name:OWSApplicationDidBecomeActiveNotification
+//                                               object:nil];
 //}
 
 //- (void)dealloc
@@ -143,82 +183,32 @@ NS_ASSUME_NONNULL_BEGIN
 //    });
 //}
 
-- (void)setBackupExportState:(OWSBackupState)backupExportState
-{
-    _backupExportState = backupExportState;
-
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameBackupStateDidChange
-                                                             object:nil
-                                                           userInfo:nil];
-}
-
-- (BOOL)isBackupEnabled
-{
-    return [self.dbConnection boolForKey:OWSBackup_IsBackupEnabledKey
-                            inCollection:OWSPrimaryStorage_OWSBackupCollection
-                            defaultValue:NO];
-}
-
-- (void)setIsBackupEnabled:(BOOL)value
-{
-    [self.dbConnection setBool:value
-                        forKey:OWSBackup_IsBackupEnabledKey
-                  inCollection:OWSPrimaryStorage_OWSBackupCollection];
-
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameBackupStateDidChange
-                                                             object:nil
-                                                           userInfo:nil];
-}
-
-- (BOOL)shouldHaveBackupExport
-{
-    if (!self.isBackupEnabled) {
-        return NO;
-    }
-    if (UIApplication.sharedApplication.applicationState != UIApplicationStateActive) {
-        // Only start backups when app is in the background.
-        return NO;
-    }
-    if (![TSAccountManager isRegistered]) {
-        return NO;
-    }
-
-    // TODO: There's probably other conditions that affect this decision.
-    return YES;
-}
-
-- (void)ensureBackupExportState
-{
-    OWSAssertIsOnMainThread();
-
-    if (!self.shouldHaveBackupExport && self.backupExport) {
-        [self.backupExport cancel];
-        self.backupExport = nil;
-    } else if (self.shouldHaveBackupExport && !self.backupExport) {
-        self.backupExport =
-            [[OWSBackupExport alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
-        [self.backupExport start];
-    }
-
-    //    BOOL shouldHaveBackupExport
-    //    OWSBackupExport *backupExport
-}
-
-#pragma mark -
-
-- (void)applicationDidBecomeActive:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self ensureBackupExportState];
-}
-
-- (void)registrationStateDidChange
-{
-    OWSAssertIsOnMainThread();
-
-    [self ensureBackupExportState];
-}
+//- (void)setBackupExportState:(OWSBackupState)backupExportState
+//{
+//    _backupExportState = backupExportState;
+//
+//    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameBackupStateDidChange
+//                                                             object:nil
+//                                                           userInfo:nil];
+//}
+//
+//- (BOOL)isBackupEnabled
+//{
+//    return [self.dbConnection boolForKey:OWSBackup_IsBackupEnabledKey
+//                            inCollection:OWSPrimaryStorage_OWSBackupCollection
+//                            defaultValue:NO];
+//}
+//
+//- (void)setIsBackupEnabled:(BOOL)value
+//{
+//    [self.dbConnection setBool:value
+//                        forKey:OWSBackup_IsBackupEnabledKey
+//                  inCollection:OWSPrimaryStorage_OWSBackupCollection];
+//
+//    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameBackupStateDidChange
+//                                                             object:nil
+//                                                           userInfo:nil];
+//}
 
 //- (void)setBackupProgress:(CGFloat)backupProgress
 //{

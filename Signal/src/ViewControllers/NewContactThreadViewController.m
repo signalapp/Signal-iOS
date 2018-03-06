@@ -728,8 +728,7 @@ NS_ASSUME_NONNULL_BEGIN
                     if ([MFMessageComposeViewController canSendText]) {
                         [inviteFlow sendSMSToPhoneNumbers:@[ phoneNumber ]];
                     } else {
-                        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")
-                                              message:NSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"")];
+                        [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"")];
                     }
                 }];
 

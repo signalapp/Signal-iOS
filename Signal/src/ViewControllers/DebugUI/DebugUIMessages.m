@@ -693,12 +693,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(size % 4 == 0);
 
-    NSMutableData *data = [NSMutableData dataWithCapacity:size];
-    for (size_t i = 0; i < size / 4; ++i) {
-        u_int32_t randomBits = arc4random();
-        [data appendBytes:(void *)&randomBits length:4];
-    }
-    return data;
+    return [Randomness generateRandomBytes:size];
 }
 
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti

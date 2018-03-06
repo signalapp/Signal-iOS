@@ -367,8 +367,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     NSString *normalizedProfileName = [self normalizedProfileName];
     if ([OWSProfileManager.sharedManager isProfileNameTooLong:normalizedProfileName]) {
-        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")
-                              message:NSLocalizedString(@"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG",
+        [OWSAlerts
+            showErrorAlertWithMessage:NSLocalizedString(@"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG",
                                           @"Error message shown when user tries to update profile with a profile name "
                                           @"that is too long.")];
         return;
@@ -396,14 +396,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                  [alertController
                                      dismissViewControllerAnimated:NO
                                                         completion:^{
-                                                            [OWSAlerts
-                                                                showAlertWithTitle:NSLocalizedString(
-                                                                                       @"ALERT_ERROR_TITLE", @"")
-                                                                           message:
-                                                                               NSLocalizedString(
-                                                                                   @"PROFILE_VIEW_ERROR_UPDATE_FAILED",
-                                                                                   @"Error message shown when a "
-                                                                                   @"profile update fails.")];
+                                                            [OWSAlerts showErrorAlertWithMessage:
+                                                                           NSLocalizedString(
+                                                                               @"PROFILE_VIEW_ERROR_UPDATE_FAILED",
+                                                                               @"Error message shown when a "
+                                                                               @"profile update fails.")];
                                                         }];
                              }];
                      }];

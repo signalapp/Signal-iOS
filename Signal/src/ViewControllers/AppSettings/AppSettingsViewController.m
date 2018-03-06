@@ -92,7 +92,8 @@
     [self updateTableContents];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self showBackup];
+        //        [self showBackup];
+        [self showDebugUI];
     });
 }
 
