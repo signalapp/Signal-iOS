@@ -2,27 +2,28 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWS107LegacySounds.h"
-#import "OWSSounds.h"
+#import "OWS108CallLoggingPreference.h"
+#import "Environment.h"
+#import "OWSPreferences.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 // Increment a similar constant for every future DBMigration
-static NSString *const OWS107LegacySoundsMigrationId = @"107";
+static NSString *const OWS108CallLoggingPreferenceId = @"108";
 
-@implementation OWS107LegacySounds
+@implementation OWS108CallLoggingPreference
 
 + (NSString *)migrationId
 {
-    return OWS107LegacySoundsMigrationId;
+    return OWS108CallLoggingPreferenceId;
 }
 
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
 
-    [OWSSounds setGlobalNotificationSound:OWSSound_SignalClassic transaction:transaction];
+    [[Environment preferences] applyCallLoggingSettingsForLegacyUsersWithTransaction:transaction];
 }
 
 @end

@@ -17,6 +17,8 @@ typedef NS_ENUM(NSUInteger, NotificationType) {
 extern NSString *const OWSPreferencesSignalDatabaseCollection;
 extern NSString *const OWSPreferencesKeyEnableDebugLog;
 
+@class YapDatabaseReadWriteTransaction;
+
 @interface OWSPreferences : NSObject
 
 #pragma mark - Helpers
@@ -63,6 +65,8 @@ extern NSString *const OWSPreferencesKeyEnableDebugLog;
 - (void)setIsSystemCallLogEnabled:(BOOL)flag;
 
 #pragma mark - Legacy CallKit settings
+
+- (void)applyCallLoggingSettingsForLegacyUsersWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (BOOL)isCallKitEnabled;
 - (void)setIsCallKitEnabled:(BOOL)flag;

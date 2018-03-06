@@ -7,6 +7,7 @@
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/TSStorageHeaders.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <SignalServiceKit/YapDatabaseTransaction+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -52,16 +53,35 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (nullable id)tryGetValueForKey:(NSString *)key
 {
     OWSAssert(key != nil);
-    return [OWSPrimaryStorage.dbReadConnection objectForKey:key inCollection:OWSPreferencesSignalDatabaseCollection];
+
+    __block id result;
+    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        result = [self tryGetValueForKey:key transaction:transaction];
+    }];
+    return result;
+}
+
+- (nullable id)tryGetValueForKey:(NSString *)key transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(key != nil);
+    return [transaction objectForKey:key inCollection:OWSPreferencesSignalDatabaseCollection];
 }
 
 - (void)setValueForKey:(NSString *)key toValue:(nullable id)value
 {
+    [OWSPrimaryStorage.dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [self setValueForKey:key toValue:value transaction:transaction];
+        }];
+}
+
+- (void)setValueForKey:(NSString *)key
+               toValue:(nullable id)value
+           transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
     OWSAssert(key != nil);
 
-    [OWSPrimaryStorage.dbReadWriteConnection setObject:value
-                                                forKey:key
-                                          inCollection:OWSPreferencesSignalDatabaseCollection];
+    [transaction setObject:value forKey:key inCollection:OWSPreferencesSignalDatabaseCollection];
 }
 
 #pragma mark - Specific Preferences
@@ -184,21 +204,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     }
 
     NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeySystemCallLogEnabled];
-
-    if (preference) {
-        return preference.boolValue;
-    } else {
-        // For legacy users, who may have previously intentionally disabled CallKit because they
-        // didn't want their calls showing up in the call log, we want to disable call logging
-        NSNumber *callKitPreference = [self tryGetValueForKey:OWSPreferencesKeyCallKitEnabled];
-        if (callKitPreference && !callKitPreference.boolValue) {
-            // user explicitly opted out of callKit, so disable system call logging.
-            return NO;
-        }
-    }
-
-    // For everyone else, including new users, enable by default.
-    return YES;
+    return preference ? preference.boolValue : YES;
 }
 
 - (void)setIsSystemCallLogEnabled:(BOOL)flag
@@ -224,11 +230,42 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 // Therefore in versions of iOS after 11, we have no need of call privacy.
 #pragma mark Legacy CallKit
 
+// Be a little conservative with system call logging with legacy users, even though it's
+// not synced to iCloud, users could be concerned to suddenly see caller names in their
+// recent calls list.
+- (void)applyCallLoggingSettingsForLegacyUsersWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    NSNumber *_Nullable callKitPreference =
+        [self tryGetValueForKey:OWSPreferencesKeyCallKitEnabled transaction:transaction];
+    BOOL wasUsingCallKit = callKitPreference ? [callKitPreference boolValue] : YES;
+
+    NSNumber *_Nullable callKitPrivacyPreference =
+        [self tryGetValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled transaction:transaction];
+    BOOL wasUsingCallKitPrivacy = callKitPrivacyPreference ? callKitPrivacyPreference.boolValue : YES;
+
+    BOOL shouldLogCallsInRecents = ^{
+        if (wasUsingCallKit && !wasUsingCallKitPrivacy) {
+            // User was using CallKit and explicitly opted in to showing names/numbers,
+            // so it's OK to continue to show names/numbers in the system recents list.
+            return YES;
+        } else {
+            // User was not previously showing names/numbers in the system
+            // recents list, so don't opt them in.
+            return NO;
+        }
+    }();
+
+    DDLogInfo(@"%@ Migrating setting - System Call Log Enabled: %d", self.logTag, shouldLogCallsInRecents);
+    [self setValueForKey:OWSPreferencesKeySystemCallLogEnabled
+                 toValue:@(shouldLogCallsInRecents)
+             transaction:transaction];
+}
+
 - (BOOL)isCallKitEnabled
 {
     if (@available(iOS 11, *)) {
-        OWSFail(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
-        return NO;
+        OWSFail(@"%@ CallKit is always enabled for iOS11+", self.logTag);
+        return YES;
     }
 
     NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyCallKitEnabled];
@@ -238,7 +275,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (void)setIsCallKitEnabled:(BOOL)flag
 {
     if (@available(iOS 11, *)) {
-        OWSFail(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
+        OWSFail(@"%@ CallKit is always enabled for iOS11+", self.logTag);
         return;
     }
 
@@ -249,7 +286,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (BOOL)isCallKitEnabledSet
 {
     if (@available(iOS 11, *)) {
-        OWSFail(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
+        OWSFail(@"%@ CallKit is always enabled for iOS11+", self.logTag);
         return NO;
     }
 

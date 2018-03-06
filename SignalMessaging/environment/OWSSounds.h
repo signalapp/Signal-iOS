@@ -20,7 +20,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_Popcorn,
     OWSSound_Pulse,
     OWSSound_Synth,
-    OWSSound_ClassicNotification,
+    OWSSound_SignalClassic,
 
     // Ringtone Sounds
     OWSSound_Opening,
@@ -47,9 +47,6 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 + (NSString *)displayNameForSound:(OWSSound)sound;
 
 + (nullable NSString *)filenameForSound:(OWSSound)sound;
-
-+ (void)playSound:(OWSSound)sound shouldRespectSilentSwitch:(BOOL)shouldRespectSilentSwitch;
-+ (void)playSound:(OWSSound)sound quiet:(BOOL)quiet shouldRespectSilentSwitch:(BOOL)shouldRespectSilentSwitch;
 
 #pragma mark - Notifications
 

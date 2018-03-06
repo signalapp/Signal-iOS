@@ -9,13 +9,6 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
 
     var buttonAction: ((UIButton) -> Void)?
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        // Opt users in to the new default sound ("note") after they've seen the splash screen.
-        OWSSounds.setGlobalNotificationSound(.note)
-    }
-
     override func loadView() {
         self.view = UIView.container()
 
@@ -51,8 +44,8 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
         let button = addButton(title: buttonTitle) { _ in
             // dismiss the modally presented view controller, then proceed.
             self.experienceUpgradesPageViewController.dismiss(animated: true) {
-                guard let fromViewController = UIApplication.shared.frontmostViewController as? HomeViewController else {
-                    owsFail("unexpected frontmostViewController: \(String(describing: UIApplication.shared.frontmostViewController))")
+                guard let fromViewController = UIApplication.shared.frontmostViewController else {
+                    owsFail("frontmostViewController was unexectedly nil")
                     return
                 }
 
@@ -497,12 +490,15 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
 
     let pageViewController: UIPageViewController
 
+    let editingDBConnection: YapDatabaseConnection
+
     // MARK: - Initializers
 
     required init(experienceUpgrades: [ExperienceUpgrade]) {
         self.experienceUpgrades = experienceUpgrades
 
         setPageControlAppearance()
+        self.editingDBConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
         self.pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
         super.init(nibName: nil, bundle: nil)
         self.pageViewController.dataSource = self
@@ -512,12 +508,7 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
 
     @available(*, unavailable, message:"unavailable, use initWithExperienceUpgrade instead")
     required init?(coder aDecoder: NSCoder) {
-        assert(false)
-        // This should never happen, but so as not to explode we give some bogus data
-        self.experienceUpgrades = [ExperienceUpgrade()]
-        self.pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
-        super.init(coder: aDecoder)
-        self.pageViewController.dataSource = self
+        fatalError("unimplemented")
     }
 
     // MARK: - View lifecycle
@@ -684,6 +675,16 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
         let count = allViewControllers.count
         viewControllerIndexes[viewController] = count
         allViewControllers.append(viewController)
+    }
+
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        // Blocking write before dismiss, to be sure they're marked as complete
+        // before HomeView.didAppear is re-fired.
+        self.editingDBConnection.readWrite { transaction in
+            Logger.info("\(self.logTag) marking all upgrades as seen.")
+            ExperienceUpgradeFinder.shared.markAllAsSeen(transaction: transaction)
+        }
+        super.dismiss(animated: flag, completion: completion)
     }
 
     func didTapDismissButton(sender: UIButton) {
