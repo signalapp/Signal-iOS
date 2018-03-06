@@ -48,9 +48,6 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 
 + (nullable NSString *)filenameForSound:(OWSSound)sound;
 
-+ (void)playSound:(OWSSound)sound shouldRespectSilentSwitch:(BOOL)shouldRespectSilentSwitch;
-+ (void)playSound:(OWSSound)sound quiet:(BOOL)quiet shouldRespectSilentSwitch:(BOOL)shouldRespectSilentSwitch;
-
 #pragma mark - Notifications
 
 + (NSArray<NSNumber *> *)allNotificationSounds;

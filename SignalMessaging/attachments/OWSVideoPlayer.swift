@@ -38,7 +38,7 @@ public class OWSVideoPlayer: NSObject {
     }
 
     public func play() {
-        OWSAudioSession.shared.setPlaybackCategory(audioActivity: self.audioActivity)
+        OWSAudioSession.shared.startPlaybackAudioActivity(self.audioActivity)
 
         guard let item = avPlayer.currentItem else {
             owsFail("\(logTag) video player item was unexpectedly nil")

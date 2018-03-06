@@ -17,8 +17,6 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
-@property (nonatomic, nullable) OWSAudioPlayer *audioPlayer;
-
 @end
 
 #pragma mark -
@@ -70,7 +68,6 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         @(OWSSound_Bamboo),
         @(OWSSound_Chord),
         @(OWSSound_Circles),
-        @(OWSSound_ClassicNotification),
         @(OWSSound_Complete),
         @(OWSSound_Hello),
         @(OWSSound_Input),
@@ -78,6 +75,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         @(OWSSound_Popcorn),
         @(OWSSound_Pulse),
         @(OWSSound_Synth),
+        @(OWSSound_ClassicNotification),
     ];
 }
 
@@ -115,7 +113,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         case OWSSound_Synth:
             return @"Synth";
         case OWSSound_ClassicNotification:
-            return @"Classic";
+            return @"Signal Classic";
 
         // Call Audio
         case OWSSound_Opening:
@@ -209,27 +207,6 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     return url;
 }
 
-+ (void)playSound:(OWSSound)sound shouldRespectSilentSwitch:(BOOL)shouldRespectSilentSwitch
-{
-    [self.sharedManager playSound:sound quiet:NO shouldRespectSilentSwitch:shouldRespectSilentSwitch];
-}
-
-+ (void)playSound:(OWSSound)sound quiet:(BOOL)quiet shouldRespectSilentSwitch:(BOOL)shouldRespectSilentSwitch
-{
-    [self.sharedManager playSound:sound quiet:quiet shouldRespectSilentSwitch:shouldRespectSilentSwitch];
-}
-
-- (void)playSound:(OWSSound)sound quiet:(BOOL)quiet shouldRespectSilentSwitch:(BOOL)shouldRespectSilentSwitch
-{
-    [self.audioPlayer stop];
-    self.audioPlayer = [OWSSounds audioPlayerForSound:sound quiet:quiet];
-    if (shouldRespectSilentSwitch) {
-        [self.audioPlayer playWithCurrentAudioCategory];
-    } else {
-        [self.audioPlayer playWithPlaybackAudioCategory];
-    }
-}
-
 #pragma mark - Notifications
 
 + (OWSSound)defaultNotificationSound
@@ -282,11 +259,18 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     DDLogDebug(@"%@ writing new default sound to %@", self.logTag, defaultSoundPath);
 
     NSURL *_Nullable soundURL = [OWSSounds soundURLForSound:sound quiet:NO];
-    OWSAssert(soundURL);
+
+    NSData *soundData = ^{
+        if (soundURL) {
+            return [NSData dataWithContentsOfURL:soundURL];
+        } else {
+            OWSAssert(sound == OWSSound_None);
+            return [NSData new];
+        }
+    }();
 
     // Quick way to achieve an atomic "copy" operation that allows overwriting if the user has previously specified
     // a default notification sound.
-    NSData *soundData = [NSData dataWithContentsOfURL:soundURL];
     BOOL success = [soundData writeToFile:defaultSoundPath atomically:YES];
 
     // The globally configured sound the user has configured is unprotected, so that we can still play the sound if the

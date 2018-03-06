@@ -99,8 +99,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playWithPlaybackAudioCategory
 {
     OWSAssertIsOnMainThread();
-    [OWSAudioSession.shared setPlaybackCategoryWithAudioActivity:self.audioActivity];
+    [OWSAudioSession.shared startPlaybackAudioActivity:self.audioActivity];
 
+    [self play];
+}
+
+- (void)playAsForegroundAlert
+{
+    OWSAssertIsOnMainThread();
+    [OWSAudioSession.shared startAmbientAudioActivity:self.audioActivity];
+
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     [self play];
 }
 
