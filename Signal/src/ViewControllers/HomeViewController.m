@@ -287,6 +287,22 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [self updateBarButtonItems];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    // Keep in mind viewDidAppear is called while the app is in the background if the app was
+    // launched by a voip notification. This is fine - it will remain visible to the user
+    // when they eventually launch the app, but we shouldn't make any changes assuming
+    // the user has *seen* the upgrade experience at this point.
+    if (!self.hasShownAnyUnseenUpgradeExperiences) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self displayAnyUnseenUpgradeExperience];
+            self.hasShownAnyUnseenUpgradeExperiences = YES;
+        });
+    }
+}
+
 - (void)updateBarButtonItems
 {
     const CGFloat kBarButtonSize = 44;
@@ -509,19 +525,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                 [self updateReminderViews];
             });
         }];
-    }
-    
-    // We want to show the user the upgrade experience as soon as the app is visible to them.
-    // It cannot go in viewDidAppear, which is called while the app is in the background if
-    // we were launched from a voip notification.
-    if (!self.hasShownAnyUnseenUpgradeExperiences) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
-                return;
-            }
-            [self displayAnyUnseenUpgradeExperience];
-            self.hasShownAnyUnseenUpgradeExperiences = YES;
-        });
     }
 }
 

@@ -44,8 +44,8 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
         let button = addButton(title: buttonTitle) { _ in
             // dismiss the modally presented view controller, then proceed.
             self.experienceUpgradesPageViewController.dismiss(animated: true) {
-                guard let fromViewController = UIApplication.shared.frontmostViewController as? HomeViewController else {
-                    owsFail("unexpected frontmostViewController: \(String(describing: UIApplication.shared.frontmostViewController))")
+                guard let fromViewController = UIApplication.shared.frontmostViewController else {
+                    owsFail("frontmostViewController was unexectedly nil")
                     return
                 }
 
