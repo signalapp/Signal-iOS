@@ -25,6 +25,82 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OWSBackupExportBoolCompletion)(BOOL success);
 typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
 
+#pragma mark -
+
+@interface OWSAttachmentExport : NSObject
+
+@property (nonatomic) NSString *exportDirPath;
+@property (nonatomic) NSString *attachmentId;
+@property (nonatomic) NSString *attachmentFilePath;
+@property (nonatomic, nullable) NSString *tempFilePath;
+@property (nonatomic, nullable) NSString *relativeFilePath;
+
+@end
+
+#pragma mark -
+
+@implementation OWSAttachmentExport
+
+- (void)dealloc
+{
+    // Surface memory leaks by logging the deallocation.
+    DDLogVerbose(@"Dealloc: %@", self.class);
+
+    // Delete temporary file ASAP.
+    if (self.tempFilePath) {
+        [OWSFileSystem deleteFileIfExists:self.tempFilePath];
+    }
+}
+
+// On success, tempFilePath will be non-nil.
+- (void)prepareForUpload
+{
+    OWSAssert(self.exportDirPath.length > 0);
+    OWSAssert(self.attachmentId.length > 0);
+    OWSAssert(self.attachmentFilePath.length > 0);
+
+    NSString *attachmentsDirPath = [TSAttachmentStream attachmentsFolder];
+    if (![self.attachmentFilePath hasPrefix:attachmentsDirPath]) {
+        DDLogError(@"%@ attachment has unexpected path.", self.logTag);
+        OWSFail(@"%@ attachment has unexpected path: %@", self.logTag, self.attachmentFilePath);
+        return;
+    }
+    NSString *relativeFilePath = [self.attachmentFilePath substringFromIndex:attachmentsDirPath.length];
+    NSString *pathSeparator = @"/";
+    if ([relativeFilePath hasPrefix:pathSeparator]) {
+        relativeFilePath = [relativeFilePath substringFromIndex:pathSeparator.length];
+    }
+    self.relativeFilePath = relativeFilePath;
+
+    NSString *_Nullable tempFilePath = [self encryptAsTempFile:self.attachmentFilePath];
+    if (!tempFilePath) {
+        DDLogError(@"%@ attachment could not be encrypted.", self.logTag);
+        OWSFail(@"%@ attachment could not be encrypted: %@", self.logTag, self.attachmentFilePath);
+        return;
+    }
+}
+
+- (nullable NSString *)encryptAsTempFile:(NSString *)srcFilePath
+{
+    OWSAssert(self.exportDirPath.length > 0);
+
+    // TODO: Encrypt the file using self.delegate.backupKey;
+
+    NSString *dstFilePath = [self.exportDirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error;
+    BOOL success = [fileManager copyItemAtPath:srcFilePath toPath:dstFilePath error:&error];
+    if (!success || error) {
+        OWSProdLogAndFail(@"%@ error writing encrypted file: %@", self.logTag, error);
+        return nil;
+    }
+    return dstFilePath;
+}
+
+@end
+
+#pragma mark -
+
 @interface OWSBackupExport () <SSZipArchiveDelegate>
 
 @property (nonatomic, weak) id<OWSBackupExportDelegate> delegate;
@@ -46,7 +122,8 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
 // A map of "record name"-to-"file name".
 @property (nonatomic) NSMutableDictionary<NSString *, NSString *> *databaseRecordMap;
 
-@property (nonatomic) NSMutableArray<NSString *> *attachmentFilePaths;
+// A map of "attachment id"-to-"local file path".
+@property (nonatomic) NSMutableDictionary<NSString *, NSString *> *attachmentFilePathMap;
 // A map of "record name"-to-"file relative path".
 @property (nonatomic) NSMutableDictionary<NSString *, NSString *> *attachmentRecordMap;
 
@@ -210,7 +287,7 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
     __block unsigned long long copiedEntities = 0;
     __block unsigned long long copiedAttachments = 0;
 
-    self.attachmentFilePaths = [NSMutableArray new];
+    self.attachmentFilePathMap = [NSMutableDictionary new];
 
     [self.srcDBConnection readWithBlock:^(YapDatabaseReadTransaction *srcTransaction) {
         [self.dstDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *dstTransaction) {
@@ -280,7 +357,8 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
                                                  TSAttachmentStream *attachmentStream = object;
                                                  NSString *_Nullable filePath = attachmentStream.filePath;
                                                  if (filePath) {
-                                                     [self.attachmentFilePaths addObject:filePath];
+                                                     OWSAssert(attachmentStream.uniqueId.length > 0);
+                                                     self.attachmentFilePathMap[attachmentStream.uniqueId] = filePath;
                                                  }
                                              }
                                              TSAttachment *attachment = object;
@@ -337,7 +415,7 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
         [self.databaseFilePaths removeLastObject];
         // Database files are encrypted and can be safely stored unencrypted in the cloud.
         // TODO: Security review.
-        [OWSBackupAPI saveBackupFileToCloudWithFileUrl:[NSURL fileURLWithPath:filePath]
+        [OWSBackupAPI saveEphemeralDatabaseFileToCloudWithFileUrl:[NSURL fileURLWithPath:filePath]
             success:^(NSString *recordName) {
                 // Ensure that we continue to perform the backup export
                 // off the main thread.
@@ -357,46 +435,35 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
         return;
     }
 
-    if (self.attachmentFilePaths.count > 0) {
-        NSString *attachmentFilePath = self.attachmentFilePaths.lastObject;
-        [self.attachmentFilePaths removeLastObject];
+    if (self.attachmentFilePathMap.count > 0) {
+        NSString *attachmentId = self.attachmentFilePathMap.allKeys.lastObject;
+        NSString *attachmentFilePath = self.attachmentFilePathMap[attachmentId];
+        [self.attachmentFilePathMap removeObjectForKey:attachmentId];
 
-        NSString *attachmentsDirPath = [TSAttachmentStream attachmentsFolder];
-        if (![attachmentFilePath hasPrefix:attachmentsDirPath]) {
-            DDLogError(@"%@ attachment has unexpected path.", self.logTag);
-            OWSFail(@"%@ attachment has unexpected path: %@", self.logTag, attachmentFilePath);
-            // Attachment files are non-critical so any error uploading them is recoverable.
-            [weakSelf saveNextFileToCloud:completion];
-            return;
-        }
-        NSString *relativeFilePath = [attachmentFilePath substringFromIndex:attachmentsDirPath.length];
-        NSString *pathSeparator = @"/";
-        if ([relativeFilePath hasPrefix:pathSeparator]) {
-            relativeFilePath = [relativeFilePath substringFromIndex:pathSeparator.length];
-        }
+        // OWSAttachmentExport is used to lazily write an encrypted copy of the
+        // attachment to disk.
+        OWSAttachmentExport *attachmentExport = [OWSAttachmentExport new];
+        attachmentExport.exportDirPath = self.exportDirPath;
+        attachmentExport.attachmentId = attachmentId;
+        attachmentExport.attachmentFilePath = attachmentFilePath;
 
-        // TODO: Make this incremental.
-        NSString *_Nullable tempFilePath = [self encryptAsTempFile:attachmentFilePath];
-        if (!tempFilePath) {
-            DDLogError(@"%@ attachment could not be encrypted.", self.logTag);
-            OWSFail(@"%@ attachment could not be encrypted: %@", self.logTag, attachmentFilePath);
-            // Attachment files are non-critical so any error uploading them is recoverable.
-            [weakSelf saveNextFileToCloud:completion];
-            return;
-        }
-        [OWSBackupAPI saveBackupFileToCloudWithFileUrl:[NSURL fileURLWithPath:tempFilePath]
+        [OWSBackupAPI savePersistentFileOnceToCloudWithFileId:attachmentId
+            fileUrlBlock:^{
+                [attachmentExport prepareForUpload];
+                if (attachmentExport.tempFilePath.length < 1 || attachmentExport.relativeFilePath.length < 1) {
+                    return (NSURL *)nil;
+                }
+                return [NSURL fileURLWithPath:attachmentExport.tempFilePath];
+            }
             success:^(NSString *recordName) {
                 // Ensure that we continue to perform the backup export
                 // off the main thread.
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    // Delete temporary file ASAP.
-                    [OWSFileSystem deleteFileIfExists:tempFilePath];
-
                     OWSBackupExport *strongSelf = weakSelf;
                     if (!strongSelf) {
                         return;
                     }
-                    strongSelf.attachmentRecordMap[recordName] = relativeFilePath;
+                    strongSelf.attachmentRecordMap[recordName] = attachmentExport.relativeFilePath;
                     [strongSelf saveNextFileToCloud:completion];
                 });
             }
@@ -404,9 +471,6 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
                 // Ensure that we continue to perform the backup export
                 // off the main thread.
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    // Delete temporary file ASAP.
-                    [OWSFileSystem deleteFileIfExists:tempFilePath];
-
                     // Attachment files are non-critical so any error uploading them is recoverable.
                     [weakSelf saveNextFileToCloud:completion];
                 });

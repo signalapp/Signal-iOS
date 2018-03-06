@@ -32,13 +32,32 @@ import CloudKit
                         failure: failure)
     }
 
+    // "Ephemeral" files are specific to this backup export and will always need to
+    // be saved.  For example, a complete image of the database is exported each time.
+    // We wouldn't want to overwrite previous images until the entire backup export is
+    // complete.
     @objc
-    public class func saveBackupFileToCloud(fileUrl: URL,
+    public class func saveEphemeralDatabaseFileToCloud(fileUrl: URL,
                                             success: @escaping (String) -> Swift.Void,
                                             failure: @escaping (Error) -> Swift.Void) {
         saveFileToCloud(fileUrl: fileUrl,
                         recordName: NSUUID().uuidString,
-                        recordType: "backupFile",
+                        recordType: "ephemeralFile",
+                        success: success,
+                        failure: failure)
+    }
+
+    // "Persistent" files may be shared between backup export; they should only be saved
+    // once.  For example, attachment files should only be uploaded once.  Subsequent
+    //
+    @objc
+    public class func savePersistentFileOnceToCloud(fileId: String,
+                                                  fileUrlBlock: @escaping (Swift.Void) -> URL?,
+                                            success: @escaping (String) -> Swift.Void,
+                                            failure: @escaping (Error) -> Swift.Void) {
+        saveFileOnceToCloud(recordName: "persistentFile-\(fileId)",
+                        recordType: "persistentFile",
+                        fileUrlBlock: fileUrlBlock,
                         success: success,
                         failure: failure)
     }
@@ -49,15 +68,27 @@ import CloudKit
     static let payloadKey = "payload"
 
     @objc
-    public class func upsertManifestFileToCloud(fileUrl: URL,
-                                            success: @escaping (String) -> Swift.Void,
-                                            failure: @escaping (Error) -> Swift.Void) {
+    public class func upsertAttachmentToCloud(fileUrl: URL,
+                                                success: @escaping (String) -> Swift.Void,
+                                                failure: @escaping (Error) -> Swift.Void) {
         // We want to use a well-known record id and type for manifest files.
         upsertFileToCloud(fileUrl: fileUrl,
-                        recordName: manifestRecordName,
-                        recordType: manifestRecordType,
-                        success: success,
-                        failure: failure)
+                          recordName: manifestRecordName,
+                          recordType: manifestRecordType,
+                          success: success,
+                          failure: failure)
+    }
+
+    @objc
+    public class func upsertManifestFileToCloud(fileUrl: URL,
+                                                success: @escaping (String) -> Swift.Void,
+                                                failure: @escaping (Error) -> Swift.Void) {
+        // We want to use a well-known record id and type for manifest files.
+        upsertFileToCloud(fileUrl: fileUrl,
+                          recordName: manifestRecordName,
+                          recordType: manifestRecordType,
+                          success: success,
+                          failure: failure)
     }
 
     @objc
@@ -117,10 +148,10 @@ import CloudKit
                     if ckerror.code == .unknownItem {
                         // No record found to update, saving new record.
                         saveFileToCloud(fileUrl: fileUrl,
-                                          recordName: recordName,
-                                          recordType: recordType,
-                                          success: success,
-                                          failure: failure)
+                                        recordName: recordName,
+                                        recordType: recordType,
+                                        success: success,
+                                        failure: failure)
                         return
                     }
                     Logger.error("\(self.logTag) error fetching record: \(error) \(ckerror.code).")
@@ -144,7 +175,47 @@ import CloudKit
             saveRecordToCloud(record: record,
                               success: success,
                               failure: failure)
+        }
+        let myContainer = CKContainer.default()
+        let privateDatabase = myContainer.privateCloudDatabase
+        privateDatabase.add(fetchOperation)
+    }
 
+    @objc
+    public class func saveFileOnceToCloud(recordName: String,
+                                        recordType: String,
+                                        fileUrlBlock: @escaping (Swift.Void) -> URL?,
+                                        success: @escaping (String) -> Swift.Void,
+                                        failure: @escaping (Error) -> Swift.Void) {
+        let recordId = CKRecordID(recordName: recordName)
+        let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
+        fetchOperation.perRecordCompletionBlock = { (record, recordId, error) in
+            if let error = error {
+                if let ckerror = error as? CKError {
+                    if ckerror.code == .unknownItem {
+                        // No record found to update, saving new record.
+
+                        guard let fileUrl = fileUrlBlock() else {
+                            Logger.error("\(self.logTag) error preparing file for upload: \(error).")
+                            return
+                        }
+
+                        saveFileToCloud(fileUrl: fileUrl,
+                                        recordName: recordName,
+                                        recordType: recordType,
+                                        success: success,
+                                        failure: failure)
+                        return
+                    }
+                    Logger.error("\(self.logTag) error fetching record: \(error) \(ckerror.code).")
+                } else {
+                    Logger.error("\(self.logTag) error fetching record: \(error).")
+                }
+                failure(error)
+                return
+            }
+            Logger.info("\(self.logTag) record already exists; skipping save.")
+            success(recordName)
         }
         let myContainer = CKContainer.default()
         let privateDatabase = myContainer.privateCloudDatabase
