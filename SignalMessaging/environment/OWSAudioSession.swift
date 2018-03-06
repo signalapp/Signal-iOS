@@ -37,22 +37,22 @@ public class OWSAudioSession: NSObject {
     // appropriate for foreground sound effects.
     public func startAmbientAudioActivity(_ audioActivity: AudioActivity) {
         Logger.debug("\(logTag) in \(#function)")
-        
+
         startAudioActivity(audioActivity)
-        
-        guard currentActivities.count == 0 else {
+
+        guard currentActivities.count == 1 else {
             // We don't want to clobber the audio capabilities configured by (e.g.) media playback or an in-progress call
             Logger.info("\(logTag) in \(#function) not touching audio session since another currentActivity exists.")
             return
         }
-        
+
         do {
             try avAudioSession.setCategory(AVAudioSessionCategoryAmbient)
         } catch {
             owsFail("\(logTag) in \(#function) failed with error: \(error)")
         }
     }
-    
+
     // Ignores hardware mute switch, plays through external speaker
     public func startPlaybackAudioActivity(_ audioActivity: AudioActivity) {
         Logger.debug("\(logTag) in \(#function)")
