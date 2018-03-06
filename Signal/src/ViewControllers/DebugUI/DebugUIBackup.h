@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface DebugUIMisc : DebugUIPage
+@interface DebugUIBackup : DebugUIPage
 
 @end
 

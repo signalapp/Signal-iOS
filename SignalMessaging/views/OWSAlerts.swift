@@ -55,6 +55,11 @@ import Foundation
     }
 
     @objc
+    public class func showErrorAlert(withMessage message: String) {
+        self.showAlert(withTitle: CommonStrings.errorAlertTitle, message: message, buttonTitle: nil)
+    }
+
+    @objc
     public class var cancelAction: UIAlertAction {
         let action = UIAlertAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
             Logger.debug("Cancel item")
