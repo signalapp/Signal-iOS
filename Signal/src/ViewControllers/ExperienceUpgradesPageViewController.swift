@@ -9,13 +9,6 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
 
     var buttonAction: ((UIButton) -> Void)?
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        // Opt users in to the new default sound ("note") after they've seen the splash screen.
-        OWSSounds.setGlobalNotificationSound(.note)
-    }
-
     override func loadView() {
         self.view = UIView.container()
 
