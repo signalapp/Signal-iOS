@@ -17,8 +17,17 @@
 
 //#import <SignalServiceKit/OWSPrimaryStorage.h>
 //#import "NSNotificationCenter+OWS.h"
+#import <Curve25519Kit/Randomness.h>
+#import <SignalServiceKit/NSDate+OWS.h>
+#import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSBackupStorage.h>
+#import <SignalServiceKit/OWSError.h>
+#import <SignalServiceKit/TSMessage.h>
+#import <SignalServiceKit/TSThread.h>
+#import <SignalServiceKit/Threading.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseCryptoUtils.h>
 
 // NSString *const NSNotificationNameBackupStateDidChange = @"NSNotificationNameBackupStateDidChange";
 //
@@ -26,6 +35,9 @@
 // NSString *const OWSBackup_IsBackupEnabledKey = @"OWSBackup_IsBackupEnabledKey";
 
 NS_ASSUME_NONNULL_BEGIN
+
+typedef void (^OWSBackupExportBoolCompletion)(BOOL success);
+typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
 
 //// Hide the "import" directories from exports, etc. by prefixing their name with a period.
 ////
@@ -50,10 +62,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<OWSBackupExportDelegate> delegate;
 
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *srcDBConnection;
+
+@property (nonatomic, readonly) YapDatabaseConnection *dstDBConnection;
 
 // Indicates that the backup succeeded, failed or was cancelled.
 @property (atomic) BOOL isComplete;
+
+@property (atomic, nullable) OWSBackupStorage *backupStorage;
+
+@property (atomic, nullable) NSData *databaseSalt;
+
+@property (atomic, nullable) OWSBackgroundTask *backgroundTask;
 
 //- (NSData *)databasePassword;
 //
@@ -84,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSBackupExport
 
-@synthesize dbConnection = _dbConnection;
+//@synthesize dbConnection = _dbConnection;
 
 //+ (instancetype)sharedManager
 //{
@@ -113,29 +133,217 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSAssert(primaryStorage);
+    OWSAssert([OWSStorage isStorageReady]);
 
     self.delegate = delegate;
-    _dbConnection = primaryStorage.newDatabaseConnection;
+    _srcDBConnection = primaryStorage.newDatabaseConnection;
 
     //    _backupExportState = OWSBackupState_AtRest;
 
-    OWSSingletonAssert();
+    // TODO: Remove.
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     return self;
 }
 
 - (void)dealloc
 {
+    // Surface memory leaks by logging the deallocation.
+    DDLogVerbose(@"Dealloc: %@", self.class);
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)startAsync
+{
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self start];
+    });
 }
 
 - (void)start
 {
-    // TODO:
+    self.backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
+    [self configureExport:^(BOOL success) {
+        if (!success) {
+            [self failWithErrorDescription:
+                      NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
+                          @"Error indicating the a backup export could not export the user's data.")];
+            ;
+            return;
+        }
+
+        if (self.isComplete) {
+            return;
+        }
+        if (![self exportDatabase]) {
+            [self failWithErrorDescription:
+                      NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
+                          @"Error indicating the a backup export could not export the user's data.")];
+            ;
+            return;
+        }
+        if (self.isComplete) {
+            return;
+        }
+        // TODO:
+
+        [self succeed];
+    }];
+}
+
+- (void)configureExport:(OWSBackupExportBoolCompletion)completion
+{
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    NSString *temporaryDirectory = NSTemporaryDirectory();
+    NSString *exportDirPath = [temporaryDirectory stringByAppendingString:[NSUUID UUID].UUIDString];
+    NSString *exportDatabaseDirPath = [exportDirPath stringByAppendingPathComponent:@"Database"];
+    self.databaseSalt = [Randomness generateRandomBytes:(int)kSQLCipherSaltLength];
+    if (![OWSFileSystem ensureDirectoryExists:exportDirPath]) {
+        DDLogError(@"%@ Could not create exportDirPath.", self.logTag);
+        return completion(NO);
+    }
+    if (![OWSFileSystem ensureDirectoryExists:exportDatabaseDirPath]) {
+        DDLogError(@"%@ Could not create exportDatabaseDirPath.", self.logTag);
+        return completion(NO);
+    }
+    if (!self.databaseSalt) {
+        DDLogError(@"%@ Could not create databaseSalt.", self.logTag);
+        return completion(NO);
+    }
+    __weak OWSBackupExport *weakSelf = self;
+    BackupStorageKeySpecBlock keySpecBlock = ^{
+        NSData *_Nullable backupKey = [weakSelf.delegate backupKey];
+        if (!backupKey) {
+            return (NSData *)nil;
+        }
+        NSData *_Nullable databaseSalt = weakSelf.databaseSalt;
+        if (!databaseSalt) {
+            return (NSData *)nil;
+        }
+        OWSCAssert(backupKey.length > 0);
+        NSData *_Nullable keySpec =
+            [YapDatabaseCryptoUtils deriveDatabaseKeySpecForPassword:backupKey saltData:databaseSalt];
+        return keySpec;
+    };
+    self.backupStorage =
+        [[OWSBackupStorage alloc] initBackupStorageWithDatabaseDirPath:exportDatabaseDirPath keySpecBlock:keySpecBlock];
+    if (!self.backupStorage) {
+        DDLogError(@"%@ Could not create backupStorage.", self.logTag);
+        return completion(NO);
+    }
+    _dstDBConnection = self.backupStorage.newDatabaseConnection;
+    if (!self.dstDBConnection) {
+        DDLogError(@"%@ Could not create dstDBConnection.", self.logTag);
+        return completion(NO);
+    }
+
+    // TODO: Do we really need to run these registrations on the main thread?
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.backupStorage runSyncRegistrations];
+        [self.backupStorage runAsyncRegistrationsWithCompletion:^{
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                completion(YES);
+            });
+        }];
+    });
+
+    //    // The backup storage is empty and therefore async registrations should
+    //    // complete very quickly.  We'll wait a short period for them to complete.
+    //    NSDate *readyStart = [NSDate new];
+    //    while (YES) {
+    //        if (self.backupStorage.areAllRegistrationsComplete) {
+    //            return YES;
+    //        }
+    //        DDLogVerbose(@"%@ waiting for backup storage: %f %f", self.logTag, readyStart.timeIntervalSinceNow,
+    //        kMinuteInterval); if (fabs(readyStart.timeIntervalSinceNow) > kMinuteInterval) {
+    //            return NO;
+    //        }
+    //        // Sleep 100 ms.
+    //        usleep(100 * 1000);
+    //    }
+}
+
+- (BOOL)exportDatabase
+{
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    __block unsigned long long copiedThreads = 0;
+    __block unsigned long long copiedInteractions = 0;
+    __block unsigned long long copiedEntities = 0;
+
+    [self.srcDBConnection readWithBlock:^(YapDatabaseReadTransaction *srcTransaction) {
+        [self.dstDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *dstTransaction) {
+            // Copy threads.
+            [srcTransaction
+                enumerateKeysAndObjectsInCollection:[TSThread collection]
+                                         usingBlock:^(NSString *key, id object, BOOL *stop) {
+                                             if (self.isComplete) {
+                                                 *stop = YES;
+                                                 return;
+                                             }
+                                             if (![object isKindOfClass:[TSThread class]]) {
+                                                 DDLogError(@"%@ unexpected class: %@", self.logTag, [object class]);
+                                                 return;
+                                             }
+                                             TSThread *thread = object;
+                                             [thread saveWithTransaction:dstTransaction];
+                                             copiedThreads++;
+                                             copiedEntities++;
+                                         }];
+
+            // Copy interactions.
+            [srcTransaction
+                enumerateKeysAndObjectsInCollection:[TSInteraction collection]
+                                         usingBlock:^(NSString *key, id object, BOOL *stop) {
+                                             if (self.isComplete) {
+                                                 *stop = YES;
+                                                 return;
+                                             }
+                                             if (![object isKindOfClass:[TSInteraction class]]) {
+                                                 DDLogError(@"%@ unexpected class: %@", self.logTag, [object class]);
+                                                 return;
+                                             }
+                                             // Ignore disappearing messages.
+                                             if ([object isKindOfClass:[TSMessage class]]) {
+                                                 TSMessage *message = object;
+                                                 if (message.isExpiringMessage) {
+                                                     return;
+                                                 }
+                                             }
+                                             TSInteraction *interaction = object;
+                                             // Ignore dynamic interactions.
+                                             if (interaction.isDynamicInteraction) {
+                                                 return;
+                                             }
+                                             [interaction saveWithTransaction:dstTransaction];
+                                             copiedInteractions++;
+                                             copiedEntities++;
+                                         }];
+
+            // TODO: Copy attachments.
+        }];
+    }];
+
+    // TODO: Should we do a database checkpoint?
+
+    DDLogInfo(@"%@ copiedThreads: %llu", self.logTag, copiedThreads);
+    DDLogInfo(@"%@ copiedMessages: %llu", self.logTag, copiedInteractions);
+    DDLogInfo(@"%@ copiedEntities: %llu", self.logTag, copiedEntities);
+
+    [self.backupStorage logFileSizes];
+
+    return YES;
 }
 
 - (void)cancel
 {
+    OWSAssertIsOnMainThread();
+
     // TODO:
     self.isComplete = YES;
 }
@@ -144,24 +352,33 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    self.isComplete = YES;
-
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegate backupExportDidSucceed];
+        if (self.isComplete) {
+            return;
+        }
+        self.isComplete = YES;
+        [self.delegate backupExportDidSucceed:self];
     });
     // TODO:
+}
+
+- (void)failWithErrorDescription:(NSString *)description
+{
+    [self failWithError:OWSErrorWithCodeDescription(OWSErrorCodeExportBackupFailed, description)];
 }
 
 - (void)failWithError:(NSError *)error
 {
     DDLogError(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, error);
 
-    self.isComplete = YES;
-
     // TODO:
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegate backupExportDidFailWithError:error];
+        if (self.isComplete) {
+            return;
+        }
+        self.isComplete = YES;
+        [self.delegate backupExportDidFail:self error:error];
     });
 }
 

@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 // NSString *const Keychain_ImportBackupService = @"OWSKeychainService";
 // NSString *const Keychain_ImportBackupKey = @"ImportBackupKey";
 
-@interface OWSBackup ()
+@interface OWSBackup () <OWSBackupExportDelegate>
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
@@ -112,6 +112,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSingletonAssert();
 
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)setup
+{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
                                                  name:OWSApplicationDidBecomeActiveNotification
@@ -121,12 +131,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                  name:RegistrationStateDidChangeNotification
                                                object:nil];
 
-    return self;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    // We want to start a backup if necessary on app launch, but app launch is a
+    // busy time and it's important to remain responsive, so wait a few seconds before
+    // starting the backup.
+    //
+    // TODO: Make this period longer.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self ensureBackupExportState];
+    });
 }
 
 //- (void)observeNotifications
@@ -168,6 +180,8 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameBackupStateDidChange
                                                              object:nil
                                                            userInfo:nil];
+
+    [self ensureBackupExportState];
 }
 
 - (BOOL)shouldHaveBackupExport
@@ -183,7 +197,9 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    // TODO: There's probably other conditions that affect this decision.
+    // TODO: There's other conditions that affect this decision,
+    // e.g. we want to throttle on time and only _try_ every N days
+    // and _succeed_ every N days.  And wifi v. cellular may play into it.
     return YES;
 }
 
@@ -197,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (self.shouldHaveBackupExport && !self.backupExport) {
         self.backupExport =
             [[OWSBackupExport alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
-        [self.backupExport start];
+        [self.backupExport startAsync];
     }
 
     //    BOOL shouldHaveBackupExport
@@ -219,6 +235,42 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self ensureBackupExportState];
 }
+
+#pragma mark - OWSBackupExportDelegate
+
+// TODO: This should eventually be the backup key stored in the Signal Service
+//       and retrieved with the backup PIN.
+- (nullable NSData *)backupKey
+{
+    // We use a delegate method to avoid storing this key in memory.
+    // It will eventually be stored in the keychain.
+    return [@"test backup key" dataUsingEncoding:NSUTF8StringEncoding];
+}
+
+- (void)backupExportDidSucceed:(OWSBackupExport *)backupExport
+{
+    if (self.backupExport != backupExport) {
+        return;
+    }
+
+    DDLogInfo(@"%@ %s.", self.logTag, __PRETTY_FUNCTION__);
+
+    // TODO:
+    self.backupExport = nil;
+}
+
+- (void)backupExportDidFail:(OWSBackupExport *)backupExport error:(NSError *)error
+{
+    if (self.backupExport != backupExport) {
+        return;
+    }
+
+    DDLogInfo(@"%@ %s: %@", self.logTag, __PRETTY_FUNCTION__, error);
+
+    // TODO:
+    self.backupExport = nil;
+}
+
 
 //- (void)setBackupProgress:(CGFloat)backupProgress
 //{

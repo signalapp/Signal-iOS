@@ -49,6 +49,8 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 - (BOOL)isBackupEnabled;
 - (void)setIsBackupEnabled:(BOOL)value;
 
+- (void)setup;
+
 //- (void)exportBackup:(nullable TSThread *)currentThread skipPassword:(BOOL)skipPassword;
 //
 //- (void)importBackup:(NSString *)backupZipPath password:(NSString *_Nullable)password;

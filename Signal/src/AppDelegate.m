@@ -9,6 +9,7 @@
 #import "DebugLogger.h"
 #import "MainAppContext.h"
 #import "NotificationsManager.h"
+#import "OWSBackup.h"
 #import "OWSNavigationController.h"
 #import "Pastelog.h"
 #import "PushManager.h"
@@ -1108,6 +1109,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [OWSPreferences setIsReadyForAppExtensions];
 
     [self ensureRootViewController];
+
+    [OWSBackup.sharedManager setup];
 }
 
 - (void)registrationStateDidChange

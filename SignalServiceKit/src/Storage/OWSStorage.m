@@ -267,30 +267,6 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     self = [super init];
 
     if (self) {
-        if (![self tryToLoadDatabase]) {
-            // Failing to load the database is catastrophic.
-            //
-            // The best we can try to do is to discard the current database
-            // and behave like a clean install.
-            OWSFail(@"%@ Could not load database", self.logTag);
-            OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
-
-            // Try to reset app by deleting all databases.
-            //
-            // TODO: Possibly clean up all app files.
-            // [OWSStorage deleteDatabaseFiles];
-
-            if (![self tryToLoadDatabase]) {
-                OWSFail(@"%@ Could not load database (second try)", self.logTag);
-                OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
-
-                // Sleep to give analytics events time to be delivered.
-                [NSThread sleepForTimeInterval:15.0f];
-
-                OWSRaiseException(OWSStorageExceptionName_NoDatabase, @"Failed to initialize database.");
-            }
-        }
-
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(resetStorage)
                                                      name:OWSResetStorageNotification
@@ -303,6 +279,33 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)loadDatabase
+{
+    if (![self tryToLoadDatabase]) {
+        // Failing to load the database is catastrophic.
+        //
+        // The best we can try to do is to discard the current database
+        // and behave like a clean install.
+        OWSFail(@"%@ Could not load database", self.logTag);
+        OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
+
+        // Try to reset app by deleting all databases.
+        //
+        // TODO: Possibly clean up all app files.
+        // [OWSStorage deleteDatabaseFiles];
+
+        if (![self tryToLoadDatabase]) {
+            OWSFail(@"%@ Could not load database (second try)", self.logTag);
+            OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
+
+            // Sleep to give analytics events time to be delivered.
+            [NSThread sleepForTimeInterval:15.0f];
+
+            OWSRaiseException(OWSStorageExceptionName_NoDatabase, @"Failed to initialize database.");
+        }
+    }
 }
 
 - (nullable id)dbNotificationObject

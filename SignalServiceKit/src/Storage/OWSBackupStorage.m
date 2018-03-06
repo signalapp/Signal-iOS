@@ -10,13 +10,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSBackupStorage ()
 
-@property (nonatomic, readonly, nullable) YapDatabaseConnection *dbConnection;
-
 @property (atomic) BOOL areAsyncRegistrationsComplete;
 @property (atomic) BOOL areSyncRegistrationsComplete;
 
 @property (nonatomic, readonly) NSString *databaseDirPath;
-@property (nonatomic, readonly) NSData *databaseKeySpec;
+@property (nonatomic, readonly) BackupStorageKeySpecBlock keySpecBlock;
 
 @end
 
@@ -24,32 +22,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSBackupStorage
 
-@synthesize databaseKeySpec = _databaseKeySpec;
-
-- (instancetype)initBackupStorageWithdatabaseDirPath:(NSString *)databaseDirPath
-                                     databaseKeySpec:(NSData *)databaseKeySpec
+- (instancetype)initBackupStorageWithDatabaseDirPath:(NSString *)databaseDirPath
+                                        keySpecBlock:(BackupStorageKeySpecBlock)keySpecBlock
 {
     OWSAssert(databaseDirPath.length > 0);
-    OWSAssert(databaseKeySpec.length > 0);
+    OWSAssert(keySpecBlock);
     OWSAssert([OWSFileSystem ensureDirectoryExists:databaseDirPath]);
 
     self = [super initStorage];
 
     if (self) {
-        [self protectFiles];
-
-        _dbConnection = self.newDatabaseConnection;
         _databaseDirPath = databaseDirPath;
-        _databaseKeySpec = databaseKeySpec;
+        _keySpecBlock = keySpecBlock;
+
+        [self loadDatabase];
     }
 
     return self;
 }
 
+- (void)loadDatabase
+{
+    [super loadDatabase];
+
+    [self protectFiles];
+}
+
 - (void)resetStorage
 {
-    _dbConnection = nil;
-
     [super resetStorage];
 }
 
@@ -93,11 +93,16 @@ NS_ASSUME_NONNULL_BEGIN
                                        }];
 }
 
-- (void)protectFiles
+- (void)logFileSizes
 {
     DDLogInfo(@"%@ Database file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath]);
     DDLogInfo(@"%@ \t SHM file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath_SHM]);
     DDLogInfo(@"%@ \t WAL file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath_WAL]);
+}
+
+- (void)protectFiles
+{
+    [self logFileSizes];
 
     // Protect the entire new database directory.
     [OWSFileSystem protectFileOrFolderAtPath:self.databaseDirPath];
@@ -140,7 +145,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSData *)databaseKeySpec
 {
-    return self.databaseKeySpec;
+    OWSAssert(self.keySpecBlock);
+
+    return self.keySpecBlock();
 }
 
 - (void)ensureDatabaseKeySpecExists

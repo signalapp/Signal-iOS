@@ -10,16 +10,24 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NSData *_Nullable (^BackupStorageKeySpecBlock)(void);
+
 @interface OWSBackupStorage : OWSStorage
 
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initStorage NS_UNAVAILABLE;
 
-- (instancetype)initBackupStorageWithdatabaseDirPath:(NSString *)databaseDirPath
-                                     databaseKeySpec:(NSData *)databaseKeySpec NS_DESIGNATED_INITIALIZER;
+- (instancetype)initBackupStorageWithDatabaseDirPath:(NSString *)databaseDirPath
+                                        keySpecBlock:(BackupStorageKeySpecBlock)keySpecBlock NS_DESIGNATED_INITIALIZER;
 
 - (YapDatabaseConnection *)dbConnection;
+
+- (void)logFileSizes;
+
+- (void)runSyncRegistrations;
+- (void)runAsyncRegistrationsWithCompletion:(void (^_Nonnull)(void))completion;
+- (BOOL)areAllRegistrationsComplete;
 
 @end
 
