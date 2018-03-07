@@ -1715,10 +1715,10 @@
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Enabled";
 
 /* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Two-Step Verification";
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Registration Lock";
 
 /* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Two-Step Verification";
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registration Lock";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Верзија";
