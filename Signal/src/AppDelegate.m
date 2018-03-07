@@ -1095,7 +1095,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
     [[OWSBatchMessageProcessor sharedInstance] handleAnyUnprocessedEnvelopesAsync];
 
-
 #ifdef DEBUG
     // A bug in orphan cleanup could be disastrous so let's only
     // run it in DEBUG builds for a few releases.

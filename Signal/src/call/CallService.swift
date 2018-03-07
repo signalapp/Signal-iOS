@@ -1643,7 +1643,7 @@ protocol CallServiceObserver: class {
             return
         }
 
-        let kMaxViewPresentationDelay = 2.5
+        let kMaxViewPresentationDelay: Double = 5
         guard fabs(connectedDate.timeIntervalSinceNow) > kMaxViewPresentationDelay else {
             // Ignore; call connected recently.
             return
@@ -1654,7 +1654,7 @@ protocol CallServiceObserver: class {
         guard nil != frontmostViewController as? CallViewController else {
             OWSProdError(OWSAnalyticsEvents.callServiceCallViewCouldNotPresent(), file: #file, function: #function, line: #line)
             owsFail("\(self.logTag) in \(#function) Call terminated due to call view presentation delay: \(frontmostViewController.debugDescription).")
-            self.terminateCall()
+            self.handleFailedCall(failedCall: call, error: CallError.assertionError(description: "Call view didn't present after \(kMaxViewPresentationDelay) seconds"))
             return
         }
     }
