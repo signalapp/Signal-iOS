@@ -15,8 +15,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     let TAG = "[CallViewController]"
 
     // Dependencies
-
-    let callUIAdapter: CallUIAdapter
+    var callUIAdapter: CallUIAdapter {
+        return SignalApp.shared().callUIAdapter
+    }
+    
     let contactsManager: OWSContactsManager
 
     // MARK: Properties
@@ -97,7 +99,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         return allAudioSources.count > 2
     }
 
-    var allAudioSources: Set<AudioSource>
+    var allAudioSources: Set<AudioSource> = Set()
 
     var appropriateAudioSources: Set<AudioSource> {
         if call.hasLocalVideo {
@@ -124,22 +126,16 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        contactsManager = Environment.current().contactsManager
-        callUIAdapter = SignalApp.shared().callUIAdapter
-        allAudioSources = Set(callUIAdapter.audioService.availableInputs)
-        self.call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: "+1234567890")
-        self.thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
-        super.init(coder: aDecoder)
-        observeNotifications()
+        fatalError("Unimplemented")
     }
 
     required init(call: SignalCall) {
         contactsManager = Environment.current().contactsManager
-        callUIAdapter = SignalApp.shared().callUIAdapter
-        allAudioSources = Set(callUIAdapter.audioService.availableInputs)
         self.call = call
         self.thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
         super.init(nibName: nil, bundle: nil)
+        
+        allAudioSources = Set(callUIAdapter.audioService.availableInputs)
 
         assert(callUIAdapter.audioService.delegate == nil)
         callUIAdapter.audioService.delegate = self

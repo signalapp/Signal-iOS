@@ -280,7 +280,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     }
 
     [self setValueForKey:OWSPreferencesKeyCallKitEnabled toValue:@(flag)];
-    OWSFail(@"Rev callUIAdaptee to get new setting");
+    // Rev callUIAdaptee to get new setting
 }
 
 - (BOOL)isCallKitEnabledSet
