@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createContents
 {
-    const CGFloat kVSpacing = 30.f;
+    const CGFloat kVSpacing = ScaleFromIPhone5(12);
 
     UILabel *instructionsLabel = [self createLabelWithText:nil];
     self.instructionsLabel = instructionsLabel;
