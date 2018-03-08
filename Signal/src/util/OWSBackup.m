@@ -139,6 +139,14 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dbConnection setBool:value
                         forKey:OWSBackup_IsBackupEnabledKey
                   inCollection:OWSPrimaryStorage_OWSBackupCollection];
+    OWSAssert(self.isBackupEnabled);
+
+    if (!value) {
+        [self.dbConnection removeObjectForKey:OWSBackup_LastExportSuccessDateKey
+                                 inCollection:OWSPrimaryStorage_OWSBackupCollection];
+        [self.dbConnection removeObjectForKey:OWSBackup_LastExportFailureDateKey
+                                 inCollection:OWSPrimaryStorage_OWSBackupCollection];
+    }
 
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameBackupStateDidChange
                                                              object:nil
@@ -162,12 +170,18 @@ NS_ASSUME_NONNULL_BEGIN
     NSDate *_Nullable lastExportSuccessDate = self.lastExportSuccessDate;
     NSDate *_Nullable lastExportFailureDate = self.lastExportFailureDate;
     // Wait N hours before retrying after a success.
-    const NSTimeInterval kRetryAfterSuccess = 24 * kHourInterval;
+    //
+    // TODO: Use actual values in production.
+    //    const NSTimeInterval kRetryAfterSuccess = 24 * kHourInterval;
+    const NSTimeInterval kRetryAfterSuccess = 0;
     if (lastExportSuccessDate && fabs(lastExportSuccessDate.timeIntervalSinceNow) < kRetryAfterSuccess) {
         return NO;
     }
     // Wait N hours before retrying after a failure.
-    const NSTimeInterval kRetryAfterFailure = 6 * kHourInterval;
+    //
+    // TODO: Use actual values in production.
+    //    const NSTimeInterval kRetryAfterFailure = 6 * kHourInterval;
+    const NSTimeInterval kRetryAfterFailure = 0;
     if (lastExportFailureDate && fabs(lastExportFailureDate.timeIntervalSinceNow) < kRetryAfterFailure) {
         return NO;
     }

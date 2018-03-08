@@ -7,6 +7,13 @@ import SignalServiceKit
 import CloudKit
 
 @objc public class OWSBackupAPI: NSObject {
+
+    // If we change the record types, we need to ensure indices
+    // are configured properly in the CloudKit dashboard.
+    static let signalBackupRecordType = "signalBackup"
+    static let manifestRecordName = "manifest"
+    static let payloadKey = "payload"
+
     @objc
     public class func recordIdForTest() -> String {
         return "test-\(NSUUID().uuidString)"
@@ -18,7 +25,7 @@ import CloudKit
                                           failure: @escaping (Error) -> Swift.Void) {
         saveFileToCloud(fileUrl: fileUrl,
                         recordName: NSUUID().uuidString,
-                        recordType: "test",
+                        recordType: signalBackupRecordType,
                         success: success,
                         failure: failure)
     }
@@ -29,46 +36,41 @@ import CloudKit
     // complete.
     @objc
     public class func saveEphemeralDatabaseFileToCloud(fileUrl: URL,
-                                            success: @escaping (String) -> Swift.Void,
-                                            failure: @escaping (Error) -> Swift.Void) {
+                                                       success: @escaping (String) -> Swift.Void,
+                                                       failure: @escaping (Error) -> Swift.Void) {
         saveFileToCloud(fileUrl: fileUrl,
                         recordName: NSUUID().uuidString,
-                        recordType: "ephemeralFile",
+                        recordType: signalBackupRecordType,
                         success: success,
                         failure: failure)
     }
 
     // "Persistent" files may be shared between backup export; they should only be saved
     // once.  For example, attachment files should only be uploaded once.  Subsequent
-    //
+    // backups can reuse the same record.
     @objc
     public class func savePersistentFileOnceToCloud(fileId: String,
-                                                  fileUrlBlock: @escaping (Swift.Void) -> URL?,
-                                            success: @escaping (String) -> Swift.Void,
-                                            failure: @escaping (Error) -> Swift.Void) {
+                                                    fileUrlBlock: @escaping (Swift.Void) -> URL?,
+                                                    success: @escaping (String) -> Swift.Void,
+                                                    failure: @escaping (Error) -> Swift.Void) {
         saveFileOnceToCloud(recordName: "persistentFile-\(fileId)",
-                        recordType: "persistentFile",
-                        fileUrlBlock: fileUrlBlock,
-                        success: success,
-                        failure: failure)
+            recordType: signalBackupRecordType,
+            fileUrlBlock: fileUrlBlock,
+            success: success,
+            failure: failure)
     }
 
-    // TODO:
-    static let manifestRecordName = "manifest_"
-    static let manifestRecordType = "manifest"
-    static let payloadKey = "payload"
-
-    @objc
-    public class func upsertAttachmentToCloud(fileUrl: URL,
-                                                success: @escaping (String) -> Swift.Void,
-                                                failure: @escaping (Error) -> Swift.Void) {
-        // We want to use a well-known record id and type for manifest files.
-        upsertFileToCloud(fileUrl: fileUrl,
-                          recordName: manifestRecordName,
-                          recordType: manifestRecordType,
-                          success: success,
-                          failure: failure)
-    }
+    //    @objc
+    //    public class func upsertAttachmentToCloud(fileUrl: URL,
+    //                                                success: @escaping (String) -> Swift.Void,
+    //                                                failure: @escaping (Error) -> Swift.Void) {
+    //        // We want to use a well-known record id and type for manifest files.
+    //        upsertFileToCloud(fileUrl: fileUrl,
+    //                          recordName: manifestRecordName,
+    //                          recordType: signalBackupRecordType,
+    //                          success: success,
+    //                          failure: failure)
+    //    }
 
     @objc
     public class func upsertManifestFileToCloud(fileUrl: URL,
@@ -77,7 +79,7 @@ import CloudKit
         // We want to use a well-known record id and type for manifest files.
         upsertFileToCloud(fileUrl: fileUrl,
                           recordName: manifestRecordName,
-                          recordType: manifestRecordType,
+                          recordType: signalBackupRecordType,
                           success: success,
                           failure: failure)
     }
@@ -121,6 +123,28 @@ import CloudKit
                 }
                 Logger.info("\(self.logTag) saved record.")
                 success(recordName)
+            }
+        }
+    }
+
+    @objc
+    public class func deleteRecordFromCloud(recordName: String,
+                                            success: @escaping (Swift.Void) -> Swift.Void,
+                                            failure: @escaping (Error) -> Swift.Void) {
+
+        let recordID = CKRecordID(recordName: recordName)
+
+        let myContainer = CKContainer.default()
+        let privateDatabase = myContainer.privateCloudDatabase
+        privateDatabase.delete(withRecordID: recordID) {
+            (record, error) in
+
+            if let error = error {
+                Logger.error("\(self.logTag) error deleting record: \(error)")
+                failure(error)
+            } else {
+                Logger.info("\(self.logTag) deleted record.")
+                success()
             }
         }
     }
@@ -177,10 +201,10 @@ import CloudKit
 
     @objc
     public class func saveFileOnceToCloud(recordName: String,
-                                        recordType: String,
-                                        fileUrlBlock: @escaping (Swift.Void) -> URL?,
-                                        success: @escaping (String) -> Swift.Void,
-                                        failure: @escaping (Error) -> Swift.Void) {
+                                          recordType: String,
+                                          fileUrlBlock: @escaping (Swift.Void) -> URL?,
+                                          success: @escaping (String) -> Swift.Void,
+                                          failure: @escaping (Error) -> Swift.Void) {
         let recordId = CKRecordID(recordName: recordName)
         let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
         // Don't download the file; we're just using the fetch to check whether or
@@ -193,7 +217,7 @@ import CloudKit
                         // No record found to update, saving new record.
 
                         guard let fileUrl = fileUrlBlock() else {
-                            Logger.error("\(self.logTag) error preparing file for upload: \(error).")
+                            Logger.error("\(self.logTag) error preparing file for upload.")
                             return
                         }
 
@@ -217,6 +241,62 @@ import CloudKit
         let myContainer = CKContainer.default()
         let privateDatabase = myContainer.privateCloudDatabase
         privateDatabase.add(fetchOperation)
+    }
+
+    @objc
+    public class func fetchAllRecordNames(success: @escaping ([String]) -> Swift.Void,
+                                          failure: @escaping (Error) -> Swift.Void) {
+
+        let query = CKQuery(recordType: signalBackupRecordType, predicate: NSPredicate(value: true))
+        // Fetch the first page of results for this query.
+        fetchAllRecordNamesStep(query: query,
+                                previousRecordNames: [String](),
+                                cursor: nil,
+                                success: success,
+                                failure: failure)
+    }
+
+    private class func fetchAllRecordNamesStep(query: CKQuery,
+                                               previousRecordNames: [String],
+                                               cursor: CKQueryCursor?,
+                                               success: @escaping ([String]) -> Swift.Void,
+                                               failure: @escaping (Error) -> Swift.Void) {
+
+        var allRecordNames = previousRecordNames
+
+        let  queryOperation = CKQueryOperation(query: query)
+        // If this isn't the first page of results for this query, resume
+        // where we left off.
+        queryOperation.cursor = cursor
+        // Don't download the file; we're just using the query to get a list of record names.
+        queryOperation.desiredKeys = []
+        queryOperation.recordFetchedBlock = { (record) in
+            assert(record.recordID.recordName.count > 0)
+            allRecordNames.append(record.recordID.recordName)
+        }
+        queryOperation.queryCompletionBlock = { (cursor, error) in
+            if let error = error {
+                Logger.error("\(self.logTag) error fetching all record names: \(error).")
+                failure(error)
+                return
+            }
+            if let cursor = cursor {
+                Logger.verbose("\(self.logTag) fetching more record names \(allRecordNames.count).")
+                // There are more pages of results, continue fetching.
+                fetchAllRecordNamesStep(query: query,
+                                        previousRecordNames: allRecordNames,
+                                        cursor: cursor,
+                                        success: success,
+                                        failure: failure)
+                return
+            }
+            Logger.info("\(self.logTag) fetched \(allRecordNames.count) record names.")
+            success(allRecordNames)
+        }
+
+        let myContainer = CKContainer.default()
+        let privateDatabase = myContainer.privateCloudDatabase
+        privateDatabase.add(queryOperation)
     }
 
     @objc
