@@ -38,7 +38,6 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 @property (nonatomic) UIBackgroundTaskIdentifier callBackgroundTask;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSMessageFetcherJob *messageFetcherJob;
-@property (nonatomic, readonly) CallUIAdapter *callUIAdapter;
 @property (nonatomic, readonly) NotificationsManager *notificationsManager;
 
 @end
@@ -58,14 +57,12 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 {
     return [self initWithMessageFetcherJob:SignalApp.sharedApp.messageFetcherJob
                             primaryStorage:[OWSPrimaryStorage sharedManager]
-                             callUIAdapter:SignalApp.sharedApp.callService.callUIAdapter
                              messageSender:[Environment current].messageSender
                       notificationsManager:SignalApp.sharedApp.notificationsManager];
 }
 
 - (instancetype)initWithMessageFetcherJob:(OWSMessageFetcherJob *)messageFetcherJob
                            primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                            callUIAdapter:(CallUIAdapter *)callUIAdapter
                             messageSender:(OWSMessageSender *)messageSender
                      notificationsManager:(NotificationsManager *)notificationsManager
 {
@@ -74,7 +71,6 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
         return self;
     }
 
-    _callUIAdapter = callUIAdapter;
     _messageSender = messageSender;
     _messageFetcherJob = messageFetcherJob;
     _callBackgroundTask = UIBackgroundTaskInvalid;
@@ -90,6 +86,11 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
                                                object:nil];
 
     return self;
+}
+
+- (CallUIAdapter *)callUIAdapter
+{
+    return SignalApp.sharedApp.callService.callUIAdapter;
 }
 
 - (void)handleMessageRead:(NSNotification *)notification
