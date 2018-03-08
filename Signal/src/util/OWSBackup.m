@@ -5,6 +5,7 @@
 #import "OWSBackup.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBackupExport.h"
+#import <Curve25519Kit/Randomness.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBackupStorage.h>
@@ -16,6 +17,7 @@ NSString *const NSNotificationNameBackupStateDidChange = @"NSNotificationNameBac
 
 NSString *const OWSPrimaryStorage_OWSBackupCollection = @"OWSPrimaryStorage_OWSBackupCollection";
 NSString *const OWSBackup_IsBackupEnabledKey = @"OWSBackup_IsBackupEnabledKey";
+NSString *const OWSBackup_BackupKeyKey = @"OWSBackup_BackupKeyKey";
 NSString *const OWSBackup_LastExportSuccessDateKey = @"OWSBackup_LastExportSuccessDateKey";
 NSString *const OWSBackup_LastExportFailureDateKey = @"OWSBackup_LastExportFailureDateKey";
 
@@ -99,13 +101,42 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
+- (void)setBackupPrivateKey:(NSData *)value
+{
+    OWSAssert(value);
+
+    // TODO: This should eventually be the backup key stored in the Signal Service
+    //       and retrieved with the backup PIN.  It will eventually be stored in
+    //       the keychain.
+    [self.dbConnection setObject:value
+                          forKey:OWSBackup_BackupKeyKey
+                    inCollection:OWSPrimaryStorage_OWSBackupCollection];
+}
+
+- (nullable NSData *)backupPrivateKey
+{
+    NSData *_Nullable result =
+        [self.dbConnection objectForKey:OWSBackup_BackupKeyKey inCollection:OWSPrimaryStorage_OWSBackupCollection];
+    if (!result) {
+        // TODO: This is temporary measure until we have proper private key
+        //       storage in the service.
+        const NSUInteger kBackupPrivateKeyLength = 32;
+        result = [Randomness generateRandomBytes:kBackupPrivateKeyLength];
+        [self setBackupPrivateKey:result];
+    }
+    OWSAssert(result);
+    OWSAssert([result isKindOfClass:[NSData class]]);
+    return result;
+}
+
 - (void)setLastExportSuccessDate:(NSDate *)value
 {
+    OWSAssert(value);
+
     [self.dbConnection setDate:value
                         forKey:OWSBackup_LastExportSuccessDateKey
                   inCollection:OWSPrimaryStorage_OWSBackupCollection];
 }
-
 
 - (nullable NSDate *)lastExportSuccessDate
 {
@@ -115,6 +146,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setLastExportFailureDate:(NSDate *)value
 {
+    OWSAssert(value);
+
     [self.dbConnection setDate:value
                         forKey:OWSBackup_LastExportFailureDateKey
                   inCollection:OWSPrimaryStorage_OWSBackupCollection];
@@ -139,7 +172,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dbConnection setBool:value
                         forKey:OWSBackup_IsBackupEnabledKey
                   inCollection:OWSPrimaryStorage_OWSBackupCollection];
-    OWSAssert(self.isBackupEnabled);
 
     if (!value) {
         [self.dbConnection removeObjectForKey:OWSBackup_LastExportSuccessDateKey
@@ -253,13 +285,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - OWSBackupExportDelegate
 
-// TODO: This should eventually be the backup key stored in the Signal Service
-//       and retrieved with the backup PIN.
+// We use a delegate method to avoid storing this key in memory.
 - (nullable NSData *)backupKey
 {
-    // We use a delegate method to avoid storing this key in memory.
-    // It will eventually be stored in the keychain.
-    return [@"test backup key" dataUsingEncoding:NSUTF8StringEncoding];
+    return self.backupPrivateKey;
 }
 
 - (void)backupExportDidSucceed:(OWSBackupExport *)backupExport

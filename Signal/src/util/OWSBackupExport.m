@@ -26,10 +26,19 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OWSBackupExportBoolCompletion)(BOOL success);
 typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
 
+@interface OWSBackupExport (Private)
+
++ (nullable NSString *)encryptAsTempFile:(NSString *)srcFilePath
+                           exportDirPath:(NSString *)exportDirPath
+                                delegate:(id<OWSBackupExportDelegate>)delegate;
+
+@end
+
 #pragma mark -
 
 @interface OWSAttachmentExport : NSObject
 
+@property (nonatomic, weak) id<OWSBackupExportDelegate> delegate;
 @property (nonatomic) NSString *exportDirPath;
 @property (nonatomic) NSString *attachmentId;
 @property (nonatomic) NSString *attachmentFilePath;
@@ -73,30 +82,15 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
     }
     self.relativeFilePath = relativeFilePath;
 
-    NSString *_Nullable tempFilePath = [self encryptAsTempFile:self.attachmentFilePath];
+    NSString *_Nullable tempFilePath = [OWSBackupExport encryptAsTempFile:self.attachmentFilePath
+                                                            exportDirPath:self.exportDirPath
+                                                                 delegate:self.delegate];
     if (!tempFilePath) {
         DDLogError(@"%@ attachment could not be encrypted.", self.logTag);
         OWSFail(@"%@ attachment could not be encrypted: %@", self.logTag, self.attachmentFilePath);
         return;
     }
     self.tempFilePath = tempFilePath;
-}
-
-- (nullable NSString *)encryptAsTempFile:(NSString *)srcFilePath
-{
-    OWSAssert(self.exportDirPath.length > 0);
-
-    // TODO: Encrypt the file using self.delegate.backupKey;
-
-    NSString *dstFilePath = [self.exportDirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error;
-    BOOL success = [fileManager copyItemAtPath:srcFilePath toPath:dstFilePath error:&error];
-    if (!success || error) {
-        OWSProdLogAndFail(@"%@ error writing encrypted file: %@", self.logTag, error);
-        return nil;
-    }
-    return dstFilePath;
 }
 
 @end
@@ -252,10 +246,6 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
     }
     __weak OWSBackupExport *weakSelf = self;
     BackupStorageKeySpecBlock keySpecBlock = ^{
-        NSData *_Nullable backupKey = [weakSelf.delegate backupKey];
-        if (!backupKey) {
-            return (NSData *)nil;
-        }
         return weakSelf.databaseKeySpec;
     };
     self.backupStorage =
@@ -449,6 +439,7 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
         // OWSAttachmentExport is used to lazily write an encrypted copy of the
         // attachment to disk.
         OWSAttachmentExport *attachmentExport = [OWSAttachmentExport new];
+        attachmentExport.delegate = self.delegate;
         attachmentExport.exportDirPath = self.exportDirPath;
         attachmentExport.attachmentId = attachmentId;
         attachmentExport.attachmentFilePath = attachmentFilePath;
@@ -517,23 +508,6 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
 
     // All files have been saved to the cloud.
     completion(nil);
-}
-
-- (nullable NSString *)encryptAsTempFile:(NSString *)srcFilePath
-{
-    OWSAssert(self.exportDirPath.length > 0);
-
-    // TODO: Encrypt the file using self.delegate.backupKey;
-
-    NSString *dstFilePath = [self.exportDirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error;
-    BOOL success = [fileManager copyItemAtPath:srcFilePath toPath:dstFilePath error:&error];
-    if (!success || error) {
-        OWSProdLogAndFail(@"%@ error writing encrypted file: %@", self.logTag, error);
-        return nil;
-    }
-    return dstFilePath;
 }
 
 - (BOOL)writeManifestFile
@@ -686,6 +660,29 @@ typedef void (^OWSBackupExportCompletion)(NSError *_Nullable error);
         self.isComplete = YES;
         [self.delegate backupExportDidFail:self error:error];
     });
+}
+
++ (nullable NSString *)encryptAsTempFile:(NSString *)srcFilePath
+                           exportDirPath:(NSString *)exportDirPath
+                                delegate:(id<OWSBackupExportDelegate>)delegate
+{
+    OWSAssert(srcFilePath.length > 0);
+    OWSAssert(exportDirPath.length > 0);
+    OWSAssert(delegate);
+
+    // TODO: Encrypt the file using self.delegate.backupKey;
+    NSData *_Nullable backupKey = [delegate backupKey];
+    OWSAssert(backupKey);
+
+    NSString *dstFilePath = [exportDirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error;
+    BOOL success = [fileManager copyItemAtPath:srcFilePath toPath:dstFilePath error:&error];
+    if (!success || error) {
+        OWSProdLogAndFail(@"%@ error writing encrypted file: %@", self.logTag, error);
+        return nil;
+    }
+    return dstFilePath;
 }
 
 @end
