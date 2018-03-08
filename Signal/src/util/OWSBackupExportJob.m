@@ -2,10 +2,9 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSBackupImport.h"
+#import "OWSBackupExportJob.h"
 #import "Signal-Swift.h"
 #import "zlib.h"
-#import <Curve25519Kit/Randomness.h>
 #import <SSZipArchive/SSZipArchive.h>
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSDate+OWS.h>
@@ -19,27 +18,15 @@
 #import <SignalServiceKit/Threading.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseCryptoUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^OWSBackupImportBoolCompletion)(BOOL success);
-typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
+NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKeySpec";
 
-@interface OWSBackupImport (Private)
+@interface OWSAttachmentExport : NSObject
 
-+ (nullable NSString *)encryptAsTempFile:(NSString *)srcFilePath
-                           importDirPath:(NSString *)importDirPath
-                                delegate:(id<OWSBackupImportDelegate>)delegate;
-
-@end
-
-#pragma mark -
-
-@interface OWSAttachmentImport : NSObject
-
-@property (nonatomic, weak) id<OWSBackupImportDelegate> delegate;
-@property (nonatomic) NSString *importDirPath;
+@property (nonatomic, weak) id<OWSBackupJobDelegate> delegate;
+@property (nonatomic) NSString *jobTempDirPath;
 @property (nonatomic) NSString *attachmentId;
 @property (nonatomic) NSString *attachmentFilePath;
 @property (nonatomic, nullable) NSString *tempFilePath;
@@ -49,7 +36,7 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
 
 #pragma mark -
 
-@implementation OWSAttachmentImport
+@implementation OWSAttachmentExport
 
 - (void)dealloc
 {
@@ -65,7 +52,7 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
 // On success, tempFilePath will be non-nil.
 - (void)prepareForUpload
 {
-    OWSAssert(self.importDirPath.length > 0);
+    OWSAssert(self.jobTempDirPath.length > 0);
     OWSAssert(self.attachmentId.length > 0);
     OWSAssert(self.attachmentFilePath.length > 0);
 
@@ -82,9 +69,9 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
     }
     self.relativeFilePath = relativeFilePath;
 
-    NSString *_Nullable tempFilePath = [OWSBackupImport encryptAsTempFile:self.attachmentFilePath
-                                                            importDirPath:self.importDirPath
-                                                                 delegate:self.delegate];
+    NSString *_Nullable tempFilePath = [OWSBackupExportJob encryptFileAsTempFile:self.attachmentFilePath
+                                                                  jobTempDirPath:self.jobTempDirPath
+                                                                        delegate:self.delegate];
     if (!tempFilePath) {
         DDLogError(@"%@ attachment could not be encrypted.", self.logTag);
         OWSFail(@"%@ attachment could not be encrypted: %@", self.logTag, self.attachmentFilePath);
@@ -97,20 +84,9 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
 
 #pragma mark -
 
-@interface OWSBackupImport () <SSZipArchiveDelegate>
-
-@property (nonatomic, weak) id<OWSBackupImportDelegate> delegate;
-
-@property (nonatomic, nullable) YapDatabaseConnection *srcDBConnection;
-
-@property (nonatomic, nullable) YapDatabaseConnection *dstDBConnection;
-
-// Indicates that the backup succeeded, failed or was cancelled.
-@property (atomic) BOOL isComplete;
+@interface OWSBackupExportJob () <SSZipArchiveDelegate>
 
 @property (nonatomic, nullable) OWSBackupStorage *backupStorage;
-
-@property (nonatomic, nullable) NSData *databaseKeySpec;
 
 @property (nonatomic, nullable) OWSBackgroundTask *backgroundTask;
 
@@ -126,43 +102,11 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
 @property (nonatomic, nullable) NSString *manifestFilePath;
 @property (nonatomic, nullable) NSString *manifestRecordName;
 
-@property (nonatomic) NSString *importDirPath;
-
 @end
 
 #pragma mark -
 
-@implementation OWSBackupImport
-
-- (instancetype)initWithDelegate:(id<OWSBackupImportDelegate>)delegate
-                  primaryStorage:(OWSPrimaryStorage *)primaryStorage
-{
-    self = [super init];
-
-    if (!self) {
-        return self;
-    }
-
-    OWSAssert(primaryStorage);
-    OWSAssert([OWSStorage isStorageReady]);
-
-    self.delegate = delegate;
-    _srcDBConnection = primaryStorage.newDatabaseConnection;
-
-    return self;
-}
-
-- (void)dealloc
-{
-    // Surface memory leaks by logging the deallocation.
-    DDLogVerbose(@"Dealloc: %@", self.class);
-
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-
-    if (self.importDirPath) {
-        [OWSFileSystem deleteFileIfExists:self.importDirPath];
-    }
-}
+@implementation OWSBackupExportJob
 
 - (void)startAsync
 {
@@ -174,7 +118,7 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
 
     [self updateProgressWithDescription:nil progress:nil];
 
-    __weak OWSBackupImport *weakSelf = self;
+    __weak OWSBackupExportJob *weakSelf = self;
     [OWSBackupAPI checkCloudKitAccessWithCompletion:^(BOOL hasAccess) {
         if (hasAccess) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -187,15 +131,15 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
 - (void)start
 {
     [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_CONFIGURATION",
-                                            @"Indicates that the backup import is being configured.")
+                                            @"Indicates that the backup export is being configured.")
                                progress:nil];
 
-    __weak OWSBackupImport *weakSelf = self;
-    [self configureImport:^(BOOL success) {
+    __weak OWSBackupExportJob *weakSelf = self;
+    [self configureExport:^(BOOL success) {
         if (!success) {
             [self failWithErrorDescription:
                       NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                          @"Error indicating the a backup import could not import the user's data.")];
+                          @"Error indicating the a backup export could not export the user's data.")];
             return;
         }
 
@@ -203,12 +147,12 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
             return;
         }
         [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_EXPORT",
-                                                @"Indicates that the backup import data is being imported.")
+                                                @"Indicates that the backup export data is being exported.")
                                    progress:nil];
-        if (![self importDatabase]) {
+        if (![self exportDatabase]) {
             [self failWithErrorDescription:
                       NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                          @"Error indicating the a backup import could not import the user's data.")];
+                          @"Error indicating the a backup export could not export the user's data.")];
             return;
         }
         if (self.isComplete) {
@@ -230,42 +174,40 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
     }];
 }
 
-- (void)configureImport:(OWSBackupImportBoolCompletion)completion
+- (void)configureExport:(OWSBackupJobBoolCompletion)completion
 {
     OWSAssert(completion);
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    NSString *temporaryDirectory = NSTemporaryDirectory();
-    self.importDirPath = [temporaryDirectory stringByAppendingString:[NSUUID UUID].UUIDString];
-    NSString *importDatabaseDirPath = [self.importDirPath stringByAppendingPathComponent:@"Database"];
-    self.databaseKeySpec = [Randomness generateRandomBytes:(int)kSQLCipherKeySpecLength];
+    if (![self ensureJobTempDir]) {
+        OWSProdLogAndFail(@"%@ Could not create jobTempDirPath.", self.logTag);
+        return completion(NO);
+    }
 
-    if (![OWSFileSystem ensureDirectoryExists:self.importDirPath]) {
-        OWSProdLogAndFail(@"%@ Could not create importDirPath.", self.logTag);
+    if (![OWSBackupJob generateRandomDatabaseKeySpecWithKeychainKey:kOWSBackup_ExportDatabaseKeySpec]) {
+        OWSProdLogAndFail(@"%@ Could not generate database key spec for export.", self.logTag);
         return completion(NO);
     }
-    if (![OWSFileSystem ensureDirectoryExists:importDatabaseDirPath]) {
-        OWSProdLogAndFail(@"%@ Could not create importDatabaseDirPath.", self.logTag);
+
+    NSString *exportDatabaseDirPath = [self.jobTempDirPath stringByAppendingPathComponent:@"Database"];
+
+    if (![OWSFileSystem ensureDirectoryExists:exportDatabaseDirPath]) {
+        OWSProdLogAndFail(@"%@ Could not create exportDatabaseDirPath.", self.logTag);
         return completion(NO);
     }
-    if (!self.databaseKeySpec) {
-        OWSProdLogAndFail(@"%@ Could not create databaseKeySpec.", self.logTag);
-        return completion(NO);
-    }
-    __weak OWSBackupImport *weakSelf = self;
     BackupStorageKeySpecBlock keySpecBlock = ^{
-        return weakSelf.databaseKeySpec;
+        NSData *_Nullable databaseKeySpec =
+            [OWSBackupJob loadDatabaseKeySpecWithKeychainKey:kOWSBackup_ExportDatabaseKeySpec];
+        if (!databaseKeySpec) {
+            OWSProdLogAndFail(@"%@ Could not load database keyspec for export.", self.logTag);
+        }
+        return databaseKeySpec;
     };
     self.backupStorage =
-        [[OWSBackupStorage alloc] initBackupStorageWithDatabaseDirPath:importDatabaseDirPath keySpecBlock:keySpecBlock];
+        [[OWSBackupStorage alloc] initBackupStorageWithDatabaseDirPath:exportDatabaseDirPath keySpecBlock:keySpecBlock];
     if (!self.backupStorage) {
         OWSProdLogAndFail(@"%@ Could not create backupStorage.", self.logTag);
-        return completion(NO);
-    }
-    _dstDBConnection = self.backupStorage.newDatabaseConnection;
-    if (!self.dstDBConnection) {
-        OWSProdLogAndFail(@"%@ Could not create dstDBConnection.", self.logTag);
         return completion(NO);
     }
 
@@ -280,9 +222,20 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
     });
 }
 
-- (BOOL)importDatabase
+- (BOOL)exportDatabase
 {
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    YapDatabaseConnection *_Nullable tempDBConnection = self.backupStorage.newDatabaseConnection;
+    if (!tempDBConnection) {
+        OWSProdLogAndFail(@"%@ Could not create tempDBConnection.", self.logTag);
+        return NO;
+    }
+    YapDatabaseConnection *_Nullable primaryDBConnection = self.primaryStorage.newDatabaseConnection;
+    if (!primaryDBConnection) {
+        OWSProdLogAndFail(@"%@ Could not create primaryDBConnection.", self.logTag);
+        return NO;
+    }
 
     __block unsigned long long copiedThreads = 0;
     __block unsigned long long copiedInteractions = 0;
@@ -291,8 +244,8 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
 
     self.attachmentFilePathMap = [NSMutableDictionary new];
 
-    [self.srcDBConnection readWithBlock:^(YapDatabaseReadTransaction *srcTransaction) {
-        [self.dstDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *dstTransaction) {
+    [primaryDBConnection readWithBlock:^(YapDatabaseReadTransaction *srcTransaction) {
+        [tempDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *dstTransaction) {
             // Copy threads.
             [srcTransaction
                 enumerateKeysAndObjectsInCollection:[TSThread collection]
@@ -388,13 +341,13 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
     ] mutableCopy];
 
     // Close the database.
-    self.dstDBConnection = nil;
+    tempDBConnection = nil;
     self.backupStorage = nil;
 
     return YES;
 }
 
-- (void)saveToCloud:(OWSBackupImportCompletion)completion
+- (void)saveToCloud:(OWSBackupJobCompletion)completion
 {
     OWSAssert(completion);
 
@@ -406,7 +359,7 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
     [self saveNextFileToCloud:completion];
 }
 
-- (void)saveNextFileToCloud:(OWSBackupImportCompletion)completion
+- (void)saveNextFileToCloud:(OWSBackupJobCompletion)completion
 {
     OWSAssert(completion);
 
@@ -417,10 +370,10 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
     CGFloat progress
         = (self.databaseRecordMap.count / (CGFloat)(self.databaseRecordMap.count + self.databaseFilePaths.count));
     [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_UPLOAD",
-                                            @"Indicates that the backup import data is being uploaded.")
+                                            @"Indicates that the backup export data is being uploaded.")
                                progress:@(progress)];
 
-    __weak OWSBackupImport *weakSelf = self;
+    __weak OWSBackupExportJob *weakSelf = self;
 
     if (self.databaseFilePaths.count > 0) {
         NSString *filePath = self.databaseFilePaths.lastObject;
@@ -431,7 +384,7 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
             success:^(NSString *recordName) {
                 // Ensure that we continue to work off the main thread.
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    OWSBackupImport *strongSelf = weakSelf;
+                    OWSBackupExportJob *strongSelf = weakSelf;
                     if (!strongSelf) {
                         return;
                     }
@@ -451,35 +404,35 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
         NSString *attachmentFilePath = self.attachmentFilePathMap[attachmentId];
         [self.attachmentFilePathMap removeObjectForKey:attachmentId];
 
-        // OWSAttachmentImport is used to lazily write an encrypted copy of the
+        // OWSAttachmentExport is used to lazily write an encrypted copy of the
         // attachment to disk.
-        OWSAttachmentImport *attachmentImport = [OWSAttachmentImport new];
-        attachmentImport.delegate = self.delegate;
-        attachmentImport.importDirPath = self.importDirPath;
-        attachmentImport.attachmentId = attachmentId;
-        attachmentImport.attachmentFilePath = attachmentFilePath;
+        OWSAttachmentExport *attachmentExport = [OWSAttachmentExport new];
+        attachmentExport.delegate = self.delegate;
+        attachmentExport.jobTempDirPath = self.jobTempDirPath;
+        attachmentExport.attachmentId = attachmentId;
+        attachmentExport.attachmentFilePath = attachmentFilePath;
 
         [OWSBackupAPI savePersistentFileOnceToCloudWithFileId:attachmentId
             fileUrlBlock:^{
-                [attachmentImport prepareForUpload];
-                if (attachmentImport.tempFilePath.length < 1) {
-                    DDLogError(@"%@ attachment import missing temp file path", self.logTag);
+                [attachmentExport prepareForUpload];
+                if (attachmentExport.tempFilePath.length < 1) {
+                    DDLogError(@"%@ attachment export missing temp file path", self.logTag);
                     return (NSURL *)nil;
                 }
-                if (attachmentImport.relativeFilePath.length < 1) {
-                    DDLogError(@"%@ attachment import missing relative file path", self.logTag);
+                if (attachmentExport.relativeFilePath.length < 1) {
+                    DDLogError(@"%@ attachment export missing relative file path", self.logTag);
                     return (NSURL *)nil;
                 }
-                return [NSURL fileURLWithPath:attachmentImport.tempFilePath];
+                return [NSURL fileURLWithPath:attachmentExport.tempFilePath];
             }
             success:^(NSString *recordName) {
                 // Ensure that we continue to work off the main thread.
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    OWSBackupImport *strongSelf = weakSelf;
+                    OWSBackupExportJob *strongSelf = weakSelf;
                     if (!strongSelf) {
                         return;
                     }
-                    strongSelf.attachmentRecordMap[recordName] = attachmentImport.relativeFilePath;
+                    strongSelf.attachmentRecordMap[recordName] = attachmentExport.relativeFilePath;
                     [strongSelf saveNextFileToCloud:completion];
                 });
             }
@@ -495,9 +448,9 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
 
     if (!self.manifestFilePath) {
         if (![self writeManifestFile]) {
-            completion(OWSErrorWithCodeDescription(OWSErrorCodeImportBackupFailed,
+            completion(OWSErrorWithCodeDescription(OWSErrorCodeExportBackupFailed,
                 NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                    @"Error indicating the a backup import could not import the user's data.")));
+                    @"Error indicating the a backup export could not export the user's data.")));
             return;
         }
         OWSAssert(self.manifestFilePath);
@@ -506,7 +459,7 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
             success:^(NSString *recordName) {
                 // Ensure that we continue to work off the main thread.
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    OWSBackupImport *strongSelf = weakSelf;
+                    OWSBackupExportJob *strongSelf = weakSelf;
                     if (!strongSelf) {
                         return;
                     }
@@ -529,14 +482,20 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
 {
     OWSAssert(self.databaseRecordMap.count > 0);
     OWSAssert(self.attachmentRecordMap);
-    OWSAssert(self.importDirPath.length > 0);
-    OWSAssert(self.databaseKeySpec.length > 0);
+    OWSAssert(self.jobTempDirPath.length > 0);
+
+    NSData *_Nullable databaseKeySpec =
+        [OWSBackupJob loadDatabaseKeySpecWithKeychainKey:kOWSBackup_ExportDatabaseKeySpec];
+    if (databaseKeySpec.length < 1) {
+        OWSProdLogAndFail(@"%@ Could not load database keyspec for export.", self.logTag);
+        return nil;
+    }
 
     NSDictionary *json = @{
-        @"database_files" : self.databaseRecordMap,
-        @"attachment_files" : self.attachmentRecordMap,
+        kOWSBackup_ManifestKey_DatabaseFiles : self.databaseRecordMap,
+        kOWSBackup_ManifestKey_AttachmentFiles : self.attachmentRecordMap,
         // JSON doesn't support byte arrays.
-        @"database_key_spec" : self.databaseKeySpec.base64EncodedString,
+        kOWSBackup_ManifestKey_DatabaseKeySpec : databaseKeySpec.base64EncodedString,
     };
     NSError *error;
     NSData *_Nullable jsonData =
@@ -545,16 +504,12 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
         OWSProdLogAndFail(@"%@ error encoding manifest file: %@", self.logTag, error);
         return NO;
     }
-    // TODO: Encrypt the manifest.
-    self.manifestFilePath = [self.importDirPath stringByAppendingPathComponent:@"manifest.json"];
-    if (![jsonData writeToFile:self.manifestFilePath atomically:YES]) {
-        OWSProdLogAndFail(@"%@ error writing manifest file: %@", self.logTag, error);
-        return NO;
-    }
-    return YES;
+    self.manifestFilePath =
+        [OWSBackupJob encryptDataAsTempFile:jsonData jobTempDirPath:self.jobTempDirPath delegate:self.delegate];
+    return self.manifestFilePath != nil;
 }
 
-- (void)cleanUpCloud:(OWSBackupImportCompletion)completion
+- (void)cleanUpCloud:(OWSBackupJobCompletion)completion
 {
     OWSAssert(completion);
 
@@ -564,9 +519,9 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
                                             @"Indicates that the cloud is being cleaned up.")
                                progress:nil];
 
-    // Now that our backup import has successfully completed,
+    // Now that our backup export has successfully completed,
     // we try to clean up the cloud.  We can safely delete any
-    // records not involved in this backup import.
+    // records not involved in this backup export.
     NSMutableSet<NSString *> *activeRecordNames = [NSMutableSet new];
 
     OWSAssert(self.databaseRecordMap.count > 0);
@@ -578,7 +533,7 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
     OWSAssert(self.manifestRecordName.length > 0);
     [activeRecordNames addObject:self.manifestRecordName];
 
-    __weak OWSBackupImport *weakSelf = self;
+    __weak OWSBackupExportJob *weakSelf = self;
     [OWSBackupAPI fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
         // Ensure that we continue to work off the main thread.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -608,7 +563,7 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
 
 - (void)deleteRecordsFromCloud:(NSMutableArray<NSString *> *)obsoleteRecordNames
                   deletedCount:(NSUInteger)deletedCount
-                    completion:(OWSBackupImportCompletion)completion
+                    completion:(OWSBackupJobCompletion)completion
 {
     OWSAssert(obsoleteRecordNames);
     OWSAssert(completion);
@@ -629,7 +584,7 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
     NSString *recordName = obsoleteRecordNames.lastObject;
     [obsoleteRecordNames removeLastObject];
 
-    __weak OWSBackupImport *weakSelf = self;
+    __weak OWSBackupExportJob *weakSelf = self;
     [OWSBackupAPI deleteRecordFromCloudWithRecordName:recordName
         success:^{
             // Ensure that we continue to work off the main thread.
@@ -648,86 +603,6 @@ typedef void (^OWSBackupImportCompletion)(NSError *_Nullable error);
                                       completion:completion];
             });
         }];
-}
-
-#pragma mark -
-
-- (void)cancel
-{
-    OWSAssertIsOnMainThread();
-
-    self.isComplete = YES;
-}
-
-- (void)succeed
-{
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.isComplete) {
-            return;
-        }
-        self.isComplete = YES;
-        [self.delegate backupImportDidSucceed:self];
-    });
-    // TODO:
-}
-
-- (void)failWithErrorDescription:(NSString *)description
-{
-    [self failWithError:OWSErrorWithCodeDescription(OWSErrorCodeImportBackupFailed, description)];
-}
-
-- (void)failWithError:(NSError *)error
-{
-    OWSProdLogAndFail(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, error);
-
-    // TODO:
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.isComplete) {
-            return;
-        }
-        self.isComplete = YES;
-        [self.delegate backupImportDidFail:self error:error];
-    });
-}
-
-- (void)updateProgressWithDescription:(nullable NSString *)description progress:(nullable NSNumber *)progress
-{
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.isComplete) {
-            return;
-        }
-        [self.delegate backupImportDidUpdate:self description:description progress:progress];
-    });
-}
-
-#pragma mark - Encryption
-
-+ (nullable NSString *)encryptAsTempFile:(NSString *)srcFilePath
-                           importDirPath:(NSString *)importDirPath
-                                delegate:(id<OWSBackupImportDelegate>)delegate
-{
-    OWSAssert(srcFilePath.length > 0);
-    OWSAssert(importDirPath.length > 0);
-    OWSAssert(delegate);
-
-    // TODO: Encrypt the file using self.delegate.backupKey;
-    NSData *_Nullable backupKey = [delegate backupKey];
-    OWSAssert(backupKey);
-
-    NSString *dstFilePath = [importDirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error;
-    BOOL success = [fileManager copyItemAtPath:srcFilePath toPath:dstFilePath error:&error];
-    if (!success || error) {
-        OWSProdLogAndFail(@"%@ error writing encrypted file: %@", self.logTag, error);
-        return nil;
-    }
-    return dstFilePath;
 }
 
 @end

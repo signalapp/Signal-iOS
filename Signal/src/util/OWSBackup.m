@@ -4,8 +4,8 @@
 
 #import "OWSBackup.h"
 #import "NSNotificationCenter+OWS.h"
-#import "OWSBackupExport.h"
-#import "OWSBackupImport.h"
+#import "OWSBackupExportJob.h"
+#import "OWSBackupImportJob.h"
 #import "Signal-Swift.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SignalServiceKit/AppContext.h>
@@ -26,15 +26,15 @@ NSString *const OWSBackup_LastExportFailureDateKey = @"OWSBackup_LastExportFailu
 NS_ASSUME_NONNULL_BEGIN
 
 // TODO: Observe Reachability.
-@interface OWSBackup () <OWSBackupExportDelegate, OWSBackupImportDelegate>
+@interface OWSBackup () <OWSBackupJobDelegate>
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 // This property should only be accessed on the main thread.
-@property (nonatomic, nullable) OWSBackupExport *backupExport;
+@property (nonatomic, nullable) OWSBackupExportJob *backupExport;
 
 // This property should only be accessed on the main thread.
-@property (nonatomic, nullable) OWSBackupImport *backupImport;
+@property (nonatomic, nullable) OWSBackupImportJob *backupImport;
 
 @property (nonatomic, nullable) NSString *backupExportDescription;
 @property (nonatomic, nullable) NSNumber *backupExportProgress;
@@ -252,7 +252,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.backupExport = nil;
     } else if (self.shouldHaveBackupExport && !self.backupExport) {
         self.backupExport =
-            [[OWSBackupExport alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
+            [[OWSBackupExportJob alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
         [self.backupExport startAsync];
     }
 
@@ -318,7 +318,7 @@ NS_ASSUME_NONNULL_BEGIN
     _backupImportState = OWSBackupState_InProgress;
 
     self.backupImport =
-        [[OWSBackupImport alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
+        [[OWSBackupImportJob alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
     [self.backupImport startAsync];
 
     [self postDidChangeNotification];
@@ -350,7 +350,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self ensureBackupExportState];
 }
 
-#pragma mark - OWSBackupExportDelegate
+#pragma mark - OWSBackupJobDelegate
 
 // We use a delegate method to avoid storing this key in memory.
 - (nullable NSData *)backupKey
@@ -358,116 +358,77 @@ NS_ASSUME_NONNULL_BEGIN
     return self.backupPrivateKey;
 }
 
-- (void)backupExportDidSucceed:(OWSBackupExport *)backupExport
+- (void)backupJobDidSucceed:(OWSBackupJob *)backupJob
 {
     OWSAssertIsOnMainThread();
-
-    if (self.backupExport != backupExport) {
-        return;
-    }
 
     DDLogInfo(@"%@ %s.", self.logTag, __PRETTY_FUNCTION__);
 
-    self.backupExport = nil;
+    if (self.backupImport == backupJob) {
+        self.backupImport = nil;
 
-    [self setLastExportSuccessDate:[NSDate new]];
+        _backupImportState = OWSBackupState_Succeeded;
+    } else if (self.backupExport == backupJob) {
+        self.backupExport = nil;
 
-    [self ensureBackupExportState];
-}
+        [self setLastExportSuccessDate:[NSDate new]];
 
-- (void)backupExportDidFail:(OWSBackupExport *)backupExport error:(NSError *)error
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.backupExport != backupExport) {
+        [self ensureBackupExportState];
+    } else {
         return;
     }
-
-    DDLogInfo(@"%@ %s: %@", self.logTag, __PRETTY_FUNCTION__, error);
-
-    self.backupExport = nil;
-
-    [self setLastExportFailureDate:[NSDate new]];
-
-    [self ensureBackupExportState];
-}
-
-- (void)backupExportDidUpdate:(OWSBackupExport *)backupExport
-                  description:(nullable NSString *)description
-                     progress:(nullable NSNumber *)progress
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.backupExport != backupExport) {
-        return;
-    }
-
-    DDLogInfo(@"%@ %s: %@, %@", self.logTag, __PRETTY_FUNCTION__, description, progress);
-
-    BOOL didChange = !([NSObject isNullableObject:self.backupExportDescription equalTo:description] &&
-        [NSObject isNullableObject:self.backupExportProgress equalTo:progress]);
-
-    self.backupExportDescription = description;
-    self.backupExportProgress = progress;
-
-    if (didChange) {
-        [self postDidChangeNotification];
-    }
-}
-
-#pragma mark - OWSBackupImportDelegate
-
-- (void)backupImportDidSucceed:(OWSBackupImport *)backupImport
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.backupImport != backupImport) {
-        return;
-    }
-
-    DDLogInfo(@"%@ %s.", self.logTag, __PRETTY_FUNCTION__);
-
-    self.backupImport = nil;
-
-    _backupImportState = OWSBackupState_Succeeded;
 
     [self postDidChangeNotification];
 }
 
-- (void)backupImportDidFail:(OWSBackupImport *)backupImport error:(NSError *)error
+- (void)backupJobDidFail:(OWSBackupJob *)backupJob error:(NSError *)error
 {
     OWSAssertIsOnMainThread();
 
-    if (self.backupImport != backupImport) {
-        return;
-    }
-
     DDLogInfo(@"%@ %s: %@", self.logTag, __PRETTY_FUNCTION__, error);
 
-    self.backupImport = nil;
+    if (self.backupImport == backupJob) {
+        self.backupImport = nil;
 
-    _backupImportState = OWSBackupState_Failed;
+        _backupImportState = OWSBackupState_Failed;
+    } else if (self.backupExport == backupJob) {
+        self.backupExport = nil;
+
+        [self setLastExportFailureDate:[NSDate new]];
+
+        [self ensureBackupExportState];
+    } else {
+        return;
+    }
 
     [self postDidChangeNotification];
 }
 
-- (void)backupImportDidUpdate:(OWSBackupImport *)backupImport
-                  description:(nullable NSString *)description
-                     progress:(nullable NSNumber *)progress
+- (void)backupJobDidUpdate:(OWSBackupJob *)backupJob
+               description:(nullable NSString *)description
+                  progress:(nullable NSNumber *)progress
 {
     OWSAssertIsOnMainThread();
 
-    if (self.backupImport != backupImport) {
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    // TODO: Should we consolidate this state?
+    BOOL didChange;
+    if (self.backupImport == backupJob) {
+        didChange = !([NSObject isNullableObject:self.backupImportDescription equalTo:description] &&
+            [NSObject isNullableObject:self.backupImportProgress equalTo:progress]);
+
+        self.backupImportDescription = description;
+        self.backupImportProgress = progress;
+    } else if (self.backupExport == backupJob) {
+        didChange = !([NSObject isNullableObject:self.backupExportDescription equalTo:description] &&
+            [NSObject isNullableObject:self.backupExportProgress equalTo:progress]);
+
+        self.backupExportDescription = description;
+        self.backupExportProgress = progress;
+    } else {
         return;
     }
-
-    DDLogInfo(@"%@ %s: %@, %@", self.logTag, __PRETTY_FUNCTION__, description, progress);
-
-    BOOL didChange = !([NSObject isNullableObject:self.backupImportDescription equalTo:description] &&
-        [NSObject isNullableObject:self.backupImportProgress equalTo:progress]);
-
-    self.backupImportDescription = description;
-    self.backupImportProgress = progress;
 
     if (didChange) {
         [self postDidChangeNotification];

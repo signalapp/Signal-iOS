@@ -325,6 +325,94 @@ import CloudKit
     }
 
     @objc
+    public class func downloadManifestFromCloud(
+                                            success: @escaping (Data) -> Swift.Void,
+                                            failure: @escaping (Error) -> Swift.Void) {
+        downloadDataFromCloud(recordName: manifestRecordName,
+                                            success: success,
+                                            failure: failure)
+    }
+
+    @objc
+    public class func downloadDataFromCloud(recordName: String,
+                                            success: @escaping (Data) -> Swift.Void,
+                                            failure: @escaping (Error) -> Swift.Void) {
+
+        downloadFromCloud(recordName: recordName,
+                          success: { (asset) in
+                            DispatchQueue.global().async {
+                                do {
+                                    let data = try Data(contentsOf: asset.fileURL)
+                                    success(data)
+                                } catch {
+                                    Logger.error("\(self.logTag) couldn't copy asset file.")
+                                    failure(OWSErrorWithCodeDescription(.exportBackupError,
+                                                                        NSLocalizedString("BACKUP_IMPORT_ERROR_DOWNLOAD_FILE_FROM_CLOUD_FAILED",
+                                                                                          comment: "Error indicating the a backup import failed to download a file from the cloud.")))
+                                }
+                            }
+        },
+                          failure: failure)
+    }
+
+    @objc
+    public class func downloadFileFromCloud(recordName: String,
+                                            toFileUrl: URL,
+                                            success: @escaping (Swift.Void) -> Swift.Void,
+                                            failure: @escaping (Error) -> Swift.Void) {
+
+        downloadFromCloud(recordName: recordName,
+                          success: { (asset) in
+                            DispatchQueue.global().async {
+                                do {
+                                    let fileManager = FileManager.default
+                                    try fileManager.copyItem(at: asset.fileURL, to: toFileUrl)
+                                    success()
+                                } catch {
+                                    Logger.error("\(self.logTag) couldn't copy asset file.")
+                                    failure(OWSErrorWithCodeDescription(.exportBackupError,
+                                                                        NSLocalizedString("BACKUP_IMPORT_ERROR_DOWNLOAD_FILE_FROM_CLOUD_FAILED",
+                                                                                          comment: "Error indicating the a backup import failed to download a file from the cloud.")))
+                                }
+                            }
+        },
+                          failure: failure)
+    }
+
+    private class func downloadFromCloud(recordName: String,
+                                            success: @escaping (CKAsset) -> Swift.Void,
+                                            failure: @escaping (Error) -> Swift.Void) {
+
+        let recordId = CKRecordID(recordName: recordName)
+        let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
+        // Download all keys for this record.
+        fetchOperation.perRecordCompletionBlock = { (record, recordId, error) in
+            if let error = error {
+                failure(error)
+                return
+            }
+            guard let record = record else {
+                Logger.error("\(self.logTag) missing fetching record.")
+                failure(OWSErrorWithCodeDescription(.exportBackupError,
+                                                    NSLocalizedString("BACKUP_IMPORT_ERROR_DOWNLOAD_FILE_FROM_CLOUD_FAILED",
+                                                                      comment: "Error indicating the a backup import failed to download a file from the cloud.")))
+                return
+            }
+            guard let asset = record[payloadKey] as? CKAsset else {
+                Logger.error("\(self.logTag) record missing payload.")
+                failure(OWSErrorWithCodeDescription(.exportBackupError,
+                                                    NSLocalizedString("BACKUP_IMPORT_ERROR_DOWNLOAD_FILE_FROM_CLOUD_FAILED",
+                                                                      comment: "Error indicating the a backup import failed to download a file from the cloud.")))
+                return
+            }
+            success(asset)
+        }
+        let myContainer = CKContainer.default()
+        let privateDatabase = myContainer.privateCloudDatabase
+        privateDatabase.add(fetchOperation)
+    }
+
+    @objc
     public class func checkCloudKitAccess(completion: @escaping (Bool) -> Swift.Void) {
         CKContainer.default().accountStatus(completionHandler: { (accountStatus, error) in
             DispatchQueue.main.async {
