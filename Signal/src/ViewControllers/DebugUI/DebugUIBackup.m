@@ -28,6 +28,14 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIBackup backupTestFile];
                                      }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Check for CloudKit backup"
+                                     actionBlock:^{
+                                         [DebugUIBackup checkForBackup];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Try to restore CloudKit backup"
+                                     actionBlock:^{
+                                         [DebugUIBackup tryToImportBackup];
+                                     }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
@@ -53,6 +61,25 @@ NS_ASSUME_NONNULL_BEGIN
                                                  }];
         }
     }];
+}
+
++ (void)checkForBackup
+{
+    DDLogInfo(@"%@ checkForBackup.", self.logTag);
+
+    [OWSBackup.sharedManager checkCanImportBackup:^(BOOL value) {
+        DDLogInfo(@"%@ has backup available  for import? %d", self.logTag, value);
+    }
+                                          failure:^(NSError *error){
+                                              // Do nothing.
+                                          }];
+}
+
++ (void)tryToImportBackup
+{
+    DDLogInfo(@"%@ tryToImportBackup.", self.logTag);
+
+    [OWSBackup.sharedManager tryToImportBackup];
 }
 
 @end

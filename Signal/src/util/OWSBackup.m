@@ -5,6 +5,7 @@
 #import "OWSBackup.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBackupExport.h"
+#import "OWSBackupImport.h"
 #import "Signal-Swift.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SignalServiceKit/AppContext.h>
@@ -25,12 +26,21 @@ NSString *const OWSBackup_LastExportFailureDateKey = @"OWSBackup_LastExportFailu
 NS_ASSUME_NONNULL_BEGIN
 
 // TODO: Observe Reachability.
-@interface OWSBackup () <OWSBackupExportDelegate>
+@interface OWSBackup () <OWSBackupExportDelegate, OWSBackupImportDelegate>
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 // This property should only be accessed on the main thread.
 @property (nonatomic, nullable) OWSBackupExport *backupExport;
+
+// This property should only be accessed on the main thread.
+@property (nonatomic, nullable) OWSBackupImport *backupImport;
+
+@property (nonatomic, nullable) NSString *backupExportDescription;
+@property (nonatomic, nullable) NSNumber *backupExportProgress;
+
+@property (nonatomic, nullable) NSString *backupImportDescription;
+@property (nonatomic, nullable) NSNumber *backupImportProgress;
 
 @end
 
@@ -70,6 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
     _dbConnection = primaryStorage.newDatabaseConnection;
 
     _backupExportState = OWSBackupState_Idle;
+    _backupImportState = OWSBackupState_Idle;
 
     OWSSingletonAssert();
 
@@ -183,9 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  inCollection:OWSPrimaryStorage_OWSBackupCollection];
     }
 
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameBackupStateDidChange
-                                                             object:nil
-                                                           userInfo:nil];
+    [self postDidChangeNotification];
 
     [self ensureBackupExportState];
 }
@@ -218,6 +227,13 @@ NS_ASSUME_NONNULL_BEGIN
     //    const NSTimeInterval kRetryAfterFailure = 6 * kHourInterval;
     const NSTimeInterval kRetryAfterFailure = 0;
     if (lastExportFailureDate && fabs(lastExportFailureDate.timeIntervalSinceNow) < kRetryAfterFailure) {
+        return NO;
+    }
+    // Don't export backup if there's an import in progress.
+    //
+    // This conflict shouldn't occur in production since we won't enable backup
+    // export until an import is complete, but this could happen in development.
+    if (self.backupImport) {
         return NO;
     }
 
@@ -264,9 +280,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL stateDidChange = _backupExportState != backupExportState;
     _backupExportState = backupExportState;
     if (stateDidChange) {
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameBackupStateDidChange
-                                                                 object:nil
-                                                               userInfo:nil];
+        [self postDidChangeNotification];
     }
 }
 
@@ -288,6 +302,24 @@ NS_ASSUME_NONNULL_BEGIN
                 failure(error);
             });
         }];
+}
+
+- (void)tryToImportBackup
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(!self.backupImport);
+
+    // In development, make sure there's no export or import in progress.
+    [self.backupExport cancel];
+    self.backupExport = nil;
+    [self.backupImport cancel];
+    self.backupImport = nil;
+
+    _backupImportState = OWSBackupState_InProgress;
+
+    self.backupImport =
+        [[OWSBackupImport alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
+    [self.backupImport startAsync];
 }
 
 #pragma mark -
@@ -316,6 +348,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)backupExportDidSucceed:(OWSBackupExport *)backupExport
 {
+    OWSAssertIsOnMainThread();
+
     if (self.backupExport != backupExport) {
         return;
     }
@@ -331,6 +365,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)backupExportDidFail:(OWSBackupExport *)backupExport error:(NSError *)error
 {
+    OWSAssertIsOnMainThread();
+
     if (self.backupExport != backupExport) {
         return;
     }
@@ -342,6 +378,88 @@ NS_ASSUME_NONNULL_BEGIN
     [self setLastExportFailureDate:[NSDate new]];
 
     [self ensureBackupExportState];
+}
+
+- (void)backupExportDidUpdate:(OWSBackupExport *)backupExport
+                  description:(nullable NSString *)description
+                     progress:(nullable NSNumber *)progress
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.backupExport != backupExport) {
+        return;
+    }
+
+    DDLogInfo(@"%@ %s: %@, %@", self.logTag, __PRETTY_FUNCTION__, description, progress);
+
+    self.backupExportDescription = description;
+    self.backupExportProgress = progress;
+
+    [self postDidChangeNotification];
+}
+
+
+#pragma mark - OWSBackupImportDelegate
+
+- (void)backupImportDidSucceed:(OWSBackupImport *)backupImport
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.backupImport != backupImport) {
+        return;
+    }
+
+    DDLogInfo(@"%@ %s.", self.logTag, __PRETTY_FUNCTION__);
+
+    self.backupImport = nil;
+
+    _backupImportState = OWSBackupState_Succeeded;
+
+    [self postDidChangeNotification];
+}
+
+- (void)backupImportDidFail:(OWSBackupImport *)backupImport error:(NSError *)error
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.backupImport != backupImport) {
+        return;
+    }
+
+    DDLogInfo(@"%@ %s: %@", self.logTag, __PRETTY_FUNCTION__, error);
+
+    self.backupImport = nil;
+
+    _backupImportState = OWSBackupState_Failed;
+
+    [self postDidChangeNotification];
+}
+
+- (void)backupImportDidUpdate:(OWSBackupImport *)backupImport
+                  description:(nullable NSString *)description
+                     progress:(nullable NSNumber *)progress
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.backupImport != backupImport) {
+        return;
+    }
+
+    DDLogInfo(@"%@ %s: %@, %@", self.logTag, __PRETTY_FUNCTION__, description, progress);
+
+    self.backupImportDescription = description;
+    self.backupImportProgress = progress;
+
+    [self postDidChangeNotification];
+}
+
+#pragma mark - Notifications
+
+- (void)postDidChangeNotification
+{
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameBackupStateDidChange
+                                                             object:nil
+                                                           userInfo:nil];
 }
 
 @end

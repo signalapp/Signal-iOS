@@ -4,23 +4,23 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSBackupExport;
+@class OWSBackupImport;
 
-@protocol OWSBackupExportDelegate <NSObject>
+@protocol OWSBackupImportDelegate <NSObject>
 
 // TODO: This should eventually be the backup key stored in the Signal Service
 //       and retrieved with the backup PIN.
 - (nullable NSData *)backupKey;
 
-// Either backupExportDidSucceed:... or backupExportDidFail:... will
+// Either backupImportDidSucceed:... or backupImportDidFail:... will
 // be called exactly once on the main thread UNLESS:
 //
-// * The export was never started.
-// * The export was cancelled.
-- (void)backupExportDidSucceed:(OWSBackupExport *)backupExport;
-- (void)backupExportDidFail:(OWSBackupExport *)backupExport error:(NSError *)error;
+// * The import was never started.
+// * The import was cancelled.
+- (void)backupImportDidSucceed:(OWSBackupImport *)backupImport;
+- (void)backupImportDidFail:(OWSBackupImport *)backupImport error:(NSError *)error;
 
-- (void)backupExportDidUpdate:(OWSBackupExport *)backupExport
+- (void)backupImportDidUpdate:(OWSBackupImport *)backupImport
                   description:(nullable NSString *)description
                      progress:(nullable NSNumber *)progress;
 
@@ -30,11 +30,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class OWSPrimaryStorage;
 
-@interface OWSBackupExport : NSObject
+@interface OWSBackupImport : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithDelegate:(id<OWSBackupExportDelegate>)delegate
+- (instancetype)initWithDelegate:(id<OWSBackupImportDelegate>)delegate
                   primaryStorage:(OWSPrimaryStorage *)primaryStorage;
 
 - (void)startAsync;
