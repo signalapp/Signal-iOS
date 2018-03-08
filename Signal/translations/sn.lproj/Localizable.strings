@@ -155,7 +155,7 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Tepfenura";
 
 /* button text for back button */
-"BACK_BUTTON" = "Back";
+"BACK_BUTTON" = "Dzoka";
 
 /* Message indicating that backup export is complete. */
 "BACKUP_EXPORT_COMPLETE_MESSAGE" = "Backup complete.";
@@ -497,10 +497,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Database riri kuwedzerwa";
 
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "Nhasi";
 
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "Nezuro";
 
 /* Error indicating that the debug logs could not be copied. */
 "DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
