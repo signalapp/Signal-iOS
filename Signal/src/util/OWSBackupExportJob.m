@@ -191,11 +191,11 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
     }
 
     NSString *exportDatabaseDirPath = [self.jobTempDirPath stringByAppendingPathComponent:@"Database"];
-
     if (![OWSFileSystem ensureDirectoryExists:exportDatabaseDirPath]) {
         OWSProdLogAndFail(@"%@ Could not create exportDatabaseDirPath.", self.logTag);
         return completion(NO);
     }
+
     BackupStorageKeySpecBlock keySpecBlock = ^{
         NSData *_Nullable databaseKeySpec =
             [OWSBackupJob loadDatabaseKeySpecWithKeychainKey:kOWSBackup_ExportDatabaseKeySpec];

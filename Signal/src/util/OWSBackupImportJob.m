@@ -100,6 +100,10 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 //@property (nonatomic) NSMutableDictionary<NSString *, NSString *> *attachmentFilePathMap;
 // A map of "record name"-to-"file relative path".
 @property (nonatomic) NSMutableDictionary<NSString *, NSString *> *attachmentRecordMap;
+
+// A map of "record name"-to-"downloaded file path".
+@property (nonatomic) NSMutableDictionary<NSString *, NSString *> *downloadedFileMap;
+
 //
 //@property (nonatomic, nullable) NSString *manifestFilePath;
 //@property (nonatomic, nullable) NSString *manifestRecordName;
@@ -148,9 +152,9 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         if (self.isComplete) {
             return;
         }
-        [self downloadAndProcessManifest:^(NSError *_Nullable error) {
-            if (error) {
-                [self failWithError:error];
+        [self downloadAndProcessManifest:^(NSError *_Nullable manifestError) {
+            if (manifestError) {
+                [self failWithError:manifestError];
                 return;
             }
 
@@ -158,6 +162,32 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 return;
             }
 
+            NSMutableArray<NSString *> *allRecordNames = [NSMutableArray new];
+            [allRecordNames addObjectsFromArray:self.databaseRecordMap.allKeys];
+            [allRecordNames addObjectsFromArray:self.attachmentRecordMap.allKeys];
+            [self downloadFilesFromCloud:allRecordNames
+                              completion:^(NSError *_Nullable fileDownloadError) {
+                                  if (fileDownloadError) {
+                                      [self failWithError:fileDownloadError];
+                                      return;
+                                  }
+
+                                  if (self.isComplete) {
+                                      return;
+                                  }
+
+
+                                  [self restoreAttachmentFiles:^(NSError *_Nullable restoreAttachmentError) {
+                                      if (restoreAttachmentError) {
+                                          [self failWithError:restoreAttachmentError];
+                                          return;
+                                      }
+
+                                      if (self.isComplete) {
+                                          return;
+                                      }
+                                  }];
+                              }];
             // TODO:
         }];
 
@@ -244,16 +274,18 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     __weak OWSBackupImportJob *weakSelf = self;
     [OWSBackupAPI downloadManifestFromCloudWithSuccess:^(NSData *data) {
-        [weakSelf processManifest:data
-                       completion:^(BOOL success) {
-                           if (success) {
-                               completion(nil);
-                           } else {
-                               completion(OWSErrorWithCodeDescription(OWSErrorCodeImportBackupFailed,
-                                   NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                       @"Error indicating the a backup import could not import the user's data.")));
-                           }
-                       }];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [weakSelf processManifest:data
+                           completion:^(BOOL success) {
+                               if (success) {
+                                   completion(nil);
+                               } else {
+                                   completion(OWSErrorWithCodeDescription(OWSErrorCodeImportBackupFailed,
+                                       NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
+                                           @"Error indicating the a backup import could not import the user's data.")));
+                               }
+                           }];
+        });
     }
         failure:^(NSError *error) {
             // The manifest file is critical so any error downloading it is unrecoverable.
@@ -303,6 +335,139 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     return completion(YES);
 }
+
+//- (void)downloadDatabaseFiles:(OWSBackupJobCompletion)completion
+//{
+//    OWSAssert(completion);
+//
+//    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+//
+//    NSString *databaseDirPath = [self.jobTempDirPath stringByAppendingPathComponent:@"Database"];
+//    if (![OWSFileSystem ensureDirectoryExists:databaseDirPath]) {
+//        OWSProdLogAndFail(@"%@ Could not create databaseDirPath.", self.logTag);
+//        return completion(OWSErrorWithCodeDescription(OWSErrorCodeImportBackupFailed,
+//                                                      NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
+//                                                                        @"Error indicating the a backup import could
+//                                                                        not import the user's data.")));
+//    }
+//
+//    //    [OWSFileSystem protectFileOrFolderAtPath:dstFilePath];
+//    NSMutableArray<NSString *> *recordNames = [self.databaseRecordMap.allKeys mutableCopy];
+//
+//    [self downloadNextFile:recordNames
+//                dstDirPath:databaseDirPath
+//                completion:completion];
+//}
+//
+//- (void)downloadNextFile:(NSMutableArray<NSString *> *)recordNames
+//              dstDirPath:(NSString *)dstDirPath
+//              completion:(OWSBackupJobCompletion)completion
+//{
+//    OWSAssert(recordNames);
+//    OWSAssert(completion);
+//
+//    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+//
+//    NSString *databaseDirPath = [self.jobTempDirPath stringByAppendingPathComponent:@"Database"];
+//    if (![OWSFileSystem ensureDirectoryExists:databaseDirPath]) {
+//        OWSProdLogAndFail(@"%@ Could not create databaseDirPath.", self.logTag);
+//        return completion(OWSErrorWithCodeDescription(OWSErrorCodeImportBackupFailed,
+//                                                      NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
+//                                                                        @"Error indicating the a backup import could
+//                                                                        not import the user's data.")));
+//    }
+//
+//    //    NSString *database
+//    //    self.jobTempDirPath
+//
+//    //    [OWSFileSystem protectFileOrFolderAtPath:dstFilePath];
+//    NSMutableArray<NSString *> *recordNamesToDownload = [self.databaseRecordMap.allKeys mutableCopy];
+//
+//    [self downloadNextFile:recordNamesToDownload
+//                completion:completion];
+//    __weak OWSBackupImportJob *weakSelf = self;
+//    [OWSBackupAPI downloadManifestFromCloudWithSuccess:^(NSData *data) {
+//        [weakSelf processManifest:data
+//                       completion:^(BOOL success) {
+//                           if (success) {
+//                               completion(nil);
+//                           } else {
+//                               completion(OWSErrorWithCodeDescription(OWSErrorCodeImportBackupFailed,
+//                                                                      NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
+//                                                                                        @"Error indicating the a
+//                                                                                        backup import could not import
+//                                                                                        the user's data.")));
+//                           }
+//                       }];
+//    }
+//                                               failure:^(NSError *error) {
+//                                                   // The manifest file is critical so any error downloading it is
+//                                                   unrecoverable. OWSProdLogAndFail(@"%@ Could not download
+//                                                   manifest.", self.logTag); completion(error);
+//                                               }];
+//}
+
+- (void)downloadFilesFromCloud:(NSMutableArray<NSString *> *)recordNames completion:(OWSBackupJobCompletion)completion
+{
+    OWSAssert(recordNames.count > 0);
+    OWSAssert(completion);
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    // A map of "record name"-to-"downloaded file path".
+    self.downloadedFileMap = [NSMutableDictionary new];
+
+    [self downloadNextFileFromCloud:recordNames completion:completion];
+}
+
+- (void)downloadNextFileFromCloud:(NSMutableArray<NSString *> *)recordNames
+                       completion:(OWSBackupJobCompletion)completion
+{
+    OWSAssert(recordNames);
+    OWSAssert(completion);
+
+    if (recordNames.count < 1) {
+        // All downloads are complete; exit.
+        return completion(nil);
+    }
+    NSString *recordName = recordNames.lastObject;
+    [recordNames removeLastObject];
+
+    if (![recordName isKindOfClass:[NSString class]]) {
+        // Invalid record name in the manifest. This may be recoverable.
+        // Ignore this for now and proceed with the other downloads.
+        return [self downloadNextFileFromCloud:recordNames completion:completion];
+    }
+
+    NSString *tempFilePath = [self.jobTempDirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
+
+    [OWSBackupAPI downloadFileFromCloudWithRecordName:recordName
+        toFileUrl:[NSURL URLWithString:tempFilePath]
+        success:^{
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [OWSFileSystem protectFileOrFolderAtPath:tempFilePath];
+                self.downloadedFileMap[recordName] = tempFilePath;
+                [self downloadNextFileFromCloud:recordNames completion:completion];
+            });
+        }
+        failure:^(NSError *error) {
+            completion(error);
+        }];
+}
+
+- (void)restoreAttachmentFiles:(OWSBackupJobCompletion)completion
+{
+    OWSAssert(completion);
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    //    // A map of "record name"-to-"downloaded file path".
+    //    self.downloadedFileMap = [NSMutableDictionary new];
+    //
+    //    [self downloadNextFileFromCloud:recordNames
+    //                         completion:completion];
+}
+
 
 //- (BOOL)importDatabase
 //{

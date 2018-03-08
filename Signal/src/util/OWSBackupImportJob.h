@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startAsync;
 
-- (void)cancel;
-
 @end
 
 NS_ASSUME_NONNULL_END

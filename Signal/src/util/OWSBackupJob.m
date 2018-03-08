@@ -283,6 +283,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         OWSProdLogAndFail(@"%@ error writing encrypted file: %@", self.logTag, error);
         return nil;
     }
+    [OWSFileSystem protectFileOrFolderAtPath:dstFilePath];
     return dstFilePath;
 }
 
@@ -305,6 +306,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         OWSProdLogAndFail(@"%@ error writing encrypted file: %@", self.logTag, error);
         return nil;
     }
+    [OWSFileSystem protectFileOrFolderAtPath:dstFilePath];
     return dstFilePath;
 }
 
