@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSObject+OWS.h"
@@ -19,6 +19,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)logTag
 {
     return self.class.logTag;
+}
+
++ (BOOL)isNullableObject:(nullable NSObject *)left equalTo:(nullable NSObject *)right
+{
+    if (!left && !right) {
+        return YES;
+    } else if (!left || !right) {
+        return NO;
+    } else {
+        return [left isEqual:right];
+    }
 }
 
 @end

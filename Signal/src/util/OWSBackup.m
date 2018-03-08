@@ -320,6 +320,18 @@ NS_ASSUME_NONNULL_BEGIN
     self.backupImport =
         [[OWSBackupImport alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
     [self.backupImport startAsync];
+
+    [self postDidChangeNotification];
+}
+
+- (void)cancelImportBackup
+{
+    [self.backupImport cancel];
+    self.backupImport = nil;
+
+    _backupImportState = OWSBackupState_Idle;
+
+    [self postDidChangeNotification];
 }
 
 #pragma mark -
@@ -392,12 +404,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     DDLogInfo(@"%@ %s: %@, %@", self.logTag, __PRETTY_FUNCTION__, description, progress);
 
+    BOOL didChange = !([NSObject isNullableObject:self.backupExportDescription equalTo:description] &&
+        [NSObject isNullableObject:self.backupExportProgress equalTo:progress]);
+
     self.backupExportDescription = description;
     self.backupExportProgress = progress;
 
-    [self postDidChangeNotification];
+    if (didChange) {
+        [self postDidChangeNotification];
+    }
 }
-
 
 #pragma mark - OWSBackupImportDelegate
 
@@ -447,16 +463,23 @@ NS_ASSUME_NONNULL_BEGIN
 
     DDLogInfo(@"%@ %s: %@, %@", self.logTag, __PRETTY_FUNCTION__, description, progress);
 
+    BOOL didChange = !([NSObject isNullableObject:self.backupImportDescription equalTo:description] &&
+        [NSObject isNullableObject:self.backupImportProgress equalTo:progress]);
+
     self.backupImportDescription = description;
     self.backupImportProgress = progress;
 
-    [self postDidChangeNotification];
+    if (didChange) {
+        [self postDidChangeNotification];
+    }
 }
 
 #pragma mark - Notifications
 
 - (void)postDidChangeNotification
 {
+    OWSAssertIsOnMainThread();
+
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameBackupStateDidChange
                                                              object:nil
                                                            userInfo:nil];

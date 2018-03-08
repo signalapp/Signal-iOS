@@ -61,6 +61,7 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 //       preserve our PIN and/or private key so that restored users
 //       continues to backup.
 - (void)tryToImportBackup;
+- (void)cancelImportBackup;
 
 @end
 

@@ -106,17 +106,11 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 {
     @synchronized(self)
     {
-        BOOL isEqual;
-        if (avatarUrlPath != nil) {
-            isEqual = [avatarUrlPath isEqual:_avatarUrlPath];
-        } else {
-            // are they both nil?
-            isEqual = _avatarUrlPath == nil;
-        }
+        BOOL didChange = ![NSObject isNullableObject:_avatarUrlPath equalTo:avatarUrlPath];
 
         _avatarUrlPath = avatarUrlPath;
 
-        if (!isEqual) {
+        if (didChange) {
             // If the avatarURL changed, the avatarFileName can't be valid.
             // Clear it.
             self.avatarFileName = nil;
