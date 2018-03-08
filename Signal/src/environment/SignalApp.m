@@ -76,6 +76,8 @@
             OWSAssert(self.accountManager);
             OWSAssert(Environment.current.contactsManager);
             OWSAssert(Environment.current.messageSender);
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCallLoggingPreference:) name:OWSPreferencesCallLoggingDidChangeNotification object:nil];
+            
             _callService = [[CallService alloc] initWithAccountManager:self.accountManager
                                                        contactsManager:Environment.current.contactsManager
                                                          messageSender:Environment.current.messageSender
@@ -232,6 +234,11 @@
                        keyboardOnViewAppearing:keyboardOnViewAppearing
                            callOnViewAppearing:callOnViewAppearing];
     });
+}
+
+- (void)didChangeCallLoggingPreference:(NSNotification *)notitication
+{
+    [self.callService createCallUIAdapter];
 }
 
 #pragma mark - Methods
