@@ -6,6 +6,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const NSNotificationNameBackupStateDidChange;
 
+typedef void (^OWSBackupBoolBlock)(BOOL success);
+typedef void (^OWSBackupErrorBlock)(NSError *error);
+
 typedef NS_ENUM(NSUInteger, OWSBackupState) {
     // Has never backed up, not trying to backup yet.
     OWSBackupState_Idle = 0,

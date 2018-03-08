@@ -5,6 +5,7 @@
 #import "OWSBackup.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBackupExport.h"
+#import "Signal-Swift.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/NSDate+OWS.h>
@@ -128,6 +129,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([result isKindOfClass:[NSData class]]);
     return result;
 }
+
+#pragma mark - Backup Export
 
 - (void)setLastExportSuccessDate:(NSDate *)value
 {
@@ -265,6 +268,26 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  object:nil
                                                                userInfo:nil];
     }
+}
+
+#pragma mark - Backup Import
+
+- (void)checkCanImportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [OWSBackupAPI checkForManifestInCloudWithSuccess:^(BOOL value) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            success(value);
+        });
+    }
+        failure:^(NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                failure(error);
+            });
+        }];
 }
 
 #pragma mark -
