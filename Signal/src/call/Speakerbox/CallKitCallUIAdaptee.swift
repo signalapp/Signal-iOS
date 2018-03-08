@@ -31,6 +31,23 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     // CallKit handles incoming ringer stop/start for us. Yay!
     let hasManualRinger = false
 
+    // Instantiating more than one CXProvider can cause us to miss call transactions, so
+    // we maintain the provider across Adaptees using a singleton pattern
+    private static var _sharedProvider: CXProvider?
+    class func sharedProvider(useSystemCallLog: Bool) -> CXProvider {
+        let configuration = buildProviderConfiguration(useSystemCallLog: useSystemCallLog)
+        
+        if let sharedProvider = self._sharedProvider {
+            sharedProvider.configuration = configuration
+            return sharedProvider
+        } else {
+            SwiftSingletons.register(self)
+            let provider = CXProvider(configuration: configuration)
+            _sharedProvider = provider
+            return provider
+        }
+    }
+    
     // The app's provider configuration, representing its CallKit capabilities
     class func buildProviderConfiguration(useSystemCallLog: Bool) -> CXProviderConfiguration {
         let localizedName = NSLocalizedString("APPLICATION_NAME", comment: "Name of application")
@@ -71,8 +88,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         self.contactsManager = contactsManager
         self.notificationsAdapter = notificationsAdapter
 
-        let providerConfiguration = type(of: self).buildProviderConfiguration(useSystemCallLog: useSystemCallLog)
-        self.provider = CXProvider(configuration: providerConfiguration)
+        self.provider = type(of: self).sharedProvider(useSystemCallLog: useSystemCallLog)
 
         self.audioActivity = AudioActivity(audioDescription: "[CallKitCallUIAdaptee]")
         self.showNamesOnCallScreen = showNamesOnCallScreen
