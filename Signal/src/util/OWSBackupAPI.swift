@@ -149,61 +149,78 @@ import CloudKit
         }
     }
 
+    // Compare:
+    // * An "upsert" creates a new record if none exists and
+    //   or updates if there is an existing record.
+    // * A "save once" creates a new record if none exists and
+    //   does nothing if there is an existing record.
     @objc
     public class func upsertFileToCloud(fileUrl: URL,
                                         recordName: String,
                                         recordType: String,
                                         success: @escaping (String) -> Swift.Void,
                                         failure: @escaping (Error) -> Swift.Void) {
-        let recordId = CKRecordID(recordName: recordName)
-        let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
-        // Don't download the file; we're just using the fetch to check whether or
-        // not this record already exists.
-        fetchOperation.desiredKeys = []
-        fetchOperation.perRecordCompletionBlock = { (record, recordId, error) in
-            if let error = error {
-                if let ckerror = error as? CKError {
-                    if ckerror.code == .unknownItem {
-                        // No record found to update, saving new record.
-                        saveFileToCloud(fileUrl: fileUrl,
-                                        recordName: recordName,
-                                        recordType: recordType,
-                                        success: success,
-                                        failure: failure)
-                        return
-                    }
-                    Logger.error("\(self.logTag) error fetching record: \(error) \(ckerror.code).")
-                } else {
-                    Logger.error("\(self.logTag) error fetching record: \(error).")
-                }
-                failure(error)
-                return
-            }
-            guard let record = record else {
-                Logger.error("\(self.logTag) error missing record.")
-                Logger.flush()
-                failure(OWSErrorWithCodeDescription(.exportBackupError,
-                                                    NSLocalizedString("BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED",
-                                                                      comment: "Error indicating the a backup export failed to save a file to the cloud.")))
-                return
-            }
-            Logger.verbose("\(self.logTag) updating record.")
-            let asset = CKAsset(fileURL: fileUrl)
-            record[payloadKey] = asset
-            saveRecordToCloud(record: record,
-                              success: success,
-                              failure: failure)
-        }
-        let myContainer = CKContainer.default()
-        let privateDatabase = myContainer.privateCloudDatabase
-        privateDatabase.add(fetchOperation)
+
+        checkForFileInCloud(recordName: recordName,
+                            success: { (record) in
+                                if let record = record {
+                                    // Record found, updating existing record.
+                                    let asset = CKAsset(fileURL: fileUrl)
+                                    record[payloadKey] = asset
+                                    saveRecordToCloud(record: record,
+                                                      success: success,
+                                                      failure: failure)
+                                } else {
+                                    // No record found, saving new record.
+                                    saveFileToCloud(fileUrl: fileUrl,
+                                                    recordName: recordName,
+                                                    recordType: recordType,
+                                                    success: success,
+                                                    failure: failure)
+                                }
+        },
+                            failure: failure)
     }
 
+    // Compare:
+    // * An "upsert" creates a new record if none exists and
+    //   or updates if there is an existing record.
+    // * A "save once" creates a new record if none exists and
+    //   does nothing if there is an existing record.
     @objc
     public class func saveFileOnceToCloud(recordName: String,
                                           recordType: String,
                                           fileUrlBlock: @escaping (Swift.Void) -> URL?,
                                           success: @escaping (String) -> Swift.Void,
+                                          failure: @escaping (Error) -> Swift.Void) {
+
+        checkForFileInCloud(recordName: recordName,
+                            success: { (record) in
+                                if record != nil {
+                                    // Record found, skipping save.
+                                    success(recordName)
+                                } else {
+                                    // No record found, saving new record.
+                                    guard let fileUrl = fileUrlBlock() else {
+                                        Logger.error("\(self.logTag) error preparing file for upload.")
+                                        failure(OWSErrorWithCodeDescription(.exportBackupError,
+                                                                            NSLocalizedString("BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED",
+                                                                                              comment: "Error indicating the a backup export failed to save a file to the cloud.")))
+                                        return
+                                    }
+
+                                    saveFileToCloud(fileUrl: fileUrl,
+                                                    recordName: recordName,
+                                                    recordType: recordType,
+                                                    success: success,
+                                                    failure: failure)
+                                }
+        },
+                            failure: failure)
+    }
+
+    private class func checkForFileInCloud(recordName: String,
+                                          success: @escaping (CKRecord?) -> Swift.Void,
                                           failure: @escaping (Error) -> Swift.Void) {
         let recordId = CKRecordID(recordName: recordName)
         let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
@@ -214,18 +231,8 @@ import CloudKit
             if let error = error {
                 if let ckerror = error as? CKError {
                     if ckerror.code == .unknownItem {
-                        // No record found to update, saving new record.
-
-                        guard let fileUrl = fileUrlBlock() else {
-                            Logger.error("\(self.logTag) error preparing file for upload.")
-                            return
-                        }
-
-                        saveFileToCloud(fileUrl: fileUrl,
-                                        recordName: recordName,
-                                        recordType: recordType,
-                                        success: success,
-                                        failure: failure)
+                        // Record not found.
+                        success(nil)
                         return
                     }
                     Logger.error("\(self.logTag) error fetching record: \(error) \(ckerror.code).")
@@ -235,12 +242,30 @@ import CloudKit
                 failure(error)
                 return
             }
-            Logger.info("\(self.logTag) record already exists; skipping save.")
-            success(recordName)
+            guard let record = record else {
+                Logger.error("\(self.logTag) missing fetching record.")
+                failure(OWSErrorWithCodeDescription(.exportBackupError,
+                                                    NSLocalizedString("BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED",
+                                                                      comment: "Error indicating the a backup export failed to save a file to the cloud.")))
+                return
+            }
+            // Record found.
+            success(record)
         }
         let myContainer = CKContainer.default()
         let privateDatabase = myContainer.privateCloudDatabase
         privateDatabase.add(fetchOperation)
+    }
+
+    @objc
+    public class func checkForManifestInCloud(success: @escaping (Bool) -> Swift.Void,
+                                              failure: @escaping (Error) -> Swift.Void) {
+
+        checkForFileInCloud(recordName: manifestRecordName,
+                            success: { (record) in
+                                success(record != nil)
+        },
+                            failure: failure)
     }
 
     @objc
