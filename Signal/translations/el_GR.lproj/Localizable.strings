@@ -155,7 +155,7 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Ηχείο";
 
 /* button text for back button */
-"BACK_BUTTON" = "Back";
+"BACK_BUTTON" = "Πίσω";
 
 /* Message indicating that backup export is complete. */
 "BACKUP_EXPORT_COMPLETE_MESSAGE" = "Η δημιουργία αντίγραφου ασφαλείας ολοκληρώθηκε.";
@@ -533,7 +533,7 @@
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Αποστολή σε εμένα";
 
 /* Label for the 'Share' option of the the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SHARE" = "Share";
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "Κοινοποίηση";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
@@ -657,37 +657,37 @@
 "EMPTY_INBOX_TITLE" = "Πεντακάθαρο.";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirm your PIN.";
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Επιβεβαιώστε το PIN σας.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Could not disable Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Αδυναμία απενεργοποίησης της κλειδαριάς εγγραφής.";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Could not enable Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Αδυναμία ενεργοποίησης της κλειδαριάς εγγραφής.";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "Disable";
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "Απενεργοποίηση";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "Enable";
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "Ενεργοποίηση";
 
 /* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Next";
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Επόμενο";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Pin does not match.";
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Τα Pin δεν ταιριάζουν.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Enter a Registration Lock PIN. You will be asked to enter this PIN the next time you register this phone number with Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Εισάγετε ένα PIN εγγραφής. Θα σας ζητηθεί να εισάγετε αυτό το ΡΙΝ επόμενη φορά που θα καταχωρήσετε τον αριθμό του κινητού σας με το Signal.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "For increased security, enable a Registration Lock PIN that will be required in order to register this phone number with Signal again.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Για αυξημένη ασφάλεια, ενεργοποιήστε την δυνατότητα καταχώρισης κλείδωματος PIN που απαιτείται για να καταχωρήσετε τον αριθμό του κινητού με το Signal και πάλι.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registration Lock is enabled. You'll need to enter your PIN when registering your phone number with Signal again.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Το κλείδωμα εγγραφής είναι ενεργοποιημένο. Θα χρειαστεί να εισάγετε το PIN σας κατά την εγγραφή τού αριθμού τηλεφώνου με το Signal και πάλι.";
 
 /* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "Registration Lock";
+"ENABLE_2FA_VIEW_TITLE" = "Κλείδωμα εγγραφής";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Κατειλλημένο.";
@@ -1193,19 +1193,19 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "Λόγω κάποιου γνωστού σφάλματος στο σύστημα Ειδοποιήσεων της Apple, η προεπισκόπηση των μηνυμάτων θα προβάλλεται αν το μήνυμα ληφθεί μέσα σε 30 δευτερόλεπτα αφού αποσταλεί. Ως αποτέλεσμα ο μετρητής ειδοποιήσεων της εφαρμογής μπορεί να μην είναι ακριβής.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "No Name or Content";
+"NOTIFICATIONS_NONE" = "Κανένα όνομα η περιεχόμενο";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
+"NOTIFICATIONS_SECTION_INAPP" = "Αναπαραγωγή οσο είναι ανοιχτή η εφαρμογή";
 
 /* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "Sounds";
+"NOTIFICATIONS_SECTION_SOUNDS" = "Ήχοι";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name and Content";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Όνομα και περιεχόμενο";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Name Only";
+"NOTIFICATIONS_SENDER_ONLY" = "Μόνο όνομα";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Προβολή";
@@ -1391,19 +1391,19 @@
 "RATING_TITLE" = "Υποστήριξε το Signal!";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "I forgot my PIN.";
+"REGISTER_2FA_FORGOT_PIN" = "Ξέχασα το ΡΙΝ μού.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration of this phone number will be possible without your Registration Lock PIN after 7 days have passed since the phone number was last active on Signal.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Εγγραφή από αυτό το τηλέφωνο θα είναι δυνατή χωρίς το κλείδωμα τού PIN Κλειδώματος μετά από 7 μέρες πού θα έχουν περάσει από τότε που ο για τελευταία φορά τηλεφωνικός αριθμός δραστηριοποιήθηκε στο Signal. ";
 
 /* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "This phone number has Registration Lock enabled. Please enter the Registration Lock PIN.\n\nYour Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+"REGISTER_2FA_INSTRUCTIONS" = "Το κλείδωμα εγγραφής για αυτό τον τηλεφωνικό αριθμό ειίναι ενεργοποιημένο. Παρακαλώ εισάγετε το PIN.\n\nΤο κλείδωμα εγγραφής PIN είναι ξεχωριστό από την αυτοματοποιημένη επαλήθευση κωδικού που σας έχει σταλεί στο τηλέφωνό σας κατά το τελευταίο βήμα.";
 
 /* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registration Failed";
+"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Η εγγραφή απέτυχε";
 
 /* Label for 'submit' button in the 2FA registration view. */
-"REGISTER_2FA_SUBMIT_BUTTON" = "Submit";
+"REGISTER_2FA_SUBMIT_BUTTON" = "Υποβολή";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Καλωσόρισες!";
@@ -1421,7 +1421,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Κωδικός χώρας";
 
 /* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Registration Lock";
+"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Κλείδωμα εγγραφής";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Εισαγωγή αριθμού";
@@ -1451,7 +1451,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Οι αριθμοί που έγραψες δεν αντιστοιχούν σε αυτούς που σου στείλαμε. Θες να το ξαναδείς;";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Incorrect Registration Lock PIN.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Λάθος Κλείδωμα εγγραφής ΡΙΝ.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Ενεργοποίηση αυτής της συσκευής";
@@ -1475,10 +1475,10 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Ο αριθμός που προσπαθείς να καταχωρήσεις έχει ήδη καταχωρηθεί σε κάποιον άλλον εξυπηρετητή. παρακαλώ απεγγράψου από εκεί και ξαναδοκίμασε.";
 
 /* Body text for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Registration Lock is enabled for your phone number.";
+"REMINDER_2FA_BODY" = "Το Κλείδωμα εγγραφής ενεργοποιήθηκε για αυτό τον τηλεφωνικό αριθμό.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Η εγγραφή κλειδώματος προστατεύει το τηλέφωνό σας από προσπάθειες μη εξουσιοδοτημένης εγγραφής. Αυτό το χαρακτηριστικό μπορεί να απενεργοποιηθεί οποιαδήποτε στιγμή στις ρυθμίσεις απορρήτου τού Signal.";
 
 /* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "Enter Your Registration Lock PIN";

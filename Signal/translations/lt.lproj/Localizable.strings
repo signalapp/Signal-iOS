@@ -1394,10 +1394,10 @@
 "REGISTER_2FA_FORGOT_PIN" = "Aš pamiršau savo PIN.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration of this phone number will be possible without your Registration Lock PIN after 7 days have passed since the phone number was last active on Signal.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Šio telefono numerio registracija be jūsų Registracijos užrakto PIN bus įmanoma praėjus 7 dienoms nuo to laiko, kai telefono numeris paskutinį kartą buvo aktyvus Signal.";
 
 /* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "This phone number has Registration Lock enabled. Please enter the Registration Lock PIN.\n\nYour Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+"REGISTER_2FA_INSTRUCTIONS" = "Šiam telefono numeriui yra įjungtas Registracijos užraktas. Įveskite Registracijos užrakto PIN.\n\nJūsų Registracijos užrakto PIN yra atskiras nuo automatinio patvirtinimo kodo, kuris buvo išsiųstas jums į telefoną paskutinio žingsnio metu.";
 
 /* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
 "REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registracija nepavyko";
@@ -1478,7 +1478,7 @@
 "REMINDER_2FA_BODY" = "Jūsų telefono numeriui yra įjungtas Registracijos užraktas.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registracijos užraktas padeda apsaugoti jūsų telefono numerį nuo neteisėtų registracijos bandymų. Ši ypatybė bet kuriuo metu gali būti išjungta jūsų Signal privatumo nustatymuose.";
 
 /* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "Įveskite savo Registracijos užrakto PIN";
@@ -1619,7 +1619,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Retransliuoti visus skambučius per Signal serverį, kad išvengtumėte savo IP adreso atskleidimo savo kontaktui. Įjungus, pablogės skambučio kokybė.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Conversation History";
+"SETTINGS_CLEAR_HISTORY" = "Išvalyti pokalbių istoriją";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Autorių Teisės Open Whisper Systems \n Licencijuota pagal GPLv3";
@@ -1637,7 +1637,7 @@
 "SETTINGS_HELP_HEADER" = "Pagalba";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Conversation History";
+"SETTINGS_HISTORYLOG_TITLE" = "Išvalyti pokalbių istoriją";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Informacija";
@@ -1655,7 +1655,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Nustatymai";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Skambučių ir žinučių pranešimai gali atsirasti tuo metu, kai jūsų telefonas yra užrakintas. Galite pageidauti apriboti tai, kas bus rodoma tuose pranešimuose.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Pranešimų turinys";
@@ -1667,10 +1667,10 @@
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Rodyti skambintojo vardą ir numerį";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Show calls in the \"Recents\" list in the iOS Phone app.";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Rodyti skambučius iOS telefono programėlės \"Paskiausiųjų\" sąraše.";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Show Calls in Recents";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Rodyti skambučius \"Paskiausiųjų\" sąraše";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS skambučių integracija";
@@ -1883,7 +1883,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Tiesiog perbraukite, norėdami atsiliepti";
 
 /* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now choose default and per-conversation notification sounds, and calls will respect the ringtone you've choosen for each system contact.";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Dabar, galite pasirinkti numatytuosius bei kiekvieno atskiro pokalbio pranešimų garsus, o skambučiai taikys kiekvienam jūsų sistemos kontaktui pasirinktą skambučio melodiją.";
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Peržiūrėti pranešimų nustatymus";
