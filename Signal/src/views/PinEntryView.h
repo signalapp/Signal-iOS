@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, nullable) id<PinEntryViewDelegate> delegate;
 @property (nonatomic, readonly) BOOL hasValidPin;
 @property (nullable, nonatomic) NSString *instructionsText;
+@property (nullable, nonatomic) NSAttributedString *attributedInstructionsText;
+@property (nonatomic, readonly) UIFont *boldLabelFont;
 
 - (void)clearText;
 - (BOOL)makePinTextFieldFirstResponder;

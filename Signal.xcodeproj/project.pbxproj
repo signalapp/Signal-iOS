@@ -85,7 +85,7 @@
 		346129C91FD2072E00532771 /* NSString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129C21FD2072D00532771 /* NSString+OWS.m */; };
 		346129CA1FD2072E00532771 /* UIImage+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129C31FD2072D00532771 /* UIImage+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129CB1FD2072E00532771 /* Promise+retainUntilComplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129C41FD2072D00532771 /* Promise+retainUntilComplete.swift */; };
-		346129CC1FD2072E00532771 /* NSAttributedString+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129C51FD2072D00532771 /* NSAttributedString+OWS.h */; };
+		346129CC1FD2072E00532771 /* NSAttributedString+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129C51FD2072D00532771 /* NSAttributedString+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129CD1FD2072E00532771 /* UIImage+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129C61FD2072D00532771 /* UIImage+OWS.m */; };
 		346129D01FD207F300532771 /* OWSAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129CF1FD207F200532771 /* OWSAlerts.swift */; };
 		346129D21FD2085A00532771 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129D11FD2085A00532771 /* CommonStrings.swift */; };

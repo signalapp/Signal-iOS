@@ -804,8 +804,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     // Perhaps the AVFoundation APIs require some extra file system permssion we don't have in the
     // passed through URL.
     private func isVideoNeedingRelocation(itemProvider: NSItemProvider, itemUrl: URL) -> Bool {
-        Logger.info("\(self.logTag) isVideoNeedingRelocation: \(itemProvider.registeredTypeIdentifiers), itemUrl: \(itemUrl)")
-
         let pathExtension = itemUrl.pathExtension
         guard pathExtension.count > 0 else {
             Logger.verbose("\(self.logTag) in \(#function): item URL has no file extension: \(itemUrl).")
