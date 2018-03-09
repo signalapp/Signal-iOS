@@ -24,6 +24,7 @@ NSString *const OWSPreferencesKeyLastRecordedVoipToken = @"LastRecordedVoipToken
 NSString *const OWSPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 NSString *const OWSPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled";
 NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
+NSString *const OWSPreferencesKeyRemoveMetadata = @"Remove Metadata Key";
 NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
@@ -114,6 +115,17 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (void)setScreenSecurity:(BOOL)flag
 {
     [self setValueForKey:OWSPreferencesKeyScreenSecurity toValue:@(flag)];
+}
+
+- (BOOL)isRemoveMetadataEnabled
+{
+    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyRemoveMetadata];
+    return preference ? [preference boolValue] : YES;
+}
+
+- (void)setIsRemoveMetadataEnabled:(BOOL)enabled
+{
+    [self setValueForKey:OWSPreferencesKeyRemoveMetadata toValue:@(enabled)];
 }
 
 - (BOOL)getHasSentAMessage
