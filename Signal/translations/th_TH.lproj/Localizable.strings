@@ -675,7 +675,7 @@
 "ENABLE_2FA_VIEW_NEXT_BUTTON" = "Next";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Pin does not match.";
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN does not match.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Enter a Registration Lock PIN. You will be asked to enter this PIN the next time you register this phone number with Signal.";
@@ -1475,7 +1475,10 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "หมายเลขโทรศัพท์ที่คุณพยายามจะลงทะเบียน ได้ลงทะเบียนอยู่แล้วบนเซิร์ฟเวอร์อื่น โปรดถอนทะเบียนจากที่นั่นและลองอีกครั้ง";
 
 /* Body text for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Registration Lock is enabled for your phone number.";
+"REMINDER_2FA_BODY" = "Registration Lock is enabled for your phone number. To help you memorize your Registration Lock PIN, Signal will periodically ask you to confirm it.";
+
+/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY_HEADER" = "Reminder:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";

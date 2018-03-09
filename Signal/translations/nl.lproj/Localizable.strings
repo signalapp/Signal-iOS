@@ -1477,6 +1477,9 @@
 /* Body text for when user is peridoically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY" = "Registratievergrendeling is ingeschakeld voor je telefoonnummer.";
 
+/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registratievergrendeling beschermt je telefoonnummer tegen niet-geautoriseerde registratiepogingen. Deze functie kan op elk moment in je Signal-privacyinstellingen uitgeschakeld worden.";
 

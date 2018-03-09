@@ -1477,6 +1477,9 @@
 /* Body text for when user is peridoically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY" = "Sinu telefoninumbri registreerimislukk on lubatud.";
 
+/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registreerimislukk aitab kaitsta sinu telefoninumbrit lubamatute registreerimiskatsete eest. Seda funktsiooni on võimalik igal ajal keelata Signali privaatsuse sätete all.";
 

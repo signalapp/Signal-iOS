@@ -1477,6 +1477,9 @@
 /* Body text for when user is peridoically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY" = "Il Blocco Registrazione è attivo per il tuo numero di telefono.";
 
+/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Il Blocco Registrazione aiuta a proteggere il tuo numero di telefono da tentativi di registrazione non autorizzati. Questa funzionalità può essere disattivata in qualsiasi momento dalle impostazioni di privacy di Signal.";
 

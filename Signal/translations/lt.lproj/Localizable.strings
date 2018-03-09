@@ -1477,6 +1477,9 @@
 /* Body text for when user is peridoically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY" = "Jūsų telefono numeriui yra įjungtas Registracijos užraktas.";
 
+/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registracijos užraktas padeda apsaugoti jūsų telefono numerį nuo neteisėtų registracijos bandymų. Ši ypatybė bet kuriuo metu gali būti išjungta jūsų Signal privatumo nustatymuose.";
 

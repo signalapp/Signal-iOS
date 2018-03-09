@@ -1477,6 +1477,9 @@
 /* Body text for when user is peridoically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY" = "Za vašo telefonsko številko je vklopljen zaklep prijave na strežnik.";
 
+/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Zaklep prijave na strežnik vas ščiti pred nepooblaščeno prijavo v omrežje Signal z vašo telefonsko številko s strani tretjih oseb. Storitev lahko kadarkoli izklopite v nastavitvah zasebnosti aplikacije Signal.";
 
