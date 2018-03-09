@@ -34,13 +34,22 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - view creation
+- (UIFont *)labelFont
+{
+    return [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
+}
+
+- (UIFont *)boldLabelFont
+{
+    return [UIFont ows_boldFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
+}
 
 - (UILabel *)createLabelWithText:(nullable NSString *)text
 {
     UILabel *label = [UILabel new];
     label.textColor = [UIColor blackColor];
     label.text = text;
-    label.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
+    label.font = self.labelFont;
     label.numberOfLines = 0;
     label.lineBreakMode = NSLineBreakByWordWrapping;
     label.textAlignment = NSTextAlignmentCenter;
@@ -114,9 +123,19 @@ NS_ASSUME_NONNULL_BEGIN
     self.instructionsLabel.text = instructionsText;
 }
 
+- (nullable NSAttributedString *)attributedInstructionsText
+{
+    return self.instructionsLabel.attributedText;
+}
+
+- (void)setAttributedInstructionsText:(nullable NSAttributedString *)attributedInstructionsText
+{
+    self.instructionsLabel.attributedText = attributedInstructionsText;
+}
+
 - (void)createContents
 {
-    const CGFloat kVSpacing = 30.f;
+    const CGFloat kVSpacing = ScaleFromIPhone5To7Plus(12, 30);
 
     UILabel *instructionsLabel = [self createLabelWithText:nil];
     self.instructionsLabel = instructionsLabel;

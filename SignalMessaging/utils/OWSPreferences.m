@@ -8,10 +8,12 @@
 #import <SignalServiceKit/TSStorageHeaders.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <SignalServiceKit/YapDatabaseTransaction+OWS.h>
+#import <SignalServiceKit/NSNotificationCenter+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSPreferencesSignalDatabaseCollection = @"SignalPreferences";
+NSString *const OWSPreferencesCallLoggingDidChangeNotification = @"OWSPreferencesCallLoggingDidChangeNotification";
 
 NSString *const OWSPreferencesKeyScreenSecurity = @"Screen Security Key";
 NSString *const OWSPreferencesKeyEnableDebugLog = @"Debugging Log Enabled Key";
@@ -271,6 +273,11 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     [self setValueForKey:OWSPreferencesKeySystemCallLogEnabled
                  toValue:@(shouldLogCallsInRecents)
              transaction:transaction];
+    
+    // We need to reload the callService.callUIAdapter here, but SignalMessaging doesn't know about CallService, so we use
+    // notifications to decouple the code. This is admittedly awkward, but it only happens once, and the alternative would
+    // be importing all the call related classes into SignalMessaging.
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:OWSPreferencesCallLoggingDidChangeNotification object:nil];
 }
 
 - (BOOL)isCallKitEnabled
@@ -292,7 +299,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     }
 
     [self setValueForKey:OWSPreferencesKeyCallKitEnabled toValue:@(flag)];
-    OWSFail(@"Rev callUIAdaptee to get new setting");
+    // Rev callUIAdaptee to get new setting
 }
 
 - (BOOL)isCallKitEnabledSet

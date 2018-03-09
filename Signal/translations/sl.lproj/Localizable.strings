@@ -1,3 +1,6 @@
+/* Text field placeholder when entering a 'two-factor auth pin'. */
+"2FA_PIN_DEFAULT_TEXT" = "••••••";
+
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Ne zdaj";
 
@@ -151,6 +154,9 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Zvočnik";
 
+/* button text for back button */
+"BACK_BUTTON" = "Nazaj";
+
 /* Message indicating that backup export is complete. */
 "BACKUP_EXPORT_COMPLETE_MESSAGE" = "Varnostno kopiranje je zaključeno.";
 
@@ -273,9 +279,6 @@
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Kliči";
-
-/* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Za oddaljeni ogled videa prosimo nadgradite svojo različico sistema na iOS 9 ali več.";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Neodgovorjeno.";
@@ -500,19 +503,19 @@
 "DATE_YESTERDAY" = "Včeraj";
 
 /* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Ne morem kopirati zabeležb.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Ne morem pripraviti zabeležb.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Ne morem prenesti zabeležb.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "Kaj želite storiti s povezavo do vaše sistemske zabeležbe?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "Ne najdem nobene zabeležbe.";
 
 /* Label for the 'Open a Bug Report' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Javi poročilo o problemu";
@@ -528,6 +531,9 @@
 
 /* Label for the 'send to self' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Pošlji sebi";
+
+/* Label for the 'Share' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "Deli";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
@@ -649,6 +655,39 @@
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Tabula rasa!";
+
+/* Indicates that user should confirm their 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Potrdite svoj PIN.";
+
+/* Error indicating that attempt to disable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Ne morem izklopiti zaklepa prijave";
+
+/* Error indicating that attempt to enable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Ne morem vklopiti zaklepa prijave.";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "Izklopi";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "Vklopi";
+
+/* Label for the 'next' button in the 'enable two factor auth' views. */
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Naprej";
+
+/* Error indicating that the entered 'two-factor auth PINs' do not match. */
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN se ne ujema.";
+
+/* Indicates that user should select a 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Vnesite PIN za zaklep prijave na strežnik. Kodo boste morali vnesti vsakič, ko se boste ponovno prijavljali v omrežje Signal s to številko.";
+
+/* Indicates that user has 'two factor auth pin' disabled. */
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Za dodatno varnost lahko vklopite PIN za zaklep prijave na strežnik. Vnesti ga boste morali vsakič, ko se boste ponovno prijavljali v omrežje Signal s to številko.";
+
+/* Indicates that user has 'two factor auth pin' enabled. */
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Vklopljen je Zaklep prijave na strežnik. Ob vsaki ponovni prijavi v omrežje Signal s to številko boste morali vnesti izbrano kodo PIN.";
+
+/* Title for the 'enable two factor auth PIN' views. */
+"ENABLE_2FA_VIEW_TITLE" = "Zaklep prijave na strežnik";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Zasedeno.";
@@ -1154,25 +1193,22 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "Zaradi hroščev v Applovem potisnem mehanizmu je predogled sporočila možen le vkolikor je to prispelo v 30 sekundah po tem, ko je bilo poslano. Zato lahko prihaja do nenatančnosti pri časovnih oznakah sporočil.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Brez imena in sporočila";
+"NOTIFICATIONS_NONE" = "Ne pošiljatelj, ne sporočilo";
+
+/* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
+"NOTIFICATIONS_SECTION_INAPP" = "Predvajanje, kadar je aplikacija odprta";
+
+/* Label for settings UI that allows user to change the notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS" = "Zvoki";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SECTION_BACKGROUND" = "Obvestila v ozadju";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Pošiljatelj in sporočilo";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SECTION_INAPP" = "Obvestila znotraj aplikacije";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Ime pošiljatelja in sporočilo";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Samo ime pošiljatelja";
+"NOTIFICATIONS_SENDER_ONLY" = "Samo pošiljatelj";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Prikaži";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SOUND" = "Zvočna obvestila";
 
 /* No comment provided by engineer. */
 "OK" = "OK";
@@ -1354,6 +1390,21 @@
 /* No comment provided by engineer. */
 "RATING_TITLE" = "Podpri Signal!";
 
+/* Label for 'I forgot my PIN' link in the 2FA registration view. */
+"REGISTER_2FA_FORGOT_PIN" = "Pozabil sem svoj PIN.";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Prijava s to telefonsko številko brez kode PIN bo mogoča po sedmih dneh odkar je bila številka nazadnje aktivna v omrežju Signal.";
+
+/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
+"REGISTER_2FA_INSTRUCTIONS" = "Telefonska številka ima vklopljen Zaklep prijave na strežnik. Prosimo vneite kodo PIN za odklep.\n\nPIN za Zaklep prijave na strežnik ni enak kodi za verifikacijo ki vam je bila pravkar posredovana preko sporočila SMS, temveč gre za kodo, ki ste jo določili sami.";
+
+/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
+"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Prijava ni uspela";
+
+/* Label for 'submit' button in the 2FA registration view. */
+"REGISTER_2FA_SUBMIT_BUTTON" = "Pošlji";
+
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Dobrodošli!";
 
@@ -1368,6 +1419,9 @@
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Koda države";
+
+/* Navigation title shown when user is re-registering after having enabled registration lock */
+"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Zaklep prijave na strežnik";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Vnesite številko";
@@ -1393,8 +1447,11 @@
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifikacija ni bila uspešna";
 
-/* Alert body, during registration */
+/* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Števila, ki ste jih vnesli, niso identična poslanim. Bi jih želeli še enkrat preveriti?";
+
+/* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Napačen PIN za zaklep prijave.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Aktiviraj napravo";
@@ -1416,6 +1473,24 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Telefonska številka, s katero se želite registrirati, je že bila ragistrirana na drugem strežniku. Prosimo, da se najprej odjavite od tam in nato poskusite znova.";
+
+/* Body text for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY" = "Za vašo telefonsko številko je vklopljen zaklep prijave na strežnik.";
+
+/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Zaklep prijave na strežnik vas ščiti pred nepooblaščeno prijavo v omrežje Signal z vašo telefonsko številko s strani tretjih oseb. Storitev lahko kadarkoli izklopite v nastavitvah zasebnosti aplikacije Signal.";
+
+/* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_NAV_TITLE" = "Vnesite PIN za zaklep prijave na strežnik";
+
+/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "V nastavitvah zasebnosti lahko določite novi PIN.";
+
+/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Vnešeni PIN je napačen.";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Ponovna registracija za potisna obvestila";
@@ -1522,6 +1597,9 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Napredno";
 
+/* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (privzeto)";
+
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Dodaj...";
 
@@ -1544,7 +1622,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Vsi klici bodo posredovani preko strežnika SIgnal. S tem boste preprečili vašemu sogovorniku, da bi izvedel za vaš naslov IP, vendar pa bo zato kvaliteta klica slabša.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Izbriši zgodovino";
+"SETTINGS_CLEAR_HISTORY" = "Izbriši zgodovino pogovorov";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Copyright Open Whisper Systems \nLicenca: GPLv3";
@@ -1555,14 +1633,14 @@
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Ste prepričani, da želite izbrisati celotno svojo zgodovino (sporočila, priponke, zgodovino klicev...)? Te poteze ni mogoče preklicati.";
 
-/* No comment provided by engineer. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Da, prepričan sem.";
+/* Confirmation text for button which deletes all message, calling, attachments, etc. */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Izbriši vse";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "Pomoč";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Zgodovina";
+"SETTINGS_HISTORYLOG_TITLE" = "Izbriši zgodovino pogovorov";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Informacije";
@@ -1573,14 +1651,29 @@
 /* content of tweet when inviting via twitter */
 "SETTINGS_INVITE_TWITTER_TEXT" = "Hej, dosegljiv sem preko aplikacije Signal, tvrdke @WhisperSystems. Naloži si jo zdaj!";
 
+/* Label for settings view that allows user to change the notification sound. */
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Zvok sporočila";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Nastavitve";
+
+/* table section footer */
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Obvestila o klicih in sporočilih se lahko pojavijo tudi, kadar je telefon zaklenjen. Morda bi želeli omejiti vsebino njihovo vsebino.";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Vsebina obvestil";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Obvestila";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Prikaži Ime in številko klicočega";
+
+/* Settings table section footer. */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Prikazovanje klicev na listi \"zadnji dogodki\" v aplikaciji iOS Klici";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Prikazuj klice med \"zadnjimi dogodki\"";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "Integrirani klici iOS";
@@ -1603,6 +1696,12 @@
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Integracija klicev iOS omogoča prikaz klicev Signal na zaslonu za zaklepanje in v sistemski zgodovini klicev. Izberete lahko tudi prikaz imena in številke klicočega. Če imate vklopljeno storitev iCloud, bo zgodovina vaših klicev prenešena tudi na strežnike Apple.";
 
+/* Label for the notifications section of conversation settings view. */
+"SETTINGS_SECTION_NOTIFICATIONS" = "Obvestila";
+
+/* Header Label for the sounds section of settings views. */
+"SETTINGS_SECTION_SOUNDS" = "Zvoki";
+
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Kličem";
 
@@ -1611,6 +1710,18 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "Podpora";
+
+/* Indicates that 'two factor auth' is disabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "Vklopljena";
+
+/* Indicates that 'two factor auth' is enabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Izklopljena";
+
+/* Label for the 'two factor auth' item of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Zaklep prijave na strežnik";
+
+/* Title for the 'two factor auth' section of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Zaklep prijave na strežnik";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Različica";
@@ -1662,6 +1773,9 @@
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Vabim te, da si namestiš aplikacijo Signal. Tu je povezava:";
+
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
+"SOUNDS_NONE" = "Brez";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Varnostno število z uporabnikom %@ se ujema. Tega uporabnika lahko označite kot potrjenega";
@@ -1770,6 +1884,15 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Za prevzem klica podrsajte";
+
+/* Description for notification audio customization */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now choose default and per-conversation notification sounds, and calls will respect the ringtone you've choosen for each system contact.";
+
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Pregled nastavitev obvsetil";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Zvoki obvestil o klicih in sporočilih so bili posodobljeni";
 
 /* button label shown one time, after user upgrades app */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Nastavite svoj profil";

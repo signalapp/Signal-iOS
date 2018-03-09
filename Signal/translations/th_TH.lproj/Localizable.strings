@@ -1,3 +1,6 @@
+/* Text field placeholder when entering a 'two-factor auth pin'. */
+"2FA_PIN_DEFAULT_TEXT" = "••••••";
+
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "เอาไว้ก่อน";
 
@@ -56,7 +59,7 @@
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send your debug logs to our team so that we can try to resolve this issue.";
 
 /* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Error";
+"APP_LAUNCH_FAILURE_ALERT_TITLE" = "ข้อผิดพลาด";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "ป้อนชื่อของคุณ";
@@ -113,7 +116,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "ไม่สามารถปรับขนาดภาพที่แนบได้";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Unable to process video.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "ไม่สามารถประมวลผลวิดีโอ";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "ไม่สามารถแยกวิเคราะห์ภาพที่แนบได้";
@@ -151,17 +154,20 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "ลำโพง";
 
+/* button text for back button */
+"BACK_BUTTON" = "Back";
+
 /* Message indicating that backup export is complete. */
 "BACKUP_EXPORT_COMPLETE_MESSAGE" = "Backup complete.";
 
 /* Label for button that copies backup password to the pasteboard. */
-"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "Copy Password";
+"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "คัดลอกรหัสผ่าน";
 
 /* Message indicating that backup export failed. */
 "BACKUP_EXPORT_FAILED_MESSAGE" = "BACKUP_EXPORT_FAILED_MESSAGE";
 
 /* Message indicating that backup export is in progress. */
-"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "Exporting Backup...";
+"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "กำลังส่งออกข้อมูลสำรอง...";
 
 /* Format for message indicating that backup export is complete. Embeds: {{the backup password}}. */
 "BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Your backup password is: %@. Make sure to keep a copy of this password or you won't be able to restore from this backup.";
@@ -200,7 +206,7 @@
 "BACKUP_IMPORT_FAILED_MESSAGE" = "Restore Failed";
 
 /* Message indicating that backup import is in progress. */
-"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Restoring Backup...";
+"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "กำลังเรียกคืนข้อมูลสำรอง...";
 
 /* Label for button that restarts app to complete restore. */
 "BACKUP_IMPORT_RESTART_BUTTON" = "Restart App";
@@ -273,9 +279,6 @@
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "โทร";
-
-/* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "กรุณาปรับรุ่นเป็น iOS 9 หรือใหม่กว่า เพื่อดูวิดีโอทางไกล";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "ไม่มีการตอบรับ";
@@ -494,10 +497,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "กำลังปรับปรุงฐานข้อมูล";
 
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "วันนี้";
 
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "เมื่อวานนี้";
 
 /* Error indicating that the debug logs could not be copied. */
 "DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
@@ -528,6 +531,9 @@
 
 /* Label for the 'send to self' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "ส่งหาตัวเอง";
+
+/* Label for the 'Share' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "Share";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
@@ -649,6 +655,39 @@
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "เวิ้งว้างว่างเปล่า";
+
+/* Indicates that user should confirm their 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirm your PIN.";
+
+/* Error indicating that attempt to disable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Could not disable Registration Lock.";
+
+/* Error indicating that attempt to enable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Could not enable Registration Lock.";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "Disable";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "Enable";
+
+/* Label for the 'next' button in the 'enable two factor auth' views. */
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Next";
+
+/* Error indicating that the entered 'two-factor auth PINs' do not match. */
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN does not match.";
+
+/* Indicates that user should select a 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Enter a Registration Lock PIN. You will be asked to enter this PIN the next time you register this phone number with Signal.";
+
+/* Indicates that user has 'two factor auth pin' disabled. */
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "For increased security, enable a Registration Lock PIN that will be required in order to register this phone number with Signal again.";
+
+/* Indicates that user has 'two factor auth pin' enabled. */
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registration Lock is enabled. You'll need to enter your PIN when registering your phone number with Signal again.";
+
+/* Title for the 'enable two factor auth PIN' views. */
+"ENABLE_2FA_VIEW_TITLE" = "Registration Lock";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "ไม่ว่าง";
@@ -933,10 +972,10 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "คลังรูปภาพ";
 
 /* Title for the 'message approval' dialog. */
-"MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "ข้อความ";
 
 /* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "To:";
+"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "ถึง:";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "ข้อความใหม่";
@@ -1154,25 +1193,22 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "เนื่องจากข้อบกพร่องที่ทราบใน Push framework ของ Apple ตัวอย่างข้อความจะแสดงเฉพาะเมื่อข้อความถูกดึงข้อมูลภายใน 30 วินาทีหลังจากส่ง ผลลัพธ์คือป้ายประกาศบนแอปพลิเคชันอาจไม่เที่ยงตรง";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "ไม่มีชื่อหรือข้อความ";
+"NOTIFICATIONS_NONE" = "No Name or Content";
+
+/* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
+"NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
+
+/* Label for settings UI that allows user to change the notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS" = "Sounds";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SECTION_BACKGROUND" = "การแจ้งเตือนในฉากหลัง";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name and Content";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SECTION_INAPP" = "การแจ้งเตือนในแอป";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "ชื่อและข้อความของผู้ส่ง";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "ชื่อผู้ส่งเท่านั้น";
+"NOTIFICATIONS_SENDER_ONLY" = "Name Only";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "แสดง";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SOUND" = "เสียงการแจ้งเตือน";
 
 /* No comment provided by engineer. */
 "OK" = "ตกลง";
@@ -1235,7 +1271,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "แฟกซ์ที่ทำงาน";
 
 /* accessability label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "เล่นสื่อ";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "คุณยังไม่ได้ทำเครื่องหมายว่า %@ ถูกตรวจยืนยันแล้ว";
@@ -1354,6 +1390,21 @@
 /* No comment provided by engineer. */
 "RATING_TITLE" = "สนับสนุน Signal!";
 
+/* Label for 'I forgot my PIN' link in the 2FA registration view. */
+"REGISTER_2FA_FORGOT_PIN" = "I forgot my PIN.";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration of this phone number will be possible without your Registration Lock PIN after 7 days have passed since the phone number was last active on Signal.";
+
+/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
+"REGISTER_2FA_INSTRUCTIONS" = "This phone number has Registration Lock enabled. Please enter the Registration Lock PIN.\n\nYour Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+
+/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
+"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registration Failed";
+
+/* Label for 'submit' button in the 2FA registration view. */
+"REGISTER_2FA_SUBMIT_BUTTON" = "Submit";
+
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "ยินดีต้อนรับ!";
 
@@ -1368,6 +1419,9 @@
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "รหัสประเทศ";
+
+/* Navigation title shown when user is re-registering after having enabled registration lock */
+"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Registration Lock";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "ป้อนหมายเลข";
@@ -1393,8 +1447,11 @@
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "การตรวจยืนยันล้มเหลว";
 
-/* Alert body, during registration */
+/* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "ตัวเลขที่คุณส่งมาไม่ตรงกับที่เราส่งให้ ต้องการตรวจสอบอีกครั้ง?";
+
+/* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Incorrect Registration Lock PIN.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "เปิดใช้งานอุปกรณ์นี้";
@@ -1416,6 +1473,24 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "หมายเลขโทรศัพท์ที่คุณพยายามจะลงทะเบียน ได้ลงทะเบียนอยู่แล้วบนเซิร์ฟเวอร์อื่น โปรดถอนทะเบียนจากที่นั่นและลองอีกครั้ง";
+
+/* Body text for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY" = "Registration Lock is enabled for your phone number. To help you memorize your Registration Lock PIN, Signal will periodically ask you to confirm it.";
+
+/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";
+
+/* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_NAV_TITLE" = "Enter Your Registration Lock PIN";
+
+/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "You can set a new PIN in your privacy settings.";
+
+/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "That is not the correct PIN.";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "ลงทะเบียนใหม่สำหรับการแจ้งเตือนแบบผลัก";
@@ -1522,6 +1597,9 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "ขั้นสูง";
 
+/* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
+
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "เพิ่ม…";
 
@@ -1544,7 +1622,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "ส่งต่อสายทุกสายให้วิ่งผ่านเซิร์ฟเวอร์ Signal เพื่อหลีกเลี่ยงการเปิดเผยหมายเลขไอพีของคุณให้กับคนที่คุณติดต่อด้วย การเปิดใช้จะลดคุณภาพการโทร";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "ล้างบันทึกประวัติ";
+"SETTINGS_CLEAR_HISTORY" = "Clear Conversation History";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "ลิขสิทธิ์ Open Whisper Systems\n อนุญาตให้ใช้ภายใต้สัญญาอนุญาต GPLv3";
@@ -1555,14 +1633,14 @@
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "คุณแน่ใจว่าต้องการลบประวัติทั้งหมดของคุณ (ข้อความ, แฟ้มแนบ, ประวัติการโทร ...)? การกระทำนี้ไม่สามารถย้อนคืนได้";
 
-/* No comment provided by engineer. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "ฉันแน่ใจ";
+/* Confirmation text for button which deletes all message, calling, attachments, etc. */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Delete Everything";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "ช่วยเหลือ";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "บันทึกประวัติ";
+"SETTINGS_HISTORYLOG_TITLE" = "Clear Conversation History";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "ข้อมูล";
@@ -1573,14 +1651,29 @@
 /* content of tweet when inviting via twitter */
 "SETTINGS_INVITE_TWITTER_TEXT" = "คุณสามารถเข้าถึงฉันโดยใช้ Signal จาก @WhisperSystems รับเลยตอนนี้";
 
+/* Label for settings view that allows user to change the notification sound. */
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "การตั้งค่า";
+
+/* table section footer */
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "การแจ้งเตือน";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "แสดงชื่อและหมายเลขของผู้โทร";
+
+/* Settings table section footer. */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Show calls in the \"Recents\" list in the iOS Phone app.";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Show Calls in Recents";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "การผสานกับการโทรของ iOS";
@@ -1603,6 +1696,12 @@
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "การผสานกับการโทรของ iOS จะแสดงสาย Signal บนหน้าจอที่ล็อกอยู่ของคุณและในประวัติการโทรของระบบ คุณอาจเลือกให้แสดงชื่อและหมายเลขของคนที่ติดต่อ และถ้าเปิดใช้ iCloud อยู่ ประวัติการโทรจะถูกแบ่งปันให้กับแอปเปิลด้วย";
 
+/* Label for the notifications section of conversation settings view. */
+"SETTINGS_SECTION_NOTIFICATIONS" = "Notifications";
+
+/* Header Label for the sounds section of settings views. */
+"SETTINGS_SECTION_SOUNDS" = "Sounds";
+
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "การโทร";
 
@@ -1611,6 +1710,18 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "สนับสนุน";
+
+/* Indicates that 'two factor auth' is disabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "Disabled";
+
+/* Indicates that 'two factor auth' is enabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Enabled";
+
+/* Label for the 'two factor auth' item of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Registration Lock";
+
+/* Title for the 'two factor auth' section of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registration Lock";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "รุ่น";
@@ -1646,13 +1757,13 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Uploading…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "กำลังอัปโหลด…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "ไม่สามารถเตรียมแฟ้มแนบได้";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "แบ่งปันไปยัง Signal";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "แสดงตัวเลขความปลอดภัยใหม่";
@@ -1662,6 +1773,9 @@
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "ฉันกำลังชวนคุณให้ติดตั้ง Signal! นี่คือลิงก์:";
+
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
+"SOUNDS_NONE" = "None";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "ตัวเลขความปลอดภัยระหว่างคุณกับ %@ ถูกต้องตรงกัน คุณสามารถทำเครื่องหมายว่าคนที่ติดต่อด้วยนี้ถูกตรวจยืนยันแล้ว";
@@ -1770,6 +1884,15 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "ปัดเพื่อตอบ";
+
+/* Description for notification audio customization */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now choose default and per-conversation notification sounds, and calls will respect the ringtone you've choosen for each system contact.";
+
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Review Notification Settings";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Updated Call and Message Sounds";
 
 /* button label shown one time, after user upgrades app */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "สร้างโปรไฟล์ของคุณ";

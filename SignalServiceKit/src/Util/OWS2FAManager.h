@@ -33,6 +33,9 @@ typedef void (^OWS2FAFailure)(NSError *error);
 
 - (void)updateRepetitionIntervalWithWasSuccessful:(BOOL)wasSuccessful;
 
+// used for testing
+- (void)setDefaultRepetitionInterval;
+
 @end
 
 NS_ASSUME_NONNULL_END

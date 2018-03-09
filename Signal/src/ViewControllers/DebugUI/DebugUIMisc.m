@@ -116,6 +116,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                         completion:nil];
                                      }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Reset 2FA Repetition Interval"
+                                     actionBlock:^() {
+                                         [OWS2FAManager.sharedManager setDefaultRepetitionInterval];
+                                     }]];
+
+
 #ifdef DEBUG
     [items addObject:[OWSTableItem subPageItemWithText:@"Share UIImage"
                                            actionBlock:^(UIViewController *viewController) {

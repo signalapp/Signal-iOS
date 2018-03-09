@@ -1,3 +1,6 @@
+/* Text field placeholder when entering a 'two-factor auth pin'. */
+"2FA_PIN_DEFAULT_TEXT" = "••••••";
+
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Mitte praegu";
 
@@ -53,10 +56,10 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ grupis %@:%@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send your debug logs to our team so that we can try to resolve this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ei saa käivituda. Palun saada silumisandmed meie meeskonnale, et saaksime proovida seda olukorda lahendada.";
 
 /* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Error";
+"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Tõrge";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Sisesta enda nimi";
@@ -113,7 +116,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Piltmanuse suuruse muutmine ei õnnestunud.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Unable to process video.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Video töötlemine ei õnnestunud.";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Piltmanuse lugemine ei õnnestunud.";
@@ -151,62 +154,65 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Valjuhääldi";
 
+/* button text for back button */
+"BACK_BUTTON" = "Tagasi";
+
 /* Message indicating that backup export is complete. */
-"BACKUP_EXPORT_COMPLETE_MESSAGE" = "Backup complete.";
+"BACKUP_EXPORT_COMPLETE_MESSAGE" = "Varukoopia tehtud.";
 
 /* Label for button that copies backup password to the pasteboard. */
-"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "Copy Password";
+"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "Kopeeri parool";
 
 /* Message indicating that backup export failed. */
 "BACKUP_EXPORT_FAILED_MESSAGE" = "BACKUP_EXPORT_FAILED_MESSAGE";
 
 /* Message indicating that backup export is in progress. */
-"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "Exporting Backup...";
+"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "Varukoopia eksportimine...";
 
 /* Format for message indicating that backup export is complete. Embeds: {{the backup password}}. */
-"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Your backup password is: %@. Make sure to keep a copy of this password or you won't be able to restore from this backup.";
+"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Sinu varukoopia parool on: %@. Hoia kindlasti see parool alles või muidu pole sul võimalik sellest varukoopiast taastada.";
 
 /* Label for button that 'send backup' in the current conversation. */
-"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Send Backup as Message";
+"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Saada varukoopia sõnumina";
 
 /* Message indicating that sending the backup failed. */
-"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Sending Backup Failed.";
+"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Varukoopia saatmine ei õnnestunud.";
 
 /* Message indicating that sending the backup succeeded. */
-"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "Backup Sent.";
+"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "Varukoopia saadetud.";
 
 /* Label for button that opens share UI for backup. */
-"BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Share Backup";
+"BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Jaga varukoopiat";
 
 /* Title for the 'backup export' view. */
-"BACKUP_EXPORT_VIEW_TITLE" = "Backup";
+"BACKUP_EXPORT_VIEW_TITLE" = "Varukoopia";
 
 /* Format for backup filenames. Embeds: {{the date and time of the backup}}. Should not include characters like slash (/ or \\) or colon (:). */
-"BACKUP_FILENAME_FORMAT" = "Signal Backup %@";
+"BACKUP_FILENAME_FORMAT" = "Signali varukoopia %@";
 
 /* Message indicating that backup import is complete. */
-"BACKUP_IMPORT_COMPLETE_MESSAGE" = "Restore Complete";
+"BACKUP_IMPORT_COMPLETE_MESSAGE" = "Taastamine õnnestus";
 
 /* Label for button confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "Restore";
+"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "Taasta";
 
 /* Message for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "To restore this backup you must restart the Signal app. Warning: you will lose all of your current Signal data.";
+"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "Sellest varukoopiast taastamiseks pead Signali taaskäivitama. Hoiatus: sa kaotad kõik praegused Signali andmed.";
 
 /* Title for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "Restore Backup?";
+"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "Kas taastada varukoopiast?";
 
 /* Message indicating that backup import failed. */
-"BACKUP_IMPORT_FAILED_MESSAGE" = "Restore Failed";
+"BACKUP_IMPORT_FAILED_MESSAGE" = "Taastamine ei õnnestunud";
 
 /* Message indicating that backup import is in progress. */
-"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Restoring Backup...";
+"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Varukoopiast taastamine...";
 
 /* Label for button that restarts app to complete restore. */
-"BACKUP_IMPORT_RESTART_BUTTON" = "Restart App";
+"BACKUP_IMPORT_RESTART_BUTTON" = "Taaskäivita rakendus";
 
 /* Title for the 'backup import' view. */
-"BACKUP_IMPORT_VIEW_TITLE" = "Restore Backup";
+"BACKUP_IMPORT_VIEW_TITLE" = "Taasta varukoopiast";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blokeeritud kasutajad ei saa sulle helistada ega saata sulle sõnumeid.";
@@ -273,9 +279,6 @@
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Helista";
-
-/* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Kaugvideo nägemiseks uuenda seade iOS 9 või uuema peale.";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Ei vasta.";
@@ -494,25 +497,25 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Andmebaasi uuendamine";
 
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "Täna";
 
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "Eile";
 
 /* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Logide kopeerimine ei õnnestunud.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Logide pakendamine ei õnnestunud.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Logide üleslaadimine ei õnnestunud.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "Mida sa soovid silumislogi lingiga teha?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "Ühtegi logi ei leitud.";
 
 /* Label for the 'Open a Bug Report' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Ava vearaport";
@@ -524,10 +527,13 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "E-mail kasutajatoele";
 
 /* Label for the 'send to last thread' option of the the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send to Last Thread";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Saada viimasesse lõime";
 
 /* Label for the 'send to self' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Saada endale";
+
+/* Label for the 'Share' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "Jaga";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
@@ -650,6 +656,39 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Täiesti tühi.";
 
+/* Indicates that user should confirm their 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Kinnita enda PIN.";
+
+/* Error indicating that attempt to disable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Registreerimisluku keelamine ei õnnestunud.";
+
+/* Error indicating that attempt to enable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Registreerimisluku lubamine ei õnnestunud.";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "Keela";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "Luba";
+
+/* Label for the 'next' button in the 'enable two factor auth' views. */
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Edasi";
+
+/* Error indicating that the entered 'two-factor auth PINs' do not match. */
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN-koodid pole samad.";
+
+/* Indicates that user should select a 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Sisesta registreerimisluku PIN-kood. Seda PIN-koodi küsitakse sinult järgmisel korral, kui registreerid seda telefoninumbrit Signalis.";
+
+/* Indicates that user has 'two factor auth pin' disabled. */
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Turvalisuse tõstmiseks luba registreerimisluku PIN-kood, mida nõutakse selle telefoninumbri Signalis uuesti registreerimisel.";
+
+/* Indicates that user has 'two factor auth pin' enabled. */
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registreerimislukk on lubatud. Pead sisestama PIN-koodi, kui registreerid selle telefoninumbri Signalis uuesti.";
+
+/* Title for the 'enable two factor auth PIN' views. */
+"ENABLE_2FA_VIEW_TITLE" = "Registreerimislukk";
+
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Hõivatud.";
 
@@ -729,7 +768,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Märgi kinnitatuks";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset Session";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Lähtesta seanss";
 
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Lõpeta grupi loomine";
@@ -933,10 +972,10 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "Pildikogu";
 
 /* Title for the 'message approval' dialog. */
-"MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "Sõnum";
 
 /* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "To:";
+"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "Saaja:";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Uus sõnum";
@@ -996,7 +1035,7 @@
 "MESSAGE_STATUS_FAILED" = "Saatmine ei õnnestunud. Info saamiseks klõpsa.";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+"MESSAGE_STATUS_FAILED_SHORT" = "Ebaõnnestus";
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Loetud";
@@ -1067,10 +1106,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal vajab ligipääsu sinu kaamerale.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can grant this permission in the Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Sul on võimalik anda see õigus rakenduses Settings.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal Requires Access to your Media Library to do this.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal nõuab selle teostamiseks ligipääsu meedialoendile.";
 
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Vastamata kõne kasutajalt %@.";
@@ -1154,25 +1193,22 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "Tuntud vea tõttu Apple'i teavitustesüsteemis näidatakse sõnumite eelvaateid ainult siis, kui sõnum on edastatud 30 sekundi jooksul pärast saatmist. Number rakenduse juures võib selle tulemusel olla vale.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Nimi või sõnum puudub";
+"NOTIFICATIONS_NONE" = "Nimi või sisu puudub";
+
+/* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
+"NOTIFICATIONS_SECTION_INAPP" = "Mängi, kui rakendus on avatud";
+
+/* Label for settings UI that allows user to change the notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS" = "Helid";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SECTION_BACKGROUND" = "Taustal teavitused";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nimi või sisu";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SECTION_INAPP" = "Rakenduse-sisesed teavitused";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Saatja nimi ja sõnum";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Ainult saatja nimi";
+"NOTIFICATIONS_SENDER_ONLY" = "Ainult nimi";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Näita";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SOUND" = "Teavituste helid";
 
 /* No comment provided by engineer. */
 "OK" = "OK";
@@ -1235,7 +1271,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Töö faks";
 
 /* accessability label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Mängi meediat";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Sa ei ole märkinud kasutajat %@ kinnitatuks.";
@@ -1354,6 +1390,21 @@
 /* No comment provided by engineer. */
 "RATING_TITLE" = "Toeta Signalit!";
 
+/* Label for 'I forgot my PIN' link in the 2FA registration view. */
+"REGISTER_2FA_FORGOT_PIN" = "Ma unustasin PIN-koodi.";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Selle telefoninumbri registreerimine ilma registreerimisluku PIN-koodita on võimalik pärast 7 päeva möödumist telefoninumbri viimasest aktiivsusest Signalis.";
+
+/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
+"REGISTER_2FA_INSTRUCTIONS" = "Selle telefoninumbri registreerimislukk on lubatud. Palun sisesta registreerimisluku PIN-kood.\n\nSinu registreerimisluku PIN-kood erineb automaatsest kontrollkoodist, mis saadeti viimase sammu käigus sinu telefonile.";
+
+/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
+"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registreerimine ei õnnestunud";
+
+/* Label for 'submit' button in the 2FA registration view. */
+"REGISTER_2FA_SUBMIT_BUTTON" = "Sisesta";
+
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Tere tulemast!";
 
@@ -1368,6 +1419,9 @@
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Riigi suunakood";
+
+/* Navigation title shown when user is re-registering after having enabled registration lock */
+"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Registreerimislukk";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Sisesta number";
@@ -1393,8 +1447,11 @@
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Kinnitamine ei õnnestunud";
 
-/* Alert body, during registration */
+/* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Sinu poolt sisestatud numbrid ei vasta nendele, mis saatsime. Kas tahad üle kontrollida?";
+
+/* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Registreerimisluku PIN-kood pole õige.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Aktiveeri see seade";
@@ -1416,6 +1473,24 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Telefoninumber, mida soovid registreerida on juba registreeritud teise serverisse. Palun eemalda registreerimine sealt ja proovi uuesti.";
+
+/* Body text for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY" = "Sinu telefoninumbri registreerimislukk on lubatud.";
+
+/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registreerimislukk aitab kaitsta sinu telefoninumbrit lubamatute registreerimiskatsete eest. Seda funktsiooni on võimalik igal ajal keelata Signali privaatsuse sätete all.";
+
+/* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_NAV_TITLE" = "Sisesta registreerimisluku PIN-kood";
+
+/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Uus PIN-kood on võimalik seadistada privaatsuse sätete all.";
+
+/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "See ei ole õige PIN-kood.";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Registreeru uuesti teavituste saamiseks";
@@ -1522,6 +1597,9 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Täpsemad sätted";
 
+/* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (vaikimisi)";
+
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Lisa...";
 
@@ -1544,7 +1622,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Vahenda kõnesid Signali serveri kaudu, et hoiduda oma IP-aadressi paljastamisest enda kontaktile. Selle lubamine vähendab kõne kvaliteeti.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Tühjenda ajalugu";
+"SETTINGS_CLEAR_HISTORY" = "Tühjenda suhtluste ajalugu";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Autoriõigus Open Whisper Systems \n Litsentsitud GPLv3 litsentsiga";
@@ -1555,14 +1633,14 @@
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Kas sa tõesti soovid kustutada kogu ajaloo (sõnumid, manused, kõnede ajalugu ...)? Seda tegevust ei saa tagasi võtta.";
 
-/* No comment provided by engineer. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Olen kindel.";
+/* Confirmation text for button which deletes all message, calling, attachments, etc. */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Kustuta kõik";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "Abi";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Ajalugu";
+"SETTINGS_HISTORYLOG_TITLE" = "Tühjenda suhtluste ajalugu";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Teave";
@@ -1573,14 +1651,29 @@
 /* content of tweet when inviting via twitter */
 "SETTINGS_INVITE_TWITTER_TEXT" = "Minuga saab ühendust võtta rakenduse Signal by @WhisperSystems abil. Hangi see kohe.";
 
+/* Label for settings view that allows user to change the notification sound. */
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Sõnumi heli";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Sätted";
+
+/* table section footer */
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Helistamise ja sõnumite teavitused ilmuvad siis, kui telefon on lukustatud. Sul on võimalik piirata, mida nendes teavitustes näidatakse.";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Teavituse sisu";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Teavitused";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Näita helistaja nime ja numbrit";
+
+/* Settings table section footer. */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Näita kõnesid iOSi telefonirakenduse hiljutiste kõnede hulgas.";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Näita kõnesid hiljutistes";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS kõnede integratsioon";
@@ -1603,6 +1696,12 @@
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOSi kõnede integratsioon näitab Signali kõnesid sinu lukustusekraanil ja süsteemi kõneajaloos. Lisaks on võimalik näidata kontakti nime ja numbrit. Kui iCloud on lubatud, siis jagatakse kõnede ajalugu Apple'iga.";
 
+/* Label for the notifications section of conversation settings view. */
+"SETTINGS_SECTION_NOTIFICATIONS" = "Teavitused";
+
+/* Header Label for the sounds section of settings views. */
+"SETTINGS_SECTION_SOUNDS" = "Helid";
+
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Helistamine";
 
@@ -1611,6 +1710,18 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "Kasutajatugi";
+
+/* Indicates that 'two factor auth' is disabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "Keelatud";
+
+/* Indicates that 'two factor auth' is enabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Lubatud";
+
+/* Label for the 'two factor auth' item of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Registreerimislukk";
+
+/* Title for the 'two factor auth' section of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registreerimislukk";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versioon";
@@ -1625,7 +1736,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Sinu turvanumber kasutajaga %@ on hiljuti muutunud. Sa võiksid selle enne uuesti saatmist põhirakenduses üle kinnitada.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "Laadimine...";
@@ -1637,22 +1748,22 @@
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Pole registreeritud";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Uuendamiseks või registreerimiseks käivita rakendus Signal.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Pole valmis";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Manuse saatmine pole võimalik";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Uploading…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Üleslaadimine...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Manuse ettevalmistamine pole võimalik";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "Jaga Signalis";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Näita uut turvanumbrit";
@@ -1662,6 +1773,9 @@
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Kutsun sind Signalit paigaldama. Siin on veebilink:";
+
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
+"SOUNDS_NONE" = "Puudub";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Sinu turvanumber kasutajaga %@ vastab. Sa saad märkida selle kontakti kinnitatuks.";
@@ -1673,13 +1787,13 @@
 "TIME_AMOUNT_DAYS" = "%@ päeva";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@p";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%@ tundi";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@t";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ minutit";
@@ -1709,7 +1823,7 @@
 "TIME_AMOUNT_WEEKS" = "%@ nädalat";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@n";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Loobu";
@@ -1771,6 +1885,15 @@
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Vastamiseks lihtsalt libista";
 
+/* Description for notification audio customization */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Nüüd saad valida nii vaikimisi kui igale vestlusele eraldi teavitushelina ja kõned austavad helistamistooni, mille oled valinud iga kontakti jaoks.";
+
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Vaata teavituste sätted üle";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Uuendatud helistamise ja sõnumite helid";
+
 /* button label shown one time, after user upgrades app */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Seadista profiil";
 
@@ -1796,7 +1919,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Tere, turvalised videokõned!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal nõuab iOS 9 või uuemat. Palun uuenda iOS, valides rakenduses Settings >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Uuenda iOSi";

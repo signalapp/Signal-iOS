@@ -1,3 +1,6 @@
+/* Text field placeholder when entering a 'two-factor auth pin'. */
+"2FA_PIN_DEFAULT_TEXT" = "••••••";
+
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Όχι Τώρα";
 
@@ -151,6 +154,9 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Ηχείο";
 
+/* button text for back button */
+"BACK_BUTTON" = "Πίσω";
+
 /* Message indicating that backup export is complete. */
 "BACKUP_EXPORT_COMPLETE_MESSAGE" = "Η δημιουργία αντίγραφου ασφαλείας ολοκληρώθηκε.";
 
@@ -273,9 +279,6 @@
 
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Κλήση";
-
-/* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Παρακαλώ αναβάθμισε σε iOS 9 ή νεότερο για να δεις βίντεο.";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Καμία απάντηση.";
@@ -500,19 +503,19 @@
 "DATE_YESTERDAY" = "Χθές";
 
 /* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Δεν μπορέσαμε να αντιγράψουμε τα αρχεία αποσφαλμάτωσης.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Δεν μπορέσαμε να πακετάρουμε τα αρχεία αποσφαλμάτωσης.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Δεν μπορέσαμε να ανεβάσουμε τα αρχεία αποσφαλμάτωσης.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "Τι θελεις να κάνεις με τον σύνδεσμο προς το αρχείο καταγραφής αποσφαλμάτωσης;";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "Δεν βρέθηκε κανένα αρχείο αποσφαλμάτωσης.";
 
 /* Label for the 'Open a Bug Report' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Άνοιγμα μιας Αναφοράς Σφάλματος";
@@ -528,6 +531,9 @@
 
 /* Label for the 'send to self' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Αποστολή σε εμένα";
+
+/* Label for the 'Share' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "Κοινοποίηση";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
@@ -649,6 +655,39 @@
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "Πεντακάθαρο.";
+
+/* Indicates that user should confirm their 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Επιβεβαιώστε το PIN σας.";
+
+/* Error indicating that attempt to disable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Αδυναμία απενεργοποίησης της κλειδαριάς εγγραφής.";
+
+/* Error indicating that attempt to enable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Αδυναμία ενεργοποίησης της κλειδαριάς εγγραφής.";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "Απενεργοποίηση";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "Ενεργοποίηση";
+
+/* Label for the 'next' button in the 'enable two factor auth' views. */
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Επόμενο";
+
+/* Error indicating that the entered 'two-factor auth PINs' do not match. */
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Τα Pin δεν ταιριάζουν.";
+
+/* Indicates that user should select a 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Εισάγετε ένα PIN εγγραφής. Θα σας ζητηθεί να εισάγετε αυτό το ΡΙΝ επόμενη φορά που θα καταχωρήσετε τον αριθμό του κινητού σας με το Signal.";
+
+/* Indicates that user has 'two factor auth pin' disabled. */
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Για αυξημένη ασφάλεια, ενεργοποιήστε την δυνατότητα καταχώρισης κλείδωματος PIN που απαιτείται για να καταχωρήσετε τον αριθμό του κινητού με το Signal και πάλι.";
+
+/* Indicates that user has 'two factor auth pin' enabled. */
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Το κλείδωμα εγγραφής είναι ενεργοποιημένο. Θα χρειαστεί να εισάγετε το PIN σας κατά την εγγραφή τού αριθμού τηλεφώνου με το Signal και πάλι.";
+
+/* Title for the 'enable two factor auth PIN' views. */
+"ENABLE_2FA_VIEW_TITLE" = "Κλείδωμα εγγραφής";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Κατειλλημένο.";
@@ -1154,25 +1193,22 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "Λόγω κάποιου γνωστού σφάλματος στο σύστημα Ειδοποιήσεων της Apple, η προεπισκόπηση των μηνυμάτων θα προβάλλεται αν το μήνυμα ληφθεί μέσα σε 30 δευτερόλεπτα αφού αποσταλεί. Ως αποτέλεσμα ο μετρητής ειδοποιήσεων της εφαρμογής μπορεί να μην είναι ακριβής.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Δεν υπάρχει όνομα ή μήνυμα";
+"NOTIFICATIONS_NONE" = "Κανένα όνομα η περιεχόμενο";
+
+/* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
+"NOTIFICATIONS_SECTION_INAPP" = "Αναπαραγωγή οσο είναι ανοιχτή η εφαρμογή";
+
+/* Label for settings UI that allows user to change the notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS" = "Ήχοι";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SECTION_BACKGROUND" = "Ειδοποιήσεις παρασκηνίου ";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Όνομα και περιεχόμενο";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SECTION_INAPP" = "Ειδοποιήσεις μέσα στην εφαρμογή";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Όνομα αποστολέα και μήνυμα";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Όνομα αποστολέα μόνο";
+"NOTIFICATIONS_SENDER_ONLY" = "Μόνο όνομα";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Προβολή";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SOUND" = "Ήχοι Ειδοποιήσεων";
 
 /* No comment provided by engineer. */
 "OK" = "ΟΚ";
@@ -1354,6 +1390,21 @@
 /* No comment provided by engineer. */
 "RATING_TITLE" = "Υποστήριξε το Signal!";
 
+/* Label for 'I forgot my PIN' link in the 2FA registration view. */
+"REGISTER_2FA_FORGOT_PIN" = "Ξέχασα το ΡΙΝ μού.";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Εγγραφή από αυτό το τηλέφωνο θα είναι δυνατή χωρίς το κλείδωμα τού PIN Κλειδώματος μετά από 7 μέρες πού θα έχουν περάσει από τότε που ο για τελευταία φορά τηλεφωνικός αριθμός δραστηριοποιήθηκε στο Signal. ";
+
+/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
+"REGISTER_2FA_INSTRUCTIONS" = "Το κλείδωμα εγγραφής για αυτό τον τηλεφωνικό αριθμό ειίναι ενεργοποιημένο. Παρακαλώ εισάγετε το PIN.\n\nΤο κλείδωμα εγγραφής PIN είναι ξεχωριστό από την αυτοματοποιημένη επαλήθευση κωδικού που σας έχει σταλεί στο τηλέφωνό σας κατά το τελευταίο βήμα.";
+
+/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
+"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Η εγγραφή απέτυχε";
+
+/* Label for 'submit' button in the 2FA registration view. */
+"REGISTER_2FA_SUBMIT_BUTTON" = "Υποβολή";
+
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Καλωσόρισες!";
 
@@ -1368,6 +1419,9 @@
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Κωδικός χώρας";
+
+/* Navigation title shown when user is re-registering after having enabled registration lock */
+"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Κλείδωμα εγγραφής";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Εισαγωγή αριθμού";
@@ -1393,8 +1447,11 @@
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Η επιβεβαίωση απέτυχε";
 
-/* Alert body, during registration */
+/* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Οι αριθμοί που έγραψες δεν αντιστοιχούν σε αυτούς που σου στείλαμε. Θες να το ξαναδείς;";
+
+/* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Λάθος Κλείδωμα εγγραφής ΡΙΝ.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Ενεργοποίηση αυτής της συσκευής";
@@ -1416,6 +1473,24 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Ο αριθμός που προσπαθείς να καταχωρήσεις έχει ήδη καταχωρηθεί σε κάποιον άλλον εξυπηρετητή. παρακαλώ απεγγράψου από εκεί και ξαναδοκίμασε.";
+
+/* Body text for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY" = "Το Κλείδωμα εγγραφής ενεργοποιήθηκε για αυτό τον τηλεφωνικό αριθμό.";
+
+/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Η εγγραφή κλειδώματος προστατεύει το τηλέφωνό σας από προσπάθειες μη εξουσιοδοτημένης εγγραφής. Αυτό το χαρακτηριστικό μπορεί να απενεργοποιηθεί οποιαδήποτε στιγμή στις ρυθμίσεις απορρήτου τού Signal.";
+
+/* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_NAV_TITLE" = "Enter Your Registration Lock PIN";
+
+/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "You can set a new PIN in your privacy settings.";
+
+/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "That is not the correct PIN.";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Επανεγγραφή για λήψη ειδοποιήσεων";
@@ -1522,6 +1597,9 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Για προχωρημένους";
 
+/* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
+
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Προσθήκη...";
 
@@ -1544,7 +1622,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Αναμετάδοση όλων των κλήσεων μέσω του διακομιστή Signal για να αποφύγεις την αποκάλυψη της IP διεύθυνσής σου στην επαφή σου. Η ενεργοποίηση θα ρίξει την ποιότητα των κλήσεων.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Διαγραφή ιστορικού";
+"SETTINGS_CLEAR_HISTORY" = "Clear Conversation History";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Πνευματική ιδιοκτησία Open Whisper Systems\nΥπό την άδεια GPLv3";
@@ -1555,14 +1633,14 @@
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Είσαι σίγουρος/η πως θέλεις να διαγράψεις όλο το ιστορικό σου (μηνύματα, συνημμένα, ιστορικό κλήσεων, κλπ); Αυτή η ενέργεια δεν είναι αναστρέψιμη.";
 
-/* No comment provided by engineer. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Είσαι σίγουρος/η;";
+/* Confirmation text for button which deletes all message, calling, attachments, etc. */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Delete Everything";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "Βοήθεια ";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Καταγραφή ιστορικού";
+"SETTINGS_HISTORYLOG_TITLE" = "Clear Conversation History";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Πληροφορίες";
@@ -1573,14 +1651,29 @@
 /* content of tweet when inviting via twitter */
 "SETTINGS_INVITE_TWITTER_TEXT" = "Επικοινωνήστε μαζί μου χρησιμοποιώντας το Signal των @WhisperSystems, κατεβάστε το τώρα.";
 
+/* Label for settings view that allows user to change the notification sound. */
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Ρυθμίσεις";
+
+/* table section footer */
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Ειδοποιήσεις";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Εμφάνιση ονόματος και αριθμού καλούντα";
+
+/* Settings table section footer. */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Show calls in the \"Recents\" list in the iOS Phone app.";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Show Calls in Recents";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "Ενσωμάτωση κλήσεων iOS";
@@ -1603,6 +1696,12 @@
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Η ενσωμάτωση κλήσεων iOS εμφανίζει τις κλήσεις Signal στην οθόνη κλειδώματος και στο ιστορικό κλήσεων του συστήματος. Μπορείς προαιρετικά να εμφανίζεις το όνομα και τον αριθμό της επαφής σου. Αν το iCloud είναι ενεργοποιημένο, αυτό το ιστορικό κλήσεων θα αποστέλλεται στην Apple.";
 
+/* Label for the notifications section of conversation settings view. */
+"SETTINGS_SECTION_NOTIFICATIONS" = "Notifications";
+
+/* Header Label for the sounds section of settings views. */
+"SETTINGS_SECTION_SOUNDS" = "Sounds";
+
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Κλήσεις";
 
@@ -1611,6 +1710,18 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "Υποστήριξη";
+
+/* Indicates that 'two factor auth' is disabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "Disabled";
+
+/* Indicates that 'two factor auth' is enabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Enabled";
+
+/* Label for the 'two factor auth' item of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Registration Lock";
+
+/* Title for the 'two factor auth' section of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registration Lock";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Έκδοση";
@@ -1662,6 +1773,9 @@
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Σε προσκαλώ να εγκαταστήσεις το Signal! Να ο σύνδεσμος:";
+
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
+"SOUNDS_NONE" = "None";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ο αριθμός ασφαλείας με τον/την %@ ταιριάζει. Μπορείς να σημειώσεις αυτή την επαφή ως επιβεβαιωμένη.";
@@ -1770,6 +1884,15 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Σύρε για να απαντήσεις";
+
+/* Description for notification audio customization */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now choose default and per-conversation notification sounds, and calls will respect the ringtone you've choosen for each system contact.";
+
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Review Notification Settings";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Updated Call and Message Sounds";
 
 /* button label shown one time, after user upgrades app */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Σετάρισμα του προφίλ σου";

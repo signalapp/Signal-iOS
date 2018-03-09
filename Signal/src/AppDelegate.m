@@ -1122,7 +1122,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
     [[OWSProfileManager sharedManager] ensureLocalProfileCached];
-
+    
     // Note that this does much more than set a flag;
     // it will also run all deferred blocks.
     [AppReadiness setAppIsReady];
@@ -1150,7 +1150,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // If there were any messages in our local queue which we hadn't yet processed.
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
     [[OWSBatchMessageProcessor sharedInstance] handleAnyUnprocessedEnvelopesAsync];
-
 
 #ifdef DEBUG
     // A bug in orphan cleanup could be disastrous so let's only

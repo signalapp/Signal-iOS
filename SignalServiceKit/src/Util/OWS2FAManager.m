@@ -95,6 +95,9 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 
     [self.dbConnection setObject:pin forKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
 
+    // Schedule next reminder relative to now
+    self.lastSuccessfulReminderDate = [NSDate new];
+
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
                                                              object:nil
                                                            userInfo:nil];
@@ -232,14 +235,15 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 
     NSUInteger oldIndex =
         [allIntervals indexOfObjectPassingTest:^BOOL(NSNumber *_Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
-            return oldInterval >= (NSTimeInterval)obj.doubleValue;
+            return oldInterval <= (NSTimeInterval)obj.doubleValue;
         }];
 
     NSUInteger newIndex;
     if (wasSuccessful) {
         newIndex = oldIndex + 1;
     } else {
-        newIndex = oldIndex - 1;
+        // prevent overflow
+        newIndex = oldIndex <= 0 ? 0 : oldIndex - 1;
     }
 
     // clamp to be valid
@@ -247,6 +251,13 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 
     NSTimeInterval newInterval = allIntervals[newIndex].doubleValue;
     return newInterval;
+}
+
+- (void)setDefaultRepetitionInterval
+{
+    [self.dbConnection setDouble:self.defaultRepetitionInterval
+                          forKey:kOWS2FAManager_RepetitionInterval
+                    inCollection:kOWS2FAManager_Collection];
 }
 
 @end

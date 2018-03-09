@@ -26,8 +26,6 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         self.notificationsAdapter = notificationsAdapter
 
         super.init()
-
-        SwiftSingletons.register(self)
     }
 
     func startOutgoingCall(handle: String) -> SignalCall {

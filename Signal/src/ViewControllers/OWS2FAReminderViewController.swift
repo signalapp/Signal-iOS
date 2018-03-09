@@ -40,13 +40,20 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         let pinEntryView = PinEntryView()
         self.pinEntryView = pinEntryView
         pinEntryView.delegate = self
-        let instructionsText = NSLocalizedString("REMINDER_2FA_BODY", comment: "Body text for when user is peridoically prompted to enter their registration lock PIN")
-        pinEntryView.instructionsText = instructionsText
+
+        let instructionsTextHeader = NSLocalizedString("REMINDER_2FA_BODY_HEADER", comment: "Body header for when user is peridoically prompted to enter their registration lock PIN")
+        let instructionsTextBody = NSLocalizedString("REMINDER_2FA_BODY", comment: "Body text for when user is peridoically prompted to enter their registration lock PIN")
+
+        let attributes = [NSFontAttributeName: pinEntryView.boldLabelFont]
+
+        let attributedInstructionsText = NSAttributedString(string: instructionsTextHeader, attributes: attributes).rtlSafeAppend(" ", referenceView: pinEntryView).rtlSafeAppend(instructionsTextBody, referenceView: pinEntryView)
+
+        pinEntryView.attributedInstructionsText = attributedInstructionsText
 
         view.addSubview(pinEntryView)
 
         pinEntryView.autoPinWidthToSuperview(withMargin: 20)
-        pinEntryView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        pinEntryView.autoPin(toTopLayoutGuideOf: self, withInset: ScaleFromIPhone5(16))
         pinEntryView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
     }
 

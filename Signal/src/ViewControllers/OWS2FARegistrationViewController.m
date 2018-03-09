@@ -74,7 +74,10 @@ NS_ASSUME_NONNULL_BEGIN
         @"REGISTER_2FA_INSTRUCTIONS", @"Instructions to enter the 'two-factor auth pin' in the 2FA registration view.");
 
     // Layout
-    [entryView autoPinEdgesToSuperviewMargins];
+    [entryView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [entryView autoPinEdgeToSuperviewMargin:ALEdgeLeft];
+    [entryView autoPinEdgeToSuperviewMargin:ALEdgeRight];
+    [entryView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 }
 
 - (void)viewWillAppear:(BOOL)animated

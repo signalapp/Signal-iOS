@@ -1,3 +1,6 @@
+/* Text field placeholder when entering a 'two-factor auth pin'. */
+"2FA_PIN_DEFAULT_TEXT" = "••••••";
+
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Jo Tani";
 
@@ -53,7 +56,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ në grupin %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal-i s’niset dot. Ju lutemi, dërgojini ekipit tonë regjistrat e diagnostikimit që të mund të provojë ta zgjidhë këtë çështje.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal-i s\’niset dot. Ju lutemi, dërgojini ekipit tonë regjistrat e diagnostikimit që të mund të provojë ta zgjidhë këtë çështje.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Gabim";
@@ -110,10 +113,10 @@
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Gabim Dërgimi Bashkëngjitjeje";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "S’u ripërmasua dot figura e bashkëngjitjes.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "S\’u ripërmasua dot figura e bashkëngjitjes.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "S’arrihet të përpunohet videoja.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "S\’arrihet të përpunohet videoja.";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "S’u përtyp dot figura e bashkëngjitjes.";
@@ -137,19 +140,22 @@
 "ATTACHMENT_LABEL" = "Bashkëngjitje";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "S’u arrit të zgjidhet dokument.";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "S\’u arrit të zgjidhet dokument.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal-i s’mund ta trajtojë këtë kartelë kështu siç është. Provooni ta zipp-oni përpara se ta dërgoni.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal-i s\’mund ta trajtojë këtë kartelë kështu siç është. Provoni ta zipp-oni përpara se ta dërgoni.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Kartelë Që S’Mbulohet";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Kartelë Që S\’Mbulohet";
 
 /* Short text label for a voice message attachment, used for thread preview and on lockscreen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Mesazh Zanor";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Altoparlant";
+
+/* button text for back button */
+"BACK_BUTTON" = "Mbrapsht";
 
 /* Message indicating that backup export is complete. */
 "BACKUP_EXPORT_COMPLETE_MESSAGE" = "Kopjeruajtje e plotësuar.";
@@ -164,7 +170,7 @@
 "BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "Po eksportohet kopjeruajtje…";
 
 /* Format for message indicating that backup export is complete. Embeds: {{the backup password}}. */
-"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Fjalëkalimi për kopjeruajtjen tuaj është: %@. Sigurohuni të mbani një kopje të këtij fjalëkalimi, përndryshe s’do të jeni në gjendje të bëni rikthime përmes kësaj kopjeruajtjeje.";
+"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Fjalëkalimi për kopjeruajtjen tuaj është: %@. Sigurohuni të mbani një kopje të këtij fjalëkalimi, përndryshe s\’do të jeni në gjendje të bëni rikthime përmes kësaj kopjeruajtjeje.";
 
 /* Label for button that 'send backup' in the current conversation. */
 "BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Dërgojeni Kopjeruajtjen si Mesazh";
@@ -209,7 +215,7 @@
 "BACKUP_IMPORT_VIEW_TITLE" = "Rikthe Kopjeruajtje";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_BEHAVIOR_EXPLANATION" = "Përdoruesit e bllokuar s’do të jenë në gjendje t’ju bëjnë thirrje apo t’ju dërgojnë mesazhe.";
+"BLOCK_BEHAVIOR_EXPLANATION" = "Përdoruesit e bllokuar s\’do të jenë në gjendje t\’ju bëjnë thirrje apo t\’ju dërgojnë mesazhe.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Bllokoje";
@@ -239,7 +245,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Përdoruesi u Bllokua";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "S’mund të bllokoni veten.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "S\’mund të bllokoni veten.";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Gabim";
@@ -266,7 +272,7 @@
 "BUTTON_DONE" = "U bë";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Që të bëjë thirrje dhe të incizojë mesazhe zanore, Signal-i lyp hyrje te mikrofoni juaj. Këtë leje mund t’ia akordoni që nga aplikacioni Settings.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Që të bëjë thirrje dhe të incizojë mesazhe zanore, Signal-i lyp hyrje te mikrofoni juaj. Këtë leje mund t\’ia akordoni që nga aplikacioni Settings.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Lypset Hyrje Te Mikrofoni";
@@ -274,11 +280,8 @@
 /* Accessibilty label for placing call button */
 "CALL_LABEL" = "Thirrje";
 
-/* Text shown on call screen in place of remote video */
-"CALL_REMOTE_VIDEO_DISABLED" = "Që të shihni video të largët, ju lutemi, përmirësojeni me iOS 9 ose më të ri.";
-
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "S’ka Përgjigje.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "S\’ka Përgjigje.";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "%@";
@@ -308,7 +311,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Pa zë";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Mund t’u përgjigjeni thirrjen drejt e nga ekrani i kyçur dhe të shihni emrin dhe numrin e telefonit për thirrjet ardhëse, nëse ndryshoni rregullimet tuaja.\n\nPër hollësi, shihni rregullime privatësie.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Mund t\’u përgjigjeni thirrjen drejt e nga ekrani i kyçur dhe të shihni emrin dhe numrin e telefonit për thirrjet ardhëse, nëse ndryshoni rregullimet tuaja.\n\nPër hollësi, shihni rregullime privatësie.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Mund të shihni emrin dhe numrin e telefonit për thirrjet ardhëse, nëse ndryshoni rregullimet tuaja.\n\nPër hollësi, shihni rregullime privatësie.";
@@ -332,7 +335,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Përdorues Signal-i";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Ky përdorues s’mund të verifikohet përpara se të keni shkëmbyer mesazhe me të.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Ky përdorues s\’mund të verifikohet përpara se të keni shkëmbyer mesazhe me të.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Gabim";
@@ -362,7 +365,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Jeni i sigurt se doni të fshihet llogaria juaj?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "S’do të jeni më në gjendje të dërgoni ose merrni mesazhe në këtë grup.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "S\’do të jeni më në gjendje të dërgoni ose merrni mesazhe në këtë grup.";
 
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "Doni vërtet të dilet?";
@@ -389,10 +392,10 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Numër i Paregjistruar";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "S’ka email për të.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "S\’ka email për të.";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "S’ka numër telefoni për të.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "S\’ka numër telefoni për të.";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Rregullime Për Biseda";
@@ -416,7 +419,7 @@
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Heshtoje";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "S’është heshtuar";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "S\’është heshtuar";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Heshtoje për një ditë";
@@ -464,7 +467,7 @@
 "CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Ndani Me Këtë Përdorues Profilin Tuaj";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Ky përdorues s’gjendet te kontaktet tuaja.";
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Ky përdorues s\’gjendet te kontaktet tuaja.";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Po Ngarkohen Më Tepër Mesazhe…";
@@ -476,7 +479,7 @@
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Bllokojeni Këtë Përdorues";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Risistemimi i sesionit tuaj do t’ju bëjë të mundur të merrni mesazhe nga %@ në të ardhmen, por nuk do të rikthejë dot ndonjë nga mesazhet e dëmtuar.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Risistemimi i sesionit tuaj do t\’ju bëjë të mundur të merrni mesazhe nga %@ në të ardhmen, por nuk do të rikthejë dot ndonjë nga mesazhet e dëmtuar.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Përzgjidhni Kod Vendi";
@@ -500,19 +503,19 @@
 "DATE_YESTERDAY" = "Dje";
 
 /* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "S\’u kopjuan dot regjistrat.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "S\’u paketuan dot regjistrat.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "S\’u ngarkuan dot regjistrat.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "Ç’do të donit të bënit me lidhjen për te regjistri juaj i diagnostikimeve?";
+"DEBUG_LOG_ALERT_MESSAGE" = "Ç\’do të donit të bënit me lidhjen për te regjistri juaj i diagnostikimeve?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "S\’u gjet dot ndonjë regjistër.";
 
 /* Label for the 'Open a Bug Report' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Hapni një Njoftim të Mete";
@@ -528,6 +531,9 @@
 
 /* Label for the 'send to self' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Dërgojani Vetes";
+
+/* Label for the 'Share' option of the the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "Ndajeni Me të Tjerë";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
@@ -546,7 +552,7 @@
 "DEVICE_LINKED_AT_LABEL" = "Lidhur më: %@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "S’u arrit të përditësohet lista e pajisjeve.";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "S\’u arrit të përditësohet lista e pajisjeve.";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Tretje Mesazhesh";
@@ -615,7 +621,7 @@
 "EDIT_TXT" = "Përpunojeni";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
-"EMAIL_INVITE_BODY" = "Hej,\n\nTani së fundi kam përdorur Signal-in, për t’i pasur private bisedat në iPhone-in tim. Do të doja ta instalonit edhe ju, që të jemi të sigurt se vetëm ju dhe unë i lexojmë mesazhet tona ose dëgjojmë thirrjet tona.\n\nSignal-i është i gatshëm për telefona iPhone dhe Android. Merreni nga këtu: %@\n\nSignal-i funksionon njësoj si aplikacioni ekzistues për mesazhe. Mund të dërgojmë foto dhe video, të bëjmë thirrje, dhe të bisedojmë në grup. Gjëja më e mirë është se askush tjetër nuk mund të shohë gjë prej këtyre, as edhe ata që krijojnë Signal-in!\n\nMë tepër mund të lexoni mbi Open Whisper Systems, njerëzit që ndërtojnë Signal-in, këtu: %@";
+"EMAIL_INVITE_BODY" = "Hej,\n\nTani së fundi kam përdorur Signal-in, për t\’i pasur private bisedat në iPhone-in tim. Do të doja ta instalonit edhe ju, që të jemi të sigurt se vetëm ju dhe unë i lexojmë mesazhet tona ose dëgjojmë thirrjet tona.\n\nSignal-i është i gatshëm për telefona iPhone dhe Android. Merreni nga këtu: %@\n\nSignal-i funksionon njësoj si aplikacioni ekzistues për mesazhe. Mund të dërgojmë foto dhe video, të bëjmë thirrje, dhe të bisedojmë në grup. Gjëja më e mirë është se askush tjetër nuk mund të shohë gjë prej këtyre, as edhe ata që krijojnë Signal-in!\n\nMë tepër mund të lexoni mbi Open Whisper Systems, njerëzit që ndërtojnë Signal-in, këtu: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Le të kalojmë në Signal";
@@ -627,7 +633,7 @@
 "EMPTY_ARCHIVE_FIRST_TITLE" = "Filloni bisedën tuaj të parë me Signal!";
 
 /* No comment provided by engineer. */
-"EMPTY_ARCHIVE_TEXT" = "Bisedat joaktive mund t’i arkivoni për më vonë, që nga Inbox-i juaj.";
+"EMPTY_ARCHIVE_TEXT" = "Bisedat joaktive mund t\’i arkivoni për më vonë, që nga Inbox-i juaj.";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "Pastroni Bisedat Tuaja.";
@@ -650,6 +656,39 @@
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "As Edhe Një Kokërr Mesazhi.";
 
+/* Indicates that user should confirm their 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Ripohoni PIN-in tuaj.";
+
+/* Error indicating that attempt to disable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "S\’u çaktivizua dot Kyçja e Regjistrimeve.";
+
+/* Error indicating that attempt to enable 'two-factor auth' failed. */
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "S\’u aktivizua dot Kyçja e Regjistrimeve.";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "Çaktivizoje";
+
+/* Label for the 'enable two-factor auth' item in the settings view */
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "Aktivizoje";
+
+/* Label for the 'next' button in the 'enable two factor auth' views. */
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Pasuesi";
+
+/* Error indicating that the entered 'two-factor auth PINs' do not match. */
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN-i nuk përputhet.";
+
+/* Indicates that user should select a 'two factor auth pin'. */
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Jepni një PIN Kyçjeje Regjistrimesh. Do t\’ju kërkohet ta jepni këtë PIN herës tjetër që regjistroni këtë numër telefoni për Signal-in.";
+
+/* Indicates that user has 'two factor auth pin' disabled. */
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Për siguri më të madhe, aktivizoni një PIN Kyçjeje Regjistrimesh që do të kërkohet për të regjistruar sërish këtë numër telefoni me Signal-in.";
+
+/* Indicates that user has 'two factor auth pin' enabled. */
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Kyçja e Regjistrimeve është e aktivizuar. Do t\’ju duhet të jepni PIN-in tuaj kur regjistrohet sërish numri juaj i telefonit për Signal-in.";
+
+/* Title for the 'enable two factor auth PIN' views. */
+"ENABLE_2FA_VIEW_TITLE" = "Kyçje Regjistrimesh";
+
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "I zënë.";
 
@@ -657,10 +696,10 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Thirrja Dështoi.";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "S’u arrit të dërgohej mesazhi.";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "S\’u arrit të dërgohej mesazhi.";
 
 /* Error mesage indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "S’arrihet të bëhet dërgimi, për shkak të dhënash privatësie të vjetruara.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "S\’arrihet të bëhet dërgimi, për shkak të dhënash privatësie të vjetruara.";
 
 /* Error mesage indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Dështoi dërgimi i mesazhit për përdorues, sepse i keni bllokuar.";
@@ -669,13 +708,13 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Dështoi për shkak dështimi shkrimi bashkëngjitjeje.";
 
 /* Generic error used whenver Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal-i s’qe në gjendje të lidhej në internet. Ju lutemi, provoni nga një tjetër rrjet WiFi ose përdorni kuota të celularit.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal-i s\’qe në gjendje të lidhej në internet. Ju lutemi, provoni nga një tjetër rrjet WiFi ose përdorni kuota të celularit.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Dërgimi i mesazhit dështoi për shkak të mungesës së marrësve të vlefshëm.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Pajisja juaj s’është më e regjistruar për numrin tuaj të telefonit. Duhet të hiqni dhe ri-instaloni Signal-in.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Pajisja juaj s\’është më e regjistruar për numrin tuaj të telefonit. Duhet të hiqni dhe ri-instaloni Signal-in.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Gabim Shërbyesi. Ju lutemi, riprovoni më vonë.";
@@ -684,7 +723,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Ndodhi një gabim i panjohur.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakti s’është përdoruesi i Signal-it.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakti s\’është përdoruesi i Signal-it.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Dështim: Kërkojini dërguesit të përditësojë Signal-in dhe ta ridërgojë.";
@@ -693,16 +732,16 @@
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "U mor një mesazh i përsëdytur.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Kyçi i marrësit s’është i vlefshëm.";
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Kyçi i marrësit s\’është i vlefshëm.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Mesazhi i marrë s’është i njëkohësuar. Prekeni që të rifillohet sesioni juaj i sigurt.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Mesazhi i marrë s\’është i njëkohësuar. Prekeni që të rifillohet sesioni juaj i sigurt.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "U mor një mesazh jo i përputhshëm me këtë version.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NO_SESSION" = "S’ka sesion të gatshëm për kontaktin.";
+"ERROR_MESSAGE_NO_SESSION" = "S\’ka sesion të gatshëm për kontaktin.";
 
 /* Shown when signal users safety numbers changed */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Ndryshoi numri i sigurisë.";
@@ -741,13 +780,13 @@
 "GENERIC_ATTACHMENT_LABEL" = "Bashkëngjitje";
 
 /* Error displayed when there is a failure fetching gifs from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "S’u arrit të sillej GIF-i i kërkuar. Ju lutemi, verifikoni se jeni i lidhur në internet.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "S\’u arrit të sillej GIF-i i kërkuar. Ju lutemi, verifikoni se jeni i lidhur në internet.";
 
 /* Generic error displayed when picking a gif */
 "GIF_PICKER_ERROR_GENERIC" = "Ndodhi një gabim i panjohur.";
 
 /* Shown when selected gif couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "S’është në gjendje të Zgjedhë GIF";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "S\’është në gjendje të Zgjedhë GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "Ju lutemi, jepni term kërkimi.";
@@ -759,7 +798,7 @@
 "GIF_VIEW_SEARCH_ERROR" = "Gabim. Prekeni që të Riprovohet.";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "S’ka Përfundime.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "S\’ka Përfundime.";
 
 /* Placeholder text for the search field in gif view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Jepni kërkimin tuaj";
@@ -861,7 +900,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Kartelë audio e pavlefshme.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Që të ftoni kontakte tuajt, lypset që te aplikacioni Settings t’i lejoni Signal-it hyrje te kontaktet tuaj.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Që të ftoni kontakte tuajt, lypset që te aplikacioni Settings t\’i lejoni Signal-it hyrje te kontaktet tuaj.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Lejoni Hyrje te Kontaktet";
@@ -888,7 +927,7 @@
 "LEAVE_GROUP_ACTION" = "Braktisni Grupin";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Ky kod QR s’është i vlefshëm, sigurohuni që po skanoni kodin QR të shfaqur te pajisja që doni të lidhni.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Ky kod QR s\’është i vlefshëm, sigurohuni që po skanoni kodin QR të shfaqur te pajisja që doni të lidhni.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Lidhja e Pajisjes Dështoi";
@@ -972,7 +1011,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Po ngarkohet";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Mesazhi s’ka lëndë ose bashkëngjitje.";
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Mesazhi s\’ka lëndë ose bashkëngjitje.";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Marrë më";
@@ -1011,13 +1050,13 @@
 "MESSAGE_STATUS_UPLOADING" = "Po ngarkohet…";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ s’është më i shënuar si i verifikuar. Prekeni për mundësi.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ s\’është më i shënuar si i verifikuar. Prekeni për mundësi.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "E Bllokuat këtë Përdorues";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ s’është më i shënuar si i verifikuar. Prekeni për mundësi.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ s\’është më i shënuar si i verifikuar. Prekeni për mundësi.";
 
 /* Action sheet title after tapping on failed download. */
 "MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Shkarkimi Dështoi.";
@@ -1035,7 +1074,7 @@
 "MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Të ndahet Me Këtë Grup Profili Juaj?";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Më shumë se një anëtar i këtij grupi s’është më i shënuar si i verifikuar. Prekeni për mundësi.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Më shumë se një anëtar i këtij grupi s\’është më i shënuar si i verifikuar. Prekeni për mundësi.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Prekni këtu për rregullime";
@@ -1044,10 +1083,10 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Mesazhe të Palexuar";
 
 /* Messages that indicates that there are more unseen messages including safety number changes that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}}. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT" = "Ka më tepër mesazhe të palexuar (përfshi ndryshime numrash sigurie) më sipër. Që t’i shihni, prekni \"%@\".";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT" = "Ka më tepër mesazhe të palexuar (përfshi ndryshime numrash sigurie) më sipër. Që t\’i shihni, prekni \"%@\".";
 
 /* Messages that indicates that there are more unseen messages that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}} */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "Ka më tepër mesazhe të palexuar më sipër. Që t’i shihni, prekni \"%@\".";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "Ka më tepër mesazhe të palexuar më sipër. Që t\’i shihni, prekni \"%@\".";
 
 /* notification title */
 "MISSED_CALL" = "Thirrje e humbur";
@@ -1076,7 +1115,7 @@
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Humbët thirrje me %@.";
 
 /* No comment provided by engineer. */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "S’mund të lidhni më pajisje të tjera.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "S\’mund të lidhni më pajisje të tjera.";
 
 /* No comment provided by engineer. */
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Keni mbërritur në numrin maksimum të pajisjeve që mund të lidhni tani me llogarinë tuaj. Ju lutemi, hiqni një pajisje ose riprovoni ta lidhni më vonë.";
@@ -1154,25 +1193,22 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "Për shkak të metash në mekanizmin push të Apple-it, paraparje mesazhesh do të shfaqen vetëm nëse mesazhi merret brenda 30 sekondash pasi është dërguar. Për pasojë stema që i vihet nga aplikacioni mund të jetë e pasaktë.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "S’ka emër ose mesazh";
+"NOTIFICATIONS_NONE" = "S\’ka Emër apo Lëndë";
+
+/* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
+"NOTIFICATIONS_SECTION_INAPP" = "Luaje Kur Aplikacioni është i Hapur";
+
+/* Label for settings UI that allows user to change the notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS" = "Tinguj";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SECTION_BACKGROUND" = "Njoftime Në Prapaskenë";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Emër dhe Lëndë";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SECTION_INAPP" = "Njoftime In-App";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Emër dërguesi & mesazh";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Vetëm emër dërguesi";
+"NOTIFICATIONS_SENDER_ONLY" = "Vetëm Emër";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Shfaqe";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SOUND" = "Tinguj Njoftimesh";
 
 /* No comment provided by engineer. */
 "OK" = "OK";
@@ -1238,7 +1274,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Luaj Media";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "S’i keni vënë shenjë %@ si i verifikuar.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "S\’i keni vënë shenjë %@ si i verifikuar.";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "I verifikuar";
@@ -1259,10 +1295,10 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ky nuk duket si numri juaj i sigurisë me %@. Po verifikoni kontaktin e duhur?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Numri në të papastrën tuaj s’duket si numri i saktë i sigurisë për këtë bisedë.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Numri në të papastrën tuaj s’\duket si numri i saktë i sigurisë për këtë bisedë.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal-i s’gjeti dot ndonjë numër sigurie në të papastrën tuaj. E keni kopjuar si duhet?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal-i s\’gjeti dot ndonjë numër sigurie në të papastrën tuaj. E keni kopjuar si duhet?";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Çdo dyshe përdoruesish të Signal-it kanë të përbashkët një numër të dhënë sigurie. Rikontrolloni se %@ po shfaq numrin *tuaj* të dhënë të sigurisë.";
@@ -1274,10 +1310,10 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Partneri juaj xhiron një version të vjetër të Signal-it. Lypset ta përditësojë, përpara se të mund të bëni verifikime.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Kodi i skanuar s’duket si kod numri sigurie. Jeni që të dy nën një version të përditësuar të Signal-it?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Kodi i skanuar s\’duket si kod numri sigurie. Jeni që të dy nën një version të përditësuar të Signal-it?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Nëse dëshironi të verifikoni sigurinë e fshehtëzimit skaj-më-skaj me %@, krahasoni numrat më poshtë me numrat në pajisjen e tyre.\n\nNdryshe, mund të skanoni kodin në telefonin e tyre, ose t’u kërkoni të skanojnë kodin tuaj.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Nëse dëshironi të verifikoni sigurinë e fshehtëzimit skaj-më-skaj me %@, krahasoni numrat më poshtë me numrat në pajisjen e tyre.\n\nNdryshe, mund të skanoni kodin në telefonin e tyre, ose t\’u kërkoni të skanojnë kodin tuaj.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Verifikoni Numër Sigurie";
@@ -1346,13 +1382,28 @@
 "QUESTIONMARK_PUNCTUATION" = "?";
 
 /* No comment provided by engineer. */
-"RATING_MSG" = "Nëse ju kënaq përdorimi i Signal-it për biseda private, mund të përkrahni projektin tonë duke e vlerësuar. S’do të hajë më shumë se një minutë, dhe do të ndihmojë të tjerët të gjejnë pak privatësi.";
+"RATING_MSG" = "Nëse ju kënaq përdorimi i Signal-it për biseda private, mund të përkrahni projektin tonë duke e vlerësuar. S\’do të hajë më shumë se një minutë, dhe do të ndihmojë të tjerët të gjejnë pak privatësi.";
 
 /* No comment provided by engineer. */
 "RATING_RATE" = "Vlerësojeni Signal-in";
 
 /* No comment provided by engineer. */
 "RATING_TITLE" = "Përkraheni Signal-in!";
+
+/* Label for 'I forgot my PIN' link in the 2FA registration view. */
+"REGISTER_2FA_FORGOT_PIN" = "Harrova PIN-in tim.";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Regjistrimi i këtij numri telefoni do të jetë i mundur pa PIN-in tuaj të Kyçjes së Regjistrime pasi të kenë kaluar 7 ditë që kur numri i telefoni qe aktiv në Signal.";
+
+/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
+"REGISTER_2FA_INSTRUCTIONS" = "Ky numër telefoni ka të aktivizuar Kyçjen e Regjistrimeve. Ju lutemi, jepni PIN-in për Kyçje Regjistrimesh.\n\nPIN-i juaj për Kyçje Regjistrimesh është tjetër gjë nga kodi i verifikimit të automatizuar që u dërgua për telefonin tuaj gjatë hapit të fundit.";
+
+/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
+"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Regjistrimi Dështoi";
+
+/* Label for 'submit' button in the 2FA registration view. */
+"REGISTER_2FA_SUBMIT_BUTTON" = "Parashtroje";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Mirë se vini!";
@@ -1369,6 +1420,9 @@
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Kod Vendi";
 
+/* Navigation title shown when user is re-registering after having enabled registration lock */
+"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Kyçje Regjistrimesh";
+
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Jepni Numër";
 
@@ -1376,7 +1430,7 @@
 "REGISTRATION_ERROR" = "Gabim Regjistrimi";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "S’mund ta aktivizojmë llogarinë tuaj para se të verifikoni kodin që ju dërguam.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "S\’mund ta aktivizojmë llogarinë tuaj para se të verifikoni kodin që ju dërguam.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Ky format numrash telefoni nuk mbulohet, ju lutemi, lidhuni me asistencën.";
@@ -1393,8 +1447,11 @@
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifikimi Dështoi";
 
-/* Alert body, during registration */
+/* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Numrat që parashtruat nuk përputhen me çka dërguam. Doni të rikontrolloni?";
+
+/* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "PIN Kyçjeje Regjistrimesh i Pasaktë.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Aktivizojeni Këtë Pajisje";
@@ -1416,6 +1473,24 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Numri i telefonit që po përpiqeni të regjistroni është regjistruat tashmë në një shërbyes tjetër, ju lutemi, çregjistrojeni prej andej dhe riprovoni.";
+
+/* Body text for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY" = "Kyçja e Regjistrimeve është e aktivizuar për numrin tuaj të telefonit.";
+
+/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+
+/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Kyçja e Regjistrimeve ndihmon të mbrohet numri juaj i telefonit nga përpjekje të paautorizuara. Kjo veçori mund të çaktivizohet në çfarëdo kohe, që nga rregullimet e privatësisë në Signal.";
+
+/* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
+"REMINDER_2FA_NAV_TITLE" = "Jepni PIN-in Tuaj të Kyçjes së Regjistrimeve";
+
+/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Një PIN të ri mund ta caktoni që nga rregullimet tuaja mbi privatësinë.";
+
+/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Ky s\’është PIN-i i saktë.";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Ri-regjistrohuni për njoftime push";
@@ -1508,7 +1583,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Anashkalimi i censurimit mund të aktivizohet vetëm kur jeni i lidhur në internet.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Anashkalimi i censurimit s’është i nevojshëm; jeni tashmë i lidhur me shërbimin Signal.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Anashkalimi i censurimit s’\është i nevojshëm; jeni tashmë i lidhur me shërbimin Signal.";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Anashkalim Censurimi";
@@ -1522,14 +1597,17 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Të mëtejshme";
 
+/* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (parazgjedhje)";
+
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Shtoni…";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "S’keni kontakte në Signal.";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "S\’keni kontakte në Signal.";
 
 /* A label that indicates the user's search has no matching results. */
-"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "S’ka Përfundime Kërkimi";
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "S\’ka Përfundime Kërkimi";
 
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "Të bllokuar";
@@ -1544,7 +1622,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Përdor rele për krejt thirrjet përmes shërbyesit Signal, për të shmangur zbulimin e adresës tuaj IP kundrejt kontaktit tuaj. Aktivizimi i kësaj do të ulë cilësinë e thirrjes.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Pastro Regjistra Historiku";
+"SETTINGS_CLEAR_HISTORY" = "Pastro Historik Bisedash";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Copyright Open Whisper Systems \n Licencuar sipas GPLv3";
@@ -1553,16 +1631,16 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Fshije Llogarinë";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Jeni i sigurt se doni të fshihet krejt historiku juaj (mesazhe, bashkëngjitje, historik thirrjesh …) ? Ky veprim s’mund të prapësohet.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Jeni i sigurt se doni të fshihet krejt historiku juaj (mesazhe, bashkëngjitje, historik thirrjesh …) ? Ky veprim s\’mund të prapësohet.";
 
-/* No comment provided by engineer. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Jam i sigurt.";
+/* Confirmation text for button which deletes all message, calling, attachments, etc. */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Fshi Gjithçka";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "Ndihmë";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Regjistër Historiku";
+"SETTINGS_HISTORYLOG_TITLE" = "Pastro Historik Bisedash";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Informacion";
@@ -1573,14 +1651,29 @@
 /* content of tweet when inviting via twitter */
 "SETTINGS_INVITE_TWITTER_TEXT" = "Mund të lidheni me mua duke përdorur Signal-in, nga @WhisperSystems, merreni që tani.";
 
+/* Label for settings view that allows user to change the notification sound. */
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Tingull Mesazhesh";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Rregullime";
+
+/* table section footer */
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Njoftimet për Thirrje dhe Mesazhe mund të shfaqen edhe me telefon të kyçur. Mund të doni të kufizoni se çfarë shfaqet në këto njoftime.";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Lëndë Njoftimesh";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Njoftime";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Shfaq Emër & Numër Thirrësi";
+
+/* Settings table section footer. */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Shfaq thirrje te lista \"Së fundi\" e aplikacionit iOS Phone.";
+
+/* Short table cell label */
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Shfaq Thirrje te Së Fundi";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "Integrim Me Thirrje iOS";
@@ -1603,6 +1696,12 @@
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Integrimi me Thirrje iOS bën që të shfaqen thirrjet Signal në ekranin e kyçur dhe te historiku i sistemit për thirrjet. Mundeni edhe të shfaqni emrin dhe numrin e kontaktit tuaj. Nëse është e aktivizuar iCloud, ky historik thirrjesh ndahet me kompaninë Apple.";
 
+/* Label for the notifications section of conversation settings view. */
+"SETTINGS_SECTION_NOTIFICATIONS" = "Njoftime";
+
+/* Header Label for the sounds section of settings views. */
+"SETTINGS_SECTION_SOUNDS" = "Tinguj";
+
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Thirrje";
 
@@ -1611,6 +1710,18 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "Asistencë";
+
+/* Indicates that 'two factor auth' is disabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "I çaktivizuar";
+
+/* Indicates that 'two factor auth' is enabled in the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "I aktivizuar";
+
+/* Label for the 'two factor auth' item of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Kyçje Regjistrimesh";
+
+/* Title for the 'two factor auth' section of the privacy settings. */
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Kyçje Regjistrimesh";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Version";
@@ -1643,13 +1754,13 @@
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Jo Gati";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "S’arrihet të Dërgohet Bashkëngjitje";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "S\’arrihet të Dërgohet Bashkëngjitje";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Po ngarkohet…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "S’arrihet të Përgatitet Bashkëngjitja";
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "S\’arrihet të Përgatitet Bashkëngjitja";
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Ndajeni Me të Tjerë në Signal";
@@ -1663,8 +1774,11 @@
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Ju ftoj të instaloni Signal-in! Ja lidhja:";
 
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
+"SOUNDS_NONE" = "Asnjë";
+
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Numri juaj i sigurisë me %@ përputhje. Mund t’i vini shenjë këtij kontakti si të verifikuar.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Numri juaj i sigurisë me %@ përputhje. Mund t\’i vini shenjë këtij kontakti si të verifikuar.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Përputhje Numri Sigurie!";
@@ -1724,7 +1838,7 @@
 "UNKNOWN_ATTACHMENT_LABEL" = "Bashkëngjitje e panjohur";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Përdoruesi s’gjendet në kontaktet tuaja. Doni të bllokohet ky përdorues?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Përdoruesi s\’gjendet në kontaktet tuaja. Doni të bllokohet ky përdorues?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Kontakt i Panjohur";
@@ -1742,7 +1856,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Të shkëputet \"%@\"?";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal-i s’qe në gjendje të bëjë shkëputjen e pajisjes tuaj.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal-i s\’qe në gjendje të bëjë shkëputjen e pajisjes tuaj.";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Pajisje Pa Emër";
@@ -1757,19 +1871,28 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Kjo pajisje nuk e mbulon këtë veçori.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "S’mund të hiqni anëtarë grupi. Dikujt ose i duhet të largohet, ose mund të krijoni një grup të ri pa atë anëtar.";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "S\’mund të hiqni anëtarë grupi. Dikujt ose i duhet të largohet, ose mund të krijoni një grup të ri pa atë anëtar.";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Nuk Lejohet";
 
 /* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Me integrim thirrjesh në iOS është e lehtë t’u përgjigjeni thirrjeve që nga ekrani juaj i kyçur. Si parazgjedhje, anonimizojmë thirrësin tuaj, pra edhe thirrja është private.";
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Me integrim thirrjesh në iOS është e lehtë t\’u përgjigjeni thirrjeve që nga ekrani juaj i kyçur. Si parazgjedhje, anonimizojmë thirrësin tuaj, pra edhe thirrja është private.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
 "UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Mësoni më tepër rreth rregullimesh privatësie.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Për Përgjigje, Thjesht Fërkojeni";
+
+/* Description for notification audio customization */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Tani e tutje mund të zgjidhni tinguj njoftimesh parazgjedhje për tërë mesazhet, ose me bazë bisede, dhe thirrje me zilen përkatëse që keni zgjedhur për çdo kontakt sistemi.";
+
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Shqyrtoni Rregullime Njoftimesh";
+
+/* Header for upgrade experience */
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Tinguj të Përditësuar Thirrjesh dhe Mesazhesh";
 
 /* button label shown one time, after user upgrades app */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Rregulloni Profilin Tuaj";
