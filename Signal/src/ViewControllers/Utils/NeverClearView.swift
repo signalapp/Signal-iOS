@@ -1,5 +1,6 @@
-// Created by Fredrik Lillejordet on 04.03.2018.
-// Copyright © 2018 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 @objc class NeverClearView: UIView {
     override var backgroundColor: UIColor? {
