@@ -2028,10 +2028,7 @@ typedef enum : NSUInteger {
 
     [self dismissKeyBoard];
 
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    CGRect convertedRect = [imageView convertRect:imageView.bounds toView:window];
     MediaDetailViewController *vc = [[MediaDetailViewController alloc] initWithAttachmentStream:attachmentStream
-                                                                                       fromRect:convertedRect
                                                                                        viewItem:viewItem];
     [vc presentFromViewController:self replacingView:imageView];
 }
@@ -2045,11 +2042,7 @@ typedef enum : NSUInteger {
     OWSAssert(attachmentStream);
 
     [self dismissKeyBoard];
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    CGRect convertedRect = [imageView convertRect:imageView.bounds toView:window];
-
     MediaDetailViewController *vc = [[MediaDetailViewController alloc] initWithAttachmentStream:attachmentStream
-                                                                                       fromRect:convertedRect
                                                                                        viewItem:viewItem];
     [vc presentFromViewController:self replacingView:imageView];
 }

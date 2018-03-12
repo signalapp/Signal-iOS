@@ -14,10 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 // If viewItem is non-null, long press will show a menu controller.
 - (instancetype)initWithAttachmentStream:(TSAttachmentStream *)attachmentStream
-                                fromRect:(CGRect)rect
                                 viewItem:(ConversationViewItem *_Nullable)viewItem;
 
-- (instancetype)initWithAttachment:(SignalAttachment *)attachment fromRect:(CGRect)rect;
+- (instancetype)initWithAttachment:(SignalAttachment *)attachment;
 
 - (void)presentFromViewController:(UIViewController *)viewController replacingView:(UIView *)view;
 

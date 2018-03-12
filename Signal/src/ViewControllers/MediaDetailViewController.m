@@ -85,28 +85,27 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation MediaDetailViewController
 
 - (instancetype)initWithAttachmentStream:(TSAttachmentStream *)attachmentStream
-                                fromRect:(CGRect)rect
                                 viewItem:(ConversationViewItem *_Nullable)viewItem
 {
     self = [super initWithNibName:nil bundle:nil];
-
-    if (self) {
-        self.attachmentStream = attachmentStream;
-        self.originRect = rect;
-        self.viewItem = viewItem;
+    if (!self) {
+        return self;
     }
+
+    self.attachmentStream = attachmentStream;
+    self.viewItem = viewItem;
 
     return self;
 }
 
-- (instancetype)initWithAttachment:(SignalAttachment *)attachment fromRect:(CGRect)rect
+- (instancetype)initWithAttachment:(SignalAttachment *)attachment
 {
     self = [super initWithNibName:nil bundle:nil];
-
-    if (self) {
-        self.attachment = attachment;
-        self.originRect = rect;
+    if (!self) {
+        return self;
     }
+
+    self.attachment = attachment;
 
     return self;
 }
@@ -188,7 +187,7 @@ NS_ASSUME_NONNULL_BEGIN
     // The alternative would be that content would shift when the navbars hide.
     self.extendedLayoutIncludesOpaqueBars = YES;
 
-    // TODO better title.
+    // FIXME better title.
     self.title = @"Attachment";
 
     self.navigationItem.leftBarButtonItem =
@@ -309,8 +308,6 @@ NS_ASSUME_NONNULL_BEGIN
     presentationView.layer.magnificationFilter = kCAFilterTrilinear;
     presentationView.contentMode = UIViewContentModeScaleAspectFit;
 
-    [self applyInitialMediaViewConstraints];
-
     if (self.isVideo) {
         PlayerProgressBar *videoProgressBar = [PlayerProgressBar new];
         videoProgressBar.delegate = self;
@@ -400,6 +397,7 @@ NS_ASSUME_NONNULL_BEGIN
         [NSLayoutConstraint deactivateConstraints:self.presentationViewConstraints];
     }
 
+    OWSAssert(!CGRectEqualToRect(CGRectZero, self.originRect));
     CGRect convertedRect = [self.presentationView.superview convertRect:self.originRect
                                                                fromView:[UIApplication sharedApplication].keyWindow];
 
@@ -714,9 +712,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Presentation
 
-- (void)presentFromViewController:(UIViewController *)viewController replacingView:(UIView *)view
+- (void)presentFromViewController:(UIViewController *)viewController replacingView:(UIView *)replacingView
 {
-    self.replacingView = view;
+    self.replacingView = replacingView;
+
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    CGRect convertedRect = [replacingView convertRect:replacingView.bounds toView:window];
+    self.originRect = convertedRect;
+
+    // loadView hasn't necesarily been called yet.
+    [self loadViewIfNeeded];
+    [self applyInitialMediaViewConstraints];
+
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self];
 
     // UIModalPresentationCustom retains the current view context behind our VC, allowing us to manually
