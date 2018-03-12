@@ -342,10 +342,6 @@ import CloudKit
                           success: { (asset) in
                             DispatchQueue.global().async {
                                 do {
-                                    // TODO: delete
-                                    Logger.verbose("asset.fileURL: \(asset.fileURL.absoluteString)")
-                                    Logger.flush()
-
                                     let data = try Data(contentsOf: asset.fileURL)
                                     success(data)
                                 } catch {
@@ -369,11 +365,6 @@ import CloudKit
                           success: { (asset) in
                             DispatchQueue.global().async {
                                 do {
-                                    // TODO: delete
-                                    Logger.verbose("asset.fileURL: \(asset.fileURL.absoluteString)")
-                                    Logger.verbose("toFileUrl: \(toFileUrl.absoluteString)")
-                                    Logger.flush()
-
                                     try FileManager.default.copyItem(at: asset.fileURL, to: toFileUrl)
                                     success()
                                 } catch {
