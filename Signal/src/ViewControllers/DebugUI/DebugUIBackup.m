@@ -32,6 +32,10 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIBackup checkForBackup];
                                      }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Log CloudKit backup records"
+                                     actionBlock:^{
+                                         [DebugUIBackup logBackupRecords];
+                                     }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Try to restore CloudKit backup"
                                      actionBlock:^{
                                          [DebugUIBackup tryToImportBackup];
@@ -73,6 +77,13 @@ NS_ASSUME_NONNULL_BEGIN
                                           failure:^(NSError *error){
                                               // Do nothing.
                                           }];
+}
+
++ (void)logBackupRecords
+{
+    DDLogInfo(@"%@ logBackupRecords.", self.logTag);
+
+    [OWSBackup.sharedManager logBackupRecords];
 }
 
 + (void)tryToImportBackup

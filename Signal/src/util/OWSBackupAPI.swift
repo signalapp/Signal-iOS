@@ -39,7 +39,7 @@ import CloudKit
                                                        success: @escaping (String) -> Swift.Void,
                                                        failure: @escaping (Error) -> Swift.Void) {
         saveFileToCloud(fileUrl: fileUrl,
-                        recordName: NSUUID().uuidString,
+                        recordName: "ephemeralFile-\(NSUUID().uuidString)",
                         recordType: signalBackupRecordType,
                         success: success,
                         failure: failure)
@@ -342,10 +342,14 @@ import CloudKit
                           success: { (asset) in
                             DispatchQueue.global().async {
                                 do {
+                                    // TODO: delete
+                                    Logger.verbose("asset.fileURL: \(asset.fileURL.absoluteString)")
+                                    Logger.flush()
+
                                     let data = try Data(contentsOf: asset.fileURL)
                                     success(data)
                                 } catch {
-                                    Logger.error("\(self.logTag) couldn't copy asset file.")
+                                    Logger.error("\(self.logTag) couldn't load asset file: \(error).")
                                     failure(OWSErrorWithCodeDescription(.exportBackupError,
                                                                         NSLocalizedString("BACKUP_IMPORT_ERROR_DOWNLOAD_FILE_FROM_CLOUD_FAILED",
                                                                                           comment: "Error indicating the a backup import failed to download a file from the cloud.")))
@@ -365,11 +369,15 @@ import CloudKit
                           success: { (asset) in
                             DispatchQueue.global().async {
                                 do {
-                                    let fileManager = FileManager.default
-                                    try fileManager.copyItem(at: asset.fileURL, to: toFileUrl)
+                                    // TODO: delete
+                                    Logger.verbose("asset.fileURL: \(asset.fileURL.absoluteString)")
+                                    Logger.verbose("toFileUrl: \(toFileUrl.absoluteString)")
+                                    Logger.flush()
+
+                                    try FileManager.default.copyItem(at: asset.fileURL, to: toFileUrl)
                                     success()
                                 } catch {
-                                    Logger.error("\(self.logTag) couldn't copy asset file.")
+                                    Logger.error("\(self.logTag) couldn't copy asset file: \(error).")
                                     failure(OWSErrorWithCodeDescription(.exportBackupError,
                                                                         NSLocalizedString("BACKUP_IMPORT_ERROR_DOWNLOAD_FILE_FROM_CLOUD_FAILED",
                                                                                           comment: "Error indicating the a backup import failed to download a file from the cloud.")))

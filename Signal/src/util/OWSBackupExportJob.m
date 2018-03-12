@@ -190,9 +190,9 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
         return completion(NO);
     }
 
-    NSString *exportDatabaseDirPath = [self.jobTempDirPath stringByAppendingPathComponent:@"Database"];
-    if (![OWSFileSystem ensureDirectoryExists:exportDatabaseDirPath]) {
-        OWSProdLogAndFail(@"%@ Could not create exportDatabaseDirPath.", self.logTag);
+    NSString *jobDatabaseDirPath = [self.jobTempDirPath stringByAppendingPathComponent:@"database"];
+    if (![OWSFileSystem ensureDirectoryExists:jobDatabaseDirPath]) {
+        OWSProdLogAndFail(@"%@ Could not create jobDatabaseDirPath.", self.logTag);
         return completion(NO);
     }
 
@@ -205,7 +205,7 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
         return databaseKeySpec;
     };
     self.backupStorage =
-        [[OWSBackupStorage alloc] initBackupStorageWithDatabaseDirPath:exportDatabaseDirPath keySpecBlock:keySpecBlock];
+        [[OWSBackupStorage alloc] initBackupStorageWithDatabaseDirPath:jobDatabaseDirPath keySpecBlock:keySpecBlock];
     if (!self.backupStorage) {
         OWSProdLogAndFail(@"%@ Could not create backupStorage.", self.logTag);
         return completion(NO);
@@ -265,7 +265,36 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
                                              copiedEntities++;
                                          }];
 
+            // Copy attachments.
+            [srcTransaction
+                enumerateKeysAndObjectsInCollection:[TSAttachmentStream collection]
+                                         usingBlock:^(NSString *key, id object, BOOL *stop) {
+                                             if (self.isComplete) {
+                                                 *stop = YES;
+                                                 return;
+                                             }
+                                             if (![object isKindOfClass:[TSAttachment class]]) {
+                                                 OWSProdLogAndFail(
+                                                     @"%@ unexpected class: %@", self.logTag, [object class]);
+                                                 return;
+                                             }
+                                             if ([object isKindOfClass:[TSAttachmentStream class]]) {
+                                                 TSAttachmentStream *attachmentStream = object;
+                                                 NSString *_Nullable filePath = attachmentStream.filePath;
+                                                 if (filePath) {
+                                                     OWSAssert(attachmentStream.uniqueId.length > 0);
+                                                     self.attachmentFilePathMap[attachmentStream.uniqueId] = filePath;
+                                                 }
+                                             }
+                                             TSAttachment *attachment = object;
+                                             [attachment saveWithTransaction:dstTransaction];
+                                             copiedAttachments++;
+                                             copiedEntities++;
+                                         }];
+
             // Copy interactions.
+            //
+            // Interactions refer to threads and attachments, so copy the last.
             [srcTransaction
                 enumerateKeysAndObjectsInCollection:[TSInteraction collection]
                                          usingBlock:^(NSString *key, id object, BOOL *stop) {
@@ -292,33 +321,6 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
                                              }
                                              [interaction saveWithTransaction:dstTransaction];
                                              copiedInteractions++;
-                                             copiedEntities++;
-                                         }];
-
-            // Copy attachments.
-            [srcTransaction
-                enumerateKeysAndObjectsInCollection:[TSAttachmentStream collection]
-                                         usingBlock:^(NSString *key, id object, BOOL *stop) {
-                                             if (self.isComplete) {
-                                                 *stop = YES;
-                                                 return;
-                                             }
-                                             if (![object isKindOfClass:[TSAttachment class]]) {
-                                                 OWSProdLogAndFail(
-                                                     @"%@ unexpected class: %@", self.logTag, [object class]);
-                                                 return;
-                                             }
-                                             if ([object isKindOfClass:[TSAttachmentStream class]]) {
-                                                 TSAttachmentStream *attachmentStream = object;
-                                                 NSString *_Nullable filePath = attachmentStream.filePath;
-                                                 if (filePath) {
-                                                     OWSAssert(attachmentStream.uniqueId.length > 0);
-                                                     self.attachmentFilePathMap[attachmentStream.uniqueId] = filePath;
-                                                 }
-                                             }
-                                             TSAttachment *attachment = object;
-                                             [attachment saveWithTransaction:dstTransaction];
-                                             copiedAttachments++;
                                              copiedEntities++;
                                          }];
         }];
@@ -373,109 +375,134 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
                                             @"Indicates that the backup export data is being uploaded.")
                                progress:@(progress)];
 
+    if ([self saveNextDatabaseFileToCloud:completion]) {
+        return;
+    }
+    if ([self saveNextAttachmentFileToCloud:completion]) {
+        return;
+    }
+    [self saveManifestFileToCloud:completion];
+}
+
+- (BOOL)saveNextDatabaseFileToCloud:(OWSBackupJobCompletion)completion
+{
+    OWSAssert(completion);
+
+    __weak OWSBackupExportJob *weakSelf = self;
+    if (self.databaseFilePaths.count < 1) {
+        return NO;
+    }
+
+    NSString *filePath = self.databaseFilePaths.lastObject;
+    [self.databaseFilePaths removeLastObject];
+    // Database files are encrypted and can be safely stored unencrypted in the cloud.
+    // TODO: Security review.
+    [OWSBackupAPI saveEphemeralDatabaseFileToCloudWithFileUrl:[NSURL fileURLWithPath:filePath]
+        success:^(NSString *recordName) {
+            // Ensure that we continue to work off the main thread.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                OWSBackupExportJob *strongSelf = weakSelf;
+                if (!strongSelf) {
+                    return;
+                }
+                strongSelf.databaseRecordMap[recordName] = [filePath lastPathComponent];
+                [strongSelf saveNextFileToCloud:completion];
+            });
+        }
+        failure:^(NSError *error) {
+            // Database files are critical so any error uploading them is unrecoverable.
+            completion(error);
+        }];
+    return YES;
+}
+
+- (BOOL)saveNextAttachmentFileToCloud:(OWSBackupJobCompletion)completion
+{
+    OWSAssert(completion);
+
+    __weak OWSBackupExportJob *weakSelf = self;
+    if (self.attachmentFilePathMap.count < 1) {
+        return NO;
+    }
+
+    NSString *attachmentId = self.attachmentFilePathMap.allKeys.lastObject;
+    NSString *attachmentFilePath = self.attachmentFilePathMap[attachmentId];
+    [self.attachmentFilePathMap removeObjectForKey:attachmentId];
+
+    // OWSAttachmentExport is used to lazily write an encrypted copy of the
+    // attachment to disk.
+    OWSAttachmentExport *attachmentExport = [OWSAttachmentExport new];
+    attachmentExport.delegate = self.delegate;
+    attachmentExport.jobTempDirPath = self.jobTempDirPath;
+    attachmentExport.attachmentId = attachmentId;
+    attachmentExport.attachmentFilePath = attachmentFilePath;
+
+    [OWSBackupAPI savePersistentFileOnceToCloudWithFileId:attachmentId
+        fileUrlBlock:^{
+            [attachmentExport prepareForUpload];
+            if (attachmentExport.tempFilePath.length < 1) {
+                DDLogError(@"%@ attachment export missing temp file path", self.logTag);
+                return (NSURL *)nil;
+            }
+            if (attachmentExport.relativeFilePath.length < 1) {
+                DDLogError(@"%@ attachment export missing relative file path", self.logTag);
+                return (NSURL *)nil;
+            }
+            return [NSURL fileURLWithPath:attachmentExport.tempFilePath];
+        }
+        success:^(NSString *recordName) {
+            // Ensure that we continue to work off the main thread.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                OWSBackupExportJob *strongSelf = weakSelf;
+                if (!strongSelf) {
+                    return;
+                }
+                strongSelf.attachmentRecordMap[recordName] = attachmentExport.relativeFilePath;
+                [strongSelf saveNextFileToCloud:completion];
+            });
+        }
+        failure:^(NSError *error) {
+            // Ensure that we continue to work off the main thread.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                // Attachment files are non-critical so any error uploading them is recoverable.
+                [weakSelf saveNextFileToCloud:completion];
+            });
+        }];
+    return YES;
+}
+
+- (void)saveManifestFileToCloud:(OWSBackupJobCompletion)completion
+{
+    OWSAssert(completion);
+
+    if (![self writeManifestFile]) {
+        completion(OWSErrorWithCodeDescription(OWSErrorCodeExportBackupFailed,
+            NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
+                @"Error indicating the a backup export could not export the user's data.")));
+        return;
+    }
+    OWSAssert(self.manifestFilePath);
+
     __weak OWSBackupExportJob *weakSelf = self;
 
-    if (self.databaseFilePaths.count > 0) {
-        NSString *filePath = self.databaseFilePaths.lastObject;
-        [self.databaseFilePaths removeLastObject];
-        // Database files are encrypted and can be safely stored unencrypted in the cloud.
-        // TODO: Security review.
-        [OWSBackupAPI saveEphemeralDatabaseFileToCloudWithFileUrl:[NSURL fileURLWithPath:filePath]
-            success:^(NSString *recordName) {
-                // Ensure that we continue to work off the main thread.
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    OWSBackupExportJob *strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return;
-                    }
-                    strongSelf.databaseRecordMap[recordName] = [filePath lastPathComponent];
-                    [strongSelf saveNextFileToCloud:completion];
-                });
-            }
-            failure:^(NSError *error) {
-                // Database files are critical so any error uploading them is unrecoverable.
-                completion(error);
-            }];
-        return;
-    }
-
-    if (self.attachmentFilePathMap.count > 0) {
-        NSString *attachmentId = self.attachmentFilePathMap.allKeys.lastObject;
-        NSString *attachmentFilePath = self.attachmentFilePathMap[attachmentId];
-        [self.attachmentFilePathMap removeObjectForKey:attachmentId];
-
-        // OWSAttachmentExport is used to lazily write an encrypted copy of the
-        // attachment to disk.
-        OWSAttachmentExport *attachmentExport = [OWSAttachmentExport new];
-        attachmentExport.delegate = self.delegate;
-        attachmentExport.jobTempDirPath = self.jobTempDirPath;
-        attachmentExport.attachmentId = attachmentId;
-        attachmentExport.attachmentFilePath = attachmentFilePath;
-
-        [OWSBackupAPI savePersistentFileOnceToCloudWithFileId:attachmentId
-            fileUrlBlock:^{
-                [attachmentExport prepareForUpload];
-                if (attachmentExport.tempFilePath.length < 1) {
-                    DDLogError(@"%@ attachment export missing temp file path", self.logTag);
-                    return (NSURL *)nil;
+    [OWSBackupAPI upsertManifestFileToCloudWithFileUrl:[NSURL fileURLWithPath:self.manifestFilePath]
+        success:^(NSString *recordName) {
+            // Ensure that we continue to work off the main thread.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                OWSBackupExportJob *strongSelf = weakSelf;
+                if (!strongSelf) {
+                    return;
                 }
-                if (attachmentExport.relativeFilePath.length < 1) {
-                    DDLogError(@"%@ attachment export missing relative file path", self.logTag);
-                    return (NSURL *)nil;
-                }
-                return [NSURL fileURLWithPath:attachmentExport.tempFilePath];
-            }
-            success:^(NSString *recordName) {
-                // Ensure that we continue to work off the main thread.
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    OWSBackupExportJob *strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return;
-                    }
-                    strongSelf.attachmentRecordMap[recordName] = attachmentExport.relativeFilePath;
-                    [strongSelf saveNextFileToCloud:completion];
-                });
-            }
-            failure:^(NSError *error) {
-                // Ensure that we continue to work off the main thread.
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    // Attachment files are non-critical so any error uploading them is recoverable.
-                    [weakSelf saveNextFileToCloud:completion];
-                });
-            }];
-        return;
-    }
+                strongSelf.manifestRecordName = recordName;
 
-    if (!self.manifestFilePath) {
-        if (![self writeManifestFile]) {
-            completion(OWSErrorWithCodeDescription(OWSErrorCodeExportBackupFailed,
-                NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                    @"Error indicating the a backup export could not export the user's data.")));
-            return;
+                // All files have been saved to the cloud.
+                completion(nil);
+            });
         }
-        OWSAssert(self.manifestFilePath);
-
-        [OWSBackupAPI upsertManifestFileToCloudWithFileUrl:[NSURL fileURLWithPath:self.manifestFilePath]
-            success:^(NSString *recordName) {
-                // Ensure that we continue to work off the main thread.
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    OWSBackupExportJob *strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return;
-                    }
-                    strongSelf.manifestRecordName = recordName;
-                    [strongSelf saveNextFileToCloud:completion];
-                });
-            }
-            failure:^(NSError *error) {
-                // The manifest file is critical so any error uploading them is unrecoverable.
-                completion(error);
-            }];
-        return;
-    }
-
-    // All files have been saved to the cloud.
-    completion(nil);
+        failure:^(NSError *error) {
+            // The manifest file is critical so any error uploading them is unrecoverable.
+            completion(error);
+        }];
 }
 
 - (BOOL)writeManifestFile
@@ -497,6 +524,11 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
         // JSON doesn't support byte arrays.
         kOWSBackup_ManifestKey_DatabaseKeySpec : databaseKeySpec.base64EncodedString,
     };
+
+    DDLogVerbose(@"%@ self.attachmentRecordMap: %@", self.logTag, self.attachmentRecordMap);
+    DDLogVerbose(@"%@ json: %@", self.logTag, json);
+    [DDLog flushLog];
+
     NSError *error;
     NSData *_Nullable jsonData =
         [NSJSONSerialization dataWithJSONObject:json options:NSJSONWritingPrettyPrinted error:&error];

@@ -63,6 +63,8 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 - (void)tryToImportBackup;
 - (void)cancelImportBackup;
 
+- (void)logBackupRecords;
+
 @end
 
 NS_ASSUME_NONNULL_END

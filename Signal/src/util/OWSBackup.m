@@ -435,6 +435,23 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)logBackupRecords
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [OWSBackupAPI fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
+        for (NSString *recordName in [recordNames sortedArrayUsingSelector:@selector(compare:)]) {
+            DDLogInfo(@"%@ \t %@", self.logTag, recordName);
+        }
+        DDLogInfo(@"%@ record count: %zd", self.logTag, recordNames.count);
+    }
+        failure:^(NSError *error) {
+            DDLogError(@"%@ Failed to retrieve backup records: %@", self.logTag, error);
+        }];
+}
+
 #pragma mark - Notifications
 
 - (void)postDidChangeNotification
