@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
-    [items addObject:[OWSTableItem itemWithTitle:@"Backup test file @ CloudKit"
+    [items addObject:[OWSTableItem itemWithTitle:@"Backup test file to CloudKit"
                                      actionBlock:^{
                                          [DebugUIBackup backupTestFile];
                                      }]];
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIBackup logBackupRecords];
                                      }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Try to restore CloudKit backup"
+    [items addObject:[OWSTableItem itemWithTitle:@"Restore CloudKit backup"
                                      actionBlock:^{
                                          [DebugUIBackup tryToImportBackup];
                                      }]];

@@ -4,8 +4,6 @@
 
 #import "OWSBackupExportJob.h"
 #import "Signal-Swift.h"
-#import "zlib.h"
-#import <SSZipArchive/SSZipArchive.h>
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
@@ -84,7 +82,7 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
 
 #pragma mark -
 
-@interface OWSBackupExportJob () <SSZipArchiveDelegate>
+@interface OWSBackupExportJob ()
 
 @property (nonatomic, nullable) OWSBackupStorage *backupStorage;
 
@@ -190,6 +188,7 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
         return completion(NO);
     }
 
+    // TODO: Move this work into the "export database" method.
     NSString *jobDatabaseDirPath = [self.jobTempDirPath stringByAppendingPathComponent:@"database"];
     if (![OWSFileSystem ensureDirectoryExists:jobDatabaseDirPath]) {
         OWSProdLogAndFail(@"%@ Could not create jobDatabaseDirPath.", self.logTag);
@@ -361,6 +360,9 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
     [self saveNextFileToCloud:completion];
 }
 
+// This method uploads one file (the "next" file) each time it
+// is called.  Each successful file upload re-invokes this method
+// until the last (the manifest file).
 - (void)saveNextFileToCloud:(OWSBackupJobCompletion)completion
 {
     OWSAssert(completion);
@@ -524,10 +526,6 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
         // JSON doesn't support byte arrays.
         kOWSBackup_ManifestKey_DatabaseKeySpec : databaseKeySpec.base64EncodedString,
     };
-
-    DDLogVerbose(@"%@ self.attachmentRecordMap: %@", self.logTag, self.attachmentRecordMap);
-    DDLogVerbose(@"%@ json: %@", self.logTag, json);
-    [DDLog flushLog];
 
     NSError *error;
     NSData *_Nullable jsonData =

@@ -6,22 +6,6 @@
 #import "Signal-Swift.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
-
-//#import "zlib.h"
-//#import <Curve25519Kit/Randomness.h>
-//#import <SSZipArchive/SSZipArchive.h>
-//#import <SignalServiceKit/NSData+Base64.h>
-//#import <SignalServiceKit/NSDate+OWS.h>
-//#import <SignalServiceKit/OWSBackgroundTask.h>
-//#import <SignalServiceKit/OWSBackupStorage.h>
-//#import <SignalServiceKit/OWSError.h>
-//#import <SignalServiceKit/OWSFileSystem.h>
-//#import <SignalServiceKit/TSAttachmentStream.h>
-//#import <SignalServiceKit/TSMessage.h>
-//#import <SignalServiceKit/TSThread.h>
-//#import <SignalServiceKit/Threading.h>
-//#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
-//#import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -33,32 +17,12 @@ NSString *const kOWSBackup_ManifestKey_DatabaseKeySpec = @"database_key_spec";
 NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
 @interface OWSBackupJob ()
-//<SSZipArchiveDelegate>
 
 @property (nonatomic, weak) id<OWSBackupJobDelegate> delegate;
 
 @property (atomic) BOOL isComplete;
 
 @property (nonatomic) OWSPrimaryStorage *primaryStorage;
-
-//@property (nonatomic, nullable) OWSBackupStorage *backupStorage;
-//
-//// TODO: Should we store this in the keychain instead?
-//@property (nonatomic, nullable) NSData *tempDatabaseKeySpec;
-//
-//@property (nonatomic, nullable) OWSBackgroundTask *backgroundTask;
-//
-////@property (nonatomic) NSMutableArray<NSString *> *databaseFilePaths;
-////// A map of "record name"-to-"file name".
-////@property (nonatomic) NSMutableDictionary<NSString *, NSString *> *databaseRecordMap;
-////
-////// A map of "attachment id"-to-"local file path".
-////@property (nonatomic) NSMutableDictionary<NSString *, NSString *> *attachmentFilePathMap;
-////// A map of "record name"-to-"file relative path".
-////@property (nonatomic) NSMutableDictionary<NSString *, NSString *> *attachmentRecordMap;
-////
-////@property (nonatomic, nullable) NSString *manifestFilePath;
-////@property (nonatomic, nullable) NSString *manifestRecordName;
 
 @property (nonatomic) NSString *jobTempDirPath;
 
@@ -114,56 +78,6 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     return YES;
 }
 
-//- (void)configureImport:(OWSBackupJobBoolCompletion)completion
-//{
-//    OWSAssert(completion);
-//
-//    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-//
-//    NSString *temporaryDirectory = NSTemporaryDirectory();
-//    self.jobTempDirPath = [temporaryDirectory stringByAppendingString:[NSUUID UUID].UUIDString];
-//    NSString *tempDatabaseDirPath = [self.jobTempDirPath stringByAppendingPathComponent:@"Database"];
-//    self.tempDatabaseKeySpec = [Randomness generateRandomBytes:(int)kSQLCipherKeySpecLength];
-//
-//    if (![OWSFileSystem ensureDirectoryExists:self.jobTempDirPath]) {
-//        OWSProdLogAndFail(@"%@ Could not create jobTempDirPath.", self.logTag);
-//        return completion(NO);
-//    }
-//    if (![OWSFileSystem ensureDirectoryExists:tempDatabaseDirPath]) {
-//        OWSProdLogAndFail(@"%@ Could not create tempDatabaseDirPath.", self.logTag);
-//        return completion(NO);
-//    }
-//    if (!self.tempDatabaseKeySpec) {
-//        OWSProdLogAndFail(@"%@ Could not create tempDatabaseKeySpec.", self.logTag);
-//        return completion(NO);
-//    }
-//    __weak OWSBackupImportJob *weakSelf = self;
-//    BackupStorageKeySpecBlock keySpecBlock = ^{
-//        return weakSelf.tempDatabaseKeySpec;
-//    };
-//    self.backupStorage =
-//        [[OWSBackupStorage alloc] initBackupStorageWithDatabaseDirPath:tempDatabaseDirPath keySpecBlock:keySpecBlock];
-//    if (!self.backupStorage) {
-//        OWSProdLogAndFail(@"%@ Could not create backupStorage.", self.logTag);
-//        return completion(NO);
-//    }
-//    _tempDBConnection = self.backupStorage.newDatabaseConnection;
-//    if (!self.tempDBConnection) {
-//        OWSProdLogAndFail(@"%@ Could not create tempDBConnection.", self.logTag);
-//        return completion(NO);
-//    }
-//
-//    // TODO: Do we really need to run these registrations on the main thread?
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        [self.backupStorage runSyncRegistrations];
-//        [self.backupStorage runAsyncRegistrationsWithCompletion:^{
-//            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//                completion(YES);
-//            });
-//        }];
-//    });
-//}
-
 #pragma mark -
 
 - (void)cancel
@@ -184,7 +98,6 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         self.isComplete = YES;
         [self.delegate backupJobDidSucceed:self];
     });
-    // TODO:
 }
 
 - (void)failWithErrorDescription:(NSString *)description
@@ -195,8 +108,6 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 - (void)failWithError:(NSError *)error
 {
     OWSProdLogAndFail(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, error);
-
-    // TODO:
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.isComplete) {
