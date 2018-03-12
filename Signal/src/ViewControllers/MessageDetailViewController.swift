@@ -21,7 +21,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
 
     let contactsManager: OWSContactsManager
 
-    let databaseConnection: YapDatabaseConnection
+    let uiDatabaseConnection: YapDatabaseConnection
 
     let bubbleFactory = OWSMessagesBubbleImageFactory()
     var bubbleView: UIView?
@@ -60,7 +60,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         self.viewItem = viewItem
         self.message = message
         self.mode = mode
-        self.databaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
+        self.uiDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -70,7 +70,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.databaseConnection.beginLongLivedReadTransaction()
+        self.uiDatabaseConnection.beginLongLivedReadTransaction()
         updateDBConnectionAndMessageToLatest()
 
         self.navigationItem.title = NSLocalizedString("MESSAGE_METADATA_VIEW_TITLE",
@@ -161,6 +161,14 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         updateContent()
     }
 
+    lazy var thread: TSThread = {
+        var thread: TSThread?
+        self.uiDatabaseConnection.read { transaction in
+            thread = self.message.thread(with: transaction)
+        }
+        return thread!
+    }()
+
     private func updateContent() {
         guard let contentView = contentView else {
             owsFail("\(TAG) Missing contentView")
@@ -174,7 +182,6 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
 
         var rows = [UIView]()
         let contactsManager = Environment.current().contactsManager!
-        let thread = message.thread
 
         // Content
         rows += contentRows()
@@ -191,7 +198,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         // Recipient(s)
         if let outgoingMessage = message as? TSOutgoingMessage {
 
-            let isGroupThread = message.thread.isGroupThread()
+            let isGroupThread = thread.isGroupThread()
 
             let recipientStatusGroups: [MessageRecipientStatus] = [
                 .read,
@@ -583,7 +590,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
 
         AssertIsOnMainThread()
 
-        self.databaseConnection.read { transaction in
+        self.uiDatabaseConnection.read { transaction in
             guard let uniqueId = self.message.uniqueId else {
                 Logger.error("\(self.TAG) Message is missing uniqueId.")
                 return
@@ -600,13 +607,13 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
     internal func yapDatabaseModified(notification: NSNotification) {
         AssertIsOnMainThread()
 
-        let notifications = self.databaseConnection.beginLongLivedReadTransaction()
+        let notifications = self.uiDatabaseConnection.beginLongLivedReadTransaction()
 
         guard let uniqueId = self.message.uniqueId else {
             Logger.error("\(self.TAG) Message is missing uniqueId.")
             return
         }
-        guard self.databaseConnection.hasChange(forKey: uniqueId,
+        guard self.uiDatabaseConnection.hasChange(forKey: uniqueId,
                                                  inCollection: TSInteraction.collection(),
                                                  in: notifications) else {
                                                     Logger.debug("\(TAG) No relevant changes.")
@@ -755,7 +762,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
             return
         }
 
-        let mediaDetailViewController = MediaDetailViewController(attachmentStream: attachmentStream, viewItem: self.viewItem)
-        mediaDetailViewController.present(from: self, replacing: fromView)
+        let mediaPageViewController = MediaPageViewController(thread: self.thread, mediaMessage: self.message, includeGallery: false)
+        mediaPageViewController.present(fromViewController: self, replacingView: fromView)
     }
 }

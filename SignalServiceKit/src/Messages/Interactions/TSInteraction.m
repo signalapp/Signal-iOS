@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSThread fetchObjectWithUniqueID:self.uniqueThreadId];
 }
 
-- (TSThread *)threadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (TSThread *)threadWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     return [TSThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
 }

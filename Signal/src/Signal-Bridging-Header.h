@@ -21,6 +21,7 @@
 #import "OWSBezierPathView.h"
 #import "OWSCallNotificationsAdaptee.h"
 #import "OWSDatabaseMigration.h"
+#import "OWSMessageCell.h"
 #import "OWSNavigationController.h"
 #import "OWSProgressView.h"
 #import "OWSWebRTCDataProtos.pb.h"
@@ -90,6 +91,7 @@
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalServiceKit/OWSMediaGalleryFinder.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSMessageSender.h>

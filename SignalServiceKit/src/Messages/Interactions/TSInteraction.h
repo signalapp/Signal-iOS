@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSYapDatabaseObject.h"
@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
 
 - (OWSInteractionType)interactionType;
 
-- (TSThread *)threadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (TSThread *)threadWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 /**
  * When an interaction is updated, it often affects the UI for it's containing thread. Touching it's thread will notify

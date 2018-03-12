@@ -18,7 +18,6 @@
 #import "DateUtil.h"
 #import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
-#import "MediaDetailViewController.h"
 #import "NSAttributedString+OWS.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioPlayer.h"
@@ -2028,8 +2027,15 @@ typedef enum : NSUInteger {
 
     [self dismissKeyBoard];
 
-    MediaDetailViewController *vc = [[MediaDetailViewController alloc] initWithAttachmentStream:attachmentStream
-                                                                                       viewItem:viewItem];
+    if (![viewItem.interaction isKindOfClass:[TSMessage class]]) {
+        OWSFail(@"Unexpected viewItem.interaction");
+        return;
+    }
+    TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
+
+    MediaPageViewController *vc =
+        [[MediaPageViewController alloc] initWithThread:self.thread mediaMessage:mediaMessage];
+
     [vc presentFromViewController:self replacingView:imageView];
 }
 
@@ -2042,8 +2048,15 @@ typedef enum : NSUInteger {
     OWSAssert(attachmentStream);
 
     [self dismissKeyBoard];
-    MediaDetailViewController *vc = [[MediaDetailViewController alloc] initWithAttachmentStream:attachmentStream
-                                                                                       viewItem:viewItem];
+
+    if (![viewItem.interaction isKindOfClass:[TSMessage class]]) {
+        OWSFail(@"Unexpected viewItem.interaction");
+        return;
+    }
+    TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
+
+    MediaPageViewController *vc =
+        [[MediaPageViewController alloc] initWithThread:self.thread mediaMessage:mediaMessage];
     [vc presentFromViewController:self replacingView:imageView];
 }
 
