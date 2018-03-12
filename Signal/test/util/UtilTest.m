@@ -7,6 +7,7 @@
 #import "TestUtil.h"
 #import <SignalMessaging/NSString+OWS.h>
 #import <SignalServiceKit/NSDate+OWS.h>
+#import <SignalServiceKit/NSObject+OWS.h>
 
 @interface NSString (OWS_Test)
 
@@ -102,6 +103,15 @@
     XCTAssertFalse([firstDate isAfterDate:sameDate]);
     XCTAssertFalse([firstDate isAfterDate:laterDate]);
     XCTAssertTrue([laterDate isAfterDate:firstDate]);
+}
+
+- (void)testObjectComparison
+{
+    XCTAssertTrue([NSObject isNullableObject:nil equalTo:nil]);
+    XCTAssertFalse([NSObject isNullableObject:@(YES) equalTo:nil]);
+    XCTAssertFalse([NSObject isNullableObject:nil equalTo:@(YES)]);
+    XCTAssertFalse([NSObject isNullableObject:@(YES) equalTo:@(NO)]);
+    XCTAssertTrue([NSObject isNullableObject:@(YES) equalTo:@(YES)]);
 }
 
 @end
