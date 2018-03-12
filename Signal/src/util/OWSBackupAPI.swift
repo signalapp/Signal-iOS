@@ -60,18 +60,6 @@ import CloudKit
             failure: failure)
     }
 
-    //    @objc
-    //    public class func upsertAttachmentToCloud(fileUrl: URL,
-    //                                                success: @escaping (String) -> Swift.Void,
-    //                                                failure: @escaping (Error) -> Swift.Void) {
-    //        // We want to use a well-known record id and type for manifest files.
-    //        upsertFileToCloud(fileUrl: fileUrl,
-    //                          recordName: manifestRecordName,
-    //                          recordType: signalBackupRecordType,
-    //                          success: success,
-    //                          failure: failure)
-    //    }
-
     @objc
     public class func upsertManifestFileToCloud(fileUrl: URL,
                                                 success: @escaping (String) -> Swift.Void,
