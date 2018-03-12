@@ -322,10 +322,9 @@ NS_ASSUME_NONNULL_BEGIN
                 // Clear the PIN so that the user can try again.
                 self.pinTextfield.text = nil;
 
-                [OWSAlerts
-                    showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")
-                               message:NSLocalizedString(@"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH",
-                                           @"Error indicating that the entered 'two-factor auth PINs' do not match.")];
+                [OWSAlerts showErrorAlertWithMessage:
+                               NSLocalizedString(@"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH",
+                                   @"Error indicating that the entered 'two-factor auth PINs' do not match.")];
             }
             break;
         }
@@ -370,11 +369,10 @@ NS_ASSUME_NONNULL_BEGIN
                               [modalActivityIndicator dismissWithCompletion:^{
                                   [weakSelf updateTableContents];
 
-                                  [OWSAlerts
-                                      showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")
-                                                 message:NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA",
-                                                             @"Error indicating that attempt to disable 'two-factor "
-                                                             @"auth' failed.")];
+                                  [OWSAlerts showErrorAlertWithMessage:
+                                                 NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA",
+                                                     @"Error indicating that attempt to disable 'two-factor "
+                                                     @"auth' failed.")];
                               }];
                           }];
                   }];
@@ -407,11 +405,10 @@ NS_ASSUME_NONNULL_BEGIN
 
                                   [weakSelf updateTableContents];
 
-                                  [OWSAlerts
-                                      showAlertWithTitle:NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA",
-                                                             @"Error indicating that attempt to enable 'two-factor "
-                                                             @"auth' failed.")
-                                                 message:error.localizedDescription];
+                                  [OWSAlerts showErrorAlertWithMessage:
+                                                 NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA",
+                                                     @"Error indicating that attempt to enable 'two-factor "
+                                                     @"auth' failed.")];
                               }];
                           }];
                   }];

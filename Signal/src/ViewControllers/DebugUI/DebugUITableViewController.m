@@ -3,6 +3,7 @@
 //
 
 #import "DebugUITableViewController.h"
+#import "DebugUIBackup.h"
 #import "DebugUIContacts.h"
 #import "DebugUIDiskUsage.h"
 #import "DebugUIMessages.h"
@@ -110,6 +111,8 @@ NS_ASSUME_NONNULL_BEGIN
                    }];
     [subsectionItems addObject:documentsFileBrowserItem];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:thread]];
+    [subsectionItems
+        addObject:[self itemForSubsection:[DebugUIBackup new] viewController:viewController thread:thread]];
 
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
 
@@ -135,6 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUISyncMessages new] viewController:viewController thread:nil]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:nil]];
+    [subsectionItems addObject:[self itemForSubsection:[DebugUIBackup new] viewController:viewController thread:nil]];
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
 
     viewController.contents = contents;

@@ -132,8 +132,8 @@ NS_ASSUME_NONNULL_BEGIN
 
             if ([error.domain isEqualToString:NSOSStatusErrorDomain]
                 && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
-                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ALERT_ERROR_TITLE", @"")
-                                      message:NSLocalizedString(@"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE",
+                [OWSAlerts
+                    showErrorAlertWithMessage:NSLocalizedString(@"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE",
                                                   @"Message for the alert indicating that an audio file is invalid.")];
             }
 

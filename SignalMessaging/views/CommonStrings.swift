@@ -12,11 +12,13 @@ import Foundation
     @objc
     static public let dismissButton = NSLocalizedString("DISMISS_BUTTON_TEXT", comment: "Short text to dismiss current modal / actionsheet / screen")
     @objc
-    static public let cancelButton = NSLocalizedString("TXT_CANCEL_TITLE", comment:"Label for the cancel button in an alert or action sheet.")
+    static public let cancelButton = NSLocalizedString("TXT_CANCEL_TITLE", comment: "Label for the cancel button in an alert or action sheet.")
     @objc
-    static public let retryButton = NSLocalizedString("RETRY_BUTTON_TEXT", comment:"Generic text for button that retries whatever the last action was.")
+    static public let retryButton = NSLocalizedString("RETRY_BUTTON_TEXT", comment: "Generic text for button that retries whatever the last action was.")
     @objc
     static public let openSettingsButton = NSLocalizedString("OPEN_SETTINGS_BUTTON", comment: "Button text which opens the settings app")
+    @objc
+    static public let errorAlertTitle = NSLocalizedString("ALERT_ERROR_TITLE", comment: "")
 }
 
 @objc public class MessageStrings: NSObject {

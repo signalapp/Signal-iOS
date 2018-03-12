@@ -58,6 +58,7 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 }
 
 #pragma mark -
+
 @interface OWSPrimaryStorage ()
 
 @property (nonatomic, readonly, nullable) YapDatabaseConnection *dbReadConnection;
@@ -91,6 +92,8 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     self = [super initStorage];
 
     if (self) {
+        [self loadDatabase];
+
         _dbReadConnection = self.newDatabaseConnection;
         _dbReadWriteConnection = self.newDatabaseConnection;
 

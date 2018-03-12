@@ -188,7 +188,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         bottomBanner.autoPinEdge(toSuperviewEdge: .top)
         bottomBanner.autoPinWidthToSuperview()
-        self.autoPinView(toBottomGuideOrKeyboard:bottomBanner)
+        self.autoPinView(toBottomGuideOrKeyboard: bottomBanner)
 
         // The Giphy API requires us to "show their trademark prominently" in our GIF experience.
         let logoImage = UIImage(named: "giphy_logo")
@@ -454,9 +454,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         progressiveSearchTimer = nil
 
         guard let text = searchBar.text else {
-            OWSAlerts.showAlert(title: NSLocalizedString("ALERT_ERROR_TITLE",
-                                                             comment: ""),
-                                message: NSLocalizedString("GIF_PICKER_VIEW_MISSING_QUERY",
+            OWSAlerts.showErrorAlert(withMessage: NSLocalizedString("GIF_PICKER_VIEW_MISSING_QUERY",
                                                            comment: "Alert message shown when user tries to search for GIFs without entering any search terms."))
             return
         }

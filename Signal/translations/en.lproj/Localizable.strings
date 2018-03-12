@@ -163,7 +163,8 @@
 /* Message indicating that backup export is complete. */
 "BACKUP_EXPORT_COMPLETE_MESSAGE" = "Backup complete.";
 
-/* Label for button that copies backup password to the pasteboard. */
+/* Label for button that copies backup password to the
+//                                                    pasteboard. */
 "BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "Copy Password";
 
 /* Message indicating that backup export failed. */
@@ -175,10 +176,12 @@
 /* Format for message indicating that backup export is complete. Embeds: {{the backup password}}. */
 "BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Your backup password is: %@. Make sure to keep a copy of this password or you won't be able to restore from this backup.";
 
-/* Label for button that 'send backup' in the current conversation. */
+/* Label for button that 'send backup' in the current
+//                                                    conversation. */
 "BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Send Backup as Message";
 
-/* Message indicating that sending the backup failed. */
+/* Message indicating that sending
+//                                                                                    the backup failed. */
 "BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Sending Backup Failed.";
 
 /* Message indicating that sending the backup succeeded. */
@@ -187,35 +190,12 @@
 /* Label for button that opens share UI for backup. */
 "BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Share Backup";
 
-/* Title for the 'backup export' view. */
+/* Title for the 'backup export'
+//    view. */
 "BACKUP_EXPORT_VIEW_TITLE" = "Backup";
 
 /* Format for backup filenames. Embeds: {{the date and time of the backup}}. Should not include characters like slash (/ or \\) or colon (:). */
 "BACKUP_FILENAME_FORMAT" = "Signal Backup %@";
-
-/* Message indicating that backup import is complete. */
-"BACKUP_IMPORT_COMPLETE_MESSAGE" = "Restore Complete";
-
-/* Label for button confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "Restore";
-
-/* Message for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "To restore this backup you must restart the Signal app. Warning: you will lose all of your current Signal data.";
-
-/* Title for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "Restore Backup?";
-
-/* Message indicating that backup import failed. */
-"BACKUP_IMPORT_FAILED_MESSAGE" = "Restore Failed";
-
-/* Message indicating that backup import is in progress. */
-"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Restoring Backup...";
-
-/* Label for button that restarts app to complete restore. */
-"BACKUP_IMPORT_RESTART_BUTTON" = "Restart App";
-
-/* Title for the 'backup import' view. */
-"BACKUP_IMPORT_VIEW_TITLE" = "Restore Backup";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
@@ -1602,6 +1582,12 @@
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
+
+/* Label for the backup view in app settings. */
+"SETTINGS_BACKUP" = "Backup";
+
+/* Label for switch in settings that controls whether or not backup is enabled. */
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Backup Enabled";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add…";

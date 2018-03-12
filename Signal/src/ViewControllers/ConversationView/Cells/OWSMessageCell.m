@@ -8,8 +8,6 @@
 #import "ConversationViewItem.h"
 #import "NSAttributedString+OWS.h"
 #import "OWSAudioMessageView.h"
-#import "OWSBackup.h"
-#import "OWSBackupImportViewController.h"
 #import "OWSExpirationTimerView.h"
 #import "OWSGenericAttachmentView.h"
 #import "Signal-Swift.h"
@@ -1321,16 +1319,7 @@ const CGFloat OWSMessageCellCornerRadius = 17;
                                      imageView:self.stillImageView];
             return;
         case OWSMessageCellType_GenericAttachment:
-#ifdef DEBUG
-            if ([self.attachmentStream.filePath.lastPathComponent hasSuffix:OWSBackup_FileExtension]) {
-                [self showBackupImportConfirmAlert:self.attachmentStream.filePath];
-            } else {
-                [AttachmentSharing showShareUIForAttachment:self.attachmentStream];
-            }
-#else
             [AttachmentSharing showShareUIForAttachment:self.attachmentStream];
-#endif
-
             break;
         case OWSMessageCellType_DownloadingAttachment: {
             OWSAssert(self.attachmentPointer);
@@ -1340,42 +1329,6 @@ const CGFloat OWSMessageCellCornerRadius = 17;
             break;
         }
     }
-}
-
-- (void)showBackupImportConfirmAlert:(NSString *)backupZipPath
-{
-    OWSAssert(backupZipPath.length > 0);
-
-    UIAlertController *controller =
-        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"BACKUP_IMPORT_CONFIRM_ALERT_TITLE",
-                                                        @"Title for alert confirming backup import.")
-                                            message:NSLocalizedString(@"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE",
-                                                        @"Message for alert confirming backup import.")
-                                     preferredStyle:UIAlertControllerStyleAlert];
-
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON",
-                                                             @"Label for button confirming backup import.")
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                     [self showBackupImportUI:backupZipPath];
-                                                 }]];
-    [controller addAction:OWSAlerts.cancelAction];
-
-    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:controller animated:YES completion:nil];
-}
-
-- (void)showBackupImportUI:(NSString *)backupZipPath
-{
-    OWSAssert(backupZipPath.length > 0);
-
-    OWSBackupImportViewController *backupViewController = [OWSBackupImportViewController new];
-    // There currently isn't any support for restoring password-protected backups.
-    [backupViewController importBackup:backupZipPath password:nil];
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:backupViewController];
-    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)handleTextLongPressGesture:(UILongPressGestureRecognizer *)sender

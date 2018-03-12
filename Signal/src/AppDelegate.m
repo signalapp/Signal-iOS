@@ -149,10 +149,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [self startupLogging];
 
-    // If a backup restore is in progress, try to complete it.
-    // Otherwise, cleanup backup state.
-    [OWSBackup applicationDidFinishLaunching];
-
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).
     //
@@ -1170,6 +1166,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [OWSPreferences setIsReadyForAppExtensions];
 
     [self ensureRootViewController];
+
+    [OWSBackup.sharedManager setup];
 }
 
 - (void)registrationStateDidChange
