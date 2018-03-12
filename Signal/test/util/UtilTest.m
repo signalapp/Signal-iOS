@@ -87,17 +87,21 @@
 - (void)testDateComparison
 {
     NSDate *firstDate = [NSDate new];
-    [firstDate timeIntervalSince1970];
 
-    NSDate *sameDate = [NSDate dateWithTimeIntervalSince1970:firstDate.timeIntervalSince1970];
-    NSDate *laterDate = [NSDate dateWithTimeIntervalSince1970:firstDate.timeIntervalSince1970 + 1.f];
+    NSDate *sameDate = [NSDate dateWithTimeIntervalSinceReferenceDate:firstDate.timeIntervalSinceReferenceDate];
+    NSDate *laterDate = [NSDate dateWithTimeIntervalSinceReferenceDate:firstDate.timeIntervalSinceReferenceDate + 1.f];
 
+    XCTAssertEqual(firstDate.timeIntervalSinceReferenceDate, sameDate.timeIntervalSinceReferenceDate);
+    XCTAssertNotEqual(firstDate.timeIntervalSinceReferenceDate, laterDate.timeIntervalSinceReferenceDate);
     XCTAssertEqualObjects(firstDate, sameDate);
     XCTAssertNotEqualObjects(firstDate, laterDate);
     XCTAssertTrue(firstDate.timeIntervalSinceReferenceDate < laterDate.timeIntervalSinceReferenceDate);
     XCTAssertFalse([firstDate isBeforeDate:sameDate]);
     XCTAssertTrue([firstDate isBeforeDate:laterDate]);
     XCTAssertFalse([laterDate isBeforeDate:firstDate]);
+    XCTAssertFalse([firstDate isAfterDate:sameDate]);
+    XCTAssertFalse([firstDate isAfterDate:laterDate]);
+    XCTAssertTrue([laterDate isAfterDate:firstDate]);
 }
 
 @end

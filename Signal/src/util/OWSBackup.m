@@ -255,9 +255,8 @@ NS_ASSUME_NONNULL_BEGIN
         if (!lastExportSuccessDate && !lastExportFailureDate) {
             backupExportState = OWSBackupState_Idle;
         } else if (lastExportSuccessDate && lastExportFailureDate) {
-            backupExportState = (([lastExportSuccessDate compare:lastExportFailureDate] == NSOrderedDescending)
-                    ? OWSBackupState_Succeeded
-                    : OWSBackupState_Failed);
+            backupExportState = ([lastExportSuccessDate isAfterDate:lastExportFailureDate] ? OWSBackupState_Succeeded
+                                                                                           : OWSBackupState_Failed);
         } else if (lastExportSuccessDate) {
             backupExportState = OWSBackupState_Succeeded;
         } else if (lastExportFailureDate) {
