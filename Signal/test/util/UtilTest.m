@@ -6,6 +6,7 @@
 #import "NumberUtil.h"
 #import "TestUtil.h"
 #import <SignalMessaging/NSString+OWS.h>
+#import <SignalServiceKit/NSDate+OWS.h>
 
 @interface NSString (OWS_Test)
 
@@ -81,6 +82,22 @@
     XCTAssertEqualObjects(@"\u202Ealicebob".filterUnsafeCharacters, @"\uFFFDalicebob");
     XCTAssertEqualObjects(@"alicebob\u202E".filterUnsafeCharacters, @"alicebob\uFFFD");
     XCTAssertEqualObjects(@"alice\u202Dbobalice\u202Ebob".filterUnsafeCharacters, @"alice\uFFFDbobalice\uFFFDbob");
+}
+
+- (void)testDateComparison
+{
+    NSDate *firstDate = [NSDate new];
+    [firstDate timeIntervalSince1970];
+
+    NSDate *sameDate = [NSDate dateWithTimeIntervalSince1970:firstDate.timeIntervalSince1970];
+    NSDate *laterDate = [NSDate dateWithTimeIntervalSince1970:firstDate.timeIntervalSince1970 + 1.f];
+
+    XCTAssertEqualObjects(firstDate, sameDate);
+    XCTAssertNotEqualObjects(firstDate, laterDate);
+    XCTAssertTrue(firstDate.timeIntervalSinceReferenceDate < laterDate.timeIntervalSinceReferenceDate);
+    XCTAssertFalse([firstDate isBeforeDate:sameDate]);
+    XCTAssertTrue([firstDate isBeforeDate:laterDate]);
+    XCTAssertFalse([laterDate isBeforeDate:firstDate]);
 }
 
 @end

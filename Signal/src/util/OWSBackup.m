@@ -196,7 +196,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     if (UIApplication.sharedApplication.applicationState != UIApplicationStateActive) {
-        // Only start backups when app is in the background.
+        // Don't start backups when app is in the background.
         return NO;
     }
     if (![TSAccountManager isRegistered]) {
@@ -255,8 +255,9 @@ NS_ASSUME_NONNULL_BEGIN
         if (!lastExportSuccessDate && !lastExportFailureDate) {
             backupExportState = OWSBackupState_Idle;
         } else if (lastExportSuccessDate && lastExportFailureDate) {
-            backupExportState = ([lastExportSuccessDate compare:lastExportFailureDate] ? OWSBackupState_Succeeded
-                                                                                       : OWSBackupState_Failed);
+            backupExportState = (([lastExportSuccessDate compare:lastExportFailureDate] == NSOrderedDescending)
+                    ? OWSBackupState_Succeeded
+                    : OWSBackupState_Failed);
         } else if (lastExportSuccessDate) {
             backupExportState = OWSBackupState_Succeeded;
         } else if (lastExportFailureDate) {
@@ -387,6 +388,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self ensureBackupExportState];
     } else {
+        DDLogInfo(@"%@ stale backup job failed.", self.logTag);
         return;
     }
 

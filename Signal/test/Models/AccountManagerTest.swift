@@ -20,7 +20,9 @@ enum PushNotificationRequestResult: String {
 class FailingTSAccountManager: TSAccountManager {
     let phoneNumberAwaitingVerification = "+13235555555"
 
-    override func verifyAccount(withCode: String, success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
+    override func verifyAccount(withCode: String,
+                                pin: String?,
+                                success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
         failure(VerificationFailedError())
     }
 
@@ -34,7 +36,9 @@ class FailingTSAccountManager: TSAccountManager {
 }
 
 class VerifyingTSAccountManager: FailingTSAccountManager {
-    override func verifyAccount(withCode: String, success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
+    override func verifyAccount(withCode: String,
+                                pin: String?,
+                                success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
         success()
     }
 
@@ -57,7 +61,7 @@ class AccountManagerTest: XCTestCase {
         let expectation = self.expectation(description: "should fail")
 
         firstly {
-            accountManager.register(verificationCode: "")
+            accountManager.register(verificationCode: "", pin: "")
         }.then {
             XCTFail("Should fail")
         }.catch { error in
@@ -78,7 +82,7 @@ class AccountManagerTest: XCTestCase {
         let expectation = self.expectation(description: "should fail")
 
         firstly {
-            accountManager.register(verificationCode: "123456")
+            accountManager.register(verificationCode: "123456", pin: "")
         }.then {
             XCTFail("Should fail")
         }.catch { error in
@@ -103,7 +107,7 @@ class AccountManagerTest: XCTestCase {
         let expectation = self.expectation(description: "should succeed")
 
         firstly {
-            accountManager.register(verificationCode: "123456")
+            accountManager.register(verificationCode: "123456", pin: "")
         }.then {
             expectation.fulfill()
         }.catch { error in

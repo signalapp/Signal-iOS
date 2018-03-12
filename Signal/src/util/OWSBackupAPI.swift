@@ -427,15 +427,15 @@ import CloudKit
                 switch accountStatus {
                 case .couldNotDetermine:
                     Logger.error("\(self.logTag) could not determine CloudKit account status:\(String(describing: error)).")
-                    OWSAlerts.showErrorAlert(withMessage: NSLocalizedString("CLOUDKIT_STATUS_COULD_NOT_DETERMINE", comment: "Error indicating that the app could not determine that user's CloudKit account status"))
+                    OWSAlerts.showErrorAlert(message: NSLocalizedString("CLOUDKIT_STATUS_COULD_NOT_DETERMINE", comment: "Error indicating that the app could not determine that user's CloudKit account status"))
                     completion(false)
                 case .noAccount:
                     Logger.error("\(self.logTag) no CloudKit account.")
-                    OWSAlerts.showErrorAlert(withMessage: NSLocalizedString("CLOUDKIT_STATUS_NO_ACCOUNT", comment: "Error indicating that user does not have an iCloud account."))
+                    OWSAlerts.showErrorAlert(message: NSLocalizedString("CLOUDKIT_STATUS_NO_ACCOUNT", comment: "Error indicating that user does not have an iCloud account."))
                     completion(false)
                 case .restricted:
                     Logger.error("\(self.logTag) restricted CloudKit account.")
-                    OWSAlerts.showErrorAlert(withMessage: NSLocalizedString("CLOUDKIT_STATUS_RESTRICTED", comment: "Error indicating that the app was prevented from accessing the user's CloudKit account."))
+                    OWSAlerts.showErrorAlert(message: NSLocalizedString("CLOUDKIT_STATUS_RESTRICTED", comment: "Error indicating that the app was prevented from accessing the user's CloudKit account."))
                     completion(false)
                 case .available:
                     completion(true)

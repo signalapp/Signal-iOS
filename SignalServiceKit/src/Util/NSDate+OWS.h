@@ -24,6 +24,8 @@ extern const NSTimeInterval kMonthInterval;
 + (NSDate *)ows_dateWithMillisecondsSince1970:(uint64_t)milliseconds;
 + (uint64_t)ows_millisecondsSince1970ForDate:(NSDate *)date;
 
+- (BOOL)isBeforeDate:(NSDate *)otherDate;
+
 @end
 
 NS_ASSUME_NONNULL_END
