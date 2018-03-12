@@ -25,10 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 // This property should only be accessed on the main thread.
-@property (nonatomic, nullable) OWSBackupExportJob *backupExport;
+@property (nonatomic, nullable) OWSBackupExportJob *backupExportJob;
 
 // This property should only be accessed on the main thread.
-@property (nonatomic, nullable) OWSBackupImportJob *backupImport;
+@property (nonatomic, nullable) OWSBackupImportJob *backupImportJob;
 
 @property (nonatomic, nullable) NSString *backupExportDescription;
 @property (nonatomic, nullable) NSNumber *backupExportProgress;
@@ -222,7 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // This conflict shouldn't occur in production since we won't enable backup
     // export until an import is complete, but this could happen in development.
-    if (self.backupImport) {
+    if (self.backupImportJob) {
         return NO;
     }
 
@@ -236,18 +236,18 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     // Start or abort a backup export if neccessary.
-    if (!self.shouldHaveBackupExport && self.backupExport) {
-        [self.backupExport cancel];
-        self.backupExport = nil;
-    } else if (self.shouldHaveBackupExport && !self.backupExport) {
-        self.backupExport =
+    if (!self.shouldHaveBackupExport && self.backupExportJob) {
+        [self.backupExportJob cancel];
+        self.backupExportJob = nil;
+    } else if (self.shouldHaveBackupExport && !self.backupExportJob) {
+        self.backupExportJob =
             [[OWSBackupExportJob alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
-        [self.backupExport startAsync];
+        [self.backupExportJob startAsync];
     }
 
     // Update the state flag.
     OWSBackupState backupExportState = OWSBackupState_Idle;
-    if (self.backupExport) {
+    if (self.backupExportJob) {
         backupExportState = OWSBackupState_InProgress;
     } else {
         NSDate *_Nullable lastExportSuccessDate = self.lastExportSuccessDate;
@@ -297,27 +297,27 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)tryToImportBackup
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(!self.backupImport);
+    OWSAssert(!self.backupImportJob);
 
     // In development, make sure there's no export or import in progress.
-    [self.backupExport cancel];
-    self.backupExport = nil;
-    [self.backupImport cancel];
-    self.backupImport = nil;
+    [self.backupExportJob cancel];
+    self.backupExportJob = nil;
+    [self.backupImportJob cancel];
+    self.backupImportJob = nil;
 
     _backupImportState = OWSBackupState_InProgress;
 
-    self.backupImport =
+    self.backupImportJob =
         [[OWSBackupImportJob alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
-    [self.backupImport startAsync];
+    [self.backupImportJob startAsync];
 
     [self postDidChangeNotification];
 }
 
 - (void)cancelImportBackup
 {
-    [self.backupImport cancel];
-    self.backupImport = nil;
+    [self.backupImportJob cancel];
+    self.backupImportJob = nil;
 
     _backupImportState = OWSBackupState_Idle;
 
@@ -354,12 +354,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     DDLogInfo(@"%@ %s.", self.logTag, __PRETTY_FUNCTION__);
 
-    if (self.backupImport == backupJob) {
-        self.backupImport = nil;
+    if (self.backupImportJob == backupJob) {
+        self.backupImportJob = nil;
 
         _backupImportState = OWSBackupState_Succeeded;
-    } else if (self.backupExport == backupJob) {
-        self.backupExport = nil;
+    } else if (self.backupExportJob == backupJob) {
+        self.backupExportJob = nil;
 
         [self setLastExportSuccessDate:[NSDate new]];
 
@@ -377,12 +377,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     DDLogInfo(@"%@ %s: %@", self.logTag, __PRETTY_FUNCTION__, error);
 
-    if (self.backupImport == backupJob) {
-        self.backupImport = nil;
+    if (self.backupImportJob == backupJob) {
+        self.backupImportJob = nil;
 
         _backupImportState = OWSBackupState_Failed;
-    } else if (self.backupExport == backupJob) {
-        self.backupExport = nil;
+    } else if (self.backupExportJob == backupJob) {
+        self.backupExportJob = nil;
 
         [self setLastExportFailureDate:[NSDate new]];
 
@@ -405,13 +405,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     // TODO: Should we consolidate this state?
     BOOL didChange;
-    if (self.backupImport == backupJob) {
+    if (self.backupImportJob == backupJob) {
         didChange = !([NSObject isNullableObject:self.backupImportDescription equalTo:description] &&
             [NSObject isNullableObject:self.backupImportProgress equalTo:progress]);
 
         self.backupImportDescription = description;
         self.backupImportProgress = progress;
-    } else if (self.backupExport == backupJob) {
+    } else if (self.backupExportJob == backupJob) {
         didChange = !([NSObject isNullableObject:self.backupExportDescription equalTo:description] &&
             [NSObject isNullableObject:self.backupExportProgress equalTo:progress]);
 
