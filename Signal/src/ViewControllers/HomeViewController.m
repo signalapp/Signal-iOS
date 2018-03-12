@@ -284,10 +284,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }
 
     [self updateBarButtonItems];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self settingsButtonPressed:nil];
-    });
 }
 
 - (void)viewDidAppear:(BOOL)animated

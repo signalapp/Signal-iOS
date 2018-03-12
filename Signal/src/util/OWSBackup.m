@@ -111,9 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(value);
 
-    // TODO: This should eventually be the backup key stored in the Signal Service
-    //       and retrieved with the backup PIN.  It will eventually be stored in
-    //       the keychain.
+    // TODO: Use actual key.
     [self.dbConnection setObject:value
                           forKey:OWSBackup_BackupKeyKey
                     inCollection:OWSPrimaryStorage_OWSBackupCollection];
@@ -124,8 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *_Nullable result =
         [self.dbConnection objectForKey:OWSBackup_BackupKeyKey inCollection:OWSPrimaryStorage_OWSBackupCollection];
     if (!result) {
-        // TODO: This is temporary measure until we have proper private key
-        //       storage in the service.
+        // TODO: Use actual key.
         const NSUInteger kBackupPrivateKeyLength = 32;
         result = [Randomness generateRandomBytes:kBackupPrivateKeyLength];
         [self setBackupPrivateKey:result];
@@ -208,18 +205,16 @@ NS_ASSUME_NONNULL_BEGIN
     NSDate *_Nullable lastExportSuccessDate = self.lastExportSuccessDate;
     NSDate *_Nullable lastExportFailureDate = self.lastExportFailureDate;
     // Wait N hours before retrying after a success.
-    //
-    // TODO: Use actual values in production.
-    //    const NSTimeInterval kRetryAfterSuccess = 24 * kHourInterval;
-    const NSTimeInterval kRetryAfterSuccess = 0;
+    const NSTimeInterval kRetryAfterSuccess = 24 * kHourInterval;
+    // TODO: Remove.
+    //    const NSTimeInterval kRetryAfterSuccess = 0;
     if (lastExportSuccessDate && fabs(lastExportSuccessDate.timeIntervalSinceNow) < kRetryAfterSuccess) {
         return NO;
     }
     // Wait N hours before retrying after a failure.
-    //
-    // TODO: Use actual values in production.
-    //    const NSTimeInterval kRetryAfterFailure = 6 * kHourInterval;
-    const NSTimeInterval kRetryAfterFailure = 0;
+    const NSTimeInterval kRetryAfterFailure = 6 * kHourInterval;
+    // TODO: Remove.
+    //    const NSTimeInterval kRetryAfterFailure = 0;
     if (lastExportFailureDate && fabs(lastExportFailureDate.timeIntervalSinceNow) < kRetryAfterFailure) {
         return NO;
     }

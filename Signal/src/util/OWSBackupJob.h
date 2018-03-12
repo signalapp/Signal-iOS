@@ -15,8 +15,7 @@ typedef void (^OWSBackupJobCompletion)(NSError *_Nullable error);
 
 @protocol OWSBackupJobDelegate <NSObject>
 
-// TODO: This should eventually be the backup key stored in the Signal Service
-//       and retrieved with the backup PIN.
+// TODO: Use actual key.
 - (nullable NSData *)backupKey;
 
 // Either backupJobDidSucceed:... or backupJobDidFail:... will
