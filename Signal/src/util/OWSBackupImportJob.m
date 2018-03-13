@@ -283,7 +283,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     if ([NSFileManager.defaultManager fileExistsAtPath:tempFilePath]) {
         [OWSFileSystem protectFileOrFolderAtPath:tempFilePath];
         self.downloadedFileMap[recordName] = tempFilePath;
-        [self downloadNextFileFromCloud:recordNames completion:completion];
+        [self downloadNextFileFromCloud:recordNames recordCount:recordCount completion:completion];
         return;
     }
 
@@ -293,7 +293,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [OWSFileSystem protectFileOrFolderAtPath:tempFilePath];
                 self.downloadedFileMap[recordName] = tempFilePath;
-                [self downloadNextFileFromCloud:recordNames completion:completion];
+                [self downloadNextFileFromCloud:recordNames recordCount:recordCount completion:completion];
             });
         }
         failure:^(NSError *error) {
