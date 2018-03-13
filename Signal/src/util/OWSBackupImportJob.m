@@ -242,10 +242,11 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     // A map of "record name"-to-"downloaded file path".
     self.downloadedFileMap = [NSMutableDictionary new];
 
-    [self downloadNextFileFromCloud:recordNames completion:completion];
+    [self downloadNextFileFromCloud:recordNames recordCount:recordNames.count completion:completion];
 }
 
 - (void)downloadNextFileFromCloud:(NSMutableArray<NSString *> *)recordNames
+                      recordCount:(NSUInteger)recordCount
                        completion:(OWSBackupJobCompletion)completion
 {
     OWSAssert(recordNames);
@@ -263,11 +264,15 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     NSString *recordName = recordNames.lastObject;
     [recordNames removeLastObject];
 
+    [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_DOWNLOAD",
+                                            @"Indicates that the backup import data is being downloaded.")
+                               progress:@((recordCount - recordNames.count) / (CGFloat)recordCount)];
+
     if (![recordName isKindOfClass:[NSString class]]) {
         DDLogError(@"%@ invalid record name in manifest: %@", self.logTag, [recordName class]);
         // Invalid record name in the manifest. This may be recoverable.
         // Ignore this for now and proceed with the other downloads.
-        return [self downloadNextFileFromCloud:recordNames completion:completion];
+        return [self downloadNextFileFromCloud:recordNames recordCount:recordCount completion:completion];
     }
 
     // Use a predictable file path so that multiple "import backup" attempts
@@ -302,10 +307,17 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     NSString *attachmentsDirPath = [TSAttachmentStream attachmentsFolder];
 
+    NSUInteger count = 0;
     for (NSString *recordName in self.attachmentRecordMap) {
         if (self.isComplete) {
             return;
         }
+
+        count++;
+        [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_RESTORING_FILES",
+                                                @"Indicates that the backup import data is being restored.")
+                                   progress:@(count / (CGFloat)self.attachmentRecordMap.count)];
+
 
         NSString *dstRelativePath = self.attachmentRecordMap[recordName];
         if (!
@@ -321,6 +333,10 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     OWSAssert(completion);
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_RESTORING_DATABASE",
+                                            @"Indicates that the backup database is being restored.")
+                               progress:nil];
 
     NSString *jobDatabaseDirPath = [self.jobTempDirPath stringByAppendingPathComponent:@"database"];
     if (![OWSFileSystem ensureDirectoryExists:jobDatabaseDirPath]) {
@@ -496,6 +512,11 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     OWSAssert(completion);
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_FINALIZING",
+                                            @"Indicates that the backup import data is being finalized.")
+                               progress:nil];
+
 
     // It's okay that we do this in a separate transaction from the
     // restoration of backup contents.  If some of migrations don't

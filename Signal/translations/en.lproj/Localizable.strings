@@ -164,16 +164,16 @@
 "BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup could not upload data.";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning up backup data.";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning Up Backup";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing backup.";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Exporting backup data.";
+"BACKUP_EXPORT_PHASE_EXPORT" = "Exporting Backup";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading backup data.";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading Backup";
 
 /* Error indicating the a backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
@@ -182,10 +182,22 @@
 "BACKUP_IMPORT_ERROR_DOWNLOAD_FILE_FROM_CLOUD_FAILED" = "Could not download backup data.";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring backup restore.";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring Backup";
+
+/* Indicates that the backup import data is being downloaded. */
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloading Backup Data";
+
+/* Indicates that the backup import data is being finalized. */
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
 
 /* Indicates that the backup import data is being imported. */
 "BACKUP_IMPORT_PHASE_IMPORT" = "Importing backup.";
+
+/* Indicates that the backup database is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Restoring Database";
+
+/* Indicates that the backup import data is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restoring Files";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
