@@ -8,6 +8,9 @@ extern NSString *const kOWSBackup_ManifestKey_DatabaseFiles;
 extern NSString *const kOWSBackup_ManifestKey_AttachmentFiles;
 extern NSString *const kOWSBackup_ManifestKey_DatabaseKeySpec;
 
+extern NSString *const kOWSBackup_Snapshot_Collection;
+extern NSString *const kOWSBackup_Snapshot_ValidKey;
+
 typedef void (^OWSBackupJobBoolCompletion)(BOOL success);
 typedef void (^OWSBackupJobCompletion)(NSError *_Nullable error);
 

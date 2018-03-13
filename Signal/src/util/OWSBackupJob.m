@@ -16,6 +16,9 @@ NSString *const kOWSBackup_ManifestKey_DatabaseKeySpec = @"database_key_spec";
 
 NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
+NSString *const kOWSBackup_Snapshot_Collection = @"kOWSBackup_Snapshot_Collection";
+NSString *const kOWSBackup_Snapshot_ValidKey = @"kOWSBackup_Snapshot_ValidKey";
+
 @interface OWSBackupJob ()
 
 @property (nonatomic, weak) id<OWSBackupJobDelegate> delegate;

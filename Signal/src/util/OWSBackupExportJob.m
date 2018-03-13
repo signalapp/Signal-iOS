@@ -248,6 +248,10 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
 
     [primaryDBConnection readWithBlock:^(YapDatabaseReadTransaction *srcTransaction) {
         [tempDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *dstTransaction) {
+            [dstTransaction setObject:@(YES)
+                               forKey:kOWSBackup_Snapshot_ValidKey
+                         inCollection:kOWSBackup_Snapshot_Collection];
+
             // Copy threads.
             [srcTransaction
                 enumerateKeysAndObjectsInCollection:[TSThread collection]
@@ -347,6 +351,9 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
         }];
     }];
 
+    if (self.isComplete) {
+        return NO;
+    }
     // TODO: Should we do a database checkpoint?
 
     DDLogInfo(@"%@ copiedThreads: %llu", self.logTag, copiedThreads);

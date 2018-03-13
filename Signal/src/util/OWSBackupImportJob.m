@@ -408,6 +408,14 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     __block BOOL aborted = NO;
     [tempDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *srcTransaction) {
         [primaryDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *dstTransaction) {
+            if (![srcTransaction boolForKey:kOWSBackup_Snapshot_ValidKey
+                               inCollection:kOWSBackup_Snapshot_Collection
+                               defaultValue:NO]) {
+                DDLogError(@"%@ invalid database.", self.logTag);
+                aborted = YES;
+                return completion(NO);
+            }
+
             for (NSString *collection in collectionsToRestore) {
                 if ([collection isEqualToString:[OWSDatabaseMigration collection]]) {
                     // It's okay if there are existing migrations; we'll clear those
