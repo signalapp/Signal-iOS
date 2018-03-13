@@ -415,17 +415,21 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                     continue;
                 }
                 if ([dstTransaction numberOfKeysInCollection:collection] > 0) {
-                    DDLogError(@"%@ cannot restore into non-empty database (%@).", self.logTag, collection);
-                    aborted = YES;
-                    return completion(NO);
+                    DDLogError(@"%@ unexpected contents in database (%@).", self.logTag, collection);
                 }
             }
 
-            // Clear existing migrations.
+            // Clear existing database contents.
             //
-            // This is safe since we only ever import into an empty database.
-            // Non-database migrations should be idempotent.
-            [dstTransaction removeAllObjectsInCollection:[OWSDatabaseMigration collection]];
+            // This should be safe since we only ever import into an empty database.
+            //
+            // Note that if the app receives a message after registering and before restoring
+            // backup, it will be lost.
+            //
+            // Note that this will clear all migrations.
+            for (NSString *collection in collectionsToRestore) {
+                [dstTransaction removeAllObjectsInCollection:collection];
+            }
 
             // Copy database entities.
             for (NSString *collection in collectionsToRestore) {

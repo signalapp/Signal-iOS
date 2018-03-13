@@ -99,12 +99,6 @@ NS_ASSUME_NONNULL_BEGIN
                               actionWithTitle:@"Restore"
                                         style:UIAlertActionStyleDefault
                                       handler:^(UIAlertAction *_Nonnull action) {
-                                          [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
-                                              readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                                  [transaction removeAllObjectsInCollection:[TSThread collection]];
-                                                  [transaction removeAllObjectsInCollection:[TSInteraction collection]];
-                                                  [transaction removeAllObjectsInCollection:[TSAttachment collection]];
-                                              }];
                                           [OWSBackup.sharedManager tryToImportBackup];
                                       }]];
     [controller addAction:[OWSAlerts cancelAction]];
