@@ -1,6 +1,3 @@
-/* Text field placeholder when entering a 'two-factor auth pin'. */
-"2FA_PIN_DEFAULT_TEXT" = "••••••";
-
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Inte nu";
 
@@ -155,7 +152,7 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Högtalare";
 
 /* button text for back button */
-"BACK_BUTTON" = "Back";
+"BACK_BUTTON" = "Tillbaka";
 
 /* Message indicating that backup export is complete. */
 "BACKUP_EXPORT_COMPLETE_MESSAGE" = "Säkerhetskopia klar.";
@@ -503,19 +500,19 @@
 "DATE_YESTERDAY" = "Igår";
 
 /* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Kunde inte kopiera loggar.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Kunde inte paketera loggar.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Kunde inte skicka loggar.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "Vad vill du göra med länken till din debuglogg?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "Kunde inte hitta några loggar.";
 
 /* Label for the 'Open a Bug Report' option of the the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Öppna en buggrapport";
@@ -533,7 +530,7 @@
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Skicka till mig själv";
 
 /* Label for the 'Share' option of the the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SHARE" = "Share";
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "Dela";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
@@ -657,7 +654,7 @@
 "EMPTY_INBOX_TITLE" = "Skinande rent och fint.";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirm your PIN.";
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Bekräfta din PIN-kod.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Could not disable Registration Lock.";
@@ -666,16 +663,16 @@
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Could not enable Registration Lock.";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "Disable";
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "Inaktivera";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "Enable";
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "Aktivera";
 
 /* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Next";
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Nästa";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN does not match.";
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN-koderna är inte samma.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Enter a Registration Lock PIN. You will be asked to enter this PIN the next time you register this phone number with Signal.";
@@ -1193,19 +1190,19 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "På grund av kända buggar i Apples push-ramverk kommer förhandsvisningar av meddelanden bara att visas om meddelanden hämtas inom 30 sekunder efter att de skickades. Som ett resultat av det kan applikationens bricka vara felaktig.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "No Name or Content";
+"NOTIFICATIONS_NONE" = "Inget namn eller meddelande";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
+"NOTIFICATIONS_SECTION_INAPP" = "Spela när appen är öppen";
 
 /* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "Sounds";
+"NOTIFICATIONS_SECTION_SOUNDS" = "Ljud";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name and Content";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Namn och innehåll";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Name Only";
+"NOTIFICATIONS_SENDER_ONLY" = "Bara namn";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Visa";
@@ -1391,7 +1388,7 @@
 "RATING_TITLE" = "Stöd Signal!";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "I forgot my PIN.";
+"REGISTER_2FA_FORGOT_PIN" = "Jag har glömt PIN-koden.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration of this phone number will be possible without your Registration Lock PIN after 7 days have passed since the phone number was last active on Signal.";
@@ -1403,7 +1400,7 @@
 "REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registration Failed";
 
 /* Label for 'submit' button in the 2FA registration view. */
-"REGISTER_2FA_SUBMIT_BUTTON" = "Submit";
+"REGISTER_2FA_SUBMIT_BUTTON" = "Skicka";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Välkommen!";
@@ -1598,7 +1595,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Avancerat";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
-"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (standard)";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Lägg till...";

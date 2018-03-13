@@ -1,6 +1,3 @@
-/* Text field placeholder when entering a 'two-factor auth pin'. */
-"2FA_PIN_DEFAULT_TEXT" = "••••••";
-
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Jo Tani";
 
@@ -1475,10 +1472,10 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Numri i telefonit që po përpiqeni të regjistroni është regjistruat tashmë në një shërbyes tjetër, ju lutemi, çregjistrojeni prej andej dhe riprovoni.";
 
 /* Body text for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Kyçja e Regjistrimeve është e aktivizuar për numrin tuaj të telefonit.";
+"REMINDER_2FA_BODY" = "Kyçja e Regjistrimeve është e aktivizuar për numrin tuaj. Për t’ju ndihmuar të mbani mend PIN-in tuaj të Kyçjes së Regjistrimeve, Signal-i do t’ju kërkojë herë pas here ripohimin e tij.";
 
 /* Body header for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+"REMINDER_2FA_BODY_HEADER" = "Kujtues:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Kyçja e Regjistrimeve ndihmon të mbrohet numri juaj i telefonit nga përpjekje të paautorizuara. Kjo veçori mund të çaktivizohet në çfarëdo kohe, që nga rregullimet e privatësisë në Signal.";

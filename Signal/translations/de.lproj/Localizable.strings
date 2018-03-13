@@ -1,6 +1,3 @@
-/* Text field placeholder when entering a 'two-factor auth pin'. */
-"2FA_PIN_DEFAULT_TEXT" = "••••••";
-
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Nicht jetzt";
 
@@ -1475,10 +1472,10 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Die eingegebene Rufnummer ist bereits auf einem anderen Server registriert. Lösche bitte zuerst dein Benutzerkonto auf dem Server und versuche es dann erneut.";
 
 /* Body text for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Für deine Rufnummer ist die Registrierungssperre aktiviert.";
+"REMINDER_2FA_BODY" = "Für deine Rufnummer ist die Registrierungssperre aktiviert. Damit du sie nicht vergisst, wird dich Signal regelmäßig nach der PIN für die Registrierungssperre fragen.";
 
 /* Body header for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+"REMINDER_2FA_BODY_HEADER" = "Erinnerung:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Die Registrierungssperre hilft, deine Rufnummer vor unautorisierten Registrierungsversuchen zu schützen. Diese Funktion kann jederzeit in den Datenschutzeinstellungen von Signal deaktiviert werden.";

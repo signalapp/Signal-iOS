@@ -1,6 +1,3 @@
-/* Text field placeholder when entering a 'two-factor auth pin'. */
-"2FA_PIN_DEFAULT_TEXT" = "••••••";
-
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "以后再说";
 
@@ -660,10 +657,10 @@
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "确认您的PIN码。";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Could not disable Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "无法禁用注册锁。";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Could not enable Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "无法启用注册锁。";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
 "ENABLE_2FA_VIEW_DISABLE_2FA" = "关闭";
@@ -675,19 +672,19 @@
 "ENABLE_2FA_VIEW_NEXT_BUTTON" = "下一步";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN码不正确。";
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN 码不正确。";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Enter a Registration Lock PIN. You will be asked to enter this PIN the next time you register this phone number with Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "请输入注册锁的 PIN 码。以后您使用此号码注册 Signal 时，将需要输入这个 PIN 码。";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "For increased security, enable a Registration Lock PIN that will be required in order to register this phone number with Signal again.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "为了加强账户安全，请启用 PIN 码注册锁。打开后，再次使用此号码注册 Signal 时，您将需要输入这个 PIN 码。";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registration Lock is enabled. You'll need to enter your PIN when registering your phone number with Signal again.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "注册锁已启用。您只有输入正确的 PIN 码后，才能重新使用这个号码注册 Signal。";
 
 /* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "Registration Lock";
+"ENABLE_2FA_VIEW_TITLE" = "注册锁";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "忙。";
@@ -1196,7 +1193,7 @@
 "NOTIFICATIONS_NONE" = "没有名字或者内容";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
+"NOTIFICATIONS_SECTION_INAPP" = "应用内播放提示音";
 
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "声音";
@@ -1205,7 +1202,7 @@
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "名字和内容";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Name Only";
+"NOTIFICATIONS_SENDER_ONLY" = "只显示名称";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "显示";
@@ -1394,10 +1391,10 @@
 "REGISTER_2FA_FORGOT_PIN" = "我忘记了我的PIN码。";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration of this phone number will be possible without your Registration Lock PIN after 7 days have passed since the phone number was last active on Signal.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "从上一次此号码成功激活 Signal 开始，7日之后，您无需输入注册锁 PIN 码就能用这个手机号码重新注册 Signal。";
 
 /* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "This phone number has Registration Lock enabled. Please enter the Registration Lock PIN.\n\nYour Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+"REGISTER_2FA_INSTRUCTIONS" = "这个电话号码已启用注册锁。请输入注册锁 PIN 码。\n\n注意，您的注册锁 PIN 码，与最后一步时发送给您的自动验证码是不同的。";
 
 /* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
 "REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "注册失败";
@@ -1421,7 +1418,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "国家编码";
 
 /* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Registration Lock";
+"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "注册锁";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "输入电话号码";
@@ -1451,7 +1448,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "你提交的数字和我们发给你的数字不匹配. 想要再次检查?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Incorrect Registration Lock PIN.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "注册锁 PIN 码不正确。";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "激活当前设备";
@@ -1475,16 +1472,16 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "您要注册的电话号码已经在别的服务器被注册，请注销该号码后再次尝试。";
 
 /* Body text for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Registration Lock is enabled for your phone number. To help you memorize your Registration Lock PIN, Signal will periodically ask you to confirm it.";
+"REMINDER_2FA_BODY" = "已为您的号码启用了注册锁。为了帮助您记住注册锁 PIN 码，Signal 会定期向您确认 PIN 码。";
 
 /* Body header for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+"REMINDER_2FA_BODY_HEADER" = "提醒：";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "注册锁能防范他人在没有您许可的情况下，使用您的号码进行注册。您随时可在 Signal 隐私设置里关闭该功能。";
 
 /* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Enter Your Registration Lock PIN";
+"REMINDER_2FA_NAV_TITLE" = "请输入您的注册锁 PIN 码";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "您可以在隐私设置里设置一个新的PIN码。";
@@ -1598,7 +1595,7 @@
 "SETTINGS_ADVANCED_TITLE" = "高级";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
-"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@（默认）";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "添加...";
@@ -1673,7 +1670,7 @@
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "将Signal通话记录整合在iOS通话记录中。";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Show Calls in Recents";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "显示最近通话";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS 通话整合";
@@ -1718,10 +1715,10 @@
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "开启";
 
 /* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Registration Lock";
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "注册锁";
 
 /* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registration Lock";
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "注册锁";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "版本";
@@ -1889,10 +1886,10 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "现在，您可以为您的每一个对话选择单独的提示音或者保持默认的提示音，通话提示音将是您在iOS通讯录中所设置的提示音。";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Review Notification Settings";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "检查通知设置";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Updated Call and Message Sounds";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "新的通话和消息提示音";
 
 /* button label shown one time, after user upgrades app */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "设置您的资料";

@@ -1,6 +1,3 @@
-/* Text field placeholder when entering a 'two-factor auth pin'. */
-"2FA_PIN_DEFAULT_TEXT" = "••••••";
-
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Non Ora";
 
@@ -675,7 +672,7 @@
 "ENABLE_2FA_VIEW_NEXT_BUTTON" = "Avanti";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Il Pin non corrisponde.";
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Il PIN non corrisponde. ";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Inserisci un PIN per il Blocco Registrazione. Questo PIN ti verrà richiesto la prossima volta che verrà effettuata una registrazione con questo numero di telefono.";
@@ -1475,10 +1472,10 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Il numero di telefono che stai cercando di registrare risulta già iscritto in un altro server, rimuovilo da tale server e riprova nuovamente.";
 
 /* Body text for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Il Blocco Registrazione è attivo per il tuo numero di telefono.";
+"REMINDER_2FA_BODY" = "Il Blocco Registrazione è attivo per il tuo numero di telefono. Per aiutarti a memorizzare il PIN di Blocco Registrazione, Signal ti chiederà di confermarlo periodicamente.";
 
 /* Body header for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+"REMINDER_2FA_BODY_HEADER" = "Promemoria:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Il Blocco Registrazione aiuta a proteggere il tuo numero di telefono da tentativi di registrazione non autorizzati. Questa funzionalità può essere disattivata in qualsiasi momento dalle impostazioni di privacy di Signal.";

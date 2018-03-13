@@ -1,6 +1,3 @@
-/* Text field placeholder when entering a 'two-factor auth pin'. */
-"2FA_PIN_DEFAULT_TEXT" = "••••••";
-
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "今は結構です";
 
@@ -155,7 +152,7 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "スピーカー";
 
 /* button text for back button */
-"BACK_BUTTON" = "Back";
+"BACK_BUTTON" = "戻る";
 
 /* Message indicating that backup export is complete. */
 "BACKUP_EXPORT_COMPLETE_MESSAGE" = "バックアップが完了しました";
@@ -533,7 +530,7 @@
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "自分に送る";
 
 /* Label for the 'Share' option of the the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SHARE" = "Share";
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "共有";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
@@ -657,37 +654,37 @@
 "EMPTY_INBOX_TITLE" = "とてもキレイです";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirm your PIN.";
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "暗証番号を確認してください";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Could not disable Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "登録鍵の無効化に失敗しました";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Could not enable Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "登録鍵の有効化に失敗しました";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "Disable";
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "無効化";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "Enable";
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "有効化";
 
 /* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Next";
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "進む";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN does not match.";
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "暗証番号が一致しません";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Enter a Registration Lock PIN. You will be asked to enter this PIN the next time you register this phone number with Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "登録鍵の暗証番号を入力してください。この電話機を再度Signalに登録する場合に必要になります。";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "For increased security, enable a Registration Lock PIN that will be required in order to register this phone number with Signal again.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "安全性を高めるために，暗証番号での登録鍵を有効にしてください。この電話機を再度Signalに登録する際に要求されます。";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registration Lock is enabled. You'll need to enter your PIN when registering your phone number with Signal again.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "登録鍵が有効になりました。この電話機を再度Signalに登録するには暗証番号が必要となります。";
 
 /* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "Registration Lock";
+"ENABLE_2FA_VIEW_TITLE" = "登録鍵";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "話し中";
@@ -1193,19 +1190,19 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "Appleのプッシュ通信仕様の既知のバグのため，メッセージのプレビューが表示されるのはメッセージの取得が送信後30秒以内に行われたときのみとなります。この結果Appアイコンのバッジが不正確になる場合があります。\n";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "No Name or Content";
+"NOTIFICATIONS_NONE" = "名前もメッセージも無し";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
+"NOTIFICATIONS_SECTION_INAPP" = "アプリが開いている場合のみ再生";
 
 /* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "Sounds";
+"NOTIFICATIONS_SECTION_SOUNDS" = "サウンド";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name and Content";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "名前とメッセージ";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Name Only";
+"NOTIFICATIONS_SENDER_ONLY" = "名前のみ";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "表示内容";
@@ -1391,19 +1388,19 @@
 "RATING_TITLE" = "Signalを支援する";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "I forgot my PIN.";
+"REGISTER_2FA_FORGOT_PIN" = "暗証番号を忘れた";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration of this phone number will be possible without your Registration Lock PIN after 7 days have passed since the phone number was last active on Signal.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "この電話機を暗証番号なしで登録できるようになるには，Signalを使用しない日が７日以上続く必要があります。";
 
 /* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "This phone number has Registration Lock enabled. Please enter the Registration Lock PIN.\n\nYour Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+"REGISTER_2FA_INSTRUCTIONS" = "登録鍵が有効になっていますので，登録鍵の暗証番号を入力してください。\n\n登録鍵の暗証番号は，最後のステップで自動的に送信された確認コードとは違います。";
 
 /* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registration Failed";
+"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "登録に失敗しました";
 
 /* Label for 'submit' button in the 2FA registration view. */
-"REGISTER_2FA_SUBMIT_BUTTON" = "Submit";
+"REGISTER_2FA_SUBMIT_BUTTON" = "送信";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "ようこそ！";
@@ -1421,7 +1418,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "国番号";
 
 /* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Registration Lock";
+"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "登録鍵";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "番号を入力する";
@@ -1451,7 +1448,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "提出していただいた番号がこちらから送った番号とは異なります。確認をよろしくお願いします。";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Incorrect Registration Lock PIN.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "登録鍵の暗証番号が間違っています";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "この端末を有効にする";
@@ -1475,22 +1472,22 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "登録しようとしている番号はすでに別のサーバーに登録されています。そこでの登録を解除してから再度試してください。";
 
 /* Body text for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Registration Lock is enabled for your phone number. To help you memorize your Registration Lock PIN, Signal will periodically ask you to confirm it.";
+"REMINDER_2FA_BODY" = "登録鍵が有効になっています。暗証番号を忘れないように，定期的に番号入力を求めています。";
 
 /* Body header for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+"REMINDER_2FA_BODY_HEADER" = "おさらい：";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "登録鍵は，電話機が不正に登録されることを防止します。この機能はいつでも解除できます。解除したい場合は設定のプライバシーに行って下さい。";
 
 /* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Enter Your Registration Lock PIN";
+"REMINDER_2FA_NAV_TITLE" = "登録鍵の暗証番号を入力してください";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "You can set a new PIN in your privacy settings.";
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "暗証番号の変更はプライバシーの設定でできます";
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "That is not the correct PIN.";
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "暗証番号が正しくありません";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "プッシュ通知の再登録";
@@ -1598,7 +1595,7 @@
 "SETTINGS_ADVANCED_TITLE" = "詳細設定";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
-"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@（デフォルト）";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "追加する";
@@ -1622,7 +1619,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "すべての通話をSignalサーバーに中継して，IPアドレスが相手に見えないようにします。ただし通話の質は下がります。";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Conversation History";
+"SETTINGS_CLEAR_HISTORY" = "会話履歴の消去";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Copyright Open Whisper Systems\nLicensed under the GPLv3";
@@ -1634,13 +1631,13 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "すべての履歴 (メッセージ・添付ファイル・通話履歴など) を削除しますが，よろしいでしょうか？ この行為は後で取り消せませんので，注意してください。";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Delete Everything";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "すべて消去";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "ヘルプ";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Conversation History";
+"SETTINGS_HISTORYLOG_TITLE" = "会話履歴の消去";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "情報";
@@ -1652,16 +1649,16 @@
 "SETTINGS_INVITE_TWITTER_TEXT" = "私と連絡を取るには@WhisperSystemsのSignalが使えますので，入手をお願いします。";
 
 /* Label for settings view that allows user to change the notification sound. */
-"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "メッセージ";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "設定";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "着信通知をロック中に表示させることができます。表示させる内容を設定してください。";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "通知内容";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "通知";
@@ -1670,10 +1667,10 @@
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "相手の名前と番号を表示する";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Show calls in the \"Recents\" list in the iOS Phone app.";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "iOSの電話アプリの最近の履歴に表示する";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Show Calls in Recents";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "履歴に通話を表示する";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "通話をiOSに統合する";
@@ -1697,10 +1694,10 @@
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "通話をiOSに統合すると，Signalでの通話がiOSのロック画面や通話履歴に表示されます。通話相手の名前と番号を表示することも可能になります。ただしiCloudが有効の場合は，通話履歴がAppleと共有されます。";
 
 /* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "Notifications";
+"SETTINGS_SECTION_NOTIFICATIONS" = "通知";
 
 /* Header Label for the sounds section of settings views. */
-"SETTINGS_SECTION_SOUNDS" = "Sounds";
+"SETTINGS_SECTION_SOUNDS" = "サウンド";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "通話";
@@ -1712,16 +1709,16 @@
 "SETTINGS_SUPPORT" = "サポート";
 
 /* Indicates that 'two factor auth' is disabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "Disabled";
+"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "無効化";
 
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Enabled";
+"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "有効化";
 
 /* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Registration Lock";
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "登録鍵";
 
 /* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registration Lock";
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "登録鍵";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "バージョン";
@@ -1775,7 +1772,7 @@
 "SMS_INVITE_BODY" = "Signalのインストールをお勧めします。このリンクから入手してください：";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "音声なし";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@に対する安全番号と一致しました。この相手は確認済みにできます。";
@@ -1886,13 +1883,13 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "スワイプで電話に出る";
 
 /* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now choose default and per-conversation notification sounds, and calls will respect the ringtone you've choosen for each system contact.";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "通知音をデフォルトと会話ごとに設定できるようになりました。";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Review Notification Settings";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "通知の設定を行う";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Updated Call and Message Sounds";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "通知音の更新";
 
 /* button label shown one time, after user upgrades app */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "プロフィールを設定する";

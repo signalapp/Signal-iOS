@@ -1,6 +1,3 @@
-/* Text field placeholder when entering a 'two-factor auth pin'. */
-"2FA_PIN_DEFAULT_TEXT" = "••••••";
-
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Niet nu";
 
@@ -1475,10 +1472,10 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Het telefoonnummer dat je probeert te registreren is al geregistreerd op een andere server, wis deze op de andere server en probeer het s.v.p. opnieuw.";
 
 /* Body text for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Registratievergrendeling is ingeschakeld voor je telefoonnummer.";
+"REMINDER_2FA_BODY" = "Registratievergrendeling is ingeschakeld voor je telefoonnummer. Signal zal je af en toe vragen om je pincode voor registratievergrendeling te bevestigen opdat je deze niet zou vergeten.";
 
 /* Body header for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+"REMINDER_2FA_BODY_HEADER" = "Herinnering:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registratievergrendeling beschermt je telefoonnummer tegen niet-geautoriseerde registratiepogingen. Deze functie kan op elk moment in je Signal-privacyinstellingen uitgeschakeld worden.";
