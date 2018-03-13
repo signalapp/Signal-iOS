@@ -24,6 +24,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 @property (nonatomic, nullable) OWSBackgroundTask *backgroundTask;
 
+@property (nonatomic, nullable) OWSBackupStorage *backupStorage;
+
 // A map of "record name"-to-"file name".
 @property (nonatomic) NSMutableDictionary<NSString *, NSString *> *databaseRecordMap;
 
@@ -347,9 +349,9 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         }
         return databaseKeySpec;
     };
-    OWSBackupStorage *_Nullable backupStorage =
+    self.backupStorage =
         [[OWSBackupStorage alloc] initBackupStorageWithDatabaseDirPath:jobDatabaseDirPath keySpecBlock:keySpecBlock];
-    if (!backupStorage) {
+    if (!self.backupStorage) {
         OWSProdLogAndFail(@"%@ Could not create backupStorage.", self.logTag);
         return completion(NO);
     }
@@ -357,18 +359,18 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     // TODO: Do we really need to run these registrations on the main thread?
     __weak OWSBackupImportJob *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [backupStorage runSyncRegistrations];
-        [backupStorage runAsyncRegistrationsWithCompletion:^{
+        [weakSelf.backupStorage runSyncRegistrations];
+        [weakSelf.backupStorage runAsyncRegistrationsWithCompletion:^{
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [weakSelf restoreDatabaseContents:backupStorage completion:completion];
+                [weakSelf restoreDatabaseContents:completion];
             });
         }];
     });
 }
 
-- (void)restoreDatabaseContents:(OWSBackupStorage *)backupStorage completion:(OWSBackupJobBoolCompletion)completion
+- (void)restoreDatabaseContents:(OWSBackupJobBoolCompletion)completion
 {
-    OWSAssert(backupStorage);
+    OWSAssert(self.backupStorage);
     OWSAssert(completion);
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
@@ -377,7 +379,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         return completion(NO);
     }
 
-    YapDatabaseConnection *_Nullable tempDBConnection = backupStorage.newDatabaseConnection;
+    YapDatabaseConnection *_Nullable tempDBConnection = self.backupStorage.newDatabaseConnection;
     if (!tempDBConnection) {
         OWSProdLogAndFail(@"%@ Could not create tempDBConnection.", self.logTag);
         return completion(NO);
@@ -480,13 +482,13 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     }
     DDLogInfo(@"%@ copiedEntities: %llu", self.logTag, copiedEntities);
 
-    [backupStorage logFileSizes];
+    [self.backupStorage logFileSizes];
 
     // Close the database.
     tempDBConnection = nil;
-    backupStorage = nil;
+    self.backupStorage = nil;
 
-    return completion(YES);
+    completion(YES);
 }
 
 - (void)ensureMigrations:(OWSBackupJobBoolCompletion)completion

@@ -88,13 +88,6 @@ NS_ASSUME_NONNULL_BEGIN
                 if (OWSBackup.sharedManager.backupExportProgress) {
                     NSUInteger progressPercent
                         = (NSUInteger)round(OWSBackup.sharedManager.backupExportProgress.floatValue * 100);
-                    DDLogVerbose(@"%@ '%@', '%@'",
-                        self.logTag,
-                        @(progressPercent).stringValue,
-                        [NSString
-                            stringWithFormat:NSLocalizedString(@"PERCENTAGE_FORMAT",
-                                                 @"Format for percentages, e.g. 65%. Embeds {{percentage}}, e.g. 65."),
-                            @(progressPercent).stringValue]);
                     [progressSection
                         addItem:[OWSTableItem
                                     labelItemWithText:NSLocalizedString(@"SETTINGS_BACKUP_PROGRESS",

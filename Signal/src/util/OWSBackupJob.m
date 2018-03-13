@@ -97,6 +97,7 @@ NSString *const kOWSBackup_Snapshot_ValidKey = @"kOWSBackup_Snapshot_ValidKey";
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.isComplete) {
+            OWSAssert(!self.hasSucceeded);
             return;
         }
         self.isComplete = YES;
@@ -120,6 +121,7 @@ NSString *const kOWSBackup_Snapshot_ValidKey = @"kOWSBackup_Snapshot_ValidKey";
     OWSProdLogAndFail(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, error);
 
     dispatch_async(dispatch_get_main_queue(), ^{
+        OWSAssert(!self.hasSucceeded);
         if (self.isComplete) {
             return;
         }
