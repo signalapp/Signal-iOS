@@ -261,7 +261,7 @@ typedef NSNumber *OWSTaskId;
     // to ensure that.  We thereby ensure that we don't end the background task
     // until all of the completion blocks have completed.
     DispatchSyncMainThreadSafe(^{
-        for (BackgroundTaskExpirationBlock expirationBlock in expirationMap) {
+        for (BackgroundTaskExpirationBlock expirationBlock in expirationMap.allValues) {
             expirationBlock();
         }
         if (backgroundTaskId != UIBackgroundTaskInvalid) {
