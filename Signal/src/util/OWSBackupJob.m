@@ -79,6 +79,10 @@ NSString *const kOWSBackup_Snapshot_ValidKey = @"kOWSBackup_Snapshot_ValidKey";
         OWSProdLogAndFail(@"%@ Could not create jobTempDirPath.", self.logTag);
         return NO;
     }
+    if (![OWSFileSystem protectFileOrFolderAtPath:self.jobTempDirPath]) {
+        OWSProdLogAndFail(@"%@ Could not protect jobTempDirPath.", self.logTag);
+        return NO;
+    }
     return YES;
 }
 
