@@ -164,9 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.backupExportJob cancel];
     self.backupExportJob = nil;
 
-    _backupExportState = OWSBackupState_Idle;
-
-    [self postDidChangeNotification];
+    [self ensureBackupExportState];
 }
 
 - (void)setLastExportSuccessDate:(NSDate *)value
