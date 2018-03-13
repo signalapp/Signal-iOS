@@ -3,6 +3,7 @@
 //
 
 #import "OWSBackupExportJob.h"
+#import "OWSDatabaseMigration.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSDate+OWS.h>
@@ -240,6 +241,7 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
     __block unsigned long long copiedInteractions = 0;
     __block unsigned long long copiedEntities = 0;
     __block unsigned long long copiedAttachments = 0;
+    __block unsigned long long copiedMigrations = 0;
 
     self.attachmentFilePathMap = [NSMutableDictionary new];
 
@@ -322,6 +324,25 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
                                              copiedInteractions++;
                                              copiedEntities++;
                                          }];
+
+            // Copy migrations.
+            [srcTransaction
+                enumerateKeysAndObjectsInCollection:[OWSDatabaseMigration collection]
+                                         usingBlock:^(NSString *key, id object, BOOL *stop) {
+                                             if (self.isComplete) {
+                                                 *stop = YES;
+                                                 return;
+                                             }
+                                             if (![object isKindOfClass:[OWSDatabaseMigration class]]) {
+                                                 OWSProdLogAndFail(
+                                                     @"%@ unexpected class: %@", self.logTag, [object class]);
+                                                 return;
+                                             }
+                                             OWSDatabaseMigration *migration = object;
+                                             [migration saveWithTransaction:dstTransaction];
+                                             copiedMigrations++;
+                                             copiedEntities++;
+                                         }];
         }];
     }];
 
@@ -331,6 +352,7 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
     DDLogInfo(@"%@ copiedMessages: %llu", self.logTag, copiedInteractions);
     DDLogInfo(@"%@ copiedEntities: %llu", self.logTag, copiedEntities);
     DDLogInfo(@"%@ copiedAttachments: %llu", self.logTag, copiedAttachments);
+    DDLogInfo(@"%@ copiedMigrations: %llu", self.logTag, copiedMigrations);
 
     [self.backupStorage logFileSizes];
 

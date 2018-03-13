@@ -3,6 +3,8 @@
 //
 
 #import "OWSBackupImportJob.h"
+#import "OWSDatabaseMigration.h"
+#import "OWSDatabaseMigrationRunner.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
@@ -124,7 +126,21 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                     return;
                                 }
 
-                                [weakSelf succeed];
+                                [weakSelf ensureMigrations:^(BOOL ensureMigrationsSuccess) {
+                                    if (!ensureMigrationsSuccess) {
+                                        [weakSelf failWithErrorDescription:NSLocalizedString(
+                                                                               @"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
+                                                                               @"Error indicating the a backup import "
+                                                                               @"could not import the user's data.")];
+                                        return;
+                                    }
+
+                                    if (weakSelf.isComplete) {
+                                        return;
+                                    }
+
+                                    [weakSelf succeed];
+                                }];
                             }];
                         }];
     }];
@@ -375,6 +391,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     __block unsigned long long copiedInteractions = 0;
     __block unsigned long long copiedEntities = 0;
     __block unsigned long long copiedAttachments = 0;
+    __block unsigned long long copiedMigrations = 0;
 
     [tempDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *srcTransaction) {
         [primaryDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *dstTransaction) {
@@ -447,6 +464,28 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                              copiedInteractions++;
                                              copiedEntities++;
                                          }];
+
+            // Clear existing migrations.
+            [dstTransaction removeAllObjectsInCollection:[OWSDatabaseMigration collection]];
+
+            // Copy migrations.
+            [srcTransaction
+                enumerateKeysAndObjectsInCollection:[OWSDatabaseMigration collection]
+                                         usingBlock:^(NSString *key, id object, BOOL *stop) {
+                                             if (self.isComplete) {
+                                                 *stop = YES;
+                                                 return;
+                                             }
+                                             if (![object isKindOfClass:[OWSDatabaseMigration class]]) {
+                                                 OWSProdLogAndFail(
+                                                     @"%@ unexpected class: %@", self.logTag, [object class]);
+                                                 return;
+                                             }
+                                             OWSDatabaseMigration *migration = object;
+                                             [migration saveWithTransaction:dstTransaction];
+                                             copiedMigrations++;
+                                             copiedEntities++;
+                                         }];
         }];
     }];
 
@@ -454,6 +493,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     DDLogInfo(@"%@ copiedMessages: %llu", self.logTag, copiedInteractions);
     DDLogInfo(@"%@ copiedEntities: %llu", self.logTag, copiedEntities);
     DDLogInfo(@"%@ copiedAttachments: %llu", self.logTag, copiedAttachments);
+    DDLogInfo(@"%@ copiedMigrations: %llu", self.logTag, copiedMigrations);
 
     [backupStorage logFileSizes];
 
@@ -462,6 +502,17 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     backupStorage = nil;
 
     return completion(YES);
+}
+
+- (void)ensureMigrations:(OWSBackupJobBoolCompletion)completion
+{
+    OWSAssert(completion);
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:self.primaryStorage] runAllOutstandingWithCompletion:^{
+        completion(YES);
+    }];
 }
 
 - (BOOL)restoreFileWithRecordName:(NSString *)recordName
