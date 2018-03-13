@@ -251,15 +251,11 @@ NS_ASSUME_NONNULL_BEGIN
     NSDate *_Nullable lastExportFailureDate = self.lastExportFailureDate;
     // Wait N hours before retrying after a success.
     const NSTimeInterval kRetryAfterSuccess = 24 * kHourInterval;
-    // TODO: Remove.
-    //    const NSTimeInterval kRetryAfterSuccess = 0;
     if (lastExportSuccessDate && fabs(lastExportSuccessDate.timeIntervalSinceNow) < kRetryAfterSuccess) {
         return NO;
     }
     // Wait N hours before retrying after a failure.
     const NSTimeInterval kRetryAfterFailure = 6 * kHourInterval;
-    // TODO: Remove.
-    //    const NSTimeInterval kRetryAfterFailure = 0;
     if (lastExportFailureDate && fabs(lastExportFailureDate.timeIntervalSinceNow) < kRetryAfterFailure) {
         return NO;
     }
