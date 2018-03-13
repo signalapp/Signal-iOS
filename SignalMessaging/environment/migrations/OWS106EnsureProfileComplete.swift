@@ -21,11 +21,6 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
     // Overriding runUp since we have some specific completion criteria which
     // is more likely to fail since it involves network requests.
     override public func runUp(completion:@escaping ((Void)) -> Void) {
-        guard type(of: self).sharedCompleteRegistrationFixerJob == nil else {
-            owsFail("\(self.TAG) should only be called once.")
-            return
-        }
-
         let job = CompleteRegistrationFixerJob(completionHandler: {
             Logger.info("\(self.TAG) Completed. Saving.")
             self.save()

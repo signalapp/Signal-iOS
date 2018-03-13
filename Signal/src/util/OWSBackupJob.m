@@ -21,6 +21,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 @property (nonatomic, weak) id<OWSBackupJobDelegate> delegate;
 
 @property (atomic) BOOL isComplete;
+@property (atomic) BOOL hasSucceeded;
 
 @property (nonatomic) OWSPrimaryStorage *primaryStorage;
 
@@ -96,6 +97,12 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
             return;
         }
         self.isComplete = YES;
+
+        // There's a lot of asynchrony in these backup jobs;
+        // ensure we only end up finishing these jobs once.
+        OWSAssert(!self.hasSucceeded);
+        self.hasSucceeded = YES;
+
         [self.delegate backupJobDidSucceed:self];
     });
 }

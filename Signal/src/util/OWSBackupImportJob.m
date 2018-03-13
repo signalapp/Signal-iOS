@@ -359,7 +359,6 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         [backupStorage runAsyncRegistrationsWithCompletion:^{
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [weakSelf restoreDatabaseContents:backupStorage completion:completion];
-                completion(YES);
             });
         }];
     });
@@ -387,113 +386,85 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         return completion(NO);
     }
 
-    __block unsigned long long copiedThreads = 0;
-    __block unsigned long long copiedInteractions = 0;
+    NSDictionary<NSString *, Class> *collectionTypeMap = @{
+        [TSThread collection] : [TSThread class],
+        [TSAttachment collection] : [TSAttachment class],
+        [TSInteraction collection] : [TSInteraction class],
+        [OWSDatabaseMigration collection] : [OWSDatabaseMigration class],
+    };
+    // Order matters here.
+    NSArray<NSString *> *collectionsToRestore = @[
+        [TSThread collection],
+        [TSAttachment collection],
+        // Interactions refer to threads and attachments,
+        // so copy them afterward.
+        [TSInteraction collection],
+        [OWSDatabaseMigration collection],
+    ];
+    NSMutableDictionary<NSString *, NSNumber *> *restoredEntityCounts = [NSMutableDictionary new];
     __block unsigned long long copiedEntities = 0;
-    __block unsigned long long copiedAttachments = 0;
-    __block unsigned long long copiedMigrations = 0;
-
+    __block BOOL aborted = NO;
     [tempDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *srcTransaction) {
         [primaryDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *dstTransaction) {
-            // Copy threads.
-            [srcTransaction
-                enumerateKeysAndObjectsInCollection:[TSThread collection]
-                                         usingBlock:^(NSString *key, id object, BOOL *stop) {
-                                             if (self.isComplete) {
-                                                 *stop = YES;
-                                                 return;
-                                             }
-                                             if (![object isKindOfClass:[TSThread class]]) {
-                                                 OWSProdLogAndFail(
-                                                     @"%@ unexpected class: %@", self.logTag, [object class]);
-                                                 return;
-                                             }
-                                             TSThread *thread = object;
-                                             [thread saveWithTransaction:dstTransaction];
-                                             copiedThreads++;
-                                             copiedEntities++;
-                                         }];
-
-            // Copy attachments.
-            [srcTransaction
-                enumerateKeysAndObjectsInCollection:[TSAttachmentStream collection]
-                                         usingBlock:^(NSString *key, id object, BOOL *stop) {
-                                             if (self.isComplete) {
-                                                 *stop = YES;
-                                                 return;
-                                             }
-                                             if (![object isKindOfClass:[TSAttachment class]]) {
-                                                 OWSProdLogAndFail(
-                                                     @"%@ unexpected class: %@", self.logTag, [object class]);
-                                                 return;
-                                             }
-                                             TSAttachment *attachment = object;
-                                             [attachment saveWithTransaction:dstTransaction];
-                                             copiedAttachments++;
-                                             copiedEntities++;
-                                         }];
-
-            // Copy interactions.
-            //
-            // Interactions refer to threads and attachments, so copy the last.
-            [srcTransaction
-                enumerateKeysAndObjectsInCollection:[TSInteraction collection]
-                                         usingBlock:^(NSString *key, id object, BOOL *stop) {
-                                             if (self.isComplete) {
-                                                 *stop = YES;
-                                                 return;
-                                             }
-                                             if (![object isKindOfClass:[TSInteraction class]]) {
-                                                 OWSProdLogAndFail(
-                                                     @"%@ unexpected class: %@", self.logTag, [object class]);
-                                                 return;
-                                             }
-                                             // Ignore disappearing messages.
-                                             if ([object isKindOfClass:[TSMessage class]]) {
-                                                 TSMessage *message = object;
-                                                 if (message.isExpiringMessage) {
-                                                     return;
-                                                 }
-                                             }
-                                             TSInteraction *interaction = object;
-                                             // Ignore dynamic interactions.
-                                             if (interaction.isDynamicInteraction) {
-                                                 return;
-                                             }
-                                             [interaction saveWithTransaction:dstTransaction];
-                                             copiedInteractions++;
-                                             copiedEntities++;
-                                         }];
+            for (NSString *collection in collectionsToRestore) {
+                if ([collection isEqualToString:[OWSDatabaseMigration collection]]) {
+                    // It's okay if there are existing migrations; we'll clear those
+                    // before restoring.
+                    continue;
+                }
+                if ([dstTransaction numberOfKeysInCollection:collection] > 0) {
+                    DDLogError(@"%@ cannot restore into non-empty database (%@).", self.logTag, collection);
+                    aborted = YES;
+                    return completion(NO);
+                }
+            }
 
             // Clear existing migrations.
+            //
+            // This is safe since we only ever import into an empty database.
+            // Non-database migrations should be idempotent.
             [dstTransaction removeAllObjectsInCollection:[OWSDatabaseMigration collection]];
 
-            // Copy migrations.
-            [srcTransaction
-                enumerateKeysAndObjectsInCollection:[OWSDatabaseMigration collection]
-                                         usingBlock:^(NSString *key, id object, BOOL *stop) {
-                                             if (self.isComplete) {
-                                                 *stop = YES;
-                                                 return;
-                                             }
-                                             if (![object isKindOfClass:[OWSDatabaseMigration class]]) {
-                                                 OWSProdLogAndFail(
-                                                     @"%@ unexpected class: %@", self.logTag, [object class]);
-                                                 return;
-                                             }
-                                             OWSDatabaseMigration *migration = object;
-                                             [migration saveWithTransaction:dstTransaction];
-                                             copiedMigrations++;
-                                             copiedEntities++;
-                                         }];
+            // Copy database entities.
+            for (NSString *collection in collectionsToRestore) {
+                [srcTransaction enumerateKeysAndObjectsInCollection:collection
+                                                         usingBlock:^(NSString *key, id object, BOOL *stop) {
+                                                             if (self.isComplete) {
+                                                                 *stop = YES;
+                                                                 aborted = YES;
+                                                                 return;
+                                                             }
+                                                             Class expectedType = collectionTypeMap[collection];
+                                                             OWSAssert(expectedType);
+                                                             if (![object isKindOfClass:expectedType]) {
+                                                                 OWSProdLogAndFail(@"%@ unexpected class: %@ != %@",
+                                                                     self.logTag,
+                                                                     [object class],
+                                                                     expectedType);
+                                                                 return;
+                                                             }
+                                                             TSYapDatabaseObject *databaseObject = object;
+                                                             [databaseObject saveWithTransaction:dstTransaction];
+
+                                                             NSUInteger count
+                                                                 = restoredEntityCounts[collection].unsignedIntValue;
+                                                             restoredEntityCounts[collection] = @(count + 1);
+                                                             copiedEntities++;
+                                                         }];
+            }
         }];
     }];
 
-    DDLogInfo(@"%@ copiedThreads: %llu", self.logTag, copiedThreads);
-    DDLogInfo(@"%@ copiedMessages: %llu", self.logTag, copiedInteractions);
+    if (aborted) {
+        return;
+    }
+
+    for (NSString *collection in collectionsToRestore) {
+        Class expectedType = collectionTypeMap[collection];
+        OWSAssert(expectedType);
+        DDLogInfo(@"%@ copied %@ (%@): %@", self.logTag, expectedType, collection, restoredEntityCounts[collection]);
+    }
     DDLogInfo(@"%@ copiedEntities: %llu", self.logTag, copiedEntities);
-    DDLogInfo(@"%@ copiedAttachments: %llu", self.logTag, copiedAttachments);
-    DDLogInfo(@"%@ copiedMigrations: %llu", self.logTag, copiedMigrations);
 
     [backupStorage logFileSizes];
 
@@ -510,9 +481,15 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:self.primaryStorage] runAllOutstandingWithCompletion:^{
-        completion(YES);
-    }];
+    // It's okay that we do this in a separate transaction from the
+    // restoration of backup contents.  If some of migrations don't
+    // complete, they'll be run the next time the app launches.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:self.primaryStorage]
+            runAllOutstandingWithCompletion:^{
+                completion(YES);
+            }];
+    });
 }
 
 - (BOOL)restoreFileWithRecordName:(NSString *)recordName

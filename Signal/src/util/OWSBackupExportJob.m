@@ -11,6 +11,7 @@
 #import <SignalServiceKit/OWSBackupStorage.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
+#import <SignalServiceKit/TSAttachment.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSThread.h>
@@ -268,7 +269,7 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
 
             // Copy attachments.
             [srcTransaction
-                enumerateKeysAndObjectsInCollection:[TSAttachmentStream collection]
+                enumerateKeysAndObjectsInCollection:[TSAttachment collection]
                                          usingBlock:^(NSString *key, id object, BOOL *stop) {
                                              if (self.isComplete) {
                                                  *stop = YES;

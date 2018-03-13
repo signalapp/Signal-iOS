@@ -56,52 +56,48 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)runAllOutstandingWithCompletion:(OWSDatabaseMigrationCompletion)completion
 {
-    [self runMigrations:self.allMigrations completion:completion];
+    [self runMigrations:[self.allMigrations mutableCopy] completion:completion];
 }
 
-- (void)runMigrations:(NSArray<OWSDatabaseMigration *> *)migrations
+// Run migrations serially to:
+//
+// * Ensure predictable ordering.
+// * Prevent them from interfering with each other (e.g. deadlock).
+- (void)runMigrations:(NSMutableArray<OWSDatabaseMigration *> *)migrations
            completion:(OWSDatabaseMigrationCompletion)completion
 {
     OWSAssert(migrations);
     OWSAssert(completion);
 
-    NSMutableArray<OWSDatabaseMigration *> *migrationsToRun = [NSMutableArray new];
+    // TODO: Remove.
+    DDLogInfo(@"%@ Considering migrations: %zd", self.logTag, migrations.count);
     for (OWSDatabaseMigration *migration in migrations) {
-        if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId] == nil) {
-            [migrationsToRun addObject:migration];
-        }
+        DDLogInfo(@"%@ Considering migrations: %@", self.logTag, migration.class);
     }
 
-    if (migrationsToRun.count < 1) {
+    // If there are no more migrations to run, complete.
+    if (migrations.count < 1) {
         dispatch_async(dispatch_get_main_queue(), ^{
             completion();
         });
         return;
     }
 
-    NSUInteger totalMigrationCount = migrationsToRun.count;
-    __block NSUInteger completedMigrationCount = 0;
-    // Call the completion exactly once, when the last migration completes.
-    void (^checkMigrationCompletion)(void) = ^{
-        @synchronized(self)
-        {
-            completedMigrationCount++;
-            if (completedMigrationCount == totalMigrationCount) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completion();
-                });
-            }
-        }
-    };
+    // Pop next migration from front of queue.
+    OWSDatabaseMigration *migration = migrations.firstObject;
+    [migrations removeObjectAtIndex:0];
 
-    for (OWSDatabaseMigration *migration in migrationsToRun) {
-        if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId]) {
-            DDLogDebug(@"%@ Skipping previously run migration: %@", self.logTag, migration);
-        } else {
-            DDLogWarn(@"%@ Running migration: %@", self.logTag, migration);
-            [migration runUpWithCompletion:checkMigrationCompletion];
-        }
+    // If migration has already been run, skip it.
+    if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId] != nil) {
+        [self runMigrations:migrations completion:completion];
+        return;
     }
+
+    DDLogInfo(@"%@ Running migration: %@", self.logTag, migration);
+    [migration runUpWithCompletion:^{
+        DDLogInfo(@"%@ Migration complete: %@", self.logTag, migration);
+        [self runMigrations:migrations completion:completion];
+    }];
 }
 
 @end
