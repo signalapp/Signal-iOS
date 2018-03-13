@@ -134,6 +134,41 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Backup Export
 
+- (void)tryToExportBackup
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(!self.backupExportJob);
+
+    if (!self.canBackupExport) {
+        // TODO: Offer a reason in the UI.
+        return;
+    }
+
+    // In development, make sure there's no export or import in progress.
+    [self.backupExportJob cancel];
+    self.backupExportJob = nil;
+    [self.backupImportJob cancel];
+    self.backupImportJob = nil;
+
+    _backupExportState = OWSBackupState_InProgress;
+
+    self.backupExportJob =
+        [[OWSBackupExportJob alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
+    [self.backupExportJob startAsync];
+
+    [self postDidChangeNotification];
+}
+
+- (void)cancelExportBackup
+{
+    [self.backupExportJob cancel];
+    self.backupExportJob = nil;
+
+    _backupExportState = OWSBackupState_Idle;
+
+    [self postDidChangeNotification];
+}
+
 - (void)setLastExportSuccessDate:(NSDate *)value
 {
     OWSAssert(value);
@@ -190,7 +225,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self ensureBackupExportState];
 }
 
-- (BOOL)shouldHaveBackupExport
+- (BOOL)canBackupExport
 {
     if (!self.isBackupEnabled) {
         return NO;
@@ -201,6 +236,18 @@ NS_ASSUME_NONNULL_BEGIN
     }
     if (![TSAccountManager isRegistered]) {
         return NO;
+    }
+    return YES;
+}
+
+- (BOOL)shouldHaveBackupExport
+{
+    if (!self.canBackupExport) {
+        return NO;
+    }
+    if (self.backupExportJob) {
+        // If there's already a job in progress, let it complete.
+        return YES;
     }
     NSDate *_Nullable lastExportSuccessDate = self.lastExportSuccessDate;
     NSDate *_Nullable lastExportFailureDate = self.lastExportFailureDate;

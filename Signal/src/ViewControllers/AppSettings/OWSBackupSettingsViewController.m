@@ -70,7 +70,85 @@ NS_ASSUME_NONNULL_BEGIN
                                         selector:@selector(isBackupEnabledDidChange:)]];
     [contents addSection:enableSection];
 
+    if (isBackupEnabled) {
+        // TODO: This UI is temporary.
+        // Enabling backup will involve entering and registering a PIN.
+        OWSTableSection *progressSection = [OWSTableSection new];
+        [progressSection
+            addItem:[OWSTableItem labelItemWithText:NSLocalizedString(@"SETTINGS_BACKUP_STATUS",
+                                                        @"Label for status row in the in the backup settings view.")
+                                      accessoryText:[self backupExportStateLocalizedDescription]]];
+        if (OWSBackup.sharedManager.backupExportState == OWSBackupState_InProgress) {
+            if (OWSBackup.sharedManager.backupExportDescription) {
+                [progressSection
+                    addItem:[OWSTableItem
+                                labelItemWithText:NSLocalizedString(@"SETTINGS_BACKUP_PHASE",
+                                                      @"Label for phase row in the in the backup settings view.")
+                                    accessoryText:OWSBackup.sharedManager.backupExportDescription]];
+                if (OWSBackup.sharedManager.backupExportProgress) {
+                    NSUInteger progressPercent
+                        = (NSUInteger)round(OWSBackup.sharedManager.backupExportProgress.floatValue * 100);
+                    DDLogVerbose(@"%@ '%@', '%@'",
+                        self.logTag,
+                        @(progressPercent).stringValue,
+                        [NSString
+                            stringWithFormat:NSLocalizedString(@"PERCENTAGE_FORMAT",
+                                                 @"Format for percentages, e.g. 65%. Embeds {{percentage}}, e.g. 65."),
+                            @(progressPercent).stringValue]);
+                    [progressSection
+                        addItem:[OWSTableItem
+                                    labelItemWithText:NSLocalizedString(@"SETTINGS_BACKUP_PROGRESS",
+                                                          @"Label for phase row in the in the backup settings view.")
+                                        accessoryText:[NSString
+                                                          stringWithFormat:NSLocalizedString(@"PERCENTAGE_FORMAT",
+                                                                               @"Format for percentages, e.g. 65%. "
+                                                                               @"Embeds {{percentage}}, e.g. 65."),
+                                                          @(progressPercent).stringValue]]];
+                }
+            }
+        }
+
+        switch (OWSBackup.sharedManager.backupExportState) {
+            case OWSBackupState_Idle:
+            case OWSBackupState_Failed:
+            case OWSBackupState_Succeeded:
+                [progressSection
+                    addItem:[OWSTableItem disclosureItemWithText:
+                                              NSLocalizedString(@"SETTINGS_BACKUP_BACKUP_NOW",
+                                                  @"Label for 'backup now' button in the backup settings view.")
+                                                     actionBlock:^{
+                                                         [OWSBackup.sharedManager tryToExportBackup];
+                                                     }]];
+                break;
+            case OWSBackupState_InProgress:
+                [progressSection
+                    addItem:[OWSTableItem disclosureItemWithText:
+                                              NSLocalizedString(@"SETTINGS_BACKUP_CANCEL_BACKUP",
+                                                  @"Label for 'cancel backup' button in the backup settings view.")
+                                                     actionBlock:^{
+                                                         [OWSBackup.sharedManager cancelExportBackup];
+                                                     }]];
+                break;
+        }
+
+        [contents addSection:progressSection];
+    }
+
     self.contents = contents;
+}
+
+- (NSString *)backupExportStateLocalizedDescription
+{
+    switch (OWSBackup.sharedManager.backupExportState) {
+        case OWSBackupState_Idle:
+            return NSLocalizedString(@"SETTINGS_BACKUP_STATUS_IDLE", @"Indicates that app is not backing up.");
+        case OWSBackupState_InProgress:
+            return NSLocalizedString(@"SETTINGS_BACKUP_STATUS_IN_PROGRESS", @"Indicates that app is backing up.");
+        case OWSBackupState_Failed:
+            return NSLocalizedString(@"SETTINGS_BACKUP_STATUS_FAILED", @"Indicates that the last backup failed.");
+        case OWSBackupState_Succeeded:
+            return NSLocalizedString(@"SETTINGS_BACKUP_STATUS_SUCCEEDED", @"Indicates that the last backup succeeded.");
+    }
 }
 
 - (void)isBackupEnabledDidChange:(UISwitch *)sender

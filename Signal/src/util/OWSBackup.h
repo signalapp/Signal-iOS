@@ -33,6 +33,7 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 #pragma mark - Backup Export
 
 @property (nonatomic, readonly) OWSBackupState backupExportState;
+
 // If a "backup export" is in progress (see backupExportState),
 // backupExportDescription _might_ contain a string that describes
 // the current phase and backupExportProgress _might_ contain a
@@ -44,9 +45,13 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 - (BOOL)isBackupEnabled;
 - (void)setIsBackupEnabled:(BOOL)value;
 
+- (void)tryToExportBackup;
+- (void)cancelExportBackup;
+
 #pragma mark - Backup Import
 
 @property (nonatomic, readonly) OWSBackupState backupImportState;
+
 // If a "backup import" is in progress (see backupImportState),
 // backupImportDescription _might_ contain a string that describes
 // the current phase and backupImportProgress _might_ contain a
