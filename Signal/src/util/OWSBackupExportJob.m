@@ -483,6 +483,10 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
                     return;
                 }
                 strongSelf.attachmentRecordMap[recordName] = attachmentExport.relativeFilePath;
+                DDLogVerbose(@"%@ exported attachment: %@ as %@",
+                    self.logTag,
+                    attachmentFilePath,
+                    attachmentExport.relativeFilePath);
                 [strongSelf saveNextFileToCloud:completion];
             });
         }
@@ -549,6 +553,8 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
         // JSON doesn't support byte arrays.
         kOWSBackup_ManifestKey_DatabaseKeySpec : databaseKeySpec.base64EncodedString,
     };
+
+    DDLogVerbose(@"%@ json: %@", self.logTag, json);
 
     NSError *error;
     NSData *_Nullable jsonData =

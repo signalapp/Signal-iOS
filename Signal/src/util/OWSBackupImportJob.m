@@ -203,6 +203,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         return completion(NO);
     }
 
+    DDLogVerbose(@"%@ json: %@", self.logTag, json);
+
     NSDictionary<NSString *, NSString *> *_Nullable databaseRecordMap = json[kOWSBackup_ManifestKey_DatabaseFiles];
     NSDictionary<NSString *, NSString *> *_Nullable attachmentRecordMap = json[kOWSBackup_ManifestKey_AttachmentFiles];
     NSString *_Nullable databaseKeySpecBase64 = json[kOWSBackup_ManifestKey_DatabaseKeySpec];
@@ -294,7 +296,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 - (void)restoreAttachmentFiles
 {
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    DDLogVerbose(@"%@ %s: %zd", self.logTag, __PRETTY_FUNCTION__, self.attachmentRecordMap.count);
 
     NSString *attachmentsDirPath = [TSAttachmentStream attachmentsFolder];
 
@@ -511,8 +513,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     }
     NSString *dstFilePath = [dstDirPath stringByAppendingPathComponent:dstRelativePath];
     if ([NSFileManager.defaultManager fileExistsAtPath:dstFilePath]) {
-        DDLogError(@"%@ skipping redundant file restore.", self.logTag);
-        return NO;
+        DDLogError(@"%@ skipping redundant file restore: %@.", self.logTag, dstFilePath);
+        return YES;
     }
     NSString *downloadedFilePath = self.downloadedFileMap[recordName];
     if (![NSFileManager.defaultManager fileExistsAtPath:downloadedFilePath]) {
@@ -525,6 +527,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         DDLogError(@"%@ could not restore attachment file.", self.logTag);
         return NO;
     }
+
+    DDLogError(@"%@ restored file: %@ (%@).", self.logTag, dstFilePath, dstRelativePath);
 
     return YES;
 }
