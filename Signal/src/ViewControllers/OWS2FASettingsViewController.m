@@ -113,8 +113,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.pinTextfield = [UITextField new];
     self.pinTextfield.textColor = [UIColor blackColor];
-    self.pinTextfield.placeholder
-        = NSLocalizedString(@"2FA_PIN_DEFAULT_TEXT", @"Text field placeholder when entering a 'two-factor auth pin'.");
     self.pinTextfield.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
     self.pinTextfield.textAlignment = NSTextAlignmentCenter;
     self.pinTextfield.keyboardType = UIKeyboardTypeNumberPad;
