@@ -187,41 +187,28 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
         OWSProdLogAndFail(@"%@ Could not create jobTempDirPath.", self.logTag);
         return completion(NO);
     }
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        completion(YES);
-    });
 
-    //    TSRequest *currentSignedPreKey = [OWSRequestFactory currentSignedPreKeyRequest];
-    //    [[TSNetworkManager sharedManager] makeRequest:currentSignedPreKey
-    //                                          success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
-    //                                              NSString *keyIdDictKey = @"keyId";
-    //                                              NSNumber *keyId = [responseObject objectForKey:keyIdDictKey];
-    //                                              OWSAssert(keyId);
+    // We need to verify that we have a valid account.
+    // Otherwise, if we re-register on another device, we
+    // continue to backup on our old device, overwriting
+    // backups from the new device.
     //
-    //                                              OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage
-    //                                              sharedManager]; NSNumber *currentSignedPrekeyId = [primaryStorage
-    //                                              currentSignedPrekeyId];
-    //
-    //                                              if (!keyId || !currentSignedPrekeyId || ![currentSignedPrekeyId
-    //                                              isEqualToNumber:keyId]) {
-    //                                                  DDLogError(
-    //                                                             @"%@ Local and service 'current signed prekey ids'
-    //                                                             did not match. %@ == %@ == %d.", self.logTag, keyId,
-    //                                                             currentSignedPrekeyId,
-    //                                                             [currentSignedPrekeyId isEqualToNumber:keyId]);
-    //                                              }
-    //                                          }
-    //                                          failure:^(NSURLSessionDataTask *task, NSError *error) {
-    //                                              if (!IsNSErrorNetworkFailure(error)) {
-    //                                                  OWSProdError([OWSAnalyticsEvents
-    //                                                  errorPrekeysCurrentSignedPrekeyRequestFailed]);
-    //                                              }
-    //                                              DDLogWarn(@"%@ Could not retrieve current signed key from the
-    //                                              service.", self.logTag);
-    //
-    //                                              // Mark the prekeys as _NOT_ checked on failure.
-    //                                              [self markPreKeysAsNotChecked];
-    //                                          }];
+    // We use an arbitrary request that requires authentication
+    // to verify our account state.
+    TSRequest *currentSignedPreKey = [OWSRequestFactory currentSignedPreKeyRequest];
+    [[TSNetworkManager sharedManager] makeRequest:currentSignedPreKey
+        success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                completion(YES);
+            });
+        }
+        failure:^(NSURLSessionDataTask *task, NSError *error) {
+            // TODO: We may want to surface this in the UI.
+            DDLogError(@"%@ could not verify account status: %@.", self.logTag, error);
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                completion(NO);
+            });
+        }];
 }
 
 - (void)exportDatabase:(OWSBackupJobBoolCompletion)completion
