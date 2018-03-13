@@ -69,12 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(migrations);
     OWSAssert(completion);
 
-    // TODO: Remove.
-    DDLogInfo(@"%@ Considering migrations: %zd", self.logTag, migrations.count);
-    for (OWSDatabaseMigration *migration in migrations) {
-        DDLogInfo(@"%@ Considering migrations: %@", self.logTag, migration.class);
-    }
-
     // If there are no more migrations to run, complete.
     if (migrations.count < 1) {
         dispatch_async(dispatch_get_main_queue(), ^{
