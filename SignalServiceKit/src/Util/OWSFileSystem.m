@@ -210,7 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (exists) {
         OWSAssert(isDirectory);
 
-        return YES;
+        return [self protectFileOrFolderAtPath:dirPath];
     } else {
         DDLogInfo(@"%@ Creating directory at: %@", self.logTag, dirPath);
 
@@ -223,7 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFail(@"%@ Failed to create directory: %@, error: %@", self.logTag, dirPath, error);
             return NO;
         }
-        return YES;
+        return [self protectFileOrFolderAtPath:dirPath];
     }
 }
 

@@ -32,6 +32,16 @@ const NSTimeInterval kMonthInterval = 30 * kDayInterval;
     return (uint64_t)(date.timeIntervalSince1970 * 1000);
 }
 
+- (BOOL)isAfterDate:(NSDate *)otherDate
+{
+    return [self compare:otherDate] == NSOrderedDescending;
+}
+
+- (BOOL)isBeforeDate:(NSDate *)otherDate
+{
+    return [self compare:otherDate] == NSOrderedAscending;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

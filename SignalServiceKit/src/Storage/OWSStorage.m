@@ -557,6 +557,20 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     return @"";
 }
 
+- (NSString *)databaseFilePath_SHM
+{
+    OWS_ABSTRACT_METHOD();
+
+    return @"";
+}
+
+- (NSString *)databaseFilePath_WAL
+{
+    OWS_ABSTRACT_METHOD();
+
+    return @"";
+}
+
 #pragma mark - Keychain
 
 + (BOOL)isDatabasePasswordAccessible
@@ -723,6 +737,13 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     } else {
         DDLogWarn(@"%@ Successfully set new keychain value.", self.logTag);
     }
+}
+
+- (void)logFileSizes
+{
+    DDLogInfo(@"%@ Database file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath]);
+    DDLogInfo(@"%@ \t SHM file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath_SHM]);
+    DDLogInfo(@"%@ \t WAL file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath_WAL]);
 }
 
 @end

@@ -79,6 +79,7 @@ extern NSString *const StorageIsReadyNotification;
 
 + (void)storeDatabaseCipherKeySpec:(NSData *)cipherKeySpecData;
 
+- (void)logFileSizes;
 
 @end
 

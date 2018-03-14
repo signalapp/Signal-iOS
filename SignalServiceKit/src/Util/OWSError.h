@@ -35,6 +35,10 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeExportBackupFailed = 777415,
     // A possibly recoverable error occured while exporting a backup.
     OWSErrorCodeExportBackupError = 777416,
+    // A non-recoverable error occured while importing a backup.
+    OWSErrorCodeImportBackupFailed = 777417,
+    // A possibly recoverable error occured while importing a backup.
+    OWSErrorCodeImportBackupError = 777418,
 };
 
 extern NSString *const OWSErrorRecipientIdentifierKey;

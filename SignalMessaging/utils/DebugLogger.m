@@ -39,7 +39,6 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
 {
     NSString *dirPath = [[OWSFileSystem cachesDirectoryPath] stringByAppendingPathComponent:@"Logs"];
     [OWSFileSystem ensureDirectoryExists:dirPath];
-    [OWSFileSystem protectFileOrFolderAtPath:dirPath];
     return dirPath;
 }
 
@@ -48,7 +47,6 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
     NSString *dirPath =
         [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"ShareExtensionLogs"];
     [OWSFileSystem ensureDirectoryExists:dirPath];
-    [OWSFileSystem protectFileOrFolderAtPath:dirPath];
     return dirPath;
 }
 

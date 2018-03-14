@@ -210,8 +210,6 @@ NS_ASSUME_NONNULL_BEGIN
         attachmentsFolder = TSAttachmentStream.sharedDataAttachmentsDirPath;
 
         [OWSFileSystem ensureDirectoryExists:attachmentsFolder];
-
-        [OWSFileSystem protectFileOrFolderAtPath:attachmentsFolder];
     });
     return attachmentsFolder;
 }

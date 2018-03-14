@@ -309,9 +309,29 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     return self.sharedDataDatabaseFilePath;
 }
 
++ (NSString *)databaseFilePath_SHM
+{
+    return self.sharedDataDatabaseFilePath_SHM;
+}
+
++ (NSString *)databaseFilePath_WAL
+{
+    return self.sharedDataDatabaseFilePath_WAL;
+}
+
 - (NSString *)databaseFilePath
 {
     return OWSPrimaryStorage.databaseFilePath;
+}
+
+- (NSString *)databaseFilename_SHM
+{
+    return OWSPrimaryStorage.databaseFilename_SHM;
+}
+
+- (NSString *)databaseFilename_WAL
+{
+    return OWSPrimaryStorage.databaseFilename_WAL;
 }
 
 + (YapDatabaseConnection *)dbReadConnection

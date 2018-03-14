@@ -93,13 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
                                        }];
 }
 
-- (void)logFileSizes
-{
-    DDLogInfo(@"%@ Database file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath]);
-    DDLogInfo(@"%@ \t SHM file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath_SHM]);
-    DDLogInfo(@"%@ \t WAL file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath_WAL]);
-}
-
 - (void)protectFiles
 {
     [self logFileSizes];

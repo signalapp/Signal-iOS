@@ -6,6 +6,8 @@
 #import "NumberUtil.h"
 #import "TestUtil.h"
 #import <SignalMessaging/NSString+OWS.h>
+#import <SignalServiceKit/NSDate+OWS.h>
+#import <SignalServiceKit/NSObject+OWS.h>
 
 @interface NSString (OWS_Test)
 
@@ -81,6 +83,35 @@
     XCTAssertEqualObjects(@"\u202Ealicebob".filterUnsafeCharacters, @"\uFFFDalicebob");
     XCTAssertEqualObjects(@"alicebob\u202E".filterUnsafeCharacters, @"alicebob\uFFFD");
     XCTAssertEqualObjects(@"alice\u202Dbobalice\u202Ebob".filterUnsafeCharacters, @"alice\uFFFDbobalice\uFFFDbob");
+}
+
+- (void)testDateComparison
+{
+    NSDate *firstDate = [NSDate new];
+
+    NSDate *sameDate = [NSDate dateWithTimeIntervalSinceReferenceDate:firstDate.timeIntervalSinceReferenceDate];
+    NSDate *laterDate = [NSDate dateWithTimeIntervalSinceReferenceDate:firstDate.timeIntervalSinceReferenceDate + 1.f];
+
+    XCTAssertEqual(firstDate.timeIntervalSinceReferenceDate, sameDate.timeIntervalSinceReferenceDate);
+    XCTAssertNotEqual(firstDate.timeIntervalSinceReferenceDate, laterDate.timeIntervalSinceReferenceDate);
+    XCTAssertEqualObjects(firstDate, sameDate);
+    XCTAssertNotEqualObjects(firstDate, laterDate);
+    XCTAssertTrue(firstDate.timeIntervalSinceReferenceDate < laterDate.timeIntervalSinceReferenceDate);
+    XCTAssertFalse([firstDate isBeforeDate:sameDate]);
+    XCTAssertTrue([firstDate isBeforeDate:laterDate]);
+    XCTAssertFalse([laterDate isBeforeDate:firstDate]);
+    XCTAssertFalse([firstDate isAfterDate:sameDate]);
+    XCTAssertFalse([firstDate isAfterDate:laterDate]);
+    XCTAssertTrue([laterDate isAfterDate:firstDate]);
+}
+
+- (void)testObjectComparison
+{
+    XCTAssertTrue([NSObject isNullableObject:nil equalTo:nil]);
+    XCTAssertFalse([NSObject isNullableObject:@(YES) equalTo:nil]);
+    XCTAssertFalse([NSObject isNullableObject:nil equalTo:@(YES)]);
+    XCTAssertFalse([NSObject isNullableObject:@(YES) equalTo:@(NO)]);
+    XCTAssertTrue([NSObject isNullableObject:@(YES) equalTo:@(YES)]);
 }
 
 @end

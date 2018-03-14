@@ -389,7 +389,6 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         [tempDirectory stringByAppendingPathComponent:[logsName stringByAppendingPathExtension:@"zip"]];
     NSString *zipDirPath = [tempDirectory stringByAppendingPathComponent:logsName];
     [OWSFileSystem ensureDirectoryExists:zipDirPath];
-    [OWSFileSystem protectFileOrFolderAtPath:zipDirPath];
 
     NSArray<NSString *> *logFilePaths = DebugLogger.sharedLogger.allLogFilePaths;
     if (logFilePaths.count < 1) {

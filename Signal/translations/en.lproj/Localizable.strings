@@ -31,7 +31,7 @@
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Don't Save";
 
-/* Title for a generic error alert. */
+/* No comment provided by engineer. */
 "ALERT_ERROR_TITLE" = "Error";
 
 /* The label for the 'save' button in action sheets. */
@@ -115,11 +115,11 @@
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Unable to process video.";
 
-/* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Unable to remove metadata from image.";
-
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Image attachment could not be parsed.";
+
+/* Attachment error message for image attachments in which metadata could not be removed */
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Unable to remove metadata from image.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
@@ -157,42 +157,35 @@
 /* button text for back button */
 "BACK_BUTTON" = "Back";
 
-/* Message indicating that backup export is complete. */
-"BACKUP_EXPORT_COMPLETE_MESSAGE" = "Backup complete.";
+/* Error indicating the a backup export could not export the user's data. */
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could be exported.";
 
-/* Label for button that copies backup password to the
-//                                                    pasteboard. */
-"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "Copy Password";
+/* Error indicating the a backup export failed to save a file to the cloud. */
+"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup could not upload data.";
 
-/* Message indicating that backup export failed. */
-"BACKUP_EXPORT_FAILED_MESSAGE" = "BACKUP_EXPORT_FAILED_MESSAGE";
+/* Indicates that the cloud is being cleaned up. */
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning up backup data.";
 
-/* Message indicating that backup export is in progress. */
-"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "Exporting Backup...";
+/* Indicates that the backup export is being configured. */
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing backup.";
 
-/* Format for message indicating that backup export is complete. Embeds: {{the backup password}}. */
-"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Your backup password is: %@. Make sure to keep a copy of this password or you won't be able to restore from this backup.";
+/* Indicates that the backup export data is being exported. */
+"BACKUP_EXPORT_PHASE_EXPORT" = "Exporting backup data.";
 
-/* Label for button that 'send backup' in the current
-//                                                    conversation. */
-"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Send Backup as Message";
+/* Indicates that the backup export data is being uploaded. */
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading backup data.";
 
-/* Message indicating that sending
-//                                                                                    the backup failed. */
-"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Sending Backup Failed.";
+/* Error indicating the a backup import could not import the user's data. */
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
 
-/* Message indicating that sending the backup succeeded. */
-"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "Backup Sent.";
+/* Error indicating the a backup import failed to download a file from the cloud. */
+"BACKUP_IMPORT_ERROR_DOWNLOAD_FILE_FROM_CLOUD_FAILED" = "Could not download backup data.";
 
-/* Label for button that opens share UI for backup. */
-"BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Share Backup";
+/* Indicates that the backup import is being configured. */
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring backup restore.";
 
-/* Title for the 'backup export'
-//    view. */
-"BACKUP_EXPORT_VIEW_TITLE" = "Backup";
-
-/* Format for backup filenames. Embeds: {{the date and time of the backup}}. Should not include characters like slash (/ or \\) or colon (:). */
-"BACKUP_FILENAME_FORMAT" = "Signal Backup %@";
+/* Indicates that the backup import data is being imported. */
+"BACKUP_IMPORT_PHASE_IMPORT" = "Importing backup.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
@@ -322,6 +315,15 @@
 
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Select Country";
+
+/* Error indicating that the app could not determine that user's CloudKit account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "CLOUDKIT_STATUS_COULD_NOT_DETERMINE";
+
+/* Error indicating that user does not have an iCloud account. */
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "CLOUDKIT_STATUS_NO_ACCOUNT";
+
+/* Error indicating that the app was prevented from accessing the user's CloudKit account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "CLOUDKIT_STATUS_RESTRICTED";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Compare with Clipboard";
@@ -1673,20 +1675,20 @@
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all conversations.";
 
+/* Remove metadata table cell label */
+"SETTINGS_REMOVE_METADATA" = "Remove Media Metadata";
+
+/* Remove metadata section footer */
+"SETTINGS_REMOVE_METADATA_DETAIL" = "Removes user-identifying metadata and GPS information when sending image and video messages.";
+
+/* Remove metadata section header */
+"SETTINGS_REMOVE_METADATA_TITLE" = "Metadata";
+
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Enable Screen Security";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevent Signal previews from appearing in the app switcher.";
-
-/* Remove metadata table view header label. */
-"SETTINGS_REMOVE_METADATA_TITLE" = "Metadata";
-
-/* Label for the remove metadata setting. */
-"SETTINGS_REMOVE_METADATA" = "Remove Media Metadata";
-
-/* Footer label explanation of the remove metadata setting. */
-"SETTINGS_REMOVE_METADATA_DETAIL" = "Removes user-identifying metadata and GPS information when sending image and video messages.";
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";

@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)areSyncRegistrationsComplete;
 
 - (NSString *)databaseFilePath;
+- (NSString *)databaseFilePath_SHM;
+- (NSString *)databaseFilePath_WAL;
 
 - (void)resetStorage;
 

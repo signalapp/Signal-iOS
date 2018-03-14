@@ -24,9 +24,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
-    [items addObject:[OWSTableItem itemWithTitle:@"Backup test file @ CloudKit"
+    [items addObject:[OWSTableItem itemWithTitle:@"Backup test file to CloudKit"
                                      actionBlock:^{
                                          [DebugUIBackup backupTestFile];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Check for CloudKit backup"
+                                     actionBlock:^{
+                                         [DebugUIBackup checkForBackup];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Log CloudKit backup records"
+                                     actionBlock:^{
+                                         [DebugUIBackup logBackupRecords];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Restore CloudKit backup"
+                                     actionBlock:^{
+                                         [DebugUIBackup tryToImportBackup];
                                      }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
@@ -53,6 +65,32 @@ NS_ASSUME_NONNULL_BEGIN
                                                  }];
         }
     }];
+}
+
++ (void)checkForBackup
+{
+    DDLogInfo(@"%@ checkForBackup.", self.logTag);
+
+    [OWSBackup.sharedManager checkCanImportBackup:^(BOOL value) {
+        DDLogInfo(@"%@ has backup available  for import? %d", self.logTag, value);
+    }
+                                          failure:^(NSError *error){
+                                              // Do nothing.
+                                          }];
+}
+
++ (void)logBackupRecords
+{
+    DDLogInfo(@"%@ logBackupRecords.", self.logTag);
+
+    [OWSBackup.sharedManager logBackupRecords];
+}
+
++ (void)tryToImportBackup
+{
+    DDLogInfo(@"%@ tryToImportBackup.", self.logTag);
+
+    [OWSBackup.sharedManager tryToImportBackup];
 }
 
 @end
