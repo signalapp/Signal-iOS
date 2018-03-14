@@ -35,8 +35,8 @@ import CloudKit
 
     @objc
     public class func saveTestFileToCloud(fileUrl: URL,
-                                          success: @escaping (String) -> Swift.Void,
-                                          failure: @escaping (Error) -> Swift.Void) {
+                                          success: @escaping (String) -> Void,
+                                          failure: @escaping (Error) -> Void) {
         saveFileToCloud(fileUrl: fileUrl,
                         recordName: NSUUID().uuidString,
                         recordType: signalBackupRecordType,
@@ -50,8 +50,8 @@ import CloudKit
     // complete.
     @objc
     public class func saveEphemeralDatabaseFileToCloud(fileUrl: URL,
-                                                       success: @escaping (String) -> Swift.Void,
-                                                       failure: @escaping (Error) -> Swift.Void) {
+                                                       success: @escaping (String) -> Void,
+                                                       failure: @escaping (Error) -> Void) {
         saveFileToCloud(fileUrl: fileUrl,
                         recordName: "ephemeralFile-\(NSUUID().uuidString)",
             recordType: signalBackupRecordType,
@@ -64,9 +64,9 @@ import CloudKit
     // backups can reuse the same record.
     @objc
     public class func savePersistentFileOnceToCloud(fileId: String,
-                                                    fileUrlBlock: @escaping (Swift.Void) -> URL?,
-                                                    success: @escaping (String) -> Swift.Void,
-                                                    failure: @escaping (Error) -> Swift.Void) {
+                                                    fileUrlBlock: @escaping (()) -> URL?,
+                                                    success: @escaping (String) -> Void,
+                                                    failure: @escaping (Error) -> Void) {
         saveFileOnceToCloud(recordName: "persistentFile-\(fileId)",
             recordType: signalBackupRecordType,
             fileUrlBlock: fileUrlBlock,
@@ -76,8 +76,8 @@ import CloudKit
 
     @objc
     public class func upsertManifestFileToCloud(fileUrl: URL,
-                                                success: @escaping (String) -> Swift.Void,
-                                                failure: @escaping (Error) -> Swift.Void) {
+                                                success: @escaping (String) -> Void,
+                                                failure: @escaping (Error) -> Void) {
         // We want to use a well-known record id and type for manifest files.
         upsertFileToCloud(fileUrl: fileUrl,
                           recordName: manifestRecordName,
@@ -90,8 +90,8 @@ import CloudKit
     public class func saveFileToCloud(fileUrl: URL,
                                       recordName: String,
                                       recordType: String,
-                                      success: @escaping (String) -> Swift.Void,
-                                      failure: @escaping (Error) -> Swift.Void) {
+                                      success: @escaping (String) -> Void,
+                                      failure: @escaping (Error) -> Void) {
         let recordID = CKRecordID(recordName: recordName)
         let record = CKRecord(recordType: recordType, recordID: recordID)
         let asset = CKAsset(fileURL: fileUrl)
@@ -104,8 +104,8 @@ import CloudKit
 
     @objc
     public class func saveRecordToCloud(record: CKRecord,
-                                        success: @escaping (String) -> Swift.Void,
-                                        failure: @escaping (Error) -> Swift.Void) {
+                                        success: @escaping (String) -> Void,
+                                        failure: @escaping (Error) -> Void) {
         saveRecordToCloud(record: record,
                           remainingRetries: maxRetries,
                           success: success,
@@ -114,21 +114,21 @@ import CloudKit
 
     private class func saveRecordToCloud(record: CKRecord,
                                          remainingRetries: Int,
-                                         success: @escaping (String) -> Swift.Void,
-                                         failure: @escaping (Error) -> Swift.Void) {
+                                         success: @escaping (String) -> Void,
+                                         failure: @escaping (Error) -> Void) {
 
         database().save(record) {
             (_, error) in
 
-            let response = responseForCloudKitError(error: error,
+            let outcome = outcomeForCloudKitError(error: error,
                                                     remainingRetries: remainingRetries,
                                                     label: "Save Record")
-            switch response {
+            switch outcome {
             case .success:
                 let recordName = record.recordID.recordName
                 success(recordName)
-            case .failureDoNotRetry(let responseError):
-                failure(responseError)
+            case .failureDoNotRetry(let outcomeError):
+                failure(outcomeError)
             case .failureRetryAfterDelay(let retryDelay):
                 DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
                     saveRecordToCloud(record: record,
@@ -159,8 +159,8 @@ import CloudKit
     public class func upsertFileToCloud(fileUrl: URL,
                                         recordName: String,
                                         recordType: String,
-                                        success: @escaping (String) -> Swift.Void,
-                                        failure: @escaping (Error) -> Swift.Void) {
+                                        success: @escaping (String) -> Void,
+                                        failure: @escaping (Error) -> Void) {
 
         checkForFileInCloud(recordName: recordName,
                             remainingRetries: maxRetries,
@@ -192,9 +192,9 @@ import CloudKit
     @objc
     public class func saveFileOnceToCloud(recordName: String,
                                           recordType: String,
-                                          fileUrlBlock: @escaping (Swift.Void) -> URL?,
-                                          success: @escaping (String) -> Swift.Void,
-                                          failure: @escaping (Error) -> Swift.Void) {
+                                          fileUrlBlock: @escaping (()) -> URL?,
+                                          success: @escaping (String) -> Void,
+                                          failure: @escaping (Error) -> Void) {
 
         checkForFileInCloud(recordName: recordName,
                             remainingRetries: maxRetries,
@@ -226,8 +226,8 @@ import CloudKit
 
     @objc
     public class func deleteRecordFromCloud(recordName: String,
-                                            success: @escaping (Swift.Void) -> Swift.Void,
-                                            failure: @escaping (Error) -> Swift.Void) {
+                                            success: @escaping (()) -> Void,
+                                            failure: @escaping (Error) -> Void) {
         deleteRecordFromCloud(recordName: recordName,
                               remainingRetries: maxRetries,
                               success: success,
@@ -236,22 +236,22 @@ import CloudKit
 
     private class func deleteRecordFromCloud(recordName: String,
                                              remainingRetries: Int,
-                                             success: @escaping (Swift.Void) -> Swift.Void,
-                                             failure: @escaping (Error) -> Swift.Void) {
+                                             success: @escaping (()) -> Void,
+                                             failure: @escaping (Error) -> Void) {
 
         let recordID = CKRecordID(recordName: recordName)
 
         database().delete(withRecordID: recordID) {
             (_, error) in
 
-            let response = responseForCloudKitError(error: error,
+            let outcome = outcomeForCloudKitError(error: error,
                                                     remainingRetries: remainingRetries,
                                                     label: "Delete Record")
-            switch response {
+            switch outcome {
             case .success:
                 success()
-            case .failureDoNotRetry(let responseError):
-                failure(responseError)
+            case .failureDoNotRetry(let outcomeError):
+                failure(outcomeError)
             case .failureRetryAfterDelay(let retryDelay):
                 DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
                     deleteRecordFromCloud(recordName: recordName,
@@ -277,8 +277,8 @@ import CloudKit
 
     private class func checkForFileInCloud(recordName: String,
                                            remainingRetries: Int,
-                                           success: @escaping (CKRecord?) -> Swift.Void,
-                                           failure: @escaping (Error) -> Swift.Void) {
+                                           success: @escaping (CKRecord?) -> Void,
+                                           failure: @escaping (Error) -> Void) {
         let recordId = CKRecordID(recordName: recordName)
         let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
         // Don't download the file; we're just using the fetch to check whether or
@@ -286,10 +286,10 @@ import CloudKit
         fetchOperation.desiredKeys = []
         fetchOperation.perRecordCompletionBlock = { (record, recordId, error) in
 
-            let response = responseForCloudKitError(error: error,
+            let outcome = outcomeForCloudKitError(error: error,
                                                     remainingRetries: remainingRetries,
                                                     label: "Check for Record")
-            switch response {
+            switch outcome {
             case .success:
                 guard let record = record else {
                     owsFail("\(self.logTag) missing fetching record.")
@@ -298,8 +298,8 @@ import CloudKit
                 }
                 // Record found.
                 success(record)
-            case .failureDoNotRetry(let responseError):
-                failure(responseError)
+            case .failureDoNotRetry(let outcomeError):
+                failure(outcomeError)
             case .failureRetryAfterDelay(let retryDelay):
                 DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
                     checkForFileInCloud(recordName: recordName,
@@ -323,8 +323,8 @@ import CloudKit
     }
 
     @objc
-    public class func checkForManifestInCloud(success: @escaping (Bool) -> Swift.Void,
-                                              failure: @escaping (Error) -> Swift.Void) {
+    public class func checkForManifestInCloud(success: @escaping (Bool) -> Void,
+                                              failure: @escaping (Error) -> Void) {
 
         checkForFileInCloud(recordName: manifestRecordName,
                             remainingRetries: maxRetries,
@@ -335,8 +335,8 @@ import CloudKit
     }
 
     @objc
-    public class func fetchAllRecordNames(success: @escaping ([String]) -> Swift.Void,
-                                          failure: @escaping (Error) -> Swift.Void) {
+    public class func fetchAllRecordNames(success: @escaping ([String]) -> Void,
+                                          failure: @escaping (Error) -> Void) {
 
         let query = CKQuery(recordType: signalBackupRecordType, predicate: NSPredicate(value: true))
         // Fetch the first page of results for this query.
@@ -352,8 +352,8 @@ import CloudKit
                                                previousRecordNames: [String],
                                                cursor: CKQueryCursor?,
                                                remainingRetries: Int,
-                                               success: @escaping ([String]) -> Swift.Void,
-                                               failure: @escaping (Error) -> Swift.Void) {
+                                               success: @escaping ([String]) -> Void,
+                                               failure: @escaping (Error) -> Void) {
 
         var allRecordNames = previousRecordNames
 
@@ -369,10 +369,10 @@ import CloudKit
         }
         queryOperation.queryCompletionBlock = { (cursor, error) in
 
-            let response = responseForCloudKitError(error: error,
+            let outcome = outcomeForCloudKitError(error: error,
                                                     remainingRetries: remainingRetries,
                                                     label: "Fetch All Records")
-            switch response {
+            switch outcome {
             case .success:
                 if let cursor = cursor {
                     Logger.verbose("\(self.logTag) fetching more record names \(allRecordNames.count).")
@@ -387,8 +387,8 @@ import CloudKit
                 }
                 Logger.info("\(self.logTag) fetched \(allRecordNames.count) record names.")
                 success(allRecordNames)
-            case .failureDoNotRetry(let responseError):
-                failure(responseError)
+            case .failureDoNotRetry(let outcomeError):
+                failure(outcomeError)
             case .failureRetryAfterDelay(let retryDelay):
                 DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
                     fetchAllRecordNamesStep(query: query,
@@ -419,8 +419,8 @@ import CloudKit
 
     @objc
     public class func downloadManifestFromCloud(
-        success: @escaping (Data) -> Swift.Void,
-        failure: @escaping (Error) -> Swift.Void) {
+        success: @escaping (Data) -> Void,
+        failure: @escaping (Error) -> Void) {
         downloadDataFromCloud(recordName: manifestRecordName,
                               success: success,
                               failure: failure)
@@ -428,8 +428,8 @@ import CloudKit
 
     @objc
     public class func downloadDataFromCloud(recordName: String,
-                                            success: @escaping (Data) -> Swift.Void,
-                                            failure: @escaping (Error) -> Swift.Void) {
+                                            success: @escaping (Data) -> Void,
+                                            failure: @escaping (Error) -> Void) {
 
         downloadFromCloud(recordName: recordName,
                           remainingRetries: maxRetries,
@@ -450,8 +450,8 @@ import CloudKit
     @objc
     public class func downloadFileFromCloud(recordName: String,
                                             toFileUrl: URL,
-                                            success: @escaping (Swift.Void) -> Swift.Void,
-                                            failure: @escaping (Error) -> Swift.Void) {
+                                            success: @escaping (()) -> Void,
+                                            failure: @escaping (Error) -> Void) {
 
         downloadFromCloud(recordName: recordName,
                           remainingRetries: maxRetries,
@@ -476,18 +476,18 @@ import CloudKit
     // the asset.
     private class func downloadFromCloud(recordName: String,
                                          remainingRetries: Int,
-                                         success: @escaping (CKAsset) -> Swift.Void,
-                                         failure: @escaping (Error) -> Swift.Void) {
+                                         success: @escaping (CKAsset) -> Void,
+                                         failure: @escaping (Error) -> Void) {
 
         let recordId = CKRecordID(recordName: recordName)
         let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
         // Download all keys for this record.
         fetchOperation.perRecordCompletionBlock = { (record, recordId, error) in
 
-            let response = responseForCloudKitError(error: error,
+            let outcome = outcomeForCloudKitError(error: error,
                                                     remainingRetries: remainingRetries,
                                                     label: "Download Record")
-            switch response {
+            switch outcome {
             case .success:
                 guard let record = record else {
                     Logger.error("\(self.logTag) missing fetching record.")
@@ -500,8 +500,8 @@ import CloudKit
                     return
                 }
                 success(asset)
-            case .failureDoNotRetry(let responseError):
-                failure(responseError)
+            case .failureDoNotRetry(let outcomeError):
+                failure(outcomeError)
             case .failureRetryAfterDelay(let retryDelay):
                 DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
                     downloadFromCloud(recordName: recordName,
@@ -527,7 +527,7 @@ import CloudKit
     // MARK: - Access
 
     @objc
-    public class func checkCloudKitAccess(completion: @escaping (Bool) -> Swift.Void) {
+    public class func checkCloudKitAccess(completion: @escaping (Bool) -> Void) {
         CKContainer.default().accountStatus(completionHandler: { (accountStatus, error) in
             DispatchQueue.main.async {
                 switch accountStatus {
@@ -552,7 +552,7 @@ import CloudKit
 
     // MARK: - Retry
 
-    private enum CKErrorResponse {
+    private enum CKOutcome {
         case success
         case failureDoNotRetry(error:Error)
         case failureRetryAfterDelay(retryDelay: Double)
@@ -561,9 +561,9 @@ import CloudKit
         case unknownItem
     }
 
-    private class func responseForCloudKitError(error: Error?,
+    private class func outcomeForCloudKitError(error: Error?,
                                                 remainingRetries: Int,
-                                                label: String) -> CKErrorResponse {
+                                                label: String) -> CKOutcome {
         if let error = error as? CKError {
             if error.code == CKError.unknownItem {
                 // This is not always an error for our purposes.
