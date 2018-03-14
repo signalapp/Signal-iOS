@@ -1,6 +1,3 @@
-/* Text field placeholder when entering a 'two-factor auth pin'. */
-"2FA_PIN_DEFAULT_TEXT" = "••••••";
-
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Ne zdaj";
 
@@ -660,10 +657,10 @@
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Potrdite svoj PIN.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Ne morem izklopiti zaklepa prijave";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Ne morem izklopiti kode PIN za prijavo na strežnik.";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Ne morem vklopiti zaklepa prijave.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Ne morem vklopiti kode PIN za prijavo na strežnik.";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
 "ENABLE_2FA_VIEW_DISABLE_2FA" = "Izklopi";
@@ -675,19 +672,19 @@
 "ENABLE_2FA_VIEW_NEXT_BUTTON" = "Naprej";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN se ne ujema.";
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Koda PIN se ne ujema.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Vnesite PIN za zaklep prijave na strežnik. Kodo boste morali vnesti vsakič, ko se boste ponovno prijavljali v omrežje Signal s to številko.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Vnesite PIN za prijavo v omrežje Signal. Kodo boste morali vnesti vsakič, ko se boste ponovno prijavljali v omrežje Signal s to številko.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Za dodatno varnost lahko vklopite PIN za zaklep prijave na strežnik. Vnesti ga boste morali vsakič, ko se boste ponovno prijavljali v omrežje Signal s to številko.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Za dodatno varnost lahko vklopite PIN za prijavo v omrežje Signal. Vnesti ga boste morali vsakič, ko se boste ponovno prijavljali v omrežje Signal s to številko.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Vklopljen je Zaklep prijave na strežnik. Ob vsaki ponovni prijavi v omrežje Signal s to številko boste morali vnesti izbrano kodo PIN.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Vklopljen je PIN za prijavo v omrežje Signal. Izbrano kodo boste morali vnseti ob vsaki novi prijavi s to telefonsko številko.";
 
 /* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "Zaklep prijave na strežnik";
+"ENABLE_2FA_VIEW_TITLE" = "PIN za prijavo v omrežje";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Zasedeno.";
@@ -1394,10 +1391,10 @@
 "REGISTER_2FA_FORGOT_PIN" = "Pozabil sem svoj PIN.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Prijava s to telefonsko številko brez kode PIN bo mogoča po sedmih dneh odkar je bila številka nazadnje aktivna v omrežju Signal.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Prijava s to telefonsko številko brez kode PIN bo mogoča šele po sedmih dneh odkar je bila številka nazadnje aktivna v omrežju Signal.";
 
 /* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "Telefonska številka ima vklopljen Zaklep prijave na strežnik. Prosimo vneite kodo PIN za odklep.\n\nPIN za Zaklep prijave na strežnik ni enak kodi za verifikacijo ki vam je bila pravkar posredovana preko sporočila SMS, temveč gre za kodo, ki ste jo določili sami.";
+"REGISTER_2FA_INSTRUCTIONS" = "Telefonska številka ima vklopljen PIN za prijavo v omrežje Signal. Za odklep prosimo vnesite svoj PIN.\n\nPIN za prijavo v omrežje Signal ni enak kodi za verifikacijo ki vam je bila pravkar posredovana preko sporočila SMS, temveč gre za kodo, ki ste jo določili sami.";
 
 /* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
 "REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Prijava ni uspela";
@@ -1421,7 +1418,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Koda države";
 
 /* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Zaklep prijave na strežnik";
+"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "PIN za prijavo v omrežje";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Vnesite številko";
@@ -1451,7 +1448,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Števila, ki ste jih vnesli, niso identična poslanim. Bi jih želeli še enkrat preveriti?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Napačen PIN za zaklep prijave.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Napačen PIN za prijavo v omrežje.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Aktiviraj napravo";
@@ -1475,16 +1472,16 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Telefonska številka, s katero se želite registrirati, je že bila ragistrirana na drugem strežniku. Prosimo, da se najprej odjavite od tam in nato poskusite znova.";
 
 /* Body text for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Za vašo telefonsko številko je vklopljen zaklep prijave na strežnik.";
+"REMINDER_2FA_BODY" = "Za to telefonsko številko je vklujčen PIN za prijavo v omrežje Signal. Da ne bi pozabili kode za prijavo, vas bomo občasno opomnili na njen vnos.";
 
 /* Body header for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+"REMINDER_2FA_BODY_HEADER" = "Opomnik:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Zaklep prijave na strežnik vas ščiti pred nepooblaščeno prijavo v omrežje Signal z vašo telefonsko številko s strani tretjih oseb. Storitev lahko kadarkoli izklopite v nastavitvah zasebnosti aplikacije Signal.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "PIN za prijavo v omrežje vas ščiti pred nepooblaščeno prijavo v omrežje Signal z vašo telefonsko številko s strani tretjih oseb. Storitev lahko kadarkoli izklopite v nastavitvah zasebnosti aplikacije Signal.";
 
 /* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Vnesite PIN za zaklep prijave na strežnik";
+"REMINDER_2FA_NAV_TITLE" = "Vnesite PIN za prijavo v omrežje Signal";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "V nastavitvah zasebnosti lahko določite novi PIN.";
@@ -1658,7 +1655,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Nastavitve";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Obvestila o klicih in sporočilih se lahko pojavijo tudi, kadar je telefon zaklenjen. Morda bi želeli omejiti vsebino njihovo vsebino.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Obvestila o klicih in sporočilih se lahko pojavijo tudi, kadar je telefon zaklenjen. Morda bi želeli omejiti prikaz vsebine.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Vsebina obvestil";
@@ -1718,10 +1715,10 @@
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Izklopljena";
 
 /* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Zaklep prijave na strežnik";
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "PIN za prijavo v omrežje";
 
 /* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Zaklep prijave na strežnik";
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "PIN za prijavo v omrežje";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Različica";
@@ -1886,13 +1883,13 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Za prevzem klica podrsajte";
 
 /* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now choose default and per-conversation notification sounds, and calls will respect the ringtone you've choosen for each system contact.";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Odslej lahko določite privzete zvoke obvestil za vsak pogovor posebej. Zvonjenja ob klicih bodo prilagojena stikom iz vašega imenika.";
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Pregled nastavitev obvsetil";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Zvoki obvestil o klicih in sporočilih so bili posodobljeni";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Zvoki za obvestila o klicih in sporočilih so bili posodobljeni";
 
 /* button label shown one time, after user upgrades app */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Nastavite svoj profil";
